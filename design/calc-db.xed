@@ -144,159 +144,169 @@ INNER JOIN sampling_unit u on t.sampling_unit_id = u.id
    </View>
    <Table id="52" name="admin_unit" schema="calc" database="" background="16777165">
       <Column id="53" name="id" type="integer" length="25" nulls="false"/>
-      <Column id="54" name="region" type="varchar" length="255" nulls="false"/>
-      <Column id="55" name="district" type="varchar" length="255" nulls="false"/>
-      <Column id="56" name="area" type="numeric" length="25" nulls="false">
+      <Column id="54" name="level1" type="varchar" length="255" nulls="false"/>
+      <Column id="55" name="level2" type="varchar" length="255" nulls="true"/>
+      <Column id="56" name="level3" type="varchar" length="255" nulls="true"/>
+      <Column id="57" name="area" type="numeric" length="25" nulls="false">
          <CP name="PRECISION">15</CP>
          <CP name="SCALE">5</CP>
       </Column>
       <Storage name="TempTable" value="false"></Storage>
    </Table>
-   <Table id="57" name="plot" schema="calc" database="" background="16777165">
-      <Column id="58" name="id" type="integer" length="25" nulls="true"/>
-      <Column id="59" name="stratum" type="varchar" length="255" nulls="true"/>
-      <Column id="60" name="cluster" type="varchar" length="255" nulls="true"/>
-      <Column id="61" name="plot" type="varchar" length="255" nulls="true"/>
-      <Column id="62" name="subplot" type="varchar" length="255" nulls="true"/>
-      <Column id="63" name="share" type="numeric" length="25" nulls="false">
+   <Table id="58" name="plot" schema="calc" database="" background="16777165">
+      <Column id="59" name="id" type="integer" length="25" nulls="true"/>
+      <Column id="60" name="level1" type="varchar" length="25" nulls="true">
+         <CP name="COMMENTS">e.g. stratum</CP>
+      </Column>
+      <Column id="61" name="level2" type="varchar" length="25" nulls="true">
+         <CP name="COMMENTS">e.g. cluster</CP>
+      </Column>
+      <Column id="62" name="level3" type="varchar" length="25" nulls="true">
+         <CP name="COMMENTS">e.g. plot</CP>
+      </Column>
+      <Column id="63" name="level4" type="varchar" length="25" nulls="true">
+         <CP name="COMMENTS">e.g. subplot</CP>
+      </Column>
+      <Column id="64" name="share" type="numeric" length="25" nulls="false">
          <CP name="PRECISION">15</CP>
          <CP name="SCALE">5</CP>
       </Column>
-      <Column id="64" name="area" type="numeric" length="25" nulls="false">
+      <Column id="65" name="area" type="numeric" length="25" nulls="false">
          <CP name="PRECISION">15</CP>
          <CP name="SCALE">5</CP>
       </Column>
-      <Column id="65" name="accessibility_id" type="integer" length="25" nulls="false"/>
-      <Column id="66" name="land_use_id" type="integer" length="25" nulls="false"/>
-      <Column id="67" name="vegetation_type_id" type="integer" length="25" nulls="false"/>
-      <Column id="68" name="ownership_id" type="integer" length="25" nulls="false"/>
-      <Column id="69" name="admin_unit_id" type="integer" length="25" nulls="false"/>
-      <Column id="70" name="undergrown_type_id" type="integer" length="25" nulls="false"/>
+      <Column id="66" name="accessibility_id" type="integer" length="25" nulls="false"/>
+      <Column id="67" name="class1" type="varchar" length="25" nulls="true"/>
+      <Column id="68" name="class2" type="varchar" length="25" nulls="true"/>
+      <Column id="69" name="class3" type="varchar" length="25" nulls="true"/>
+      <Column id="70" name="class4" type="varchar" length="25" nulls="true"/>
+      <Column id="71" name="class5" type="varchar" length="25" nulls="true"/>
+      <Column id="72" name="admin_unit_id" type="integer" length="25" nulls="false"/>
       <Storage name="TempTable" value="false"></Storage>
    </Table>
-   <Table id="71" name="land_use_dist" schema="calc" database="" background="16777165">
-      <Column id="72" name="id" type="integer" length="25" nulls="false"/>
-      <Column id="73" name="area" type="numeric" length="25" nulls="true">
+   <Table id="73" name="land_use_dist" schema="calc" database="" background="16777165">
+      <Column id="74" name="id" type="integer" length="25" nulls="false"/>
+      <Column id="75" name="area" type="numeric" length="25" nulls="true">
          <CP name="PRECISION">15</CP>
          <CP name="SCALE">5</CP>
       </Column>
-      <Column id="74" name="admin_unit_id" type="integer" length="25" nulls="false"/>
-      <Column id="75" name="land_use_id" type="integer" length="25" nulls="false"/>
+      <Column id="76" name="admin_unit_id" type="integer" length="25" nulls="false"/>
+      <Column id="77" name="land_use_id" type="integer" length="25" nulls="false"/>
       <Storage name="TempTable" value="false"></Storage>
    </Table>
-   <Table id="76" name="vegetation_type_dist" schema="calc" database="" background="16777165">
-      <Column id="77" name="id" type="integer" length="25" nulls="false"/>
-      <Column id="78" name="area" type="numeric" length="25" nulls="true">
+   <Table id="78" name="vegetation_type_dist" schema="calc" database="" background="16777165">
+      <Column id="79" name="id" type="integer" length="25" nulls="false"/>
+      <Column id="80" name="area" type="numeric" length="25" nulls="true">
          <CP name="PRECISION">15</CP>
          <CP name="SCALE">5</CP>
       </Column>
-      <Column id="79" name="admin_unit_id" type="integer" length="25" nulls="false"/>
-      <Column id="80" name="vegetation_type_id" type="integer" length="25" nulls="false"/>
+      <Column id="81" name="admin_unit_id" type="integer" length="25" nulls="false"/>
+      <Column id="82" name="vegetation_type_id" type="integer" length="25" nulls="false"/>
       <Storage name="TempTable" value="false"></Storage>
    </Table>
-   <Table id="81" name="ownership_dist" schema="calc" database="" background="16777165">
-      <Column id="82" name="id" type="integer" length="25" nulls="false"/>
-      <Column id="83" name="area" type="numeric" length="25" nulls="true">
+   <Table id="83" name="ownership_dist" schema="calc" database="" background="16777165">
+      <Column id="84" name="id" type="integer" length="25" nulls="false"/>
+      <Column id="85" name="area" type="numeric" length="25" nulls="true">
          <CP name="PRECISION">15</CP>
          <CP name="SCALE">5</CP>
       </Column>
-      <Column id="84" name="admin_unit_id" type="integer" length="25" nulls="false"/>
-      <Column id="85" name="ownership_id" type="integer" length="25" nulls="false"/>
+      <Column id="86" name="admin_unit_id" type="integer" length="25" nulls="false"/>
+      <Column id="87" name="ownership_id" type="integer" length="25" nulls="false"/>
       <Storage name="TempTable" value="false"></Storage>
    </Table>
-   <Table id="86" name="land_use" schema="" database="" background="16777165">
-      <Column id="87" name="id" type="integer" length="25" nulls="false"/>
-      <Column id="88" name="name" type="varchar" length="255" nulls="false"/>
+   <Table id="88" name="land_use" schema="" database="" background="16777165">
+      <Column id="89" name="id" type="integer" length="25" nulls="false"/>
+      <Column id="90" name="name" type="varchar" length="255" nulls="false"/>
       <Storage name="TempTable" value="false"></Storage>
    </Table>
-   <Table id="89" name="vegetation_type" schema="" database="" background="16777165">
-      <Column id="90" name="id" type="integer" length="25" nulls="false"/>
-      <Column id="91" name="name" type="varchar" length="255" nulls="false"/>
+   <Table id="91" name="vegetation_type" schema="" database="" background="16777165">
+      <Column id="92" name="id" type="integer" length="25" nulls="false"/>
+      <Column id="93" name="name" type="varchar" length="255" nulls="false"/>
       <Storage name="TempTable" value="false"></Storage>
    </Table>
-   <Table id="92" name="ownership" schema="" database="" background="16777165">
-      <Column id="93" name="id" type="integer" length="25" nulls="false"/>
-      <Column id="94" name="name" type="varchar" length="255" nulls="false"/>
+   <Table id="94" name="ownership" schema="" database="" background="16777165">
+      <Column id="95" name="id" type="integer" length="25" nulls="false"/>
+      <Column id="96" name="name" type="varchar" length="255" nulls="false"/>
       <Storage name="TempTable" value="false"></Storage>
    </Table>
-   <Table id="95" name="plot_phase1" schema="calc" database="" background="16777165">
-      <Column id="96" name="id" type="integer" length="25" nulls="false"/>
-      <Column id="97" name="admin_unit_id" type="integer" length="25" nulls="false"/>
-      <Column id="98" name="stratum" type="varchar" length="255" nulls="false"/>
-      <Column id="99" name="cluster" type="varchar" length="255" nulls="false"/>
-      <Column id="100" name="plot" type="integer" length="25" nulls="false"/>
+   <Table id="97" name="plot_phase1" schema="calc" database="" background="16777165">
+      <Column id="98" name="id" type="integer" length="25" nulls="false"/>
+      <Column id="99" name="admin_unit_id" type="integer" length="25" nulls="false"/>
+      <Column id="100" name="stratum" type="varchar" length="255" nulls="false"/>
+      <Column id="101" name="cluster" type="varchar" length="255" nulls="false"/>
+      <Column id="102" name="plot" type="integer" length="25" nulls="false"/>
       <Storage name="TempTable" value="false"></Storage>
    </Table>
-   <Table id="101" name="plot_phase2" schema="calc" database="" background="16777165">
-      <Column id="102" name="id" type="integer" length="25" nulls="true"/>
-      <Column id="103" name="stratum" type="varchar" length="255" nulls="true"/>
-      <Column id="104" name="cluster" type="varchar" length="255" nulls="true"/>
-      <Column id="105" name="no" type="integer" length="255" nulls="false"/>
-      <Column id="106" name="land_use_id" type="integer" length="25" nulls="false"/>
-      <Column id="107" name="vegetation_type_id" type="integer" length="25" nulls="false"/>
-      <Column id="108" name="ownership_id" type="integer" length="25" nulls="false"/>
-      <Column id="109" name="admin_unit_id" type="integer" length="25" nulls="false"/>
+   <Table id="103" name="plot_phase2" schema="calc" database="" background="16777165">
+      <Column id="104" name="id" type="integer" length="25" nulls="true"/>
+      <Column id="105" name="stratum" type="varchar" length="255" nulls="true"/>
+      <Column id="106" name="cluster" type="varchar" length="255" nulls="true"/>
+      <Column id="107" name="no" type="integer" length="255" nulls="false"/>
+      <Column id="108" name="land_use_id" type="integer" length="25" nulls="false"/>
+      <Column id="109" name="vegetation_type_id" type="integer" length="25" nulls="false"/>
+      <Column id="110" name="ownership_id" type="integer" length="25" nulls="false"/>
+      <Column id="111" name="admin_unit_id" type="integer" length="25" nulls="false"/>
       <Storage name="TempTable" value="false"></Storage>
    </Table>
-   <Table id="110" name="stump" schema="calc" database="" background="16777165">
-      <Column id="111" name="id" type="integer" length="25" nulls="false"/>
-      <Column id="112" name="diameter" type="numeric" length="25" nulls="true">
+   <Table id="112" name="stump" schema="calc" database="" background="16777165">
+      <Column id="113" name="id" type="integer" length="25" nulls="false"/>
+      <Column id="114" name="diameter" type="numeric" length="25" nulls="true">
          <CP name="PRECISION">15</CP>
          <CP name="SCALE">5</CP>
       </Column>
-      <Column id="113" name="diameter_height" type="numeric" length="25" nulls="true">
+      <Column id="115" name="diameter_height" type="numeric" length="25" nulls="true">
          <CP name="PRECISION">15</CP>
          <CP name="SCALE">5</CP>
       </Column>
-      <Column id="114" name="est_dbh" type="numeric" length="25" nulls="true">
+      <Column id="116" name="est_dbh" type="numeric" length="25" nulls="true">
          <CP name="PRECISION">15</CP>
          <CP name="SCALE">5</CP>
       </Column>
-      <Column id="115" name="est_top_height" type="numeric" length="25" nulls="true">
+      <Column id="117" name="est_top_height" type="numeric" length="25" nulls="true">
          <CP name="PRECISION">15</CP>
          <CP name="SCALE">5</CP>
       </Column>
-      <Column id="116" name="est_stump_volume" type="numeric" length="25" nulls="true">
+      <Column id="118" name="est_stump_volume" type="numeric" length="25" nulls="true">
          <CP name="PRECISION">15</CP>
          <CP name="SCALE">5</CP>
       </Column>
-      <Column id="117" name="est_stem_volume" type="numeric" length="25" nulls="true">
+      <Column id="119" name="est_stem_volume" type="numeric" length="25" nulls="true">
          <CP name="PRECISION">15</CP>
          <CP name="SCALE">5</CP>
          <CP name="COMMENTS">Volume from default stump height level up to recorded stump height</CP>
       </Column>
-      <Column id="118" name="est_removal_volume" type="numeric" length="25" nulls="true">
+      <Column id="120" name="est_removal_volume" type="numeric" length="25" nulls="true">
          <CP name="PRECISION">15</CP>
          <CP name="SCALE">5</CP>
          <CP name="COMMENTS">Removal is based on stem and not whole tree; includes only timber (stem) removal.</CP>
       </Column>
-      <Column id="119" name="est_ag_biomass" type="numeric" length="25" nulls="true">
+      <Column id="121" name="est_ag_biomass" type="numeric" length="25" nulls="true">
          <CP name="PRECISION">15</CP>
          <CP name="SCALE">5</CP>
       </Column>
-      <Column id="120" name="est_bg_biomass" type="numeric" length="25" nulls="true">
+      <Column id="122" name="est_bg_biomass" type="numeric" length="25" nulls="true">
          <CP name="PRECISION">15</CP>
          <CP name="SCALE">5</CP>
       </Column>
-      <Column id="121" name="est_biomass" type="numeric" length="25" nulls="true">
+      <Column id="123" name="est_biomass" type="numeric" length="25" nulls="true">
          <CP name="PRECISION">15</CP>
          <CP name="SCALE">5</CP>
       </Column>
-      <Column id="122" name="est_ag_carbon" type="numeric" length="25" nulls="true">
+      <Column id="124" name="est_ag_carbon" type="numeric" length="25" nulls="true">
          <CP name="PRECISION">15</CP>
          <CP name="SCALE">5</CP>
       </Column>
-      <Column id="123" name="est_bg_carbon" type="numeric" length="25" nulls="true">
+      <Column id="125" name="est_bg_carbon" type="numeric" length="25" nulls="true">
          <CP name="PRECISION">15</CP>
          <CP name="SCALE">5</CP>
       </Column>
       <Storage name="TempTable" value="false"></Storage>
    </Table>
-   <Relation id="124" name="taxon_tree_fkey" cardinality="-1" identifying="false" nulls="false">
+   <Relation id="126" name="taxon_tree_fkey" cardinality="-1" identifying="false" nulls="false">
       <FK>29</FK>
       <PK>3</PK>
    </Relation>
-   <Relation id="125" name="operation_operation_parameter_fkey" cardinality="-2" identifying="true" nulls="false">
+   <Relation id="127" name="operation_operation_parameter_fkey" cardinality="-2" identifying="true" nulls="false">
       <FK>36</FK>
       <PK>42</PK>
    </Relation>
@@ -309,40 +319,40 @@ INNER JOIN sampling_unit u on t.sampling_unit_id = u.id
    <Constraint table="52" name="admin_unit_pkey" type="PrimKey">
       <ConstraintColumn id="53"></ConstraintColumn>
    </Constraint>
-   <Constraint table="57" name="sampling_unit_pkey" type="PrimKey">
-      <ConstraintColumn id="58"></ConstraintColumn>
+   <Constraint table="58" name="sampling_unit_pkey" type="PrimKey">
+      <ConstraintColumn id="59"></ConstraintColumn>
    </Constraint>
-   <Constraint table="101" name="sampling_unit_pkey_1" type="PrimKey">
-      <ConstraintColumn id="102"></ConstraintColumn>
+   <Constraint table="103" name="sampling_unit_pkey_1" type="PrimKey">
+      <ConstraintColumn id="104"></ConstraintColumn>
    </Constraint>
-   <Sheet name="Survey" id="126" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
+   <Sheet name="Survey" id="128" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
       <Place id="43" visible="true">240,160,60,20</Place>
    </Sheet>
-   <Sheet name="Trees" id="127" disp_at="true" disp_ph="true" disp_co="true">
-      <Place id="44" visible="true">70,500,301,161</Place>
-      <Place id="0" visible="true">691,308,271,501</Place>
+   <Sheet name="Trees" id="129" disp_at="true" disp_ph="true" disp_co="true">
+      <Place id="52" visible="true">980,89,191,132</Place>
+      <Place id="0" visible="true">601,337,271,501</Place>
+      <Place id="44" visible="true">79,89,301,161</Place>
+      <Place id="112" visible="true">1028,419,251,251</Place>
+      <Place id="126" visible="false">500,0,0,0</Place>
+      <Place id="58" visible="true">209,419,241,292</Place>
       <Place id="28" visible="true">499,100,243,131</Place>
-      <Place id="57" visible="true">211,210,241,251</Place>
-      <Place id="124" visible="false">500,0,0,0</Place>
       <Place id="43" visible="false">380,20,120,61</Place>
-      <Place id="52" visible="true">870,120,191,101</Place>
-      <Place id="110" visible="true">1028,419,251,251</Place>
    </Sheet>
-   <Sheet name="Areas" id="128" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
-      <Place id="95" visible="true">207,69,211,111</Place>
-      <Place id="101" visible="true">792,99,241,161</Place>
-      <Place id="71" visible="true">540,409,191,101</Place>
-      <Place id="81" visible="true">200,409,231,101</Place>
-      <Place id="86" visible="true">550,609,191,60</Place>
-      <Place id="89" visible="true">860,609,191,60</Place>
-      <Place id="52" visible="true">540,257,180,90</Place>
-      <Place id="76" visible="true">840,409,231,101</Place>
-      <Place id="92" visible="true">220,609,191,60</Place>
+   <Sheet name="Areas" id="130" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
+      <Place id="83" visible="true">100,379,231,101</Place>
+      <Place id="88" visible="true">450,579,191,60</Place>
+      <Place id="52" visible="true">450,207,180,114</Place>
+      <Place id="91" visible="true">760,579,191,60</Place>
+      <Place id="97" visible="true">107,59,211,111</Place>
+      <Place id="78" visible="true">740,379,231,101</Place>
+      <Place id="73" visible="true">440,379,191,101</Place>
+      <Place id="94" visible="true">120,579,191,60</Place>
+      <Place id="103" visible="true">692,69,241,161</Place>
    </Sheet>
-   <Sheet name="Audit" id="129" disp_at="true" disp_ph="true" disp_co="true">
-      <Place id="38" visible="true">640,70,231,121</Place>
+   <Sheet name="Audit" id="131" disp_at="true" disp_ph="true" disp_co="true">
       <Place id="35" visible="true">280,80,191,101</Place>
-      <Place id="125" visible="true" options="280.0,80.0,191.0,101.0,640.0,70.0,231.0,121.0,4,471.0,130.0,556.0,130.0,555.5,130.0,640.0,130.0">500,0,0,0</Place>
+      <Place id="38" visible="true">640,70,231,121</Place>
+      <Place id="127" visible="true" options="280.0,80.0,191.0,101.0,640.0,70.0,231.0,121.0,4,471.0,130.0,556.0,130.0,555.5,130.0,640.0,130.0">500,0,0,0</Place>
    </Sheet>
-   <Settings sheet="127" zoom="0.8408964152537146"></Settings>
+   <Settings sheet="129" zoom="0.8408964152537146"></Settings>
 </Diagram>
