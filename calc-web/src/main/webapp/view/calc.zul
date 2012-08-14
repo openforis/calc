@@ -1,0 +1,30 @@
+<?page title="Open Foris Calc" contentType="text/html;charset=UTF-8"?>
+<?init class="org.zkoss.zk.ui.util.Composition" arg0="/view/template.zul"?>
+<zk
+	xmlns="http://www.zkoss.org/2005/zul"
+	xmlns:h="http://www.w3.org/1999/xhtml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd"
+>
+ 
+
+	<div 
+		self="@{define(content)}" 
+	 	apply="org.zkoss.bind.BindComposer"
+		viewModel="@id('model') @init('org.openforis.calc.web.viewmodel.ExecuteCalculationsViewModel')"
+		>
+		<div style="padding-top: 50px; margin:auto" width="500px">
+			<button 
+				label="Execute Calculations"
+				onClick="@command('calc')"
+				width="120px" height="30px"
+			/>
+		</div>
+		
+		<div style="padding-top: 40px; margin:auto" width="500px">
+			<label style="font-size:20px;"  value="@load(model.message)"></label>
+		</div>
+		
+	</div>		
+
+</zk>

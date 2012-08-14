@@ -1,0 +1,39 @@
+<zk
+	xmlns="http://www.zkoss.org/2005/zul"
+	xmlns:h="http://www.w3.org/1999/xhtml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd"
+>
+		
+	<window width="700px"
+			height="600px"
+			apply="org.zkoss.bind.BindComposer"
+			viewModel="@id('model') @init('org.openforis.calc.web.viewmodel.ImputeHeightViewModel')">
+
+    	<vbox width="100%" height="100%">
+    	
+    		<button label="Calculate Height" 
+    				width="150px"
+                    height="30px" 
+                    onClick="@command('calc')" />
+    	    
+			<grid id="grid" mold="paging" pageSize="13" model="@load(model.trees)" width="98%" >				
+		        <columns>
+		            <column hflex="1" label="Id" align="left" />
+		            <column hflex="2" label="Dbh" align="center" />
+		            <column hflex="2" label="Height" align="center" />
+		            <column hflex="1" label="Height Predicted" align="center" />
+		        </columns>
+		        <template name="model" >
+		            <row>
+		                <label value="@load(each.id)" />
+		                <label value="@load(each.dbh)" />
+		                <label value="@load(each.height)" />
+		                <label value="@load(each.heightPredicted)" />
+		            </row>
+		        </template>
+		    </grid>
+	    </vbox>
+	</window>
+	
+</zk>

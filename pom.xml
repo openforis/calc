@@ -1,0 +1,132 @@
+<project
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.openforis</groupId>
+	<artifactId>calc</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<modules>
+		<module>calc-server</module>
+		<module>calc-web</module>
+		<module>calc-core</module>
+	</modules>
+
+	<properties>
+		<spring.version>3.1.0.RELEASE</spring.version>
+		<zk.version>6.0.1</zk.version>
+		<zk.spring.version>3.1</zk.spring.version>
+		<kettle.version>4.3.0-stable</kettle.version>
+	</properties>
+
+	<repositories>
+		<repository>
+			<id>ZK_CE</id>
+			<name>ZK CE Repository</name>
+			<url>http://mavensync.zkoss.org/maven2</url>
+		</repository>
+		<repository>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>pentaho</id>
+			<name>repo</name>
+			<url>http://repository.pentaho.org/artifactory/repo</url>
+		</repository>
+		<repository>
+			<snapshots />
+			<id>pentaho snapshots</id>
+			<name>repo</name>
+			<url>http://repository.pentaho.org/artifactory/repo</url>
+		</repository>
+		<repository>
+			<id>bedatadriven</id>
+			<name>Bedatadriven Public REpo</name>
+			<url>http://nexus.bedatadriven.com/content/groups/public/</url>
+		</repository>
+	</repositories>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.openforis</groupId>
+				<artifactId>calc-core</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openforis</groupId>
+				<artifactId>calc-server</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-web</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-tx</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-web</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.zkoss.zk</groupId>
+				<artifactId>zkplus</artifactId>
+				<version>${zk.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.zkoss.zk</groupId>
+				<artifactId>zhtml</artifactId>
+				<version>${zk.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.zkoss.zk</groupId>
+				<artifactId>zkbind</artifactId>
+				<version>${zk.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.zkoss.zk</groupId>
+				<artifactId>zul</artifactId>
+				<version>${zk.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.zkoss.zk</groupId>
+				<artifactId>zkspring-core</artifactId>
+				<version>${zk.spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.zkoss.zk</groupId>
+				<artifactId>zkspring-webflow</artifactId>
+				<version>${zk.spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>pentaho-kettle</groupId>
+				<artifactId>kettle-core</artifactId>
+				<version>${kettle.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>pentaho-kettle</groupId>
+				<artifactId>kettle-db</artifactId>
+				<version>${kettle.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>pentaho-kettle</groupId>
+				<artifactId>kettle-engine</artifactId>
+				<version>${kettle.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>pentaho-kettle</groupId>
+				<artifactId>kettle-gpload-plugin</artifactId>
+				<version>${kettle.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+</project>

@@ -1,0 +1,51 @@
+<?page title="Open Foris Calc" contentType="text/html;charset=UTF-8"?>
+<?init class="org.zkoss.zk.ui.util.Composition" arg0="/view/template.zul"?>
+<zk
+	xmlns="http://www.zkoss.org/2005/zul"
+	xmlns:h="http://www.w3.org/1999/xhtml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd"
+>
+ 
+
+	<div 
+		self="@{define(content)}" 
+	 	apply="org.zkoss.bind.BindComposer"
+		viewModel="@id('model') @init('org.openforis.calc.web.viewmodel.ImportDataViewModel')"
+		>
+		
+		<div style="padding-top: 40px; margin:auto" width="500px">
+			<label value="Import Plots" style="font-size:15px; padding-right: 5px;"></label>
+			<button 
+				label="Upload" 
+				id="uploadPlotBtn" 
+				onClick="@command('uploadPlots')"
+				width="80px" height="30px">
+			</button>
+			<label style="font-size:10px; padding-left: 20px;" value="Last import:"></label>
+			<label style="font-size:10px;"  value="@load(model.lastImportPlots)"></label>
+		</div>
+		
+		<div style="padding-top: 40px; margin:auto" width="500px">
+			<label value="Import Trees" style="font-size:15px; padding-right: 5px;"></label>
+			<button 
+				label="Upload" 
+				id="uploadTreesBtn" 
+				onClick="@command('uploadTrees')"
+				width="80px" height="30px">
+			</button>
+			<label style="font-size:10px; padding-left: 20px;" value="Last import:"></label>
+			<label style="font-size:10px;"  value="@load(model.lastImportTrees)"></label>
+		</div>
+		
+		<div style="padding-top: 50px; margin:auto" width="500px">
+			<button 
+				label="Import"
+				onClick="@command('import')"
+				width="120px" height="30px"
+			/>
+		</div>
+		
+	</div>		
+
+</zk>

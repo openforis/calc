@@ -1,0 +1,38 @@
+<?page title="Open Foris Calc" contentType="text/html;charset=UTF-8"?>
+<zk
+	xmlns="http://www.zkoss.org/2005/zul"
+	xmlns:h="http://www.w3.org/1999/xhtml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.zkoss.org/2005/zul http://www.zkoss.org/2005/zul/zul.xsd"
+>
+
+			
+	<borderlayout height="100%" width="100%">
+		<north height="10%" border="0">
+			<div style="margin:auto" width="974px" height="102px">
+				<image src="/images/calc-banner.jpg" ></image>					
+			</div>
+		</north>
+		<center border="0">
+			<borderlayout>
+				<west border="none" splittable="true" collapsible="true" width="20%" hflex="true">
+					<vlayout width="100%">
+						
+						<div width="100%" style="background: #eeeeee; ">
+							<div height="100px" width="200px" style="margin:auto;" >
+								<a href="importData.zul"><label style="font-size: 20px" value="Import Data"></label></a>
+							</div>
+						</div>
+						<div width="100%" style="background: #eeeeee; ">
+							<div height="100px" width="200px" style="margin:auto;" >
+								<a href="calc.zul"><label style="font-size: 20px" value="Calculate"></label></a>
+							</div>
+						</div>
+					</vlayout>
+				</west>
+				<center border="0" self="@{insert(content)}"></center>
+			</borderlayout>
+		</center>		
+	</borderlayout>
+
+</zk>
