@@ -1,6 +1,6 @@
 <transformation>
   <info>
-    <name>import_plot</name>
+    <name>csv_plot_to_calc2</name>
     <description/>
     <extended_description/>
     <trans_version/>
@@ -63,7 +63,7 @@
   <created_user>-</created_user>
   <created_date>2012&#47;07&#47;09 16:30:13.116</created_date>
   <modified_user>-</modified_user>
-  <modified_date>2012&#47;08&#47;09 17:07:17.898</modified_date>
+  <modified_date>2012&#47;08&#47;20 17:09:00.432</modified_date>
   </info>
   <notepads>
   </notepads>
@@ -1079,7 +1079,7 @@
     <execute_each_row>N</execute_each_row>
     <single_statement>Y</single_statement>
     <replace_variables>N</replace_variables>
-    <sql>delete from calc.plot_obs</sql>
+    <sql>truncate table calc.tree_obs; delete from calc.plot_obs;</sql>
     <insert_field/>
     <update_field/>
     <delete_field/>
@@ -1088,8 +1088,8 @@
     </arguments>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>103</xloc>
-      <yloc>178</yloc>
+      <xloc>67</xloc>
+      <yloc>155</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -1259,8 +1259,8 @@ order by
     <lazy_conversion_active>N</lazy_conversion_active>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>509</xloc>
-      <yloc>295</yloc>
+      <xloc>538</xloc>
+      <yloc>307</yloc>
       <draw>Y</draw>
       </GUI>
     </step>

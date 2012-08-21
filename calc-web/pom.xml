@@ -23,6 +23,12 @@
 		<dependency>
 			<groupId>org.openforis</groupId>
 			<artifactId>calc-server</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>servlet-api</artifactId>
+					<groupId>javax.servlet</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 </project>

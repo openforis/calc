@@ -23,6 +23,8 @@ import org.pentaho.di.trans.TransMeta;
  */
 abstract class AbstractTransformation {
 
+	private static final String FILE_EXTENSION = ".ktr";
+
 	static {
 		try {
 			KettleEnvironment.init();
@@ -31,7 +33,7 @@ abstract class AbstractTransformation {
 		}
 	}
 
-//	private Trans trans;
+	// private Trans trans;
 	private String transformationFile;
 
 	AbstractTransformation(String transformationFile, String inputFileName) {
@@ -65,9 +67,9 @@ abstract class AbstractTransformation {
 		}
 	}
 
-//	public int getErrors() {
-//		return trans.getErrors();
-//	}
+	// public int getErrors() {
+	// return trans.getErrors();
+	// }
 
 	private Trans createTransformation(String transformationFile) {
 		try {
@@ -82,9 +84,10 @@ abstract class AbstractTransformation {
 
 	private void createTransformationFile(String inputFileName) {
 		try {
-			String name = this.getClass().getPackage().getName();
+			String name = this.getClass().getName();
 			name = name.replaceAll("\\.", "/");
-			name += "/" + getName();
+			name += FILE_EXTENSION;
+			// name += "/" + getName();
 
 			InputStream is = getClass().getClassLoader().getResourceAsStream(name);
 			StringWriter sw = new StringWriter();
@@ -101,8 +104,4 @@ abstract class AbstractTransformation {
 		}
 	}
 
-	abstract String getName();
-public static void main(String[] args) {
-	System.out.println(System.getProperty("java.io.tmpdir"));
-}
 }

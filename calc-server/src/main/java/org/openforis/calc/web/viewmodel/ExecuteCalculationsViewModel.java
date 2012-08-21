@@ -15,7 +15,7 @@ import org.zkoss.zk.ui.select.annotation.WireVariable;
  * 
  */
 @VariableResolver(org.zkoss.zkplus.spring.DelegatingVariableResolver.class)
-public class ExecuteCalculationsViewModel {
+public class ExecuteCalculationsViewModel extends AbstractViewModel {
 
 	@WireVariable
 	private OperationsExecutor operationsExecutor;

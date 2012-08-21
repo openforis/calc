@@ -9,13 +9,13 @@ import org.zkoss.zk.ui.select.annotation.VariableResolver;
 
 /**
  * @author Mino Togna
- *
+ * 
  */
 @VariableResolver(org.zkoss.zkplus.spring.DelegatingVariableResolver.class)
-public class SelectOperationViewModel {
+public class SelectOperationViewModel extends AbstractViewModel {
 
 	private List<String> operation;
-	
+
 	private String selectedOperation;
 
 	public List<String> getOperation() {
@@ -33,5 +33,5 @@ public class SelectOperationViewModel {
 	public void setSelectedOperation(String selectedOperation) {
 		this.selectedOperation = selectedOperation;
 	}
-	
+
 }
