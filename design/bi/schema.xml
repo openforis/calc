@@ -105,4 +105,18 @@
     <CalculatedMember name="Mean Volume" formatString="0.00000" caption="Mean Volume (m3 / ha)" formula="[Measures].[Total Volume] / [Measures].[Area]" dimension="Measures" visible="true">
     </CalculatedMember>
   </VirtualCube>
+  <Role name="ROLE_ADMIN">
+    <SchemaGrant access="all">
+    </SchemaGrant>
+  </Role>
+  <Role name="ROLE_USER">
+    <SchemaGrant access="all">
+      <CubeGrant cube="Area" access="none">
+      </CubeGrant>
+      <CubeGrant cube="Area non synthetic" access="none">
+      </CubeGrant>
+      <CubeGrant cube="Tree" access="none">
+      </CubeGrant>
+    </SchemaGrant>
+  </Role>
 </Schema>
