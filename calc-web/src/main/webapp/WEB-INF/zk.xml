@@ -30,9 +30,8 @@
 	<!--          running a zk application in a CLUSTER         -->
 	<!-- ====================================================== -->
 	<system-config>
-		<ui-factory-class>
-			org.zkoss.zk.ui.http.SerializableUiFactory
-		</ui-factory-class>
+		<ui-factory-class>org.zkoss.zk.ui.http.SerializableUiFactory</ui-factory-class>
+		<label-location>/WEB-INF/classes/labels/label.properties</label-location>
 	</system-config>
 
 	<!-- ====================================================== -->

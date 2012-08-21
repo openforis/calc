@@ -62,8 +62,8 @@
 		<property name="defaultOperations">
 			<list>
 				<ref bean="updatePlotArea" />
-				<ref bean="treeHeightImputation" />
-				<ref bean="treeVolumeCalculation"/>
+<!-- 				<ref bean="treeHeightImputation" /> -->
+<!-- 				<ref bean="treeVolumeCalculation"/> -->
 			</list>
 		</property>
 	</bean>

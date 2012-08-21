@@ -20,12 +20,17 @@
 						
 						<div width="100%" style="background: #eeeeee; ">
 							<div height="100px" width="200px" style="margin:auto;" >
-								<a href="importData.zul"><label style="font-size: 20px" value="Import Data"></label></a>
+								<a href="importData.zul"><label style="font-size: 20px" value="${labels.app.menu.imp}"></label></a>
 							</div>
 						</div>
 						<div width="100%" style="background: #eeeeee; ">
 							<div height="100px" width="200px" style="margin:auto;" >
-								<a href="calc.zul"><label style="font-size: 20px" value="Calculate"></label></a>
+								<a href="calc.zul"><label style="font-size: 20px" value="${labels.app.menu.calc}"></label></a>
+							</div>
+						</div>
+						<div width="100%" style="background: #eeeeee; ">
+							<div height="100px" width="200px" style="margin:auto;" >
+								<a href="analysis.zul"><label style="font-size: 20px" value="${labels.app.menu.analysis}"></label></a>
 							</div>
 						</div>
 					</vlayout>

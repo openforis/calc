@@ -15,32 +15,32 @@
 		>
 		
 		<div style="padding-top: 40px; margin:auto" width="500px">
-			<label value="Import Plots" style="font-size:15px; padding-right: 5px;"></label>
+			<label value="${labels.imp.importPlots}" style="font-size:15px; padding-right: 5px;"></label>
 			<button 
-				label="Upload" 
+				label="${labels.imp.btn.upload}" 
 				id="uploadPlotBtn" 
 				onClick="@command('uploadPlots')"
 				width="80px" height="30px">
 			</button>
-			<label style="font-size:10px; padding-left: 20px;" value="Last import:"></label>
+			<label style="font-size:10px; padding-left: 20px;" value="${labels.imp.lastImport}"></label>
 			<label style="font-size:10px;"  value="@load(model.lastImportPlots)"></label>
 		</div>
 		
 		<div style="padding-top: 40px; margin:auto" width="500px">
-			<label value="Import Trees" style="font-size:15px; padding-right: 5px;"></label>
+			<label value="${labels.imp.importTrees}" style="font-size:15px; padding-right: 5px;"></label>
 			<button 
-				label="Upload" 
+				label="${labels.imp.btn.upload}" 
 				id="uploadTreesBtn" 
 				onClick="@command('uploadTrees')"
 				width="80px" height="30px">
 			</button>
-			<label style="font-size:10px; padding-left: 20px;" value="Last import:"></label>
+			<label style="font-size:10px; padding-left: 20px;" value="${labels.imp.lastImport}"></label>
 			<label style="font-size:10px;"  value="@load(model.lastImportTrees)"></label>
 		</div>
 		
 		<div style="padding-top: 50px; margin:auto" width="500px">
 			<button 
-				label="Import"
+				label="${labels.imp.btn.imp}"
 				onClick="@command('import')"
 				width="120px" height="30px"
 			/>

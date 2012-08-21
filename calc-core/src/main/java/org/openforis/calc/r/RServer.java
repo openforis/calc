@@ -81,7 +81,7 @@ public class RServer {
 			StartRServerTask start = new StartRServerTask();
 			try {
 				executorService.submit(start).get();
-				Thread.sleep(1000);
+//				Thread.sleep(1000);
 			} catch ( InterruptedException e ) {
 				throw new RuntimeException("Error in Thread.sleep", e);
 			} catch ( ExecutionException e ) {

@@ -15,7 +15,7 @@
 		>
 		<div style="padding-top: 50px; margin:auto" width="500px">
 			<button 
-				label="Execute Calculations"
+				label="${labels.calc.execute}"
 				onClick="@command('calc')"
 				width="120px" height="30px"
 			/>
