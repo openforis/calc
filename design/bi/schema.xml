@@ -1,0 +1,108 @@
+<Schema name="NAFORMA">
+  <Dimension type="StandardDimension" visible="true" highCardinality="false" name="AOI" caption="Area of Interest">
+    <Hierarchy name="Admin Unit" visible="true" hasAll="true" allMemberCaption="All Regions" primaryKey="id">
+      <Table name="admin_unit" schema="calc">
+      </Table>
+      <Level name="Region" visible="true" table="admin_unit" column="level1_name" nameColumn="level1_name" type="String" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+      </Level>
+      <Level name="District" visible="true" table="admin_unit" column="level2_name" nameColumn="level2_name" type="String" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+        <Property name="Total Area" column="area" type="Numeric">
+        </Property>
+      </Level>
+    </Hierarchy>
+  </Dimension>
+  <Dimension type="StandardDimension" visible="true" highCardinality="false" name="Land Use">
+    <Hierarchy name="Land Use" visible="true" hasAll="true" allMemberCaption="All Land Uses" primaryKey="id">
+      <Table name="plot_class1" schema="calc">
+      </Table>
+      <Level name="Land Use" visible="true" table="plot_class1" column="level1_code" nameColumn="level1_name" type="String" uniqueMembers="true" levelType="Regular" hideMemberIf="Never">
+      </Level>
+    </Hierarchy>
+  </Dimension>
+  <Dimension type="StandardDimension" visible="true" highCardinality="false" name="Vegetation Type">
+    <Hierarchy name="Vegetation Type" visible="true" hasAll="true" allMemberCaption="All Vegetation Types" primaryKey="id">
+      <Table name="plot_class2" schema="calc">
+      </Table>
+      <Level name="Primary Vegetation Type" visible="true" table="plot_class2" column="level1_name" type="String" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+      </Level>
+      <Level name="Secondary Vegetation Type" visible="true" table="plot_class2" column="full_code" nameColumn="level2_name" type="String" uniqueMembers="true" levelType="Regular" hideMemberIf="Never">
+      </Level>
+    </Hierarchy>
+  </Dimension>
+  <Dimension type="StandardDimension" visible="true" highCardinality="false" name="SU" caption="Sampling Unit">
+    <Hierarchy name="Sampling Unit" visible="true" hasAll="true" primaryKey="id">
+      <Table name="plot_view" schema="calc">
+      </Table>
+      <Level name="Stratum" visible="true" table="plot_view" column="stratum_id" nameColumn="stratum_code" type="String" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+      </Level>
+      <Level name="Cluster" visible="true" table="plot_view" column="cluster_id" nameColumn="cluster_code" type="String" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+      </Level>
+      <Level name="Plot" visible="true" table="plot_view" column="id" nameColumn="code" type="String" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+      </Level>
+    </Hierarchy>
+  </Dimension>
+  <Cube name="Area" visible="false" cache="true" enabled="true">
+    <Table name="substratum_area_dist" schema="calc">
+    </Table>
+    <DimensionUsage source="Land Use" name="Land Use" visible="true" foreignKey="class1_id" highCardinality="false">
+    </DimensionUsage>
+    <DimensionUsage source="Vegetation Type" name="Vegetation Type" visible="true" foreignKey="class2_id" highCardinality="false">
+    </DimensionUsage>
+    <DimensionUsage source="AOI" name="AOI" visible="true" foreignKey="admin_unit_id" highCardinality="false">
+    </DimensionUsage>
+    <Measure name="Area" column="est_area" datatype="Numeric" formatString="#,###" aggregator="sum" description="Area" visible="true">
+    </Measure>
+  </Cube>
+  <Cube name="Area non synthetic" visible="false" cache="true" enabled="true">
+    <Table name="plot_obs_view" schema="calc">
+    </Table>
+    <DimensionUsage source="Land Use" name="Land Use" visible="true" foreignKey="class1_id" highCardinality="false">
+    </DimensionUsage>
+    <DimensionUsage source="Vegetation Type" name="Vegetation Type" visible="true" foreignKey="class2_id" highCardinality="false">
+    </DimensionUsage>
+    <DimensionUsage source="SU" name="SU" visible="true" foreignKey="plot_id" highCardinality="false">
+    </DimensionUsage>
+    <Measure name="Plot Count" column="id" datatype="Integer" formatString="#,###" aggregator="count" caption="Plot Count" visible="true">
+    </Measure>
+    <Measure name="Area" column="hte_area" datatype="Numeric" formatString="#,##0.00000" aggregator="sum" description="Area" visible="true">
+    </Measure>
+  </Cube>
+  <Cube name="Tree" visible="false" cache="true" enabled="true">
+    <Table name="tree_obs_view" schema="calc">
+    </Table>
+    <DimensionUsage source="Land Use" name="Land Use" visible="true" foreignKey="plot_class1_id" highCardinality="false">
+    </DimensionUsage>
+    <DimensionUsage source="Vegetation Type" name="Vegetation Type" visible="true" foreignKey="plot_class2_id" highCardinality="false">
+    </DimensionUsage>
+    <DimensionUsage source="SU" name="SU" visible="true" foreignKey="plot_id" highCardinality="false">
+    </DimensionUsage>
+    <Measure name="Tree Count" column="id" datatype="Integer" formatString="#,###" aggregator="count" caption="Tree Count" visible="true">
+    </Measure>
+    <Measure name="Total Volume" column="hte_volume" formatString="#,##0.00000" aggregator="sum" caption="Total Volume (m3)" visible="true">
+    </Measure>
+  </Cube>
+  <VirtualCube enabled="true" name="Results" visible="true">
+    <CubeUsages>
+      <CubeUsage cubeName="Tree" ignoreUnrelatedDimensions="true">
+      </CubeUsage>
+      <CubeUsage cubeName="Area non synthetic" ignoreUnrelatedDimensions="true">
+      </CubeUsage>
+    </CubeUsages>
+    <VirtualCubeDimension cubeName="Area non synthetic" visible="true" highCardinality="false" name="Land Use">
+    </VirtualCubeDimension>
+    <VirtualCubeDimension cubeName="Area non synthetic" visible="true" highCardinality="false" name="Vegetation Type">
+    </VirtualCubeDimension>
+    <VirtualCubeDimension cubeName="Area non synthetic" visible="true" highCardinality="false" name="SU">
+    </VirtualCubeDimension>
+    <VirtualCubeMeasure cubeName="Tree" name="[Measures].[Total Volume]" visible="true">
+    </VirtualCubeMeasure>
+    <VirtualCubeMeasure cubeName="Area non synthetic" name="[Measures].[Area]" visible="true">
+    </VirtualCubeMeasure>
+    <VirtualCubeMeasure cubeName="Tree" name="[Measures].[Tree Count]" visible="true">
+    </VirtualCubeMeasure>
+    <VirtualCubeMeasure cubeName="Area non synthetic" name="[Measures].[Plot Count]" visible="true">
+    </VirtualCubeMeasure>
+    <CalculatedMember name="Mean Volume" formatString="0.00000" caption="Mean Volume (m3 / ha)" formula="[Measures].[Total Volume] / [Measures].[Area]" dimension="Measures" visible="true">
+    </CalculatedMember>
+  </VirtualCube>
+</Schema>

@@ -60,6 +60,9 @@
 	<bean
 		id="updateTreeInclusionProbability"
 		class="org.openforis.calc.operation.UpdateTreeInclusionProbability" />
+	<bean
+		id="updateTreeEstimates"
+		class="org.openforis.calc.operation.UpdateTreeEstimates" />
 		
 	<bean id="operationsExecutor"
 		class="org.openforis.calc.operation.OperationsExecutor">
@@ -67,8 +70,9 @@
 			<list>
 				<ref bean="updatePlotArea" />
 				<ref bean="treeHeightImputation" />
-				<ref bean="treeVolumeCalculation" />
 				<ref bean="updateTreeInclusionProbability" />
+				<ref bean="treeVolumeCalculation" />
+				<ref bean="updateTreeEstimates" />
 			</list>
 		</property>
 	</bean>
