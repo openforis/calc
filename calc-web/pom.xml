@@ -13,22 +13,46 @@
 	</parent>
 
 	<artifactId>calc-web</artifactId>
-	<packaging>war</packaging>
-
-	<build>
-		<finalName>calc</finalName>
-	</build>
+	<packaging>jar</packaging>
 
 	<dependencies>
+
 		<dependency>
 			<groupId>org.openforis</groupId>
-			<artifactId>calc-server</artifactId>
+			<artifactId>calc-core</artifactId>
+		</dependency>
+		
+		<!-- ZK -->
+		<dependency>
+			<groupId>org.zkoss.zk</groupId>
+			<artifactId>zul</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.zkoss.zk</groupId>
+			<artifactId>zkplus</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.zkoss.zk</groupId>
+			<artifactId>zhtml</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.zkoss.zk</groupId>
+			<artifactId>zkbind</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.zkoss.zk</groupId>
+			<artifactId>zkspring-core</artifactId>
 			<exclusions>
 				<exclusion>
-					<artifactId>servlet-api</artifactId>
-					<groupId>javax.servlet</groupId>
+					<artifactId>google-collections</artifactId>
+					<groupId>com.google.collections</groupId>
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<dependency>
+			<groupId>org.zkoss.zk</groupId>
+			<artifactId>zkspring-webflow</artifactId>
+		</dependency>
+		
 	</dependencies>
 </project>

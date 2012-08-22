@@ -10,9 +10,9 @@
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>calc-server</module>
-		<module>calc-web</module>
 		<module>calc-core</module>
+		<module>calc-web</module>
+		<module>calc-webapp</module>
 	</modules>
 
 	<properties>
