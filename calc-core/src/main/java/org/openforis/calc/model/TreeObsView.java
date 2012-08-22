@@ -412,18 +412,23 @@ public class TreeObsView implements java.io.Serializable {
 		this.adminUnitId = adminUnitId;
 	}
 
+	@Override
 	public boolean equals(Object other) {
-		if ( (this == other) )
+		if ( this == other ) {
 			return true;
-		if ( (other == null) )
+		}
+		if ( other == null ) {
 			return false;
-		if ( !(other instanceof TreeObsView) )
+		}
+		if ( !(other instanceof TreeObsView) ) {
 			return false;
-		TreeObsView castOther = (TreeObsView) other;
+		}
+		final TreeObsView castOther = (TreeObsView) other;
 
-		return (this.getId() == castOther.getId()) || (this.getId() != null && castOther.getId() != null && this.getId().equals(castOther.getId()));
+		return this.getId() == castOther.getId() || this.getId() != null && castOther.getId() != null && this.getId().equals(castOther.getId());
 	}
 
+	@Override
 	public int hashCode() {
 		int result = 17;
 		result = 37 * result + (getId() == null ? 0 : this.getId().hashCode());

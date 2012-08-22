@@ -3,6 +3,7 @@ package org.openforis.calc.model;
 // Generated Aug 8, 2012 5:42:26 PM by Hibernate Tools 3.4.0.CR1
 
 import java.math.BigDecimal;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -19,7 +20,7 @@ import javax.persistence.Table;
 public class TreeObs implements java.io.Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private int id;
 	private TreeHealth treeHealth;
 	private PlotObs plotObs;
