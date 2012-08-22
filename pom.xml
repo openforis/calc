@@ -21,7 +21,26 @@
 		<zk.version>6.0.1</zk.version>
 		<zk.spring.version>3.1</zk.spring.version>
 		<kettle.version>4.3.0-stable</kettle.version>
+		<postgres-driver-version>9.1-901-1.jdbc4</postgres-driver-version>
 	</properties>
+
+<!-- 	<profiles> -->
+<!-- 		<profile> -->
+<!-- 			<id>exclude-server</id> -->
+<!-- 			<activation> -->
+<!-- 				<activeByDefault>true</activeByDefault> -->
+<!-- 			</activation> -->
+<!-- 			<modules> -->
+<!-- 				<module>calc-core</module> -->
+<!-- 			</modules> -->
+<!-- 		</profile> -->
+<!-- 		<profile> -->
+<!-- 			<id>install-server</id> -->
+<!-- 			<modules> -->
+<!-- 				<module>calc-core</module> -->
+<!-- 			</modules> -->
+<!-- 		</profile> -->
+<!-- 	</profiles> -->
 
 	<repositories>
 		<repository>
@@ -132,6 +151,11 @@
 				<groupId>pentaho-kettle</groupId>
 				<artifactId>kettle-gpload-plugin</artifactId>
 				<version>${kettle.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>postgresql</groupId>
+				<artifactId>postgresql</artifactId>
+				<version>${postgres-driver-version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

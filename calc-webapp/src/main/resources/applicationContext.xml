@@ -31,6 +31,9 @@
 	<zksp:zk-config />
 	<context:annotation-config />
 	
+	<!-- context aware -->
+	<bean id="calcContext" class="org.openforis.calc.web.context.CalcContext"/>
+	
 	<!-- Dao's -->
 	<bean
 		id="genericDao"
@@ -81,5 +84,8 @@
 	<bean
 		id="rServer"
 		class="org.openforis.calc.r.RServer" />
+		
+	<!-- Managers -->
+	<bean id="biSchemaManager" class="org.openforis.calc.bi.SchemaManager" />	
 	
 </beans>
