@@ -3,18 +3,6 @@
  */
 package org.openforis.calc.web.viewmodel;
 
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
-import java.util.concurrent.TimeUnit;
-
-import org.apache.commons.lang.StringUtils;
-import org.openforis.calc.operation.OperationException;
-import org.openforis.calc.operation.TreeHeightImputation;
-import org.zkoss.bind.annotation.Command;
-import org.zkoss.bind.annotation.Init;
-import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.zk.ui.select.annotation.VariableResolver;
 
 /**
