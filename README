@@ -1,0 +1,5 @@
+install maven dependencies
+
+mvn install:install-file -Dfile=lib/REngine.jar -DgroupId=org.rosuda -DartifactId=rEngine -Dversion=0.1 -Dpackaging=jar
+
+mvn install:install-file -Dfile=lib/RserveEngine.jar -DgroupId=org.rosuda -DartifactId=rServeEngine -Dversion=0.1 -Dpackaging=jar
