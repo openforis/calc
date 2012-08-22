@@ -13,6 +13,7 @@
 		<module>calc-core</module>
 		<module>calc-web</module>
 		<module>calc-webapp</module>
+		<module>calc-server</module>
 	</modules>
 
 	<properties>
@@ -58,7 +59,13 @@
 			</dependency>
 			<dependency>
 				<groupId>org.openforis</groupId>
-				<artifactId>calc-server</artifactId>
+				<artifactId>calc-web</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openforis</groupId>
+				<artifactId>calc-webapp</artifactId>
+				<type>war</type>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>

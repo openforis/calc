@@ -22,7 +22,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.openforis</groupId>
-			<artifactId>calc-server</artifactId>
+			<artifactId>calc-web</artifactId>
 			<exclusions>
 				<exclusion>
 					<artifactId>servlet-api</artifactId>
