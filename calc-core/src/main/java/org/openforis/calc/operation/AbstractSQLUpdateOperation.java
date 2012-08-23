@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Mino Togna
  * 
  */
-abstract class AbstractSQLUpdateOperation implements Operation {
+abstract class AbstractSQLUpdateOperation extends Operation {
 
 	private static final String FILE_EXTENSION = ".sql";
 

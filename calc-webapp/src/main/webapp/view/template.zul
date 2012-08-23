@@ -37,16 +37,19 @@
 									href="importData.zul" 
 									sclass="menuitem"
 									/>
+						 	<menuseparator />
 							<menuitem 
 									label="${labels.app.menu.calc}" 
 									href="calc.zul" 
 									sclass="menuitem"
 									/>
+							<menuseparator />
 							<menuitem 
 									label="${labels.app.menu.analysis}" 
 									href="analysis.zul" 
 									sclass="menuitem"
 									/>
+							<menuseparator />
 						</menubar>
 						
 <!-- 						<div width="100%" style="background: #eeeeee; "> -->

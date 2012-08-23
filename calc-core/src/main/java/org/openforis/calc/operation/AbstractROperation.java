@@ -19,7 +19,7 @@ import org.renjin.sexp.ExpressionVector;
  * @author Mino Togna
  * 
  */
-public abstract class AbstractROperation implements Operation {
+public abstract class AbstractROperation extends Operation {
 
 	private static final String FILE_EXTENSION = ".R";
 	private String script;

@@ -71,6 +71,8 @@
 
 	<dependencyManagement>
 		<dependencies>
+		
+			<!-- OF Calc -->
 			<dependency>
 				<groupId>org.openforis</groupId>
 				<artifactId>calc-core</artifactId>
@@ -87,6 +89,8 @@
 				<type>war</type>
 				<version>${project.version}</version>
 			</dependency>
+			
+			<!-- Spring -->
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-web</artifactId>
@@ -102,6 +106,8 @@
 				<artifactId>spring-security-web</artifactId>
 				<version>${spring.version}</version>
 			</dependency>
+			
+			<!-- ZK -->
 			<dependency>
 				<groupId>org.zkoss.zk</groupId>
 				<artifactId>zkplus</artifactId>
@@ -132,6 +138,8 @@
 				<artifactId>zkspring-webflow</artifactId>
 				<version>${zk.spring.version}</version>
 			</dependency>
+			
+			<!-- Pentaho -->
 			<dependency>
 				<groupId>pentaho-kettle</groupId>
 				<artifactId>kettle-core</artifactId>
@@ -152,6 +160,8 @@
 				<artifactId>kettle-gpload-plugin</artifactId>
 				<version>${kettle.version}</version>
 			</dependency>
+			
+			<!-- Postgres -->
 			<dependency>
 				<groupId>postgresql</groupId>
 				<artifactId>postgresql</artifactId>
