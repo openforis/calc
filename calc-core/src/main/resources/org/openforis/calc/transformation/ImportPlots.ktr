@@ -63,7 +63,7 @@
   <created_user>-</created_user>
   <created_date>2012&#47;07&#47;09 16:30:13.116</created_date>
   <modified_user>-</modified_user>
-  <modified_date>2012&#47;08&#47;20 17:09:00.432</modified_date>
+  <modified_date>2012&#47;08&#47;30 12:21:07.551</modified_date>
   </info>
   <notepads>
   </notepads>
@@ -409,7 +409,7 @@
       </field>
       <field>
         <name>location_x</name>
-        <type>Integer</type>
+        <type>String</type>
         <format/>
         <currency>$</currency>
         <decimal>.</decimal>
@@ -420,7 +420,7 @@
       </field>
       <field>
         <name>location_y</name>
-        <type>Integer</type>
+        <type>String</type>
         <format/>
         <currency>$</currency>
         <decimal>.</decimal>
@@ -1347,6 +1347,18 @@ order by
         <rename/>
         <length>-2</length>
         <precision>-2</precision>
+      </field>      <field>        <name>location_x</name>
+        <rename/>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>      <field>        <name>location_y</name>
+        <rename/>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>      <field>        <name>location_srs_id</name>
+        <rename/>
+        <length>-2</length>
+        <precision>-2</precision>
       </field>        <select_unspecified>N</select_unspecified>
     </fields>     <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
@@ -1541,6 +1553,18 @@ order by
         <field>
           <column_name>plot_id</column_name>
           <stream_name>plot_id</stream_name>
+        </field>
+        <field>
+          <column_name>location_x</column_name>
+          <stream_name>location_x</stream_name>
+        </field>
+        <field>
+          <column_name>location_y</column_name>
+          <stream_name>location_y</stream_name>
+        </field>
+        <field>
+          <column_name>location_srs</column_name>
+          <stream_name>location_srs_id</stream_name>
         </field>
     </fields>
      <cluster_schema/>

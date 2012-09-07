@@ -94,12 +94,12 @@
      </layout>
    </appender>
    
-   <category name="mondrian">
-      <priority value="DEBUG"/>
-      <appender-ref ref="MONDRIAN"/>
-   </category> 
    
    -->
+   <category name="mondrian">
+      <priority value="info"/>
+      <appender-ref ref="SAIKUFILE"/>
+   </category> 
 
    <!-- ========================================================= -->
    <!-- Special Log File specifically for Mondrian MDX Statements -->
@@ -121,6 +121,7 @@
       <appender-ref ref="MDXLOG"/>
    </category>
    -->
+ 
 
    <!-- ========================================================= -->
    <!-- Special Log File specifically for Mondrian SQL Statements -->

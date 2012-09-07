@@ -1,4 +1,4 @@
--- Update tree inclusion area (plot area)
+-- Update tree inclusion area (plot area) within the stratum
 update 
     calc.tree_obs t
 set
@@ -10,13 +10,13 @@ set
         end
 ;
 
--- Update inclusion probability
+-- Update tree inclusion probability within the stratum
 update 
     calc.tree_obs t
 set
     inclusion_probability = d.plot_density * t.inclusion_area
 from
-    calc.stratum_plot_density d   
+    calc.stratum_plot_obs_density d   
 inner join
     calc.tree_obs_view v on v.stratum_id = d.stratum_id
  where 

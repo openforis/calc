@@ -15,7 +15,7 @@
 		viewModel="@id('model') @init('org.openforis.calc.web.viewmodel.AnalysisViewModel')"
 		>
 		
-		<iframe src="/../saiku-ui/" width="100%" height="100%" />
+		<iframe src="${execution.scheme }://${execution.serverName }:${execution.serverPort }/saiku-ui/" width="100%" height="100%" />
 		
 	</div>
 

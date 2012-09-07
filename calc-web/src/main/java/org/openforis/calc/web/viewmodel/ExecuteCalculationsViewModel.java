@@ -12,6 +12,7 @@ import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.select.annotation.VariableResolver;
 import org.zkoss.zk.ui.select.annotation.WireVariable;
+import org.zkoss.zk.ui.util.Clients;
 import org.zkoss.zul.Hbox;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.Progressmeter;
@@ -49,8 +50,9 @@ public class ExecuteCalculationsViewModel extends AbstractViewModel {
 	}
 
 	private void startProgress() {
+//		Clients.evalJavaScript("jq(\"#\""+progressBox.getUuid()+").slideDown()");
 		timer.start();
-
+		
 		progressBox.setVisible(true);
 		progressMeter.setValue(0);
 		progressMeterLabel.setValue(0 + "%");
