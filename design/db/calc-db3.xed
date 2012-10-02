@@ -336,29 +336,23 @@
    </Table>
    <View id="150" name="stratum_view" schema="" database="" background="15790335">
       <Text>Summary of data at stratum level</Text>
-      <Statement></Statement>
       <Column id="151" name="stratum_id" type="integer" length="25" nulls="false"/>
    </View>
    <View id="152" name="plot_section_view" schema="calc" database="calc" background="15790335">
       <Text>Observed plot sections and respective sampling design attributes</Text>
-      <Statement></Statement>
    </View>
    <View id="153" name="plot_view" schema="calc" database="calc" background="15790335">
       <Text>Observed plot centers and respective sampling design attributes</Text>
-      <Statement></Statement>
    </View>
    <View id="154" name="cluster_view" schema="" database="" background="15790335">
       <Text>Summary of data at cluster level</Text>
-      <Statement></Statement>
    </View>
    <View id="155" name="admin_unit_view" schema="" database="" background="15790335">
-      <Statement></Statement>
       <Column id="156" name="admin_unid_id" type="integer" length="25" nulls="false"/>
    </View>
    <Relation id="157" name="fk_obs_plot2" cardinality="-2" identifying="true" nulls="false">
       <FK>90</FK>
       <PK>25</PK>
-      <Text></Text>
    </Relation>
    <Relation id="158" name="fk_cluster_stratum" cardinality="-2" identifying="true" nulls="false">
       <FK>36</FK>
@@ -371,12 +365,10 @@
    <Relation id="160" name="fk_tree_obs_plot" cardinality="-2" identifying="true" nulls="false">
       <FK>24</FK>
       <PK>42</PK>
-      <Text></Text>
    </Relation>
    <Relation id="161" name="fk_admin_unit_level" cardinality="-2" identifying="true" nulls="false">
       <FK>87</FK>
       <PK>7</PK>
-      <Text></Text>
    </Relation>
    <Relation id="162" name="fk_plot2_plot1" cardinality="1" identifying="true" nulls="false">
       <FK>17</FK>
@@ -385,77 +377,81 @@
    <Relation id="163" name="fk_plot_admin_unit" cardinality="-2" identifying="false" nulls="false">
       <FK>1</FK>
       <PK>22</PK>
-      <Text></Text>
    </Relation>
    <Relation id="164" name="fk_admin_unit_parent" cardinality="-1" identifying="false" nulls="true">
       <FK>1</FK>
       <PK>8</PK>
-      <Text></Text>
    </Relation>
    <Relation id="165" name="fk_plot_class_level" cardinality="-2" identifying="true" nulls="false">
       <FK>104</FK>
       <FK>105</FK>
       <PK>97</PK>
       <PK>98</PK>
-      <Text></Text>
    </Relation>
    <Relation id="166" name="fk_plot_section_land_class" cardinality="-2" identifying="true" nulls="false">
       <FK>24</FK>
       <PK>108</PK>
-      <Text></Text>
    </Relation>
    <Relation id="167" name="fk_land_class_level_scheme" cardinality="-2" identifying="true" nulls="false">
       <FK>100</FK>
       <PK>104</PK>
-      <Text></Text>
    </Relation>
    <Relation id="168" name="fk_land_class_scheme" cardinality="-2" identifying="true" nulls="false">
       <FK>100</FK>
       <PK>97</PK>
-      <Text></Text>
    </Relation>
    <Relation id="169" name="fk_land_class_plot_section" cardinality="-2" identifying="true" nulls="false">
       <FK>93</FK>
       <PK>109</PK>
-      <Text></Text>
    </Relation>
    <Relation id="170" name="fk_obs_tree_class" cardinality="-2" identifying="true" nulls="false">
       <FK>41</FK>
       <PK>126</PK>
-      <Text></Text>
    </Relation>
    <Relation id="171" name="fk_tree_class_obs" cardinality="-2" identifying="true" nulls="false">
       <FK>111</FK>
       <PK>126</PK>
-      <Text></Text>
    </Relation>
    <Relation id="172" name="fk_tree_class_scheme" cardinality="-2" identifying="true" nulls="false">
       <FK>118</FK>
       <PK>115</PK>
-      <Text></Text>
    </Relation>
    <Relation id="173" name="fk_tree_class_level_scheme" cardinality="-2" identifying="true" nulls="false">
       <FK>118</FK>
       <PK>122</PK>
-      <Text></Text>
    </Relation>
    <Relation id="174" name="fk_tree_class_level" cardinality="-2" identifying="true" nulls="false">
       <FK>122</FK>
       <FK>123</FK>
       <PK>115</PK>
       <PK>116</PK>
-      <Text></Text>
    </Relation>
    <Relation id="175" name="fk_res_tree_obs" cardinality="-3" identifying="true" nulls="false">
       <FK>41</FK>
       <PK>129</PK>
-      <Text></Text>
    </Relation>
    <Relation id="176" name="fk_res_plot_section_obs" cardinality="-3" identifying="true" nulls="false">
       <FK>24</FK>
       <PK>148</PK>
-      <Text></Text>
    </Relation>
+   <Note id="177">
+      <Text>Sampling design and related reference data tables</Text>
+   </Note>
+   <Note id="178">
+      <Text>Plot-level observations and related master data (land use classes, etc) table.</Text>
+   </Note>
+   <Note id="179">
+      <Text>Tree-level observations and related master data (health classes, etc) table.</Text>
+   </Note>
+   <Note id="180">
+      <Text>Plot-level result tables.</Text>
+   </Note>
+   <Note id="181">
+      <Text>Tree-level result tables.</Text>
+   </Note>
+   <Note id="182">
+      <Text>Views summarizing data, including counts, densities, etc.</Text>
+   </Note>
    <Constraint table="0" name="admin_unit_pkey" type="PrimKey">
       <ConstraintColumn id="1"></ConstraintColumn>
    </Constraint>
@@ -480,76 +476,82 @@
    <Constraint table="128" name="tree_pkey_1" type="PrimKey">
       <ConstraintColumn id="129"></ConstraintColumn>
    </Constraint>
-   <Sheet name="Sampling Design" id="177" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
-      <Place id="162" visible="true" options="778.0,31.0,190.0,140.0,470.0,310.0,170.0,60.0,4,778.0,160.0,670.0,160.0,670.0,310.0,640.0,310.0">500,0,0,0</Place>
-      <Place id="0" visible="true">761,400,200,160</Place>
-      <Place id="35" visible="true">20,49,220,90</Place>
-      <Place id="51" visible="false">510,530,240,600</Place>
-      <Place id="89" visible="true">470,310,170,60</Place>
-      <Place id="86" visible="true">760,700,170,60</Place>
-      <Place id="161" visible="true" options="760.0,700.0,170.0,60.0,761.0,400.0,200.0,160.0,2,810.0,700.0,810.0,560.0">500,0,0,0</Place>
-      <Place id="40" visible="false">260,10,240,480</Place>
-      <Place id="164" visible="true">500,0,0,0</Place>
-      <Place id="157" visible="false">500,0,0,0</Place>
-      <Place id="158" visible="true" options="20.0,49.0,220.0,90.0,420.0,37.0,201.0,130.0,2,240.0,100.0,420.0,100.0">500,0,0,0</Place>
-      <Place id="16" visible="true">778,31,190,140</Place>
-      <Place id="9" visible="true">420,37,201,130</Place>
-      <Place id="159" visible="true" options="420.0,37.0,201.0,130.0,778.0,31.0,190.0,140.0,2,621.0,90.0,778.0,90.0">500,0,0,0</Place>
+   <Sheet name="Sampling Design" id="183" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
       <Place id="163" visible="true" options="761.0,400.0,200.0,160.0,778.0,31.0,190.0,140.0,5,770.0,400.0,770.0,405.0,775.0,405.0,775.0,170.0,778.0,170.0">500,0,0,0</Place>
-      <Place id="23" visible="false">950,10,230,280</Place>
-   </Sheet>
-   <Sheet name="Plot Observations" id="178" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
-      <Place id="165" visible="true" options="700.0,570.0,270.0,80.0,160.0,530.0,200.0,130.0,4,700.0,600.0,700.0,595.0,360.0,595.0,360.0,590.0">500,0,0,0</Place>
-      <Place id="0" visible="false">40,10,210,161</Place>
-      <Place id="92" visible="true">160,530,200,130</Place>
-      <Place id="167" visible="true" options="700.0,370.0,230.0,80.0,700.0,570.0,270.0,80.0,2,820.0,450.0,820.0,570.0">500,0,0,0</Place>
-      <Place id="169" visible="true" options="160.0,530.0,200.0,130.0,840.0,140.0,210.0,60.0,4,270.0,530.0,270.0,320.0,940.0,320.0,940.0,200.0">500,0,0,0</Place>
-      <Place id="89" visible="true">90,120,110,40</Place>
-      <Place id="107" visible="true">840,140,210,60</Place>
-      <Place id="158" visible="true">500,0,0,0</Place>
-      <Place id="157" visible="true" options="90.0,120.0,110.0,40.0,390.0,50.0,200.0,210.0,2,200.0,150.0,390.0,150.0">409,-10,0,0</Place>
-      <Place id="168" visible="true" options="700.0,370.0,230.0,80.0,160.0,530.0,200.0,130.0,4,700.0,420.0,410.0,420.0,410.0,530.0,360.0,530.0">500,0,0,0</Place>
-      <Place id="16" visible="false">60,190,180,130</Place>
-      <Place id="166" visible="true" options="390.0,50.0,200.0,210.0,840.0,140.0,210.0,60.0,4,590.0,160.0,715.0,160.0,715.0,160.0,840.0,160.0">500,0,0,0</Place>
-      <Place id="99" visible="true">700,370,230,80</Place>
-      <Place id="103" visible="true">700,570,270,80</Place>
-      <Place id="23" visible="true">390,50,200,210</Place>
-   </Sheet>
-   <Sheet name="Tree Observations" id="179" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
-      <Place id="128" visible="false">769,50,260,330</Place>
-      <Place id="121" visible="true">684,726,270,80</Place>
-      <Place id="117" visible="true">812,539,230,80</Place>
-      <Place id="171" visible="true" options="398.283998561499,564.5749626056422,200.0,130.0,396.63961611532466,391.8787273635782,190.0,60.0,2,480.0,564.0,480.0,451.8787273635782">500,0,0,0</Place>
-      <Place id="173" visible="true">500,0,0,0</Place>
-      <Place id="172" visible="true" options="812.2398528116103,539.4123087562996,230.0,80.0,398.283998561499,564.5749626056422,200.0,130.0,4,812.0,590.0,705.1419992807495,590.0,705.1419992807495,620.0,598.283998561499,620.0">500,0,0,0</Place>
-      <Place id="40" visible="true">370,109,230,190</Place>
       <Place id="157" visible="false">500,0,0,0</Place>
-      <Place id="16" visible="false">730,140,251,181</Place>
-      <Place id="174" visible="true" options="684.0182667857125,726.2811201492677,270.0,80.0,398.283998561499,564.5749626056422,200.0,130.0,3,730.0,726.2811201492677,730.0,650.0,598.283998561499,650.0">500,0,0,0</Place>
-      <Place id="170" visible="true" options="370.0,109.0,230.0,190.0,396.63961611532466,391.8787273635782,190.0,60.0,2,480.0,299.0,480.0,391.8787273635782">500,0,0,0</Place>
-      <Place id="125" visible="true">396,391,190,60</Place>
-      <Place id="110" visible="true">398,564,200,130</Place>
-      <Place id="23" visible="true">15,99,200,190</Place>
-      <Place id="160" visible="true" options="15.26738799427904,99.39079445718781,200.0,190.0,370.0,109.0,230.0,190.0,2,215.26738799427903,200.0,370.0,200.0">500,0,0,0</Place>
+      <Place id="9" visible="true">420,37,201,130</Place>
+      <Place id="164" visible="true">500,0,0,0</Place>
+      <Place id="16" visible="true">778,31,190,140</Place>
+      <Place id="162" visible="true" options="778.0,31.0,190.0,140.0,470.0,310.0,170.0,60.0,4,778.0,160.0,670.0,160.0,670.0,310.0,640.0,310.0">500,0,0,0</Place>
+      <Place id="89" visible="true">470,310,170,60</Place>
+      <Place id="23" visible="false">950,10,230,280</Place>
+      <Place id="161" visible="true" options="760.0,700.0,170.0,60.0,761.0,400.0,200.0,160.0,2,810.0,700.0,810.0,560.0">500,0,0,0</Place>
+      <Place id="86" visible="true">760,700,170,60</Place>
+      <Place id="177" visible="true">150,280,161,81</Place>
+      <Place id="0" visible="true">761,400,200,160</Place>
+      <Place id="40" visible="false">260,10,240,480</Place>
+      <Place id="159" visible="true" options="420.0,37.0,201.0,130.0,778.0,31.0,190.0,140.0,2,621.0,90.0,778.0,90.0">500,0,0,0</Place>
+      <Place id="35" visible="true">20,49,220,90</Place>
+      <Place id="158" visible="true" options="20.0,49.0,220.0,90.0,420.0,37.0,201.0,130.0,2,240.0,100.0,420.0,100.0">500,0,0,0</Place>
+      <Place id="51" visible="false">510,530,240,600</Place>
    </Sheet>
-   <Sheet name="Plot Results" id="180" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
-      <Place id="89" visible="false">180,110,110,40</Place>
+   <Sheet name="Plot Observations" id="184" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
+      <Place id="165" visible="true">500,0,0,0</Place>
+      <Place id="167" visible="true">500,0,0,0</Place>
+      <Place id="166" visible="true" options="440.0,210.0,200.0,210.0,890.0,300.0,210.0,60.0,2,640.0,310.0,890.0,310.0">500,0,0,0</Place>
+      <Place id="157" visible="true" options="120.0,290.0,110.0,40.0,440.0,210.0,200.0,210.0,2,230.0,310.0,440.0,310.0">409,-10,0,0</Place>
+      <Place id="16" visible="false">60,190,180,130</Place>
+      <Place id="103" visible="true">750,730,270,80</Place>
+      <Place id="89" visible="true">120,290,110,40</Place>
+      <Place id="99" visible="true">750,530,230,80</Place>
+      <Place id="23" visible="true">440,210,200,210</Place>
+      <Place id="168" visible="true" options="750.0,530.0,230.0,80.0,210.0,690.0,200.0,130.0,3,750.0,560.0,340.0,560.0,340.0,690.0">500,0,0,0</Place>
+      <Place id="107" visible="true">890,300,210,60</Place>
+      <Place id="92" visible="true">210,690,200,130</Place>
+      <Place id="178" visible="true">790,120,251,60</Place>
+      <Place id="169" visible="true" options="210.0,690.0,200.0,130.0,890.0,300.0,210.0,60.0,4,300.0,690.0,300.0,460.0,970.0,460.0,970.0,360.0">500,0,0,0</Place>
+      <Place id="0" visible="false">40,10,210,161</Place>
+      <Place id="158" visible="true">500,0,0,0</Place>
+   </Sheet>
+   <Sheet name="Tree Observations" id="185" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
+      <Place id="157" visible="false">500,0,0,0</Place>
+      <Place id="125" visible="true">396,391,190,60</Place>
+      <Place id="173" visible="true">500,0,0,0</Place>
+      <Place id="110" visible="true">398,564,200,130</Place>
+      <Place id="160" visible="true" options="15.26738799427904,99.39079445718781,200.0,190.0,370.0,109.0,230.0,190.0,2,215.26738799427903,200.0,370.0,200.0">500,0,0,0</Place>
+      <Place id="16" visible="false">730,140,251,181</Place>
+      <Place id="171" visible="true" options="398.0,564.0,200.0,130.0,396.0,391.0,190.0,60.0,2,460.0,564.0,460.0,451.0">500,0,0,0</Place>
+      <Place id="23" visible="true">15,99,200,190</Place>
+      <Place id="174" visible="true" options="684.0182667857125,726.2811201492677,270.0,80.0,398.0,564.0,200.0,130.0,3,730.0,726.2811201492677,730.0,640.0,598.0,640.0">500,0,0,0</Place>
+      <Place id="121" visible="true">684,726,270,80</Place>
+      <Place id="128" visible="false">769,50,260,330</Place>
+      <Place id="179" visible="true">820,110,251,60</Place>
+      <Place id="117" visible="true">812,539,230,80</Place>
+      <Place id="170" visible="true" options="370.0,109.0,230.0,190.0,396.0,391.0,190.0,60.0,4,480.0,299.0,485.0,299.0,485.0,391.0,490.0,391.0">500,0,0,0</Place>
+      <Place id="40" visible="true">370,109,230,190</Place>
+      <Place id="172" visible="true" options="812.2398528116103,539.4123087562996,230.0,80.0,398.0,564.0,200.0,130.0,4,812.0,590.0,705.1419992807495,590.0,705.0,590.0,598.0,590.0">500,0,0,0</Place>
+   </Sheet>
+   <Sheet name="Plot Results" id="186" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
       <Place id="176" visible="true">500,0,0,0</Place>
       <Place id="157" visible="false">500,0,0,0</Place>
-      <Place id="23" visible="true">110,90,200,190</Place>
-      <Place id="147" visible="true">580,180,250,60</Place>
+      <Place id="180" visible="true">520,240,251,60</Place>
+      <Place id="89" visible="false">180,110,110,40</Place>
+      <Place id="147" visible="true">590,450,250,60</Place>
+      <Place id="23" visible="true">120,360,200,190</Place>
    </Sheet>
-   <Sheet name="Tree Results" id="181" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
+   <Sheet name="Tree Results" id="187" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
+      <Place id="128" visible="true">630,300,260,330</Place>
       <Place id="175" visible="true">500,0,0,0</Place>
-      <Place id="128" visible="true">630,90,260,330</Place>
-      <Place id="40" visible="true">170,170,230,190</Place>
+      <Place id="40" visible="true">170,380,230,190</Place>
+      <Place id="181" visible="true">390,130,251,60</Place>
    </Sheet>
-   <Sheet name="Summary Views" id="182" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
-      <Place id="150" visible="true">180,70,221,171</Place>
-      <Place id="155" visible="true">370,390,180,40</Place>
-      <Place id="154" visible="true">150,350,120,60</Place>
-      <Place id="153" visible="true">640,80,241,150</Place>
-      <Place id="152" visible="true">710,310,211,100</Place>
+   <Sheet name="Summary Views" id="188" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
+      <Place id="182" visible="true">400,130,251,60</Place>
+      <Place id="154" visible="true">260,610,120,60</Place>
+      <Place id="152" visible="true">820,570,211,100</Place>
+      <Place id="150" visible="true">290,330,221,171</Place>
+      <Place id="153" visible="true">750,340,241,150</Place>
+      <Place id="155" visible="true">480,650,180,40</Place>
    </Sheet>
-   <Settings sheet="178" zoom="1.0"></Settings>
+   <Settings sheet="188" zoom="1.0"></Settings>
 </Diagram>
