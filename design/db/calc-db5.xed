@@ -1,0 +1,693 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Diagram version="1.0" type="POSTGRES" versionMajor="9" versionMinor="0" groupSchema="false" hide_inv="false">
+   <Table id="0" name="rd_admin_unit" schema="calc" database="calc" background="16777165">
+      <Column id="1" name="id" type="integer" length="0" nulls="false"/>
+      <Column id="2" name="name" type="varchar" length="255" nulls="false"/>
+      <Column id="3" name="no" type="integer" length="25" nulls="true"/>
+      <Column id="4" name="code" type="varchar" length="25" nulls="true"/>
+      <Column id="5" name="identifier" type="varchar" length="255" nulls="true"/>
+      <Column id="6" name="land_area" type="numeric" length="25" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+      <Column id="7" name="total_area" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+      <Column id="8" name="level" type="integer" length="25" nulls="false"/>
+      <Column id="9" name="parent_id" type="integer" length="25" nulls="true"/>
+      <Storage name="TempTable" value="false"></Storage>
+   </Table>
+   <Table id="10" name="sd_cluster" schema="calc" database="calc" background="16777165">
+      <Column id="11" name="id" type="integer" length="0" nulls="false"/>
+      <Column id="12" name="no" type="integer" length="25" nulls="true"/>
+      <Column id="13" name="code" type="varchar" length="25" nulls="true"/>
+      <Column id="14" name="x" type="integer" length="25" nulls="true"/>
+      <Column id="15" name="y" type="integer" length="25" nulls="true"/>
+      <Column id="16" name="stratum_id" type="integer" length="0" nulls="true"/>
+      <Storage name="TempTable" value="false"></Storage>
+   </Table>
+   <Table id="17" name="sd_plot1" schema="calc" database="calc" background="16777165">
+      <Column id="18" name="id" type="integer" length="0" nulls="false"/>
+      <Column id="19" name="no" type="integer" length="25" nulls="true"/>
+      <Column id="20" name="code" type="varchar" length="25" nulls="true"/>
+      <Column id="21" name="cluster_id" type="integer" length="0" nulls="false"/>
+      <Column id="22" name="location" type="varchar" length="255" nulls="false"/>
+      <Column id="23" name="admin_unit_id" type="integer" length="25" nulls="false"/>
+      <Column id="24" name="phase" type="integer" length="25" nulls="true"/>
+      <Storage name="TempTable" value="false"></Storage>
+   </Table>
+   <Table id="25" name="obs_plot_section" schema="calc" database="calc" background="16777165">
+      <Column id="26" name="id" type="integer" length="0" nulls="false"/>
+      <Column id="27" name="plot_id" type="integer" length="0" nulls="false"/>
+      <Column id="28" name="survey_date" type="date" length="25" nulls="false"/>
+      <Column id="29" name="section" type="integer" length="25" nulls="false"/>
+      <Column id="30" name="share" type="numeric" length="0" nulls="false">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+         <CP name="COMMENTS">Share of total plot size, in percent</CP>
+      </Column>
+      <Column id="31" name="center" type="boolean" length="25" nulls="false"/>
+      <Column id="32" name="admin_unit_id" type="integer" length="0" nulls="true"/>
+      <Column id="33" name="slope" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+         <CP name="COMMENTS">Slope of plot section in percent</CP>
+      </Column>
+      <Column id="34" name="slope_corrected" type="boolean" length="0" nulls="true">
+         <CP name="COMMENTS">Was slope correction applied when determining plot boundaries in the field</CP>
+      </Column>
+      <Column id="35" name="location" type="varchar" length="255" nulls="true"/>
+      <Column id="36" name="land_use_id" type="integer" length="25" nulls="true"/>
+      <Column id="37" name="land_cover_id" type="integer" length="25" nulls="true"/>
+      <Column id="38" name="land_ownership_id" type="integer" length="25" nulls="true"/>
+      <Column id="39" name="class1_id" type="integer" length="25" nulls="true"/>
+      <Column id="40" name="class2_id" type="integer" length="25" nulls="true"/>
+      <Column id="41" name="class3_id" type="integer" length="25" nulls="true"/>
+      <Column id="42" name="accessibility_id" type="integer" length="25" nulls="true"/>
+      <Storage name="TempTable" value="false"></Storage>
+   </Table>
+   <Table id="43" name="sd_stratum" schema="calc" database="calc" background="16777165">
+      <Column id="44" name="id" type="integer" length="0" nulls="false"/>
+      <Column id="45" name="no" type="integer" length="25" nulls="true"/>
+      <Column id="46" name="code" type="varchar" length="25" nulls="true"/>
+      <Column id="47" name="name" type="varchar" length="255" nulls="true"/>
+      <Storage name="TempTable" value="false"></Storage>
+   </Table>
+   <Table id="48" name="obs_tree" schema="calc" database="calc" background="16777165">
+      <Column id="49" name="id" type="integer" length="0" nulls="false"/>
+      <Column id="50" name="obs_plot_id" type="integer" length="0" nulls="false"/>
+      <Column id="51" name="measurement_date" type="date" length="25" nulls="true"/>
+      <Column id="52" name="taxon_id" type="integer" length="0" nulls="true"/>
+      <Column id="53" name="dbh" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+      <Column id="54" name="dbh_height" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+      <Column id="55" name="top_height" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+      <Column id="56" name="bole_height" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+         <CP name="COMMENTS">a.k.a. merchantable</CP>
+      </Column>
+      <Column id="57" name="stump_diameter" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+      <Column id="58" name="stump_height" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+      <Storage name="TempTable" value="false"></Storage>
+   </Table>
+   <View id="59" name="tree_view" schema="calc" database="calc" background="15790335">
+      <Statement>CREATE VIEW tree_view AS SELECT t.id, t.plot_id, t.taxon_id, t.health_id, t.origin_id, t.dbh, t.dbh_height, t.top_height, t.bole_height, t.stump_diameter, t.stump_height, t.inclusion_area, t.inclusion_probability, t.est_top_height, t.est_basal_area, t.est_stem_volume, t.est_bole_volume, t.est_top_volume, t.est_volume, t.est_stem_biomass, t.est_ag_biomass, t.est_bg_biomass, t.est_biomass, t.est_stem_carbon, t.est_ag_carbon, t.est_bg_carbon, t.est_carbon, p.admin_unit_id, p.class1_id, p.plot_id AS sampling_unit_id, p.section, p.class2_id, ((t.est_volume)::double precision / t.inclusion_probability) AS hte_volume, ((1)::double precision / t.inclusion_probability) AS hte_stem_count FROM (calc.tree_obs t JOIN calc.plot_obs p ON ((t.plot_id = p.id)));</Statement>
+      <Column id="60" name="id" type="int4" length="0" nulls="true"/>
+      <Column id="61" name="plot_id" type="int4" length="0" nulls="true"/>
+      <Column id="62" name="taxon_id" type="int4" length="0" nulls="true"/>
+      <Column id="63" name="health_id" type="int4" length="0" nulls="true"/>
+      <Column id="64" name="origin_id" type="int4" length="0" nulls="true"/>
+      <Column id="65" name="dbh" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+      <Column id="66" name="dbh_height" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+      <Column id="67" name="top_height" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+      <Column id="68" name="bole_height" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+      <Column id="69" name="stump_diameter" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+      <Column id="70" name="stump_height" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+      <Column id="71" name="inclusion_area" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+      <Column id="72" name="inclusion_probability" type="float8" length="0" nulls="true"/>
+      <Column id="73" name="est_top_height" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+      <Column id="74" name="est_basal_area" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+      <Column id="75" name="est_stem_volume" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+      <Column id="76" name="est_bole_volume" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+      <Column id="77" name="est_top_volume" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+      <Column id="78" name="est_volume" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+      <Column id="79" name="est_stem_biomass" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+      <Column id="80" name="est_ag_biomass" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+      <Column id="81" name="est_bg_biomass" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+      <Column id="82" name="est_biomass" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+      <Column id="83" name="est_stem_carbon" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+      <Column id="84" name="est_ag_carbon" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+      <Column id="85" name="est_bg_carbon" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+      <Column id="86" name="est_carbon" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+      <Column id="87" name="admin_unit_id" type="int4" length="0" nulls="true"/>
+      <Column id="88" name="class1_id" type="int4" length="0" nulls="true"/>
+      <Column id="89" name="sampling_unit_id" type="int4" length="0" nulls="true"/>
+      <Column id="90" name="section" type="varchar" length="25" nulls="true"/>
+      <Column id="91" name="class2_id" type="int4" length="0" nulls="true"/>
+      <Column id="92" name="hte_volume" type="float8" length="0" nulls="true"/>
+      <Column id="93" name="hte_stem_count" type="float8" length="0" nulls="true"/>
+   </View>
+   <Table id="94" name="rd_admin_unit_level" schema="calc" database="calc" background="16777165">
+      <Column id="95" name="level" type="integer" length="25" nulls="false"/>
+      <Column id="96" name="name" type="varchar" length="255" nulls="false"/>
+      <Storage name="TempTable" value="false"></Storage>
+   </Table>
+   <Table id="97" name="md_tree_class" schema="calc" database="calc" background="16777165">
+      <Column id="98" name="id" type="integer" length="25" nulls="false"/>
+      <Column id="99" name="no" type="integer" length="25" nulls="true"/>
+      <Column id="100" name="code" type="varchar" length="25" nulls="true"/>
+      <Column id="101" name="name" type="varchar" length="255" nulls="true"/>
+      <Column id="102" name="scheme_id" type="integer" length="25" nulls="false"/>
+      <Column id="103" name="level" type="integer" length="25" nulls="false"/>
+      <Storage name="TempTable" value="false"></Storage>
+   </Table>
+   <Table id="104" name="md_tree_classification_scheme" schema="calc" database="calc" background="16777165">
+      <Column id="105" name="id" type="integer" length="25" nulls="false"/>
+      <Column id="106" name="name" type="varchar" length="255" nulls="true"/>
+      <Column id="107" name="multiple" type="boolean" length="25" nulls="false"/>
+      <Storage name="TempTable" value="false"></Storage>
+   </Table>
+   <Table id="108" name="md_tree_classification_level" schema="calc" database="calc" background="16777165">
+      <Column id="109" name="scheme_id" type="integer" length="25" nulls="false"/>
+      <Column id="110" name="level" type="integer" length="25" nulls="false"/>
+      <Column id="111" name="name" type="varchar" length="255" nulls="true"/>
+      <Storage name="TempTable" value="false"></Storage>
+   </Table>
+   <Table id="112" name="obs_tree_class" schema="calc" database="calc" background="16777165">
+      <Column id="113" name="tree_id" type="integer" length="25" nulls="false"/>
+      <Column id="114" name="class_id" type="integer" length="25" nulls="false"/>
+      <Storage name="TempTable" value="false"></Storage>
+   </Table>
+   <Table id="115" name="res_tree" schema="calc" database="calc" background="16777165">
+      <Column id="116" name="obs_id" type="integer" length="0" nulls="false"/>
+      <Column id="117" name="inclusion_area" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+      <Column id="118" name="plot_expansion_factor" type="float8" length="0" nulls="true"/>
+      <Column id="119" name="est_top_height" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+      <Column id="120" name="est_basal_area" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+      <Column id="121" name="est_stem_volume" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+      <Column id="122" name="est_bole_volume" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+         <CP name="COMMENTS">a.k.a. merchantable</CP>
+      </Column>
+      <Column id="123" name="est_top_volume" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+      <Column id="124" name="est_volume" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+      <Column id="125" name="est_stem_biomass" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+      <Column id="126" name="est_ag_biomass" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+         <CP name="COMMENTS">Estimated above-ground biomass</CP>
+      </Column>
+      <Column id="127" name="est_bg_biomass" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+         <CP name="COMMENTS">Estimated below-ground biomass</CP>
+      </Column>
+      <Column id="128" name="est_biomass" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+      <Column id="129" name="est_stem_carbon" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+      <Column id="130" name="est_ag_carbon" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+      <Column id="131" name="est_bg_carbon" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+      <Column id="132" name="est_carbon" type="numeric" length="0" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+      <Column id="133" name="est_mean_volume" type="double precision" length="25" nulls="true"/>
+      <Storage name="TempTable" value="false"></Storage>
+   </Table>
+   <Table id="134" name="res_plot_section" schema="calc" database="calc" background="16777165">
+      <Column id="135" name="obs_id" type="integer" length="25" nulls="false"/>
+      <Column id="136" name="est_proj_area" type="numeric" length="25" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+      <Storage name="TempTable" value="false"></Storage>
+   </Table>
+   <View id="137" name="stratum_view" schema="" database="" background="15790335">
+      <Text>Summary of data at stratum level</Text>
+      <Column id="138" name="stratum_id" type="integer" length="25" nulls="false"/>
+      <Column id="139" name="sd_plot1_cnt" type="integer" length="25" nulls="true"/>
+      <Column id="140" name="sd_plot2_cnt" type="integer" length="25" nulls="true"/>
+      <Column id="141" name="obs_plot_cnt" type="integer" length="25" nulls="true"/>
+   </View>
+   <View id="142" name="plot_section_view" schema="calc" database="calc" background="15790335">
+      <Text>Observed plot sections and respective sampling design attributes</Text>
+   </View>
+   <View id="143" name="plot_view" schema="calc" database="calc" background="15790335">
+      <Text>Observed plot centers and respective sampling design attributes</Text>
+   </View>
+   <View id="144" name="cluster_view" schema="" database="" background="15790335">
+      <Text>Summary of data at cluster level</Text>
+   </View>
+   <View id="145" name="admin_unit_view" schema="" database="" background="15790335">
+      <Column id="146" name="admin_unid_id" type="integer" length="25" nulls="false"/>
+      <Column id="147" name="sd_plot1_cnt" type="integer" length="25" nulls="true"/>
+   </View>
+   <View id="148" name="substratum_view" schema="calc" database="" background="15790335">
+      <Text>Summary of data at each stratum/admin_unit intersection</Text>
+      <Column id="149" name="stratum_id" type="integer" length="25" nulls="false"/>
+      <Column id="150" name="admin_unit_id" type="integer" length="25" nulls="false"/>
+      <Column id="151" name="sd_plot1_cnt" type="integer" length="25" nulls="false"/>
+      <Column id="152" name="sd_plot2_cnt" type="integer" length="25" nulls="false"/>
+      <Column id="153" name="obs_plot_cnt" type="integer" length="25" nulls="false"/>
+      <Column id="154" name="land_area" type="numeric" length="25" nulls="false">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+      <Column id="155" name="plot_expf" type="numeric" length="25" nulls="true">
+         <CP name="PRECISION">15</CP>
+         <CP name="SCALE">5</CP>
+      </Column>
+   </View>
+   <Table id="156" name="md_land_use" schema="calc" database="calc" background="16777165">
+      <Column id="157" name="id" type="integer" length="25" nulls="false"/>
+      <Column id="158" name="no" type="integer" length="25" nulls="true"/>
+      <Column id="159" name="code" type="varchar" length="25" nulls="true"/>
+      <Column id="160" name="name" type="varchar" length="255" nulls="true"/>
+      <Column id="161" name="level_no" type="integer" length="25" nulls="true"/>
+      <Column id="162" name="parent_id" type="integer" length="25" nulls="true"/>
+      <Storage name="TempTable" value="false"></Storage>
+   </Table>
+   <Table id="163" name="md_land_cover" schema="calc" database="calc" background="16777165">
+      <Column id="164" name="id" type="integer" length="25" nulls="false"/>
+      <Column id="165" name="no" type="integer" length="25" nulls="true"/>
+      <Column id="166" name="code" type="varchar" length="25" nulls="true"/>
+      <Column id="167" name="name" type="varchar" length="255" nulls="true"/>
+      <Column id="168" name="level_no" type="integer" length="25" nulls="true"/>
+      <Column id="169" name="is_land" type="boolean" length="25" nulls="true"/>
+      <Column id="170" name="parent_id" type="integer" length="25" nulls="true"/>
+      <Storage name="TempTable" value="false"></Storage>
+   </Table>
+   <Table id="171" name="md_land_ownership" schema="calc" database="calc" background="16777165">
+      <Column id="172" name="id" type="integer" length="25" nulls="false"/>
+      <Column id="173" name="no" type="integer" length="25" nulls="true"/>
+      <Column id="174" name="code" type="varchar" length="25" nulls="true"/>
+      <Column id="175" name="name" type="varchar" length="255" nulls="true"/>
+      <Column id="176" name="level_no" type="integer" length="25" nulls="true"/>
+      <Column id="177" name="parent_id" type="integer" length="25" nulls="true"/>
+      <Storage name="TempTable" value="false"></Storage>
+   </Table>
+   <Table id="178" name="md_plot_accessibility" schema="calc" database="calc" background="16777165">
+      <Column id="179" name="id" type="integer" length="25" nulls="false"/>
+      <Column id="180" name="no" type="integer" length="25" nulls="true"/>
+      <Column id="181" name="code" type="varchar" length="25" nulls="true"/>
+      <Column id="182" name="name" type="varchar" length="255" nulls="true"/>
+      <Column id="183" name="is_accessible" type="boolean" length="25" nulls="true"/>
+      <Storage name="TempTable" value="false"></Storage>
+   </Table>
+   <Table id="184" name="md_plot_class1" schema="calc" database="calc" background="16777165">
+      <Column id="185" name="id" type="integer" length="25" nulls="false"/>
+      <Column id="186" name="no" type="integer" length="25" nulls="true"/>
+      <Column id="187" name="code" type="varchar" length="25" nulls="true"/>
+      <Column id="188" name="name" type="varchar" length="255" nulls="true"/>
+      <Column id="189" name="level_no" type="integer" length="25" nulls="true"/>
+      <Column id="190" name="parent_id" type="integer" length="25" nulls="true"/>
+      <Storage name="TempTable" value="false"></Storage>
+   </Table>
+   <Table id="191" name="md_plot_class2" schema="calc" database="calc" background="16777165">
+      <Column id="192" name="id" type="integer" length="25" nulls="false"/>
+      <Column id="193" name="no" type="integer" length="25" nulls="true"/>
+      <Column id="194" name="code" type="varchar" length="25" nulls="true"/>
+      <Column id="195" name="name" type="varchar" length="255" nulls="true"/>
+      <Column id="196" name="level_no" type="integer" length="25" nulls="true"/>
+      <Column id="197" name="parent_id" type="integer" length="25" nulls="true"/>
+      <Storage name="TempTable" value="false"></Storage>
+   </Table>
+   <Table id="198" name="md_plot_class3" schema="calc" database="calc" background="16777165">
+      <Column id="199" name="id" type="integer" length="25" nulls="false"/>
+      <Column id="200" name="no" type="integer" length="25" nulls="true"/>
+      <Column id="201" name="code" type="varchar" length="25" nulls="true"/>
+      <Column id="202" name="name" type="varchar" length="255" nulls="true"/>
+      <Column id="203" name="level_no" type="integer" length="25" nulls="true"/>
+      <Column id="204" name="parent_id" type="integer" length="25" nulls="true"/>
+      <Storage name="TempTable" value="false"></Storage>
+   </Table>
+   <Relation id="205" name="fk_obs_plot2" cardinality="-2" identifying="true" nulls="false">
+      <FK>18</FK>
+      <PK>27</PK>
+   </Relation>
+   <Relation id="206" name="fk_cluster_stratum" cardinality="-2" identifying="true" nulls="false">
+      <FK>44</FK>
+      <PK>16</PK>
+   </Relation>
+   <Relation id="207" name="fk_plot1_cluster" cardinality="-2" identifying="true" nulls="false">
+      <FK>11</FK>
+      <PK>21</PK>
+   </Relation>
+   <Relation id="208" name="fk_tree_obs_plot" cardinality="-2" identifying="true" nulls="false">
+      <FK>26</FK>
+      <PK>50</PK>
+   </Relation>
+   <Relation id="209" name="fk_admin_unit_level" cardinality="-2" identifying="true" nulls="false">
+      <FK>95</FK>
+      <PK>8</PK>
+   </Relation>
+   <Relation id="210" name="fk_plot_admin_unit" cardinality="-2" identifying="false" nulls="false">
+      <FK>1</FK>
+      <PK>23</PK>
+   </Relation>
+   <Relation id="211" name="fk_admin_unit_parent" cardinality="-1" identifying="false" nulls="true">
+      <FK>1</FK>
+      <PK>9</PK>
+   </Relation>
+   <Relation id="212" name="fk_obs_tree_class" cardinality="-2" identifying="true" nulls="false">
+      <FK>49</FK>
+      <PK>113</PK>
+   </Relation>
+   <Relation id="213" name="fk_tree_class_obs" cardinality="-2" identifying="true" nulls="false">
+      <FK>98</FK>
+      <PK>114</PK>
+   </Relation>
+   <Relation id="214" name="fk_tree_class_scheme" cardinality="-2" identifying="true" nulls="false">
+      <FK>105</FK>
+      <PK>102</PK>
+   </Relation>
+   <Relation id="215" name="fk_tree_class_level_scheme" cardinality="-2" identifying="true" nulls="false">
+      <FK>105</FK>
+      <PK>109</PK>
+   </Relation>
+   <Relation id="216" name="fk_tree_class_level" cardinality="-2" identifying="true" nulls="false">
+      <FK>109</FK>
+      <FK>110</FK>
+      <PK>102</PK>
+      <PK>103</PK>
+   </Relation>
+   <Relation id="217" name="fk_res_tree_obs" cardinality="-3" identifying="true" nulls="false">
+      <FK>49</FK>
+      <PK>116</PK>
+   </Relation>
+   <Relation id="218" name="fk_res_plot_section_obs" cardinality="-3" identifying="true" nulls="false">
+      <FK>26</FK>
+      <PK>135</PK>
+   </Relation>
+   <Relation id="219" name="fk_land_use_obs_plot" cardinality="-2" identifying="true" nulls="false">
+      <FK>157</FK>
+      <PK>36</PK>
+   </Relation>
+   <Relation id="220" name="fk_land_cover_obs_plot" cardinality="-2" identifying="true" nulls="false">
+      <FK>164</FK>
+      <PK>37</PK>
+   </Relation>
+   <Relation id="221" name="fk_land_ownership_obs_plot" cardinality="-2" identifying="true" nulls="false">
+      <FK>172</FK>
+      <PK>38</PK>
+   </Relation>
+   <Relation id="222" name="fk_plot_class1_obs_plot" cardinality="-2" identifying="false" nulls="true">
+      <FK>185</FK>
+      <PK>39</PK>
+   </Relation>
+   <Relation id="223" name="fk_plot_class2_obs_plot" cardinality="-2" identifying="false" nulls="true">
+      <FK>192</FK>
+      <PK>40</PK>
+   </Relation>
+   <Relation id="224" name="fk_plot_class3_obs_plot" cardinality="-2" identifying="false" nulls="true">
+      <FK>199</FK>
+      <PK>41</PK>
+   </Relation>
+   <Relation id="225" name="REL_1" cardinality="-2" identifying="false" nulls="true">
+      <FK>179</FK>
+      <PK>42</PK>
+   </Relation>
+   <Relation id="226" name="fk_land_cover_land_cover" cardinality="-2" identifying="false" nulls="true">
+      <FK>164</FK>
+      <PK>170</PK>
+   </Relation>
+   <Relation id="227" name="fk_land_ownership_land_ownership" cardinality="-2" identifying="false" nulls="true">
+      <FK>172</FK>
+      <PK>177</PK>
+   </Relation>
+   <Relation id="228" name="fk_plot_class1_plot_class1" cardinality="-2" identifying="false" nulls="true">
+      <FK>185</FK>
+      <PK>190</PK>
+   </Relation>
+   <Relation id="229" name="fk_land_use_land_use" cardinality="-2" identifying="false" nulls="true">
+      <FK>157</FK>
+      <PK>162</PK>
+   </Relation>
+   <Relation id="230" name="fk_plot_class2_plot_class2" cardinality="-2" identifying="false" nulls="true">
+      <FK>192</FK>
+      <PK>197</PK>
+   </Relation>
+   <Relation id="231" name="fk_plot_class3_plot_class3" cardinality="-2" identifying="false" nulls="true">
+      <Option name="deferrable" class="Boolean" value="false"></Option>
+      <FK>199</FK>
+      <PK>204</PK>
+   </Relation>
+   <Note id="232">
+      <Text>Sampling design and related reference data tables</Text>
+   </Note>
+   <Note id="233">
+      <Text>Plot-level observations and related master data (land use classes, etc) table.</Text>
+   </Note>
+   <Note id="234">
+      <Text>Tree-level observations and related master data (health classes, etc) table.</Text>
+   </Note>
+   <Note id="235">
+      <Text>Plot-level result tables.</Text>
+   </Note>
+   <Note id="236">
+      <Text>Tree-level result tables.</Text>
+   </Note>
+   <Note id="237">
+      <Text>Views summarizing data, including counts, densities, etc.</Text>
+   </Note>
+   <Constraint table="0" name="admin_unit_pkey" type="PrimKey">
+      <ConstraintColumn id="1"></ConstraintColumn>
+   </Constraint>
+   <Constraint table="10" name="cluster_pkey" type="PrimKey">
+      <ConstraintColumn id="11"></ConstraintColumn>
+   </Constraint>
+   <Constraint table="17" name="plot_pkey1" type="PrimKey">
+      <ConstraintColumn id="18"></ConstraintColumn>
+   </Constraint>
+   <Constraint table="25" name="plot_pkey" type="PrimKey">
+      <ConstraintColumn id="26"></ConstraintColumn>
+   </Constraint>
+   <Constraint table="43" name="stratum_pkey" type="PrimKey">
+      <ConstraintColumn id="44"></ConstraintColumn>
+   </Constraint>
+   <Constraint table="48" name="tree_pkey" type="PrimKey">
+      <ConstraintColumn id="49"></ConstraintColumn>
+   </Constraint>
+   <Constraint table="94" name="PK_rd_admin_unit_level_1" type="PrimKey">
+      <ConstraintColumn id="95"></ConstraintColumn>
+   </Constraint>
+   <Constraint table="97" name="PK_md_tree_class_1" type="PrimKey">
+      <ConstraintColumn id="98"></ConstraintColumn>
+   </Constraint>
+   <Constraint table="104" name="PK_md_tree_classification_scheme_1" type="PrimKey">
+      <ConstraintColumn id="105"></ConstraintColumn>
+   </Constraint>
+   <Constraint table="108" name="PK_md_tree_classification_level_1" type="PrimKey">
+      <ConstraintColumn id="109"></ConstraintColumn>
+      <ConstraintColumn id="110"></ConstraintColumn>
+   </Constraint>
+   <Constraint table="112" name="PK_obs_tree_class_1" type="PrimKey">
+      <ConstraintColumn id="113"></ConstraintColumn>
+      <ConstraintColumn id="114"></ConstraintColumn>
+   </Constraint>
+   <Constraint table="115" name="tree_pkey_1" type="PrimKey">
+      <ConstraintColumn id="116"></ConstraintColumn>
+   </Constraint>
+   <Constraint table="134" name="PK_res_plot_section_1" type="PrimKey">
+      <ConstraintColumn id="135"></ConstraintColumn>
+   </Constraint>
+   <Constraint table="156" name="PK_md_land_use_1" type="PrimKey">
+      <ConstraintColumn id="157"></ConstraintColumn>
+   </Constraint>
+   <Constraint table="163" name="PK_md_land_use_2" type="PrimKey">
+      <ConstraintColumn id="164"></ConstraintColumn>
+   </Constraint>
+   <Constraint table="171" name="PK_md_land_use_3" type="PrimKey">
+      <ConstraintColumn id="172"></ConstraintColumn>
+   </Constraint>
+   <Constraint table="178" name="PK_md_land_use_4" type="PrimKey">
+      <ConstraintColumn id="179"></ConstraintColumn>
+   </Constraint>
+   <Constraint table="184" name="PK_md_land_use_5" type="PrimKey">
+      <ConstraintColumn id="185"></ConstraintColumn>
+   </Constraint>
+   <Constraint table="191" name="PK_md_land_use_6" type="PrimKey">
+      <ConstraintColumn id="192"></ConstraintColumn>
+   </Constraint>
+   <Constraint table="198" name="PK_md_land_use_7" type="PrimKey">
+      <ConstraintColumn id="199"></ConstraintColumn>
+   </Constraint>
+   <Sheet name="Sampling Design" id="238" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
+      <Place id="59" visible="false">510,530,240,600</Place>
+      <Place id="94" visible="true">379,411,170,60</Place>
+      <Place id="48" visible="false">260,10,240,480</Place>
+      <Place id="207" visible="true" options="420.0,37.0,201.0,130.0,778.0,31.0,190.0,160.0,4,621.0,100.0,700.0,100.0,699.5,100.0,778.0,100.0">500,0,0,0</Place>
+      <Place id="210" visible="true" options="761.0,400.0,200.0,181.0,778.0,31.0,190.0,160.0,4,850.0,400.0,860.0,400.0,860.0,191.0,870.0,191.0">500,0,0,0</Place>
+      <Place id="232" visible="true">150,280,161,81</Place>
+      <Place id="43" visible="true">20,49,220,90</Place>
+      <Place id="205" visible="false">500,0,0,0</Place>
+      <Place id="25" visible="false">950,10,230,280</Place>
+      <Place id="211" visible="true">500,0,0,0</Place>
+      <Place id="17" visible="true">778,31,190,160</Place>
+      <Place id="206" visible="true" options="20.0,49.0,220.0,90.0,420.0,37.0,201.0,130.0,2,240.0,100.0,420.0,100.0">500,0,0,0</Place>
+      <Place id="209" visible="true" options="379.4537231991294,411.0226710543389,170.0,60.0,761.0,400.0,200.0,181.0,4,549.0,440.0,740.0,440.0,740.0,440.0,761.0,440.0">500,0,0,0</Place>
+      <Place id="0" visible="true">761,400,200,181</Place>
+      <Place id="10" visible="true">420,37,201,130</Place>
+   </Sheet>
+   <Sheet name="Plot Observations" id="239" disp_at="true" disp_ph="true" disp_co="true">
+      <Place id="220" visible="true" options="147.0,408.0,193.0,151.0,487.0,11.0,233.0,330.0,3,240.0,408.0,240.0,270.0,487.0,270.0">500,0,0,0</Place>
+      <Place id="227" visible="true">500,0,0,0</Place>
+      <Place id="163" visible="true">147,408,193,151</Place>
+      <Place id="230" visible="true">500,0,0,0</Place>
+      <Place id="178" visible="true">809,21,182,151</Place>
+      <Place id="17" visible="true">68,20,190,140</Place>
+      <Place id="206" visible="true">500,0,0,0</Place>
+      <Place id="0" visible="false">40,10,210,161</Place>
+      <Place id="198" visible="true">1020,210,182,151</Place>
+      <Place id="223" visible="true" options="910.0,410.0,182.0,151.0,487.0,11.0,233.0,330.0,4,910.0,430.0,870.0,430.0,870.0,280.0,720.0,280.0">500,0,0,0</Place>
+      <Place id="221" visible="true" options="397.0905638364392,411.16653606066393,182.0,151.0,487.0,11.0,233.0,330.0,4,540.0,411.16653606066393,540.0,355.5,550.0,355.5,550.0,341.0">500,0,0,0</Place>
+      <Place id="191" visible="true">910,410,182,151</Place>
+      <Place id="233" visible="true">1049,39,251,60</Place>
+      <Place id="222" visible="true">500,0,0,0</Place>
+      <Place id="184" visible="true">650,410,182,151</Place>
+      <Place id="226" visible="true">500,0,0,0</Place>
+      <Place id="205" visible="true" options="68.0,20.0,190.0,140.0,487.0,11.0,233.0,330.0,6,258.0,90.0,415.5,90.0,416.0,90.0,442.0,90.0,442.0,160.0,487.0,160.0">409,-10,0,0</Place>
+      <Place id="219" visible="true" options="17.0,200.0,182.0,151.0,487.0,11.0,233.0,330.0,4,199.0,210.0,250.0,210.0,250.0,210.0,487.0,210.0">500,0,0,0</Place>
+      <Place id="228" visible="true">500,0,0,0</Place>
+      <Place id="25" visible="true">487,11,233,330</Place>
+      <Place id="231" visible="true">500,0,0,0</Place>
+      <Place id="229" visible="true" options="17.0,200.0,182.0,151.0,17.0,200.0,182.0,151.0,5,199.0,341.0,229.0,341.0,229.0,371.0,190.0,371.0,190.0,351.0">500,0,0,0</Place>
+      <Place id="171" visible="true">397,411,182,151</Place>
+      <Place id="224" visible="true" options="1020.0,210.0,182.0,151.0,487.0,11.0,233.0,330.0,4,1020.0,260.0,860.5,260.0,861.0,210.0,720.0,210.0">500,0,0,0</Place>
+      <Place id="225" visible="true" options="809.0925536017411,21.269822124932013,182.0,151.0,487.0,11.0,233.0,330.0,4,809.0,90.0,760.0,90.0,760.0,170.0,720.0,170.0">500,0,0,0</Place>
+      <Place id="156" visible="true">17,200,182,151</Place>
+   </Sheet>
+   <Sheet name="Tree Observations" id="240" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
+      <Place id="108" visible="true">843,567,270,80</Place>
+      <Place id="213" visible="true" options="267.0,435.0,200.0,130.0,395.0,292.0,190.0,60.0,4,350.0,435.0,350.0,390.0,460.0,390.0,460.0,352.0">500,0,0,0</Place>
+      <Place id="48" visible="true">389,10,230,190</Place>
+      <Place id="234" visible="true">839,11,251,60</Place>
+      <Place id="205" visible="false">500,0,0,0</Place>
+      <Place id="104" visible="true">850,360,230,80</Place>
+      <Place id="25" visible="true">25,19,200,190</Place>
+      <Place id="214" visible="true" options="850.0,360.0,230.0,80.0,267.0,435.0,200.0,130.0,3,890.0,440.0,890.0,470.0,467.0,470.0">500,0,0,0</Place>
+      <Place id="17" visible="false">730,140,251,181</Place>
+      <Place id="216" visible="true">500,0,0,0</Place>
+      <Place id="208" visible="true" options="25.0,19.053301169885728,200.0,190.0,389.0,10.0,230.0,190.0,4,225.0,90.0,310.0,90.0,310.0,100.0,389.0,100.0">500,0,0,0</Place>
+      <Place id="115" visible="false">769,50,260,330</Place>
+      <Place id="97" visible="true">267,435,200,130</Place>
+      <Place id="112" visible="true">395,292,190,60</Place>
+      <Place id="212" visible="true">500,0,0,0</Place>
+      <Place id="215" visible="true">500,0,0,0</Place>
+   </Sheet>
+   <Sheet name="Plot Results" id="241" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
+      <Place id="25" visible="true">120,360,200,190</Place>
+      <Place id="218" visible="true">500,0,0,0</Place>
+      <Place id="205" visible="false">500,0,0,0</Place>
+      <Place id="134" visible="true">590,450,250,60</Place>
+      <Place id="235" visible="true">520,240,251,60</Place>
+   </Sheet>
+   <Sheet name="Tree Results" id="242" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
+      <Place id="217" visible="true">500,0,0,0</Place>
+      <Place id="48" visible="true">170,380,230,190</Place>
+      <Place id="236" visible="true">390,130,251,60</Place>
+      <Place id="115" visible="true">630,300,260,330</Place>
+   </Sheet>
+   <Sheet name="Summary Views" id="243" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
+      <Place id="142" visible="true">950,400,211,100</Place>
+      <Place id="148" visible="true">210,400,190,190</Place>
+      <Place id="137" visible="true">250,180,221,171</Place>
+      <Place id="144" visible="true">60,450,120,60</Place>
+      <Place id="237" visible="true">420,50,251,60</Place>
+      <Place id="145" visible="true">520,420,241,111</Place>
+      <Place id="143" visible="true">710,190,241,150</Place>
+   </Sheet>
+   <Settings sheet="240" zoom="1.0"></Settings>
+</Diagram>
