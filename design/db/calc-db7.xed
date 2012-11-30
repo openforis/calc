@@ -1,47 +1,48 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <Diagram version="1.0" type="POSTGRES" versionMajor="9" versionMinor="0" groupSchema="true" hide_inv="false">
    <Table id="0" name="cluster" schema="calc" database="calc" background="15663086">
+      <Text>A grouping of sample plots.</Text>
       <Column id="1" name="id" type="integer" length="0" nulls="false"/>
-      <Column id="2" name="code" type="varchar" length="255" nulls="true"/>
+      <Column id="2" name="code" type="varchar" length="25" nulls="true"/>
       <Column id="3" name="x_index" type="integer" length="25" nulls="true"/>
       <Column id="4" name="y_index" type="integer" length="25" nulls="true"/>
       <Storage name="TempTable" value="false"></Storage>
    </Table>
    <Table id="5" name="plot" schema="calc" database="calc" background="15663086">
+      <Text>A pre-defined, spatially contiguous area in which observations are to made.</Text>
       <Column id="6" name="id" type="integer" length="0" nulls="false"/>
-      <Column id="7" name="cluster_id" type="integer" length="0" nulls="false"/>
-      <Column id="8" name="code" type="varchar" length="255" nulls="true"/>
-      <Column id="9" name="location" type="point" length="255" nulls="false"/>
+      <Column id="7" name="cluster_id" type="integer" length="0" nulls="true">
+         <CP name="COMMENTS">May be null if clusters are not used</CP>
+      </Column>
+      <Column id="8" name="code" type="varchar" length="25" nulls="true"/>
+      <Column id="9" name="shape" type="polygon" length="255" nulls="false"/>
       <Column id="10" name="phase" type="integer" length="25" nulls="true"/>
       <Column id="11" name="permanent" type="boolean" length="25" nulls="false"/>
-      <Column id="12" name="stratum_id" type="integer" length="25" nulls="false"/>
+      <Column id="12" name="ground_plot" type="boolean" length="25" nulls="false"/>
+      <Column id="13" name="stratum_id" type="integer" length="25" nulls="false"/>
       <Storage name="TempTable" value="false"></Storage>
    </Table>
-   <Table id="13" name="plot_obs" schema="calc" database="calc" background="16777165">
-      <Column id="14" name="id" type="integer" length="0" nulls="false"/>
-      <Column id="15" name="plot_id" type="integer" length="0" nulls="false"/>
-      <Column id="16" name="section_no" type="integer" length="25" nulls="false"/>
-      <Column id="17" name="survey_date" type="date" length="25" nulls="false"/>
-      <Column id="18" name="share" type="numeric" length="0" nulls="false">
-         <CP name="PRECISION">15</CP>
-         <CP name="SCALE">5</CP>
-         <CP name="COMMENTS">Share of total plot size, in percent</CP>
-      </Column>
+   <Table id="14" name="surveyed_plot" schema="calc" database="calc" background="16777165">
+      <Column id="15" name="id" type="integer" length="0" nulls="false"/>
+      <Column id="16" name="plot_id" type="integer" length="0" nulls="false"/>
+      <Column id="17" name="section_no" type="integer" length="25" nulls="false"/>
+      <Column id="18" name="survey_date" type="date" length="25" nulls="false"/>
       <Column id="19" name="location" type="point" length="255" nulls="false"/>
       <Column id="20" name="accessible" type="boolean" length="25" nulls="false"/>
       <Storage name="TempTable" value="false"></Storage>
    </Table>
    <Table id="21" name="stratum" schema="calc" database="calc" background="15663086">
+      <Text>In stratified sampling, a homogenous subgroup of the population of sampling units.  For simple random or systematic sampling, this will contain one record.</Text>
       <Column id="22" name="id" type="integer" length="0" nulls="false"/>
       <Column id="23" name="survey_id" type="integer" length="25" nulls="false"/>
-      <Column id="24" name="code" type="varchar" length="255" nulls="true"/>
+      <Column id="24" name="code" type="varchar" length="25" nulls="true"/>
       <Column id="25" name="name" type="varchar" length="255" nulls="true"/>
       <Storage name="TempTable" value="false"></Storage>
    </Table>
-   <Table id="26" name="flora_obs" schema="calc" database="calc" background="16777165">
+   <Table id="26" name="specimen" schema="calc" database="calc" background="16777165">
       <Column id="27" name="id" type="integer" length="0" nulls="false"/>
       <Column id="28" name="plot_id" type="integer" length="0" nulls="false"/>
-      <Column id="29" name="flora_type_id" type="integer" length="25" nulls="false"/>
+      <Column id="29" name="specimen_type_id" type="integer" length="25" nulls="false"/>
       <Column id="30" name="taxon_id" type="integer" length="0" nulls="true"/>
       <Column id="31" name="survey_date" type="date" length="25" nulls="true"/>
       <Storage name="TempTable" value="false"></Storage>
@@ -166,6 +167,7 @@
       <Column id="78" name="plot_obs_cnt" type="integer" length="25" nulls="false"/>
    </View>
    <Table id="79" name="aoi" schema="calc" database="calc" background="16772846">
+      <Text>Each areas of interest (AOI) may be divided into sub-parts such that the sub-parts add up to the area of the whole (i.e. a compositional containment hierarchy)</Text>
       <Column id="80" name="id" type="integer" length="25" nulls="false"/>
       <Column id="81" name="hierarchy_id" type="integer" length="25" nulls="false"/>
       <Column id="82" name="code" type="varchar" length="255" nulls="true"/>
@@ -176,6 +178,7 @@
       <Storage name="TempTable" value="false"></Storage>
    </Table>
    <Table id="87" name="aoi_hierarchy" schema="calc" database="calc" background="16772846">
+      <Text>A particular AOI hierarchy, such as "Administrative Units" or "Ecological Zones".</Text>
       <Column id="88" name="id" type="integer" length="25" nulls="false"/>
       <Column id="89" name="survey_id" type="integer" length="25" nulls="false"/>
       <Column id="90" name="name" type="varchar" length="255" nulls="true"/>
@@ -238,371 +241,386 @@ http://code.google.com/p/darwincore/wiki/Taxon</Text>
       <Storage name="TempTable" value="false"></Storage>
    </Table>
    <Table id="112" name="survey" schema="calc" database="calc" background="16053492">
+      <Text>An inventory or inventory cycle.</Text>
       <Column id="113" name="id" type="integer" length="25" nulls="false"/>
       <Column id="114" name="name" type="varchar" length="255" nulls="true"/>
       <Column id="115" name="description" type="varchar" length="255" nulls="true"/>
+      <Column id="116" name="cycle" type="integer" length="25" nulls="true"/>
+      <Column id="117" name="from_date" type="date" length="25" nulls="true"/>
+      <Column id="118" name="to_date" type="date" length="25" nulls="true"/>
       <Storage name="TempTable" value="false"></Storage>
    </Table>
-   <Table id="116" name="plot_attr_value" schema="calc" database="calc" background="16777165">
-      <Column id="117" name="id" type="integer" length="25" nulls="false"/>
-      <Column id="118" name="plot_obs_id" type="integer" length="25" nulls="false"/>
-      <Column id="119" name="attr_id" type="integer" length="25" nulls="false"/>
-      <Column id="120" name="value" type="double precision" length="25" nulls="false"/>
-      <Column id="121" name="derived" type="boolean" length="1" nulls="false"/>
+   <Table id="119" name="plot_numeric_value" schema="calc" database="calc" background="16777165">
+      <Column id="120" name="id" type="integer" length="25" nulls="false"/>
+      <Column id="121" name="plot_obs_id" type="integer" length="25" nulls="false"/>
+      <Column id="122" name="variable_id" type="integer" length="25" nulls="false"/>
+      <Column id="123" name="value" type="double precision" length="25" nulls="false"/>
+      <Column id="124" name="computed" type="boolean" length="1" nulls="false"/>
       <Storage name="TempTable" value="false"></Storage>
    </Table>
-   <Table id="122" name="plot_attr" schema="calc" database="calc" background="16772846">
-      <Column id="123" name="id" type="integer" length="25" nulls="false"/>
-      <Column id="124" name="survey_id" type="integer" length="25" nulls="false"/>
-      <Column id="125" name="key" type="varchar" length="255" nulls="false"/>
-      <Column id="126" name="name" type="varchar" length="255" nulls="true"/>
-      <Column id="127" name="multivalued" type="boolean" length="25" nulls="false"/>
+   <Table id="125" name="plot_numeric_variable" schema="calc" database="calc" background="16772846">
+      <Column id="126" name="id" type="integer" length="25" nulls="false"/>
+      <Column id="127" name="survey_id" type="integer" length="25" nulls="false"/>
+      <Column id="128" name="key" type="varchar" length="255" nulls="false"/>
+      <Column id="129" name="name" type="varchar" length="255" nulls="true"/>
+      <Column id="130" name="multiple_response" type="boolean" length="25" nulls="false"/>
+      <Column id="131" name="type" type="varchar" length="25" nulls="false">
+         <CP name="COMMENTS">count|additive|multiplicative</CP>
+      </Column>
       <Storage name="TempTable" value="false"></Storage>
    </Table>
-   <Table id="128" name="plot_class" schema="calc" database="calc" background="16772846">
-      <Column id="129" name="id" type="integer" length="25" nulls="false"/>
-      <Column id="130" name="scheme_id" type="integer" length="25" nulls="false"/>
-      <Column id="131" name="code" type="varchar" length="255" nulls="true"/>
-      <Column id="132" name="name" type="varchar" length="255" nulls="true"/>
-      <Column id="133" name="order" type="integer" length="25" nulls="false"/>
+   <Table id="132" name="plot_category" schema="calc" database="calc" background="16772846">
+      <Column id="133" name="id" type="integer" length="25" nulls="false"/>
+      <Column id="134" name="scheme_id" type="integer" length="25" nulls="false"/>
+      <Column id="135" name="code" type="varchar" length="255" nulls="true"/>
+      <Column id="136" name="name" type="varchar" length="255" nulls="true"/>
+      <Column id="137" name="order" type="integer" length="25" nulls="false"/>
       <Storage name="TempTable" value="false"></Storage>
    </Table>
-   <Table id="134" name="plot_class_value" schema="calc" database="calc" background="16777165">
-      <Column id="135" name="id" type="integer" length="25" nulls="false"/>
-      <Column id="136" name="plot_obs_id" type="integer" length="25" nulls="false"/>
-      <Column id="137" name="class_id" type="integer" length="25" nulls="false"/>
-      <Column id="138" name="derived" type="boolean" length="1" nulls="false"/>
+   <Table id="138" name="plot_categorical_value" schema="calc" database="calc" background="16777165">
+      <Column id="139" name="id" type="integer" length="25" nulls="false"/>
+      <Column id="140" name="plot_obs_id" type="integer" length="25" nulls="false"/>
+      <Column id="141" name="category_id" type="integer" length="25" nulls="false"/>
+      <Column id="142" name="computed" type="boolean" length="1" nulls="false"/>
       <Storage name="TempTable" value="false"></Storage>
    </Table>
-   <Table id="139" name="plot_derived_class" schema="calc" database="calc" background="16772846">
-      <Column id="140" name="id" type="integer" length="25" nulls="false"/>
-      <Column id="141" name="plot_class_id" type="integer" length="25" nulls="false"/>
-      <Column id="142" name="plot_attr_id" type="integer" length="25" nulls="false"/>
-      <Column id="143" name="minimum" type="integer" length="25" nulls="true"/>
-      <Column id="144" name="left_open" type="boolean" length="25" nulls="false"/>
-      <Column id="145" name="maximum" type="integer" length="25" nulls="true"/>
-      <Column id="146" name="right_open" type="boolean" length="25" nulls="false"/>
+   <Table id="143" name="plot_numeric_band" schema="calc" database="calc" background="16772846">
+      <Column id="144" name="id" type="integer" length="25" nulls="false"/>
+      <Column id="145" name="category_id" type="integer" length="25" nulls="false"/>
+      <Column id="146" name="numeric_variable_id" type="integer" length="25" nulls="false"/>
+      <Column id="147" name="minimum" type="integer" length="25" nulls="true"/>
+      <Column id="148" name="left_open" type="boolean" length="25" nulls="false"/>
+      <Column id="149" name="maximum" type="integer" length="25" nulls="true"/>
+      <Column id="150" name="right_open" type="boolean" length="25" nulls="false"/>
       <Storage name="TempTable" value="false"></Storage>
    </Table>
-   <Table id="147" name="plot_classification_scheme" schema="calc" database="calc" background="16772846">
-      <Column id="148" name="id" type="integer" length="25" nulls="false"/>
-      <Column id="149" name="survey_id" type="integer" length="25" nulls="false"/>
-      <Column id="150" name="name" type="varchar" length="255" nulls="true"/>
-      <Column id="151" name="multivalued" type="boolean" length="25" nulls="false"/>
+   <Table id="151" name="plot_categorical_variable" schema="calc" database="calc" background="16772846">
+      <Column id="152" name="id" type="integer" length="25" nulls="false"/>
+      <Column id="153" name="survey_id" type="integer" length="25" nulls="false"/>
+      <Column id="154" name="name" type="varchar" length="255" nulls="true"/>
+      <Column id="155" name="multiple_response" type="boolean" length="25" nulls="false"/>
+      <Column id="156" name="type" type="varchar" length="25" nulls="false">
+         <CP name="COMMENTS">ordinal|nominal|interval</CP>
+      </Column>
       <Storage name="TempTable" value="false"></Storage>
    </Table>
-   <Table id="152" name="taxonomic_checklist" schema="calc" database="calc" background="16772846">
-      <Column id="153" name="id" type="integer" length="25" nulls="false"/>
-      <Column id="154" name="survey_id" type="integer" length="25" nulls="false"/>
-      <Column id="155" name="name" type="varchar" length="255" nulls="true"/>
+   <Table id="157" name="taxonomic_checklist" schema="calc" database="calc" background="16772846">
+      <Column id="158" name="id" type="integer" length="25" nulls="false"/>
+      <Column id="159" name="survey_id" type="integer" length="25" nulls="false"/>
+      <Column id="160" name="name" type="varchar" length="255" nulls="true"/>
       <Storage name="TempTable" value="false"></Storage>
    </Table>
-   <Table id="156" name="taxon_vernacular_name" schema="calc" database="calc" background="16772846">
-      <Column id="157" name="id" type="integer" length="25" nulls="false"/>
-      <Column id="158" name="accepted_name_id" type="integer" length="25" nulls="false"/>
-      <Column id="159" name="name" type="varchar" length="255" nulls="true"/>
-      <Column id="160" name="language_code" type="varchar" length="2" nulls="true"/>
-      <Column id="161" name="language_variant" type="varchar" length="255" nulls="true"/>
-      <Column id="162" name="qualifier" type="varchar" length="25" nulls="true">
+   <Table id="161" name="taxon_vernacular_name" schema="calc" database="calc" background="16772846">
+      <Column id="162" name="id" type="integer" length="25" nulls="false"/>
+      <Column id="163" name="accepted_name_id" type="integer" length="25" nulls="false"/>
+      <Column id="164" name="name" type="varchar" length="255" nulls="true"/>
+      <Column id="165" name="language_code" type="varchar" length="2" nulls="true"/>
+      <Column id="166" name="language_variant" type="varchar" length="255" nulls="true"/>
+      <Column id="167" name="qualifier" type="varchar" length="25" nulls="true">
          <CP name="COMMENTS">For qualifying usage by region or other parameters</CP>
       </Column>
-      <Column id="163" name="remarks" type="varchar" length="1024" nulls="true"/>
+      <Column id="168" name="remarks" type="varchar" length="1024" nulls="true"/>
       <Storage name="TempTable" value="false"></Storage>
    </Table>
-   <Table id="164" name="flora_class" schema="calc" database="calc" background="16772846">
-      <Column id="165" name="id" type="integer" length="25" nulls="false"/>
-      <Column id="166" name="scheme_id" type="integer" length="25" nulls="false"/>
-      <Column id="167" name="code" type="varchar" length="255" nulls="true"/>
-      <Column id="168" name="name" type="varchar" length="255" nulls="true"/>
-      <Column id="169" name="order" type="integer" length="25" nulls="false"/>
+   <Table id="169" name="specimen_category" schema="calc" database="calc" background="16772846">
+      <Column id="170" name="id" type="integer" length="25" nulls="false"/>
+      <Column id="171" name="scheme_id" type="integer" length="25" nulls="false"/>
+      <Column id="172" name="code" type="varchar" length="255" nulls="true"/>
+      <Column id="173" name="name" type="varchar" length="255" nulls="true"/>
+      <Column id="174" name="order" type="integer" length="25" nulls="false"/>
       <Storage name="TempTable" value="false"></Storage>
    </Table>
-   <Table id="170" name="flora_derived_class" schema="calc" database="calc" background="16772846">
-      <Column id="171" name="id" type="integer" length="25" nulls="false"/>
-      <Column id="172" name="flora_class_id" type="integer" length="25" nulls="false"/>
-      <Column id="173" name="flora_attr_id" type="integer" length="25" nulls="false"/>
-      <Column id="174" name="minimum" type="integer" length="25" nulls="true"/>
-      <Column id="175" name="left_open" type="boolean" length="25" nulls="false"/>
-      <Column id="176" name="maximum" type="integer" length="25" nulls="true"/>
-      <Column id="177" name="right_open" type="boolean" length="25" nulls="false"/>
+   <Table id="175" name="specimen_numeric_band" schema="calc" database="calc" background="16772846">
+      <Column id="176" name="id" type="integer" length="25" nulls="false"/>
+      <Column id="177" name="category_id" type="integer" length="25" nulls="false"/>
+      <Column id="178" name="numeric_variable_id" type="integer" length="25" nulls="false"/>
+      <Column id="179" name="minimum" type="integer" length="25" nulls="true"/>
+      <Column id="180" name="left_open" type="boolean" length="25" nulls="false"/>
+      <Column id="181" name="maximum" type="integer" length="25" nulls="true"/>
+      <Column id="182" name="right_open" type="boolean" length="25" nulls="false"/>
       <Storage name="TempTable" value="false"></Storage>
    </Table>
-   <Table id="178" name="flora_attr" schema="calc" database="calc" background="16772846">
-      <Column id="179" name="id" type="integer" length="25" nulls="false"/>
-      <Column id="180" name="flora_type_id" type="integer" length="25" nulls="false"/>
-      <Column id="181" name="key" type="varchar" length="255" nulls="false"/>
-      <Column id="182" name="name" type="varchar" length="255" nulls="true"/>
-      <Column id="183" name="multivalued" type="boolean" length="25" nulls="false"/>
-      <Storage name="TempTable" value="false"></Storage>
-   </Table>
-   <Table id="184" name="flora_classification_scheme" schema="calc" database="calc" background="16772846">
-      <Column id="185" name="id" type="integer" length="25" nulls="false"/>
-      <Column id="186" name="flora_type_id" type="integer" length="25" nulls="false"/>
+   <Table id="183" name="specimen_numeric_variable" schema="calc" database="calc" background="16772846">
+      <Column id="184" name="id" type="integer" length="25" nulls="false"/>
+      <Column id="185" name="specimen_type_id" type="integer" length="25" nulls="false"/>
+      <Column id="186" name="key" type="varchar" length="255" nulls="false"/>
       <Column id="187" name="name" type="varchar" length="255" nulls="true"/>
-      <Column id="188" name="multivalued" type="boolean" length="25" nulls="false"/>
+      <Column id="188" name="multiple_response" type="boolean" length="25" nulls="false"/>
+      <Column id="189" name="type" type="varchar" length="25" nulls="false">
+         <CP name="COMMENTS">count|additive|multiplicative</CP>
+      </Column>
       <Storage name="TempTable" value="false"></Storage>
    </Table>
-   <Table id="189" name="flora_attr_value" schema="calc" database="calc" background="16777165">
-      <Column id="190" name="id" type="integer" length="25" nulls="false"/>
-      <Column id="191" name="flora_obs_id" type="integer" length="25" nulls="false"/>
-      <Column id="192" name="attr_id" type="integer" length="25" nulls="false"/>
-      <Column id="193" name="value" type="double precision" length="25" nulls="false"/>
-      <Column id="194" name="derived" type="boolean" length="1" nulls="false"/>
+   <Table id="190" name="specimen_categorical_variable" schema="calc" database="calc" background="16772846">
+      <Column id="191" name="id" type="integer" length="25" nulls="false"/>
+      <Column id="192" name="specimen_type_id" type="integer" length="25" nulls="false"/>
+      <Column id="193" name="name" type="varchar" length="255" nulls="true"/>
+      <Column id="194" name="multiple_response" type="boolean" length="25" nulls="false"/>
+      <Column id="195" name="type" type="varchar" length="25" nulls="false">
+         <CP name="COMMENTS">ordinal|nominal|interval</CP>
+      </Column>
       <Storage name="TempTable" value="false"></Storage>
    </Table>
-   <Table id="195" name="flora_class_value" schema="calc" database="calc" background="16777165">
-      <Column id="196" name="id" type="integer" length="25" nulls="false"/>
-      <Column id="197" name="flora_obs_id" type="integer" length="25" nulls="false"/>
-      <Column id="198" name="class_id" type="integer" length="25" nulls="false"/>
-      <Column id="199" name="derived" type="boolean" length="1" nulls="false"/>
+   <Table id="196" name="specimen_numeric_value" schema="calc" database="calc" background="16777165">
+      <Column id="197" name="id" type="integer" length="25" nulls="false"/>
+      <Column id="198" name="specimen_id" type="integer" length="25" nulls="false"/>
+      <Column id="199" name="numeric_variable_id" type="integer" length="25" nulls="false"/>
+      <Column id="200" name="value" type="double precision" length="25" nulls="false"/>
+      <Column id="201" name="calculated" type="boolean" length="1" nulls="false"/>
       <Storage name="TempTable" value="false"></Storage>
    </Table>
-   <Table id="200" name="processing_chain" schema="calc" database="calc" background="16772846">
-      <Column id="201" name="id" type="integer" length="25" nulls="false"/>
-      <Column id="202" name="survey_id" type="integer" length="25" nulls="false"/>
-      <Column id="203" name="name" type="varchar" length="255" nulls="true"/>
-      <Column id="204" name="description" type="varchar" length="255" nulls="true"/>
+   <Table id="202" name="specimen_category_value" schema="calc" database="calc" background="16777165">
+      <Column id="203" name="id" type="integer" length="25" nulls="false"/>
+      <Column id="204" name="specimen_id" type="integer" length="25" nulls="false"/>
+      <Column id="205" name="category_id" type="integer" length="25" nulls="false"/>
+      <Column id="206" name="calculated" type="boolean" length="1" nulls="false"/>
       <Storage name="TempTable" value="false"></Storage>
    </Table>
-   <Table id="205" name="process" schema="calc" database="calc" background="16772846">
-      <Column id="206" name="id" type="integer" length="25" nulls="false"/>
-      <Column id="207" name="chain_id" type="integer" length="25" nulls="false"/>
-      <Column id="208" name="process_id" type="integer" length="25" nulls="false"/>
-      <Column id="209" name="name" type="varchar" length="255" nulls="true"/>
-      <Column id="210" name="description" type="varchar" length="1024" nulls="true"/>
-      <Column id="211" name="order" type="integer" length="25" nulls="false"/>
+   <Table id="207" name="processing_chain" schema="calc" database="calc" background="16772846">
+      <Column id="208" name="id" type="integer" length="25" nulls="false"/>
+      <Column id="209" name="survey_id" type="integer" length="25" nulls="false"/>
+      <Column id="210" name="name" type="varchar" length="255" nulls="true"/>
+      <Column id="211" name="description" type="varchar" length="255" nulls="true"/>
       <Storage name="TempTable" value="false"></Storage>
    </Table>
-   <Table id="212" name="operation_parameter" schema="calc" database="calc" background="16772846">
+   <Table id="212" name="process" schema="calc" database="calc" background="16772846">
       <Column id="213" name="id" type="integer" length="25" nulls="false"/>
-      <Column id="214" name="process_id" type="integer" length="25" nulls="false"/>
-      <Column id="215" name="name" type="varchar" length="255" nulls="true"/>
-      <Column id="216" name="value" type="varchar" length="255" nulls="false"/>
+      <Column id="214" name="chain_id" type="integer" length="25" nulls="false"/>
+      <Column id="215" name="process_id" type="integer" length="25" nulls="false"/>
+      <Column id="216" name="name" type="varchar" length="255" nulls="true"/>
+      <Column id="217" name="description" type="varchar" length="1024" nulls="true"/>
+      <Column id="218" name="order" type="integer" length="25" nulls="false"/>
       <Storage name="TempTable" value="false"></Storage>
    </Table>
-   <Table id="217" name="operation" schema="calc" database="calc" background="16053492">
-      <Column id="218" name="id" type="integer" length="25" nulls="false"/>
-      <Column id="219" name="name" type="varchar" length="255" nulls="true"/>
-      <Column id="220" name="description" type="varchar" length="255" nulls="true"/>
-      <Column id="221" name="class" type="varchar" length="255" nulls="true"/>
+   <Table id="219" name="operation_parameter" schema="calc" database="calc" background="16772846">
+      <Column id="220" name="id" type="integer" length="25" nulls="false"/>
+      <Column id="221" name="process_id" type="integer" length="25" nulls="false"/>
+      <Column id="222" name="name" type="varchar" length="255" nulls="true"/>
+      <Column id="223" name="value" type="varchar" length="255" nulls="false"/>
       <Storage name="TempTable" value="false"></Storage>
    </Table>
-   <Table id="222" name="flora_type" schema="calc" database="calc" background="16772846">
-      <Column id="223" name="id" type="integer" length="25" nulls="false"/>
-      <Column id="224" name="survey_id" type="integer" length="25" nulls="false"/>
-      <Column id="225" name="key" type="varchar" length="255" nulls="false"/>
+   <Table id="224" name="operation" schema="calc" database="calc" background="16053492">
+      <Column id="225" name="id" type="integer" length="25" nulls="false"/>
       <Column id="226" name="name" type="varchar" length="255" nulls="true"/>
       <Column id="227" name="description" type="varchar" length="255" nulls="true"/>
+      <Column id="228" name="class" type="varchar" length="255" nulls="true"/>
       <Storage name="TempTable" value="false"></Storage>
    </Table>
-   <Relation id="228" name="fk_plot_obs_plot" cardinality="-2" identifying="true" nulls="false">
-      <FK>6</FK>
-      <PK>15</PK>
-   </Relation>
-   <Relation id="229" name="fk_cluster_stratum" cardinality="-2" identifying="true" nulls="false">
-      <FK>22</FK>
-      <PK>12</PK>
-   </Relation>
-   <Relation id="230" name="fk_plot_cluster" cardinality="-2" identifying="true" nulls="false">
-      <FK>1</FK>
-      <PK>7</PK>
-   </Relation>
-   <Relation id="231" name="fk_flora_obs_plot" cardinality="-2" identifying="true" nulls="false">
-      <FK>14</FK>
-      <PK>28</PK>
-      <Text></Text>
-   </Relation>
-   <Relation id="232" name="fk_aoi_parent" cardinality="-2" identifying="false" nulls="true">
-      <FK>80</FK>
-      <PK>85</PK>
-   </Relation>
-   <Relation id="233" name="fk_aoi_hierarchy" cardinality="-2" identifying="true" nulls="false">
+   <Table id="229" name="specimen_type" schema="calc" database="calc" background="16772846">
+      <Column id="230" name="id" type="integer" length="25" nulls="false"/>
+      <Column id="231" name="survey_id" type="integer" length="25" nulls="false"/>
+      <Column id="232" name="key" type="varchar" length="255" nulls="false"/>
+      <Column id="233" name="name" type="varchar" length="255" nulls="true"/>
+      <Column id="234" name="description" type="varchar" length="255" nulls="true"/>
+      <Storage name="TempTable" value="false"></Storage>
+   </Table>
+   <Relation id="235" name="fk_aoi_hierarchy" cardinality="-2" identifying="true" nulls="false">
       <FK>88</FK>
       <PK>81</PK>
    </Relation>
-   <Relation id="234" name="fk_flora_obs_taxon" cardinality="-2" identifying="false" nulls="false">
-      <FK>92</FK>
-      <PK>30</PK>
-      <Text></Text>
-   </Relation>
-   <Relation id="235" name="fk_stratum_survey" cardinality="-2" identifying="true" nulls="false">
-      <FK>113</FK>
-      <PK>23</PK>
-   </Relation>
-   <Relation id="236" name="fk_plot_attr_value_obs" cardinality="-2" identifying="true" nulls="false">
-      <FK>14</FK>
-      <PK>118</PK>
-   </Relation>
-   <Relation id="237" name="fk_plot_attr_value_attr" cardinality="-2" identifying="true" nulls="false">
-      <FK>123</FK>
-      <PK>119</PK>
-   </Relation>
-   <Relation id="238" name="fk_plot_class_value_obs" cardinality="-2" identifying="true" nulls="false">
-      <FK>14</FK>
-      <PK>136</PK>
-   </Relation>
-   <Relation id="239" name="fk_plot_class_value_class" cardinality="-2" identifying="true" nulls="false">
-      <FK>129</FK>
-      <PK>137</PK>
-   </Relation>
-   <Relation id="240" name="fk_plot_derived_class_class" cardinality="-3" identifying="true" nulls="false">
-      <FK>141</FK>
-      <PK>129</PK>
-   </Relation>
-   <Relation id="241" name="fk_plot_derived_class_attr" cardinality="-3" identifying="true" nulls="false">
-      <FK>142</FK>
-      <PK>123</PK>
-   </Relation>
-   <Relation id="242" name="fk_plot_class_scheme" cardinality="-2" identifying="true" nulls="false">
-      <FK>148</FK>
-      <PK>130</PK>
-   </Relation>
-   <Relation id="243" name="fk_taxon_checklist" cardinality="-2" identifying="true" nulls="false">
-      <FK>153</FK>
-      <PK>93</PK>
-   </Relation>
-   <Relation id="244" name="fk_taxon_vernacular_name_accepted_usage" cardinality="-2" identifying="true" nulls="false">
-      <FK>92</FK>
-      <PK>158</PK>
-   </Relation>
-   <Relation id="245" name="fk_flora_class_scheme" cardinality="-2" identifying="true" nulls="false">
-      <FK>185</FK>
-      <PK>166</PK>
-      <Text></Text>
-   </Relation>
-   <Relation id="246" name="fk_flora_derived_class_class" cardinality="-3" identifying="true" nulls="false">
-      <FK>172</FK>
-      <PK>165</PK>
-      <Text></Text>
-   </Relation>
-   <Relation id="247" name="fk_flora_derived_class_attr" cardinality="-3" identifying="true" nulls="false">
-      <FK>173</FK>
-      <PK>179</PK>
-      <Text></Text>
-   </Relation>
-   <Relation id="248" name="fk_flora_attr_value_attr" cardinality="-2" identifying="true" nulls="false">
-      <FK>179</FK>
-      <PK>192</PK>
-      <Text></Text>
-   </Relation>
-   <Relation id="249" name="fk_flora_class_value_class" cardinality="-2" identifying="true" nulls="false">
-      <FK>165</FK>
-      <PK>198</PK>
-      <Text></Text>
-   </Relation>
-   <Relation id="250" name="fk_flora_attr_value_obs" cardinality="-2" identifying="true" nulls="false">
-      <FK>27</FK>
-      <PK>191</PK>
-      <Text></Text>
-   </Relation>
-   <Relation id="251" name="fk_flora_class_value_obs" cardinality="-2" identifying="true" nulls="false">
-      <FK>27</FK>
-      <PK>197</PK>
-      <Text></Text>
-   </Relation>
-   <Relation id="252" name="fk_taxon_parent" cardinality="-2" identifying="false" nulls="true">
-      <FK>92</FK>
-      <PK>109</PK>
-   </Relation>
-   <Relation id="253" name="fk_taxon_original_name" cardinality="-2" identifying="false" nulls="true">
-      <FK>92</FK>
-      <PK>110</PK>
-   </Relation>
-   <Relation id="254" name="fk_taxon_accepted_name" cardinality="-2" identifying="false" nulls="true">
-      <FK>92</FK>
-      <PK>111</PK>
-   </Relation>
-   <Relation id="255" name="fk_taxonomic_checklist_survey" cardinality="-2" identifying="true" nulls="false">
-      <FK>113</FK>
-      <PK>154</PK>
-   </Relation>
-   <Relation id="256" name="fk_plot_classification_scheme_survey" cardinality="-2" identifying="true" nulls="false">
-      <FK>113</FK>
-      <PK>149</PK>
-   </Relation>
-   <Relation id="257" name="fk_aoi_hierarchy_survey" cardinality="-2" identifying="true" nulls="false">
+   <Relation id="236" name="fk_aoi_hierarchy_survey" cardinality="-2" identifying="true" nulls="false">
       <FK>113</FK>
       <PK>89</PK>
    </Relation>
-   <Relation id="258" name="fk_processing_chain_survey" cardinality="-2" identifying="true" nulls="false">
+   <Relation id="237" name="fk_aoi_parent" cardinality="-2" identifying="false" nulls="true">
+      <FK>80</FK>
+      <PK>85</PK>
+   </Relation>
+   <Relation id="238" name="fk_attr_value_specimen" cardinality="-2" identifying="true" nulls="false">
+      <FK>27</FK>
+      <PK>198</PK>
+      <Text></Text>
+   </Relation>
+   <Relation id="239" name="fk_class_value_specimen" cardinality="-2" identifying="true" nulls="false">
+      <FK>27</FK>
+      <PK>204</PK>
+      <Text></Text>
+   </Relation>
+   <Relation id="240" name="fk_cluster_stratum" cardinality="-2" identifying="true" nulls="false">
+      <FK>22</FK>
+      <PK>13</PK>
+   </Relation>
+   <Relation id="241" name="fk_operation_parameter_process" cardinality="-2" identifying="true" nulls="false">
+      <FK>213</FK>
+      <PK>221</PK>
+   </Relation>
+   <Relation id="242" name="fk_plot_numeric_variable_survey" cardinality="-2" identifying="true" nulls="false">
       <FK>113</FK>
-      <PK>202</PK>
+      <PK>127</PK>
+      <Text></Text>
    </Relation>
-   <Relation id="259" name="fk_process_processing_chain" cardinality="-2" identifying="true" nulls="false">
-      <FK>201</FK>
-      <PK>207</PK>
+   <Relation id="243" name="fk_plot_attr_value_attr" cardinality="-2" identifying="true" nulls="false">
+      <FK>126</FK>
+      <PK>122</PK>
    </Relation>
-   <Relation id="260" name="fk_operation_parameter_process" cardinality="-2" identifying="true" nulls="false">
-      <FK>206</FK>
+   <Relation id="244" name="fk_plot_attr_value_obs" cardinality="-2" identifying="true" nulls="false">
+      <FK>15</FK>
+      <PK>121</PK>
+   </Relation>
+   <Relation id="245" name="fk_plot_category_variable" cardinality="-2" identifying="true" nulls="false">
+      <FK>152</FK>
+      <PK>134</PK>
+      <Text></Text>
+   </Relation>
+   <Relation id="246" name="fk_plot_class_value_class" cardinality="-2" identifying="true" nulls="false">
+      <FK>133</FK>
+      <PK>141</PK>
+   </Relation>
+   <Relation id="247" name="fk_plot_class_value_obs" cardinality="-2" identifying="true" nulls="false">
+      <FK>15</FK>
+      <PK>140</PK>
+   </Relation>
+   <Relation id="248" name="fk_plot_categorical_variable_survey" cardinality="-2" identifying="true" nulls="false">
+      <FK>113</FK>
+      <PK>153</PK>
+      <Text></Text>
+   </Relation>
+   <Relation id="249" name="fk_plot_cluster" cardinality="-2" identifying="true" nulls="false">
+      <FK>1</FK>
+      <PK>7</PK>
+   </Relation>
+   <Relation id="250" name="fk_plot_band_numeric_variable" cardinality="-3" identifying="true" nulls="false">
+      <FK>146</FK>
+      <PK>126</PK>
+      <Text></Text>
+   </Relation>
+   <Relation id="251" name="fk_plot_band_category" cardinality="-3" identifying="true" nulls="false">
+      <FK>145</FK>
+      <PK>133</PK>
+      <Text></Text>
+   </Relation>
+   <Relation id="252" name="fk_plot_obs_plot" cardinality="-2" identifying="true" nulls="false">
+      <FK>6</FK>
+      <PK>16</PK>
+   </Relation>
+   <Relation id="253" name="fk_process_operation" cardinality="-2" identifying="true" nulls="false">
+      <FK>225</FK>
+      <PK>215</PK>
+   </Relation>
+   <Relation id="254" name="fk_process_processing_chain" cardinality="-2" identifying="true" nulls="false">
+      <FK>208</FK>
       <PK>214</PK>
    </Relation>
-   <Relation id="261" name="fk_process_operation" cardinality="-2" identifying="true" nulls="false">
-      <FK>218</FK>
-      <PK>208</PK>
-   </Relation>
-   <Relation id="262" name="fk_plot_attr_survey" cardinality="-2" identifying="true" nulls="false">
+   <Relation id="255" name="fk_processing_chain_survey" cardinality="-2" identifying="true" nulls="false">
       <FK>113</FK>
-      <PK>124</PK>
+      <PK>209</PK>
    </Relation>
-   <Relation id="263" name="fk_flora_obs_type" cardinality="-2" identifying="true" nulls="false">
-      <FK>223</FK>
+   <Relation id="256" name="fk_specimen_numeric_variable_type" cardinality="-2" identifying="true" nulls="false">
+      <FK>230</FK>
+      <PK>185</PK>
+      <Text></Text>
+   </Relation>
+   <Relation id="257" name="fk_specimen_attr_value_attr" cardinality="-2" identifying="true" nulls="false">
+      <FK>184</FK>
+      <PK>199</PK>
+   </Relation>
+   <Relation id="258" name="fk_specimen_category_variable" cardinality="-2" identifying="true" nulls="false">
+      <FK>191</FK>
+      <PK>171</PK>
+      <Text></Text>
+   </Relation>
+   <Relation id="259" name="fk_specimen_class_value_class" cardinality="-2" identifying="true" nulls="false">
+      <FK>170</FK>
+      <PK>205</PK>
+   </Relation>
+   <Relation id="260" name="fk_specimen_categorical_variable_type" cardinality="-2" identifying="true" nulls="false">
+      <FK>230</FK>
+      <PK>192</PK>
+      <Text></Text>
+   </Relation>
+   <Relation id="261" name="fk_specimen_band_numeric_variable" cardinality="-3" identifying="true" nulls="false">
+      <FK>178</FK>
+      <PK>184</PK>
+      <Text></Text>
+   </Relation>
+   <Relation id="262" name="fk_specimen_band_category" cardinality="-3" identifying="true" nulls="false">
+      <FK>177</FK>
+      <PK>170</PK>
+      <Text></Text>
+   </Relation>
+   <Relation id="263" name="fk_specimen_plot" cardinality="-2" identifying="true" nulls="false">
+      <FK>15</FK>
+      <PK>28</PK>
+   </Relation>
+   <Relation id="264" name="fk_specimen_taxon" cardinality="-2" identifying="false" nulls="false">
+      <FK>92</FK>
+      <PK>30</PK>
+   </Relation>
+   <Relation id="265" name="fk_specimen_type" cardinality="-2" identifying="true" nulls="false">
+      <FK>230</FK>
       <PK>29</PK>
-      <Text></Text>
    </Relation>
-   <Relation id="264" name="fk_flora_type_survey" cardinality="-2" identifying="true" nulls="false">
+   <Relation id="266" name="fk_specimen_type_survey" cardinality="-2" identifying="true" nulls="false">
       <FK>113</FK>
-      <PK>224</PK>
-      <Text></Text>
+      <PK>231</PK>
    </Relation>
-   <Relation id="265" name="fk_flora_classification_scheme_type" cardinality="-2" identifying="true" nulls="false">
-      <FK>223</FK>
-      <PK>186</PK>
-      <Text></Text>
+   <Relation id="267" name="fk_stratum_survey" cardinality="-2" identifying="true" nulls="false">
+      <FK>113</FK>
+      <PK>23</PK>
    </Relation>
-   <Relation id="266" name="fk_flora_attr_type" cardinality="-2" identifying="true" nulls="false">
-      <FK>223</FK>
-      <PK>180</PK>
-      <Text></Text>
+   <Relation id="268" name="fk_taxon_accepted_name" cardinality="-2" identifying="false" nulls="true">
+      <FK>92</FK>
+      <PK>111</PK>
    </Relation>
-   <Note id="267">
+   <Relation id="269" name="fk_taxon_checklist" cardinality="-2" identifying="true" nulls="false">
+      <FK>158</FK>
+      <PK>93</PK>
+   </Relation>
+   <Relation id="270" name="fk_taxon_original_name" cardinality="-2" identifying="false" nulls="true">
+      <FK>92</FK>
+      <PK>110</PK>
+   </Relation>
+   <Relation id="271" name="fk_taxon_parent" cardinality="-2" identifying="false" nulls="true">
+      <FK>92</FK>
+      <PK>109</PK>
+   </Relation>
+   <Relation id="272" name="fk_taxon_vernacular_name_accepted_usage" cardinality="-2" identifying="true" nulls="false">
+      <FK>92</FK>
+      <PK>163</PK>
+   </Relation>
+   <Relation id="273" name="fk_taxonomic_checklist_survey" cardinality="-2" identifying="true" nulls="false">
+      <FK>113</FK>
+      <PK>159</PK>
+   </Relation>
+   <Note id="274">
       <Text>Statistical sampling design tables</Text>
    </Note>
-   <Note id="268">
+   <Note id="275">
       <Text>Plot-level observations and related master data (land classes, etc.)</Text>
    </Note>
-   <Note id="269">
+   <Note id="276">
       <Text>Tree-level observations and related master data (health classes, etc).</Text>
    </Note>
-   <Note id="270">
+   <Note id="277">
       <Text>Plot-level result tables.</Text>
    </Note>
-   <Note id="271">
+   <Note id="278">
       <Text>Tree-level result tables.</Text>
    </Note>
-   <Note id="272">
+   <Note id="279">
       <Text>Views summarizing data, including counts, densities, etc.</Text>
    </Note>
-   <Note id="273">
+   <Note id="280">
       <Text>Note: Natural language text is stored in the database for convenience only.  All multilingual text will be stored in resource bundles in the filesystem.</Text>
    </Note>
-   <Note id="274">
-      <Text>Stratum is associated with plot (and not cluster) to allow for stratified sampling.  When instead clustered sampling is used, the stratum id should be the same for each plot in any given cluster.</Text>
+   <Note id="281">
+      <Text>Note: Strata are associated with plots (and not clusters) to allow stratified sampling.  When clustered sampling is used, each plot in a cluster will have the same stratum id.</Text>
    </Note>
-   <Note id="275">
+   <Note id="282">
       <Text>TBD: Plot class groupings</Text>
    </Note>
-   <Note id="276">
+   <Note id="283">
       <Text>TBD: Tree class groupings</Text>
    </Note>
-   <Note id="277">
+   <Note id="284">
       <Text>TBD: Species groups and volume and biomass equations</Text>
    </Note>
-   <Note id="278">
+   <Note id="285">
       <Text>Geospatial queries can be used to link theoretical and observed plots to AOIs.
 
 AOI geometry should be represented as PostGIS 'geometry' type.  'polygon' used here because 'geometry' is not supported by the ER design tool.</Text>
    </Note>
-   <Note id="279">
+   <Note id="286">
       <Text>Preloaded operations:
   executeModule(rModuleName, params)
   updateDerivedPlotClass(plotClassName)
@@ -616,12 +634,12 @@ AOI geometry should be represented as PostGIS 'geometry' type.  'polygon' used h
    <Constraint table="5" name="plot_pkey1" type="PrimKey">
       <ConstraintColumn id="6"></ConstraintColumn>
    </Constraint>
-   <Constraint table="13" name="plot_pkey" type="PrimKey">
-      <ConstraintColumn id="14"></ConstraintColumn>
-   </Constraint>
-   <Constraint table="13" name="uk_plot_obs" type="Unique">
+   <Constraint table="14" name="plot_pkey" type="PrimKey">
       <ConstraintColumn id="15"></ConstraintColumn>
+   </Constraint>
+   <Constraint table="14" name="uk_plot_obs" type="Unique">
       <ConstraintColumn id="16"></ConstraintColumn>
+      <ConstraintColumn id="17"></ConstraintColumn>
    </Constraint>
    <Constraint table="21" name="stratum_pkey" type="PrimKey">
       <ConstraintColumn id="22"></ConstraintColumn>
@@ -641,219 +659,219 @@ AOI geometry should be represented as PostGIS 'geometry' type.  'polygon' used h
    <Constraint table="112" name="pk_survey" type="PrimKey">
       <ConstraintColumn id="113"></ConstraintColumn>
    </Constraint>
-   <Constraint table="116" name="pk_plot_attr_value" type="PrimKey">
-      <ConstraintColumn id="117"></ConstraintColumn>
+   <Constraint table="119" name="pk_plot_attr_value" type="PrimKey">
+      <ConstraintColumn id="120"></ConstraintColumn>
    </Constraint>
-   <Constraint table="122" name="pk_plot_attr" type="PrimKey">
-      <ConstraintColumn id="123"></ConstraintColumn>
+   <Constraint table="125" name="pk_plot_attr" type="PrimKey">
+      <ConstraintColumn id="126"></ConstraintColumn>
    </Constraint>
-   <Constraint table="128" name="uk_plot_class_code" type="Unique">
-      <ConstraintColumn id="130"></ConstraintColumn>
-      <ConstraintColumn id="131"></ConstraintColumn>
-   </Constraint>
-   <Constraint table="128" name="uk_plot_class_order" type="Unique">
-      <ConstraintColumn id="130"></ConstraintColumn>
-      <ConstraintColumn id="133"></ConstraintColumn>
-   </Constraint>
-   <Constraint table="128" name="pk_plot_class" type="PrimKey">
-      <ConstraintColumn id="129"></ConstraintColumn>
-   </Constraint>
-   <Constraint table="134" name="pk_plot_class_value" type="PrimKey">
+   <Constraint table="132" name="uk_plot_class_code" type="Unique">
+      <ConstraintColumn id="134"></ConstraintColumn>
       <ConstraintColumn id="135"></ConstraintColumn>
    </Constraint>
-   <Constraint table="139" name="pk_plot_derived_class" type="PrimKey">
-      <ConstraintColumn id="140"></ConstraintColumn>
+   <Constraint table="132" name="uk_plot_class_order" type="Unique">
+      <ConstraintColumn id="134"></ConstraintColumn>
+      <ConstraintColumn id="137"></ConstraintColumn>
    </Constraint>
-   <Constraint table="139" name="uk_plot_derived_class_class" type="Unique">
-      <ConstraintColumn id="141"></ConstraintColumn>
+   <Constraint table="132" name="pk_plot_class" type="PrimKey">
+      <ConstraintColumn id="133"></ConstraintColumn>
    </Constraint>
-   <Constraint table="147" name="pk_plot_classification_scheme" type="PrimKey">
-      <ConstraintColumn id="148"></ConstraintColumn>
+   <Constraint table="138" name="pk_plot_class_value" type="PrimKey">
+      <ConstraintColumn id="139"></ConstraintColumn>
    </Constraint>
-   <Constraint table="152" name="pk_taxonomic_checklist" type="PrimKey">
-      <ConstraintColumn id="153"></ConstraintColumn>
+   <Constraint table="143" name="pk_plot_derived_class" type="PrimKey">
+      <ConstraintColumn id="144"></ConstraintColumn>
    </Constraint>
-   <Constraint table="156" name="pk_taxon_vernacular_name" type="PrimKey">
-      <ConstraintColumn id="157"></ConstraintColumn>
+   <Constraint table="143" name="uk_plot_derived_class_class" type="Unique">
+      <ConstraintColumn id="145"></ConstraintColumn>
    </Constraint>
-   <Constraint table="164" name="uk_plot_class_code_1" type="Unique">
-      <ConstraintColumn id="166"></ConstraintColumn>
-      <ConstraintColumn id="167"></ConstraintColumn>
+   <Constraint table="151" name="pk_plot_classification_scheme" type="PrimKey">
+      <ConstraintColumn id="152"></ConstraintColumn>
    </Constraint>
-   <Constraint table="164" name="uk_plot_class_order_1" type="Unique">
-      <ConstraintColumn id="166"></ConstraintColumn>
-      <ConstraintColumn id="169"></ConstraintColumn>
+   <Constraint table="157" name="pk_taxonomic_checklist" type="PrimKey">
+      <ConstraintColumn id="158"></ConstraintColumn>
    </Constraint>
-   <Constraint table="164" name="pk_flora_class" type="PrimKey">
-      <ConstraintColumn id="165"></ConstraintColumn>
+   <Constraint table="161" name="pk_taxon_vernacular_name" type="PrimKey">
+      <ConstraintColumn id="162"></ConstraintColumn>
    </Constraint>
-   <Constraint table="170" name="pk_flora_derived_class" type="PrimKey">
+   <Constraint table="169" name="uk_plot_class_code_1" type="Unique">
       <ConstraintColumn id="171"></ConstraintColumn>
+      <ConstraintColumn id="172"></ConstraintColumn>
    </Constraint>
-   <Constraint table="178" name="pk_flora_attr" type="PrimKey">
-      <ConstraintColumn id="179"></ConstraintColumn>
+   <Constraint table="169" name="uk_plot_class_order_1" type="Unique">
+      <ConstraintColumn id="171"></ConstraintColumn>
+      <ConstraintColumn id="174"></ConstraintColumn>
    </Constraint>
-   <Constraint table="184" name="pk_flora_classification_scheme" type="PrimKey">
-      <ConstraintColumn id="185"></ConstraintColumn>
+   <Constraint table="169" name="pk_specimen_class" type="PrimKey">
+      <ConstraintColumn id="170"></ConstraintColumn>
    </Constraint>
-   <Constraint table="189" name="pk_flora_attr_value" type="PrimKey">
-      <ConstraintColumn id="190"></ConstraintColumn>
+   <Constraint table="175" name="pk_specimen_derived_class" type="PrimKey">
+      <ConstraintColumn id="176"></ConstraintColumn>
    </Constraint>
-   <Constraint table="195" name="pk_flora_class_value" type="PrimKey">
-      <ConstraintColumn id="196"></ConstraintColumn>
+   <Constraint table="183" name="pk_specimen_attr" type="PrimKey">
+      <ConstraintColumn id="184"></ConstraintColumn>
    </Constraint>
-   <Constraint table="200" name="pk_processing_chain" type="PrimKey">
-      <ConstraintColumn id="201"></ConstraintColumn>
+   <Constraint table="190" name="pk_specimen_classification_scheme" type="PrimKey">
+      <ConstraintColumn id="191"></ConstraintColumn>
    </Constraint>
-   <Constraint table="205" name="pkK_process" type="PrimKey">
-      <ConstraintColumn id="206"></ConstraintColumn>
+   <Constraint table="196" name="pk_specimen_attr_value" type="PrimKey">
+      <ConstraintColumn id="197"></ConstraintColumn>
    </Constraint>
-   <Constraint table="212" name="pk_operation_parameter" type="PrimKey">
+   <Constraint table="202" name="pk_specimen_class_value" type="PrimKey">
+      <ConstraintColumn id="203"></ConstraintColumn>
+   </Constraint>
+   <Constraint table="207" name="pk_processing_chain" type="PrimKey">
+      <ConstraintColumn id="208"></ConstraintColumn>
+   </Constraint>
+   <Constraint table="212" name="pkK_process" type="PrimKey">
       <ConstraintColumn id="213"></ConstraintColumn>
    </Constraint>
-   <Constraint table="217" name="pk_operation" type="PrimKey">
-      <ConstraintColumn id="218"></ConstraintColumn>
+   <Constraint table="219" name="pk_operation_parameter" type="PrimKey">
+      <ConstraintColumn id="220"></ConstraintColumn>
    </Constraint>
-   <Constraint table="222" name="pk_flora_type" type="PrimKey">
-      <ConstraintColumn id="223"></ConstraintColumn>
+   <Constraint table="224" name="pk_operation" type="PrimKey">
+      <ConstraintColumn id="225"></ConstraintColumn>
    </Constraint>
-   <Sheet name="Sampling Design" id="280" disp_at="true" disp_ph="true" disp_rn="true">
+   <Constraint table="229" name="pk_specimen_type" type="PrimKey">
+      <ConstraintColumn id="230"></ConstraintColumn>
+   </Constraint>
+   <Sheet name="Sampling Design" id="287" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
+      <Place id="240" visible="true" options="62.0,379.0,289.0,152.0,498.0,331.0,233.0,220.0,2,351.0,440.0,498.0,440.0">500,0,0,0</Place>
+      <Place id="267" visible="true" options="140.0,90.0,200.0,160.0,62.0,379.0,289.0,152.0,4,230.0,250.0,230.0,285.0,230.0,285.0,230.0,379.0">500,0,0,0</Place>
       <Place id="26" visible="false">260,10,240,480</Place>
-      <Place id="228" visible="false">500,0,0,0</Place>
-      <Place id="5" visible="true">488,391,180,140</Place>
+      <Place id="274" visible="true">445,13,351,40</Place>
+      <Place id="112" visible="true">140,90,200,160</Place>
+      <Place id="249" visible="true" options="920.0,377.0,191.0,124.0,498.0,331.0,233.0,220.0,4,920.0,430.0,794.0,430.0,794.0,430.0,731.0,430.0">500,0,0,0</Place>
+      <Place id="235" visible="false">500,0,0,0</Place>
+      <Place id="21" visible="true">62,379,289,152</Place>
+      <Place id="14" visible="false">950,10,230,280</Place>
+      <Place id="280" visible="true">710,760,361,71</Place>
+      <Place id="237" visible="false">500,0,0,0</Place>
       <Place id="79" visible="false">90,330,180,140</Place>
-      <Place id="230" visible="true">500,0,0,0</Place>
-      <Place id="233" visible="false">500,0,0,0</Place>
-      <Place id="274" visible="true">740,300,351,91</Place>
+      <Place id="252" visible="false">500,0,0,0</Place>
       <Place id="32" visible="false">510,530,240,600</Place>
-      <Place id="267" visible="true">445,13,351,40</Place>
+      <Place id="0" visible="true">920,377,191,124</Place>
+      <Place id="281" visible="true">70,610,351,71</Place>
+      <Place id="5" visible="true">498,331,233,220</Place>
       <Place id="87" visible="false">90,150,170,60</Place>
-      <Place id="21" visible="true">472,219,220,90</Place>
-      <Place id="229" visible="true" options="472.0,219.0,220.0,90.0,488.0,391.0,180.0,140.0,2,580.0,309.0,580.0,391.0">500,0,0,0</Place>
-      <Place id="112" visible="true">480,70,200,80</Place>
-      <Place id="235" visible="true" options="480.0,70.0,200.0,80.0,472.0,219.0,220.0,90.0,4,580.0,150.0,580.0,184.5,580.0,185.0,580.0,219.0">500,0,0,0</Place>
-      <Place id="0" visible="true">500,597,160,90</Place>
-      <Place id="232" visible="false">500,0,0,0</Place>
-      <Place id="13" visible="false">950,10,230,280</Place>
-      <Place id="273" visible="true">620,790,361,71</Place>
    </Sheet>
-   <Sheet name="Plot Metadata" id="281" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
-      <Place id="152" visible="false">190,479,170,60</Place>
-      <Place id="122" visible="true">698,339,170,110</Place>
-      <Place id="139" visible="true">518,620,170,140</Place>
-      <Place id="241" visible="true" options="518.0,620.0,170.0,140.0,698.0,339.0,170.0,110.0,4,620.0,620.0,620.0,530.0,780.0,530.0,780.0,449.0">457,-1,0,-16</Place>
-      <Place id="243" visible="false">500,0,0,0</Place>
-      <Place id="275" visible="true">758,750,261,71</Place>
-      <Place id="147" visible="true">498,188,200,90</Place>
-      <Place id="79" visible="false">110,220,180,140</Place>
-      <Place id="242" visible="true" options="498.0,188.0,200.0,90.0,368.0,339.0,170.0,110.0,2,520.0,278.0,520.0,339.0">303,-10,0,0</Place>
-      <Place id="233" visible="false">500,0,0,0</Place>
-      <Place id="87" visible="false">100,60,170,60</Place>
-      <Place id="256" visible="true" options="510.0,20.0,200.0,80.0,498.0,188.0,200.0,90.0,2,600.0,100.0,600.0,188.0">490,-23,0,0</Place>
-      <Place id="128" visible="true">368,339,170,110</Place>
-      <Place id="240" visible="true" options="518.0,620.0,170.0,140.0,368.0,339.0,170.0,110.0,4,560.0,620.0,560.0,530.0,470.0,530.0,470.0,449.0">617,14,0,0</Place>
-      <Place id="112" visible="true">510,20,200,80</Place>
-      <Place id="262" visible="true" options="510.0,20.0,200.0,80.0,698.0,339.0,170.0,110.0,4,680.0,100.0,680.0,130.0,790.0,130.0,790.0,339.0">707,-11,0,0</Place>
-      <Place id="232" visible="false">500,0,0,16</Place>
+   <Sheet name="Plot Metadata" id="288" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
+      <Place id="250" visible="true" options="638.0,570.0,210.0,140.0,648.0,279.0,210.0,130.0,2,750.0,570.0,750.0,409.0">478,8,0,-16</Place>
       <Place id="91" visible="false">108,637,260,280</Place>
+      <Place id="282" visible="true">828,750,261,71</Place>
+      <Place id="143" visible="true">638,570,210,140</Place>
+      <Place id="132" visible="true">268,589,170,110</Place>
+      <Place id="151" visible="true">268,298,210,110</Place>
+      <Place id="251" visible="true" options="638.0,570.0,210.0,140.0,268.0,589.0,170.0,110.0,2,638.0,630.0,438.0,630.0">500,13,0,0</Place>
+      <Place id="112" visible="true">490,50,200,40</Place>
+      <Place id="235" visible="false">500,0,0,0</Place>
+      <Place id="237" visible="false">500,0,0,16</Place>
+      <Place id="79" visible="false">110,220,180,140</Place>
+      <Place id="248" visible="true" options="490.0,50.0,200.0,40.0,268.0,298.0,210.0,110.0,4,610.0,90.0,610.0,178.5,410.0,178.5,410.0,298.0">613,-18,0,0</Place>
+      <Place id="269" visible="false">500,0,0,0</Place>
+      <Place id="242" visible="true">784,-7,0,0</Place>
+      <Place id="157" visible="false">190,479,170,60</Place>
+      <Place id="245" visible="true" options="268.0,298.0,210.0,110.0,268.0,589.0,170.0,110.0,2,330.0,408.0,330.0,589.0">530,-8,0,0</Place>
+      <Place id="125" visible="true">648,279,210,130</Place>
+      <Place id="87" visible="false">100,60,170,60</Place>
    </Sheet>
-   <Sheet name="Tree Metadata" id="282" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
-      <Place id="266" visible="true" options="450.0,170.0,200.0,110.0,710.0,401.0,170.0,110.0,4,620.0,280.0,620.0,350.0,750.0,350.0,750.0,401.0">573,-13,0,0</Place>
-      <Place id="164" visible="true">220,551,170,110</Place>
-      <Place id="265" visible="true" options="450.0,170.0,200.0,110.0,220.0,370.0,210.0,90.0,4,490.0,280.0,490.0,330.0,320.0,330.0,320.0,370.0">715,9,-1,0</Place>
-      <Place id="264" visible="true" options="450.0,30.0,200.0,80.0,450.0,170.0,200.0,110.0,4,560.0,110.0,560.0,150.0,560.0,150.0,560.0,170.0">500,0,0,0</Place>
-      <Place id="276" visible="true">690,782,261,71</Place>
-      <Place id="184" visible="true">220,370,210,90</Place>
-      <Place id="247" visible="true" options="440.0,682.0,180.0,140.0,710.0,401.0,170.0,110.0,4,550.0,682.0,550.0,600.0,800.0,600.0,800.0,511.0">549,-12,0,0</Place>
-      <Place id="245" visible="true" options="220.0,370.0,210.0,90.0,220.0,551.0,170.0,110.0,4,320.0,460.0,315.0,460.0,315.0,551.0,310.0,551.0">380,-12,0,0</Place>
-      <Place id="246" visible="true" options="440.0,682.0,180.0,140.0,220.0,551.0,170.0,110.0,3,530.0,682.0,530.0,600.0,390.0,600.0">510,-9,0,-18</Place>
-      <Place id="178" visible="true">710,401,170,110</Place>
-      <Place id="112" visible="true">450,30,200,80</Place>
-      <Place id="222" visible="true">450,170,200,110</Place>
-      <Place id="170" visible="true">440,682,180,140</Place>
+   <Sheet name="Plot Data" id="289" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
+      <Place id="243" visible="true" options="279.0,341.0,210.0,130.0,759.247151070593,351.0259873298423,180.0,110.0,2,489.0,410.0,759.0,410.0">550,10,0,0</Place>
+      <Place id="250" visible="false">500,0,0,0</Place>
+      <Place id="240" visible="true">500,0,0,0</Place>
+      <Place id="247" visible="true" options="765.0,101.0,160.0,140.0,759.0,580.0,180.0,90.0,4,925.0,220.0,1000.0,220.0,1000.0,620.0,939.0,620.0">500,0,0,0</Place>
+      <Place id="246" visible="true" options="290.0,559.0,170.0,110.0,759.0,580.0,180.0,90.0,2,460.0,620.0,759.0,620.0">540,-12,0,0</Place>
+      <Place id="143" visible="false">368,829,170,130</Place>
+      <Place id="275" visible="true">458,19,353,61</Place>
+      <Place id="132" visible="true">290,559,170,110</Place>
+      <Place id="251" visible="false">500,0,0,0</Place>
+      <Place id="138" visible="true">759,580,180,90</Place>
+      <Place id="14" visible="true">765,101,160,140</Place>
+      <Place id="252" visible="true" options="267.0,80.0,224.0,191.0,765.0,101.0,160.0,140.0,2,491.0,170.0,765.0,170.0">498,-9,0,0</Place>
+      <Place id="119" visible="true">759,351,180,110</Place>
+      <Place id="244" visible="true" options="765.0,101.0,160.0,140.0,759.247151070593,351.0259873298423,180.0,110.0,2,840.0,241.0,840.0,351.0">500,0,0,0</Place>
+      <Place id="5" visible="true">267,80,224,191</Place>
+      <Place id="125" visible="true">279,341,210,130</Place>
    </Sheet>
-   <Sheet name="Species" id="283" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
-      <Place id="152" visible="true">150,200,170,80</Place>
-      <Place id="253" visible="true" options="430.0,160.0,270.0,460.0,430.0,160.0,270.0,460.0,5,700.0,600.0,740.0,600.0,740.0,650.0,680.0,650.0,680.0,620.0">500,-8,0,5</Place>
-      <Place id="252" visible="true">500,0,0,0</Place>
-      <Place id="156" visible="true">110,590,260,140</Place>
-      <Place id="243" visible="true">477,-5,0,16</Place>
-      <Place id="244" visible="true" options="430.0,160.0,270.0,460.0,110.0,590.0,260.0,140.0,3,430.0,500.0,250.0,500.0,250.0,590.0">764,-3,0,0</Place>
-      <Place id="255" visible="true" options="140.0,30.0,200.0,80.0,150.0,200.0,170.0,80.0,4,220.0,110.0,225.0,110.0,225.0,200.0,230.0,200.0">500,0,0,0</Place>
-      <Place id="254" visible="true" options="430.0,160.0,270.0,460.0,430.0,160.0,270.0,460.0,5,700.0,590.0,750.0,590.0,750.0,660.0,670.0,660.0,670.0,620.0">500,-5,0,15</Place>
-      <Place id="112" visible="true">140,30,200,80</Place>
-      <Place id="277" visible="true">720,770,261,71</Place>
-      <Place id="91" visible="true">430,160,270,460</Place>
+   <Sheet name="Tree Metadata" id="290" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
+      <Place id="262" visible="true" options="670.0,602.0,210.0,140.0,240.0,621.0,170.0,110.0,3,670.0,660.0,410.0,660.0,410.0,650.0">510,-9,0,-18</Place>
+      <Place id="169" visible="true">240,621,170,110</Place>
+      <Place id="190" visible="true">200,370,230,110</Place>
+      <Place id="260" visible="true" options="450.0,170.0,200.0,110.0,200.0,370.0,230.0,110.0,4,490.0,280.0,490.0,340.0,320.0,340.0,320.0,370.0">715,9,-1,0</Place>
+      <Place id="261" visible="true" options="670.0,602.0,210.0,140.0,670.0,371.0,210.0,130.0,2,770.0,602.0,770.0,501.0">549,-12,0,0</Place>
+      <Place id="258" visible="true" options="200.0,370.0,230.0,110.0,240.0,621.0,170.0,110.0,2,340.0,480.0,340.0,621.0">380,-12,0,0</Place>
+      <Place id="266" visible="true" options="450.0,30.0,200.0,41.0,450.0,170.0,200.0,110.0,4,570.0,71.0,570.0,120.0,570.0,120.0,570.0,170.0">500,0,0,0</Place>
+      <Place id="183" visible="true">670,371,210,130</Place>
+      <Place id="283" visible="true">780,782,261,71</Place>
+      <Place id="112" visible="true">450,30,200,41</Place>
+      <Place id="256" visible="true" options="450.0,170.0,200.0,110.0,670.0,371.0,210.0,130.0,4,620.0,280.0,620.0,340.0,770.0,340.0,770.0,371.0">759,-13,0,0</Place>
+      <Place id="175" visible="true">670,602,210,140</Place>
+      <Place id="229" visible="true">450,170,200,110</Place>
    </Sheet>
-   <Sheet name="AOI" id="284" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
-      <Place id="87" visible="true">520,320,170,80</Place>
-      <Place id="278" visible="true">790,670,291,151</Place>
-      <Place id="257" visible="true" options="490.0,130.0,200.0,80.0,520.0,320.0,170.0,80.0,5,620.0,210.0,620.0,205.0,615.0,205.0,615.0,320.0,610.0,320.0">500,0,0,0</Place>
-      <Place id="112" visible="true">490,130,200,80</Place>
-      <Place id="79" visible="true">510,540,180,140</Place>
-      <Place id="233" visible="true" options="520.0,320.0,170.0,80.0,510.0,540.0,180.0,140.0,2,600.0,400.0,600.0,540.0">500,0,0,0</Place>
-      <Place id="232" visible="true">500,0,0,0</Place>
-   </Sheet>
-   <Sheet name="Tree Data" id="285" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
-      <Place id="26" visible="true">469,300,150,90</Place>
-      <Place id="266" visible="true">500,0,0,0</Place>
-      <Place id="228" visible="false">500,0,0,0</Place>
-      <Place id="5" visible="false">730,140,251,181</Place>
-      <Place id="164" visible="true">90,640,170,110</Place>
-      <Place id="263" visible="true">500,0,0,0</Place>
-      <Place id="269" visible="true">69,21,251,60</Place>
-      <Place id="231" visible="true" options="465.0,49.0,160.0,140.0,469.0,300.0,150.0,90.0,2,520.0,189.0,520.0,300.0">477,-6,0,0</Place>
-      <Place id="189" visible="true">460,470,180,110</Place>
-      <Place id="249" visible="true" options="90.0,640.0,170.0,110.0,450.0,670.0,180.0,90.0,4,260.0,700.0,260.0,705.0,450.0,705.0,450.0,710.0">510,-8,0,0</Place>
-      <Place id="251" visible="true" options="469.0,300.0,150.0,90.0,450.0,670.0,180.0,90.0,4,619.0,320.0,740.0,320.0,740.0,710.0,630.0,710.0">500,0,0,0</Place>
-      <Place id="234" visible="true" options="875.0,100.0,260.0,360.0,469.0,300.0,150.0,90.0,4,875.0,250.0,747.0,250.0,747.0,320.0,619.0,320.0">500,0,0,0</Place>
-      <Place id="253" visible="true" options="875.0,100.0,260.0,360.0,875.0,100.0,260.0,360.0,5,1135.0,440.0,1175.0,440.0,1175.0,490.0,1115.0,490.0,1115.0,460.0">500,-6,0,6</Place>
-      <Place id="252" visible="true">500,0,0,0</Place>
-      <Place id="250" visible="true" options="469.0,300.0,150.0,90.0,460.0,470.0,180.0,110.0,2,550.0,390.0,550.0,470.0">500,0,0,0</Place>
-      <Place id="254" visible="true" options="875.0,100.0,260.0,360.0,875.0,100.0,260.0,360.0,5,1135.0,430.0,1185.0,430.0,1185.0,500.0,1105.0,500.0,1105.0,460.0">500,-5,0,11</Place>
-      <Place id="178" visible="true">90,460,170,90</Place>
-      <Place id="248" visible="true" options="90.0,460.0,170.0,90.0,460.0,470.0,180.0,110.0,2,260.0,530.0,460.0,530.0">464,-9,0,0</Place>
-      <Place id="222" visible="true">100,240,170,90</Place>
-      <Place id="13" visible="true">465,49,160,140</Place>
-      <Place id="195" visible="true">450,670,180,90</Place>
+   <Sheet name="Tree Data" id="291" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
+      <Place id="268" visible="true" options="875.0,100.0,260.0,360.0,875.0,100.0,260.0,360.0,5,1135.0,430.0,1185.0,430.0,1185.0,500.0,1105.0,500.0,1105.0,460.0">500,-5,0,11</Place>
+      <Place id="238" visible="true">500,0,0,0</Place>
       <Place id="91" visible="true">875,100,260,360</Place>
+      <Place id="263" visible="true">477,-6,0,0</Place>
+      <Place id="264" visible="true" options="875.0,100.0,260.0,360.0,429.0,240.0,210.0,110.0,4,875.0,250.0,747.0,250.0,747.0,310.0,639.0,310.0">500,0,0,0</Place>
+      <Place id="265" visible="true" options="100.0,240.0,200.0,110.0,429.0,240.0,210.0,110.0,2,300.0,300.0,429.0,300.0">500,0,0,0</Place>
+      <Place id="169" visible="true">90,640,170,110</Place>
+      <Place id="270" visible="true" options="875.0,100.0,260.0,360.0,875.0,100.0,260.0,360.0,5,1135.0,440.0,1175.0,440.0,1175.0,490.0,1115.0,490.0,1115.0,460.0">500,-6,0,6</Place>
+      <Place id="196" visible="true">450,450,220,110</Place>
+      <Place id="183" visible="true">90,460,210,130</Place>
+      <Place id="276" visible="true">69,21,251,60</Place>
+      <Place id="26" visible="true">429,240,210,110</Place>
+      <Place id="259" visible="true" options="90.0,640.0,170.0,110.0,450.0,670.0,200.0,90.0,4,260.0,700.0,260.0,705.0,450.0,705.0,450.0,700.0">510,-8,0,0</Place>
+      <Place id="271" visible="true">500,0,0,0</Place>
+      <Place id="239" visible="true" options="429.0,240.0,210.0,110.0,450.0,670.0,200.0,90.0,4,639.0,330.0,740.0,330.0,740.0,710.0,650.0,710.0">500,0,0,0</Place>
+      <Place id="202" visible="true">450,670,200,90</Place>
+      <Place id="14" visible="true">445,49,160,140</Place>
+      <Place id="256" visible="true" options="100.0,240.0,200.0,110.0,90.0,460.0,210.0,130.0,2,200.0,350.0,200.0,460.0">500,0,0,0</Place>
+      <Place id="252" visible="false">500,0,0,0</Place>
+      <Place id="5" visible="false">730,140,251,181</Place>
+      <Place id="257" visible="true" options="90.0,460.0,210.0,130.0,450.0,450.0,220.0,110.0,4,300.0,530.0,385.0,530.0,385.0,510.0,450.0,510.0">464,-9,0,0</Place>
+      <Place id="229" visible="true">100,240,200,110</Place>
    </Sheet>
-   <Sheet name="Plot Data" id="286" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
-      <Place id="134" visible="true">759,581,180,90</Place>
-      <Place id="122" visible="true">319,361,170,90</Place>
-      <Place id="139" visible="false">368,829,170,130</Place>
-      <Place id="228" visible="true" options="317.0,130.0,180.0,140.0,765.0,131.0,160.0,140.0,4,497.0,180.0,630.0,180.0,630.0,180.0,765.0,180.0">498,-9,0,0</Place>
-      <Place id="268" visible="true">458,19,353,61</Place>
-      <Place id="241" visible="false">500,0,0,0</Place>
-      <Place id="5" visible="true">317,130,180,140</Place>
-      <Place id="237" visible="true" options="319.0,361.0,170.0,90.0,759.247151070593,351.0259873298423,180.0,110.0,2,489.0,410.0,759.247151070593,410.0">550,10,0,0</Place>
-      <Place id="236" visible="true" options="765.0,131.0,160.0,140.0,759.247151070593,351.0259873298423,180.0,110.0,2,840.0,271.0,840.0,351.0">500,0,0,0</Place>
-      <Place id="239" visible="true" options="320.0,559.0,170.0,110.0,759.0,581.0,180.0,90.0,2,490.0,620.0,759.0,620.0">540,-12,0,0</Place>
-      <Place id="229" visible="true">500,0,0,0</Place>
-      <Place id="128" visible="true">320,559,170,110</Place>
-      <Place id="240" visible="false">500,0,0,0</Place>
-      <Place id="238" visible="true" options="765.0,131.0,160.0,140.0,759.0,581.0,180.0,90.0,4,925.0,271.0,1000.0,271.0,1000.0,610.0,939.0,610.0">500,0,0,0</Place>
-      <Place id="13" visible="true">765,131,160,140</Place>
-      <Place id="116" visible="true">759,351,180,110</Place>
+   <Sheet name="Species" id="292" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
+      <Place id="273" visible="true" options="230.0,30.0,200.0,80.0,240.0,200.0,170.0,80.0,4,230.0,90.0,190.0,90.0,190.0,210.0,240.0,210.0">500,0,0,0</Place>
+      <Place id="268" visible="true">500,-5,0,15</Place>
+      <Place id="112" visible="true">230,30,200,80</Place>
+      <Place id="271" visible="true">500,0,0,0</Place>
+      <Place id="91" visible="true">520,160,270,460</Place>
+      <Place id="161" visible="true">200,590,260,140</Place>
+      <Place id="284" visible="true">810,770,261,71</Place>
+      <Place id="270" visible="true">500,-8,0,5</Place>
+      <Place id="272" visible="true">764,-3,0,0</Place>
+      <Place id="269" visible="true">477,-5,0,16</Place>
+      <Place id="157" visible="true">240,200,170,80</Place>
    </Sheet>
-   <Sheet name="Processing Chain" id="287" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
-      <Place id="279" visible="true">760,220,331,121</Place>
-      <Place id="261" visible="true" options="790.0,430.0,200.0,90.0,369.0,480.0,210.0,130.0,4,790.0,470.0,684.5,470.0,684.5,520.0,579.0,520.0">500,0,0,0</Place>
-      <Place id="200" visible="true">362,237,200,90</Place>
-      <Place id="258" visible="true" options="360.0,50.0,200.0,80.0,362.0,237.0,200.0,90.0,2,460.0,130.0,460.0,237.0">500,0,0,0</Place>
-      <Place id="205" visible="true">369,480,210,130</Place>
+   <Sheet name="AOI" id="293" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
+      <Place id="112" visible="true">520,30,200,161</Place>
+      <Place id="285" visible="true">790,670,291,151</Place>
+      <Place id="235" visible="true" options="480.0,310.0,261.0,140.0,460.0,550.0,291.0,211.0,2,600.0,450.0,600.0,550.0">500,0,0,0</Place>
+      <Place id="236" visible="true" options="520.0,30.0,200.0,161.0,480.0,310.0,261.0,140.0,2,620.0,191.0,620.0,310.0">500,0,0,0</Place>
+      <Place id="237" visible="true">500,0,0,0</Place>
+      <Place id="79" visible="true">460,550,291,211</Place>
+      <Place id="87" visible="true">480,310,261,140</Place>
+   </Sheet>
+   <Sheet name="Processing Chain" id="294" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
       <Place id="112" visible="true">360,50,200,80</Place>
-      <Place id="260" visible="true" options="369.0,480.0,210.0,130.0,800.0,620.0,170.0,90.0,4,579.0,540.0,630.0,540.0,630.0,660.0,800.0,660.0">554,14,0,15</Place>
-      <Place id="259" visible="true" options="362.0,237.0,200.0,90.0,369.0,480.0,210.0,130.0,2,460.0,327.0,460.0,480.0">500,0,0,0</Place>
-      <Place id="217" visible="true">790,430,200,90</Place>
-      <Place id="212" visible="true">800,620,170,90</Place>
+      <Place id="255" visible="true" options="360.0,50.0,200.0,80.0,362.0,237.0,200.0,90.0,2,460.0,130.0,460.0,237.0">500,0,0,0</Place>
+      <Place id="224" visible="true">790,430,200,90</Place>
+      <Place id="219" visible="true">800,620,170,90</Place>
+      <Place id="253" visible="true" options="790.0,430.0,200.0,90.0,369.0,480.0,210.0,130.0,4,790.0,470.0,684.5,470.0,684.5,520.0,579.0,520.0">500,0,0,0</Place>
+      <Place id="254" visible="true" options="362.0,237.0,200.0,90.0,369.0,480.0,210.0,130.0,2,460.0,327.0,460.0,480.0">500,0,0,0</Place>
+      <Place id="286" visible="true">760,220,331,121</Place>
+      <Place id="207" visible="true">362,237,200,90</Place>
+      <Place id="241" visible="true" options="369.0,480.0,210.0,130.0,800.0,620.0,170.0,90.0,4,579.0,540.0,630.0,540.0,630.0,660.0,800.0,660.0">554,14,0,15</Place>
+      <Place id="212" visible="true">369,480,210,130</Place>
    </Sheet>
-   <Sheet name="Summary Views" id="288" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
-      <Place id="74" visible="true">430,530,241,111</Place>
-      <Place id="73" visible="true">530,200,120,60</Place>
+   <Sheet name="Summary Views" id="295" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
       <Place id="72" visible="true">800,170,211,100</Place>
-      <Place id="272" visible="true">420,50,251,60</Place>
       <Place id="67" visible="true">170,160,221,171</Place>
+      <Place id="74" visible="true">430,530,241,111</Place>
+      <Place id="279" visible="true">420,50,251,60</Place>
+      <Place id="73" visible="true">530,200,120,60</Place>
    </Sheet>
-   <Settings sheet="280" zoom="1.0"></Settings>
+   <Settings sheet="289" zoom="1.0"></Settings>
 </Diagram>
