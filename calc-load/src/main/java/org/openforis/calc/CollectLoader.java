@@ -6,8 +6,13 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.openforis.calc.model.CategoricalVariable;
+import org.openforis.calc.model.NumericVariable;
 import org.openforis.calc.model.Survey;
 import org.openforis.calc.model.SurveyUnit;
+import org.openforis.calc.persistence.CategoricalVariableDao;
+import org.openforis.calc.persistence.CategoryDao;
+import org.openforis.calc.persistence.NumericVariableDao;
 import org.openforis.calc.persistence.SurveyDao;
 import org.openforis.calc.persistence.SurveyUnitDao;
 import org.openforis.collect.model.CollectSurvey;
@@ -15,6 +20,7 @@ import org.openforis.collect.persistence.xml.CollectSurveyIdmlBinder;
 import org.openforis.idm.metamodel.AttributeDefinition;
 import org.openforis.idm.metamodel.BooleanAttributeDefinition;
 import org.openforis.idm.metamodel.CodeAttributeDefinition;
+import org.openforis.idm.metamodel.CoordinateAttributeDefinition;
 import org.openforis.idm.metamodel.EntityDefinition;
 import org.openforis.idm.metamodel.NodeDefinition;
 import org.openforis.idm.metamodel.NumberAttributeDefinition;
@@ -37,6 +43,12 @@ public class CollectLoader {
 	private SurveyDao surveyDao;
 	@Autowired
 	private SurveyUnitDao surveyUnitDao;
+	@Autowired
+	private NumericVariableDao numericVariableDao;
+	@Autowired
+	private CategoricalVariableDao categoricalVariableDao;
+	@Autowired
+	private CategoryDao categoryDao;
 	
 	private Survey survey;
 	
@@ -55,8 +67,7 @@ public class CollectLoader {
 	}
 
 	@Transactional
-	synchronized 
-	private  void importSurvey(ClassPathXmlApplicationContext ctx, CollectSurvey cs) {
+	private void importSurvey(ClassPathXmlApplicationContext ctx, CollectSurvey cs) {
 		survey = new Survey();
 		survey.setName(cs.getProjectName(lang));
 		survey.setUri(cs.getUri());
@@ -92,35 +103,44 @@ public class CollectLoader {
 	}
 
 	private void importVariable(SurveyUnit parentUnit, AttributeDefinition attr) {
-		if ( attr instanceof CodeAttributeDefinition ) {
-			importCatVariable((CodeAttributeDefinition) attr);
-			System.out.println("Cat. variable: "+parentUnit.getName()+"."+attr.getName());
+		if ( attr instanceof CodeAttributeDefinition && ((CodeAttributeDefinition) attr).getList().getLookupTable() == null ) {
+			importCatVariable(parentUnit, (CodeAttributeDefinition) attr);
 		} else if ( attr instanceof BooleanAttributeDefinition && !attr.isMultiple() ) {
-			importCatVariable((BooleanAttributeDefinition) attr);
-			System.out.println("Cat. variable: "+parentUnit.getName()+"."+attr.getName());
+			importCatVariable(parentUnit, (BooleanAttributeDefinition) attr);
 		} else if ( attr instanceof NumberAttributeDefinition  && !attr.isMultiple() ) {
-			importNumVariable((NumberAttributeDefinition) attr);
-			System.out.println("Num. variable: "+parentUnit.getName()+"."+attr.getName());
+			importNumVariable(parentUnit, (NumberAttributeDefinition) attr);
+		} else if ( attr instanceof CoordinateAttributeDefinition ) {
+			System.out.println("GPS location: "+attr.getName());
 		} else {
 			System.out.println("Skipping unsupported attribute: "+attr.getPath());
 		}
-		// TODO Auto-generated method stub
+	}
+
+	private void importNumVariable(SurveyUnit parentUnit, NumberAttributeDefinition attr) {
+		NumericVariable var = new NumericVariable();
+		var.setName(attr.getName());
+		var.setSurveyUnitId(parentUnit.getId());		
+		numericVariableDao.insert(var);
+		System.out.println("Num. variable: "+parentUnit.getName()+"."+var.getName()+" ("+var.getId()+")");
+	}
+
+	private void importCatVariable(SurveyUnit parentUnit, BooleanAttributeDefinition attr) {
+		CategoricalVariable var = new CategoricalVariable();
+		var.setName(attr.getName());
+		var.setSurveyUnitId(parentUnit.getId());
+		var.setMultipleResponse(false);
+		categoricalVariableDao.insert(var);
+		System.out.println("Cat. variable: "+parentUnit.getName()+"."+var.getName()+" ("+var.getId()+")");
 		
 	}
 
-	private void importNumVariable(NumberAttributeDefinition attr) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	private void importCatVariable(BooleanAttributeDefinition attr) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	private void importCatVariable(CodeAttributeDefinition attr) {
-		// TODO Auto-generated method stub
-		
+	private void importCatVariable(SurveyUnit parentUnit, CodeAttributeDefinition attr) {
+		CategoricalVariable var = new CategoricalVariable();
+		var.setName(attr.getName());
+		var.setSurveyUnitId(parentUnit.getId());
+		var.setMultipleResponse(attr.isMultiple());
+		categoricalVariableDao.insert(var);
+		System.out.println("Cat. variable: "+parentUnit.getName()+"."+var.getName()+" ("+var.getId()+")");
 	}
 
 	private SurveyUnit importSurveyUnit(SurveyUnit parentUnit, String unitType, String unitName) {
@@ -136,7 +156,7 @@ public class CollectLoader {
 		return unit;
 	}
 
-	private  CollectSurvey loadIdml(String idml) 
+	private CollectSurvey loadIdml(String idml) 
 				throws FileNotFoundException, IdmlParseException {
 		FileReader reader = new FileReader(idml);
 		CollectSurvey cs = (CollectSurvey) idmlBinder.unmarshal(reader);

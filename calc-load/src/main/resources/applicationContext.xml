@@ -19,7 +19,7 @@
     http://www.springframework.org/schema/tx 
     http://www.springframework.org/schema/tx/spring-tx-3.0.xsd"
 	default-lazy-init="true">
-	
+
 	<context:annotation-config />
 	
 	<context:property-placeholder location="file:///home/gino/workspace/of/calc/calc-load/dev.properties" />
@@ -41,6 +41,8 @@
     	<property name="url" value="${calc.jdbc.url}"/>
     	<property name="username" value="${calc.jdbc.username}"/>
     	<property name="password" value="${calc.jdbc.password}"/>
+		<property name="maxActive" value="10"/> 
+    	<property name="minIdle" value="5"/>     	
 	</bean>
 		
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
@@ -49,9 +51,12 @@
     
     <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true" />
     
-	<bean class="org.openforis.calc.CollectLoader"/>
+	<bean id="loader" class="org.openforis.calc.CollectLoader" />
 	<bean class="org.openforis.calc.persistence.SurveyDao" autowire="byName"/>
 	<bean class="org.openforis.calc.persistence.SurveyUnitDao" autowire="byName"/>
+	<bean class="org.openforis.calc.persistence.NumericVariableDao" autowire="byName"/>
+	<bean class="org.openforis.calc.persistence.CategoricalVariableDao" autowire="byName"/>
+	<bean class="org.openforis.calc.persistence.CategoryDao" autowire="byName"/>
 	
     <bean id="collectSurveyContext" class="org.openforis.collect.model.CollectSurveyContext">
         <constructor-arg><ref bean="expressionFactory"/></constructor-arg>

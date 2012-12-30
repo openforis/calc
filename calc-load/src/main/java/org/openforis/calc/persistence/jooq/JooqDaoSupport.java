@@ -31,10 +31,10 @@ import org.springframework.transaction.annotation.Transactional;
 public abstract class JooqDaoSupport<R extends UpdatableRecord<R>, P extends ModelObject>
 	extends JdbcDaoSupport implements DAO<R, P, Integer>
 {
-	private final Log log = LogFactory.getLog(getClass());
+	private Log log = LogFactory.getLog(getClass());
 
-	private final Table<R> table;
-	private final Class<P> type;
+	private Table<R> table;
+	private Class<P> type;
     
 	protected JooqDaoSupport(Table<R> table, Class<P> type) {
 		this.table = table;
@@ -66,18 +66,21 @@ public abstract class JooqDaoSupport<R extends UpdatableRecord<R>, P extends Mod
 	}
 	
 
+	@Transactional
     @Override
-    public final void insert(P object) {
+    public void insert(P object) {
         insert(singletonList(object));
     }
 
+    @Transactional
     @Override
-    public final void insert(P... objects) {
+    public void insert(P... objects) {
         insert(asList(objects));
     }
 
+    @Transactional
     @Override
-    public final void insert(Collection<P> objects) {
+    public void insert(Collection<P> objects) {
     	Factory create = getJooqFactory();
     	List<P> pojos = new ArrayList<P>(objects);
     	
@@ -109,119 +112,119 @@ public abstract class JooqDaoSupport<R extends UpdatableRecord<R>, P extends Mod
 //	
 //	@Override
 //	@Transactional
-//	public final void insert(P object) {
+//	public void insert(P object) {
 //		JooqDaoImpl jooqDao = getJooqDao();
 //		jooqDao.insert(object);
 //	}
 //
 //	@Override
 //	@Transactional
-//	public final void insert(P... objects) {
+//	public void insert(P... objects) {
 //		JooqDaoImpl jooqDao = getJooqDao();
 //		jooqDao.insert(objects);
 //	}
 //
 //	@Override
 //	@Transactional
-//	public final void insert(Collection<P> objects) {
+//	public void insert(Collection<P> objects) {
 //		JooqDaoImpl jooqDao = getJooqDao();
 //		jooqDao.insert(objects);
 //	}
 
 	@Override
 	@Transactional
-	public final void update(P object) {
+	public void update(P object) {
 		JooqDaoImpl jooqDao = getJooqDao();
 		jooqDao.update(object);
 	}
 
 	@Override
 	@Transactional
-	public final void update(P... objects) {
+	public void update(P... objects) {
 		JooqDaoImpl jooqDao = getJooqDao();
 		jooqDao.update(objects);
 	}
 
 	@Override
 	@Transactional
-	public final void update(Collection<P> objects) {
+	public void update(Collection<P> objects) {
 		JooqDaoImpl jooqDao = getJooqDao();
 		jooqDao.update(objects);
 	}
 
 	@Override
 	@Transactional
-	public final void delete(P... objects) {
+	public void delete(P... objects) {
 		JooqDaoImpl jooqDao = getJooqDao();
 		jooqDao.delete(objects);
 	}
 
 	@Override
 	@Transactional
-	public final void delete(Collection<P> objects) {
+	public void delete(Collection<P> objects) {
 		JooqDaoImpl jooqDao = getJooqDao();
 		jooqDao.delete(objects);
 	}
 
 	@Override
 	@Transactional
-	public final void deleteById(Integer... ids) {
+	public void deleteById(Integer... ids) {
 		JooqDaoImpl jooqDao = getJooqDao();
 		jooqDao.deleteById(ids);
 	}
 
 	@Override
 	@Transactional
-	public final void deleteById(Collection<Integer> ids) {
+	public void deleteById(Collection<Integer> ids) {
 		JooqDaoImpl jooqDao = getJooqDao();
 		jooqDao.deleteById(ids);
 	}
 
 	@Override
 	@Transactional
-	public final boolean exists(P object) {
+	public boolean exists(P object) {
 		JooqDaoImpl jooqDao = getJooqDao();
 		return jooqDao.exists(object);
 	}
 
 	@Override
 	@Transactional
-	public final boolean existsById(Integer id) {
+	public boolean existsById(Integer id) {
 		JooqDaoImpl jooqDao = getJooqDao();
 		return jooqDao.existsById(id);
 	}
 
 	@Override
 	@Transactional
-	public final long count() {
+	public long count() {
 		JooqDaoImpl jooqDao = getJooqDao();
 		return jooqDao.count();
 	}
 
 	@Override
 	@Transactional
-	public final List<P> findAll() {
+	public List<P> findAll() {
 		JooqDaoImpl jooqDao = getJooqDao();
 		return jooqDao.findAll();
 	}
 
 	@Override
 	@Transactional
-	public final P findById(Integer id) {
+	public P findById(Integer id) {
 		JooqDaoImpl jooqDao = getJooqDao();
 		return jooqDao.findById(id);
 	}
 
 	@Override
 	@Transactional
-	public final <Z> List<P> fetch(Field<Z> field, Z... values) {
+	public <Z> List<P> fetch(Field<Z> field, Z... values) {
 		JooqDaoImpl jooqDao = getJooqDao();
 		return jooqDao.fetch(field, values);
 	}
 
 	@Override
 	@Transactional
-	public final <Z> P fetchOne(Field<Z> field, Z value) {
+	public <Z> P fetchOne(Field<Z> field, Z value) {
 		JooqDaoImpl jooqDao = getJooqDao();
 		return jooqDao.fetchOne(field, value);
 	}
@@ -248,7 +251,7 @@ public abstract class JooqDaoSupport<R extends UpdatableRecord<R>, P extends Mod
 	
 	// From DAOImpl
 	
-    private final Field<?> pk() {
+    private Field<?> pk() {
         if (table instanceof UpdatableTable) {
             UpdatableTable<?> updatable = (UpdatableTable<?>) table;
             UniqueKey<?> key = updatable.getMainKey();
@@ -261,7 +264,7 @@ public abstract class JooqDaoSupport<R extends UpdatableRecord<R>, P extends Mod
         return null;
     }
 
-    private final List<R> records(Collection<P> objects, boolean forUpdate) {
+    private List<R> records(Collection<P> objects, boolean forUpdate) {
     	Factory create = getJooqFactory();
         List<R> result = new ArrayList<R>();
 //        Field<?> pk = pk();
