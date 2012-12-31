@@ -51,12 +51,26 @@
     
     <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true" />
     
-	<bean id="loader" class="org.openforis.calc.CollectLoader" />
+	<bean class="org.openforis.calc.collect.CollectMetadataLoader" />
+	<bean class="org.openforis.calc.collect.CollectDataLoader" />
+
+	<!--  DAOs -->	
 	<bean class="org.openforis.calc.persistence.SurveyDao" autowire="byName"/>
-	<bean class="org.openforis.calc.persistence.SurveyUnitDao" autowire="byName"/>
+	<bean class="org.openforis.calc.persistence.ObservationUnitDao" autowire="byName"/>
 	<bean class="org.openforis.calc.persistence.NumericVariableDao" autowire="byName"/>
 	<bean class="org.openforis.calc.persistence.CategoricalVariableDao" autowire="byName"/>
 	<bean class="org.openforis.calc.persistence.CategoryDao" autowire="byName"/>
+	<bean class="org.openforis.calc.persistence.StratumDao" autowire="byName"/>
+	<bean class="org.openforis.calc.persistence.ClusterDao" autowire="byName"/>
+	<bean class="org.openforis.calc.persistence.PlotDao" autowire="byName"/>
+	<bean class="org.openforis.calc.persistence.AoiDao" autowire="byName"/>
+	<bean class="org.openforis.calc.persistence.SurveyedClusterDao" autowire="byName"/>
+	<bean class="org.openforis.calc.persistence.SurveyedPlotDao" autowire="byName"/>
+	<bean class="org.openforis.calc.persistence.SpecimenDao" autowire="byName"/>
+
+	<!-- Services -->	
+	<bean class="org.openforis.calc.service.MetadataService" />
+	<bean class="org.openforis.calc.service.DataService" />
 	
     <bean id="collectSurveyContext" class="org.openforis.collect.model.CollectSurveyContext">
         <constructor-arg><ref bean="expressionFactory"/></constructor-arg>

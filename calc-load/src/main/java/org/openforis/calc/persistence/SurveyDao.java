@@ -15,5 +15,8 @@ public class SurveyDao extends JooqDaoSupport<SurveyRecord, Survey> {
 	public SurveyDao() {
 		super(Tables.SURVEY, Survey.class);
 	}
-
+	
+	public Survey fetchByUri(String uri) {
+		return fetchOne(Tables.SURVEY.URI, uri);
+	}
 }
