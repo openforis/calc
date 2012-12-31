@@ -38,7 +38,7 @@
       </Column>
       <Column id="26" name="survey_type" type="char" length="1" nulls="false">
          <CP name="DEFAULT_VALUE">'P'</CP>
-         <CP name="COMMENTS">P|R|U|QA - Planned/Remeasurement/Unplanned/QA</CP>
+         <CP name="COMMENTS">P|R|U|QA - Primary/Remeasurement/Unplanned/QA</CP>
       </Column>
       <Column id="27" name="step" type="integer" length="25" nulls="false">
          <CP name="COMMENTS">1=Incomplete 2=Dirty 3=Clean</CP>
@@ -58,7 +58,7 @@
    </Table>
    <Table id="34" name="specimen" schema="calc" database="calc" background="16777165">
       <Column id="35" name="id" type="serial" length="0" nulls="false"/>
-      <Column id="36" name="plot_id" type="integer" length="0" nulls="false"/>
+      <Column id="36" name="surveyed_plot_id" type="integer" length="0" nulls="false"/>
       <Column id="37" name="obs_unit_id" type="integer" length="25" nulls="false"/>
       <Column id="38" name="taxon_id" type="integer" length="0" nulls="true"/>
       <Column id="39" name="survey_date" type="date" length="25" nulls="true"/>
@@ -600,7 +600,6 @@ http://code.google.com/p/darwincore/wiki/Taxon</Text>
    <Relation id="275" name="fk_specimen_parent" cardinality="-2" identifying="false" nulls="true">
       <FK>35</FK>
       <PK>41</PK>
-      <Text></Text>
    </Relation>
    <Note id="276">
       <Text>Plot Observations &amp; Attributes</Text>
@@ -779,146 +778,146 @@ Numeric &amp; Categorical Variables</Text>
       <ConstraintColumn id="232"></ConstraintColumn>
    </Constraint>
    <Sheet name="AOI" id="296" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
-      <Place id="100" visible="true">450,330,261,140</Place>
-      <Place id="288" visible="true">480,20,181,40</Place>
+      <Place id="91" visible="true">430,560,331,270</Place>
       <Place id="285" visible="true">830,670,291,151</Place>
-      <Place id="235" visible="true" options="470.0,80.0,200.0,180.0,450.0,330.0,261.0,140.0,2,560.0,260.0,560.0,330.0">500,0,0,0</Place>
       <Place id="125" visible="true">470,80,200,180</Place>
       <Place id="236" visible="true">500,0,0,0</Place>
       <Place id="234" visible="true" options="450.0,330.0,261.0,140.0,430.0,560.0,331.0,270.0,4,580.0,470.0,580.0,515.0,570.0,515.0,570.0,560.0">500,0,0,0</Place>
-      <Place id="91" visible="true">430,560,331,270</Place>
+      <Place id="288" visible="true">480,20,181,40</Place>
+      <Place id="235" visible="true" options="470.0,80.0,200.0,180.0,450.0,330.0,261.0,140.0,2,560.0,260.0,560.0,330.0">500,0,0,0</Place>
+      <Place id="100" visible="true">450,330,261,140</Place>
    </Sheet>
    <Sheet name="Sampling Design" id="297" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
-      <Place id="34" visible="false">260,10,240,480</Place>
       <Place id="280" visible="true">710,760,361,71</Place>
-      <Place id="100" visible="false">90,150,170,60</Place>
-      <Place id="257" visible="true" options="140.0,90.0,200.0,180.0,62.0,379.0,289.0,152.0,2,230.0,270.0,230.0,379.0">500,0,0,0</Place>
       <Place id="239" visible="true" options="62.0,379.0,289.0,152.0,498.0,331.0,233.0,220.0,2,351.0,440.0,498.0,440.0">476,-11,0,0</Place>
-      <Place id="281" visible="true">70,610,351,71</Place>
-      <Place id="15" visible="false">950,10,230,280</Place>
-      <Place id="5" visible="true">498,331,233,220</Place>
-      <Place id="287" visible="true">540,20,131,40</Place>
-      <Place id="236" visible="false">500,0,0,0</Place>
-      <Place id="234" visible="false">500,0,0,0</Place>
-      <Place id="0" visible="true">920,377,160,130</Place>
-      <Place id="248" visible="true" options="920.0,377.0,160.0,130.0,498.0,331.0,233.0,220.0,4,920.0,440.0,794.0,440.0,794.0,430.0,731.0,430.0">500,0,0,0</Place>
-      <Place id="29" visible="true">62,379,289,152</Place>
       <Place id="125" visible="true">140,90,200,180</Place>
-      <Place id="42" visible="false">510,530,240,600</Place>
+      <Place id="236" visible="false">500,0,0,0</Place>
+      <Place id="15" visible="false">950,10,230,280</Place>
       <Place id="251" visible="false">500,0,0,0</Place>
+      <Place id="234" visible="false">500,0,0,0</Place>
+      <Place id="42" visible="false">510,530,240,600</Place>
+      <Place id="248" visible="true" options="920.0,377.0,160.0,130.0,498.0,331.0,233.0,220.0,4,920.0,440.0,794.0,440.0,794.0,430.0,731.0,430.0">500,0,0,0</Place>
       <Place id="91" visible="false">90,330,180,140</Place>
+      <Place id="34" visible="false">260,10,240,480</Place>
+      <Place id="281" visible="true">70,610,351,71</Place>
+      <Place id="5" visible="true">498,331,233,220</Place>
+      <Place id="257" visible="true" options="140.0,90.0,200.0,180.0,62.0,379.0,289.0,152.0,2,230.0,270.0,230.0,379.0">500,0,0,0</Place>
+      <Place id="29" visible="true">62,379,289,152</Place>
+      <Place id="0" visible="true">920,377,160,130</Place>
+      <Place id="100" visible="false">90,150,170,60</Place>
+      <Place id="287" visible="true">540,20,131,40</Place>
    </Sheet>
    <Sheet name="Metadata" id="298" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
-      <Place id="100" visible="false">100,60,170,60</Place>
-      <Place id="289" visible="true">450,30,251,40</Place>
-      <Place id="145" visible="true">908,689,170,130</Place>
-      <Place id="139" visible="true">68,459,190,110</Place>
-      <Place id="272" visible="true">500,0,0,0</Place>
-      <Place id="271" visible="true" options="68.0,459.0,190.0,110.0,450.0,510.0,220.0,60.0,5,258.0,520.0,258.0,525.0,460.0,525.0,460.0,520.0,450.0,520.0">468,15,6,0</Place>
+      <Place id="241" visible="true" options="490.0,270.0,170.0,130.0,68.0,459.0,190.0,110.0,3,490.0,340.0,160.0,340.0,160.0,459.0">634,-16,1,0</Place>
+      <Place id="165" visible="true">888,408,210,140</Place>
+      <Place id="125" visible="true">220,70,200,180</Place>
       <Place id="236" visible="false">500,0,0,16</Place>
       <Place id="259" visible="false">500,0,0,0</Place>
-      <Place id="241" visible="true" options="490.0,270.0,170.0,130.0,68.0,459.0,190.0,110.0,3,490.0,340.0,160.0,340.0,160.0,459.0">634,-16,1,0</Place>
+      <Place id="271" visible="true" options="68.0,459.0,190.0,110.0,450.0,510.0,220.0,60.0,5,258.0,520.0,258.0,525.0,460.0,525.0,460.0,520.0,450.0,520.0">468,15,6,0</Place>
+      <Place id="145" visible="true">908,689,170,130</Place>
+      <Place id="139" visible="true">68,459,190,110</Place>
+      <Place id="173" visible="false">190,479,170,60</Place>
+      <Place id="282" visible="true">878,170,261,71</Place>
       <Place id="264" visible="true" options="490.0,270.0,170.0,130.0,888.0,408.0,210.0,140.0,3,660.0,340.0,1010.0,340.0,1010.0,408.0">651,11,0,0</Place>
-      <Place id="125" visible="true">220,70,200,180</Place>
+      <Place id="270" visible="true" options="450.0,510.0,220.0,60.0,888.0,408.0,210.0,140.0,4,670.0,540.0,670.0,535.0,888.0,535.0,888.0,530.0">500,0,0,0</Place>
       <Place id="157" visible="true">438,670,210,140</Place>
       <Place id="249" visible="true" options="450.0,510.0,220.0,60.0,438.0,670.0,210.0,140.0,2,570.0,570.0,570.0,670.0">500,24,38,0</Place>
-      <Place id="165" visible="true">888,408,210,140</Place>
-      <Place id="244" visible="true" options="888.0,408.0,210.0,140.0,908.0,689.0,170.0,130.0,2,1000.0,548.0,1000.0,689.0">530,-8,0,0</Place>
-      <Place id="247" visible="true" options="220.0,70.0,200.0,180.0,490.0,270.0,170.0,130.0,3,420.0,220.0,570.0,220.0,570.0,270.0">580,-10,2,0</Place>
-      <Place id="234" visible="false">500,0,0,0</Place>
-      <Place id="218" visible="true">490,270,170,130</Place>
-      <Place id="270" visible="true" options="450.0,510.0,220.0,60.0,888.0,408.0,210.0,140.0,4,670.0,540.0,670.0,535.0,888.0,535.0,888.0,530.0">500,0,0,0</Place>
-      <Place id="250" visible="true" options="908.0,689.0,170.0,130.0,438.0,670.0,210.0,140.0,4,908.0,730.0,780.0,730.0,780.0,730.0,648.0,730.0">500,13,0,0</Place>
-      <Place id="282" visible="true">878,170,261,71</Place>
-      <Place id="173" visible="false">190,479,170,60</Place>
+      <Place id="272" visible="true">500,0,0,0</Place>
       <Place id="104" visible="false">108,637,260,280</Place>
+      <Place id="247" visible="true" options="220.0,70.0,200.0,180.0,490.0,270.0,170.0,130.0,3,420.0,220.0,570.0,220.0,570.0,270.0">580,-10,2,0</Place>
       <Place id="231" visible="true">450,510,220,60</Place>
+      <Place id="289" visible="true">450,30,251,40</Place>
+      <Place id="244" visible="true" options="888.0,408.0,210.0,140.0,908.0,689.0,170.0,130.0,2,1000.0,548.0,1000.0,689.0">530,-8,0,0</Place>
+      <Place id="234" visible="false">500,0,0,0</Place>
       <Place id="91" visible="false">110,220,180,140</Place>
+      <Place id="250" visible="true" options="908.0,689.0,170.0,130.0,438.0,670.0,210.0,140.0,4,908.0,730.0,780.0,730.0,780.0,730.0,648.0,730.0">500,13,0,0</Place>
+      <Place id="100" visible="false">100,60,170,60</Place>
+      <Place id="218" visible="true">490,270,170,130</Place>
    </Sheet>
    <Sheet name="Plot Data" id="299" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
-      <Place id="249" visible="false">500,0,0,0</Place>
       <Place id="239" visible="true">500,0,0,0</Place>
-      <Place id="145" visible="true">760,689,170,110</Place>
-      <Place id="242" visible="true" options="239.0,711.0,210.0,130.0,249.0,491.0,180.0,110.0,2,340.0,711.0,340.0,601.0">550,10,0,0</Place>
-      <Place id="152" visible="true">769,520,170,90</Place>
-      <Place id="139" visible="true">239,711,210,130</Place>
-      <Place id="273" visible="true">500,0,0,0</Place>
       <Place id="165" visible="false">720,760,210,90</Place>
-      <Place id="244" visible="false">500,0,0,0</Place>
-      <Place id="15" visible="true">465,271,220,250</Place>
-      <Place id="269" visible="true">500,0,0,0</Place>
-      <Place id="5" visible="true">27,60,214,240</Place>
-      <Place id="295" visible="true">820,130,251,61</Place>
-      <Place id="250" visible="false">500,0,0,0</Place>
-      <Place id="245" visible="true" options="760.0,689.0,170.0,110.0,769.0,520.0,170.0,90.0,4,840.0,689.0,845.0,689.0,845.0,610.0,850.0,610.0">540,-12,0,0</Place>
-      <Place id="268" visible="true" options="490.0,90.0,160.0,110.0,465.0,271.0,220.0,250.0,4,560.0,200.0,560.0,223.0,560.0,223.0,560.0,271.0">500,0,0,0</Place>
       <Place id="246" visible="true" options="465.0,271.0,220.0,250.0,769.0,520.0,170.0,90.0,3,685.0,370.0,850.0,370.0,850.0,520.0">512,-11,32,0</Place>
-      <Place id="276" visible="true">468,29,223,42</Place>
-      <Place id="225" visible="true">490,90,160,110</Place>
-      <Place id="133" visible="true">249,491,180,110</Place>
-      <Place id="157" visible="false">368,829,170,130</Place>
+      <Place id="244" visible="false">500,0,0,0</Place>
+      <Place id="242" visible="true" options="239.0,711.0,210.0,130.0,249.0,491.0,180.0,110.0,2,340.0,711.0,340.0,601.0">550,10,0,0</Place>
+      <Place id="15" visible="true">465,271,220,250</Place>
       <Place id="251" visible="true">576,3,0,7</Place>
+      <Place id="145" visible="true">760,689,170,110</Place>
+      <Place id="133" visible="true">249,491,180,110</Place>
+      <Place id="139" visible="true">239,711,210,130</Place>
+      <Place id="157" visible="false">368,829,170,130</Place>
+      <Place id="225" visible="true">490,90,160,110</Place>
+      <Place id="276" visible="true">468,29,223,42</Place>
+      <Place id="273" visible="true">500,0,0,0</Place>
+      <Place id="5" visible="true">27,60,214,240</Place>
+      <Place id="268" visible="true" options="490.0,90.0,160.0,110.0,465.0,271.0,220.0,250.0,4,560.0,200.0,560.0,223.0,560.0,223.0,560.0,271.0">500,0,0,0</Place>
+      <Place id="249" visible="false">500,0,0,0</Place>
+      <Place id="295" visible="true">820,130,251,61</Place>
+      <Place id="245" visible="true" options="760.0,689.0,170.0,110.0,769.0,520.0,170.0,90.0,4,840.0,689.0,845.0,689.0,845.0,610.0,850.0,610.0">540,-12,0,0</Place>
       <Place id="243" visible="true" options="465.0,271.0,220.0,250.0,249.0,491.0,180.0,110.0,3,465.0,370.0,340.0,370.0,340.0,491.0">556,18,0,10</Place>
+      <Place id="250" visible="false">500,0,0,0</Place>
+      <Place id="152" visible="true">769,520,170,90</Place>
+      <Place id="269" visible="true">500,0,0,0</Place>
    </Sheet>
    <Sheet name="Specimen Data" id="300" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
-      <Place id="34" visible="true">459,350,170,140</Place>
-      <Place id="237" visible="true">500,0,0,0</Place>
-      <Place id="145" visible="true">580,760,170,110</Place>
-      <Place id="274" visible="true">500,0,0,0</Place>
-      <Place id="139" visible="true">200,740,210,110</Place>
-      <Place id="258" visible="true">500,-5,0,11</Place>
-      <Place id="265" visible="true" options="200.0,740.0,210.0,110.0,230.0,510.0,220.0,110.0,4,300.0,740.0,300.0,680.0,300.0,680.0,300.0,620.0">500,0,0,0</Place>
-      <Place id="238" visible="true">500,0,0,0</Place>
+      <Place id="256" visible="true">500,0,0,0</Place>
+      <Place id="277" visible="true">69,21,312,100</Place>
       <Place id="165" visible="false">80,680,210,90</Place>
       <Place id="15" visible="true">425,79,220,210</Place>
-      <Place id="269" visible="true">500,0,0,0</Place>
-      <Place id="5" visible="false">730,140,251,181</Place>
-      <Place id="260" visible="true">500,-6,0,6</Place>
-      <Place id="261" visible="true">500,0,0,0</Place>
-      <Place id="255" visible="true" options="425.0,79.0,220.0,210.0,459.0,350.0,170.0,140.0,5,530.0,289.0,525.0,289.0,525.0,355.0,520.0,355.0,520.0,350.0">477,-6,0,0</Place>
-      <Place id="185" visible="true">230,510,220,110</Place>
-      <Place id="275" visible="true">500,0,0,0</Place>
-      <Place id="256" visible="true">500,0,0,0</Place>
-      <Place id="104" visible="true">855,270,260,360</Place>
-      <Place id="266" visible="true" options="580.0,760.0,170.0,110.0,570.0,580.0,200.0,90.0,2,680.0,760.0,680.0,670.0">500,0,0,0</Place>
-      <Place id="191" visible="true">570,580,200,90</Place>
-      <Place id="291" visible="true">410,20,271,40</Place>
       <Place id="251" visible="false">500,0,0,0</Place>
-      <Place id="277" visible="true">69,21,312,100</Place>
+      <Place id="255" visible="true" options="425.0,79.0,220.0,210.0,459.0,350.0,210.0,140.0,5,530.0,289.0,525.0,289.0,525.0,355.0,520.0,355.0,520.0,350.0">477,-6,0,0</Place>
+      <Place id="291" visible="true">410,20,271,40</Place>
+      <Place id="145" visible="true">580,760,170,110</Place>
+      <Place id="139" visible="true">200,740,210,110</Place>
+      <Place id="191" visible="true">570,580,200,90</Place>
+      <Place id="185" visible="true">230,510,220,110</Place>
+      <Place id="260" visible="true">500,-6,0,6</Place>
+      <Place id="237" visible="true">500,0,0,0</Place>
+      <Place id="34" visible="true">459,350,210,140</Place>
+      <Place id="5" visible="false">730,140,251,181</Place>
+      <Place id="238" visible="true">500,0,0,0</Place>
+      <Place id="266" visible="true" options="580.0,760.0,170.0,110.0,570.0,580.0,200.0,90.0,2,680.0,760.0,680.0,670.0">500,0,0,0</Place>
+      <Place id="274" visible="true">500,0,0,0</Place>
+      <Place id="265" visible="true" options="200.0,740.0,210.0,110.0,230.0,510.0,220.0,110.0,4,300.0,740.0,300.0,680.0,300.0,680.0,300.0,620.0">500,0,0,0</Place>
+      <Place id="104" visible="true">855,270,260,360</Place>
+      <Place id="261" visible="true">500,0,0,0</Place>
+      <Place id="258" visible="true">500,-5,0,11</Place>
+      <Place id="269" visible="true">500,0,0,0</Place>
+      <Place id="275" visible="true">500,0,0,0</Place>
    </Sheet>
    <Sheet name="Species" id="301" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
-      <Place id="261" visible="true">500,0,0,0</Place>
-      <Place id="173" visible="true">250,370,170,80</Place>
-      <Place id="262" visible="true" options="600.0,210.0,270.0,460.0,190.0,650.0,260.0,140.0,3,600.0,500.0,390.0,500.0,390.0,650.0">764,-3,0,0</Place>
-      <Place id="259" visible="true" options="250.0,370.0,170.0,80.0,600.0,210.0,270.0,460.0,2,420.0,410.0,600.0,410.0">477,-5,0,16</Place>
-      <Place id="258" visible="true">500,-5,0,15</Place>
-      <Place id="104" visible="true">600,210,270,460</Place>
-      <Place id="263" visible="true" options="240.0,100.0,241.0,160.0,250.0,370.0,170.0,80.0,4,360.0,260.0,350.0,260.0,350.0,370.0,340.0,370.0">500,0,0,0</Place>
-      <Place id="292" visible="true">440,20,271,40</Place>
-      <Place id="260" visible="true">500,-8,0,5</Place>
-      <Place id="125" visible="true">240,100,241,160</Place>
       <Place id="177" visible="true">190,650,260,140</Place>
+      <Place id="260" visible="true">500,-8,0,5</Place>
+      <Place id="262" visible="true" options="600.0,210.0,270.0,460.0,190.0,650.0,260.0,140.0,3,600.0,500.0,390.0,500.0,390.0,650.0">764,-3,0,0</Place>
+      <Place id="125" visible="true">240,100,241,160</Place>
+      <Place id="292" visible="true">440,20,271,40</Place>
       <Place id="284" visible="true">810,800,261,71</Place>
+      <Place id="259" visible="true" options="250.0,370.0,170.0,80.0,600.0,210.0,270.0,460.0,2,420.0,410.0,600.0,410.0">477,-5,0,16</Place>
+      <Place id="104" visible="true">600,210,270,460</Place>
+      <Place id="261" visible="true">500,0,0,0</Place>
+      <Place id="258" visible="true">500,-5,0,15</Place>
+      <Place id="173" visible="true">250,370,170,80</Place>
+      <Place id="263" visible="true" options="240.0,100.0,241.0,160.0,250.0,370.0,170.0,80.0,4,360.0,260.0,350.0,260.0,350.0,370.0,340.0,370.0">500,0,0,0</Place>
    </Sheet>
    <Sheet name="Processing Chains" id="302" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
-      <Place id="240" visible="true" options="289.0,570.0,210.0,130.0,750.0,710.0,170.0,90.0,4,499.0,670.0,620.0,670.0,620.0,730.0,750.0,730.0">554,14,0,15</Place>
-      <Place id="286" visible="true">710,310,331,121</Place>
-      <Place id="196" visible="true">312,327,200,90</Place>
-      <Place id="201" visible="true">289,570,210,130</Place>
-      <Place id="252" visible="true" options="740.0,520.0,200.0,90.0,289.0,570.0,210.0,130.0,4,740.0,600.0,630.0,600.0,630.0,600.0,499.0,600.0">500,0,0,0</Place>
-      <Place id="254" visible="true" options="310.0,80.0,200.0,160.0,312.0,327.0,200.0,90.0,4,420.0,240.0,420.0,283.5,420.0,284.0,420.0,327.0">500,0,0,0</Place>
       <Place id="213" visible="true">740,520,200,90</Place>
-      <Place id="253" visible="true" options="312.0,327.0,200.0,90.0,289.0,570.0,210.0,130.0,4,410.0,417.0,405.0,417.0,405.0,570.0,400.0,570.0">500,0,0,0</Place>
-      <Place id="293" visible="true">540,20,141,40</Place>
+      <Place id="254" visible="true" options="310.0,80.0,200.0,160.0,312.0,327.0,200.0,90.0,4,420.0,240.0,420.0,283.5,420.0,284.0,420.0,327.0">500,0,0,0</Place>
       <Place id="125" visible="true">310,80,200,160</Place>
+      <Place id="196" visible="true">312,327,200,90</Place>
+      <Place id="286" visible="true">710,310,331,121</Place>
+      <Place id="240" visible="true" options="289.0,570.0,210.0,130.0,750.0,710.0,170.0,90.0,4,499.0,670.0,620.0,670.0,620.0,730.0,750.0,730.0">554,14,0,15</Place>
+      <Place id="252" visible="true" options="740.0,520.0,200.0,90.0,289.0,570.0,210.0,130.0,4,740.0,600.0,630.0,600.0,630.0,600.0,499.0,600.0">500,0,0,0</Place>
+      <Place id="253" visible="true" options="312.0,327.0,200.0,90.0,289.0,570.0,210.0,130.0,4,410.0,417.0,405.0,417.0,405.0,570.0,400.0,570.0">500,0,0,0</Place>
       <Place id="208" visible="true">750,710,170,90</Place>
+      <Place id="201" visible="true">289,570,210,130</Place>
+      <Place id="293" visible="true">540,20,141,40</Place>
    </Sheet>
    <Sheet name="Summary Views" id="303" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
-      <Place id="85" visible="true">470,430,241,111</Place>
-      <Place id="294" visible="true">480,30,201,40</Place>
       <Place id="77" visible="true">210,150,200,140</Place>
       <Place id="83" visible="true">740,160,211,100</Place>
+      <Place id="294" visible="true">480,30,201,40</Place>
+      <Place id="85" visible="true">470,430,241,111</Place>
       <Place id="84" visible="true">520,220,120,60</Place>
    </Sheet>
-   <Settings sheet="300" zoom="1.0"></Settings>
+   <Settings sheet="299" zoom="1.0"></Settings>
 </Diagram>

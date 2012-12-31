@@ -6,6 +6,7 @@ import java.util.List;
 import org.openforis.calc.model.ModelObject;
 import org.openforis.calc.model.ObservationUnit;
 import org.openforis.calc.model.SurveySourceMap;
+import org.openforis.calc.model.SurveyedCluster;
 import org.openforis.collect.model.CollectRecord;
 import org.openforis.collect.persistence.xml.DataHandler;
 import org.openforis.collect.persistence.xml.DataHandler.NodeUnmarshallingError;
@@ -13,8 +14,11 @@ import org.openforis.collect.persistence.xml.DataUnmarshaller;
 import org.openforis.collect.persistence.xml.DataUnmarshaller.ParseRecordResult;
 import org.openforis.collect.persistence.xml.DataUnmarshallerException;
 import org.openforis.idm.metamodel.EntityDefinition;
+import org.openforis.idm.metamodel.NodeDefinition;
 import org.openforis.idm.metamodel.xml.IdmlParseException;
+import org.openforis.idm.model.Attribute;
 import org.openforis.idm.model.Entity;
+import org.openforis.idm.model.Node;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
@@ -24,7 +28,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  */
 public class CollectDataLoader extends CollectLoaderBase {
 	
-	// TODO to partially refactor into DataService
+	// TODO partially refactor into DataService?
 
 	private DataUnmarshaller dataUnmarshaller;
 	private SurveySourceMap sourceMap;
@@ -41,7 +45,7 @@ public class CollectDataLoader extends CollectLoaderBase {
 	}
 
 	synchronized
-	public void importData(String path, int step) throws IOException, DataImportException {
+	public void importData(String path, int step) throws IOException, DataImportException, InvalidMetadataException {
 		try {
 			collectSurvey = metadataService.loadIdml(path+IDML_FILENAME);
 			survey = surveyDao.fetchByUri(collectSurvey.getUri());
@@ -51,39 +55,76 @@ public class CollectDataLoader extends CollectLoaderBase {
 			importXml(path+"3/699.xml");
 		} catch (IdmlParseException e) {
 			throw new DataImportException(e);
+		}
+	}
+
+	private void importXml(String filename) throws DataImportException, InvalidMetadataException {
+		ParseRecordResult result;
+		try {
+			result = dataUnmarshaller.parse(filename);
+			if ( !result.isSuccess() ) {
+				logFailures(filename, result);
+				throw new DataImportException("Failed to load data");
+			}
+			logWarnings(filename, result);
+			CollectRecord record = result.getRecord();
+			importRecord(record);
 		} catch (DataUnmarshallerException e) {
 			throw new DataImportException(e);
 		}
 	}
 
-	private void importXml(String filename) throws DataUnmarshallerException, DataImportException {
-		ParseRecordResult result = dataUnmarshaller.parse(filename);
-		if ( !result.isSuccess() ) {
-			logFailures(filename, result);
-			throw new DataUnmarshallerException("Failed to load data");
-		}
-		logWarnings(filename, result);
-		CollectRecord record = result.getRecord();
-		importRecord(record);
-		
-	}
-
-	private void importRecord(CollectRecord record) throws DataImportException {
+	private void importRecord(CollectRecord record) throws DataImportException, InvalidMetadataException {
 		Entity root = record.getRootEntity();
-		traverse(root, null);
+		traverse(root, null, null);
 	}
 
-	private void traverse(Entity entity, ObservationUnit parentUnit) throws DataImportException {
+	private void traverse(Entity entity, ObservationUnit parentUnit, SurveyedCluster cluster, Integer parentId) 
+				throws DataImportException, InvalidMetadataException {
 		EntityDefinition defn = entity.getDefinition();
-		int defnId = defn.getId();
-		ModelObject obj = sourceMap.getModelObject(defnId);
-		if ( obj instanceof ObservationUnit ) {
-			ObservationUnit level = (ObservationUnit) obj;
+		EntityType type = getEntityType(defn);
+		if ( type != null ) {
+			switch (type) {
+			case CLUSTER:
+				if ( parentUnit != null ) {
+					throw new InvalidMetadataException("'cluster' must be above all observation units");
+				}
+				cluster = importCluster(entity);
+//				log.info("Cluster entity found: "+entity.getPath());
+				break;
+			case PLOT:
+//				parentUnit = importPlot(parentUnit, entity, parentId);
+				break;
+			case SPECIMEN:
+//				parentUnit = importSpecimen(parentUnit, entity, parentId);
+				break;
+			default:
+				throw new RuntimeException("Unimplemented entity type '"+type+"'");
+			}
 			
-			parentUnit = level;
-		} else {
-			throw new DataImportException("Entity "+defn.getPath()+" mapped to invalid "+obj.getClass());
+			int defnId = defn.getId();
+			ModelObject obj = sourceMap.getModelObject(defnId);
+			if ( obj instanceof ObservationUnit ) {
+				ObservationUnit level = (ObservationUnit) obj;
+				
+				parentUnit = level;
+			} else {
+				throw new DataImportException("Entity "+defn.getPath()+" mapped to invalid "+obj.getClass());
+			}
+
 		}
+	}
+
+	private SurveyedCluster importCluster(Entity entity) {
+		SurveyedCluster cluster = new SurveyedCluster();
+		List<Node<?>> children = entity.getChildren();
+		for (Node<?> child : children) {
+			NodeDefinition defn = child.getDefinition();
+			// TODO Preload cluster codes --> id
+			// TODO Assign cluster id
+			// TODO Assign survey date
+		}
+		return cluster;
 	}
 
 	private void logWarnings(String filename, ParseRecordResult result) {

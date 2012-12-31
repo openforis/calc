@@ -48,7 +48,7 @@ public class CollectMetadataLoader extends CollectLoaderBase {
 
 	@Transactional
 	synchronized
-	public void importMetadata(String idmlFilename) throws FileNotFoundException, IdmlParseException {		
+	public void importMetadata(String idmlFilename) throws FileNotFoundException, IdmlParseException, InvalidMetadataException {		
 		collectSurvey = metadataService.loadIdml(idmlFilename);
 		survey = new Survey();
 		survey.setName(collectSurvey.getProjectName(lang));
@@ -59,16 +59,27 @@ public class CollectMetadataLoader extends CollectLoaderBase {
 		traverse(schema);
 	}
 
-	private void traverse(Schema schema) {
+	private void traverse(Schema schema) throws InvalidMetadataException {
 		List<EntityDefinition> roots = schema.getRootEntityDefinitions();
 		for (EntityDefinition root : roots) {
 			traverse(root, null);
 		}
 	}
 
-	private void traverse(EntityDefinition node, ObservationUnit parentUnit) {
-		if ( node.getAnnotation(UNIT_TYPE_ATTRIBUTE) != null ) {
-			parentUnit = importSurveyUnitType(parentUnit, node);
+	private void traverse(EntityDefinition node, ObservationUnit parentUnit) throws InvalidMetadataException {
+		EntityType type = getEntityType(node);
+		if ( type != null ) {
+			if ( type.isCluster() ) {
+				if ( parentUnit != null ) {
+					throw new InvalidMetadataException("'cluster' entity found inside observation unit '" +
+							parentUnit.getName()+"' instead of top level");
+				}
+				log.info("Cluster entity found: "+node.getPath());
+			} else if ( type.isObservationUnit() ){
+				parentUnit = importObservationUnit(parentUnit, node, type);
+			} else {
+				throw new RuntimeException("Unimplemented entity type '"+type+"'");
+			}
 		} else {
 			log.info("Skipping unmapped entity: "+node.getPath());
 		}
@@ -197,14 +208,13 @@ public class CollectMetadataLoader extends CollectLoaderBase {
 		}
 	}
 
-	private ObservationUnit importSurveyUnitType(ObservationUnit parentUnit, EntityDefinition node) {
-		String unitType = node.getAnnotation(UNIT_TYPE_ATTRIBUTE);
-		String unitName = node.getAnnotation(UNIT_NAME_ATTRIBUTE);
-		unitName = unitName == null ? node.getName() : unitName;
+	private ObservationUnit importObservationUnit(ObservationUnit parentUnit, EntityDefinition node, EntityType type) {
+		String name = node.getAnnotation(OBS_UNIT_QNAME);
+		name = name == null ? node.getName() : name;
 		ObservationUnit unit = new ObservationUnit();
 		unit.setSurveyId(survey.getId());
-		unit.setName(unitName);
-		unit.setType(unitType);
+		unit.setName(name);
+		unit.setType(type.toString());
 		unit.setSourceId(node.getId());
 		if ( parentUnit != null ) {
 			unit.setParentId(parentUnit.getId());
