@@ -35,7 +35,4 @@ public class DialectAwareJooqFactory extends Factory {
 			throw new RuntimeException("Error getting database name", e);
 		}
 	}
-
-
-
 }

@@ -53,6 +53,7 @@
     
 	<bean class="org.openforis.calc.collect.CollectMetadataLoader" />
 	<bean class="org.openforis.calc.collect.CollectDataLoader" />
+	<bean class="org.openforis.calc.dataimport.SamplingDesignCsvImporter" />
 
 	<!--  DAOs -->	
 	<bean class="org.openforis.calc.persistence.SurveyDao" autowire="byName"/>

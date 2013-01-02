@@ -3,6 +3,7 @@ package org.openforis.calc.collect;
 import java.io.IOException;
 import java.util.List;
 
+import org.openforis.calc.dataimport.ImportException;
 import org.openforis.calc.model.ModelObject;
 import org.openforis.calc.model.ObservationUnit;
 import org.openforis.calc.model.SurveySourceMap;
@@ -45,7 +46,7 @@ public class CollectDataLoader extends CollectLoaderBase {
 	}
 
 	synchronized
-	public void importData(String path, int step) throws IOException, DataImportException, InvalidMetadataException {
+	public void importData(String path, int step) throws IOException, ImportException, InvalidMetadataException {
 		try {
 			collectSurvey = metadataService.loadIdml(path+IDML_FILENAME);
 			survey = surveyDao.fetchByUri(collectSurvey.getUri());
@@ -54,33 +55,33 @@ public class CollectDataLoader extends CollectLoaderBase {
 			dataUnmarshaller = new DataUnmarshaller(handler);
 			importXml(path+"3/699.xml");
 		} catch (IdmlParseException e) {
-			throw new DataImportException(e);
+			throw new ImportException(e);
 		}
 	}
 
-	private void importXml(String filename) throws DataImportException, InvalidMetadataException {
+	private void importXml(String filename) throws ImportException, InvalidMetadataException {
 		ParseRecordResult result;
 		try {
 			result = dataUnmarshaller.parse(filename);
 			if ( !result.isSuccess() ) {
 				logFailures(filename, result);
-				throw new DataImportException("Failed to load data");
+				throw new ImportException("Failed to load data");
 			}
 			logWarnings(filename, result);
 			CollectRecord record = result.getRecord();
 			importRecord(record);
 		} catch (DataUnmarshallerException e) {
-			throw new DataImportException(e);
+			throw new ImportException(e);
 		}
 	}
 
-	private void importRecord(CollectRecord record) throws DataImportException, InvalidMetadataException {
+	private void importRecord(CollectRecord record) throws ImportException, InvalidMetadataException {
 		Entity root = record.getRootEntity();
-		traverse(root, null, null);
+		traverse(root, null, null, null);
 	}
 
 	private void traverse(Entity entity, ObservationUnit parentUnit, SurveyedCluster cluster, Integer parentId) 
-				throws DataImportException, InvalidMetadataException {
+				throws ImportException, InvalidMetadataException {
 		EntityDefinition defn = entity.getDefinition();
 		EntityType type = getEntityType(defn);
 		if ( type != null ) {
@@ -109,7 +110,7 @@ public class CollectDataLoader extends CollectLoaderBase {
 				
 				parentUnit = level;
 			} else {
-				throw new DataImportException("Entity "+defn.getPath()+" mapped to invalid "+obj.getClass());
+				throw new ImportException("Entity "+defn.getPath()+" mapped to invalid "+obj.getClass());
 			}
 
 		}

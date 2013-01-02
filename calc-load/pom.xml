@@ -48,11 +48,11 @@
 					</execution>
 				</executions>
 				<dependencies>
-					<dependency>
-						<groupId>postgresql</groupId>
-						<artifactId>postgresql</artifactId>
-						<version>9.1-901.jdbc4</version>
-					</dependency>
+<!-- 					<dependency> -->
+<!-- 						<groupId>postgresql</groupId> -->
+<!-- 						<artifactId>postgresql</artifactId> -->
+<!-- 						<version>9.1-901.jdbc4</version> -->
+<!-- 					</dependency> -->
 					<dependency>
 						<groupId>org.openforis.util</groupId>
 						<artifactId>build-utils</artifactId>
@@ -73,6 +73,18 @@
 							<includes>.*</includes>
 							<excludes />
 							<inputSchema>calc</inputSchema>
+<!-- 							  <customTypes> -->
+<!-- 							    <customType> -->
+<!-- 							      <name>java.awt.geom.Point2D.Double</name> -->
+<!-- 							      <converter>org.openforis.calc.persistence.jooq.PGPointConverter</converter> -->
+<!-- 							    </customType> -->
+<!-- 							  </customTypes> -->
+<!-- 							  <forcedTypes> -->
+<!-- 							    <forcedType> -->
+<!-- 							      <name>java.awt.geom.Point2D.Double</name> -->
+<!-- 							      <expressions>.*\.location</expressions> -->
+<!-- 							    </forcedType> -->
+<!-- 							  </forcedTypes>							 -->
 						</database>
 						<generate>
 							<relations>true</relations>
@@ -247,6 +259,11 @@
 			<version>9.1-901.jdbc4</version>
 		</dependency>
 		<dependency>
+			<groupId>org.postgis</groupId>
+			<artifactId>postgis-jdbc</artifactId>
+			<version>1.3.3</version>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
 			<version>${spring.version}</version>
@@ -271,5 +288,25 @@
 			<artifactId>kxml2</artifactId>
 			<version>2.3.0</version>
 		</dependency>
+	    <dependency>
+	      <groupId>net.sf.opencsv</groupId>
+	      <artifactId>opencsv</artifactId>
+	      <version>2.0</version>
+	    </dependency>
+	    <dependency>
+	      <groupId>org.geotools</groupId>
+	      <artifactId>gt-referencing</artifactId>
+	      <version>2.7.5</version>
+	    </dependency>
+	    <dependency>
+	      <groupId>org.geotools</groupId>
+	      <artifactId>gt-epsg-hsql</artifactId>
+	      <version>2.7.5</version>
+	    </dependency>
+<!-- 	    <dependency> -->
+<!-- 	      <groupId>org.geotoolkit</groupId> -->
+<!-- 	      <artifactId>geotk-epsg</artifactId> -->
+<!-- 	      <version>3.20-geoapi-3.0</version> -->
+<!-- 	    </dependency> -->
 	</dependencies>
 </project>

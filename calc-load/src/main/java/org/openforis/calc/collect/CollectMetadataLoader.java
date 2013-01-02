@@ -35,6 +35,7 @@ public class CollectMetadataLoader extends CollectLoaderBase {
 	private String lang = "en";
 	private String codeSeparator = "/";
 	private String codeListItemLabelSeparator = " > ";
+	// TODO add inserted item counts (plot types, specimen types, variables, etc)
 	
 	public static void main(String[] args)  {
 		try {
@@ -53,6 +54,7 @@ public class CollectMetadataLoader extends CollectLoaderBase {
 		survey = new Survey();
 		survey.setName(collectSurvey.getProjectName(lang));
 		survey.setUri(collectSurvey.getUri());
+//		survey.setId(1);
 		surveyDao.insert(survey);
 		log.info("Survey: " +survey.getName()+" ("+survey.getId()+")");
 		Schema schema = collectSurvey.getSchema();
