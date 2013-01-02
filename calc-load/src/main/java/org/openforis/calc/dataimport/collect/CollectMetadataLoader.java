@@ -1,4 +1,4 @@
-package org.openforis.calc.collect;
+package org.openforis.calc.dataimport.collect;
 
 import java.io.FileNotFoundException;
 import java.util.List;

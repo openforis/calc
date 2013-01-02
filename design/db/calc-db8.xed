@@ -440,224 +440,228 @@ http://code.google.com/p/darwincore/wiki/Taxon</Text>
       <Column id="240" name="numeric_variable_id" type="integer" length="25" nulls="false"/>
       <Storage name="TempTable" value="false"></Storage>
    </Table>
-   <Relation id="241" name="fk_aoi_hierarchy" cardinality="-2" identifying="true" nulls="false">
+   <View id="241" name="ground_plot" schema="calc" database="calc" background="15790335">
+      <Text>Plots designated in sampling design for field survey</Text>
+      <Statement>SELECT * FROM calc.plot WHERE ground_plot</Statement>
+   </View>
+   <Relation id="242" name="fk_aoi_hierarchy" cardinality="-2" identifying="true" nulls="false">
       <FK>107</FK>
       <PK>99</PK>
    </Relation>
-   <Relation id="242" name="fk_aoi_hierarchy_survey" cardinality="-2" identifying="true" nulls="false">
+   <Relation id="243" name="fk_aoi_hierarchy_survey" cardinality="-2" identifying="true" nulls="false">
       <FK>132</FK>
       <PK>108</PK>
    </Relation>
-   <Relation id="243" name="fk_aoi_parent" cardinality="-2" identifying="false" nulls="true">
+   <Relation id="244" name="fk_aoi_parent" cardinality="-2" identifying="false" nulls="true">
       <FK>98</FK>
       <PK>104</PK>
    </Relation>
-   <Relation id="244" name="fk_specimen_numeric_value_specimen" cardinality="-2" identifying="true" nulls="false">
+   <Relation id="245" name="fk_specimen_numeric_value_specimen" cardinality="-2" identifying="true" nulls="false">
       <FK>41</FK>
       <PK>193</PK>
    </Relation>
-   <Relation id="245" name="fk_specimen_category_specimen" cardinality="-2" identifying="true" nulls="false">
+   <Relation id="246" name="fk_specimen_category_specimen" cardinality="-2" identifying="true" nulls="false">
       <FK>41</FK>
       <PK>199</PK>
    </Relation>
-   <Relation id="246" name="fk_plot_stratum" cardinality="-2" identifying="true" nulls="false">
+   <Relation id="247" name="fk_plot_stratum" cardinality="-2" identifying="true" nulls="false">
       <FK>35</FK>
       <PK>18</PK>
    </Relation>
-   <Relation id="247" name="fk_operation_parameter_process" cardinality="-2" identifying="true" nulls="false">
+   <Relation id="248" name="fk_operation_parameter_process" cardinality="-2" identifying="true" nulls="false">
       <FK>208</FK>
       <PK>216</PK>
    </Relation>
-   <Relation id="248" name="fk_numeric_variable_obs_unit" cardinality="-2" identifying="true" nulls="false">
+   <Relation id="249" name="fk_numeric_variable_obs_unit" cardinality="-2" identifying="true" nulls="false">
       <FK>225</FK>
       <PK>147</PK>
    </Relation>
-   <Relation id="249" name="fk_plot_numeric_value_variable" cardinality="-2" identifying="true" nulls="false">
+   <Relation id="250" name="fk_plot_numeric_value_variable" cardinality="-2" identifying="true" nulls="false">
       <FK>146</FK>
       <PK>142</PK>
    </Relation>
-   <Relation id="250" name="fk_plot_numeric_value_surveyed_plot" cardinality="-2" identifying="true" nulls="false">
+   <Relation id="251" name="fk_plot_numeric_value_surveyed_plot" cardinality="-2" identifying="true" nulls="false">
       <FK>20</FK>
       <PK>141</PK>
    </Relation>
-   <Relation id="251" name="fk_category_variable" cardinality="-2" identifying="true" nulls="false">
+   <Relation id="252" name="fk_category_variable" cardinality="-2" identifying="true" nulls="false">
       <FK>172</FK>
       <PK>153</PK>
    </Relation>
-   <Relation id="252" name="fk_plot_category_category" cardinality="-2" identifying="true" nulls="false">
+   <Relation id="253" name="fk_plot_category_category" cardinality="-2" identifying="true" nulls="false">
       <FK>152</FK>
       <PK>161</PK>
    </Relation>
-   <Relation id="253" name="fk_plot_category_value_surveyed_plot" cardinality="-2" identifying="true" nulls="false">
+   <Relation id="254" name="fk_plot_category_value_surveyed_plot" cardinality="-2" identifying="true" nulls="false">
       <FK>20</FK>
       <PK>160</PK>
    </Relation>
-   <Relation id="254" name="fk_survey_unit_survey" cardinality="-2" identifying="true" nulls="false">
+   <Relation id="255" name="fk_survey_unit_survey" cardinality="-2" identifying="true" nulls="false">
       <FK>132</FK>
       <PK>226</PK>
    </Relation>
-   <Relation id="255" name="fk_plot_cluster" cardinality="-2" identifying="true" nulls="false">
+   <Relation id="256" name="fk_plot_cluster" cardinality="-2" identifying="true" nulls="false">
       <FK>1</FK>
       <PK>10</PK>
    </Relation>
-   <Relation id="256" name="fk_numeric_band_banding" cardinality="-2" identifying="true" nulls="false">
+   <Relation id="257" name="fk_numeric_band_banding" cardinality="-2" identifying="true" nulls="false">
       <FK>239</FK>
       <PK>166</PK>
    </Relation>
-   <Relation id="257" name="fk_numeric_band_category" cardinality="-3" identifying="true" nulls="false">
+   <Relation id="258" name="fk_numeric_band_category" cardinality="-3" identifying="true" nulls="false">
       <FK>152</FK>
       <PK>165</PK>
    </Relation>
-   <Relation id="258" name="fk_surveyed_plot_plot" cardinality="-2" identifying="true" nulls="false">
+   <Relation id="259" name="fk_surveyed_plot_plot" cardinality="-2" identifying="true" nulls="false">
       <FK>8</FK>
       <PK>22</PK>
    </Relation>
-   <Relation id="259" name="fk_process_operation" cardinality="-2" identifying="true" nulls="false">
+   <Relation id="260" name="fk_process_operation" cardinality="-2" identifying="true" nulls="false">
       <FK>220</FK>
       <PK>210</PK>
    </Relation>
-   <Relation id="260" name="fk_process_processing_chain" cardinality="-2" identifying="true" nulls="false">
+   <Relation id="261" name="fk_process_processing_chain" cardinality="-2" identifying="true" nulls="false">
       <FK>203</FK>
       <PK>209</PK>
    </Relation>
-   <Relation id="261" name="fk_processing_chain_survey" cardinality="-2" identifying="true" nulls="false">
+   <Relation id="262" name="fk_processing_chain_survey" cardinality="-2" identifying="true" nulls="false">
       <FK>132</FK>
       <PK>204</PK>
    </Relation>
-   <Relation id="262" name="fk_specimen_plot" cardinality="-2" identifying="false" nulls="false">
+   <Relation id="263" name="fk_specimen_plot" cardinality="-2" identifying="false" nulls="false">
       <FK>20</FK>
       <PK>42</PK>
    </Relation>
-   <Relation id="263" name="fk_specimen_taxon" cardinality="-2" identifying="false" nulls="false">
+   <Relation id="264" name="fk_specimen_taxon" cardinality="-2" identifying="false" nulls="false">
       <FK>111</FK>
       <PK>44</PK>
    </Relation>
-   <Relation id="264" name="fk_stratum_survey" cardinality="-2" identifying="true" nulls="false">
+   <Relation id="265" name="fk_stratum_survey" cardinality="-2" identifying="true" nulls="false">
       <FK>132</FK>
       <PK>36</PK>
    </Relation>
-   <Relation id="265" name="fk_taxon_accepted_name" cardinality="-2" identifying="false" nulls="true">
+   <Relation id="266" name="fk_taxon_accepted_name" cardinality="-2" identifying="false" nulls="true">
       <FK>111</FK>
       <PK>130</PK>
    </Relation>
-   <Relation id="266" name="fk_taxon_checklist" cardinality="-2" identifying="true" nulls="false">
+   <Relation id="267" name="fk_taxon_checklist" cardinality="-2" identifying="true" nulls="false">
       <FK>180</FK>
       <PK>112</PK>
    </Relation>
-   <Relation id="267" name="fk_taxon_original_name" cardinality="-2" identifying="false" nulls="true">
+   <Relation id="268" name="fk_taxon_original_name" cardinality="-2" identifying="false" nulls="true">
       <FK>111</FK>
       <PK>129</PK>
    </Relation>
-   <Relation id="268" name="fk_taxon_parent" cardinality="-2" identifying="false" nulls="true">
+   <Relation id="269" name="fk_taxon_parent" cardinality="-2" identifying="false" nulls="true">
       <FK>111</FK>
       <PK>128</PK>
    </Relation>
-   <Relation id="269" name="fk_taxon_vernacular_name_accepted_usage" cardinality="-2" identifying="true" nulls="false">
+   <Relation id="270" name="fk_taxon_vernacular_name_accepted_usage" cardinality="-2" identifying="true" nulls="false">
       <FK>111</FK>
       <PK>185</PK>
    </Relation>
-   <Relation id="270" name="fk_taxonomic_checklist_survey" cardinality="-2" identifying="true" nulls="false">
+   <Relation id="271" name="fk_taxonomic_checklist_survey" cardinality="-2" identifying="true" nulls="false">
       <FK>132</FK>
       <PK>181</PK>
    </Relation>
-   <Relation id="271" name="fk_categorical_variable_obs_unit" cardinality="-2" identifying="true" nulls="false">
+   <Relation id="272" name="fk_categorical_variable_obs_unit" cardinality="-2" identifying="true" nulls="false">
       <FK>225</FK>
       <PK>173</PK>
    </Relation>
-   <Relation id="272" name="fk_specimen_numeric_value_variable" cardinality="-2" identifying="true" nulls="false">
+   <Relation id="273" name="fk_specimen_numeric_value_variable" cardinality="-2" identifying="true" nulls="false">
       <FK>146</FK>
       <PK>194</PK>
    </Relation>
-   <Relation id="273" name="fk_specimen_category_category" cardinality="-2" identifying="true" nulls="false">
+   <Relation id="274" name="fk_specimen_category_category" cardinality="-2" identifying="true" nulls="false">
       <FK>152</FK>
       <PK>200</PK>
    </Relation>
-   <Relation id="274" name="fk_surveyed_cluster_cluster" cardinality="-2" identifying="true" nulls="false">
+   <Relation id="275" name="fk_surveyed_cluster_cluster" cardinality="-2" identifying="true" nulls="false">
       <FK>1</FK>
       <PK>234</PK>
    </Relation>
-   <Relation id="275" name="fk_surveyed_plot_cluster" cardinality="-2" identifying="true" nulls="false">
+   <Relation id="276" name="fk_surveyed_plot_cluster" cardinality="-2" identifying="true" nulls="false">
       <FK>232</FK>
       <PK>24</PK>
    </Relation>
-   <Relation id="276" name="fk_parent_surveyed_plot" cardinality="-2" identifying="false" nulls="false">
+   <Relation id="277" name="fk_parent_surveyed_plot" cardinality="-2" identifying="false" nulls="false">
       <FK>20</FK>
       <PK>30</PK>
    </Relation>
-   <Relation id="277" name="fk_categorical_variable_banding" cardinality="-2" identifying="true" nulls="false">
+   <Relation id="278" name="fk_categorical_variable_banding" cardinality="-2" identifying="true" nulls="false">
       <FK>239</FK>
       <PK>176</PK>
    </Relation>
-   <Relation id="278" name="fk_banding_numeric_variable" cardinality="-2" identifying="true" nulls="false">
+   <Relation id="279" name="fk_banding_numeric_variable" cardinality="-2" identifying="true" nulls="false">
       <FK>146</FK>
       <PK>240</PK>
    </Relation>
-   <Relation id="279" name="fk_survey_unit_parent" cardinality="-2" identifying="false" nulls="true">
+   <Relation id="280" name="fk_survey_unit_parent" cardinality="-2" identifying="false" nulls="true">
       <FK>225</FK>
       <PK>229</PK>
    </Relation>
-   <Relation id="280" name="fk_surveyed_plot_obs_unit" cardinality="-2" identifying="false" nulls="false">
+   <Relation id="281" name="fk_surveyed_plot_obs_unit" cardinality="-2" identifying="false" nulls="false">
       <FK>225</FK>
       <PK>23</PK>
    </Relation>
-   <Relation id="281" name="fk_specimen_obs_unit" cardinality="-2" identifying="false" nulls="false">
+   <Relation id="282" name="fk_specimen_obs_unit" cardinality="-2" identifying="false" nulls="false">
       <FK>225</FK>
       <PK>43</PK>
    </Relation>
-   <Relation id="282" name="fk_specimen_parent" cardinality="-2" identifying="false" nulls="true">
+   <Relation id="283" name="fk_specimen_parent" cardinality="-2" identifying="false" nulls="true">
       <FK>41</FK>
       <PK>47</PK>
    </Relation>
-   <Relation id="283" name="fk_plot_survey" cardinality="-2" identifying="true" nulls="false">
+   <Relation id="284" name="fk_plot_survey" cardinality="-2" identifying="true" nulls="false">
       <FK>132</FK>
       <PK>9</PK>
    </Relation>
-   <Relation id="284" name="fk_cluster_survey" cardinality="-2" identifying="true" nulls="false">
+   <Relation id="285" name="fk_cluster_survey" cardinality="-2" identifying="true" nulls="false">
       <FK>132</FK>
       <PK>2</PK>
    </Relation>
-   <Relation id="285" name="fk_surveyed_cluster_survey" cardinality="-2" identifying="true" nulls="false">
+   <Relation id="286" name="fk_surveyed_cluster_survey" cardinality="-2" identifying="true" nulls="false">
       <FK>132</FK>
       <PK>233</PK>
    </Relation>
-   <Relation id="286" name="fk_surveyed_plot_survey" cardinality="-2" identifying="true" nulls="false">
+   <Relation id="287" name="fk_surveyed_plot_survey" cardinality="-2" identifying="true" nulls="false">
       <FK>132</FK>
       <PK>21</PK>
    </Relation>
-   <Note id="287">
+   <Note id="288">
       <Text>Plot Observations &amp; Attributes</Text>
       <Font>Arial-bold-14</Font>
    </Note>
-   <Note id="288">
+   <Note id="289">
       <Text>Specimen observations (e.g. surveyed trees, dead wood, bamboo, regeneration) and related master data (health classes, etc).</Text>
    </Note>
-   <Note id="289">
+   <Note id="290">
       <Text>Plot-level result tables.</Text>
    </Note>
-   <Note id="290">
+   <Note id="291">
       <Text>Tree-level result tables.</Text>
    </Note>
-   <Note id="291">
+   <Note id="292">
       <Text>Note: Natural language text is stored in the database for convenience only.  All multilingual text will be stored in resource bundles in the filesystem.</Text>
    </Note>
-   <Note id="292">
+   <Note id="293">
       <Text>Note: Strata are associated with plots (and not clusters) to allow stratified sampling.  When clustered sampling is used, each plot in a cluster will have the same stratum id.</Text>
    </Note>
-   <Note id="293">
+   <Note id="294">
       <Text>TO DO: Classification schemes for grouping categories together hierarchically.</Text>
    </Note>
-   <Note id="294">
+   <Note id="295">
       <Text>TBD: Tree class groupings</Text>
    </Note>
-   <Note id="295">
+   <Note id="296">
       <Text>TBD: Species groups and volume and biomass equations</Text>
    </Note>
-   <Note id="296">
+   <Note id="297">
       <Text>Geospatial queries can be used to link theoretical and observed plots to AOIs.
 
 AOI geometry should be represented as PostGIS 'geometry' type.  'polygon' used here because 'geometry' is not supported by the ER design tool.</Text>
    </Note>
-   <Note id="297">
+   <Note id="298">
       <Text>Preloaded operations:
   executeModule(rModuleName, params)
   updateDerivedPlotClass(plotClassName)
@@ -665,42 +669,45 @@ AOI geometry should be represented as PostGIS 'geometry' type.  'polygon' used h
   applyTreeModel(modelName)
 </Text>
    </Note>
-   <Note id="298">
+   <Note id="299">
       <Text>Sampling Design</Text>
       <Font>Arial-bold-14</Font>
    </Note>
-   <Note id="299">
+   <Note id="300">
       <Text>Areas of Interest (AOIs)</Text>
       <Font>Arial-bold-14</Font>
    </Note>
-   <Note id="300">
+   <Note id="301">
       <Text>Calculation &amp; Observation Units
 Numeric &amp; Categorical Variables</Text>
       <Font>Arial-bold-14</Font>
    </Note>
-   <Note id="301">
+   <Note id="302">
       <Text>Cluster Observations &amp; Attributes</Text>
       <Font>Arial-bold-14</Font>
    </Note>
-   <Note id="302">
+   <Note id="303">
       <Text>Specimen Observations &amp; Attributes</Text>
       <Font>Arial-bold-14</Font>
    </Note>
-   <Note id="303">
+   <Note id="304">
       <Text>Species Checklist, Models &amp; Factors</Text>
       <Font>Arial-bold-14</Font>
    </Note>
-   <Note id="304">
+   <Note id="305">
       <Text>Processing Chains</Text>
       <Font>Arial-bold-14</Font>
    </Note>
-   <Note id="305">
+   <Note id="306">
       <Text>Data Summary Views</Text>
       <Font>Arial-bold-14</Font>
    </Note>
-   <Note id="306">
+   <Note id="307">
       <Text>Note: Subplots are represented as plots with a parent_id.  For main sample plots, parent_id = NULL</Text>
    </Note>
+   <Index table="7" name="idx_plot_ground_plot" schema="calc" database="calc">
+      <IndexColumn id="17" sequence="0" ascending="true"></IndexColumn>
+   </Index>
    <Constraint table="0" name="pk_cluster" type="PrimKey">
       <ConstraintColumn id="1"></ConstraintColumn>
    </Constraint>
@@ -812,157 +819,158 @@ Numeric &amp; Categorical Variables</Text>
    <Constraint table="238" name="pk_numeric_variable_banding" type="PrimKey">
       <ConstraintColumn id="239"></ConstraintColumn>
    </Constraint>
-   <Sheet name="AOI" id="307" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
-      <Place id="131" visible="true">470,80,200,180</Place>
-      <Place id="299" visible="true">480,20,181,40</Place>
-      <Place id="243" visible="true">500,0,0,0</Place>
-      <Place id="242" visible="true" options="470.0,80.0,200.0,180.0,450.0,330.0,261.0,140.0,2,560.0,260.0,560.0,330.0">500,0,0,0</Place>
+   <Sheet name="AOI" id="308" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
+      <Place id="243" visible="true" options="470.0,80.0,200.0,180.0,450.0,330.0,261.0,140.0,2,560.0,260.0,560.0,330.0">500,0,0,0</Place>
+      <Place id="300" visible="true">480,20,181,40</Place>
       <Place id="97" visible="true">430,560,331,270</Place>
-      <Place id="241" visible="true" options="450.0,330.0,261.0,140.0,430.0,560.0,331.0,270.0,4,580.0,470.0,580.0,515.0,570.0,515.0,570.0,560.0">500,0,0,0</Place>
-      <Place id="296" visible="true">830,670,291,151</Place>
+      <Place id="244" visible="true">500,0,0,0</Place>
+      <Place id="131" visible="true">470,80,200,180</Place>
+      <Place id="242" visible="true" options="450.0,330.0,261.0,140.0,430.0,560.0,331.0,270.0,4,580.0,470.0,580.0,515.0,570.0,515.0,570.0,560.0">500,0,0,0</Place>
+      <Place id="297" visible="true">830,670,291,151</Place>
       <Place id="106" visible="true">450,330,261,140</Place>
    </Sheet>
-   <Sheet name="Sampling Design" id="308" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
+   <Sheet name="Sampling Design" id="309" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
+      <Place id="259" visible="false">500,0,0,0</Place>
       <Place id="48" visible="false">510,530,240,600</Place>
-      <Place id="291" visible="true">710,760,361,71</Place>
-      <Place id="34" visible="true">62,379,289,152</Place>
-      <Place id="243" visible="false">500,0,0,0</Place>
-      <Place id="284" visible="true" options="500.0,90.0,200.0,180.0,920.0,377.0,160.0,160.0,3,700.0,260.0,990.0,260.0,990.0,377.0">500,0,0,0</Place>
-      <Place id="97" visible="false">90,330,180,140</Place>
-      <Place id="246" visible="true" options="62.0,379.0,289.0,152.0,498.0,331.0,200.0,260.0,6,351.0,440.0,424.5,440.0,425.0,440.0,461.5,440.0,461.5,450.0,498.0,450.0">476,-11,0,0</Place>
-      <Place id="255" visible="true" options="920.0,377.0,160.0,160.0,498.0,331.0,200.0,260.0,8,920.0,450.0,872.75,450.0,872.75,440.0,825.5,440.0,826.0,440.0,762.0,440.0,762.0,450.0,698.0,450.0">500,0,0,0</Place>
-      <Place id="106" visible="false">90,150,170,60</Place>
-      <Place id="264" visible="true" options="500.0,90.0,200.0,180.0,62.0,379.0,289.0,152.0,3,500.0,180.0,230.0,180.0,230.0,379.0">500,0,0,0</Place>
-      <Place id="283" visible="true" options="500.0,90.0,200.0,180.0,498.0,331.0,200.0,260.0,2,610.0,270.0,610.0,331.0">500,0,0,0</Place>
-      <Place id="298" visible="true">540,20,131,40</Place>
-      <Place id="131" visible="true">500,90,200,180</Place>
-      <Place id="292" visible="true">70,610,351,71</Place>
       <Place id="0" visible="true">920,377,160,160</Place>
-      <Place id="258" visible="false">500,0,0,0</Place>
-      <Place id="19" visible="false">950,10,230,280</Place>
-      <Place id="241" visible="false">500,0,0,0</Place>
-      <Place id="40" visible="false">260,10,240,480</Place>
+      <Place id="131" visible="true">500,90,200,180</Place>
+      <Place id="242" visible="false">500,0,0,0</Place>
+      <Place id="293" visible="true">70,610,351,71</Place>
+      <Place id="292" visible="true">710,760,361,71</Place>
+      <Place id="285" visible="true" options="500.0,90.0,200.0,180.0,920.0,377.0,160.0,160.0,3,700.0,260.0,990.0,260.0,990.0,377.0">500,0,0,0</Place>
+      <Place id="34" visible="true">62,379,289,152</Place>
+      <Place id="284" visible="true" options="500.0,90.0,200.0,180.0,498.0,331.0,200.0,260.0,2,610.0,270.0,610.0,331.0">500,0,0,0</Place>
       <Place id="7" visible="true">498,331,200,260</Place>
+      <Place id="299" visible="true">540,20,131,40</Place>
+      <Place id="19" visible="false">950,10,230,280</Place>
+      <Place id="97" visible="false">90,330,180,140</Place>
+      <Place id="40" visible="false">260,10,240,480</Place>
+      <Place id="244" visible="false">500,0,0,0</Place>
+      <Place id="247" visible="true" options="62.0,379.0,289.0,152.0,498.0,331.0,200.0,260.0,6,351.0,440.0,424.5,440.0,425.0,440.0,461.5,440.0,461.5,450.0,498.0,450.0">476,-11,0,0</Place>
+      <Place id="256" visible="true" options="920.0,377.0,160.0,160.0,498.0,331.0,200.0,260.0,8,920.0,450.0,872.75,450.0,872.75,440.0,825.5,440.0,826.0,440.0,762.0,440.0,762.0,450.0,698.0,450.0">500,0,0,0</Place>
+      <Place id="106" visible="false">90,150,170,60</Place>
+      <Place id="265" visible="true" options="500.0,90.0,200.0,180.0,62.0,379.0,289.0,152.0,3,500.0,180.0,230.0,180.0,230.0,379.0">500,0,0,0</Place>
    </Sheet>
-   <Sheet name="Metadata" id="309" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
-      <Place id="254" visible="true" options="220.0,70.0,200.0,180.0,490.0,270.0,170.0,130.0,3,420.0,220.0,570.0,220.0,570.0,270.0">580,-10,2,0</Place>
-      <Place id="163" visible="true">438,670,210,140</Place>
-      <Place id="106" visible="false">100,60,170,60</Place>
-      <Place id="256" visible="true" options="450.0,510.0,220.0,60.0,438.0,670.0,210.0,140.0,2,570.0,570.0,570.0,670.0">500,24,38,0</Place>
-      <Place id="271" visible="true" options="490.0,270.0,170.0,130.0,888.0,408.0,210.0,140.0,3,660.0,340.0,1010.0,340.0,1010.0,408.0">651,11,0,0</Place>
-      <Place id="131" visible="true">220,70,200,180</Place>
-      <Place id="238" visible="true">450,510,220,60</Place>
-      <Place id="151" visible="true">908,689,170,130</Place>
-      <Place id="300" visible="true">450,30,251,40</Place>
-      <Place id="241" visible="false">500,0,0,0</Place>
-      <Place id="248" visible="true" options="490.0,270.0,170.0,130.0,68.0,459.0,190.0,110.0,3,490.0,340.0,160.0,340.0,160.0,459.0">634,-16,1,0</Place>
+   <Sheet name="Metadata" id="310" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
       <Place id="145" visible="true">68,459,190,110</Place>
-      <Place id="224" visible="true">490,270,170,130</Place>
-      <Place id="110" visible="false">108,637,260,280</Place>
-      <Place id="243" visible="false">500,0,0,16</Place>
+      <Place id="272" visible="true" options="490.0,270.0,170.0,130.0,888.0,408.0,210.0,140.0,3,660.0,340.0,1010.0,340.0,1010.0,408.0">651,11,0,0</Place>
       <Place id="179" visible="false">190,479,170,60</Place>
-      <Place id="293" visible="true">878,170,261,71</Place>
-      <Place id="97" visible="false">110,220,180,140</Place>
-      <Place id="278" visible="true" options="68.0,459.0,190.0,110.0,450.0,510.0,220.0,60.0,5,258.0,520.0,258.0,525.0,460.0,525.0,460.0,520.0,450.0,520.0">468,15,6,0</Place>
-      <Place id="279" visible="true">500,0,0,0</Place>
-      <Place id="257" visible="true" options="908.0,689.0,170.0,130.0,438.0,670.0,210.0,140.0,4,908.0,730.0,780.0,730.0,780.0,730.0,648.0,730.0">500,13,0,0</Place>
-      <Place id="266" visible="false">500,0,0,0</Place>
-      <Place id="277" visible="true" options="450.0,510.0,220.0,60.0,888.0,408.0,210.0,140.0,4,670.0,540.0,670.0,535.0,888.0,535.0,888.0,530.0">500,0,0,0</Place>
+      <Place id="267" visible="false">500,0,0,0</Place>
+      <Place id="257" visible="true" options="450.0,510.0,220.0,60.0,438.0,670.0,210.0,140.0,2,570.0,570.0,570.0,670.0">500,24,38,0</Place>
+      <Place id="238" visible="true">450,510,220,60</Place>
       <Place id="171" visible="true">888,408,210,140</Place>
-      <Place id="251" visible="true" options="888.0,408.0,210.0,140.0,908.0,689.0,170.0,130.0,2,1000.0,548.0,1000.0,689.0">530,-8,0,0</Place>
-   </Sheet>
-   <Sheet name="Plot Data" id="310" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
-      <Place id="253" visible="true" options="565.0,281.0,220.0,260.0,839.0,540.0,170.0,90.0,3,785.0,400.0,910.0,400.0,910.0,540.0">512,-11,32,0</Place>
-      <Place id="275" visible="true" options="590.0,80.0,160.0,130.0,565.0,281.0,220.0,260.0,4,650.0,210.0,650.0,250.0,650.0,250.0,650.0,281.0">500,0,0,0</Place>
-      <Place id="287" visible="true">468,29,223,42</Place>
-      <Place id="163" visible="false">368,829,170,130</Place>
-      <Place id="246" visible="true">500,0,0,0</Place>
-      <Place id="250" visible="true" options="565.0,281.0,220.0,260.0,379.0,541.0,180.0,110.0,3,565.0,500.0,430.0,500.0,430.0,541.0">556,18,0,10</Place>
-      <Place id="256" visible="false">500,0,0,0</Place>
-      <Place id="131" visible="true">250,230,200,71</Place>
-      <Place id="158" visible="true">839,540,170,90</Place>
-      <Place id="151" visible="true">840,679,170,130</Place>
-      <Place id="0" visible="true">40,80,160,91</Place>
-      <Place id="258" visible="true" options="37.0,360.0,214.0,81.0,565.0,281.0,220.0,260.0,4,251.0,390.0,410.0,390.0,410.0,390.0,565.0,390.0">576,3,0,7</Place>
-      <Place id="249" visible="true" options="409.0,701.0,170.0,110.0,379.0,541.0,180.0,110.0,6,409.0,710.0,369.5,710.0,369.5,656.0,359.5,656.0,359.5,640.0,379.0,640.0">550,10,0,0</Place>
-      <Place id="252" visible="true" options="840.0,679.0,170.0,130.0,839.0,540.0,170.0,90.0,4,840.0,690.0,845.0,690.0,845.0,610.0,839.0,610.0">540,-12,0,0</Place>
-      <Place id="139" visible="true">379,541,180,110</Place>
-      <Place id="7" visible="true">37,360,214,81</Place>
-      <Place id="145" visible="true">409,701,170,110</Place>
-      <Place id="284" visible="true">500,0,0,0</Place>
-      <Place id="285" visible="true">500,0,0,0</Place>
-      <Place id="286" visible="true">500,0,0,0</Place>
-      <Place id="255" visible="true" options="40.0,80.0,160.0,91.0,37.0,360.0,214.0,81.0,4,90.0,171.0,90.0,270.0,90.0,270.0,90.0,360.0">500,0,0,0</Place>
-      <Place id="283" visible="true">500,0,0,0</Place>
-      <Place id="231" visible="true">590,80,160,130</Place>
+      <Place id="258" visible="true" options="908.0,689.0,170.0,130.0,438.0,670.0,210.0,140.0,4,908.0,730.0,780.0,730.0,780.0,730.0,648.0,730.0">500,13,0,0</Place>
       <Place id="280" visible="true">500,0,0,0</Place>
-      <Place id="274" visible="true">500,0,0,0</Place>
-      <Place id="19" visible="true">565,281,220,260</Place>
+      <Place id="301" visible="true">450,30,251,40</Place>
+      <Place id="224" visible="true">490,270,170,130</Place>
+      <Place id="244" visible="false">500,0,0,16</Place>
+      <Place id="151" visible="true">908,689,170,130</Place>
+      <Place id="106" visible="false">100,60,170,60</Place>
+      <Place id="163" visible="true">438,670,210,140</Place>
+      <Place id="294" visible="true">878,170,261,71</Place>
+      <Place id="279" visible="true" options="68.0,459.0,190.0,110.0,450.0,510.0,220.0,60.0,5,258.0,520.0,258.0,525.0,460.0,525.0,460.0,520.0,450.0,520.0">468,15,6,0</Place>
+      <Place id="131" visible="true">220,70,200,180</Place>
+      <Place id="242" visible="false">500,0,0,0</Place>
+      <Place id="252" visible="true" options="888.0,408.0,210.0,140.0,908.0,689.0,170.0,130.0,2,1000.0,548.0,1000.0,689.0">530,-8,0,0</Place>
+      <Place id="255" visible="true" options="220.0,70.0,200.0,180.0,490.0,270.0,170.0,130.0,3,420.0,220.0,570.0,220.0,570.0,270.0">580,-10,2,0</Place>
+      <Place id="278" visible="true" options="450.0,510.0,220.0,60.0,888.0,408.0,210.0,140.0,4,670.0,540.0,670.0,535.0,888.0,535.0,888.0,530.0">500,0,0,0</Place>
+      <Place id="110" visible="false">108,637,260,280</Place>
+      <Place id="97" visible="false">110,220,180,140</Place>
+      <Place id="249" visible="true" options="490.0,270.0,170.0,130.0,68.0,459.0,190.0,110.0,3,490.0,340.0,160.0,340.0,160.0,459.0">634,-16,1,0</Place>
+   </Sheet>
+   <Sheet name="Plot Data" id="311" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
+      <Place id="259" visible="true" options="37.0,360.0,214.0,81.0,565.0,281.0,220.0,260.0,4,251.0,390.0,410.0,390.0,410.0,390.0,565.0,390.0">576,3,0,7</Place>
+      <Place id="158" visible="true">839,540,170,90</Place>
+      <Place id="251" visible="true" options="565.0,281.0,220.0,260.0,379.0,541.0,180.0,110.0,3,565.0,500.0,430.0,500.0,430.0,541.0">556,18,0,10</Place>
+      <Place id="145" visible="true">409,701,170,110</Place>
+      <Place id="285" visible="true">500,0,0,0</Place>
       <Place id="257" visible="false">500,0,0,0</Place>
-      <Place id="306" visible="true">790,130,251,61</Place>
-      <Place id="276" visible="true">500,0,0,0</Place>
+      <Place id="276" visible="true" options="590.0,80.0,160.0,130.0,565.0,281.0,220.0,260.0,4,650.0,210.0,650.0,250.0,650.0,250.0,650.0,281.0">500,0,0,0</Place>
       <Place id="171" visible="false">720,760,210,90</Place>
-      <Place id="251" visible="false">500,0,0,0</Place>
-   </Sheet>
-   <Sheet name="Specimen Data" id="311" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
-      <Place id="145" visible="true">200,740,210,110</Place>
-      <Place id="110" visible="true">855,270,260,360</Place>
-      <Place id="197" visible="true">570,580,200,90</Place>
-      <Place id="267" visible="true">500,-6,0,6</Place>
-      <Place id="245" visible="true">500,0,0,0</Place>
-      <Place id="262" visible="true" options="425.0,79.0,220.0,210.0,459.0,350.0,170.0,140.0,5,530.0,289.0,525.0,289.0,525.0,355.0,520.0,355.0,520.0,350.0">477,-6,0,0</Place>
-      <Place id="281" visible="true">500,0,0,0</Place>
-      <Place id="191" visible="true">230,510,220,110</Place>
-      <Place id="273" visible="true" options="580.0,760.0,170.0,110.0,570.0,580.0,200.0,90.0,2,680.0,760.0,680.0,670.0">500,0,0,0</Place>
-      <Place id="268" visible="true">500,0,0,0</Place>
-      <Place id="151" visible="true">580,760,170,110</Place>
+      <Place id="254" visible="true" options="565.0,281.0,220.0,260.0,839.0,540.0,170.0,90.0,3,785.0,400.0,910.0,400.0,910.0,540.0">512,-11,32,0</Place>
+      <Place id="253" visible="true" options="840.0,679.0,170.0,130.0,839.0,540.0,170.0,90.0,4,840.0,690.0,845.0,690.0,845.0,610.0,839.0,610.0">540,-12,0,0</Place>
       <Place id="258" visible="false">500,0,0,0</Place>
-      <Place id="272" visible="true" options="200.0,740.0,210.0,110.0,230.0,510.0,220.0,110.0,4,300.0,740.0,300.0,680.0,300.0,680.0,300.0,620.0">500,0,0,0</Place>
-      <Place id="19" visible="true">425,79,220,210</Place>
-      <Place id="244" visible="true">500,0,0,0</Place>
+      <Place id="275" visible="true">500,0,0,0</Place>
+      <Place id="151" visible="true">840,679,170,130</Place>
+      <Place id="247" visible="true">500,0,0,0</Place>
+      <Place id="256" visible="true" options="40.0,80.0,160.0,91.0,37.0,360.0,214.0,81.0,4,90.0,171.0,90.0,270.0,90.0,270.0,90.0,360.0">500,0,0,0</Place>
+      <Place id="139" visible="true">379,541,180,110</Place>
+      <Place id="163" visible="false">368,829,170,130</Place>
+      <Place id="231" visible="true">590,80,160,130</Place>
+      <Place id="250" visible="true" options="409.0,701.0,170.0,110.0,379.0,541.0,180.0,110.0,6,409.0,710.0,369.5,710.0,369.5,656.0,359.5,656.0,359.5,640.0,379.0,640.0">550,10,0,0</Place>
+      <Place id="0" visible="true">40,80,160,91</Place>
+      <Place id="286" visible="true">500,0,0,0</Place>
+      <Place id="131" visible="true">250,230,200,71</Place>
+      <Place id="284" visible="true">500,0,0,0</Place>
+      <Place id="7" visible="true">37,360,214,81</Place>
+      <Place id="307" visible="true">790,130,251,61</Place>
+      <Place id="252" visible="false">500,0,0,0</Place>
+      <Place id="19" visible="true">565,281,220,260</Place>
+      <Place id="287" visible="true">500,0,0,0</Place>
+      <Place id="288" visible="true">468,29,223,42</Place>
+      <Place id="281" visible="true">500,0,0,0</Place>
+      <Place id="277" visible="true">500,0,0,0</Place>
+   </Sheet>
+   <Sheet name="Specimen Data" id="312" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
+      <Place id="259" visible="false">500,0,0,0</Place>
+      <Place id="303" visible="true">410,20,271,40</Place>
+      <Place id="145" visible="true">200,740,210,110</Place>
+      <Place id="246" visible="true">500,0,0,0</Place>
       <Place id="282" visible="true">500,0,0,0</Place>
-      <Place id="263" visible="true">500,0,0,0</Place>
-      <Place id="288" visible="true">69,21,312,100</Place>
-      <Place id="40" visible="true">459,350,170,140</Place>
-      <Place id="302" visible="true">410,20,271,40</Place>
-      <Place id="276" visible="true">500,0,0,0</Place>
-      <Place id="265" visible="true">500,-5,0,11</Place>
-      <Place id="7" visible="false">730,140,251,181</Place>
+      <Place id="274" visible="true" options="580.0,760.0,170.0,110.0,570.0,580.0,200.0,90.0,2,680.0,760.0,680.0,670.0">500,0,0,0</Place>
+      <Place id="283" visible="true">500,0,0,0</Place>
+      <Place id="191" visible="true">230,510,220,110</Place>
+      <Place id="197" visible="true">570,580,200,90</Place>
+      <Place id="263" visible="true" options="425.0,79.0,220.0,210.0,459.0,350.0,170.0,140.0,5,530.0,289.0,525.0,289.0,525.0,355.0,520.0,355.0,520.0,350.0">477,-6,0,0</Place>
+      <Place id="245" visible="true">500,0,0,0</Place>
+      <Place id="289" visible="true">69,21,312,100</Place>
+      <Place id="268" visible="true">500,-6,0,6</Place>
       <Place id="171" visible="false">80,680,210,90</Place>
+      <Place id="7" visible="false">730,140,251,181</Place>
+      <Place id="266" visible="true">500,-5,0,11</Place>
+      <Place id="269" visible="true">500,0,0,0</Place>
+      <Place id="19" visible="true">425,79,220,210</Place>
+      <Place id="110" visible="true">855,270,260,360</Place>
+      <Place id="273" visible="true" options="200.0,740.0,210.0,110.0,230.0,510.0,220.0,110.0,4,300.0,740.0,300.0,680.0,300.0,680.0,300.0,620.0">500,0,0,0</Place>
+      <Place id="40" visible="true">459,350,170,140</Place>
+      <Place id="151" visible="true">580,760,170,110</Place>
+      <Place id="264" visible="true">500,0,0,0</Place>
+      <Place id="277" visible="true">500,0,0,0</Place>
    </Sheet>
-   <Sheet name="Species" id="312" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
-      <Place id="131" visible="true">240,100,241,160</Place>
+   <Sheet name="Species" id="313" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
+      <Place id="266" visible="true">500,-5,0,15</Place>
+      <Place id="270" visible="true" options="600.0,210.0,270.0,460.0,190.0,650.0,260.0,140.0,3,600.0,500.0,390.0,500.0,390.0,650.0">764,-3,0,0</Place>
+      <Place id="304" visible="true">440,20,271,40</Place>
+      <Place id="269" visible="true">500,0,0,0</Place>
       <Place id="110" visible="true">600,210,270,460</Place>
-      <Place id="295" visible="true">810,800,261,71</Place>
-      <Place id="269" visible="true" options="600.0,210.0,270.0,460.0,190.0,650.0,260.0,140.0,3,600.0,500.0,390.0,500.0,390.0,650.0">764,-3,0,0</Place>
-      <Place id="268" visible="true">500,0,0,0</Place>
-      <Place id="267" visible="true">500,-8,0,5</Place>
-      <Place id="179" visible="true">250,370,170,80</Place>
-      <Place id="266" visible="true" options="250.0,370.0,170.0,80.0,600.0,210.0,270.0,460.0,2,420.0,410.0,600.0,410.0">477,-5,0,16</Place>
       <Place id="183" visible="true">190,650,260,140</Place>
-      <Place id="270" visible="true" options="240.0,100.0,241.0,160.0,250.0,370.0,170.0,80.0,4,360.0,260.0,350.0,260.0,350.0,370.0,340.0,370.0">500,0,0,0</Place>
-      <Place id="303" visible="true">440,20,271,40</Place>
-      <Place id="265" visible="true">500,-5,0,15</Place>
+      <Place id="179" visible="true">250,370,170,80</Place>
+      <Place id="131" visible="true">240,100,241,160</Place>
+      <Place id="267" visible="true" options="250.0,370.0,170.0,80.0,600.0,210.0,270.0,460.0,2,420.0,410.0,600.0,410.0">477,-5,0,16</Place>
+      <Place id="271" visible="true" options="240.0,100.0,241.0,160.0,250.0,370.0,170.0,80.0,4,360.0,260.0,350.0,260.0,350.0,370.0,340.0,370.0">500,0,0,0</Place>
+      <Place id="268" visible="true">500,-8,0,5</Place>
+      <Place id="296" visible="true">810,800,261,71</Place>
    </Sheet>
-   <Sheet name="Processing Chains" id="313" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
-      <Place id="297" visible="true">710,310,331,121</Place>
-      <Place id="131" visible="true">310,80,200,160</Place>
-      <Place id="260" visible="true" options="312.0,327.0,200.0,90.0,289.0,570.0,210.0,130.0,4,410.0,417.0,405.0,417.0,405.0,570.0,400.0,570.0">500,0,0,0</Place>
-      <Place id="259" visible="true" options="740.0,520.0,200.0,90.0,289.0,570.0,210.0,130.0,4,740.0,600.0,630.0,600.0,630.0,600.0,499.0,600.0">500,0,0,0</Place>
-      <Place id="261" visible="true" options="310.0,80.0,200.0,160.0,312.0,327.0,200.0,90.0,4,420.0,240.0,420.0,283.5,420.0,284.0,420.0,327.0">500,0,0,0</Place>
-      <Place id="219" visible="true">740,520,200,90</Place>
-      <Place id="202" visible="true">312,327,200,90</Place>
-      <Place id="207" visible="true">289,570,210,130</Place>
-      <Place id="304" visible="true">540,20,141,40</Place>
-      <Place id="247" visible="true" options="289.0,570.0,210.0,130.0,750.0,710.0,170.0,90.0,4,499.0,670.0,620.0,670.0,620.0,730.0,750.0,730.0">554,14,0,15</Place>
+   <Sheet name="Processing Chains" id="314" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
       <Place id="214" visible="true">750,710,170,90</Place>
+      <Place id="207" visible="true">289,570,210,130</Place>
+      <Place id="262" visible="true" options="310.0,80.0,200.0,160.0,312.0,327.0,200.0,90.0,4,420.0,240.0,420.0,283.5,420.0,284.0,420.0,327.0">500,0,0,0</Place>
+      <Place id="248" visible="true" options="289.0,570.0,210.0,130.0,750.0,710.0,170.0,90.0,4,499.0,670.0,620.0,670.0,620.0,730.0,750.0,730.0">554,14,0,15</Place>
+      <Place id="305" visible="true">540,20,141,40</Place>
+      <Place id="202" visible="true">312,327,200,90</Place>
+      <Place id="219" visible="true">740,520,200,90</Place>
+      <Place id="261" visible="true" options="312.0,327.0,200.0,90.0,289.0,570.0,210.0,130.0,4,410.0,417.0,405.0,417.0,405.0,570.0,400.0,570.0">500,0,0,0</Place>
+      <Place id="298" visible="true">710,310,331,121</Place>
+      <Place id="260" visible="true" options="740.0,520.0,200.0,90.0,289.0,570.0,210.0,130.0,4,740.0,600.0,630.0,600.0,630.0,600.0,499.0,600.0">500,0,0,0</Place>
+      <Place id="131" visible="true">310,80,200,160</Place>
    </Sheet>
-   <Sheet name="Summary Views" id="314" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
-      <Place id="89" visible="true">740,160,211,100</Place>
-      <Place id="91" visible="true">470,430,241,111</Place>
-      <Place id="90" visible="true">520,220,120,60</Place>
-      <Place id="305" visible="true">480,30,201,40</Place>
+   <Sheet name="Summary Views" id="315" disp_at="true" disp_ph="true" disp_co="true" disp_rn="true">
       <Place id="83" visible="true">210,150,200,140</Place>
+      <Place id="90" visible="true">520,220,120,60</Place>
+      <Place id="89" visible="true">740,160,211,100</Place>
+      <Place id="241" visible="true">140,510,201,81</Place>
+      <Place id="306" visible="true">480,30,201,40</Place>
+      <Place id="91" visible="true">470,430,241,111</Place>
    </Sheet>
-   <Settings sheet="308" zoom="1.0"></Settings>
+   <Settings sheet="311" zoom="1.0"></Settings>
 </Diagram>

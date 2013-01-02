@@ -51,8 +51,8 @@
     
     <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true" />
     
-	<bean class="org.openforis.calc.collect.CollectMetadataLoader" />
-	<bean class="org.openforis.calc.collect.CollectDataLoader" />
+	<bean class="org.openforis.calc.dataimport.collect.CollectMetadataLoader" />
+	<bean class="org.openforis.calc.dataimport.collect.CollectDataLoader" />
 	<bean class="org.openforis.calc.dataimport.SamplingDesignCsvImporter" />
 
 	<!--  DAOs -->	

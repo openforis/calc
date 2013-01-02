@@ -24,6 +24,7 @@ import org.postgis.PGgeometry;
 import org.postgis.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 
@@ -73,6 +74,7 @@ public class SamplingDesignCsvImporter {
 		}
 	}
 
+	@Transactional
 	public void importSamplingDesign(String uri, String filename) throws ImportException, IOException {
 		survey = surveyDao.fetchByUri(uri);
 		if ( survey == null ) {
@@ -84,6 +86,7 @@ public class SamplingDesignCsvImporter {
 	}
 
 
+	@Transactional
 	public void importSamplingDesign(int surveyId, String filename) throws ImportException, IOException {
 		CsvReader reader = null;
 		try {
@@ -150,7 +153,7 @@ public class SamplingDesignCsvImporter {
 				p.setSurveyId(surveyId);
 				p.setCode(plotCode);
 				p.setNo(plotNo);
-				p.setPhase(groundPlot ? 2 : 1);
+				p.setPhase(phase);
 				
 				// Projection UTM Zone 36 Hemisphere S Datum WGS84 
 				Point2D pos = TransformationUtils.toLatLong(plotX, plotY, "EPSG:32736");

@@ -1,4 +1,4 @@
-package org.openforis.calc.collect;
+package org.openforis.calc.dataimport.collect;
 
 import javax.xml.namespace.QName;
 
