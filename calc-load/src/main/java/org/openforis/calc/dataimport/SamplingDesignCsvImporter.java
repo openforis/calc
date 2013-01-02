@@ -85,7 +85,6 @@ public class SamplingDesignCsvImporter {
         		+permanentPlotCount+" permanent) in "+duration/1000.0+"s");
 	}
 
-
 	@Transactional
 	public void importSamplingDesign(int surveyId, String filename) throws ImportException, IOException {
 		CsvReader reader = null;
@@ -126,7 +125,8 @@ public class SamplingDesignCsvImporter {
 					str.setNo(stratumNo);
 					str.setCode(nvl(stratumCode, stratumNo));
 					stratumDao.insert(str);
-					stratumIds.put(stratumNo, str.getId());
+					stratumId = str.getId();
+					stratumIds.put(stratumNo, stratumId);
 				}
 				
 				Integer clusterId = clusterIds.get(clusterCode);
@@ -138,7 +138,8 @@ public class SamplingDesignCsvImporter {
 					c.setXIndex(clusterX);
 					c.setYIndex(clusterY);					
 					clusterDao.insert(c);
-					clusterIds.put(clusterCode, c.getId());
+					clusterId = c.getId();
+					clusterIds.put(clusterCode, clusterId);
 					clusterCount += 1;
 				}
 				
@@ -151,6 +152,8 @@ public class SamplingDesignCsvImporter {
 				}
 				Plot p = new Plot();
 				p.setSurveyId(surveyId);
+				p.setStratumId(stratumId);
+				p.setClusterId(clusterId);
 				p.setCode(plotCode);
 				p.setNo(plotNo);
 				p.setPhase(phase);

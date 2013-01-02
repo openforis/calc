@@ -440,9 +440,30 @@ http://code.google.com/p/darwincore/wiki/Taxon</Text>
       <Column id="240" name="numeric_variable_id" type="integer" length="25" nulls="false"/>
       <Storage name="TempTable" value="false"></Storage>
    </Table>
-   <View id="241" name="ground_plot" schema="calc" database="calc" background="15790335">
+   <View id="241" name="sampling_design_view" schema="calc" database="calc" background="15790335">
       <Text>Plots designated in sampling design for field survey</Text>
-      <Statement>SELECT * FROM calc.plot WHERE ground_plot</Statement>
+      <Statement>SELECT
+	plot.survey_id,
+	plot.stratum_id,
+    stratum.no AS stratum_no,
+    stratum.code AS stratum_code,
+	cluster.id AS cluster_id,
+    cluster.no AS cluster_no,
+    cluster.code AS cluster_code,
+	plot.id AS plot_id,
+	plot.no AS plot_no,
+	plot.code AS plot_code,
+	plot.location AS plot_location,
+	plot.shape AS plot_shape,
+	plot.phase,
+	plot.permanent_plot,
+	plot.ground_plot
+FROM
+	plot
+LEFT OUTER JOIN 
+    stratum ON stratum.id = plot.stratum_id
+LEFT OUTER JOIN 
+    cluster ON cluster.id = plot.cluster_id</Statement>
    </View>
    <Relation id="242" name="fk_aoi_hierarchy" cardinality="-2" identifying="true" nulls="false">
       <FK>107</FK>
@@ -972,5 +993,5 @@ Numeric &amp; Categorical Variables</Text>
       <Place id="306" visible="true">480,30,201,40</Place>
       <Place id="91" visible="true">470,430,241,111</Place>
    </Sheet>
-   <Settings sheet="311" zoom="1.0"></Settings>
+   <Settings sheet="315" zoom="1.0"></Settings>
 </Diagram>
