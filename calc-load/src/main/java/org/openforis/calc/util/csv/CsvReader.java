@@ -3,8 +3,10 @@ import java.io.IOException;
 import java.io.Reader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import au.com.bytecode.opencsv.CSVReader;
@@ -53,5 +55,9 @@ public class CsvReader extends CSVReader {
 	
 	public void setDateFormat(String pattern) {
 		this.dateFormat = new SimpleDateFormat(pattern);
+	}
+	
+	public List<String> getColumnNames() {
+		return Collections.unmodifiableList(new ArrayList<String>(columns.keySet()));
 	}
 }

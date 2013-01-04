@@ -4,7 +4,6 @@ import static org.openforis.calc.persistence.jooq.Tables.*;
 
 import java.util.List;
 
-import org.openforis.calc.model.ObservationUnit;
 import org.openforis.calc.model.Variable;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
 import org.openforis.calc.persistence.jooq.tables.records.VariableRecord;
@@ -20,11 +19,7 @@ public class VariableDao extends JooqDaoSupport<VariableRecord, Variable> {
 		super(VARIABLE, Variable.class);
 	}
 	
-	public List<Variable> fetchByObservationUnitId(int surveyUnitId) {
-		return fetch(VARIABLE.OBS_UNIT_ID, surveyUnitId);
-	}
-
-	public List<Variable> fetchByObservationUnit(ObservationUnit level) {
-		return fetchByObservationUnitId(level.getId());
+	public List<Variable> findByObservationUnitId(int id) {
+		return fetch(VARIABLE.OBS_UNIT_ID, id);
 	}
 }

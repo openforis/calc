@@ -97,7 +97,7 @@ public abstract class JooqDaoSupport<R extends UpdatableRecord<R>, P extends Mod
         
 		// Update ids in POJOs
 		Field<?> pk = pk();
-		if ( pk != null ) {
+		if ( !objects.isEmpty() && pk != null ) {
 			Iterator<R> recordIter = records.iterator();
 			for (P pojo : pojos) {
 				if ( pojo instanceof ModelObject ) {

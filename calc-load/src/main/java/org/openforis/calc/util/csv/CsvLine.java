@@ -23,7 +23,7 @@ public class CsvLine {
 	}
 	
 	public String getString(int idx) {
-		return line[idx];
+		return toString(line[idx]);
 	}
 	
 	public String getString(String column) {
@@ -31,7 +31,15 @@ public class CsvLine {
 		if ( idx == null ) {
 			return null;
 		} else {
-			return line[idx];
+			return toString(line[idx]);
+		}
+	}
+
+	private String toString(String txt) {
+		if ( txt == null || txt.trim().isEmpty() || "NA".equals(txt) ) { 		
+			return null;
+		} else {
+			return txt;
 		}
 	}
 

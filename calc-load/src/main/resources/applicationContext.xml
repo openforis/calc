@@ -52,7 +52,8 @@
     <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true" />
     
 	<bean class="org.openforis.calc.dataimport.collect.CollectMetadataLoader" />
-	<bean class="org.openforis.calc.dataimport.FieldDataCsvImporter" />
+	<bean class="org.openforis.calc.dataimport.PlotDataCsvImporter" />
+	<bean class="org.openforis.calc.dataimport.SpecimenDataCsvImporter" />
 	<bean class="org.openforis.calc.dataimport.SamplingDesignCsvImporter" />
 
 	<!--  DAOs -->	
@@ -65,7 +66,11 @@
 	<bean class="org.openforis.calc.persistence.PlotDao" autowire="byName"/>
 	<bean class="org.openforis.calc.persistence.AoiDao" autowire="byName"/>
 	<bean class="org.openforis.calc.persistence.PlotSurveyDao" autowire="byName"/>
+	<bean class="org.openforis.calc.persistence.PlotMeasurementDao" autowire="byName"/>
+	<bean class="org.openforis.calc.persistence.PlotCategoryDao" autowire="byName"/>
 	<bean class="org.openforis.calc.persistence.SpecimenDao" autowire="byName"/>
+	<bean class="org.openforis.calc.persistence.SpecimenMeasurementDao" autowire="byName"/>
+	<bean class="org.openforis.calc.persistence.SpecimenCategoryDao" autowire="byName"/>
 
 	<!-- Services -->	
 	<bean class="org.openforis.calc.service.MetadataService" />

@@ -4,8 +4,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.List;
 
-import org.openforis.calc.dataimport.ModelObjectSourceIdMap;
+import org.openforis.calc.model.Category;
 import org.openforis.calc.model.ObservationUnit;
+import org.openforis.calc.model.Survey;
 import org.openforis.calc.model.Variable;
 import org.openforis.calc.persistence.CategoryDao;
 import org.openforis.calc.persistence.ObservationUnitDao;
@@ -28,6 +29,8 @@ public class MetadataService {
 	@Autowired
 	protected ObservationUnitDao surveyUnitDao;
 	@Autowired
+	protected ObservationUnitDao observationUnitDao;
+	@Autowired
 	protected VariableDao variableDao;
 	@Autowired
 	protected CategoryDao categoryDao;
@@ -40,16 +43,34 @@ public class MetadataService {
 		return cs;
 	}
 
-	public ModelObjectSourceIdMap loadSourceIds(int surveyId) {
-		ModelObjectSourceIdMap map = new ModelObjectSourceIdMap();
-		List<ObservationUnit> levels = surveyUnitDao.findBySurveyId(surveyId);
-		for (ObservationUnit level : levels) {
-			map.putModelObject(level);
-			// Load variables
-			List<Variable> vars = variableDao.fetchByObservationUnit(level);
-			map.putModelObjects(vars);
+//	public ModelObjectSourceIdMap loadSourceIds(int surveyId) {
+//		ModelObjectSourceIdMap map = new ModelObjectSourceIdMap();
+//		List<ObservationUnit> levels = surveyUnitDao.findBySurveyId(surveyId);
+//		for (ObservationUnit level : levels) {
+//			map.putModelObject(level);
+//			// Load variables
+//			List<Variable> vars = variableDao.fetchByObservationUnit(level);
+//			map.putModelObjects(vars);
+//		}
+//		return map;
+//	}
+
+	public void loadSurveyMetadata(Survey survey) {
+		List<ObservationUnit> units = observationUnitDao.findBySurveyId(survey.getId());
+		for (ObservationUnit unit : units) {
+			loadObservationUnitMetadata(unit);
 		}
-		return map;
+		survey.setObservationUnits(units);
 	}
 
+	public void loadObservationUnitMetadata(ObservationUnit unit) {
+		List<Variable> vars = variableDao.findByObservationUnitId(unit.getId());
+		for (Variable var : vars) {
+			if ( var.isCategorical() ) {
+				List<Category> cats = categoryDao.findByVariableId(var.getId());
+				var.setCategories(cats);
+			}
+		}
+		unit.setVariables(vars);
+	}
 }
