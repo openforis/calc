@@ -1,13 +1,20 @@
 package org.openforis.calc.util.csv;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 
 public class CsvLine {
 	private Map<String, Integer> columns;
 	private String[] line;
-
-	CsvLine(Map<String, Integer> columns, String[] line) {
-		this.columns = columns;
+	private CsvReader reader;
+	
+	CsvLine(CsvReader reader, String[] line) {
+		this.columns = reader.getColumnIndices();
+		this.reader = reader;
 		this.line = line;
 	}
 	
@@ -28,11 +35,11 @@ public class CsvLine {
 		}
 	}
 
-	public Integer getInteger(int idx) {
+	public Integer getInteger(int idx) throws NumberFormatException {
 		return toInteger(line[idx]);
 	}
 
-	public Integer getInteger(String column) {
+	public Integer getInteger(String column) throws NumberFormatException {
 		Integer idx = getColumnIndex(column);
 		if ( idx == null ) {
 			return null;
@@ -41,11 +48,11 @@ public class CsvLine {
 		}
 	}
 
-	public Double getDouble(int idx) {
+	public Double getDouble(int idx) throws NumberFormatException {
 		return toDouble(line[idx]);
 	}
 
-	public Double getDouble(String column) {
+	public Double getDouble(String column) throws NumberFormatException {
 		Integer idx = getColumnIndex(column);
 		if ( idx == null ) {
 			return null;
@@ -54,11 +61,24 @@ public class CsvLine {
 		}
 	}
 
-	public Boolean getBoolean(int idx) {
+	public Date getDate(int idx) throws ParseException {
+		return toDate(line[idx]);
+	}
+
+	public Date getDate(String column) throws ParseException {
+		Integer idx = getColumnIndex(column);
+		if ( idx == null ) {
+			return null;
+		} else {
+			return toDate(line[idx]);
+		}
+	}
+
+	public Boolean getBoolean(int idx) throws NumberFormatException {
 		return toBoolean(line[idx]);
 	}
 
-	public Boolean getBoolean(String column) {
+	public Boolean getBoolean(String column) throws NumberFormatException {
 		Integer idx = getColumnIndex(column);
 		if ( idx == null ) {
 			return null;
@@ -67,15 +87,19 @@ public class CsvLine {
 		}
 	}
 	private Integer toInteger(String val) {
-		return val == null || val.isEmpty() ? null : Integer.valueOf(val);
+		return isNullValue(val) ? null : Double.valueOf(val).intValue();
 	}
 
 	private Double toDouble(String val) {
-		return val == null || val.isEmpty() ? null : Double.valueOf(val);
+		return isNullValue(val) ? null : Double.valueOf(val);
+	}
+	
+	private boolean isNullValue(String val) {
+		return val == null || val.isEmpty() || "NA".equals(val);
 	}
 
 	private Boolean toBoolean(String val) {
-		if ( val == null ) {
+		if ( isNullValue(val) ) {
 			return null;
 		} else if ( val.equals("1") || 
 					val.equalsIgnoreCase("T") || 
@@ -97,6 +121,18 @@ public class CsvLine {
 			throw new IllegalStateException("Column headers not yet read");
 		}
 		return columns.get(column);
+	}
+
+	private Date toDate(String val) throws ParseException {
+		return isNullValue(val) ? null : reader.getDateFormat().parse(val);
+	}
+	
+	public CsvReader getReader() {
+		return reader;
+	}
+
+	public List<String> getColumnNames() {
+		return Collections.unmodifiableList(new ArrayList<String>(columns.keySet()));
 	}
 }
  

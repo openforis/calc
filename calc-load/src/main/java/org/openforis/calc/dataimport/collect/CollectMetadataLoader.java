@@ -3,16 +3,16 @@ package org.openforis.calc.dataimport.collect;
 import java.io.FileNotFoundException;
 import java.util.List;
 
-import org.openforis.calc.model.CategoricalVariable;
 import org.openforis.calc.model.Category;
-import org.openforis.calc.model.NumericVariable;
-import org.openforis.calc.model.Survey;
 import org.openforis.calc.model.ObservationUnit;
+import org.openforis.calc.model.Survey;
+import org.openforis.calc.model.Variable;
 import org.openforis.idm.metamodel.AttributeDefinition;
 import org.openforis.idm.metamodel.BooleanAttributeDefinition;
 import org.openforis.idm.metamodel.CodeAttributeDefinition;
 import org.openforis.idm.metamodel.CodeList;
 import org.openforis.idm.metamodel.CodeList.CodeScope;
+import org.openforis.idm.metamodel.NodeLabel.Type;
 import org.openforis.idm.metamodel.CodeListItem;
 import org.openforis.idm.metamodel.CoordinateAttributeDefinition;
 import org.openforis.idm.metamodel.EntityDefinition;
@@ -52,11 +52,11 @@ public class CollectMetadataLoader extends CollectLoaderBase {
 	public void importMetadata(String idmlFilename) throws FileNotFoundException, IdmlParseException, InvalidMetadataException {		
 		collectSurvey = metadataService.loadIdml(idmlFilename);
 		survey = new Survey();
-		survey.setName(collectSurvey.getProjectName(lang));
+		survey.setDefaultLabel(collectSurvey.getProjectName(lang));
 		survey.setUri(collectSurvey.getUri());
-//		survey.setId(1);
-		surveyDao.insert(survey);
-		log.info("Survey: " +survey.getName()+" ("+survey.getId()+")");
+		survey.setId(1);
+//		surveyDao.insert(survey);
+		log.info("Survey: " +survey.getDefaultLabel()+" ("+survey.getId()+")");
 		Schema schema = collectSurvey.getSchema();
 		traverse(schema);
 	}
@@ -70,7 +70,12 @@ public class CollectMetadataLoader extends CollectLoaderBase {
 
 	private void traverse(EntityDefinition node, ObservationUnit parentUnit) throws InvalidMetadataException {
 		EntityType type = getEntityType(node);
-		if ( type != null ) {
+		if ( type == null ) {
+			if ( node.isMultiple() ) {
+				log.info("Skipping unmapped multiple entity: "+node.getPath());
+				return;
+			}
+		} else {
 			if ( type.isCluster() ) {
 				if ( parentUnit != null ) {
 					throw new InvalidMetadataException("'cluster' entity found inside observation unit '" +
@@ -82,9 +87,8 @@ public class CollectMetadataLoader extends CollectLoaderBase {
 			} else {
 				throw new RuntimeException("Unimplemented entity type '"+type+"'");
 			}
-		} else {
-			log.info("Skipping unmapped entity: "+node.getPath());
 		}
+		
 		for (NodeDefinition child : node.getChildDefinitions()) {
 			if ( parentUnit != null && child instanceof AttributeDefinition ) {
 				importVariable(parentUnit, (AttributeDefinition) child);
@@ -109,51 +113,53 @@ public class CollectMetadataLoader extends CollectLoaderBase {
 	}
 
 	private void importNumVariable(ObservationUnit parentUnit, NumberAttributeDefinition attr) {
-		NumericVariable var = new NumericVariable();
-		var.setName(attr.getName());
+		Variable var = new Variable();
+		var.setName(attr.getCompoundName());
 		var.setObsUnitId(parentUnit.getId());
 		var.setSourceId(attr.getId());
-		numericVariableDao.insert(var);
+		var.setDefaultLabel(attr.getLabel(Type.INSTANCE, lang));
+		var.setType("ratio");
+		variableDao.insert(var);
 		log.info("Num. variable: "+parentUnit.getName()+"."+var.getName()+" ("+var.getId()+")");
 	}
 
 	private void importCatVariable(ObservationUnit parentUnit, BooleanAttributeDefinition attr) {
-		CategoricalVariable var = new CategoricalVariable();
-		var.setName(attr.getName());
+		Variable var = new Variable();
+		var.setName(attr.getCompoundName());
 		var.setObsUnitId(parentUnit.getId());
 		var.setSourceId(attr.getId());
-		var.setMultipleResponse(false);
-		var.setType("binomial");
-		categoricalVariableDao.insert(var);
+		var.setDefaultLabel(attr.getLabel(Type.INSTANCE, lang));
+		var.setType("binary");
+		variableDao.insert(var);
 		log.info("Cat. variable: "+parentUnit.getName()+"."+var.getName()+" ("+var.getId()+")");
 		insertCategory(var, TRUE_CATEGORY_CODE, TRUE_CATEGORY_LABEL, 1);
 		insertCategory(var, FALSE_CATEGORY_CODE, FALSE_CATEGORY_LABEL, 2);
 		
 	}
 
-	private void insertCategory(CategoricalVariable var, String code, String defaultLabel, int idx) {
+	private void insertCategory(Variable var, String code, String defaultLabel, int idx) {
 		Category cat = new Category();
 		cat.setVariableId(var.getId());
 		cat.setCode(code);
-		cat.setName(defaultLabel);
+		cat.setDefaultLabel(defaultLabel);
 		cat.setOrder(idx);
 		categoryDao.insert(cat);
 		log.info("Category: "+cat.getCode()+" ("+cat.getId()+")");		
 	}
 
 	private void importCatVariable(ObservationUnit parentUnit, CodeAttributeDefinition attr) {
-		CategoricalVariable var = new CategoricalVariable();
-		var.setName(attr.getName());
+		Variable var = new Variable();
+		var.setName(attr.getCompoundName());
 		var.setObsUnitId(parentUnit.getId());
 		var.setSourceId(attr.getId());
-		var.setType("nominal");
-		var.setMultipleResponse(attr.isMultiple());
-		categoricalVariableDao.insert(var);
+		var.setDefaultLabel(attr.getLabel(Type.INSTANCE, lang));
+		var.setType(attr.isMultiple() ? "multiple" : "nominal");
+		variableDao.insert(var);
 		log.info("Cat. variable: "+parentUnit.getName()+"."+var.getName()+" ("+var.getId()+")");
 		importCategories(var, attr);
 	}
 
-	private void importCategories(CategoricalVariable var, CodeAttributeDefinition attr) {
+	private void importCategories(Variable var, CodeAttributeDefinition attr) {
 		CodeList list = attr.getList();
 		int level = attr.getCodeListLevel();
 		List<CodeListItem> items = list.getItems(level);
@@ -163,13 +169,13 @@ public class CollectMetadataLoader extends CollectLoaderBase {
 		}
 	}
 
-	private void importCategory(CategoricalVariable var, CodeListItem item, int idx) {
+	private void importCategory(Variable var, CodeListItem item, int idx) {
 		String code = getCode(item);
 		String label = getCodeListItemLabel(item);
 		Category cat = new Category();
 		cat.setVariableId(var.getId());
 		cat.setCode(code);
-		cat.setName(label);
+		cat.setDefaultLabel(label);
 		cat.setOrder(idx);
 		cat.setSourceId(item.getId());
 		categoryDao.insert(cat);

@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openforis.calc.geospatial.TransformationUtils;
 import org.openforis.calc.model.Cluster;
 import org.openforis.calc.model.Plot;
 import org.openforis.calc.model.Stratum;
@@ -17,7 +18,6 @@ import org.openforis.calc.persistence.PlotDao;
 import org.openforis.calc.persistence.StratumDao;
 import org.openforis.calc.persistence.SurveyDao;
 import org.openforis.calc.service.MetadataService;
-import org.openforis.calc.util.TransformationUtils;
 import org.openforis.calc.util.csv.CsvLine;
 import org.openforis.calc.util.csv.CsvReader;
 import org.postgis.PGgeometry;
@@ -76,7 +76,7 @@ public class SamplingDesignCsvImporter {
 
 	@Transactional
 	public void importSamplingDesign(String uri, String filename) throws ImportException, IOException {
-		survey = surveyDao.fetchByUri(uri);
+		survey = surveyDao.findByUri(uri);
 		if ( survey == null ) {
 			throw new ImportException("No survey with URI "+uri);
 		}

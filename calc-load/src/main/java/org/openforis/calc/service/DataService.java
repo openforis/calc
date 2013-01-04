@@ -1,10 +1,9 @@
 package org.openforis.calc.service;
 
-import org.openforis.calc.persistence.CategoricalVariableDao;
 import org.openforis.calc.persistence.CategoryDao;
-import org.openforis.calc.persistence.NumericVariableDao;
-import org.openforis.calc.persistence.SurveyDao;
 import org.openforis.calc.persistence.ObservationUnitDao;
+import org.openforis.calc.persistence.SurveyDao;
+import org.openforis.calc.persistence.VariableDao;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -19,9 +18,7 @@ public class DataService {
 	@Autowired
 	protected ObservationUnitDao surveyUnitDao;
 	@Autowired
-	protected NumericVariableDao numericVariableDao;
-	@Autowired
-	protected CategoricalVariableDao categoricalVariableDao;
+	protected VariableDao variableDao;
 	@Autowired
 	protected CategoryDao categoryDao;
 	

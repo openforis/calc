@@ -9,19 +9,19 @@ public class InvalidMetadataException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 
-	protected InvalidMetadataException() {
+	public InvalidMetadataException() {
 		super();
 	}
 
-	protected InvalidMetadataException(String message, Throwable cause) {
+	public InvalidMetadataException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
-	protected InvalidMetadataException(String message) {
+	public InvalidMetadataException(String message) {
 		super(message);
 	}
 
-	protected InvalidMetadataException(Throwable cause) {
+	public InvalidMetadataException(Throwable cause) {
 		super(cause);
 	}
 }

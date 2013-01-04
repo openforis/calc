@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.openforis.calc.util;
+package org.openforis.calc.geospatial;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -104,10 +104,9 @@ public class TransformationUtils {
 			return dest;
 		} catch (Throwable t) {
 			if (LOG.isErrorEnabled()) {
-				LOG.error("Error converting: x=" + x + " y=" + y + " srs=" + srsId, t);
-				throw new RuntimeException(t);
+				LOG.error("Error converting point (" + x + ", " + y + ", '" + srsId+"'): "+t.getMessage());
 			}
-			return new DirectPosition2D(0, 0);
+			return null;
 		}
 	}
 	

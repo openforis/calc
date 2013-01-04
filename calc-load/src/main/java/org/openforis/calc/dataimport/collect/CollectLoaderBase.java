@@ -5,11 +5,10 @@ import javax.xml.namespace.QName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openforis.calc.model.Survey;
-import org.openforis.calc.persistence.CategoricalVariableDao;
 import org.openforis.calc.persistence.CategoryDao;
-import org.openforis.calc.persistence.NumericVariableDao;
-import org.openforis.calc.persistence.SurveyDao;
 import org.openforis.calc.persistence.ObservationUnitDao;
+import org.openforis.calc.persistence.SurveyDao;
+import org.openforis.calc.persistence.VariableDao;
 import org.openforis.calc.service.MetadataService;
 import org.openforis.collect.model.CollectSurvey;
 import org.openforis.idm.metamodel.EntityDefinition;
@@ -43,9 +42,7 @@ public abstract class CollectLoaderBase {
 	@Autowired
 	protected ObservationUnitDao surveyUnitDao;
 	@Autowired
-	protected NumericVariableDao numericVariableDao;
-	@Autowired
-	protected CategoricalVariableDao categoricalVariableDao;
+	protected VariableDao variableDao;
 	@Autowired
 	protected CategoryDao categoryDao;
 	
