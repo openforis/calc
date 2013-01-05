@@ -1,11 +1,10 @@
 package org.openforis.calc.model;
 
-import org.openforis.calc.persistence.jooq.tables.pojos.SpecimenCategoryBase;
 
 /**
  * @author G. Miceli
  */
-public class SpecimenCategory extends SpecimenCategoryBase implements ModelObject {
+public class SpecimenCategory extends org.openforis.calc.persistence.jooq.tables.pojos.SpecimenCategory implements ModelObject {
 
 	private static final long serialVersionUID = 1L;
 

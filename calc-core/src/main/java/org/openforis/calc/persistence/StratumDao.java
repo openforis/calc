@@ -1,6 +1,6 @@
 package org.openforis.calc.persistence;
 
-import static org.openforis.calc.persistence.jooq.tables.StratumTable.*;
+import static org.openforis.calc.persistence.jooq.tables.Stratum.*;
 
 import org.jooq.Record;
 import org.jooq.Result;

@@ -4,12 +4,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.openforis.calc.persistence.jooq.tables.pojos.VariableBase;
-
 /**
  * @author G. Miceli
  */
-public class Variable extends VariableBase implements ImportableModelObject {
+public class Variable extends org.openforis.calc.persistence.jooq.tables.pojos.Variable implements ImportableModelObject {
 
 	private static final long serialVersionUID = 1L;
 

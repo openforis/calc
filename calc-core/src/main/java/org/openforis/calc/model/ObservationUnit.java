@@ -4,12 +4,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.openforis.calc.persistence.jooq.tables.pojos.ObservationUnitBase;
-
 /**
  * @author G. Miceli
  */
-public class ObservationUnit extends ObservationUnitBase implements ImportableModelObject {
+public class ObservationUnit extends org.openforis.calc.persistence.jooq.tables.pojos.ObservationUnit implements ImportableModelObject {
 
 	private static final long serialVersionUID = 1L;
 	

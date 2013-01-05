@@ -1,11 +1,10 @@
 package org.openforis.calc.model;
 
-import org.openforis.calc.persistence.jooq.tables.pojos.SpecimenMeasurementBase;
 
 /**
  * @author G. Miceli
  */
-public class SpecimenMeasurement extends SpecimenMeasurementBase implements ModelObject {
+public class SpecimenMeasurement extends org.openforis.calc.persistence.jooq.tables.pojos.SpecimenMeasurement implements ModelObject {
 
 	private static final long serialVersionUID = 1L;
 	

@@ -3,12 +3,10 @@ package org.openforis.calc.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openforis.calc.persistence.jooq.tables.pojos.SurveyBase;
-
 /**
  * @author G. Miceli
  */
-public class Survey extends SurveyBase implements ModelObject {
+public class Survey extends org.openforis.calc.persistence.jooq.tables.pojos.Survey implements ModelObject {
 
 	private static final long serialVersionUID = 1L;
 	

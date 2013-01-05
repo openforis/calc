@@ -1,11 +1,9 @@
 package org.openforis.calc.model;
 
-import org.openforis.calc.persistence.jooq.tables.pojos.AoiBase;
-
 /**
  * @author G. Miceli
  */
-public class Aoi extends AoiBase implements ModelObject {
+public class Aoi extends org.openforis.calc.persistence.jooq.tables.pojos.Aoi implements ModelObject {
 
 	private static final long serialVersionUID = 1L;
 

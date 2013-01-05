@@ -2,12 +2,10 @@ package org.openforis.calc.model;
 
 import java.util.Date;
 
-import org.openforis.calc.persistence.jooq.tables.pojos.PlotSurveyBase;
-
 /**
  * @author G. Miceli
  */
-public class PlotSurvey extends PlotSurveyBase implements ObservationUnitInstance {
+public class PlotSurvey extends org.openforis.calc.persistence.jooq.tables.pojos.PlotSurvey implements ObservationUnitInstance {
 
 	private static final long serialVersionUID = 1L;
 

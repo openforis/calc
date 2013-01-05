@@ -56,11 +56,6 @@
 						<artifactId>postgresql</artifactId>
 						<version>9.1-901.jdbc4</version>
 					</dependency>
-					<dependency>
-						<groupId>org.openforis.util</groupId>
-						<artifactId>build-utils</artifactId>
-						<version>1.0.0-SNAPSHOT</version>
-					</dependency>
 				</dependencies>
 				<configuration>
 					<jdbc>
@@ -70,7 +65,6 @@
 						<password>${calc.jdbc.password}</password>
 					</jdbc>
 					<generator>
-<!-- 						<name>org.jooq.util.DefaultGenerator</name> -->
 						<database>
 							<name>org.jooq.util.postgres.PostgresDatabase</name>
 							<includes>.*</includes>
@@ -95,9 +89,6 @@
 							<pojos>true</pojos>
 							<daos>false</daos>
 						</generate>
-						<strategy>
-							<name>org.openforis.jooq.codegen.JooqGeneratorStrategy</name>
-						</strategy>
 						<target>
 							<packageName>org.openforis.calc.persistence.jooq</packageName>
 							<directory>${jooq-codegen.target.directory}</directory>

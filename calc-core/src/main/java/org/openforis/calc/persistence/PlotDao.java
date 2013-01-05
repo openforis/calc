@@ -1,6 +1,6 @@
 package org.openforis.calc.persistence;
 
-import static org.openforis.calc.persistence.jooq.tables.PlotTable.*;
+import static org.openforis.calc.persistence.jooq.tables.Plot.*;
 
 import org.jooq.Record;
 import org.jooq.Result;

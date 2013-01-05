@@ -1,11 +1,10 @@
 package org.openforis.calc.model;
 
-import org.openforis.calc.persistence.jooq.tables.pojos.ClusterBase;
 
 /**
  * @author G. Miceli
  */
-public class Cluster extends ClusterBase implements ModelObject {
+public class Cluster extends org.openforis.calc.persistence.jooq.tables.pojos.Cluster implements ModelObject {
 
 	private static final long serialVersionUID = 1L;
 

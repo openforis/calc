@@ -1,6 +1,6 @@
 package org.openforis.calc.persistence;
 
-import static org.openforis.calc.persistence.jooq.tables.ClusterTable.*;
+import static org.openforis.calc.persistence.jooq.tables.Cluster.*;
 
 import org.jooq.Record;
 import org.jooq.Result;

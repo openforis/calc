@@ -1,11 +1,10 @@
 package org.openforis.calc.model;
 
-import org.openforis.calc.persistence.jooq.tables.pojos.PlotBase;
 
 /**
  * @author G. Miceli
  */
-public class Plot extends PlotBase implements ModelObject {
+public class Plot extends org.openforis.calc.persistence.jooq.tables.pojos.Plot implements ModelObject {
 
 	private static final long serialVersionUID = 1L;
 
