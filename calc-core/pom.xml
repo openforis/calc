@@ -1,168 +1,298 @@
-<project
-	xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
+		<groupId>org.openforis.calc</groupId>
 		<artifactId>calc</artifactId>
-		<groupId>org.openforis</groupId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>1.0-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
-
+	
 	<artifactId>calc-core</artifactId>
+	<packaging>jar</packaging>
+	<name>Open Foris Calc Core</name>
+	
+	<build>
+		<plugins>
+			<!-- Read dev properties -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>properties-maven-plugin</artifactId>
+				<version>1.0-alpha-2</version>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>read-project-properties</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<files>
+						<file>dev.properties</file>
+					</files>
+					<quiet>true</quiet>
+				</configuration>
+			</plugin>
+			<!-- Generate jOOQ stub classes -->
+			<plugin>
+				<groupId>org.jooq</groupId>
+				<artifactId>jooq-codegen-maven</artifactId>
+				<version>${jooq.version}</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>postgresql</groupId>
+						<artifactId>postgresql</artifactId>
+						<version>9.1-901.jdbc4</version>
+					</dependency>
+					<dependency>
+						<groupId>org.openforis.util</groupId>
+						<artifactId>build-utils</artifactId>
+						<version>1.0.0-SNAPSHOT</version>
+					</dependency>
+				</dependencies>
+				<configuration>
+					<jdbc>
+						<driver>${calc.jdbc.driver}</driver>
+						<url>${calc.jdbc.url}</url>
+						<user>${calc.jdbc.username}</user>
+						<password>${calc.jdbc.password}</password>
+					</jdbc>
+					<generator>
+<!-- 						<name>org.jooq.util.DefaultGenerator</name> -->
+						<database>
+							<name>org.jooq.util.postgres.PostgresDatabase</name>
+							<includes>.*</includes>
+							<excludes />
+							<inputSchema>calc</inputSchema>
+<!-- 							  <customTypes> -->
+<!-- 							    <customType> -->
+<!-- 							      <name>java.awt.geom.Point2D.Double</name> -->
+<!-- 							      <converter>org.openforis.calc.persistence.jooq.PGPointConverter</converter> -->
+<!-- 							    </customType> -->
+<!-- 							  </customTypes> -->
+<!-- 							  <forcedTypes> -->
+<!-- 							    <forcedType> -->
+<!-- 							      <name>java.awt.geom.Point2D.Double</name> -->
+<!-- 							      <expressions>.*\.location</expressions> -->
+<!-- 							    </forcedType> -->
+<!-- 							  </forcedTypes>							 -->
+						</database>
+						<generate>
+							<relations>true</relations>
+							<deprecated>false</deprecated>
+							<pojos>true</pojos>
+							<daos>false</daos>
+						</generate>
+						<strategy>
+							<name>org.openforis.jooq.codegen.JooqGeneratorStrategy</name>
+						</strategy>
+						<target>
+							<packageName>org.openforis.calc.persistence.jooq</packageName>
+							<directory>${project.build.directory}}/generated-sources/jooq</directory>
+						</target>
+						<!-- <masterDataTables> -->
+						<!-- <masterDataTable> -->
+						<!-- <name>t_language</name> -->
+						<!-- <literal>cd</literal> -->
+						<!-- <description>description</description> -->
+						<!-- </masterDataTable> -->
+						<!-- </masterDataTables> -->
+					</generator>
+				</configuration>
+			</plugin>
+<!-- 			<plugin> -->
+<!-- 				<groupId>org.apache.maven.plugins</groupId> -->
+<!-- 				<artifactId>maven-surefire-plugin</artifactId> -->
+<!-- 				<version>2.11</version> -->
+<!-- 				<configuration> -->
+<!-- 					<testSourceDirectory>${basedir}/src/test/java</testSourceDirectory> -->
+<!-- 					<excludes> -->
+<!-- 						<exclude>**/*IntegrationTest.java</exclude> -->
+<!-- 					</excludes> -->
+<!-- 				</configuration> -->
+<!-- 			</plugin> -->
+<!-- 			<plugin> -->
+<!-- 				<groupId>org.apache.maven.plugins</groupId> -->
+<!-- 				<artifactId>maven-failsafe-plugin</artifactId> -->
+<!-- 				<version>2.11</version> -->
+<!-- 				<configuration> -->
+<!-- 					<failIfNoTests>true</failIfNoTests> -->
+<!-- 					<testSourceDirectory>${basedir}/src/it/java</testSourceDirectory> -->
+<!-- 					<includes> -->
+<!-- 						<include>**/*IntegrationTest.java</include> -->
+<!-- 					</includes> -->
+<!-- 				</configuration> -->
+<!-- 				<executions> -->
+<!-- 					<execution> -->
+<!-- 						<goals> -->
+<!-- 							<goal>integration-test</goal> -->
+<!-- 							<goal>verify</goal> -->
+<!-- 						</goals> -->
+<!-- 					</execution> -->
+<!-- 				</executions> -->
+<!-- 			</plugin> -->
+
+			<!-- Add generated sources to build path -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+						<id>add-generated-source</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>${project.build.directory}/generated-sources/jooq</source>
+							</sources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>add-integration-test-sources</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>add-test-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>src/it/java</source>
+							</sources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>add-integration-test-resources</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>add-test-resource</goal>
+						</goals>
+						<configuration>
+							<resources>
+								<resource>
+									<directory>src/it/resources</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>2.0.2</version>
+					<configuration>
+						<source>1.6</source>
+						<target>1.6</target>
+						<encoding>${project.build.sourceEncoding}</encoding>
+					</configuration>
+				</plugin>
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.codehaus.mojo</groupId>
+										<artifactId>properties-maven-plugin</artifactId>
+										<versionRange>[1.0-alpha-2,)</versionRange>
+										<goals>
+											<goal>read-project-properties</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore/>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.jooq</groupId>
+										<artifactId>jooq-codegen-maven</artifactId>
+										<versionRange>[${jooq.version},)</versionRange>
+										<goals>
+											<goal>generate</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore/>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
 
 	<dependencies>
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.10</version>
-			<scope>test</scope>
-		</dependency>
-		
-		<!-- Apache Commons -->
-		<dependency>
-			<groupId>commons-lang</groupId>
-			<artifactId>commons-lang</artifactId>
-			<version>2.6</version>
+			<groupId>org.openforis.collect</groupId>
+			<artifactId>collect-core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.3</version>
+			<groupId>org.jooq</groupId>
+			<artifactId>jooq</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>commons-dbcp</groupId>
-			<artifactId>commons-dbcp</artifactId>
-			<version>1.4</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-exec</artifactId>
-			<version>1.1</version>
-		</dependency>
-		
-		<!-- Java Persistence api -->
-		<dependency>
-			<groupId>org.hibernate.javax.persistence</groupId>
-			<artifactId>hibernate-jpa-2.0-api</artifactId>
-			<version>1.0.0.Final</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.transaction</groupId>
-			<artifactId>jta</artifactId>
-			<version>1.1</version>
-		</dependency>
-		
-		<!-- Db -->
-		<dependency>
-			<groupId>commons-dbcp</groupId>
-			<artifactId>commons-dbcp</artifactId>
-			<version>1.4</version>
-		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-entitymanager</artifactId>
-			<version>3.2.0.ga</version>
-		</dependency>
-<!-- 		<dependency> -->
-<!-- 			<groupId>postgresql</groupId> -->
-<!-- 			<artifactId>postgresql</artifactId> -->
-<!-- 			<version>9.1-901-1.jdbc4</version> -->
-<!-- 		</dependency> -->
-		
-		<!-- Spring  -->
 		<dependency>
 			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
-			<exclusions>
-				<exclusion>
-					<artifactId>commons-logging</artifactId>
-					<groupId>commons-logging</groupId>
-				</exclusion>
-			</exclusions>
+			<artifactId>spring-context</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-tx</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-web</artifactId>
-			<exclusions>
-				<exclusion>
-					<artifactId>spring-expression</artifactId>
-					<groupId>org.springframework</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>spring-jdbc</artifactId>
-					<groupId>org.springframework</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
 			<groupId>org.springframework</groupId>
-			<artifactId>spring-hibernate3</artifactId>
-			<version>2.0.8</version>
+			<artifactId>spring-jdbc</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-jpa</artifactId>
-			<version>2.0.8</version>
-		</dependency>
-		
-		<!-- Pentaho Kettle -->
-		<dependency>
-			<groupId>pentaho-kettle</groupId>
-			<artifactId>kettle-core</artifactId>
+			<groupId>postgresql</groupId>
+			<artifactId>postgresql</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>pentaho-kettle</groupId>
-			<artifactId>kettle-db</artifactId>
+			<groupId>org.postgis</groupId>
+			<artifactId>postgis-jdbc</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>pentaho-kettle</groupId>
-			<artifactId>kettle-engine</artifactId>
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>pentaho-kettle</groupId>
-			<artifactId>kettle-gpload-plugin</artifactId>
+			<groupId>net.sf.kxml</groupId>
+			<artifactId>kxml2</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>commons-vfs</groupId>
-			<artifactId>commons-vfs</artifactId>
-			<version>1.0</version>
-		</dependency>
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.14</version>
-		</dependency>
-		<!-- R -->
-		<dependency>
-			<groupId>org.rosuda</groupId>
-			<artifactId>rEngine</artifactId>
-			<version>0.1</version>
-			<type>jar</type>
-		</dependency>
-		<dependency>
-			<groupId>org.rosuda</groupId>
-			<artifactId>rServeEngine</artifactId>
-			<version>0.1</version>
-			<type>jar</type>
-		</dependency>
-		<dependency>
-			<groupId>org.renjin</groupId>
-			<artifactId>renjin-core</artifactId>
-			<version>0.6.4-SNAPSHOT</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>asm</artifactId>
-					<groupId>asm</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
+	    <dependency>
+	      <groupId>net.sf.opencsv</groupId>
+	      <artifactId>opencsv</artifactId>
+	    </dependency>
+	    <dependency>
+	      <groupId>org.geotools</groupId>
+	      <artifactId>gt-referencing</artifactId>
+	    </dependency>
+	    <dependency>
+	      <groupId>org.geotools</groupId>
+	      <artifactId>gt-epsg-hsql</artifactId>
+	    </dependency>
+<!-- 	    <dependency> -->
+<!-- 	      <groupId>org.geotoolkit</groupId> -->
+<!-- 	      <artifactId>geotk-epsg</artifactId> -->
+<!-- 	    </dependency> -->
 	</dependencies>
-
 </project>
