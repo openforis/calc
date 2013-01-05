@@ -16,4 +16,10 @@
 	<packaging>jar</packaging>
 	<name>Open Foris Calc Server</name>
 
+	<dependencies>
+		<dependency>
+			<groupId>org.openforis.calc</groupId>
+			<artifactId>calc-core</artifactId>
+		</dependency>
+	</dependencies>
 </project>

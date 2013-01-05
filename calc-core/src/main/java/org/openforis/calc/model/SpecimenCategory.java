@@ -4,7 +4,7 @@ package org.openforis.calc.model;
 /**
  * @author G. Miceli
  */
-public class SpecimenCategory extends org.openforis.calc.persistence.jooq.tables.pojos.SpecimenCategory implements ModelObject {
+public class SpecimenCategory extends org.openforis.calc.persistence.jooq.tables.pojos.SpecimenCategory implements Identifiable {
 
 	private static final long serialVersionUID = 1L;
 

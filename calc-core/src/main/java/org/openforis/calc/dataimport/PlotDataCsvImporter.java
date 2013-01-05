@@ -13,49 +13,50 @@ import org.openforis.calc.model.Category;
 import org.openforis.calc.model.ObservationUnit;
 import org.openforis.calc.model.PlotCategory;
 import org.openforis.calc.model.PlotMeasurement;
-import org.openforis.calc.model.PlotSurvey;
-import org.openforis.calc.model.SamplingDesignIdentifiers;
+import org.openforis.calc.model.PlotSection;
+import org.openforis.calc.model.SamplePlot;
 import org.openforis.calc.model.Variable;
 import org.openforis.calc.persistence.PlotCategoryDao;
 import org.openforis.calc.persistence.PlotMeasurementDao;
-import org.openforis.calc.persistence.PlotSurveyDao;
+import org.openforis.calc.persistence.PlotSectionDao;
 import org.openforis.calc.service.SamplingDesignService;
 import org.openforis.calc.util.csv.CsvLine;
 import org.openforis.calc.util.csv.CsvReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.stereotype.Component;
 
 /**
  * 
  * @author G. Miceli
  *
  */
+@Component
 public class PlotDataCsvImporter extends AbstractFieldDataCsvImporter {
 	
 	// test - remove
-	protected static final String PLOT_TEST_FILE = "/home/gino/workspace/tzdata/plots.csv";
-	protected static final String TEST_URI = "http://www.openforis.org/idm/naforma1";
+	private static final String PLOT_TEST_FILE = "/home/gino/workspace/tzdata/plots.csv";
+	private static final String TEST_URI = "http://www.openforis.org/idm/naforma1";
+	private static final String TEST_UNIT = "plot";
 
-	private SamplingDesignIdentifiers samplingDesignIds;
 	private Set<String> plotIdents;
 	
 	@Autowired
-	private PlotSurveyDao surveyedPlotDao;
+	private PlotSectionDao surveyedPlotDao;
 	@Autowired
 	private SamplingDesignService samplingDesignService;
 	@Autowired
 	private PlotMeasurementDao plotMeasurementDao;
 	@Autowired
 	private PlotCategoryDao plotCategoryDao;
-	
+
 	private List<Variable> vars;
-	private ObservationUnit obsUnit;
 
 	public static void main(String[] args)  {
 		try {
 			ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
 			PlotDataCsvImporter loader = ctx.getBean(PlotDataCsvImporter.class);
-			loader.doImport(TEST_URI, PLOT_TEST_FILE);
+			loader.doImport(TEST_URI, TEST_UNIT, PLOT_TEST_FILE);
 		} catch ( Throwable ex ) {
 			ex.printStackTrace();
 		}
@@ -63,22 +64,23 @@ public class PlotDataCsvImporter extends AbstractFieldDataCsvImporter {
 
 	@Override
 	protected void beforeImport(CsvReader reader) throws ImportException, IOException {
-		Integer surveyId = getSurvey().getId();
-		obsUnit = loadObservationUnitMetadata(surveyId);
-		samplingDesignIds = samplingDesignService.loadGroundPlotIds(surveyId);
-		vars = getVariables(reader.getColumnNames(), obsUnit);
+		log.info("Loading sampling design...");
+		samplingDesignService.loadSamplingDesign(getSurvey());
 		plotIdents = new HashSet<String>();
+		vars = getVariables(reader.getColumnNames());
+		log.info("Importing...");
 	}
 
 	@Override
 	protected void processLine(CsvLine line) throws ImportException, IOException {
-		PlotSurvey plotSurvey = insertPlotSurvey(line, obsUnit);
-		if ( plotSurvey != null ) {
-			insertPlotValues(plotSurvey, obsUnit, line, vars);
+		PlotSection section = insertPlotSection(line);
+		if ( section != null ) {
+			insertPlotValues(section, line, vars);
 		}
 	}
 
-	private PlotSurvey insertPlotSurvey(CsvLine line, ObservationUnit unit) throws ImportException {
+	private PlotSection insertPlotSection(CsvLine line) throws ImportException {
+		ObservationUnit unit = getObservationUnit();
 		String plotIdent = null;
 		try {
 			plotIdent = null;
@@ -86,46 +88,50 @@ public class PlotDataCsvImporter extends AbstractFieldDataCsvImporter {
 			String clusterCode = line.getString("cluster_code");
 			Integer plotNo = line.getInteger("plot_no");
 			String plotSection = line.getString("plot_section");
-			String surveyType = line.getString("survey_type");
-
-			plotIdent = getPlotIdentifer(clusterCode, plotNo, plotSection, surveyType);
-			Integer clusterNo = line.getInteger("cluster_no");
+			String visitType = line.getString("visit_type");
+			if ( plotNo == null ) {
+				log.warn("Skipping plot with missing plot_no at row "+getRowCount());
+				return null;				
+			}
+			
+			plotIdent = getPlotIdentifer(clusterCode, plotNo, plotSection, visitType);
 			Date surveyDate = line.getDate("survey_date");
-			String plotCode = line.getString("plot_code");
 			Double gpsX = line.getDouble("gps_reading_x");
 			Double gpsY = line.getDouble("gps_reading_y");
 			String gpsSrs = line.getString("gps_reading_srs_id");
 			Integer step = line.getInteger("step");
+			Double percentShare = line.getDouble("percent_share");
+			Double direction = line.getDouble("center_direction");
+			Double distance = line.getDouble("center_distance");
 			Boolean accessible = line.getBoolean("accessible");
 			if ( plotIdents.contains(plotIdent) ) {
 				log.warn("Skipping duplicate plot "+plotIdent+" at row "+getRowCount());
 				return null;
 			}
-			
-			Integer clusterId =  samplingDesignIds.getClusterIds().getId(clusterCode, clusterNo);
-			Integer plotId = samplingDesignIds.getPlotIds().getId(clusterId, plotCode, plotNo);
-			if ( plotId == null ) {
+			SamplePlot splot = unit.getGroundPlot(clusterCode, plotNo);
+			if ( splot == null ) {
 				log.warn("Skipping unrecognized plot "+plotIdent+" at row "+getRowCount());
 				return null;
 			}
-	
-			Integer sectionNo = parsePlotSectionNo(plotSection);
+			Integer plotId = splot.getId();
+
 			GeodeticCoordinate gpsReading = GeodeticCoordinate.toInstance(gpsX, gpsY, gpsSrs);
 			if ( gpsReading == null ) {
 				log.warn("Skipping plot with invalid gps_reading: "+plotIdent+" at row "+getRowCount());
 				return null;
 			}
-			PlotSurvey p = new PlotSurvey();
-			p.setSurveyId(unit.getSurveyId());
-			p.setPlotId(plotId);
-			p.setSectionNo(sectionNo);
+			PlotSection p = new PlotSection();
+			p.setSamplePlotId(plotId);
+			p.setSection(plotSection);
 			p.setSurveyDate(surveyDate);
-			p.setSurveyType(surveyType);
+			p.setVisitType(visitType);
 			p.setStep(step);
 			p.setGpsReading(gpsReading.toPGGeometry());
 			p.setLocation(gpsReading.toPGGeometry()); // TODO correct location
-			p.setObsUnitId(unit.getId());
-			p.setAccessible(accessible);			
+			p.setAccessible(accessible);
+			p.setPercentShare(percentShare);
+			p.setDirection(direction);
+			p.setDistance(distance);
 			incrementInsertCount();
 			surveyedPlotDao.insert(p);
 			plotIdents.add(plotIdent);
@@ -139,7 +145,7 @@ public class PlotDataCsvImporter extends AbstractFieldDataCsvImporter {
 		}
 	}
 
-	private void insertPlotValues(PlotSurvey plotSurvey, ObservationUnit unit, CsvLine line, List<Variable> vars) {
+	private void insertPlotValues(PlotSection section, CsvLine line, List<Variable> vars) {
 		List<PlotMeasurement> pms = new ArrayList<PlotMeasurement>();
 		List<PlotCategory> pcs = new ArrayList<PlotCategory>();
 		for (Variable var : vars) {
@@ -147,7 +153,7 @@ public class PlotDataCsvImporter extends AbstractFieldDataCsvImporter {
 			if ( var.isNumeric() ) {
 				Double value = line.getDouble(name);
 				if ( value != null ) {
-					PlotMeasurement pm = new PlotMeasurement(plotSurvey, var, value, false);
+					PlotMeasurement pm = new PlotMeasurement(section, var, value, false);
 					pms.add(pm);
 				}
 			}
@@ -159,7 +165,7 @@ public class PlotDataCsvImporter extends AbstractFieldDataCsvImporter {
 					if ( cat == null ) {
 						log.warn("Skipping unknown code "+code);
 					} else {
-						PlotCategory pc = new PlotCategory(plotSurvey, cat, false);
+						PlotCategory pc = new PlotCategory(section, cat, false);
 						pcs.add(pc);
 					}
 				}

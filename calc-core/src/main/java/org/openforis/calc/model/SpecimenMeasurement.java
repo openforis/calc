@@ -4,7 +4,7 @@ package org.openforis.calc.model;
 /**
  * @author G. Miceli
  */
-public class SpecimenMeasurement extends org.openforis.calc.persistence.jooq.tables.pojos.SpecimenMeasurement implements ModelObject {
+public class SpecimenMeasurement extends org.openforis.calc.persistence.jooq.tables.pojos.SpecimenMeasurement implements Identifiable {
 
 	private static final long serialVersionUID = 1L;
 	

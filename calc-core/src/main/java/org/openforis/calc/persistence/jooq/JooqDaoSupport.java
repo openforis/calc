@@ -11,6 +11,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.sql.DataSource;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jooq.DAO;
@@ -21,21 +23,29 @@ import org.jooq.UpdatableRecord;
 import org.jooq.UpdatableTable;
 import org.jooq.impl.DAOImpl;
 import org.jooq.impl.Factory;
-import org.openforis.calc.model.ModelObject;
+import org.openforis.calc.model.Identifiable;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author G. Miceli
  */
-public abstract class JooqDaoSupport<R extends UpdatableRecord<R>, P extends ModelObject>
+public abstract class JooqDaoSupport<R extends UpdatableRecord<R>, P extends Identifiable>
 	extends JdbcDaoSupport implements DAO<R, P, Integer>
 {
 	private Log log = LogFactory.getLog(getClass());
 
 	private Table<R> table;
 	private Class<P> type;
-    
+
+	@Autowired(required = true)
+	@Qualifier("dataSource")
+	private void setDataSourceInternal(DataSource dataSource) {
+		setDataSource(dataSource);
+	}
+	
 	protected JooqDaoSupport(Table<R> table, Class<P> type) {
 		this.table = table;
 		this.type = type;
@@ -100,7 +110,7 @@ public abstract class JooqDaoSupport<R extends UpdatableRecord<R>, P extends Mod
 		if ( !objects.isEmpty() && pk != null ) {
 			Iterator<R> recordIter = records.iterator();
 			for (P pojo : pojos) {
-				if ( pojo instanceof ModelObject ) {
+				if ( pojo instanceof Identifiable ) {
 					R record = recordIter.next();
 					Integer id = (Integer) record.getValue(pk());
 					pojo.setId(id);

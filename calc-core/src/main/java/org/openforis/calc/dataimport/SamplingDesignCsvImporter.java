@@ -10,11 +10,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openforis.calc.geospatial.TransformationUtils;
 import org.openforis.calc.model.Cluster;
-import org.openforis.calc.model.Plot;
+import org.openforis.calc.model.ObservationUnit;
+import org.openforis.calc.model.SamplePlot;
 import org.openforis.calc.model.Stratum;
 import org.openforis.calc.model.Survey;
 import org.openforis.calc.persistence.ClusterDao;
-import org.openforis.calc.persistence.PlotDao;
+import org.openforis.calc.persistence.ObservationUnitDao;
+import org.openforis.calc.persistence.SamplePlotDao;
 import org.openforis.calc.persistence.StratumDao;
 import org.openforis.calc.persistence.SurveyDao;
 import org.openforis.calc.service.MetadataService;
@@ -24,6 +26,7 @@ import org.postgis.PGgeometry;
 import org.postgis.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -31,22 +34,26 @@ import org.springframework.transaction.annotation.Transactional;
  * @author G. Miceli
  *
  */
-public class SamplingDesignCsvImporter {
+@Component
+public class SamplingDesignCsvImporter  {
 	
 	// test - remove
-	protected static final String TEST_FILE = "/home/gino/workspace/tzdesign/sampling-design.csv";
-	protected static final String TEST_URI = "http://www.openforis.org/idm/naforma1";
+	private static final String TEST_FILE = "/home/gino/workspace/tzdesign/sampling-design.csv";
+	private static final String TEST_URI = "http://www.openforis.org/idm/naforma1";
+	private static final String TEST_PLOT_TYPE = "plot";
 	
 	@Autowired
-	protected MetadataService metadataService;
+	private MetadataService metadataService;
 	@Autowired
-	protected SurveyDao surveyDao;
+	private SurveyDao surveyDao;
 	@Autowired
-	protected StratumDao stratumDao;
+	private StratumDao stratumDao;
 	@Autowired
-	protected ClusterDao clusterDao;
+	private ClusterDao clusterDao;
 	@Autowired
-	protected PlotDao plotDao;
+	private SamplePlotDao samplePlotDao;
+	@Autowired
+	private ObservationUnitDao observationUnitDao;
 	
 	protected Survey survey;
 	
@@ -68,25 +75,31 @@ public class SamplingDesignCsvImporter {
 		try {
 			ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
 			SamplingDesignCsvImporter loader = ctx.getBean(SamplingDesignCsvImporter.class);
-			loader.importSamplingDesign(TEST_URI, TEST_FILE);
+			loader.importSamplingDesign(TEST_URI, TEST_PLOT_TYPE, TEST_FILE);
 		} catch ( Throwable ex ) {
 			ex.printStackTrace();
 		}
 	}
 
 	@Transactional
-	public void importSamplingDesign(String uri, String filename) throws ImportException, IOException {
+	public void importSamplingDesign(String uri, String plotType, String filename) throws ImportException, IOException {
 		survey = surveyDao.findByUri(uri);
 		if ( survey == null ) {
 			throw new ImportException("No survey with URI "+uri);
 		}
-		importSamplingDesign(survey.getId(), filename);
+		int surveyId = survey.getId();		
+		// Could use metadata in Survey instead
+		ObservationUnit unit = observationUnitDao.find(surveyId, "plot", plotType);
+		if ( unit == null ) {
+			throw new ImportException("No plot observation unit '"+plotType+"'");
+		}
+		importSamplingDesign(surveyId, unit.getId(), filename);
         log.info("Imported "+stratumCount+" strata, "+clusterCount+" clusters, "+plotCount+" plots ("+groundPlotCount+" ground, "
         		+permanentPlotCount+" permanent) in "+duration/1000.0+"s");
 	}
 
 	@Transactional
-	public void importSamplingDesign(int surveyId, String filename) throws ImportException, IOException {
+	public void importSamplingDesign(int surveyId, int unitId, String filename) throws ImportException, IOException {
 		CsvReader reader = null;
 		try {
 			long start = System.currentTimeMillis();
@@ -104,7 +117,6 @@ public class SamplingDesignCsvImporter {
 			CsvLine line;
 			while ((line = reader.readNextLine()) != null) {
 				Integer stratumNo = line.getInteger("stratum_no");
-				String stratumCode = line.getString("stratum_code");
 				Integer clusterX = line.getInteger("cluster_x");
 				Integer clusterY = line.getInteger("cluster_y");
 				Integer clusterNo = line.getInteger("cluster_no");
@@ -113,7 +125,6 @@ public class SamplingDesignCsvImporter {
 				Integer plotX = line.getInteger("plot_x");
 				Integer plotY = line.getInteger("plot_y");
 				Integer phase = line.getInteger("phase");
-				String plotCode = line.getString("plot_code");
 				Boolean groundPlot = line.getBoolean("ground_plot");
 				Boolean permanentPlot = line.getBoolean("permanent_plot");
 				
@@ -123,7 +134,6 @@ public class SamplingDesignCsvImporter {
 					Stratum str = new Stratum();
 					str.setSurveyId(surveyId);
 					str.setNo(stratumNo);
-					str.setCode(nvl(stratumCode, stratumNo));
 					stratumDao.insert(str);
 					stratumId = str.getId();
 					stratumIds.put(stratumNo, stratumId);
@@ -133,7 +143,6 @@ public class SamplingDesignCsvImporter {
 				if ( clusterId == null ) {
 					Cluster c = new Cluster();
 					c.setSurveyId(surveyId);
-					c.setNo(clusterNo);
 					c.setCode(nvl(clusterCode, clusterNo));
 					c.setXIndex(clusterX);
 					c.setYIndex(clusterY);					
@@ -150,13 +159,12 @@ public class SamplingDesignCsvImporter {
 				if ( permanentPlot ) {
 					permanentPlotCount += 1;
 				}
-				Plot p = new Plot();
-				p.setSurveyId(surveyId);
+				SamplePlot p = new SamplePlot();
 				p.setStratumId(stratumId);
 				p.setClusterId(clusterId);
-				p.setCode(plotCode);
 				p.setNo(plotNo);
 				p.setPhase(phase);
+				p.setObsUnitId(unitId);
 				
 				// Projection UTM Zone 36 Hemisphere S Datum WGS84 
 				Point2D pos = TransformationUtils.toLatLong(plotX, plotY, "EPSG:32736");
@@ -167,7 +175,7 @@ public class SamplingDesignCsvImporter {
 //				p.setLocation("ST_SetSRID(ST_MakePoint("+plotX+", "+plotY+"), 4326)");
 				p.setGroundPlot(groundPlot);
 				p.setPermanentPlot(permanentPlot);
-				plotDao.insert(p);
+				samplePlotDao.insert(p);
 				plotCount += 1;
 				if ( plotCount % reportFrequency == 0 ) {
 					log.info(plotCount+" plots inserted.");

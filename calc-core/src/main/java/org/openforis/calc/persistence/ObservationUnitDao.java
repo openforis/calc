@@ -9,11 +9,13 @@ import org.jooq.impl.Factory;
 import org.openforis.calc.model.ObservationUnit;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
 import org.openforis.calc.persistence.jooq.tables.records.ObservationUnitRecord;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author G. Miceli
  */
+@Component
 @Transactional
 public class ObservationUnitDao extends JooqDaoSupport<ObservationUnitRecord, ObservationUnit> {
 

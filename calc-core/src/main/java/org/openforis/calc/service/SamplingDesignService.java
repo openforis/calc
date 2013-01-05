@@ -1,53 +1,47 @@
 package org.openforis.calc.service;
 
-import org.openforis.calc.model.IdentifierMap;
-import org.openforis.calc.model.PlotIdentifierMap;
-import org.openforis.calc.model.SamplingDesignIdentifiers;
+import java.util.List;
+
+import org.openforis.calc.model.Cluster;
+import org.openforis.calc.model.SamplePlot;
+import org.openforis.calc.model.Stratum;
+import org.openforis.calc.model.Survey;
 import org.openforis.calc.persistence.ClusterDao;
-import org.openforis.calc.persistence.PlotDao;
+import org.openforis.calc.persistence.ObservationUnitDao;
+import org.openforis.calc.persistence.SamplePlotDao;
 import org.openforis.calc.persistence.StratumDao;
 import org.openforis.calc.persistence.SurveyDao;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.stereotype.Component;
 
 /**
  * 
  * @author G. Miceli
  *
  */
+@Component
 public class SamplingDesignService {
 
 	@Autowired
-	protected SurveyDao surveyDao;
+	private SurveyDao surveyDao;
 	@Autowired
-	protected StratumDao stratumDao;
+	private StratumDao stratumDao;
 	@Autowired
-	protected ClusterDao clusterDao;
+	private ClusterDao clusterDao;
 	@Autowired
-	protected PlotDao plotDao;
+	private ObservationUnitDao observationUnitDao;
+	@Autowired
+	private SamplePlotDao samplePlotDao;
 	
-	@Transactional
-	public SamplingDesignIdentifiers loadGroundPlotIds(int surveyId) {
-		SamplingDesignIdentifiers map = new SamplingDesignIdentifiers(surveyId);
-		loadStratumIds(surveyId, map);
-		loadClusterIds(surveyId, map);
-		loadGroundPlotIds(surveyId, map);
-		return map;
+	/**
+	 * Loads ground plots only
+	 * @param survey
+	 */
+	public void loadSamplingDesign(Survey survey) {
+		int surveyId = survey.getId();
+		List<Cluster> clusters = clusterDao.findBySurveyId(surveyId);
+		List<Stratum> strata = stratumDao.findBySurveyId(surveyId);
+		List<SamplePlot> groundPlots = samplePlotDao.findGroundPlotsBySurveyId(surveyId);
+		survey.setSamplingDesign(clusters, strata, groundPlots);
 	}
-
-	private void loadStratumIds(int surveyId, SamplingDesignIdentifiers map) {
-		IdentifierMap ids = stratumDao.loadIdentifiers(surveyId);
-		map.setStratumIds(ids);
-	}
-
-	private void loadClusterIds(int surveyId, SamplingDesignIdentifiers map) {
-		IdentifierMap ids = clusterDao.loadIdentifiers(surveyId);
-		map.setClusterIds(ids);
-	}
-
-	private void loadGroundPlotIds(int surveyId, SamplingDesignIdentifiers map) {
-		PlotIdentifierMap ids = plotDao.loadGroundPlotIdentifiers(surveyId);
-		map.setPlotIds(ids);
-	}
-
 }

@@ -1,6 +1,6 @@
 package org.openforis.calc.dataimport.collect;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 
 import org.openforis.calc.model.Category;
@@ -12,15 +12,16 @@ import org.openforis.idm.metamodel.BooleanAttributeDefinition;
 import org.openforis.idm.metamodel.CodeAttributeDefinition;
 import org.openforis.idm.metamodel.CodeList;
 import org.openforis.idm.metamodel.CodeList.CodeScope;
-import org.openforis.idm.metamodel.NodeLabel.Type;
 import org.openforis.idm.metamodel.CodeListItem;
 import org.openforis.idm.metamodel.CoordinateAttributeDefinition;
 import org.openforis.idm.metamodel.EntityDefinition;
 import org.openforis.idm.metamodel.NodeDefinition;
+import org.openforis.idm.metamodel.NodeLabel.Type;
 import org.openforis.idm.metamodel.NumberAttributeDefinition;
 import org.openforis.idm.metamodel.Schema;
 import org.openforis.idm.metamodel.xml.IdmlParseException;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -28,10 +29,12 @@ import org.springframework.transaction.annotation.Transactional;
  * @author G. Miceli
  *
  */
+@Component
 public class CollectMetadataLoader extends CollectLoaderBase {
 
-	// TODO to partially refactor into MetadataService
-	
+	// TODO to partially refactor into MetadataService?
+	private static final String TEST_SURVEY_NAME = "naforma1";
+
 	private String lang = "en";
 	private String codeSeparator = "/";
 	private String codeListItemLabelSeparator = " > ";
@@ -41,7 +44,7 @@ public class CollectMetadataLoader extends CollectLoaderBase {
 		try {
 			ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
 			CollectMetadataLoader loader = ctx.getBean(CollectMetadataLoader.class);
-			loader.importMetadata(TEST_PATH+IDML_FILENAME);
+			loader.importMetadata(TEST_SURVEY_NAME, TEST_PATH+IDML_FILENAME);
 		} catch ( Throwable ex ) {
 			ex.printStackTrace();
 		}
@@ -49,13 +52,14 @@ public class CollectMetadataLoader extends CollectLoaderBase {
 
 	@Transactional
 	synchronized
-	public void importMetadata(String idmlFilename) throws FileNotFoundException, IdmlParseException, InvalidMetadataException {		
+	public void importMetadata(String surveyName, String idmlFilename) throws IOException, IdmlParseException, InvalidMetadataException {		
 		collectSurvey = metadataService.loadIdml(idmlFilename);
 		survey = new Survey();
 		survey.setDefaultLabel(collectSurvey.getProjectName(lang));
 		survey.setUri(collectSurvey.getUri());
-		survey.setId(1);
-//		surveyDao.insert(survey);
+		survey.setName(surveyName);
+//		survey.setId(1);
+		surveyDao.insert(survey);
 		log.info("Survey: " +survey.getDefaultLabel()+" ("+survey.getId()+")");
 		Schema schema = collectSurvey.getSchema();
 		traverse(schema);
@@ -116,7 +120,6 @@ public class CollectMetadataLoader extends CollectLoaderBase {
 		Variable var = new Variable();
 		var.setName(attr.getCompoundName());
 		var.setObsUnitId(parentUnit.getId());
-		var.setSourceId(attr.getId());
 		var.setDefaultLabel(attr.getLabel(Type.INSTANCE, lang));
 		var.setType("ratio");
 		variableDao.insert(var);
@@ -127,7 +130,6 @@ public class CollectMetadataLoader extends CollectLoaderBase {
 		Variable var = new Variable();
 		var.setName(attr.getCompoundName());
 		var.setObsUnitId(parentUnit.getId());
-		var.setSourceId(attr.getId());
 		var.setDefaultLabel(attr.getLabel(Type.INSTANCE, lang));
 		var.setType("binary");
 		variableDao.insert(var);
@@ -151,7 +153,6 @@ public class CollectMetadataLoader extends CollectLoaderBase {
 		Variable var = new Variable();
 		var.setName(attr.getCompoundName());
 		var.setObsUnitId(parentUnit.getId());
-		var.setSourceId(attr.getId());
 		var.setDefaultLabel(attr.getLabel(Type.INSTANCE, lang));
 		var.setType(attr.isMultiple() ? "multiple" : "nominal");
 		variableDao.insert(var);
@@ -177,7 +178,6 @@ public class CollectMetadataLoader extends CollectLoaderBase {
 		cat.setCode(code);
 		cat.setDefaultLabel(label);
 		cat.setOrder(idx);
-		cat.setSourceId(item.getId());
 		categoryDao.insert(cat);
 		log.info("Category: "+cat.getCode()+" ("+cat.getId()+")");
 	}
@@ -223,7 +223,6 @@ public class CollectMetadataLoader extends CollectLoaderBase {
 		unit.setSurveyId(survey.getId());
 		unit.setName(name);
 		unit.setType(type.toString());
-		unit.setSourceId(node.getId());
 		if ( parentUnit != null ) {
 			unit.setParentId(parentUnit.getId());
 		}

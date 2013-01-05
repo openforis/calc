@@ -1,18 +1,18 @@
-ALTER TABLE "calc"."plot_survey" 
+ALTER TABLE "calc"."plot_section" 
     ALTER COLUMN "gps_reading" TYPE geometry(Point,4326) USING NULL
 GO
-ALTER TABLE "calc"."plot_survey" 
+ALTER TABLE "calc"."plot_section" 
     ALTER COLUMN "location" TYPE geometry(Point,4326) USING NULL
 GO
-ALTER TABLE "calc"."plot_survey" 
-    ALTER COLUMN "shape" TYPE geometry(Multipolygon,4326) USING NULL
+ALTER TABLE "calc"."plot_section" 
+    ALTER COLUMN "shape" TYPE geometry(Polygon,4326) USING NULL
 GO
-ALTER TABLE "calc"."plot" 
+ALTER TABLE "calc"."sample_plot" 
     ALTER COLUMN "location" TYPE geometry(Point,4326) USING NULL
 GO
-ALTER TABLE "calc"."plot_survey" 
-    ALTER COLUMN "shape" TYPE geometry(Multipolygon,4326) USING NULL
+ALTER TABLE "calc"."sample_plot" 
+    ALTER COLUMN "shape" TYPE geometry(Polygon,4326) USING NULL
 GO
 ALTER TABLE "calc"."aoi" 
-    ALTER COLUMN "geometry" TYPE geometry(Multipolygon,4326) USING NULL
+    ALTER COLUMN "shape" TYPE geometry(Multipolygon,4326) USING NULL
 GO

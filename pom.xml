@@ -100,6 +100,11 @@
 			<!-- Spring -->
 			<dependency>
 				<groupId>org.springframework</groupId>
+				<artifactId>spring-core</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
 				<artifactId>spring-web</artifactId>
 				<version>${spring.version}</version>
 			</dependency>
@@ -228,6 +233,14 @@
 <!-- 	      <artifactId>geotk-epsg</artifactId> -->
 <!-- 	      <version>3.20-geoapi-3.0</version> -->
 <!-- 	    </dependency> -->
+
+			<!-- Misc -->
+		    <dependency>
+		      <groupId>javax.annotation</groupId>
+		      <artifactId>jsr250-api</artifactId>
+		      <version>1.0</version>
+		    </dependency>
+			
 		</dependencies>
 	</dependencyManagement>
 

@@ -20,9 +20,11 @@
     http://www.springframework.org/schema/tx/spring-tx-3.0.xsd"
 	default-lazy-init="true">
 
+	<context:component-scan base-package="org.openforis.calc" />
+
 	<context:annotation-config />
 	
-	<context:property-placeholder location="file:///home/gino/workspace/of/calc/calc-load/dev.properties" />
+	<context:property-placeholder location="classpath:dev.properties" />
 	
 	<bean id="dataMarshaller" class="org.openforis.collect.persistence.xml.DataMarshaller" lazy-init="false" autowire-candidate="true" autowire="byName" />
 
@@ -51,31 +53,29 @@
     
     <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true" />
     
-	<bean class="org.openforis.calc.dataimport.collect.CollectMetadataLoader" />
-	<bean class="org.openforis.calc.dataimport.PlotDataCsvImporter" />
-	<bean class="org.openforis.calc.dataimport.SpecimenDataCsvImporter" />
-	<bean class="org.openforis.calc.dataimport.SamplingDesignCsvImporter" />
+<!-- 	<bean class="org.openforis.calc.dataimport.collect.CollectMetadataLoader" /> -->
+<!-- 	<bean class="org.openforis.calc.dataimport.PlotDataCsvImporter" autowire="byType" /> -->
 
 	<!--  DAOs -->	
-	<bean class="org.openforis.calc.persistence.SurveyDao" autowire="byName"/>
-	<bean class="org.openforis.calc.persistence.ObservationUnitDao" autowire="byName"/>
-	<bean class="org.openforis.calc.persistence.VariableDao" autowire="byName"/>
-	<bean class="org.openforis.calc.persistence.CategoryDao" autowire="byName"/>
-	<bean class="org.openforis.calc.persistence.StratumDao" autowire="byName"/>
-	<bean class="org.openforis.calc.persistence.ClusterDao" autowire="byName"/>
-	<bean class="org.openforis.calc.persistence.PlotDao" autowire="byName"/>
-	<bean class="org.openforis.calc.persistence.AoiDao" autowire="byName"/>
-	<bean class="org.openforis.calc.persistence.PlotSurveyDao" autowire="byName"/>
-	<bean class="org.openforis.calc.persistence.PlotMeasurementDao" autowire="byName"/>
-	<bean class="org.openforis.calc.persistence.PlotCategoryDao" autowire="byName"/>
-	<bean class="org.openforis.calc.persistence.SpecimenDao" autowire="byName"/>
-	<bean class="org.openforis.calc.persistence.SpecimenMeasurementDao" autowire="byName"/>
-	<bean class="org.openforis.calc.persistence.SpecimenCategoryDao" autowire="byName"/>
+<!-- 	<bean class="org.openforis.calc.persistence.SurveyDao" autowire="byName"/> -->
+<!-- 	<bean class="org.openforis.calc.persistence.ObservationUnitDao" autowire="byName"/> -->
+<!-- 	<bean class="org.openforis.calc.persistence.VariableDao" autowire="byName"/> -->
+<!-- 	<bean class="org.openforis.calc.persistence.CategoryDao" autowire="byName"/> -->
+<!-- 	<bean class="org.openforis.calc.persistence.StratumDao" autowire="byName"/> -->
+<!-- 	<bean class="org.openforis.calc.persistence.ClusterDao" autowire="byName"/> -->
+<!-- 	<bean class="org.openforis.calc.persistence.SamplePlotDao" autowire="byName"/> -->
+<!-- 	<bean class="org.openforis.calc.persistence.AoiDao" autowire="byName"/> -->
+<!-- 	<bean class="org.openforis.calc.persistence.PlotSectionDao" autowire="byName"/> -->
+<!-- 	<bean class="org.openforis.calc.persistence.PlotMeasurementDao" autowire="byName"/> -->
+<!-- 	<bean class="org.openforis.calc.persistence.PlotCategoryDao" autowire="byName"/> -->
+<!-- 	<bean class="org.openforis.calc.persistence.SpecimenDao" autowire="byName"/> -->
+<!-- 	<bean class="org.openforis.calc.persistence.SpecimenMeasurementDao" autowire="byName"/> -->
+<!-- 	<bean class="org.openforis.calc.persistence.SpecimenCategoryDao" autowire="byName"/> -->
 
 	<!-- Services -->	
-	<bean class="org.openforis.calc.service.MetadataService" />
-	<bean class="org.openforis.calc.service.SamplingDesignService" />
-	<bean class="org.openforis.calc.service.DataService" />
+<!-- 	<bean class="org.openforis.calc.service.MetadataService" /> -->
+<!-- 	<bean class="org.openforis.calc.service.SamplingDesignService" /> -->
+<!-- 	<bean class="org.openforis.calc.service.DataService" /> -->
 	
     <bean id="collectSurveyContext" class="org.openforis.collect.model.CollectSurveyContext">
         <constructor-arg><ref bean="expressionFactory"/></constructor-arg>

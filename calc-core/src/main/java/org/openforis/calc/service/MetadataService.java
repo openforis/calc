@@ -16,24 +16,24 @@ import org.openforis.collect.model.CollectSurvey;
 import org.openforis.collect.persistence.xml.CollectSurveyIdmlBinder;
 import org.openforis.idm.metamodel.xml.IdmlParseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * 
  * @author G. Miceli
  *
  */
+@Component
 public class MetadataService {
 
 	@Autowired
-	protected SurveyDao surveyDao;
+	private SurveyDao surveyDao;
 	@Autowired
-	protected ObservationUnitDao surveyUnitDao;
+	private ObservationUnitDao observationUnitDao;
 	@Autowired
-	protected ObservationUnitDao observationUnitDao;
+	private VariableDao variableDao;
 	@Autowired
-	protected VariableDao variableDao;
-	@Autowired
-	protected CategoryDao categoryDao;
+	private CategoryDao categoryDao;
 	@Autowired
 	private CollectSurveyIdmlBinder idmlBinder;
 	
@@ -43,18 +43,6 @@ public class MetadataService {
 		return cs;
 	}
 
-//	public ModelObjectSourceIdMap loadSourceIds(int surveyId) {
-//		ModelObjectSourceIdMap map = new ModelObjectSourceIdMap();
-//		List<ObservationUnit> levels = surveyUnitDao.findBySurveyId(surveyId);
-//		for (ObservationUnit level : levels) {
-//			map.putModelObject(level);
-//			// Load variables
-//			List<Variable> vars = variableDao.fetchByObservationUnit(level);
-//			map.putModelObjects(vars);
-//		}
-//		return map;
-//	}
-
 	public void loadSurveyMetadata(Survey survey) {
 		List<ObservationUnit> units = observationUnitDao.findBySurveyId(survey.getId());
 		for (ObservationUnit unit : units) {
@@ -63,7 +51,7 @@ public class MetadataService {
 		survey.setObservationUnits(units);
 	}
 
-	public void loadObservationUnitMetadata(ObservationUnit unit) {
+	private void loadObservationUnitMetadata(ObservationUnit unit) {
 		List<Variable> vars = variableDao.findByObservationUnitId(unit.getId());
 		for (Variable var : vars) {
 			if ( var.isCategorical() ) {

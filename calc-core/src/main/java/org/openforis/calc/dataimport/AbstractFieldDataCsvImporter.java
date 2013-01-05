@@ -41,18 +41,10 @@ public abstract class AbstractFieldDataCsvImporter {
 	private int rowCount;
 
 	private Survey survey;
+	private ObservationUnit unit;
 	
 	public AbstractFieldDataCsvImporter() {
 		reportFrequency = 10000;
-	}
-
-	protected ObservationUnit loadObservationUnitMetadata(Integer surveyId) throws ImportException {
-		ObservationUnit obsUnit = observationUnitDao.find(surveyId, "plot", "plot");
-		if ( obsUnit == null ) {
-			throw new ImportException("No observation unit 'plot' defined in database");			
-		}
-		metadataService.loadObservationUnitMetadata(obsUnit);
-		return obsUnit;
 	}
 
 	protected Survey loadSurvey(String uri) throws ImportException {
@@ -85,9 +77,11 @@ public abstract class AbstractFieldDataCsvImporter {
 	
 	@Transactional
 	synchronized
-	public final void doImport(String surveyUri, String filename) throws ImportException, IOException {
+	public void doImport(String surveyUri, String unitName, String filename) throws ImportException, IOException {
 		resetCounters();
 		survey = loadSurvey(surveyUri);
+		metadataService.loadSurveyMetadata(survey);
+		unit = survey.getObservationUnitByName(unitName);
 		CsvReader reader = null;
 		try {
 			FileReader fileReader = new FileReader(filename);
@@ -165,7 +159,7 @@ public abstract class AbstractFieldDataCsvImporter {
 		return duration;
 	}
 	
-	protected List<Variable> getVariables(List<String> colnames, ObservationUnit unit) {
+	protected List<Variable> getVariables(List<String> colnames) {
 		List<String> skipped = new ArrayList<String>();
 		List<String> varcols = new ArrayList<String>();
 		List<Variable> vars = new ArrayList<Variable>();
@@ -184,4 +178,7 @@ public abstract class AbstractFieldDataCsvImporter {
 		return vars;
 	}
 
+	protected ObservationUnit getObservationUnit() {
+		return unit;
+	}
 }

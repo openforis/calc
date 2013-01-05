@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * @author G. Miceli
  */
-public class Variable extends org.openforis.calc.persistence.jooq.tables.pojos.Variable implements ImportableModelObject {
+public class Variable extends org.openforis.calc.persistence.jooq.tables.pojos.Variable implements Identifiable {
 
 	private static final long serialVersionUID = 1L;
 
