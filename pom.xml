@@ -21,7 +21,7 @@
 		<zk.version>6.0.1</zk.version>
 		<zk.spring.version>3.1</zk.spring.version>
 		<kettle.version>4.3.0-stable</kettle.version>
-		<postgres-driver-version>9.1-901-1.jdbc4</postgres-driver-version>
+		<postgres-driver.version>9.1-901-1.jdbc4</postgres-driver.version>
 		<jooq.version>2.5.0</jooq.version>
 		<collect.version>3.0-Alpha5-SNAPSHOT</collect.version>
 	</properties>
@@ -182,7 +182,7 @@
 			<dependency>
 				<groupId>postgresql</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>${postgres-driver-version}</version>
+				<version>${postgres-driver.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.postgis</groupId>
