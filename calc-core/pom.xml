@@ -11,7 +11,11 @@
 	<artifactId>calc-core</artifactId>
 	<packaging>jar</packaging>
 	<name>Open Foris Calc Core</name>
-	
+
+	<properties>
+		<jooq-codegen.target.directory>${project.build.directory}/generated-sources/jooq</jooq-codegen.target.directory>
+	</properties>
+		
 	<build>
 		<plugins>
 			<!-- Read dev properties -->
@@ -96,15 +100,8 @@
 						</strategy>
 						<target>
 							<packageName>org.openforis.calc.persistence.jooq</packageName>
-							<directory>${project.build.directory}}/generated-sources/jooq</directory>
+							<directory>${jooq-codegen.target.directory}</directory>
 						</target>
-						<!-- <masterDataTables> -->
-						<!-- <masterDataTable> -->
-						<!-- <name>t_language</name> -->
-						<!-- <literal>cd</literal> -->
-						<!-- <description>description</description> -->
-						<!-- </masterDataTable> -->
-						<!-- </masterDataTables> -->
 					</generator>
 				</configuration>
 			</plugin>
@@ -154,7 +151,7 @@
 						</goals>
 						<configuration>
 							<sources>
-								<source>${project.build.directory}/generated-sources/jooq</source>
+								<source>${jooq-codegen.target.directory}</source>
 							</sources>
 						</configuration>
 					</execution>
