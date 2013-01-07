@@ -30,7 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
  *
  */
 @Component
-public class CollectMetadataLoader extends CollectLoaderBase {
+public class IdmMetadataLoader extends IdmLoaderBase {
 
 	// TODO to partially refactor into MetadataService?
 	private static final String TEST_SURVEY_NAME = "naforma1";
@@ -43,7 +43,7 @@ public class CollectMetadataLoader extends CollectLoaderBase {
 	public static void main(String[] args)  {
 		try {
 			ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
-			CollectMetadataLoader loader = ctx.getBean(CollectMetadataLoader.class);
+			IdmMetadataLoader loader = ctx.getBean(IdmMetadataLoader.class);
 			loader.importMetadata(TEST_SURVEY_NAME, TEST_PATH+IDML_FILENAME);
 		} catch ( Throwable ex ) {
 			ex.printStackTrace();
@@ -53,15 +53,15 @@ public class CollectMetadataLoader extends CollectLoaderBase {
 	@Transactional
 	synchronized
 	public void importMetadata(String surveyName, String idmlFilename) throws IOException, IdmlParseException, InvalidMetadataException {		
-		collectSurvey = metadataService.loadIdml(idmlFilename);
+		idmSurvey = metadataService.loadIdml(idmlFilename);
 		survey = new Survey();
-		survey.setDefaultLabel(collectSurvey.getProjectName(lang));
-		survey.setUri(collectSurvey.getUri());
+		survey.setDefaultLabel(idmSurvey.getProjectName(lang));
+		survey.setUri(idmSurvey.getUri());
 		survey.setName(surveyName);
 //		survey.setId(1);
 		surveyDao.insert(survey);
 		log.info("Survey: " +survey.getDefaultLabel()+" ("+survey.getId()+")");
-		Schema schema = collectSurvey.getSchema();
+		Schema schema = idmSurvey.getSchema();
 		traverse(schema);
 	}
 

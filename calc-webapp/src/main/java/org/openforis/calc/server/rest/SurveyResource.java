@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
  * @author G. Miceli
  *
  */
-@Path("/surveys/{survey}")
+@Path("/surveys/{surveyName}")
 @Component
 @Scope("request")
 public class SurveyResource extends CalcResource {
@@ -29,19 +29,18 @@ public class SurveyResource extends CalcResource {
 	@Autowired
 	private SurveyDao surveyDao;
 
-	@Autowired
-	priv
+//	@Autowired
+//	private ObservationUnitResource observationUnitResource;
 
-	@PathParam("survey")
-	private String name;
-
+	@PathParam("surveyName")
+	private String surveyName;
 	
 	private Survey survey;
 	
-	@PostConstruct
 //	public Result<ObservationUnitRecord> getObservationUnits() {
+	@PostConstruct
 	public void loadSurvey() { 
-		survey = surveyDao.findByName(name);
+		survey = surveyDao.findByName(surveyName);
 		if ( survey == null ) {
 			throw new WebApplicationException(404);
 		}
@@ -50,6 +49,6 @@ public class SurveyResource extends CalcResource {
 //	@Path("/units")
 	@GET
     public Result<SurveyRecord> getSurvey() {
-    	return surveyDao.fetchByName(name);
+    	return surveyDao.fetchByName(surveyName);
     }
 }

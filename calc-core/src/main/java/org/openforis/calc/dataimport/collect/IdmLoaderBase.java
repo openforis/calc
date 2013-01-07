@@ -10,7 +10,6 @@ import org.openforis.calc.persistence.ObservationUnitDao;
 import org.openforis.calc.persistence.SurveyDao;
 import org.openforis.calc.persistence.VariableDao;
 import org.openforis.calc.service.MetadataService;
-import org.openforis.collect.model.CollectSurvey;
 import org.openforis.idm.metamodel.EntityDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author G. Miceli
  *
  */
-public abstract class CollectLoaderBase {
+public abstract class IdmLoaderBase {
 	
 	// test - remove
 	protected static final String TEST_PATH = "/home/gino/workspace/tzdata/";
@@ -47,7 +46,7 @@ public abstract class CollectLoaderBase {
 	protected CategoryDao categoryDao;
 	
 	protected Survey survey;
-	protected  CollectSurvey collectSurvey;
+	protected org.openforis.idm.metamodel.Survey idmSurvey;
 	
 	protected Log log = LogFactory.getLog(getClass());
 	

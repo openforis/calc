@@ -94,6 +94,7 @@ public class CsvLine {
 			return toBoolean(line[idx]);
 		}
 	}
+	
 	private Integer toInteger(String val) {
 		return isNullValue(val) ? null : Double.valueOf(val).intValue();
 	}

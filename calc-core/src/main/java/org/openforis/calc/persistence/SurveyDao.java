@@ -1,9 +1,11 @@
 package org.openforis.calc.persistence;
 
+import static org.openforis.calc.persistence.jooq.Tables.*;
+
 import org.jooq.Result;
+import org.jooq.impl.Factory;
 import org.openforis.calc.model.Survey;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
-import static org.openforis.calc.persistence.jooq.Tables.*;
 import org.openforis.calc.persistence.jooq.tables.records.SurveyRecord;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +29,13 @@ public class SurveyDao extends JooqDaoSupport<SurveyRecord, Survey> {
 		return fetchOne(SURVEY.NAME, name);
 	}
 
+	public Integer getIdByName(String name) {
+		Factory create = getJooqFactory();
+		return create.select(SURVEY.ID)
+				.where(SURVEY.NAME.eq(name))
+				.fetchOne(SURVEY.ID);
+	}
+	
 	public Result<SurveyRecord> fetchAll() {
 		return getJooqFactory().fetch(SURVEY);
 	}
