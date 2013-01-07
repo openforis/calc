@@ -29,9 +29,10 @@ public class SurveyDao extends JooqDaoSupport<SurveyRecord, Survey> {
 		return fetchOne(SURVEY.NAME, name);
 	}
 
-	public Integer getIdByName(String name) {
+	public Integer findIdByName(String name) {
 		Factory create = getJooqFactory();
 		return create.select(SURVEY.ID)
+				.from(SURVEY)
 				.where(SURVEY.NAME.eq(name))
 				.fetchOne(SURVEY.ID);
 	}

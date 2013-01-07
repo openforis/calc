@@ -1,13 +1,10 @@
 package org.openforis.calc.server.rest;
 
-import javax.annotation.PostConstruct;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 
 import org.jooq.Result;
-import org.openforis.calc.model.Survey;
 import org.openforis.calc.persistence.SurveyDao;
 import org.openforis.calc.persistence.jooq.tables.records.SurveyRecord;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,34 +18,28 @@ import org.springframework.stereotype.Component;
  * @author G. Miceli
  *
  */
-@Path("/surveys/{surveyName}")
 @Component
 @Scope("request")
-public class SurveyResource extends CalcResource {
+public class SurveyResource extends CalcResource<String> {
 
 	@Autowired
 	private SurveyDao surveyDao;
 
-//	@Autowired
-//	private ObservationUnitResource observationUnitResource;
-
-	@PathParam("surveyName")
-	private String surveyName;
-	
-	private Survey survey;
-	
-//	public Result<ObservationUnitRecord> getObservationUnits() {
-	@PostConstruct
-	public void loadSurvey() { 
-		survey = surveyDao.findByName(surveyName);
-		if ( survey == null ) {
-			throw new WebApplicationException(404);
-		}
-	}
-	
-//	@Path("/units")
 	@GET
     public Result<SurveyRecord> getSurvey() {
-    	return surveyDao.fetchByName(surveyName);
+    	return surveyDao.fetchByName(getKey());
     }
+	
+	@Path("/units")
+	public ObservationUnitListResource getObservationUnitListResource() {
+		return getResource(ObservationUnitListResource.class, null);
+	}
+	
+	int getId() {
+		Integer surveyId = surveyDao.findIdByName(getKey());
+		if ( surveyId == null ) {
+			throw new WebApplicationException(404);
+		}
+		return surveyId;
+	}
 }
