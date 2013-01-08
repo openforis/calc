@@ -44,7 +44,25 @@
 <!-- 		</profile> -->
 <!-- 	</profiles> -->
 
-<!-- 	<repositories> -->
+	<repositories>
+		<repository>
+			<id>opengeo</id>
+			<name>opengeo</name>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>never</updatePolicy>
+			</snapshots>
+			<url>http://repo.opengeo.org/</url>
+		</repository>
+		<repository>
+			<id>osgeo</id>
+			<name>Open Source Geospatial Foundation Repository</name>
+			<url>http://download.osgeo.org/webdav/geotools/</url>
+			<snapshots>
+				<enabled>false</enabled>
+				<updatePolicy>never</updatePolicy>
+			</snapshots>
+		</repository>
 <!-- 		<repository> -->
 <!-- 			<id>ZK_CE</id> -->
 <!-- 			<name>ZK CE Repository</name> -->
@@ -69,7 +87,48 @@
 <!-- 			<name>Bedatadriven Public REpo</name> -->
 <!-- 			<url>http://nexus.bedatadriven.com/content/groups/public/</url> -->
 <!-- 		</repository> -->
-<!-- 	</repositories> -->
+	</repositories>
+	
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>2.0.2</version>
+					<configuration>
+						<source>1.6</source>
+						<target>1.6</target>
+						<encoding>${project.build.sourceEncoding}</encoding>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		<plugins>
+			<!--  Set Eclipse project text encoding to UTF-8 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+					<additionalConfig>
+						<file>
+							<name>.settings/org.eclipse.core.resources.prefs</name>
+							<content>
+				                <![CDATA[eclipse.preferences.version=1${line.separator}encoding/<project>=${project.build.sourceEncoding}${line.separator}]]>
+							</content>
+						</file>
+					</additionalConfig>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.3</version>
+			</plugin>
+		</plugins>
+	</build>
+
 
 	<dependencyManagement>
 		<dependencies>
