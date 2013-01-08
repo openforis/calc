@@ -26,6 +26,7 @@ public class ObservationUnitListResource extends CalcResource<Void> {
 	
 	@GET
 	public String getObservationUnits() {
+//		observationUnitDao.find
 		return "units for survey: "+surveyResource.getId();
 	}
 	

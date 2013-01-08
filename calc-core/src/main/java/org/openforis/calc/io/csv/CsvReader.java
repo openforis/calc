@@ -1,4 +1,4 @@
-package org.openforis.calc.util.csv;
+package org.openforis.calc.io.csv;
 import java.io.IOException;
 import java.io.Reader;
 import java.text.DateFormat;
@@ -9,20 +9,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.openforis.calc.io.FlatDataStream;
+
 import au.com.bytecode.opencsv.CSVReader;
 
-
-public class CsvReader extends CSVReader {
+/**
+ * 
+ * @author G. Miceli
+ *
+ */
+public class CsvReader implements FlatDataStream {
 
 	private Map<String, Integer> columns;
 	private DateFormat dateFormat;
+	private CSVReader csv;
 	
 	public CsvReader(Reader reader) {
-		super(reader);
+		csv = new CSVReader(reader);
 	}
 
 	public void readHeaderLine() throws IOException {
-		String[] headers = readNext();
+		String[] headers = csv.readNext();
 		columns = new HashMap<String, Integer>();
 		for (int i = 0; i < headers.length; i++) {
 			columns.put(headers[i], i);
@@ -30,7 +37,7 @@ public class CsvReader extends CSVReader {
 	}
 	
 	public CsvLine readNextLine() throws IOException {
-		String[] line = readNext();
+		String[] line = csv.readNext();
 		if ( line == null ) {
 			return null;
 		} else {
@@ -59,5 +66,9 @@ public class CsvReader extends CSVReader {
 	
 	public List<String> getColumnNames() {
 		return Collections.unmodifiableList(new ArrayList<String>(columns.keySet()));
+	}
+
+	public void close() throws IOException {
+		csv.close();
 	}
 }

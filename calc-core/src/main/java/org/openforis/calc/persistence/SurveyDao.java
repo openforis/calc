@@ -4,6 +4,7 @@ import static org.openforis.calc.persistence.jooq.Tables.*;
 
 import org.jooq.Result;
 import org.jooq.impl.Factory;
+import org.openforis.calc.io.FlatDataStream;
 import org.openforis.calc.model.Survey;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
 import org.openforis.calc.persistence.jooq.tables.records.SurveyRecord;
@@ -37,12 +38,15 @@ public class SurveyDao extends JooqDaoSupport<SurveyRecord, Survey> {
 				.fetchOne(SURVEY.ID);
 	}
 	
-	public Result<SurveyRecord> fetchAll() {
-		return getJooqFactory().fetch(SURVEY);
-	}
+//	public Result<SurveyRecord> fetchAll() {
+//		return getJooqFactory().fetch(SURVEY);
+//	}
 
 	public Result<SurveyRecord> fetchByName(String name) {
 		return getJooqFactory().fetch(SURVEY, SURVEY.NAME.eq(name));
 	}
 
+	public FlatDataStream streamAll() {
+		return toDataStream(getJooqFactory().fetch(SURVEY));
+	}
 }

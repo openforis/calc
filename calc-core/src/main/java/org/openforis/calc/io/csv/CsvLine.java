@@ -1,4 +1,4 @@
-package org.openforis.calc.util.csv;
+package org.openforis.calc.io.csv;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,7 +6,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-
+/**
+ * 
+ * @author G. Miceli
+ *
+ */
 public class CsvLine {
 	private Map<String, Integer> columns;
 	private String[] line;

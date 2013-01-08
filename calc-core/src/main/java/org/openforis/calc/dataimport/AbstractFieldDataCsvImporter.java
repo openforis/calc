@@ -7,14 +7,14 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openforis.calc.io.csv.CsvLine;
+import org.openforis.calc.io.csv.CsvReader;
 import org.openforis.calc.model.ObservationUnit;
 import org.openforis.calc.model.Survey;
 import org.openforis.calc.model.Variable;
 import org.openforis.calc.persistence.ObservationUnitDao;
 import org.openforis.calc.persistence.SurveyDao;
 import org.openforis.calc.service.MetadataService;
-import org.openforis.calc.util.csv.CsvLine;
-import org.openforis.calc.util.csv.CsvReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 

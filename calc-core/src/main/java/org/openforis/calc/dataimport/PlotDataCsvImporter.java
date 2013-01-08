@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.openforis.calc.geospatial.GeodeticCoordinate;
+import org.openforis.calc.io.csv.CsvLine;
+import org.openforis.calc.io.csv.CsvReader;
 import org.openforis.calc.model.Category;
 import org.openforis.calc.model.ObservationUnit;
 import org.openforis.calc.model.PlotCategory;
@@ -20,8 +22,6 @@ import org.openforis.calc.persistence.PlotCategoryDao;
 import org.openforis.calc.persistence.PlotMeasurementDao;
 import org.openforis.calc.persistence.PlotSectionDao;
 import org.openforis.calc.service.SamplingDesignService;
-import org.openforis.calc.util.csv.CsvLine;
-import org.openforis.calc.util.csv.CsvReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;

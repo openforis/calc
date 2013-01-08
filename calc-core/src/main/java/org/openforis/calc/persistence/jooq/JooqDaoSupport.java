@@ -17,12 +17,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jooq.DAO;
 import org.jooq.Field;
+import org.jooq.Record;
+import org.jooq.Result;
 import org.jooq.Table;
 import org.jooq.UniqueKey;
 import org.jooq.UpdatableRecord;
 import org.jooq.UpdatableTable;
 import org.jooq.impl.DAOImpl;
 import org.jooq.impl.Factory;
+import org.openforis.calc.io.FlatDataStream;
 import org.openforis.calc.model.Identifiable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -292,4 +295,7 @@ public abstract class JooqDaoSupport<R extends UpdatableRecord<R>, P extends Ide
         return result;
     }
 
+    protected FlatDataStream toDataStream(Result<? extends Record> result) {
+		return new JooqResultDataStream(result);
+	}
 }
