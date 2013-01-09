@@ -29,7 +29,7 @@ public class ObservationService {
 	@Autowired
 	private SpecimenCategory specimenCategoryDao;
 
-	public void importSpecimenData(FlatDataStream in) {
+	public void importSpecimenData(String surveyName, String observationUnit, FlatDataStream in) {
 		
 	}
 }
