@@ -39,7 +39,6 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * @author G. Miceli
  */
-// TODO wrap Jooq DAO inside and make delegate methods protected; do not expost jOOQ classes
 public abstract class JooqDaoSupport<R extends UpdatableRecord<R>, P extends Identifiable>
 	extends JdbcDaoSupport implements DAO<R, P, Integer>
 {
@@ -49,6 +48,7 @@ public abstract class JooqDaoSupport<R extends UpdatableRecord<R>, P extends Ide
 	private Class<P> type;
 	private Field<?>[] uniqueKeyFields;
 	private Map<List<Object>, Integer> idCache;
+	// TODO sync cache on insert, update, delete
 	
 	protected JooqDaoSupport(Table<R> table, Class<P> type, Field<?>... uniqueKeyFields) {
 		this.table = table;
@@ -61,25 +61,44 @@ public abstract class JooqDaoSupport<R extends UpdatableRecord<R>, P extends Ide
 		if ( uniqueKeyFields!= null && uniqueKeyFields.length > 0 ) {
 			log.info("Pre-loading keys from "+table);
 			this.idCache = new HashMap<List<Object>, Integer>();
-			Factory create = getJooqFactory();
-			Field<?> pk = pk();
-			List<Field<?>> fields = new ArrayList<Field<?>>(uniqueKeyFields.length+1);
-			fields.add(pk);
-			fields.addAll(Arrays.asList(uniqueKeyFields));
-			Result<Record> result = create.select(fields)
-										   .from(table)
-										   .fetch();
-			for (Record record : result) {				
-				List<Object> keys = new ArrayList<Object>(uniqueKeyFields.length);
-				for (int i = 0; i < uniqueKeyFields.length; i++) {
-					keys.add(record.getValue(i+1));
-				}
-				Integer id = record.getValueAsInteger(pk);
-				idCache.put(keys, id);
+			Result<Record> result = fetchKeys();
+			for (Record record : result) {
+				putId(record);
 			}
 		}
 	}
 
+	private Result<Record> fetchKeys() {
+		Factory create = getJooqFactory();
+		List<Field<?>> fields = getKeyFields();
+		Result<Record> result = create.select(fields)
+									   .from(table)
+									   .fetch();
+		return result;
+	}
+
+	private List<Field<?>> getKeyFields() {
+		List<Field<?>> fields = new ArrayList<Field<?>>(uniqueKeyFields.length+1);
+		fields.add(pk());
+		fields.addAll(Arrays.asList(uniqueKeyFields));
+		return fields;
+	}
+
+	protected void putId(Record record) {
+		List<Object> keys = getKey(record);
+		Integer id = record.getValueAsInteger(pk());
+		idCache.put(keys, id);
+	}
+
+	protected List<Object> getKey(Record record) {
+		List<Object> keys = new ArrayList<Object>(uniqueKeyFields.length);
+		for (Field<?> uk : uniqueKeyFields) {
+			Object val = record.getValue(uk);
+			keys.add(val);
+		}
+		return keys;
+	}
+	
 	@Autowired(required = true)
 	@Qualifier("dataSource")
 	private void setDataSourceInternal(DataSource dataSource) {
@@ -153,16 +172,17 @@ public abstract class JooqDaoSupport<R extends UpdatableRecord<R>, P extends Ide
             records.get(0).store();
         }
         
-		// Update ids in POJOs
+		// Update ids in POJOs and cache
 		Field<?> pk = pk();
 		if ( !objects.isEmpty() && pk != null ) {
 			Iterator<R> recordIter = records.iterator();
 			for (P pojo : pojos) {
+				R record = recordIter.next();
 				if ( pojo instanceof Identifiable ) {
-					R record = recordIter.next();
 					Integer id = (Integer) record.getValue(pk());
 					pojo.setId(id);
 				}
+				putId(record);
 			}
 		}
     }
