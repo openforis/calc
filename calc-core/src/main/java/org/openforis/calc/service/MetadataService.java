@@ -61,4 +61,12 @@ public class MetadataService {
 		}
 		unit.setVariables(vars);
 	}
+
+	ObservationUnit getObservationUnit(String survey, String observationUnit) {
+		Integer surveyId = surveyDao.getId(survey);
+		if ( surveyId == null ) {
+			return null;
+		}
+		return observationUnitDao.find(surveyId, observationUnit); 
+	}
 }

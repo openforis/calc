@@ -1,10 +1,13 @@
 package org.openforis.calc.io.csv;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.List;
 
 import org.openforis.calc.io.flat.FlatDataStream;
 import org.openforis.calc.io.flat.Record;
+
 
 import au.com.bytecode.opencsv.CSVReader;
 
@@ -18,6 +21,10 @@ public class CsvReader extends CsvProcessor implements FlatDataStream {
 	private CSVReader csv;
 	private long linesRead;
 	private boolean headersRead;
+	
+	public CsvReader(String filename) throws FileNotFoundException {
+		this(new FileReader(filename));
+	}
 	
 	public CsvReader(Reader reader) {
 		csv = new CSVReader(reader);
