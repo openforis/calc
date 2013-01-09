@@ -1,9 +1,10 @@
 package org.openforis.calc.service;
 
-import org.openforis.calc.persistence.CategoryDao;
-import org.openforis.calc.persistence.ObservationUnitDao;
-import org.openforis.calc.persistence.SurveyDao;
-import org.openforis.calc.persistence.VariableDao;
+import org.openforis.calc.io.flat.FlatDataStream;
+import org.openforis.calc.model.SpecimenCategory;
+import org.openforis.calc.model.SpecimenMeasurement;
+import org.openforis.calc.persistence.PlotSectionDao;
+import org.openforis.calc.persistence.SpecimenDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,13 +16,20 @@ import org.springframework.stereotype.Component;
 @Component
 public class ObservationService {
 
+	@Autowired 
+	private MetadataService metadataService;
+	@Autowired 
+	private SamplingDesignService samplingDesignService;
 	@Autowired
-	private SurveyDao surveyDao;
+	private PlotSectionDao plotSectionDao;
 	@Autowired
-	private ObservationUnitDao surveyUnitDao;
+	private SpecimenDao specimenDao;
 	@Autowired
-	private VariableDao variableDao;
+	private SpecimenMeasurement specimenMeasurementDao;
 	@Autowired
-	private CategoryDao categoryDao;
-	
+	private SpecimenCategory specimenCategoryDao;
+
+	public void importSpecimenData(FlatDataStream in) {
+		
+	}
 }
