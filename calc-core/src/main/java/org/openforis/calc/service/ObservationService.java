@@ -13,16 +13,15 @@ import org.springframework.stereotype.Component;
  *
  */
 @Component
-public class DataService {
+public class ObservationService {
 
 	@Autowired
-	protected SurveyDao surveyDao;
+	private SurveyDao surveyDao;
 	@Autowired
-	protected ObservationUnitDao surveyUnitDao;
+	private ObservationUnitDao surveyUnitDao;
 	@Autowired
-	protected VariableDao variableDao;
+	private VariableDao variableDao;
 	@Autowired
-	protected CategoryDao categoryDao;
-	
+	private CategoryDao categoryDao;
 	
 }

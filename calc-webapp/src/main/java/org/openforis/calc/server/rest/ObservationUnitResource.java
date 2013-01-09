@@ -60,6 +60,7 @@ public class ObservationUnitResource extends SubResource<String> {
 
 	ObservationUnit getObservationUnit() {
 		int surveyId = surveyResource.getSurveyId();
+		
 		ObservationUnit unit = observationUnitDao.find(surveyId, getKey());
 		if ( unit == null ) {
 			throw new WebApplicationException(Response.Status.NOT_FOUND);

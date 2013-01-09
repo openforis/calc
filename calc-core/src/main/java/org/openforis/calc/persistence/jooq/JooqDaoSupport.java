@@ -6,11 +6,15 @@ import static java.util.Collections.*;
 import java.sql.Connection;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
@@ -43,6 +47,38 @@ public abstract class JooqDaoSupport<R extends UpdatableRecord<R>, P extends Ide
 
 	private Table<R> table;
 	private Class<P> type;
+	private Field<?>[] uniqueKeyFields;
+	private Map<List<Object>, Integer> idCache;
+	
+	protected JooqDaoSupport(Table<R> table, Class<P> type, Field<?>... uniqueKeyFields) {
+		this.table = table;
+		this.type = type;
+		this.uniqueKeyFields = uniqueKeyFields;
+	}
+	
+	@PostConstruct
+	private void preloadKeys() {
+		if ( uniqueKeyFields!= null && uniqueKeyFields.length > 0 ) {
+			log.info("Pre-loading keys from "+table);
+			this.idCache = new HashMap<List<Object>, Integer>();
+			Factory create = getJooqFactory();
+			Field<?> pk = pk();
+			List<Field<?>> fields = new ArrayList<Field<?>>(uniqueKeyFields.length+1);
+			fields.add(pk);
+			fields.addAll(Arrays.asList(uniqueKeyFields));
+			Result<Record> result = create.select(fields)
+										   .from(table)
+										   .fetch();
+			for (Record record : result) {				
+				List<Object> keys = new ArrayList<Object>(uniqueKeyFields.length);
+				for (int i = 0; i < uniqueKeyFields.length; i++) {
+					keys.add(record.getValue(i+1));
+				}
+				Integer id = record.getValueAsInteger(pk);
+				idCache.put(keys, id);
+			}
+		}
+	}
 
 	@Autowired(required = true)
 	@Qualifier("dataSource")
@@ -50,9 +86,17 @@ public abstract class JooqDaoSupport<R extends UpdatableRecord<R>, P extends Ide
 		setDataSource(dataSource);
 	}
 	
-	protected JooqDaoSupport(Table<R> table, Class<P> type) {
-		this.table = table;
-		this.type = type;
+	protected Integer getIdByKey(Object... keys) {
+		if ( keys == null ) {
+			throw new NullPointerException("keys");
+		}
+		if ( uniqueKeyFields == null ) {
+			throw new NullPointerException("uniqueKeyFields");
+		}
+		if ( keys.length != uniqueKeyFields.length ) {
+			throw new IllegalArgumentException("Expected "+uniqueKeyFields.length+" but got "+keys.length);
+		}
+		return idCache.get(Arrays.asList(keys));
 	}
 
 	protected Log getLog() {

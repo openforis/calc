@@ -35,6 +35,7 @@ public class SamplePlotDao extends JooqDaoSupport<SamplePlotRecord, SamplePlot> 
 //		        		  .fetch().into(SamplePlot.class);
 //	}
 
+	@Deprecated
 	public List<SamplePlot> findGroundPlotsBySurveyId(int surveyId) {
 		Factory create = getJooqFactory();
 		return 
@@ -46,8 +47,8 @@ public class SamplePlotDao extends JooqDaoSupport<SamplePlotRecord, SamplePlot> 
 		        		  .fetch().into(SamplePlot.class);
 	}
 
-	public FlatDataStream streamAll(int observationUnitId) {
-		return stream(SAMPLE_PLOT.OBS_UNIT_ID, observationUnitId);
+	public FlatDataStream streamAll(String[] fields, int observationUnitId) {
+		return stream(fields, SAMPLE_PLOT.OBS_UNIT_ID, observationUnitId);
 	}
 
 	public FlatDataStream streamGroundPlots(int observationUnitId) {

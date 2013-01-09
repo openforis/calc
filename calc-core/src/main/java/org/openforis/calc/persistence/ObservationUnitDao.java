@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ObservationUnitDao extends JooqDaoSupport<ObservationUnitRecord, ObservationUnit> {
 
 	public ObservationUnitDao() {
-		super(OBSERVATION_UNIT, ObservationUnit.class);
+		super(OBSERVATION_UNIT, ObservationUnit.class, OBSERVATION_UNIT.SURVEY_ID, OBSERVATION_UNIT.NAME);
 	}
 
 	public List<ObservationUnit> findBySurveyId(int surveyId) {
@@ -62,5 +62,9 @@ public class ObservationUnitDao extends JooqDaoSupport<ObservationUnitRecord, Ob
 				     .from(OBSERVATION_UNIT)
 				     .where(OBSERVATION_UNIT.SURVEY_ID.eq(surveyId)
 				    		 .and(OBSERVATION_UNIT.NAME.eq(name)));		
+	}
+
+	public Integer getId(int surveyId, String key) {
+		return getIdByKey(surveyId, key);
 	}
 }

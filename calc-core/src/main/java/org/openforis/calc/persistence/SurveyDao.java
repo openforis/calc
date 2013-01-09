@@ -4,7 +4,6 @@ import static org.openforis.calc.persistence.jooq.Tables.*;
 
 import org.jooq.Field;
 import org.jooq.Result;
-import org.jooq.impl.Factory;
 import org.openforis.calc.io.flat.FlatDataStream;
 import org.openforis.calc.model.Survey;
 import org.openforis.calc.persistence.jooq.DialectAwareJooqFactory;
@@ -21,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class SurveyDao extends JooqDaoSupport<SurveyRecord, Survey> {
 
 	public SurveyDao() {
-		super(SURVEY, Survey.class);
+		super(SURVEY, Survey.class, SURVEY.NAME);
 	}
 	
 	public Survey findByUri(String uri) {
@@ -32,13 +31,9 @@ public class SurveyDao extends JooqDaoSupport<SurveyRecord, Survey> {
 		return fetchOne(SURVEY.NAME, name);
 	}
 
-//	public Integer findIdByName(String name) {
-//		Factory create = getJooqFactory();
-//		return create.select(SURVEY.ID)
-//				.from(SURVEY)
-//				.where(SURVEY.NAME.eq(name))
-//				.fetchOne(SURVEY.ID);
-//	}
+	public Integer getId(String name) {
+		return getIdByKey(name);
+	}
 	
 	public FlatDataStream streamByName(String[] fieldNames, String name) {
 		return stream(fieldNames, SURVEY.NAME, name);

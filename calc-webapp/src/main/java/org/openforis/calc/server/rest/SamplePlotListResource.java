@@ -25,6 +25,6 @@ public class SamplePlotListResource extends SubResource<Void> {
 	
 	@GET
 	public FlatDataStream getList() {
-		return samplePlotDao.streamAll(observationUnitResource.getObservationUnitId());
+		return samplePlotDao.streamAll(getFields(), observationUnitResource.getObservationUnitId());
 	}
 }

@@ -283,6 +283,10 @@
 	      <groupId>javax.annotation</groupId>
 	      <artifactId>jsr250-api</artifactId>
 	    </dependency>
+	    <dependency>
+	      <groupId>jcs</groupId>
+	      <artifactId>jcs</artifactId>
+	    </dependency>
 <!-- 	    <dependency> -->
 <!-- 	      <groupId>org.geotoolkit</groupId> -->
 <!-- 	      <artifactId>geotk-epsg</artifactId> -->
