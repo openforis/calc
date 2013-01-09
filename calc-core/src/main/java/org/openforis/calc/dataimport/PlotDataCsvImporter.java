@@ -1,7 +1,6 @@
 package org.openforis.calc.dataimport;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -11,6 +10,7 @@ import java.util.Set;
 import org.openforis.calc.geospatial.GeodeticCoordinate;
 import org.openforis.calc.io.csv.CsvLine;
 import org.openforis.calc.io.csv.CsvReader;
+import org.openforis.calc.io.csv.DateFormatException;
 import org.openforis.calc.model.Category;
 import org.openforis.calc.model.ObservationUnit;
 import org.openforis.calc.model.PlotCategory;
@@ -136,7 +136,7 @@ public class PlotDataCsvImporter extends AbstractFieldDataCsvImporter {
 			surveyedPlotDao.insert(p);
 			plotIdents.add(plotIdent);
 			return p;
-		} catch (ParseException p) {
+		} catch (DateFormatException p) {
 			log.warn("Skipping plot with invalid date "+plotIdent+" at row "+getRowCount());
 			return null;
 		} catch (NumberFormatException p) {

@@ -1,15 +1,10 @@
 package org.openforis.calc.io.csv;
 import java.io.IOException;
 import java.io.Reader;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.openforis.calc.io.FlatDataStream;
+import org.openforis.calc.io.flat.FlatDataStream;
+import org.openforis.calc.io.flat.Record;
 
 import au.com.bytecode.opencsv.CSVReader;
 
@@ -18,25 +13,31 @@ import au.com.bytecode.opencsv.CSVReader;
  * @author G. Miceli
  *
  */
-public class CsvReader implements FlatDataStream {
+public class CsvReader extends CsvProcessor implements FlatDataStream {
 
-	private Map<String, Integer> columns;
-	private DateFormat dateFormat;
 	private CSVReader csv;
+	private long linesRead;
+	private boolean headersRead;
 	
 	public CsvReader(Reader reader) {
 		csv = new CSVReader(reader);
+		headersRead = false;
+		linesRead = 0;
 	}
 
-	public void readHeaderLine() throws IOException {
-		String[] headers = csv.readNext();
-		columns = new HashMap<String, Integer>();
-		for (int i = 0; i < headers.length; i++) {
-			columns.put(headers[i], i);
+	public void readHeaders() throws IOException {
+		if ( headersRead ) {
+			throw new IllegalStateException("Headers already read");
 		}
+		String[] headers = csv.readNext();
+		setColumnNames(headers);
+		headersRead = true;
 	}
-	
+
 	public CsvLine readNextLine() throws IOException {
+		if ( !headersRead ) {
+			throw new IllegalStateException("Headers must be read first");
+		}
 		String[] line = csv.readNext();
 		if ( line == null ) {
 			return null;
@@ -45,30 +46,25 @@ public class CsvReader implements FlatDataStream {
 		}
 	}
 	
-	Map<String, Integer> getColumnIndices() {
-		return Collections.unmodifiableMap(columns);
-	}
-	
-	public DateFormat getDateFormat() {
-		if ( dateFormat == null ) {
-			setDateFormat("yyyy-MM-dd");
-		}
-		return dateFormat;
-	}
-	
-	public void setDateFormat(DateFormat dateFormat) {
-		this.dateFormat = dateFormat;
-	}
-	
-	public void setDateFormat(String pattern) {
-		this.dateFormat = new SimpleDateFormat(pattern);
-	}
-	
-	public List<String> getColumnNames() {
-		return Collections.unmodifiableList(new ArrayList<String>(columns.keySet()));
-	}
-
 	public void close() throws IOException {
 		csv.close();
+	}
+
+	public boolean isHeadersRead() {
+		return headersRead;
+	}
+
+	public long getLinesRead() {
+		return linesRead;
+	}
+	
+	@Override
+	public List<String> getFieldNames() {
+		return getColumnNames();
+	}
+
+	@Override
+	public Record nextRecord() throws IOException {
+		return readNextLine();
 	}
 }

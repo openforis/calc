@@ -8,22 +8,21 @@ import org.springframework.context.ApplicationContextAware;
 /**
  * @author G. Miceli
  */
-public abstract class CalcResource<T> implements ApplicationContextAware {
+public abstract class Resource implements ApplicationContextAware {
 	
 	private ApplicationContext applicationContext;
-	private T key;
 	
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 	}
 	
-	public <K, R extends CalcResource<K>> R getResource(Class<R> type, K key) {
+	public <K, R extends SubResource<K>> R getResource(Class<R> type, K key) {
 		R rsc = applicationContext.getBean(type);
-		rsc.key = key;
+		rsc.setKey(key);
 		return rsc;
 	}
-
-	public T getKey() {
-		return key;
+	
+	public <K, R extends SubResource<K>> R getResource(Class<R> type) {
+		return getResource(type, null);
 	}
 }

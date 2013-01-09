@@ -4,6 +4,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
+import org.openforis.calc.io.flat.FlatDataStream;
 import org.openforis.calc.persistence.ObservationUnitDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -16,7 +17,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope("request")
-public class ObservationUnitListResource extends CalcResource<Void> {
+public class ObservationUnitListResource extends SubResource<Void> {
 
 	@Autowired
 	private ObservationUnitDao observationUnitDao;
@@ -25,9 +26,8 @@ public class ObservationUnitListResource extends CalcResource<Void> {
 	private SurveyResource surveyResource;
 	
 	@GET
-	public String getObservationUnits() {
-//		observationUnitDao.find
-		return "units for survey: "+surveyResource.getId();
+	public FlatDataStream getList() {
+		return observationUnitDao.streamAll(getFields(), surveyResource.getSurveyId());
 	}
 	
 	@Path("{unitName}")

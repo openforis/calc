@@ -1,5 +1,7 @@
 package org.openforis.calc.persistence.jooq;
 
+import java.util.Date;
+
 import org.openforis.calc.io.flat.Record;
 
 /**
@@ -40,5 +42,30 @@ class JooqRecord implements Record {
 			s[i] = record.getValueAsString(i);
 		}
 		return s;
+	}
+
+	@Override
+	public Date getDate(String name) {
+		return record.getValueAsDate(name);
+	}
+
+	@Override
+	public Integer getInteger(int idx) {
+		return record.getValueAsInteger(idx);
+	}
+
+	@Override
+	public Double getDouble(int idx) {
+		return record.getValueAsDouble(idx);
+	}
+
+	@Override
+	public Boolean getBoolean(int idx) {
+		return record.getValueAsBoolean(idx);
+	}
+
+	@Override
+	public Date getDate(int idx) {
+		return record.getValueAsDate(idx);
 	}
 }

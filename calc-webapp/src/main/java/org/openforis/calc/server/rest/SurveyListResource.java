@@ -4,7 +4,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
-import org.openforis.calc.io.FlatDataStream;
+import org.openforis.calc.io.flat.FlatDataStream;
 import org.openforis.calc.persistence.SurveyDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -17,17 +17,16 @@ import org.springframework.stereotype.Component;
  * @author G. Miceli
  *
  */
-@Path("/surveys")
 @Component 
 @Scope("request")
-public class SurveyListResource extends CalcResource<Void> {
+public class SurveyListResource extends SubResource<Void> {
 
 	@Autowired
 	private SurveyDao surveyDao;
 
 	@GET
-    public FlatDataStream getSurveyList() {
-    	return surveyDao.streamAll();
+    public FlatDataStream getList() {
+    	return surveyDao.streamAll(getFields());
     }
 	
 	@Path("{surveyName}")

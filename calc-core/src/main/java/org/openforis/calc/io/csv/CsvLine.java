@@ -6,19 +6,21 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.openforis.calc.io.flat.Record;
+
 /**
  * 
  * @author G. Miceli
  *
  */
-public class CsvLine {
+public class CsvLine implements Record {
 	private Map<String, Integer> columns;
 	private String[] line;
-	private CsvReader reader;
+	private CsvProcessor processor;
 	
-	CsvLine(CsvReader reader, String[] line) {
-		this.columns = reader.getColumnIndices();
-		this.reader = reader;
+	CsvLine(CsvProcessor processor, String[] line) {
+		this.columns = processor.getColumnIndices();
+		this.processor = processor;
 		this.line = line;
 	}
 	
@@ -30,6 +32,7 @@ public class CsvLine {
 		return toString(line[idx]);
 	}
 	
+	@Override
 	public String getString(String column) {
 		Integer idx = getColumnIndex(column);
 		if ( idx == null ) {
@@ -46,56 +49,64 @@ public class CsvLine {
 			return txt;
 		}
 	}
-
+	
+	@Override
 	public Integer getInteger(int idx) throws NumberFormatException {
 		return toInteger(line[idx]);
 	}
 
+	@Override
 	public Integer getInteger(String column) throws NumberFormatException {
 		Integer idx = getColumnIndex(column);
 		if ( idx == null ) {
 			return null;
 		} else {
-			return toInteger(line[idx]);
+			return getInteger(idx);
 		}
 	}
 
+	@Override
 	public Double getDouble(int idx) throws NumberFormatException {
 		return toDouble(line[idx]);
 	}
 
+	@Override
 	public Double getDouble(String column) throws NumberFormatException {
 		Integer idx = getColumnIndex(column);
 		if ( idx == null ) {
 			return null;
 		} else {
-			return toDouble(line[idx]);
+			return getDouble(idx);
 		}
 	}
 
-	public Date getDate(int idx) throws ParseException {
-		return toDate(line[idx]);
-	}
-
-	public Date getDate(String column) throws ParseException {
-		Integer idx = getColumnIndex(column);
-		if ( idx == null ) {
-			return null;
-		} else {
+	@Override
+	public Date getDate(int idx) throws DateFormatException {
+		try {
 			return toDate(line[idx]);
+		} catch (ParseException e) {
+			throw DateFormatException.forInputString(line[idx]);
 		}
 	}
 
+	@Override
+	public Date getDate(String column) throws DateFormatException {
+		Integer idx = getColumnIndex(column);
+		return getDate(idx);
+	}
+
+	@Override
 	public Boolean getBoolean(int idx) throws NumberFormatException {
 		return toBoolean(line[idx]);
 	}
 
+	@Override
 	public Boolean getBoolean(String column) throws NumberFormatException {
 		Integer idx = getColumnIndex(column);
 		if ( idx == null ) {
 			return null;
 		} else {
-			return toBoolean(line[idx]);
+			return getBoolean(idx);
 		}
 	}
 	
@@ -137,15 +148,16 @@ public class CsvLine {
 	}
 
 	private Date toDate(String val) throws ParseException {
-		return isNullValue(val) ? null : reader.getDateFormat().parse(val);
-	}
-	
-	public CsvReader getReader() {
-		return reader;
+		return isNullValue(val) ? null : processor.getDateFormat().parse(val);
 	}
 
 	public List<String> getColumnNames() {
 		return Collections.unmodifiableList(new ArrayList<String>(columns.keySet()));
+	}
+
+	@Override
+	public String[] toStringArray() {
+		return line;
 	}
 }
  

@@ -4,8 +4,12 @@ import static org.openforis.calc.persistence.jooq.Tables.*;
 
 import java.util.List;
 
+import org.jooq.Field;
 import org.jooq.Record;
+import org.jooq.Result;
+import org.jooq.SelectConditionStep;
 import org.jooq.impl.Factory;
+import org.openforis.calc.io.flat.FlatDataStream;
 import org.openforis.calc.model.ObservationUnit;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
 import org.openforis.calc.persistence.jooq.tables.records.ObservationUnitRecord;
@@ -27,14 +31,36 @@ public class ObservationUnitDao extends JooqDaoSupport<ObservationUnitRecord, Ob
 		return fetch(OBSERVATION_UNIT.SURVEY_ID, surveyId);
 	}
 
-	public ObservationUnit find(Integer surveyId, String type, String name) {
+	public ObservationUnit find(int surveyId, String name) {
 		Factory create = getJooqFactory();
 		Record record = create.select()
 				     .from(OBSERVATION_UNIT)
 				     .where(OBSERVATION_UNIT.SURVEY_ID.eq(surveyId)
-				    		 .and(OBSERVATION_UNIT.TYPE.eq(type))
 				    		 .and(OBSERVATION_UNIT.NAME.eq(name)))
 				     .fetchOne();
 		return record == null ? null : record.into(ObservationUnit.class);
+	}
+
+	public FlatDataStream streamAll(String[] fieldNames, int surveyId) {
+		Field<?>[] fields = getFields(fieldNames);
+		return stream(fields, OBSERVATION_UNIT.SURVEY_ID, surveyId);
+	}
+
+	public FlatDataStream streamByName(String[] fieldNames, int surveyId, String name) {
+		Field<?>[] fields = getFields(fieldNames);
+		Result<Record> result = selectByName(surveyId, name, fields).fetch();
+		return stream(result);
+	}
+
+//	public Integer findIdByName(int surveyId, String name) {
+//		return selectByName(surveyId, name, OBSERVATION_UNIT.ID).fetchOne(SURVEY.ID);
+//	}
+	
+	private SelectConditionStep selectByName(int surveyId, String name, Field<?>... fields) {
+		Factory create = getJooqFactory();
+		return create.select(fields)
+				     .from(OBSERVATION_UNIT)
+				     .where(OBSERVATION_UNIT.SURVEY_ID.eq(surveyId)
+				    		 .and(OBSERVATION_UNIT.NAME.eq(name)));		
 	}
 }

@@ -86,7 +86,7 @@ public abstract class AbstractFieldDataCsvImporter {
 		try {
 			FileReader fileReader = new FileReader(filename);
 			reader = new CsvReader(fileReader);
-			reader.readHeaderLine();
+			reader.readHeaders();
 			beforeImport(reader);
 			CsvLine line;
 			while ((line = reader.readNextLine()) != null) {				

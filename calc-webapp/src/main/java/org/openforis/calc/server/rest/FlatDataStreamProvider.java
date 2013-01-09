@@ -1,25 +1,20 @@
-package org.openforis.calc.server.rest.jooq;
+package org.openforis.calc.server.rest;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.List;
 
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
-import org.openforis.calc.io.FlatDataStream;
-import org.openforis.calc.io.flat.Record;
-
-import au.com.bytecode.opencsv.CSVWriter;
+import org.openforis.calc.io.csv.CsvWriter;
+import org.openforis.calc.io.flat.FlatDataStream;
 
 /**
  * @author G. Miceli
@@ -39,22 +34,15 @@ public class FlatDataStreamProvider implements MessageBodyWriter<FlatDataStream>
     public void writeTo(FlatDataStream in, Class<?> t, Type gt, Annotation[] as,
             MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, 
             OutputStream out) throws IOException {
-    	Record r = in.nextRecord();
-    	if ( r== null ) {
-    		throw new WebApplicationException(404);
-    	}    		
-
-    	List<String> fieldNames = in.getFieldNames();
-    	Writer wr = new BufferedWriter(new OutputStreamWriter(out));
-    	CSVWriter csvOut = new CSVWriter(wr);
-    	String[] headers = fieldNames.toArray(new String[fieldNames.size()]);
-		csvOut.writeNext(headers);
-		
-		while ( r != null ) {
-			String[] line = r.toStringArray();
-			csvOut.writeNext(line);
-			r = in.nextRecord();
+    	
+    	CsvWriter csvWriter = new CsvWriter(out);
+    	
+		csvWriter.writeAll(in);
+    	
+		if ( csvWriter.getLinesWritten() == 0 ) {
+			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}
-		csvOut.close();
+		
+		csvWriter.close();
     }
 }

@@ -4,7 +4,10 @@ import static org.openforis.calc.persistence.jooq.Tables.*;
 
 import java.util.List;
 
+import org.jooq.Record;
+import org.jooq.Result;
 import org.jooq.impl.Factory;
+import org.openforis.calc.io.flat.FlatDataStream;
 import org.openforis.calc.model.SamplePlot;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
 import org.openforis.calc.persistence.jooq.tables.records.SamplePlotRecord;
@@ -41,5 +44,31 @@ public class SamplePlotDao extends JooqDaoSupport<SamplePlotRecord, SamplePlot> 
 		        		  .and(OBSERVATION_UNIT.SURVEY_ID.eq(surveyId))
 		        		  .and(SAMPLE_PLOT.GROUND_PLOT.isTrue()))
 		        		  .fetch().into(SamplePlot.class);
+	}
+
+	public FlatDataStream streamAll(int observationUnitId) {
+		return stream(SAMPLE_PLOT.OBS_UNIT_ID, observationUnitId);
+	}
+
+	public FlatDataStream streamGroundPlots(int observationUnitId) {
+		Factory create = getJooqFactory();
+		Result<Record> result = create.select()
+		      .from(SAMPLE_PLOT)
+		      .where(SAMPLE_PLOT.OBS_UNIT_ID.eq(observationUnitId)
+		    		  .and(SAMPLE_PLOT.GROUND_PLOT.isTrue()))
+		      .fetch();
+		
+		return stream(result);
+	}
+
+	public FlatDataStream streamPermanentPlots(int observationUnitId) {
+		Factory create = getJooqFactory();
+		Result<Record> result = create.select()
+		      .from(SAMPLE_PLOT)
+		      .where(SAMPLE_PLOT.OBS_UNIT_ID.eq(observationUnitId)
+		    		  .and(SAMPLE_PLOT.PERMANENT_PLOT.isTrue()))
+		      .fetch();
+		
+		return stream(result);
 	}
 }

@@ -113,7 +113,7 @@ public class SamplingDesignCsvImporter  {
 			Map<String, Integer> clusterIds = new HashMap<String, Integer>();
 			FileReader fileReader = new FileReader(filename);
 			reader = new CsvReader(fileReader);
-			reader.readHeaderLine();
+			reader.readHeaders();
 			CsvLine line;
 			while ((line = reader.readNextLine()) != null) {
 				Integer stratumNo = line.getInteger("stratum_no");

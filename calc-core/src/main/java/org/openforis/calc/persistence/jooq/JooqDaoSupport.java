@@ -25,7 +25,7 @@ import org.jooq.UpdatableRecord;
 import org.jooq.UpdatableTable;
 import org.jooq.impl.DAOImpl;
 import org.jooq.impl.Factory;
-import org.openforis.calc.io.FlatDataStream;
+import org.openforis.calc.io.flat.FlatDataStream;
 import org.openforis.calc.model.Identifiable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -35,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * @author G. Miceli
  */
+// TODO wrap Jooq DAO inside and make delegate methods protected; do not expost jOOQ classes
 public abstract class JooqDaoSupport<R extends UpdatableRecord<R>, P extends Identifiable>
 	extends JdbcDaoSupport implements DAO<R, P, Integer>
 {
@@ -242,6 +243,49 @@ public abstract class JooqDaoSupport<R extends UpdatableRecord<R>, P extends Ide
 		return jooqDao.fetchOne(field, value);
 	}
 
+
+	@Transactional
+	public <Z> FlatDataStream stream(Field<?>[] fields, Field<Z> filterField, Z... values) {
+		Factory create = getJooqFactory();
+        return stream(
+        		create.select(fields)
+        			.from(table)
+        			.where(filterField.in(values))
+        			.fetch());
+	}
+
+	@Transactional
+	public <Z> FlatDataStream stream(String[] fieldNames, Field<Z> filterField, Z... values) {
+		Field<?>[] fields = getFields(fieldNames);
+		return stream(fields, filterField, values);
+	}
+//	@Transactional
+//	public <Z> FlatDataStream streamOne(Field<?>[] fields, Field<Z> filterField, Z value) {
+//		Factory create = getJooqFactory();
+//        return stream(
+//        		create.select(fields)
+//        			.from(table)
+//        			.where(filterField.equal(value))
+//        			.fetchOne());
+//	}
+
+	protected Field<?>[] getFields(String[] fieldNames) {
+		if ( fieldNames == null ) {
+			return new Field<?>[0];
+		} else {
+			Field<?>[] fields = new Field<?>[fieldNames.length];
+			for (int i = 0; i < fieldNames.length; i++) {
+				String name = fieldNames[i];
+				Field<?> field = table.getField(name);
+				if ( field == null ) {
+					throw InvalidFieldNameException.forFieldName(name);
+				}
+				fields[i] = field;
+			}
+			return fields;
+		}
+	}
+
 	protected static Timestamp toTimestamp(Date date) {
 		if ( date == null ) {
 			return null;
@@ -295,7 +339,11 @@ public abstract class JooqDaoSupport<R extends UpdatableRecord<R>, P extends Ide
         return result;
     }
 
-    protected FlatDataStream toDataStream(Result<? extends Record> result) {
+    protected FlatDataStream stream(Result<? extends Record> result) {
 		return new JooqResultDataStream(result);
+	}
+    
+	protected FlatDataStream stream(R record) {
+		return new JooqResultDataStream(record);
 	}
 }
