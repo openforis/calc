@@ -89,7 +89,7 @@ public class SamplingDesignCsvImporter  {
 		}
 		int surveyId = survey.getId();		
 		// Could use metadata in Survey instead
-		ObservationUnit unit = observationUnitDao.find(surveyId, "plot", plotType);
+		ObservationUnit unit = observationUnitDao.find(surveyId, "plot");
 		if ( unit == null ) {
 			throw new ImportException("No plot observation unit '"+plotType+"'");
 		}

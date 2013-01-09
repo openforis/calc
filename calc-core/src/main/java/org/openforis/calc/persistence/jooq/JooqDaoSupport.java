@@ -48,7 +48,7 @@ public abstract class JooqDaoSupport<R extends UpdatableRecord<R>, P extends Ide
 	private Class<P> type;
 	private Field<?>[] uniqueKeyFields;
 	private Map<List<Object>, Integer> idCache;
-	// TODO sync cache on insert, update, delete
+	// TODO sync cache on insert, update, delete - in jooq factory?
 	
 	protected JooqDaoSupport(Table<R> table, Class<P> type, Field<?>... uniqueKeyFields) {
 		this.table = table;
@@ -358,9 +358,9 @@ public abstract class JooqDaoSupport<R extends UpdatableRecord<R>, P extends Ide
 		}
 	}
 	
-	public class JooqDaoImpl extends DAOImpl<R, P, Integer> {
+	private class JooqDaoImpl extends DAOImpl<R, P, Integer> {
 
-		protected JooqDaoImpl(Table<R> table, Class<P> type, Factory create) {
+		private JooqDaoImpl(Table<R> table, Class<P> type, Factory create) {
 			super(table, type, create);
 		}
 
