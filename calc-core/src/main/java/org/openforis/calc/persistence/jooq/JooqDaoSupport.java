@@ -93,9 +93,11 @@ public abstract class JooqDaoSupport<R extends TableRecord<R>, P>
 	}
 
 	protected void putId(Record record) {
-		List<Object> keys = getKey(record);
-		Integer id = record.getValueAsInteger(pk());
-		idCache.put(keys, id);
+		if ( idCache != null ) {
+			List<Object> keys = getKey(record);
+			Integer id = record.getValueAsInteger(pk());
+			idCache.put(keys, id);
+		}
 	}
 
 	protected List<Object> getKey(Record record) {

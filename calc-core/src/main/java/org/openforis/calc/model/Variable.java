@@ -1,8 +1,5 @@
 package org.openforis.calc.model;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author G. Miceli
@@ -11,7 +8,7 @@ public class Variable extends org.openforis.calc.persistence.jooq.tables.pojos.V
 
 	private static final long serialVersionUID = 1L;
 
-	private Map<String, Category> categoryCodeMap;
+//	private Map<String, Category> categoryCodeMap;
 
 	public boolean isCategorical() {
 		String type = getVariableType();
@@ -22,19 +19,19 @@ public class Variable extends org.openforis.calc.persistence.jooq.tables.pojos.V
 		return !isCategorical();
 	}
 
-	public void setCategories(List<Category> categories) {
-		this.categoryCodeMap = new HashMap<String, Category>();
-		for ( Category cat : categories ) {
-			categoryCodeMap.put(cat.getCategoryCode(), cat);
-		}
-	}
-
-	public Category getCategory(String code) {
-		if ( categoryCodeMap == null ) {
-			throw new NullPointerException("categories not initialized");
-		}
-		return categoryCodeMap.get(code);
-	}
+//	public void setCategories(List<Category> categories) {
+//		this.categoryCodeMap = new HashMap<String, Category>();
+//		for ( Category cat : categories ) {
+//			categoryCodeMap.put(cat.getCategoryCode(), cat);
+//		}
+//	}
+//
+//	public Category getCategory(String code) {
+//		if ( categoryCodeMap == null ) {
+//			throw new NullPointerException("categories not initialized");
+//		}
+//		return categoryCodeMap.get(code);
+//	}
 
 	@Override
 	public Integer getId() {

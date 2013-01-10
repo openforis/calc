@@ -81,7 +81,7 @@ public abstract class AbstractFieldDataCsvImporter {
 		resetCounters();
 		survey = loadSurvey(surveyUri);
 		metadataService.loadSurveyMetadata(survey);
-		unit = survey.getObservationUnitByName(unitName);
+		unit = survey.getObservationUnitMetadataByName(unitName);
 		CsvReader reader = null;
 		try {
 			FileReader fileReader = new FileReader(filename);
