@@ -417,7 +417,7 @@ public abstract class JooqDaoSupport<R extends TableRecord<R>, P>
 		return uniqueKeyFields;
 	}
 	
-	protected Object[] extractIds(FlatRecord r, Object... fieldsOrValues) {
+	protected Object[] extractKey(FlatRecord r, Object... fieldsOrValues) {
 		Object[] keys = new Object[fieldsOrValues.length];
 		if ( uniqueKeyFields.length != fieldsOrValues.length ) {
 			throw new IllegalArgumentException("Wrong number of keys");

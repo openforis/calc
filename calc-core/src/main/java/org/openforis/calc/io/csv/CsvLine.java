@@ -192,7 +192,7 @@ public class CsvLine implements FlatRecord {
 	@Override
 	public <T> T getValue(String column, Class<T> type) {
 		Integer idx = getColumnIndex(column);
-		return getValue(idx, type);
+		return idx == null ? null : getValue(idx, type);
 	}
 
 }

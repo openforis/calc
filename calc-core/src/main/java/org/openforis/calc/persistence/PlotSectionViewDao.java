@@ -33,8 +33,8 @@ public class PlotSectionViewDao extends JooqDaoSupport<PlotSectionViewRecord, Pl
 	}
 
 	public Integer getId(int obsUnitId, FlatRecord r) {
-		Object[] keys = extractIds(r, obsUnitId, V.CLUSTER_CODE, V.PLOT_NO, V.SECTION, V.VISIT_TYPE);
+		Object[] keys = extractKey(r, obsUnitId, V.CLUSTER_CODE, V.PLOT_NO, V.SECTION, V.VISIT_TYPE);
 
-		return null;
+		return getIdByKey(keys);
 	}
 }
