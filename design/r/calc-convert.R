@@ -1,4 +1,20 @@
-
+getTrees <- function(fileName) {
+  trees <- read.csv(fileName);
+  
+  trees$cluster_plot_subplot[trees$cluster_plot_subplot == ''] <- 'A';
+  
+  trees$total_height <- trees$total_height_value;
+  trees$dbh <- trees$dbh_value;
+  trees$species_code <- toupper(trees$species_code);
+  
+  #Remove trees with no dbh
+  trees <- subset( trees, !is.na(trees$dbh) );
+  
+  #Remove baobab from trees (for growing stock volume estimation)
+  trees <- subset( trees, species_code != 'ADA/DIG' );
+  
+  return (trees);
+}
 
 #setwd('/home/gino/workspace/minotz/')
 obsp = read.csv('data/plot.csv')
@@ -36,7 +52,7 @@ sp[sp$cluster_code=='152_63'  & sp$plot_no==3,]$plot_no[1] = 8
 
 write.csv(sp, '~/tzdata/plots.csv')
 
-#trees  = read.csv('data/trees.csv')
+trees  = getTrees('data/trees.csv')
 
 tr = with(
       trees, 
