@@ -55,12 +55,12 @@ public class IdmMetadataLoader extends IdmLoaderBase {
 	public void importMetadata(String surveyName, String idmlFilename) throws IOException, IdmlParseException, InvalidMetadataException {		
 		idmSurvey = metadataService.loadIdml(idmlFilename);
 		survey = new Survey();
-		survey.setDefaultLabel(idmSurvey.getProjectName(lang));
-		survey.setUri(idmSurvey.getUri());
-		survey.setName(surveyName);
+		survey.setSurveyLabel(idmSurvey.getProjectName(lang));
+		survey.setSurveyUri(idmSurvey.getUri());
+		survey.setSurveyName(surveyName);
 //		survey.setId(1);
 		surveyDao.insert(survey);
-		log.info("Survey: " +survey.getDefaultLabel()+" ("+survey.getId()+")");
+		log.info("Survey: " +survey.getSurveyName()+" ("+survey.getId()+")");
 		Schema schema = idmSurvey.getSchema();
 		traverse(schema);
 	}
@@ -83,7 +83,7 @@ public class IdmMetadataLoader extends IdmLoaderBase {
 			if ( type.isCluster() ) {
 				if ( parentUnit != null ) {
 					throw new InvalidMetadataException("'cluster' entity found inside observation unit '" +
-							parentUnit.getName()+"' instead of top level");
+							parentUnit.getObsUnitName() + "' instead of top level");
 				}
 				log.info("Cluster entity found: "+node.getPath());
 			} else if ( type.isObservationUnit() ){
@@ -118,22 +118,22 @@ public class IdmMetadataLoader extends IdmLoaderBase {
 
 	private void importNumVariable(ObservationUnit parentUnit, NumberAttributeDefinition attr) {
 		Variable var = new Variable();
-		var.setName(attr.getCompoundName());
+		var.setVariableName(attr.getCompoundName());
 		var.setObsUnitId(parentUnit.getId());
-		var.setDefaultLabel(attr.getLabel(Type.INSTANCE, lang));
-		var.setType("ratio");
+		var.setVariableLabel(attr.getLabel(Type.INSTANCE, lang));
+		var.setVariableType("ratio");
 		variableDao.insert(var);
-		log.info("Num. variable: "+parentUnit.getName()+"."+var.getName()+" ("+var.getId()+")");
+		log.info("Num. variable: "+parentUnit.getObsUnitName()+"."+var.getVariableName()+" ("+var.getId()+")");
 	}
 
 	private void importCatVariable(ObservationUnit parentUnit, BooleanAttributeDefinition attr) {
 		Variable var = new Variable();
-		var.setName(attr.getCompoundName());
+		var.setVariableName(attr.getCompoundName());
 		var.setObsUnitId(parentUnit.getId());
-		var.setDefaultLabel(attr.getLabel(Type.INSTANCE, lang));
-		var.setType("binary");
+		var.setVariableLabel(attr.getLabel(Type.INSTANCE, lang));
+		var.setVariableType("binary");
 		variableDao.insert(var);
-		log.info("Cat. variable: "+parentUnit.getName()+"."+var.getName()+" ("+var.getId()+")");
+		log.info("Cat. variable: " + parentUnit.getObsUnitName() + "." + var.getVariableName() + " (" + var.getId() + ")");
 		insertCategory(var, TRUE_CATEGORY_CODE, TRUE_CATEGORY_LABEL, 1);
 		insertCategory(var, FALSE_CATEGORY_CODE, FALSE_CATEGORY_LABEL, 2);
 		
@@ -142,21 +142,21 @@ public class IdmMetadataLoader extends IdmLoaderBase {
 	private void insertCategory(Variable var, String code, String defaultLabel, int idx) {
 		Category cat = new Category();
 		cat.setVariableId(var.getId());
-		cat.setCode(code);
-		cat.setDefaultLabel(defaultLabel);
-		cat.setOrder(idx);
+		cat.setCategoryCode(code);
+		cat.setCategoryLabel(defaultLabel);
+		cat.setCategoryOrder(idx);
 		categoryDao.insert(cat);
-		log.info("Category: "+cat.getCode()+" ("+cat.getId()+")");		
+		log.info("Category: "+cat.getCategoryCode()+" ("+cat.getId()+")");		
 	}
 
 	private void importCatVariable(ObservationUnit parentUnit, CodeAttributeDefinition attr) {
 		Variable var = new Variable();
-		var.setName(attr.getCompoundName());
+		var.setVariableName(attr.getCompoundName());
 		var.setObsUnitId(parentUnit.getId());
-		var.setDefaultLabel(attr.getLabel(Type.INSTANCE, lang));
-		var.setType(attr.isMultiple() ? "multiple" : "nominal");
+		var.setVariableLabel(attr.getLabel(Type.INSTANCE, lang));
+		var.setVariableType(attr.isMultiple() ? "multiple" : "nominal");
 		variableDao.insert(var);
-		log.info("Cat. variable: "+parentUnit.getName()+"."+var.getName()+" ("+var.getId()+")");
+		log.info("Cat. variable: " + parentUnit.getObsUnitName() + "." + var.getVariableName() + " (" + var.getId() + ")");
 		importCategories(var, attr);
 	}
 
@@ -175,11 +175,11 @@ public class IdmMetadataLoader extends IdmLoaderBase {
 		String label = getCodeListItemLabel(item);
 		Category cat = new Category();
 		cat.setVariableId(var.getId());
-		cat.setCode(code);
-		cat.setDefaultLabel(label);
-		cat.setOrder(idx);
+		cat.setCategoryCode(code);
+		cat.setCategoryLabel(label);
+		cat.setCategoryOrder(idx);
 		categoryDao.insert(cat);
-		log.info("Category: "+cat.getCode()+" ("+cat.getId()+")");
+		log.info("Category: " + cat.getCategoryCode() + " (" + cat.getId() + ")");
 	}
 
 	private String getCodeListItemLabel(CodeListItem item) {
@@ -221,13 +221,14 @@ public class IdmMetadataLoader extends IdmLoaderBase {
 		name = name == null ? node.getName() : name;
 		ObservationUnit unit = new ObservationUnit();
 		unit.setSurveyId(survey.getId());
-		unit.setName(name);
-		unit.setType(type.toString());
+		unit.setObsUnitName(name);
+		unit.setObsUnitType(type.toString());
 		if ( parentUnit != null ) {
-			unit.setParentId(parentUnit.getId());
+			unit.setObsUnitParentId(parentUnit.getId());
 		}
 		surveyUnitDao.insert(unit);
-		log.info("Survey unit: " +unit.getName()+" ("+unit.getId()+")");
+		log.info("Survey unit: " + unit.getObsUnitName() + " (" + unit.getId() + ")");
 		return unit;
 	}
+	
 }

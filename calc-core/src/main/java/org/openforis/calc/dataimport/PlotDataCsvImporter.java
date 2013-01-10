@@ -13,13 +13,13 @@ import org.openforis.calc.io.csv.CsvReader;
 import org.openforis.calc.io.csv.DateFormatException;
 import org.openforis.calc.model.Category;
 import org.openforis.calc.model.ObservationUnit;
-import org.openforis.calc.model.PlotCategory;
-import org.openforis.calc.model.PlotMeasurement;
+import org.openforis.calc.model.PlotCategoricalValue;
+import org.openforis.calc.model.PlotNumericValue;
 import org.openforis.calc.model.PlotSection;
 import org.openforis.calc.model.SamplePlot;
 import org.openforis.calc.model.Variable;
-import org.openforis.calc.persistence.PlotCategoryDao;
-import org.openforis.calc.persistence.PlotMeasurementDao;
+import org.openforis.calc.persistence.PlotCategoricalValueDao;
+import org.openforis.calc.persistence.PlotNumericVariabletDao;
 import org.openforis.calc.persistence.PlotSectionDao;
 import org.openforis.calc.service.SamplingDesignService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,9 +46,9 @@ public class PlotDataCsvImporter extends AbstractFieldDataCsvImporter {
 	@Autowired
 	private SamplingDesignService samplingDesignService;
 	@Autowired
-	private PlotMeasurementDao plotMeasurementDao;
+	private PlotNumericVariabletDao plotNumericVariabletDao;
 	@Autowired
-	private PlotCategoryDao plotCategoryDao;
+	private PlotCategoricalValueDao plotCategoricalValueDao;
 
 	private List<Variable> vars;
 
@@ -126,12 +126,12 @@ public class PlotDataCsvImporter extends AbstractFieldDataCsvImporter {
 			p.setSurveyDate(surveyDate);
 			p.setVisitType(visitType);
 			p.setStep(step);
-			p.setGpsReading(gpsReading.toPGGeometry());
-			p.setLocation(gpsReading.toPGGeometry()); // TODO correct location
+			p.setPlotGpsReading(gpsReading.toPGGeometry());
+			p.setPlotLocation(gpsReading.toPGGeometry()); // TODO correct location
 			p.setAccessible(accessible);
-			p.setPercentShare(percentShare);
-			p.setDirection(direction);
-			p.setDistance(distance);
+			p.setPlotShare(percentShare);
+			p.setPlotDirection(direction);
+			p.setPlotDistance(distance);
 			incrementInsertCount();
 			surveyedPlotDao.insert(p);
 			plotIdents.add(plotIdent);
@@ -146,14 +146,14 @@ public class PlotDataCsvImporter extends AbstractFieldDataCsvImporter {
 	}
 
 	private void insertPlotValues(PlotSection section, CsvLine line, List<Variable> vars) {
-		List<PlotMeasurement> pms = new ArrayList<PlotMeasurement>();
-		List<PlotCategory> pcs = new ArrayList<PlotCategory>();
+		List<PlotNumericValue> pms = new ArrayList<PlotNumericValue>();
+		List<PlotCategoricalValue> pcs = new ArrayList<PlotCategoricalValue>();
 		for (Variable var : vars) {
-			String name = var.getName();
+			String name = var.getVariableName();
 			if ( var.isNumeric() ) {
 				Double value = line.getDouble(name);
 				if ( value != null ) {
-					PlotMeasurement pm = new PlotMeasurement(section, var, value, false);
+					PlotNumericValue pm = new PlotNumericValue(section, var, value, false);
 					pms.add(pm);
 				}
 			}
@@ -165,13 +165,13 @@ public class PlotDataCsvImporter extends AbstractFieldDataCsvImporter {
 					if ( cat == null ) {
 						log.warn("Skipping unknown code "+code);
 					} else {
-						PlotCategory pc = new PlotCategory(section, cat, false);
+						PlotCategoricalValue pc = new PlotCategoricalValue(section, cat, false);
 						pcs.add(pc);
 					}
 				}
 			}
 		}		
-		plotMeasurementDao.insert(pms);
-		plotCategoryDao.insert(pcs);
+		plotNumericVariabletDao.insert(pms);
+		plotCategoricalValueDao.insert(pcs);
 	}
 }

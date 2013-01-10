@@ -7,4 +7,14 @@ public class Aoi extends org.openforis.calc.persistence.jooq.tables.pojos.Aoi im
 
 	private static final long serialVersionUID = 1L;
 
+	@Override
+	public Integer getId() {
+		return super.getAoiHierarchyId();
+	}
+
+	@Override
+	public void setId(Integer id) {
+		super.setAoiId(id);
+	}
+
 }

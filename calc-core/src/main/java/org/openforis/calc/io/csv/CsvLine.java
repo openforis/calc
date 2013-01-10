@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.openforis.calc.io.flat.FlatDataStream;
 import org.openforis.calc.io.flat.Record;
 
 /**
@@ -16,11 +17,11 @@ import org.openforis.calc.io.flat.Record;
 public class CsvLine implements Record {
 	private Map<String, Integer> columns;
 	private String[] line;
-	private CsvProcessor processor;
+	private CsvReader csvReader;
 	
-	CsvLine(CsvProcessor processor, String[] line) {
-		this.columns = processor.getColumnIndices();
-		this.processor = processor;
+	CsvLine(CsvReader csvReader, String[] line) {
+		this.columns = csvReader.getColumnIndices();
+		this.csvReader = csvReader;
 		this.line = line;
 	}
 	
@@ -148,7 +149,7 @@ public class CsvLine implements Record {
 	}
 
 	private Date toDate(String val) throws ParseException {
-		return isNullValue(val) ? null : processor.getDateFormat().parse(val);
+		return isNullValue(val) ? null : csvReader.getDateFormat().parse(val);
 	}
 
 	public List<String> getColumnNames() {
@@ -159,5 +160,16 @@ public class CsvLine implements Record {
 	public String[] toStringArray() {
 		return line;
 	}
+
+	@Override
+	public FlatDataStream getFlatDataStream() {		
+		return csvReader;
+	}
+
+	@Override
+	public List<String> getFieldNames() {
+		return csvReader.getColumnNames();
+	}
+
 }
  

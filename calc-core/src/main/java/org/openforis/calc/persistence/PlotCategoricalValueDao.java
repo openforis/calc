@@ -1,9 +1,9 @@
 package org.openforis.calc.persistence;
 
-import org.openforis.calc.model.PlotCategory;
+import org.openforis.calc.model.PlotCategoricalValue;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
 import org.openforis.calc.persistence.jooq.Tables;
-import org.openforis.calc.persistence.jooq.tables.records.PlotCategoryRecord;
+import org.openforis.calc.persistence.jooq.tables.records.PlotCategoricalValueRecord;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,9 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component 
 @Transactional
-public class PlotCategoryDao extends JooqDaoSupport<PlotCategoryRecord, PlotCategory> {
+public class PlotCategoricalValueDao extends JooqDaoSupport<PlotCategoricalValueRecord, PlotCategoricalValue> {
 
-	public PlotCategoryDao() {
-		super(Tables.PLOT_CATEGORY, PlotCategory.class);
+	public PlotCategoricalValueDao() {
+		super(Tables.PLOT_CATEGORICAL_VALUE, PlotCategoricalValue.class);
 	}
 }

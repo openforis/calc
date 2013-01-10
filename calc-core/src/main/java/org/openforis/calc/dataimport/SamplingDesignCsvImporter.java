@@ -133,7 +133,7 @@ public class SamplingDesignCsvImporter  {
 					stratumCount += 1;
 					Stratum str = new Stratum();
 					str.setSurveyId(surveyId);
-					str.setNo(stratumNo);
+					str.setStratumNo(stratumNo);
 					stratumDao.insert(str);
 					stratumId = str.getId();
 					stratumIds.put(stratumNo, stratumId);
@@ -143,9 +143,9 @@ public class SamplingDesignCsvImporter  {
 				if ( clusterId == null ) {
 					Cluster c = new Cluster();
 					c.setSurveyId(surveyId);
-					c.setCode(nvl(clusterCode, clusterNo));
-					c.setXIndex(clusterX);
-					c.setYIndex(clusterY);					
+					c.setClusterCode(nvl(clusterCode, clusterNo));
+					c.setClusterX(clusterX);
+					c.setClusterY(clusterY);					
 					clusterDao.insert(c);
 					clusterId = c.getId();
 					clusterIds.put(clusterCode, clusterId);
@@ -162,8 +162,8 @@ public class SamplingDesignCsvImporter  {
 				SamplePlot p = new SamplePlot();
 				p.setStratumId(stratumId);
 				p.setClusterId(clusterId);
-				p.setNo(plotNo);
-				p.setPhase(phase);
+				p.setPlotNo(plotNo);
+				p.setSamplePlotPhase(phase);
 				p.setObsUnitId(unitId);
 				
 				// Projection UTM Zone 36 Hemisphere S Datum WGS84 
@@ -171,7 +171,7 @@ public class SamplingDesignCsvImporter  {
 				Point point = new Point(pos.getX(), pos.getY());
 				point.setSrid(4326);
 				PGgeometry geom = new PGgeometry(point);
-				p.setLocation(geom);
+				p.setSamplePlotLocation(geom);
 //				p.setLocation("ST_SetSRID(ST_MakePoint("+plotX+", "+plotY+"), 4326)");
 				p.setGroundPlot(groundPlot);
 				p.setPermanentPlot(permanentPlot);

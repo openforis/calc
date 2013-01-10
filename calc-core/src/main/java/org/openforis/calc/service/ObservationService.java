@@ -6,11 +6,10 @@ import org.openforis.calc.io.csv.CsvReader;
 import org.openforis.calc.io.flat.FlatDataStream;
 import org.openforis.calc.io.flat.Record;
 import org.openforis.calc.model.ObservationUnit;
-import org.openforis.calc.persistence.PlotSectionDao;
-import org.openforis.calc.persistence.SpecimenCategoryDao;
+import org.openforis.calc.persistence.PlotSectionViewDao;
+import org.openforis.calc.persistence.SpecimenCategoricalValueDao;
 import org.openforis.calc.persistence.SpecimenDao;
-import org.openforis.calc.persistence.SpecimenMeasurementDao;
-import org.openforis.calc.persistence.jooq.tables.SamplePlotView;
+import org.openforis.calc.persistence.SpecimenNumericValueDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
@@ -26,19 +25,19 @@ public class ObservationService {
 	@Autowired 
 	private MetadataService metadataService;
 	@Autowired
-	private PlotSectionDao plotSectionDao;
+	private PlotSectionViewDao plotSectionViewDao;
 	@Autowired
 	private SpecimenDao specimenDao;
 	@Autowired
-	private SpecimenMeasurementDao specimenMeasurementDao;
+	private SpecimenNumericValueDao specimenMeasurementDao;
 	@Autowired
-	private SpecimenCategoryDao specimenCategoryDao;
+	private SpecimenCategoricalValueDao specimenCategoryDao;
 
 	public static void main(String[] args)  {
 		try {
 			ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
 			ObservationService svc = ctx.getBean(ObservationService.class);
-			CsvReader in = new CsvReader("/home/gino/workspace/tzdata/trees.csv");
+			CsvReader in = new CsvReader("/home/minotogna/tzdata/trees.csv");
 			in.readHeaders();
 			svc.importSpecimenData("naforma1", "tree", in);
 		} catch ( Throwable ex ) {
@@ -47,16 +46,23 @@ public class ObservationService {
 	}
 	
 	public void importSpecimenData(String surveyName, String observationUnit, FlatDataStream in) throws IOException {
-		ObservationUnit unit = metadataService.getObservationUnit(surveyName, observationUnit);
-		if ( unit == null ) {
+		ObservationUnit specimenUnit = metadataService.getObservationUnit(surveyName, observationUnit);
+		if ( specimenUnit == null ) {
 			throw new IllegalArgumentException("Invalid survey or observation unit");
 		}
-		if ( !"specimen".equals(unit.getType()) ) {
-			throw new IllegalArgumentException("Invalid observation unit type: "+unit.getType()); 
+		if ( !"specimen".equals(specimenUnit.getObsUnitType()) ) {
+			throw new IllegalArgumentException("Invalid observation unit type: "+specimenUnit.getObsUnitType()); 
 		}
+		ObservationUnit plotUnit = metadataService.getObservationUnit(surveyName, "plot");		// TODO <<< implement getParent
 		Record r;
 		while ( (r = in.nextRecord()) != null ) {
-			System.out.println(r.getString(SamplePlotView.SAMPLE_PLOT_VIEW.CLUSTER_CODE.getName()));
+//			PlotSectionView V = Tables.PLOT_SECTION_VIEW;
+			String clusterCode = r.getString("cluster_code");
+			Integer plotNo = r.getInteger("plot_no");
+			String section = r.getString("plot_section");
+			String visitType = r.getString("visit_type")+" ";
+			Integer plotSectionId = plotSectionViewDao.getId(plotUnit.getId(), clusterCode, plotNo, section, visitType);			
+			System.out.println(plotSectionId);
 		}
 	}
 }

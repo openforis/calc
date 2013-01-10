@@ -169,7 +169,7 @@ public abstract class AbstractFieldDataCsvImporter {
 				skipped.add(col);
 			} else {
 				vars.add(var);
-				varcols.add(var.getName());
+				varcols.add(var.getVariableName());
 			}
 		}
 		log.info("Recognized system attributes: TBD");

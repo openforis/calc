@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 /**
  * 
  * @author G. Miceli
- *
+ * 
  */
 @Component
 @Scope("request")
@@ -32,19 +32,19 @@ public class ObservationUnitResource extends SubResource<String> {
 		int surveyId = surveyResource.getSurveyId();
 		return observationUnitDao.streamByName(getFields(), surveyId, getKey());
 	}
-	
+
 	@Path("sample-plots")
 	public SamplePlotListResource getSamplePlotListResource() {
 		assertType("plot");
 		return getResource(SamplePlotListResource.class);
 	}
-	
+
 	@Path("ground-plots")
 	public GroundPlotListResource getGroundPlotListResource() {
 		assertType("plot");
 		return getResource(GroundPlotListResource.class);
 	}
-	
+
 	@Path("permanent-plots")
 	public PermanentPlotListResource getPermanentPlotListResource() {
 		assertType("plot");
@@ -53,21 +53,21 @@ public class ObservationUnitResource extends SubResource<String> {
 
 	private void assertType(String type) {
 		ObservationUnit unit = getObservationUnit();
-		if ( !type.equals(unit.getType()) ) {
+		if ( !type.equals(unit.getObsUnitType()) ) {
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}
 	}
 
 	ObservationUnit getObservationUnit() {
 		int surveyId = surveyResource.getSurveyId();
-		
+
 		ObservationUnit unit = observationUnitDao.find(surveyId, getKey());
 		if ( unit == null ) {
 			throw new WebApplicationException(Response.Status.NOT_FOUND);
 		}
-		return unit ;
+		return unit;
 	}
-	
+
 	int getObservationUnitId() {
 		return getObservationUnit().getId();
 	}

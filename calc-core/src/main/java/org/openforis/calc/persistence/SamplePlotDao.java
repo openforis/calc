@@ -1,6 +1,7 @@
 package org.openforis.calc.persistence;
 
-import static org.openforis.calc.persistence.jooq.Tables.*;
+import static org.openforis.calc.persistence.jooq.Tables.OBSERVATION_UNIT;
+import static org.openforis.calc.persistence.jooq.Tables.SAMPLE_PLOT;
 
 import java.util.List;
 
@@ -41,7 +42,7 @@ public class SamplePlotDao extends JooqDaoSupport<SamplePlotRecord, SamplePlot> 
 		return 
 		    create.select(SAMPLE_PLOT.getFields())
 		          .from(SAMPLE_PLOT, OBSERVATION_UNIT)
-		          .where(SAMPLE_PLOT.OBS_UNIT_ID.eq(OBSERVATION_UNIT.ID)
+		          .where(SAMPLE_PLOT.OBS_UNIT_ID.eq(OBSERVATION_UNIT.OBS_UNIT_ID)
 		        		  .and(OBSERVATION_UNIT.SURVEY_ID.eq(surveyId))
 		        		  .and(SAMPLE_PLOT.GROUND_PLOT.isTrue()))
 		        		  .fetch().into(SamplePlot.class);

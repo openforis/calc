@@ -24,6 +24,7 @@ import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.Table;
+import org.jooq.TableRecord;
 import org.jooq.UniqueKey;
 import org.jooq.UpdatableRecord;
 import org.jooq.UpdatableTable;
@@ -39,7 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * @author G. Miceli
  */
-public abstract class JooqDaoSupport<R extends UpdatableRecord<R>, P extends Identifiable>
+public abstract class JooqDaoSupport<R extends TableRecord<R>, P>
 	extends JdbcDaoSupport implements DAO<R, P, Integer>
 {
 	private Log log = LogFactory.getLog(getClass());
@@ -161,7 +162,7 @@ public abstract class JooqDaoSupport<R extends UpdatableRecord<R>, P extends Ide
     	Factory create = getJooqFactory();
     	List<P> pojos = new ArrayList<P>(objects);
     	
-        List<R> records = records(pojos, false);
+        List<UpdatableRecord<?>> records = records(pojos, false);
         
         // Execute a batch INSERT
 		if (objects.size() > 1) {
@@ -175,12 +176,12 @@ public abstract class JooqDaoSupport<R extends UpdatableRecord<R>, P extends Ide
 		// Update ids in POJOs and cache
 		Field<?> pk = pk();
 		if ( !objects.isEmpty() && pk != null ) {
-			Iterator<R> recordIter = records.iterator();
+			Iterator<UpdatableRecord<?>> recordIter = records.iterator();
 			for (P pojo : pojos) {
-				R record = recordIter.next();
+				UpdatableRecord<?> record = recordIter.next();
 				if ( pojo instanceof Identifiable ) {
 					Integer id = (Integer) record.getValue(pk());
-					pojo.setId(id);
+					((Identifiable) pojo).setId(id);
 				}
 				putId(record);
 			}
@@ -290,7 +291,7 @@ public abstract class JooqDaoSupport<R extends UpdatableRecord<R>, P extends Ide
 	@Transactional
 	public P findById(Integer id) {
 		JooqDaoImpl jooqDao = getJooqDao();
-		return jooqDao.findById(id);
+		return (P) jooqDao.findById(id);
 	}
 
 	@Override
@@ -304,7 +305,7 @@ public abstract class JooqDaoSupport<R extends UpdatableRecord<R>, P extends Ide
 	@Transactional
 	public <Z> P fetchOne(Field<Z> field, Z value) {
 		JooqDaoImpl jooqDao = getJooqDao();
-		return jooqDao.fetchOne(field, value);
+		return (P) jooqDao.fetchOne(field, value);
 	}
 
 
@@ -358,21 +359,21 @@ public abstract class JooqDaoSupport<R extends UpdatableRecord<R>, P extends Ide
 		}
 	}
 	
-	private class JooqDaoImpl extends DAOImpl<R, P, Integer> {
+	private class JooqDaoImpl<UR extends UpdatableRecord<UR>> extends DAOImpl<UR, P, Integer> {
 
-		private JooqDaoImpl(Table<R> table, Class<P> type, Factory create) {
+		private JooqDaoImpl(Table<UR> table, Class<P> type, Factory create) {
 			super(table, type, create);
 		}
 
 		@Override
-		protected Integer getId(P object) {
-			return object.getId();
+		protected Integer getId(P object) {			
+			return ((Identifiable) object).getId();
 		}
 	}
 	
 	// From DAOImpl
 	
-    private Field<?> pk() {
+    protected Field<?> pk() {
         if (table instanceof UpdatableTable) {
             UpdatableTable<?> updatable = (UpdatableTable<?>) table;
             UniqueKey<?> key = updatable.getMainKey();
@@ -385,13 +386,13 @@ public abstract class JooqDaoSupport<R extends UpdatableRecord<R>, P extends Ide
         return null;
     }
 
-    private List<R> records(Collection<P> objects, boolean forUpdate) {
+    private List<UpdatableRecord<?>> records(Collection<P> objects, boolean forUpdate) {
     	Factory create = getJooqFactory();
-        List<R> result = new ArrayList<R>();
+        List<UpdatableRecord<?>> result = new ArrayList<UpdatableRecord<?>>();
 //        Field<?> pk = pk();
 
         for (P object : objects) {
-            R record = create.newRecord(table, object);
+        	UpdatableRecord<?> record = (UpdatableRecord<?>) create.newRecord(table, object);
 
 //            if (forUpdate && pk != null) {
 //                ((AbstractRecord) record).getValue0(pk).setChanged(false);

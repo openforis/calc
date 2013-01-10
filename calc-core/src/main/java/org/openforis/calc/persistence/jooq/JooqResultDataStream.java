@@ -45,7 +45,7 @@ public class JooqResultDataStream implements FlatDataStream {
 	public Record nextRecord() {
 		if ( jooqResultIterator.hasNext() ) {
 			org.jooq.Record r = jooqResultIterator.next();
-			return new JooqRecord(r);
+			return new JooqRecord(r, this);
 		} else { 
 			return null;
 		}

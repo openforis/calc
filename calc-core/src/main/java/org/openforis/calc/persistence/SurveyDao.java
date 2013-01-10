@@ -1,6 +1,6 @@
 package org.openforis.calc.persistence;
 
-import static org.openforis.calc.persistence.jooq.Tables.*;
+import static org.openforis.calc.persistence.jooq.Tables.SURVEY;
 
 import org.jooq.Field;
 import org.jooq.Result;
@@ -20,15 +20,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class SurveyDao extends JooqDaoSupport<SurveyRecord, Survey> {
 
 	public SurveyDao() {
-		super(SURVEY, Survey.class, SURVEY.NAME);
+		super(SURVEY, Survey.class, SURVEY.SURVEY_NAME);
 	}
 	
 	public Survey findByUri(String uri) {
-		return fetchOne(SURVEY.URI, uri);
+		return fetchOne(SURVEY.SURVEY_URI, uri);
 	}
 
 	public Survey findByName(String name) {
-		return fetchOne(SURVEY.NAME, name);
+		return fetchOne(SURVEY.SURVEY_NAME, name);
 	}
 
 	public Integer getId(String name) {
@@ -36,7 +36,7 @@ public class SurveyDao extends JooqDaoSupport<SurveyRecord, Survey> {
 	}
 	
 	public FlatDataStream streamByName(String[] fieldNames, String name) {
-		return stream(fieldNames, SURVEY.NAME, name);
+		return stream(fieldNames, SURVEY.SURVEY_NAME, name);
 	}
 	
 	public FlatDataStream streamAll(String[] fieldNames) {

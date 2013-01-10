@@ -6,46 +6,45 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-
 /**
  * @author G. Miceli
  */
 public class Survey extends org.openforis.calc.persistence.jooq.tables.pojos.Survey implements Identifiable {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private Map<Integer, ObservationUnit> observationUnitsById;
 	private Map<String, ObservationUnit> observationUnitsByName;
 	private Map<Integer, Cluster> clustersById;
 	private Map<String, Cluster> clustersByCode;
-	
+
 	public void setObservationUnits(Collection<ObservationUnit> ous) {
 		observationUnitsById = new LinkedHashMap<Integer, ObservationUnit>();
-		observationUnitsByName = new HashMap<String, ObservationUnit>(); 
-		for (ObservationUnit ou : ous) {
+		observationUnitsByName = new HashMap<String, ObservationUnit>();
+		for ( ObservationUnit ou : ous ) {
 			ou.clearGroundPlots();
 			observationUnitsById.put(ou.getId(), ou);
-			observationUnitsByName.put(ou.getName(), ou);
+			observationUnitsByName.put(ou.getObsUnitName(), ou);
 		}
 	}
-	
+
 	private void setClusters(Collection<Cluster> clusters) {
 		clustersById = new LinkedHashMap<Integer, Cluster>();
 		clustersByCode = new LinkedHashMap<String, Cluster>();
-		for (Cluster cluster : clusters) {
+		for ( Cluster cluster : clusters ) {
 			clustersById.put(cluster.getId(), cluster);
-			clustersByCode.put(cluster.getCode(), cluster);
+			clustersByCode.put(cluster.getClusterCode(), cluster);
 		}
 	}
-	
+
 	public Cluster getClusterById(int id) {
 		return clustersById.get(id);
 	}
-	
+
 	public Cluster getClusterByCode(String code) {
 		return clustersByCode.get(code);
 	}
-	
+
 	public ObservationUnit getObservationUnitByName(String name) {
 		if ( observationUnitsById == null ) {
 			throw new NullPointerException("observationUnits not initialized");
@@ -53,10 +52,7 @@ public class Survey extends org.openforis.calc.persistence.jooq.tables.pojos.Sur
 		return observationUnitsByName.get(name);
 	}
 
-	public void setSamplingDesign(
-			Collection<Cluster> clusters, 
-			Collection<Stratum> strata, 
-			Collection<SamplePlot> groundPlots) {
+	public void setSamplingDesign(Collection<Cluster> clusters, Collection<Stratum> strata, Collection<SamplePlot> groundPlots) {
 		if ( observationUnitsById == null ) {
 			throw new NullPointerException("Observation units metadata must be set first");
 		}
@@ -66,7 +62,7 @@ public class Survey extends org.openforis.calc.persistence.jooq.tables.pojos.Sur
 	}
 
 	private void setGroundPlots(Collection<SamplePlot> groundPlots) {
-		for (SamplePlot plot : groundPlots) {
+		for ( SamplePlot plot : groundPlots ) {
 			Integer clusterId = plot.getClusterId();
 			if ( clusterId != null ) {
 				Cluster cluster = getClusterById(clusterId);
@@ -84,10 +80,20 @@ public class Survey extends org.openforis.calc.persistence.jooq.tables.pojos.Sur
 
 	private void setStrata(Collection<Stratum> strata) {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
+
 	public Collection<ObservationUnit> getObservationUnits() {
 		return observationUnitsById == null ? null : Collections.unmodifiableCollection(observationUnitsById.values());
+	}
+
+	@Override
+	public Integer getId() {
+		return super.getSurveyId();
+	}
+
+	@Override
+	public void setId(Integer id) {
+		super.setSurveyId(id);
 	}
 }
