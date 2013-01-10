@@ -33,8 +33,7 @@ public class ObservationService {
 	@Autowired
 	private SpecimenCategoricalValueDao specimenCategoryDao;
 
-	@Autowired
-	@Value("#{calc.dev.test-data-path}")
+	@Value("${testDataPath}")
 	private String testTreesFilename;
 	
 	public static void main(String[] args)  {
