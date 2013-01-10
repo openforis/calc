@@ -122,7 +122,7 @@ public class PlotDataCsvImporter extends AbstractFieldDataCsvImporter {
 			}
 			PlotSection p = new PlotSection();
 			p.setSamplePlotId(plotId);
-			p.setSection(plotSection);
+			p.setPlotSection(plotSection);
 			p.setSurveyDate(surveyDate);
 			p.setVisitType(visitType);
 			p.setStep(step);
