@@ -17,7 +17,7 @@ getTrees <- function(fileName) {
 }
 
 #setwd('/home/gino/workspace/minotz/')
-obsp = read.csv('data/plot.csv')
+obsp = read.csv('~/tzdata/src/plot.csv')
 # collect can flatten and rename columns, exporting to this format
 # column names specified in calc:column and calc:table
 # each plot row includes key (rowno or id) of each ancestor
@@ -52,7 +52,7 @@ sp[sp$cluster_code=='152_63'  & sp$plot_no==3,]$plot_no[1] = 8
 
 write.csv(sp, '~/tzdata/plots.csv')
 
-trees  = getTrees('data/trees.csv')
+trees  = getTrees('~/tzdata/src/trees.csv')
 
 tr = with(
       trees, 
