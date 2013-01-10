@@ -61,7 +61,7 @@ tr = with(
           visit_type    = cluster_measurement, 
           plot_no       = cluster_plot_no, 
           plot_section  = cluster_plot_subplot, 
-          survey_date   = paste(time_study_date_year, time_study_date_month, time_study_date_day, sep="-"),
+#          survey_date   = paste(time_study_date_year, time_study_date_month, time_study_date_day, sep="-"),
           specimen_code = paste(tree_no, stem_no, sep="/"),
           dbh           = dbh_value,
           health, origin,
