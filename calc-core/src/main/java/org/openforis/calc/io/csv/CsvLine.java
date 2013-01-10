@@ -1,6 +1,7 @@
 package org.openforis.calc.io.csv;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -28,86 +29,12 @@ public class CsvLine implements FlatRecord {
 	public String[] getLine() {
 		return line;
 	}
-	
-	public String getString(int idx) {
-		return toString(line[idx]);
-	}
-	
-	@Override
-	public String getString(String column) {
-		Integer idx = getColumnIndex(column);
-		if ( idx == null ) {
-			return null;
-		} else {
-			return toString(line[idx]);
-		}
-	}
 
 	private String toString(String txt) {
 		if ( txt == null || txt.trim().isEmpty() || "NA".equals(txt) ) { 		
 			return null;
 		} else {
 			return txt;
-		}
-	}
-	
-	@Override
-	public Integer getInteger(int idx) throws NumberFormatException {
-		return toInteger(line[idx]);
-	}
-
-	@Override
-	public Integer getInteger(String column) throws NumberFormatException {
-		Integer idx = getColumnIndex(column);
-		if ( idx == null ) {
-			return null;
-		} else {
-			return getInteger(idx);
-		}
-	}
-
-	@Override
-	public Double getDouble(int idx) throws NumberFormatException {
-		return toDouble(line[idx]);
-	}
-
-	@Override
-	public Double getDouble(String column) throws NumberFormatException {
-		Integer idx = getColumnIndex(column);
-		if ( idx == null ) {
-			return null;
-		} else {
-			return getDouble(idx);
-		}
-	}
-
-	@Override
-	public Date getDate(int idx) throws DateFormatException {
-		try {
-			return toDate(line[idx]);
-		} catch (ParseException e) {
-			throw DateFormatException.forInputString(line[idx]);
-		}
-	}
-
-	@Override
-	public Date getDate(String column) throws DateFormatException {
-		Integer idx = getColumnIndex(column);
-		return getDate(idx);
-	}
-
-	@Override
-	public Boolean getBoolean(int idx) throws NumberFormatException {
-		return toBoolean(line[idx]);
-	}
-
-	@Override
-	public Boolean getBoolean(String column) throws NumberFormatException {
-		Integer idx = getColumnIndex(column);
-		if ( idx == null ) {
-			return null;
-		} else {
-			return getBoolean(idx);
 		}
 	}
 	
@@ -148,8 +75,12 @@ public class CsvLine implements FlatRecord {
 		return columns.get(column);
 	}
 
-	private Date toDate(String val) throws ParseException {
-		return isNullValue(val) ? null : csvReader.getDateFormat().parse(val);
+	private Date toDate(String val) {
+		try {
+			return isNullValue(val) ? null : csvReader.getDateFormat().parse(val);
+		} catch (ParseException e) {
+			throw DateFormatException.forInputString(val);
+		}
 	}
 
 	public List<String> getColumnNames() {
@@ -174,16 +105,17 @@ public class CsvLine implements FlatRecord {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T getValue(int idx, Class<T> type) {
+		String value = line[idx];
 		if ( type.isAssignableFrom(Integer.class) ) {
-			return (T) getInteger(idx);
+			return (T) toInteger(value);
 		} else if ( type.isAssignableFrom(Double.class) ) {
-			return (T) getDouble(idx);
+			return (T) toDouble(value);
 		} else if ( type.isAssignableFrom(Boolean.class) ) {
-			return (T) getBoolean(idx);
+			return (T) toBoolean(value);
 		} else if ( type.isAssignableFrom(String.class) ) {
-			return (T) getString(idx);
+			return (T) toString(value);
 		} else if ( type.isAssignableFrom(Date.class) ) {
-			return (T) getDate(idx);
+			return (T) toDate(value);
 		} else {
 			throw new IllegalArgumentException("Unknown type "+type);
 		}
@@ -195,5 +127,20 @@ public class CsvLine implements FlatRecord {
 		return idx == null ? null : getValue(idx, type);
 	}
 
+	@Override
+	public boolean isMissing(int idx) {
+		return line[idx] == null || line[idx].equals("NA") || line[idx].trim().isEmpty(); 
+	}
+
+	@Override
+	public boolean isMissing(String column) {
+		Integer idx = getColumnIndex(column);
+		return idx == null || isMissing(idx);
+	}
+	
+	@Override
+	public String toString() {
+		return Arrays.toString(line);
+	}
 }
  

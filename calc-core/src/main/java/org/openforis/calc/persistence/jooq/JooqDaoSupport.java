@@ -51,13 +51,19 @@ public abstract class JooqDaoSupport<R extends TableRecord<R>, P>
 	private Field<?>[] uniqueKeyFields;
 	private Map<List<Object>, Integer> idCache;
 	// TODO sync cache on insert, update, delete - in jooq factory?
+	private Field<?>[] requiredFields;
+
 	
 	protected JooqDaoSupport(Table<R> table, Class<P> type, Field<?>... uniqueKeyFields) {
 		this.table = table;
 		this.type = type;
 		this.uniqueKeyFields = uniqueKeyFields;
 	}
-	
+
+	protected void require(Field<?>... requiredFields ) {
+		this.requiredFields = requiredFields;
+	}
+
 	@PostConstruct
 	private void preloadKeys() {
 		if ( uniqueKeyFields!= null && uniqueKeyFields.length > 0 ) {
@@ -107,7 +113,7 @@ public abstract class JooqDaoSupport<R extends TableRecord<R>, P>
 		setDataSource(dataSource);
 	}
 	
-	protected Integer getIdByKey(Object... keys) {
+	public Integer getIdByKey(Object... keys) {
 		if ( keys == null ) {
 			throw new NullPointerException("keys");
 		}
@@ -188,28 +194,6 @@ public abstract class JooqDaoSupport<R extends TableRecord<R>, P>
 			}
 		}
     }
-	
-//	
-//	@Override
-//	@Transactional
-//	public void insert(P object) {
-//		JooqDaoImpl jooqDao = getJooqDao();
-//		jooqDao.insert(object);
-//	}
-//
-//	@Override
-//	@Transactional
-//	public void insert(P... objects) {
-//		JooqDaoImpl jooqDao = getJooqDao();
-//		jooqDao.insert(objects);
-//	}
-//
-//	@Override
-//	@Transactional
-//	public void insert(Collection<P> objects) {
-//		JooqDaoImpl jooqDao = getJooqDao();
-//		jooqDao.insert(objects);
-//	}
 
 	@Override
 	@Transactional
@@ -434,4 +418,39 @@ public abstract class JooqDaoSupport<R extends TableRecord<R>, P>
 		}
 		return keys;
 	}
+	
+	// TODO refactor?
+
+	protected void copyFields(FlatRecord from, Record to, Field<?>... fields) {
+		for (Field<?> field : fields) {
+			copyField(from, to, field);
+		}
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private void copyField(FlatRecord from, Record to, Field field) {		
+		String name = field.getName();
+		Class<?> type = field.getType();
+		Object value = from.getValue(name, type);
+		to.setValue(field, value);
+	}
+	
+	protected R toJooqRecord(FlatRecord r) {
+		R record = getJooqFactory().newRecord(table);
+		List<Field<?>> fields = table.getFields();
+		copyFields(r, record, fields.toArray(new Field<?>[fields.size()]));
+		return record;
+	}
+	
+	public boolean isValid(FlatRecord r) {
+		if ( requiredFields != null ) {
+			for (Field<?> field : requiredFields) {
+				if ( r.isMissing(field.getName()) ) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
 }

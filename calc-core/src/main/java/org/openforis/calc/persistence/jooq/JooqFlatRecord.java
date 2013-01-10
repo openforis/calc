@@ -1,6 +1,5 @@
 package org.openforis.calc.persistence.jooq;
 
-import java.util.Date;
 import java.util.List;
 
 import org.jooq.Record;
@@ -19,27 +18,6 @@ class JooqFlatRecord implements FlatRecord {
 		this.jooqRecord = record;
 		this.dataStream = dataStream;
 	}
-
-	@Override
-	public Integer getInteger(String name) {
-		return jooqRecord.getValue(name, Integer.class);
-	}
-
-	@Override
-	public Double getDouble(String name) {
-		return jooqRecord.getValue(name, Double.class);
-	}
-
-	@Override
-	public Boolean getBoolean(String name) {
-		return jooqRecord.getValue(name, Boolean.class);
-	}
-
-	@Override
-	public String getString(String name) {
-		return jooqRecord.getValue(name, String.class);
-	}
-
 	@Override
 	public String[] toStringArray() {
 		String[] s = new String[jooqRecord.size()];
@@ -47,31 +25,6 @@ class JooqFlatRecord implements FlatRecord {
 			s[i] = jooqRecord.getValue(i, String.class);
 		}
 		return s;
-	}
-
-	@Override
-	public Date getDate(String name) {
-		return jooqRecord.getValue(name, Date.class);
-	}
-
-	@Override
-	public Integer getInteger(int idx) {
-		return jooqRecord.getValue(idx, Integer.class);
-	}
-
-	@Override
-	public Double getDouble(int idx) {
-		return jooqRecord.getValue(idx, Double.class);
-	}
-
-	@Override
-	public Boolean getBoolean(int idx) {
-		return jooqRecord.getValue(idx, Boolean.class);
-	}
-
-	@Override
-	public Date getDate(int idx) {
-		return jooqRecord.getValue(idx, Date.class);
 	}
 
 	@Override 
@@ -92,6 +45,14 @@ class JooqFlatRecord implements FlatRecord {
 	@Override
 	public <T> T getValue(String name, Class<T> type) {
 		return jooqRecord.getValue(name, type);
+	}
+	@Override
+	public boolean isMissing(int idx) {
+		return jooqRecord.getValue(idx) == null;
+	}
+	@Override
+	public boolean isMissing(String name) {
+		return jooqRecord.getValue(name) == null;
 	}
 	
 }

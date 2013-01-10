@@ -60,7 +60,8 @@ tr = with(
           cluster_code  = cluster_id, 
           visit_type    = cluster_measurement, 
           plot_no       = cluster_plot_no, 
-          plot_section  = cluster_plot_subplot, 
+          plot_section  = cluster_plot_subplot,
+#          specimen_no   = tree_no * 100 + ifelse(is.na(stem_no), 1, stem_no),
 #          survey_date   = paste(time_study_date_year, time_study_date_month, time_study_date_day, sep="-"),
           specimen_code = paste(tree_no, stem_no, sep="/"),
           dbh           = dbh_value,
@@ -72,4 +73,5 @@ tr = with(
         )
       )
 
+tr$specimen_no = 1:nrow(tr)
 write.csv(tr, '~/tzdata/trees.csv')

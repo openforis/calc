@@ -2,6 +2,7 @@ package org.openforis.calc.service;
 
 import java.io.IOException;
 
+import org.jooq.exception.DataAccessException;
 import org.openforis.calc.io.csv.CsvReader;
 import org.openforis.calc.io.flat.FlatDataStream;
 import org.openforis.calc.io.flat.FlatRecord;
@@ -14,13 +15,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 /**
  * 
  * @author G. Miceli
  *
  */
 @Component
-public class ObservationService {
+public class ObservationService extends CalcService {
 
 	@Autowired 
 	private MetadataService metadataService;
@@ -34,7 +36,7 @@ public class ObservationService {
 	private SpecimenCategoricalValueDao specimenCategoryDao;
 
 	@Value("${testDataPath}")
-	private String testTreesFilename;
+	private String testDataPath;
 	
 	public static void main(String[] args)  {
 		try {
@@ -47,7 +49,7 @@ public class ObservationService {
 	}
 	
 	private void test() throws IOException {
-		CsvReader in = new CsvReader(testTreesFilename+"/trees.csv");
+		CsvReader in = new CsvReader(testDataPath+"/trees.csv");
 		in.readHeaders();
 		importSpecimenData("naforma1", "tree", in);
 	}
@@ -62,10 +64,25 @@ public class ObservationService {
 		}
 		ObservationUnit plotUnit = metadataService.getObservationUnit(surveyName, "plot");		// TODO <<< implement getParent
 		int plotUnitId = plotUnit.getId();
+		int specimenUnitId = specimenUnit.getId();
 		FlatRecord r;
 		while ( (r = in.nextRecord()) != null ) {
-			Integer plotSectionId = plotSectionViewDao.getId(plotUnitId, r);			
-			System.out.println(plotSectionId);
+			Object[] key = plotSectionViewDao.extractKey(r, plotUnitId);
+			Integer plotSectionId = plotSectionViewDao.getIdByKey(key);
+			if ( plotSectionId == null ) {
+				log().warn("Skipping specimen with unknown plot "+key);
+				continue;
+			} 
+			if ( !specimenDao.isValid(r) ) {
+				log().warn("Skipping invalid record: "+r);
+				continue;
+			}
+			try {
+				Integer specimenId = specimenDao.insert(plotSectionId, specimenUnitId, r);
+//				System.out.println(specimenId);
+			} catch (DataAccessException e) {
+				log().warn("Skipping record "+r+": "+e.getMessage());
+			}
 		}
 	}
 }

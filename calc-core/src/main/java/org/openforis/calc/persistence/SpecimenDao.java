@@ -2,6 +2,7 @@ package org.openforis.calc.persistence;
 
 import static org.openforis.calc.persistence.jooq.Tables.*;
 
+import org.openforis.calc.io.flat.FlatRecord;
 import org.openforis.calc.model.Specimen;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
 import org.openforis.calc.persistence.jooq.tables.records.SpecimenRecord;
@@ -17,36 +18,15 @@ public class SpecimenDao extends JooqDaoSupport<SpecimenRecord, Specimen> {
 
 	public SpecimenDao() {
 		super(SPECIMEN, Specimen.class, SPECIMEN.PLOT_SECTION_ID, SPECIMEN.SPECIMEN_NO);
+		require(SPECIMEN.SPECIMEN_NO);
 	}
-	
-//	public void importSpecimenData(FlatDataStream stream) throws IOException {
-//		Factory create = getJooqFactory();
-//		FlatRecord r = null;
-//		while ( (r=stream.nextRecord()) != null ) {
-//			Object[] keys = extractKeys(r);
-//			Integer id = getIdByKey(keys);
-//			SpecimenRecord rec = create.newRecord(SPECIMEN);
-//			copyFields(r, rec, SPECIMEN.SPECIMEN_NO, SPECIMEN.SPECIMEN_SURVEY_DATE);
-//		}
-//	}
 
-//	protected Object[] extractKeys(FlatRecord r) {
-//		
-//		return null;
-//	}
-
-//	protected void copyFields(FlatRecord r, SpecimenRecord rec, Field<?>... fields) {
-//		for (Field<?> field : fields) {
-//			String name = field.getName();
-//			if ( field.getType().isAssignableFrom(Integer.class) ) {
-//				Integer value = r.getInteger(name);
-//				copyField(rec, field, value);
-//			}
-//		}
-//	}
-//
-//	@SuppressWarnings("unchecked")
-//	private void copyField(SpecimenRecord rec, Field field, Object value) {
-//		rec.setValue(field, value);
-//	}
+	public Integer insert(int plotSectionId, int obsUnitId, FlatRecord r) {
+		SpecimenRecord record = toJooqRecord(r);
+		record.setPlotSectionId(plotSectionId);
+		record.setObsUnitId(obsUnitId);
+		record.setValue(pk(), null);
+		record.store();
+		return record.getSpecimenId();
+	}
 }
