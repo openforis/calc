@@ -7,14 +7,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.openforis.calc.io.flat.FlatDataStream;
-import org.openforis.calc.io.flat.Record;
+import org.openforis.calc.io.flat.FlatRecord;
 
 /**
  * 
  * @author G. Miceli
  *
  */
-public class CsvLine implements Record {
+public class CsvLine implements FlatRecord {
 	private Map<String, Integer> columns;
 	private String[] line;
 	private CsvReader csvReader;
@@ -169,6 +169,30 @@ public class CsvLine implements Record {
 	@Override
 	public List<String> getFieldNames() {
 		return csvReader.getColumnNames();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> T getValue(int idx, Class<T> type) {
+		if ( type.isAssignableFrom(Integer.class) ) {
+			return (T) getInteger(idx);
+		} else if ( type.isAssignableFrom(Double.class) ) {
+			return (T) getDouble(idx);
+		} else if ( type.isAssignableFrom(Boolean.class) ) {
+			return (T) getBoolean(idx);
+		} else if ( type.isAssignableFrom(String.class) ) {
+			return (T) getString(idx);
+		} else if ( type.isAssignableFrom(Date.class) ) {
+			return (T) getDate(idx);
+		} else {
+			throw new IllegalArgumentException("Unknown type "+type);
+		}
+	}
+
+	@Override
+	public <T> T getValue(String column, Class<T> type) {
+		Integer idx = getColumnIndex(column);
+		return getValue(idx, type);
 	}
 
 }

@@ -1,8 +1,9 @@
 package org.openforis.calc.persistence;
 
-import static org.openforis.calc.persistence.jooq.Tables.PLOT_SECTION_VIEW;
+import static org.openforis.calc.persistence.jooq.Tables.*;
 
 import org.jooq.Field;
+import org.openforis.calc.io.flat.FlatRecord;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
 import org.openforis.calc.persistence.jooq.tables.PlotSectionView;
 import org.openforis.calc.persistence.jooq.tables.records.PlotSectionViewRecord;
@@ -30,5 +31,11 @@ public class PlotSectionViewDao extends JooqDaoSupport<PlotSectionViewRecord, Pl
 	@Override
 	protected Field<?> pk() {
 		return V.PLOT_SECTION_ID;
+	}
+
+	public Integer getId(int obsUnitId, FlatRecord r) {
+		Object[] keys = extractIds(r, obsUnitId, V.CLUSTER_CODE, V.SAMPLE_PLOT_NO, V.PLOT_SECTION, V.VISIT_TYPE);
+
+		return null;
 	}
 }

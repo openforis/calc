@@ -6,7 +6,7 @@ import java.io.Reader;
 import java.util.List;
 
 import org.openforis.calc.io.flat.FlatDataStream;
-import org.openforis.calc.io.flat.Record;
+import org.openforis.calc.io.flat.FlatRecord;
 
 
 import au.com.bytecode.opencsv.CSVReader;
@@ -71,7 +71,7 @@ public class CsvReader extends CsvProcessor implements FlatDataStream {
 	}
 
 	@Override
-	public Record nextRecord() throws IOException {
+	public FlatRecord nextRecord() throws IOException {
 		return readNextLine();
 	}
 }

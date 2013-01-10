@@ -31,6 +31,7 @@ import org.jooq.UpdatableTable;
 import org.jooq.impl.DAOImpl;
 import org.jooq.impl.Factory;
 import org.openforis.calc.io.flat.FlatDataStream;
+import org.openforis.calc.io.flat.FlatRecord;
 import org.openforis.calc.model.Identifiable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -410,5 +411,27 @@ public abstract class JooqDaoSupport<R extends TableRecord<R>, P>
     
 	protected FlatDataStream stream(R record) {
 		return new JooqResultDataStream(record);
+	}
+	
+	protected Field<?>[] getUniqueKeyFields() {
+		return uniqueKeyFields;
+	}
+	
+	protected Object[] extractIds(FlatRecord r, Object... fieldsOrValues) {
+		Object[] keys = new Object[fieldsOrValues.length];
+		if ( uniqueKeyFields.length != fieldsOrValues.length ) {
+			throw new IllegalArgumentException("Wrong number of keys");
+		}
+		for (int i = 0; i < fieldsOrValues.length; i++) {
+			Object fov = fieldsOrValues[i];
+			if ( fov instanceof Field ) {
+				Field<?> field = (Field<?>) fov;
+				String name = field.getName();
+				keys[i] = r.getValue(name, field.getType());
+			} else {
+				keys[i] = fov;
+			}
+		}
+		return keys;
 	}
 }

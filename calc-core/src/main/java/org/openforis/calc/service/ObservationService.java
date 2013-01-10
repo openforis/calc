@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import org.openforis.calc.io.csv.CsvReader;
 import org.openforis.calc.io.flat.FlatDataStream;
-import org.openforis.calc.io.flat.Record;
+import org.openforis.calc.io.flat.FlatRecord;
 import org.openforis.calc.model.ObservationUnit;
 import org.openforis.calc.persistence.PlotSectionViewDao;
 import org.openforis.calc.persistence.SpecimenCategoricalValueDao;
@@ -13,7 +13,6 @@ import org.openforis.calc.persistence.SpecimenNumericValueDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
-
 /**
  * 
  * @author G. Miceli
@@ -54,14 +53,11 @@ public class ObservationService {
 			throw new IllegalArgumentException("Invalid observation unit type: "+specimenUnit.getObsUnitType()); 
 		}
 		ObservationUnit plotUnit = metadataService.getObservationUnit(surveyName, "plot");		// TODO <<< implement getParent
-		Record r;
+		int plotUnitId = plotUnit.getId();
+		FlatRecord r;
 		while ( (r = in.nextRecord()) != null ) {
-//			PlotSectionView V = Tables.PLOT_SECTION_VIEW;
-			String clusterCode = r.getString("cluster_code");
-			Integer plotNo = r.getInteger("plot_no");
-			String section = r.getString("plot_section");
-			String visitType = r.getString("visit_type")+" ";
-			Integer plotSectionId = plotSectionViewDao.getId(plotUnit.getId(), clusterCode, plotNo, section, visitType);			
+//			Integer plotSectionId = plotSectionViewDao.getId(plotUnitId, clusterCode, plotNo, section, visitType);			
+			Integer plotSectionId = plotSectionViewDao.getId(plotUnitId, r);			
 			System.out.println(plotSectionId);
 		}
 	}

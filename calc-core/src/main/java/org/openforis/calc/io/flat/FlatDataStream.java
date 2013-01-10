@@ -11,6 +11,6 @@ public interface FlatDataStream {
 	
 	List<String> getFieldNames();
 	
-	Record nextRecord() throws IOException;
+	FlatRecord nextRecord() throws IOException;
 	
 }

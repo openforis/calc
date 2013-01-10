@@ -22,7 +22,7 @@
 		<zk.spring.version>3.1</zk.spring.version>
 		<kettle.version>4.3.0-stable</kettle.version>
 		<postgres-driver.version>9.1-901-1.jdbc4</postgres-driver.version>
-		<jooq.version>2.5.0</jooq.version>
+		<jooq.version>2.6.0</jooq.version>
 		<collect.version>3.0-Alpha5-SNAPSHOT</collect.version>
 	</properties>
 

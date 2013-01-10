@@ -9,7 +9,7 @@ import java.util.List;
 import org.jooq.Field;
 import org.jooq.Result;
 import org.openforis.calc.io.flat.FlatDataStream;
-import org.openforis.calc.io.flat.Record;
+import org.openforis.calc.io.flat.FlatRecord;
 
 /**
  * @author G. Miceli
@@ -17,16 +17,16 @@ import org.openforis.calc.io.flat.Record;
 public class JooqResultDataStream implements FlatDataStream {
 
 	private List<String> fieldNames;
-	private Iterator<? extends org.jooq.Record> jooqResultIterator;
+	private Iterator<? extends org.jooq.Record> jooqRecordIterator;
 	
 	public JooqResultDataStream(Result<? extends org.jooq.Record> jooqResult) {
 		setFieldNames(jooqResult.getFields());
-		this.jooqResultIterator = jooqResult.iterator(); 
+		this.jooqRecordIterator = jooqResult.iterator(); 
 	}
 	
 	public JooqResultDataStream(org.jooq.Record jooqRecord) {
 		setFieldNames(jooqRecord.getFields());
-		this.jooqResultIterator = Arrays.asList(jooqRecord).iterator(); 
+		this.jooqRecordIterator = Arrays.asList(jooqRecord).iterator(); 
 	}
 
 	@Override
@@ -42,10 +42,10 @@ public class JooqResultDataStream implements FlatDataStream {
 		this.fieldNames = Collections.unmodifiableList(colnames);
 	}
 	
-	public Record nextRecord() {
-		if ( jooqResultIterator.hasNext() ) {
-			org.jooq.Record r = jooqResultIterator.next();
-			return new JooqRecord(r, this);
+	public FlatRecord nextRecord() {
+		if ( jooqRecordIterator.hasNext() ) {
+			org.jooq.Record r = jooqRecordIterator.next();
+			return new JooqFlatRecord(r, this);
 		} else { 
 			return null;
 		}

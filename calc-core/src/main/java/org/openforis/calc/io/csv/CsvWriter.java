@@ -8,7 +8,7 @@ import java.io.Writer;
 import java.util.List;
 
 import org.openforis.calc.io.flat.FlatDataStream;
-import org.openforis.calc.io.flat.Record;
+import org.openforis.calc.io.flat.FlatRecord;
 
 import au.com.bytecode.opencsv.CSVWriter;
 
@@ -32,7 +32,7 @@ public class CsvWriter extends CsvProcessor {
 	}
 
 	public void writeAll(FlatDataStream in) throws IOException {
-		Record r = in.nextRecord();
+		FlatRecord r = in.nextRecord();
 		if ( r == null ) {
 			return;
 		}
@@ -50,7 +50,7 @@ public class CsvWriter extends CsvProcessor {
 		csvWriter.close();
 	}
 	
-	public void writeNext(Record r) {
+	public void writeNext(FlatRecord r) {
 		String[] line = r.toStringArray();
 		csvWriter.writeNext(line);
 		linesWritten++;

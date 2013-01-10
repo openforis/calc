@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * @author G. Miceli
  */
-public interface Record {
+public interface FlatRecord {
 
 	Integer getInteger(String name);
 
@@ -31,5 +31,9 @@ public interface Record {
 	FlatDataStream getFlatDataStream();
 
 	List<String> getFieldNames();
+
+	<T> T getValue(int idx, Class<T> type);
+	
+	<T> T getValue(String name, Class<T> type);
 
 }
