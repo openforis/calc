@@ -20,7 +20,7 @@ public class PlotSectionViewDao extends JooqDaoSupport<PlotSectionViewRecord, Pl
 	private static final PlotSectionView V = PLOT_SECTION_VIEW;
 
 	public PlotSectionViewDao() {
-		super(V, PlotSectionView.class, V.OBS_UNIT_ID, V.CLUSTER_CODE, V.PLOT_NO, V.SECTION, V.VISIT_TYPE);
+		super(V, PlotSectionView.class, V.OBS_UNIT_ID, V.CLUSTER_CODE, V.PLOT_NO, V.PLOT_SECTION, V.VISIT_TYPE);
 	}
 
 	public Integer getId(int obsUnitId, String clusterCode, int plotNo, String plotSection, String visitType) {
@@ -33,7 +33,7 @@ public class PlotSectionViewDao extends JooqDaoSupport<PlotSectionViewRecord, Pl
 	}
 
 	public Integer getId(int obsUnitId, FlatRecord r) {
-		Object[] keys = extractKey(r, obsUnitId, V.CLUSTER_CODE, V.PLOT_NO, V.SECTION, V.VISIT_TYPE);
+		Object[] keys = extractIds(r, obsUnitId, V.CLUSTER_CODE, V.PLOT_NO, V.PLOT_SECTION, V.VISIT_TYPE);
 
 		return getIdByKey(keys);
 	}
