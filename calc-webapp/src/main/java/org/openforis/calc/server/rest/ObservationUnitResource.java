@@ -50,6 +50,12 @@ public class ObservationUnitResource extends SubResource<String> {
 		assertType("plot");
 		return getResource(PermanentPlotListResource.class);
 	}
+	
+	@Path("specimens")
+	public SpecimenListResource getSpecimenListResource(){
+		assertType("specimen");
+		return getResource(SpecimenListResource.class);
+	}
 
 	private void assertType(String type) {
 		ObservationUnit unit = getObservationUnit();
