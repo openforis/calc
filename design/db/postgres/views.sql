@@ -1,3 +1,5 @@
+//drop view if exists calc.specimen_numeric_value_view;
+drop view if exists calc.specimen_categorical_value_view;
 drop view if exists calc.specimen_view;
 drop view if exists calc.plot_numeric_value_view;
 drop view if exists calc.plot_section_view;
@@ -180,3 +182,43 @@ inner join
     calc.plot_section_view p on s.plot_section_id = p.plot_section_id
 inner join
     calc.observation_unit u on s.obs_unit_id = u.obs_unit_id;
+
+
+create or replace view calc.specimen_categorical_value_view
+as
+select 
+    cv.value_id,
+    cv.specimen_id,
+    cv.category_id,
+    cv.computed,
+    c.variable_id,
+    c.category_code,
+    c.category_label,
+    c.category_order,
+    c.banding_interval,
+    c.banding_source_variable_id,
+    c.category_description
+from
+    calc.specimen_categorical_value cv
+inner join
+    calc.category c on cv.category_id = c.category_id ;
+
+
+//create or replace view calc.specimen_numeric_value_view
+//as
+//select 
+//    v.value_id,
+//    v.specimen_id,
+//    v.variable_id,
+//    v.value,
+//    v.computed,
+//    va.obs_unit_id,
+//    va.variable_name,
+//    va.variable_type,
+//    va.variable_order,
+//    va.variable_label,
+//    va.variable_description
+//from
+//    calc.specimen_numeric_value v
+//inner join
+//    calc.variable va on va.variable_id = v.variable_id;

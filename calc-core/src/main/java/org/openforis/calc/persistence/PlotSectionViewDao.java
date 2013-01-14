@@ -1,8 +1,9 @@
 package org.openforis.calc.persistence;
 
-import static org.openforis.calc.persistence.jooq.Tables.*;
+import static org.openforis.calc.persistence.jooq.Tables.PLOT_SECTION_VIEW;
 
 import org.jooq.Field;
+import org.openforis.calc.io.flat.FlatDataStream;
 import org.openforis.calc.io.flat.FlatRecord;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
 import org.openforis.calc.persistence.jooq.tables.PlotSectionView;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author G. Miceli
+ * @author Mino Togna
  */
 @Component
 @Transactional
@@ -34,5 +36,9 @@ public class PlotSectionViewDao extends JooqDaoSupport<PlotSectionViewRecord, Pl
 
 	public Object[] extractKey(FlatRecord r, int obsUnitId) {
 		return extractKey(r, obsUnitId, V.CLUSTER_CODE, V.PLOT_NO, V.PLOT_SECTION, V.VISIT_TYPE);
+	}
+
+	public FlatDataStream streamAll(String[] fields, int observationUnitId) {
+		return stream(fields, V.PLOT_OBS_UNIT_ID, observationUnitId);
 	}
 }
