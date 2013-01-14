@@ -3,6 +3,7 @@ package org.openforis.calc.server.rest;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
  */
 @Path("/")
 @Component 
+@Lazy
 @Scope("request")
 public class RootResource extends Resource {
 
