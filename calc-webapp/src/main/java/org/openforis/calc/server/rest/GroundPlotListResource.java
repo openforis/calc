@@ -25,6 +25,6 @@ public class GroundPlotListResource extends SubResource<Void> {
 	
 	@GET
 	public FlatDataStream getList() {
-		return samplePlotDao.streamGroundPlots(observationUnitResource.getObservationUnitId());
+		return samplePlotDao.streamGroundPlots(getFields(), observationUnitResource.getObservationUnitId());
 	}
 }

@@ -25,6 +25,6 @@ public class PermanentPlotListResource extends SubResource<Void> {
 	
 	@GET
 	public FlatDataStream getList() {
-		return samplePlotDao.streamPermanentPlots(observationUnitResource.getObservationUnitId());
+		return samplePlotDao.streamPermanentPlots(getFields(), observationUnitResource.getObservationUnitId());
 	}
 }

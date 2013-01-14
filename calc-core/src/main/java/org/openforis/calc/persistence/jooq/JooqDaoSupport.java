@@ -23,6 +23,7 @@ import org.jooq.DAO;
 import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Result;
+import org.jooq.SelectSelectStep;
 import org.jooq.Table;
 import org.jooq.TableRecord;
 import org.jooq.UniqueKey;
@@ -455,4 +456,9 @@ public abstract class JooqDaoSupport<R extends TableRecord<R>, P>
 		return true;
 	}
 
+	protected SelectSelectStep selectByName(String[] fieldNames) {
+		Factory create = getJooqFactory();
+		Field<?>[] fields = getFields(fieldNames);
+		return create.select(fields);		
+	}
 }
