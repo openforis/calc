@@ -9,7 +9,7 @@ public class Aoi extends org.openforis.calc.persistence.jooq.tables.pojos.Aoi im
 
 	@Override
 	public Integer getId() {
-		return super.getAoiHierarchyId();
+		return super.getAoiId();
 	}
 
 	@Override
