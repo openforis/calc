@@ -322,26 +322,21 @@ public abstract class JooqDaoSupport<R extends TableRecord<R>, P>
 //        			.fetchOne());
 //	}
 
-	protected Field<?>[] getFields(String[] fieldNames) {
+	protected Field<?>[] getFields(String... fieldNames) {
 		if ( fieldNames == null ) {
 			return new Field<?>[0];
 		} else {
 			Field<?>[] fields = new Field<?>[fieldNames.length];
 			for (int i = 0; i < fieldNames.length; i++) {
 				String name = fieldNames[i];
-				Field<?> field = getField(name);
+				Field<?> field = table.getField(name);
+				if ( field == null ) {
+					throw InvalidFieldNameException.forFieldName(name);
+				}
 				fields[i] = field;
 			}
 			return fields;
 		}
-	}
-
-	protected Field<?> getField(String name) {
-		Field<?> field = table.getField(name);
-		if ( field == null ) {
-			throw InvalidFieldNameException.forFieldName(name);
-		}
-		return field;
 	}
 
 	protected static Timestamp toTimestamp(Date date) {

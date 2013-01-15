@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 /**
  * 
  * @author G. Miceli
+ * @author Mino Togna
  * 
  */
 @Component
@@ -33,25 +34,27 @@ public class ObservationUnitResource extends SubResource<String> {
 		return observationUnitDao.streamByName(getFields(), surveyId, getKey());
 	}
 
-	@Path("sample-plots")
+	@Path("design")
 	public SamplePlotListResource getSamplePlotListResource() {
 		assertType("plot");
-		return getResource(SamplePlotListResource.class);
+		return getResource( SamplePlotListResource.class );
 	}
 
+	@Deprecated
 	@Path("ground-plots")
-	public GroundPlotListResource getGroundPlotListResource() {
+	private GroundPlotListResource getGroundPlotListResource() {
 		assertType("plot");
 		return getResource(GroundPlotListResource.class);
 	}
 
+	@Deprecated
 	@Path("permanent-plots")
-	public PermanentPlotListResource getPermanentPlotListResource() {
+	protected PermanentPlotListResource getPermanentPlotListResource() {
 		assertType("plot");
 		return getResource(PermanentPlotListResource.class);
 	}
 
-	@Path("plot-sections")
+	@Path("observations")
 	public PlotSectionsListResource getPlotSectionsListResource() {
 		assertType("plot");
 		return getResource(PlotSectionsListResource.class);

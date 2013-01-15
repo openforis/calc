@@ -37,18 +37,22 @@ sp = with( obsp,
               center_distance    = centre_dist,
               accessible    = (accessibility == 0),
               step          = 3,
-              land_use, vegetation_type, ownership_type, accessibility,
+              land_use, 
+              vegetation_type, 
+              ownership_type, 
+              accessibility,
               canopy_cover  = canopy_cover_value, 
               canopy_coverage_centre, 
               canopy_coverage_north,
               canopy_coverage_east, 
               canopy_coverage_south, 
               canopy_coverage_west
-              ) 
+              )
            )
 
 # Fix known problems
 sp[sp$cluster_code=='152_63'  & sp$plot_no==3,]$plot_no[1] = 8
+sp[is.na(sp$percent_share),]$percent_share <- 100
 
 write.csv(sp, '~/tzdata/plots.csv')
 

@@ -1,6 +1,7 @@
 package org.openforis.calc.persistence;
 
-import static org.openforis.calc.persistence.jooq.Tables.*;
+import static org.openforis.calc.persistence.jooq.Tables.OBSERVATION_UNIT;
+import static org.openforis.calc.persistence.jooq.Tables.SAMPLE_PLOT;
 
 import java.util.List;
 
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author G. Miceli
+ * @author Mino Togna
  */
 @Component 
 @Transactional
@@ -70,4 +72,5 @@ public class SamplePlotDao extends JooqDaoSupport<SamplePlotRecord, SamplePlot> 
 		
 		return stream(result);
 	}
+	
 }

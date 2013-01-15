@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Scope("request")
+@Deprecated
 public class PermanentPlotListResource extends SubResource<Void> {
 
 	@Autowired

@@ -48,6 +48,7 @@ public class SpecimenViewDao extends JooqDaoSupport<SpecimenViewRecord, Specimen
 		
 		if ( fields != null ) {
 			Factory create = getJooqFactory();
+			
 			SelectQuery select = create.selectQuery();
 			//select.addSelect(V.SPECIMEN_ID);
 			select.addFrom(V);
@@ -77,7 +78,7 @@ public class SpecimenViewDao extends JooqDaoSupport<SpecimenViewRecord, Specimen
 								);
 					}
 				} else {
-					select.addSelect( getField(fieldName) );
+					select.addSelect( getFields(fieldName) );
 				}
 				select.addConditions( V.SPECIMEN_OBS_UNIT_ID.eq(observationUnitId) );
 			}

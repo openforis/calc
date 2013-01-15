@@ -1,4 +1,5 @@
 //drop view if exists calc.specimen_numeric_value_view;
+drop view if exists calc.sample_plot_cnt_view;
 drop view if exists calc.specimen_categorical_value_view;
 drop view if exists calc.specimen_view;
 drop view if exists calc.plot_numeric_value_view;
@@ -51,7 +52,7 @@ AS
          p.plot_no,
          p.sample_plot_location,
          p.sample_plot_shape,
-         p.sample_plot_phase,
+         p.sampling_phase,
          p.ground_plot,
          p.permanent_plot
   FROM sample_plot p
@@ -76,7 +77,7 @@ AS
          sample_plot_view.plot_no,
          sample_plot_view.sample_plot_location,
          sample_plot_view.sample_plot_shape,
-         sample_plot_view.sample_plot_phase,
+         sample_plot_view.sampling_phase,
          sample_plot_view.ground_plot,
          sample_plot_view.permanent_plot
   FROM sample_plot_view 
@@ -97,7 +98,7 @@ AS
          p.plot_no,
          p.sample_plot_location,
          p.sample_plot_shape,
-         p.sample_plot_phase,
+         p.sampling_phase,
          p.ground_plot,
          p.permanent_plot,
          ps.plot_section_id,
@@ -131,7 +132,7 @@ AS
          ps.plot_no,
          ps.sample_plot_location,
          ps.sample_plot_shape,
-         ps.sample_plot_phase,
+         ps.sampling_phase,
          ps.ground_plot,
          ps.permanent_plot,
          ps.plot_section_id,
@@ -222,3 +223,28 @@ inner join
 //    calc.specimen_numeric_value v
 //inner join
 //    calc.variable va on va.variable_id = v.variable_id;
+
+create or replace view calc.sample_plot_cnt_view
+as
+select
+    s.stratum_no,
+    s.stratum_id,
+    1 as aoi_id,    
+    p.plot_obs_unit_id,
+    count(p.sample_plot_id) as plot1_cnt
+    -- count(p.sample_plot_id) / (select count(sample_plot_id) from calc.sample_plot)::numeric as prop,
+    -- count(p.sample_plot_id) / (select count(sample_plot_id) from calc.sample_plot)::numeric * (select aoi_area from calc.aoi where aoi_id = 1)  as area    
+from
+    calc.sample_plot_view p
+inner join
+    calc.stratum s on p.stratum_id = s.stratum_id
+//where 
+//    p.survey_id = 2
+//    and 
+//    p.plot_obs_unit_id = 2
+group by
+    s.stratum_id,
+    s.stratum_no,
+    p.plot_obs_unit_id
+order by
+    s.stratum_no;
