@@ -55,46 +55,47 @@ public class PlotSectionViewDao extends JooqDaoSupport<PlotSectionViewRecord, Pl
 	
 	public FlatDataStream getCategoryDistributionStream(Collection<VariableMetadata> variables, int obsUnitId, boolean useShares){
 		Factory create = getJooqFactory();
-		SelectQuery select = create.selectQuery();
+		SelectQuery query = create.selectQuery();
 		
-		// This is a where select.addSelect(V.PLOT_OBS_UNIT_ID);
-		select.addSelect( V.STRATUM_ID );
-		select.addSelect( A.AOI_ID );
+		query.addSelect( V.STRATUM_ID );
+		query.addSelect( A.AOI_ID );
 		
-		select.addFrom(V);
+		query.addFrom(V);
 		
 		//TODO change in future
-		select.addJoin( A, A.AOI_ID.eq(1) );
+		query.addJoin( A, A.AOI_ID.eq(1) );
 		
-		select.addConditions(V.PLOT_OBS_UNIT_ID.eq(obsUnitId));
+		query.addConditions(V.PLOT_OBS_UNIT_ID.eq(obsUnitId));
 		
-		select.addGroupBy(V.STRATUM_ID);
-		select.addGroupBy(A.AOI_ID);
+		query.addGroupBy(V.STRATUM_ID);
+		query.addGroupBy(A.AOI_ID);
+		
 		int varIndex = 0;
 		for ( VariableMetadata variable : variables ) {
 			String varName = variable.getVariableName();
 			if(variable.isCategorical()){
 				PlotCategoricalValueView plotCatValueView = PLOT_CATEGORICAL_VALUE_VIEW.as("c_"+ (varIndex++) );
 				
-				select.addSelect(plotCatValueView.CATEGORY_CODE.as(varName));
+				query.addSelect(plotCatValueView.CATEGORY_CODE.as(varName));
 				
-				select.addJoin(
+				query.addJoin(
 						plotCatValueView, 
 						JoinType.LEFT_OUTER_JOIN, 
 						V.PLOT_SECTION_ID.eq(plotCatValueView.PLOT_SECTION_ID).and(plotCatValueView.VARIABLE_NAME.eq(varName))
 						);
 				
-				select.addGroupBy(plotCatValueView.CATEGORY_CODE);
+				query.addGroupBy(plotCatValueView.CATEGORY_CODE);
 			}
 		}
 		
 		if(useShares) {
-			select.addSelect( V.PLOT_SHARE.div(100).sum().as("plot_distribution") );
+			query.addSelect( V.PLOT_SHARE.div(100).sum().as("plot_distribution") );
 		} else {
-			select.addSelect(V.PLOT_SECTION_ID.count().as("plot_distribution") );
-			select.addConditions( V.PRIMARY_SECTION.eq(true) );
+			query.addSelect(V.PLOT_SECTION_ID.count().as("plot_distribution") );
+			query.addConditions( V.PRIMARY_SECTION.eq(true) );
 		}
-		return stream( select.fetch() );
+		
+		return stream( query.fetch() );
 	}
 	
 }

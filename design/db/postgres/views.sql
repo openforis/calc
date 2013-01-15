@@ -232,7 +232,7 @@ as
 select
     s.stratum_no,
     s.stratum_id,
-    1 as aoi_id,    
+    a.aoi_id,    
     p.plot_obs_unit_id,
     count(p.sample_plot_id) as plot1_cnt
     -- count(p.sample_plot_id) / (select count(sample_plot_id) from calc.sample_plot)::numeric as prop,
@@ -241,6 +241,8 @@ from
     calc.sample_plot_view p
 inner join
     calc.stratum s on p.stratum_id = s.stratum_id
+inner join
+    calc.aoi a on a.aoi_id = 1
 //where 
 //    p.survey_id = 2
 //    and 
@@ -248,6 +250,7 @@ inner join
 group by
     s.stratum_id,
     s.stratum_no,
+    a.aoi_id,
     p.plot_obs_unit_id
 order by
     s.stratum_no;
@@ -257,7 +260,7 @@ as
 select
     s.stratum_no,
     s.stratum_id,
-    1 as aoi_id,    
+    a.aoi_id,    
     p.plot_obs_unit_id,
     count(p.sample_plot_id) as plot1_cnt
     -- count(p.sample_plot_id) / (select count(sample_plot_id) from calc.sample_plot)::numeric as prop,
@@ -268,6 +271,8 @@ inner join
     calc.stratum s on p.stratum_id = s.stratum_id
 inner join
     calc.plot_section ps on p.sample_plot_id = ps.sample_plot_id
+inner join
+    calc.aoi a on a.aoi_id = 1
 where
     ps.visit_type = 'P'
 //where 
@@ -277,6 +282,7 @@ where
 group by
     s.stratum_id,
     s.stratum_no,
+    a.aoi_id,
     p.plot_obs_unit_id
 order by
     s.stratum_no;
