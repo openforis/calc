@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
  * Root resource containing first-level sub-resource locator methods.
 
  * @author G. Miceli
+ * @author Mino Togna
  *
  */
 @Component
@@ -34,6 +35,11 @@ public class SurveyResource extends SubResource<String> {
 	@Path("/units")
 	public ObservationUnitListResource getObservationUnitListResource() {
 		return getResource(ObservationUnitListResource.class);
+	}
+	
+	@Path("/aoi-hierarchies")
+	public AoiHierarchyListResource getAoiHierarchyListResource(){
+		return getResource(AoiHierarchyListResource.class);
 	}
 
 	Survey getSurvey() {

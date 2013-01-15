@@ -1,9 +1,11 @@
 package org.openforis.calc.server.rest;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.QueryParam;
 
 import org.openforis.calc.io.flat.FlatDataStream;
 import org.openforis.calc.persistence.SamplePlotCntViewDao;
+import org.openforis.calc.persistence.SamplePlotVisitedCntViewDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
@@ -23,13 +25,21 @@ public class SamplePlotCountResource extends SubResource<Void> {
 	private SamplePlotCntViewDao samplePlotCntViewDao;
 
 	@Autowired
+	private SamplePlotVisitedCntViewDao samplePlotVisitedCntViewDao;
+
+	@Autowired
 	private ObservationUnitResource observationUnitResource;
 
 	@GET
-	public FlatDataStream getCounts() {
-
+	public FlatDataStream getCounts(@QueryParam("observed") Boolean observed) {
 		int obsUnitId = observationUnitResource.getObservationUnitId();
-		return samplePlotCntViewDao.getCountsByObsUnit(obsUnitId );
+		FlatDataStream stream = null;
+		if ( Boolean.TRUE.equals(observed) ) {
+			stream = samplePlotVisitedCntViewDao.getCountsByObsUnit(obsUnitId);
+		} else {
+			stream = samplePlotCntViewDao.getCountsByObsUnit(obsUnitId);
+		}
+		return stream;
 
 	}
 

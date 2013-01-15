@@ -16,6 +16,7 @@ import org.openforis.calc.persistence.PlotSectionViewDao;
 import org.openforis.calc.persistence.SpecimenCategoricalValueDao;
 import org.openforis.calc.persistence.SpecimenDao;
 import org.openforis.calc.persistence.SpecimenNumericValueDao;
+import org.openforis.calc.persistence.SpecimenViewDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 /**
@@ -28,19 +29,30 @@ public class ObservationService extends CalcService {
 
 	@Autowired 
 	private MetadataService metadataService;
+	
 	@Autowired
 	private PlotSectionViewDao plotSectionViewDao;
+	
 	@Autowired
 	private SpecimenDao specimenDao;
+	
 	@Autowired
 	private SpecimenNumericValueDao specimenNumericValueDao;
+	
 	@Autowired
 	private SpecimenCategoricalValueDao specimenCategoricalValueDao;
-
+	
+	@Autowired
+	private SpecimenViewDao specimenViewDao;
+	
+	public enum PlotDistributionCalculationMethod {
+		SHARED_PLOT, PRIMARY_SECTION_ONLY;
+	}
+	
 //	@Transactional
 	public void importSpecimenData(String surveyName, String observationUnit, FlatDataStream in) throws IOException {
 		SurveyMetadata surveyMetadata = metadataService.getSurveyMetadata(surveyName);
-		ObservationUnitMetadata specimenMetadata = surveyMetadata.getObservationUnitMetadataByName(observationUnit);
+		ObservationUnitMetadata specimenMetadata = getObservationUnitMetadata(surveyName, observationUnit);
 		if ( specimenMetadata == null ) {
 			throw new IllegalArgumentException("Invalid survey or observation unit");
 		}
@@ -72,6 +84,27 @@ public class ObservationService extends CalcService {
 		}
 	}
 
+	public FlatDataStream getSpecimenDataStream(String surveyName, String observationUnitName, String[] fieldNames) {
+		ObservationUnitMetadata unitMetadata = getObservationUnitMetadata(surveyName, observationUnitName);
+		Collection<VariableMetadata> variableMetadata = unitMetadata.getVariableMetadata();
+	
+		return specimenViewDao.streamAll(variableMetadata, fieldNames, unitMetadata.getObsUnitId());
+	}
+
+	
+	public FlatDataStream getPlotCategoryDistributionStream(String surveyName, String observationUnitName, PlotDistributionCalculationMethod plotDistributionCalculationMethod){
+		ObservationUnitMetadata unitMetadata = getObservationUnitMetadata(surveyName, observationUnitName);
+		Collection<VariableMetadata> variableMetadata = unitMetadata.getVariableMetadata();
+		boolean useShares = plotDistributionCalculationMethod == PlotDistributionCalculationMethod.SHARED_PLOT;
+		return plotSectionViewDao.getCategoryDistributionStream(variableMetadata, unitMetadata.getObsUnitId(), useShares);
+	}
+	
+	private ObservationUnitMetadata getObservationUnitMetadata(String surveyName, String observationUnitName) {
+		SurveyMetadata surveyMetadata = metadataService.getSurveyMetadata(surveyName);
+		ObservationUnitMetadata unitMetadata = surveyMetadata.getObservationUnitMetadataByName(observationUnitName);
+		return unitMetadata;
+	}
+	
 	private void importValues(ObservationUnitMetadata specimenMetadata, int specimenId, FlatRecord r) {
 		Collection<VariableMetadata> vars = specimenMetadata.getVariableMetadata();
 		for (VariableMetadata var : vars) {

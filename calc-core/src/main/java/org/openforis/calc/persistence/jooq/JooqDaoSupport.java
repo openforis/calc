@@ -41,6 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author G. Miceli
+ * @author Mino Togna
  */
 public abstract class JooqDaoSupport<R extends TableRecord<R>, P>
 	extends JdbcDaoSupport implements DAO<R, P, Integer>
@@ -307,6 +308,14 @@ public abstract class JooqDaoSupport<R extends TableRecord<R>, P>
         			.fetch());
 	}
 
+	@Transactional
+	public FlatDataStream streamAll(String[] fieldNames){
+		Field<?>[] fields = getFields(fieldNames);
+		Factory create = getJooqFactory();
+		Result<Record> result = create.select(fields).from(table).fetch();
+		return stream( result );
+	}
+	
 	@Transactional
 	public <Z> FlatDataStream stream(String[] fieldNames, Field<Z> filterField, Z... values) {
 		Field<?>[] fields = getFields(fieldNames);

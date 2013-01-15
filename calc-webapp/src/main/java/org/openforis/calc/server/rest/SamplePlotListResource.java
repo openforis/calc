@@ -1,7 +1,6 @@
 package org.openforis.calc.server.rest;
 
 import javax.ws.rs.GET;
-import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 
 import org.openforis.calc.io.flat.FlatDataStream;
@@ -42,11 +41,6 @@ public class SamplePlotListResource extends SubResource<Void> {
 		}
 
 		return stream;
-	}
-
-	@Path("count")
-	public SamplePlotCountResource getSamplePlotCountResource() {
-		return getResource(SamplePlotCountResource.class);
 	}
 
 }

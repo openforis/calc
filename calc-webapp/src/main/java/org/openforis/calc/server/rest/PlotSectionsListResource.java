@@ -31,8 +31,4 @@ public class PlotSectionsListResource extends SubResource<Void> {
 		return plotSectionViewDao.streamAll(getFields(), observationUnitResource.getObservationUnitId());
 	}
 
-	// @Path("{surveyName}")
-	// public SpecimenResource getSpecimenResource(@PathParam("specimenName") String name) {
-	// return getResource(SpecimenResource.class, name);
-	// }
 }

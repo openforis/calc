@@ -4,21 +4,19 @@ import static org.openforis.calc.persistence.jooq.Tables.SPECIMEN_CATEGORICAL_VA
 import static org.openforis.calc.persistence.jooq.Tables.SPECIMEN_NUMERIC_VALUE;
 import static org.openforis.calc.persistence.jooq.Tables.SPECIMEN_VIEW;
 
+import java.util.Collection;
+
 import org.jooq.Field;
 import org.jooq.JoinType;
 import org.jooq.SelectQuery;
 import org.jooq.impl.Factory;
 import org.openforis.calc.io.flat.FlatDataStream;
-import org.openforis.calc.model.ObservationUnitMetadata;
 import org.openforis.calc.model.SpecimenView;
-import org.openforis.calc.model.SurveyMetadata;
 import org.openforis.calc.model.VariableMetadata;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
 import org.openforis.calc.persistence.jooq.tables.SpecimenCategoricalValueView;
 import org.openforis.calc.persistence.jooq.tables.SpecimenNumericValue;
 import org.openforis.calc.persistence.jooq.tables.records.SpecimenViewRecord;
-import org.openforis.calc.service.MetadataService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,9 +30,6 @@ public class SpecimenViewDao extends JooqDaoSupport<SpecimenViewRecord, Specimen
 
 	private static final org.openforis.calc.persistence.jooq.tables.SpecimenView V = SPECIMEN_VIEW;
 
-	@Autowired
-	private MetadataService metadataService;
-
 	public SpecimenViewDao() {
 		super(SPECIMEN_VIEW, SpecimenView.class);
 	}
@@ -44,7 +39,7 @@ public class SpecimenViewDao extends JooqDaoSupport<SpecimenViewRecord, Specimen
 		return V.SPECIMEN_ID;
 	}
 
-	public FlatDataStream streamAll(String[] fields, String surveyName, int observationUnitId) {
+	public FlatDataStream streamAll(Collection<VariableMetadata> variables, String[] fields, int observationUnitId) {
 		
 		if ( fields != null ) {
 			Factory create = getJooqFactory();
@@ -55,7 +50,7 @@ public class SpecimenViewDao extends JooqDaoSupport<SpecimenViewRecord, Specimen
 			
 			int fieldIndex = 0; 
 			for ( String fieldName : fields ) {
-				VariableMetadata variable = getVariableMetadata(surveyName, observationUnitId, fieldName);
+				VariableMetadata variable = getVariableMetadata(variables, observationUnitId, fieldName);
 				if ( variable != null ) {
 					Integer variableId = variable.getVariableId();
 					String variableName = variable.getVariableName();
@@ -90,14 +85,14 @@ public class SpecimenViewDao extends JooqDaoSupport<SpecimenViewRecord, Specimen
 		}
 	}
 
-	private VariableMetadata getVariableMetadata(String surveyName, int observationUnitId, String fieldName) {
-		SurveyMetadata survey = metadataService.getSurveyMetadata(surveyName);
-		ObservationUnitMetadata obsUnit = survey.getObservationUnitMetadataById(observationUnitId);
-		VariableMetadata variable = obsUnit.getVariableMetadataByName(fieldName);
+	private VariableMetadata getVariableMetadata(Collection<VariableMetadata> variables, int observationUnitId, String fieldName) {
+		VariableMetadata variable = null;
+		for ( VariableMetadata variableMetadata : variables ) {
+			if(variableMetadata.getVariableName().equals(fieldName)){
+				variable = variableMetadata;
+			}
+		}
 		return variable;
 	}
 
-	// public Object[] extractKey(FlatRecord r, int obsUnitId) {
-	// return extractKey(r, obsUnitId, V.CLUSTER_CODE, V.PLOT_NO, V.PLOT_SECTION, V.VISIT_TYPE);
-	// }
 }

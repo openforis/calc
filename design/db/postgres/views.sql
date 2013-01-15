@@ -1,4 +1,6 @@
 //drop view if exists calc.specimen_numeric_value_view;
+//drop view if exists calc.plot_category_distribution_view;
+drop view if exists calc.sample_plot_visited_cnt_view;
 drop view if exists calc.sample_plot_cnt_view;
 drop view if exists calc.specimen_categorical_value_view;
 drop view if exists calc.specimen_view;
@@ -95,7 +97,7 @@ AS
          p.cluster_x,
          p.cluster_y,
          p.sample_plot_id,
-         p.plot_no,
+         p.plot_no,         
          p.sample_plot_location,
          p.sample_plot_shape,
          p.sampling_phase,
@@ -113,7 +115,8 @@ AS
          ps.step,
          ps.plot_section_shape,
          ps.plot_section_area,
-         ps.plot_share
+         ps.plot_share,
+         ps.primary_section
   FROM plot_section ps
        JOIN ground_plot_view p ON ps.sample_plot_id = p.sample_plot_id;
 	   
@@ -248,3 +251,33 @@ group by
     p.plot_obs_unit_id
 order by
     s.stratum_no;
+
+create or replace view calc.sample_plot_visited_cnt_view
+as
+select
+    s.stratum_no,
+    s.stratum_id,
+    1 as aoi_id,    
+    p.plot_obs_unit_id,
+    count(p.sample_plot_id) as plot1_cnt
+    -- count(p.sample_plot_id) / (select count(sample_plot_id) from calc.sample_plot)::numeric as prop,
+    -- count(p.sample_plot_id) / (select count(sample_plot_id) from calc.sample_plot)::numeric * (select aoi_area from calc.aoi where aoi_id = 1)  as area    
+from
+    calc.sample_plot_view p
+inner join
+    calc.stratum s on p.stratum_id = s.stratum_id
+inner join
+    calc.plot_section ps on p.sample_plot_id = ps.sample_plot_id
+where
+    ps.visit_type = 'P'
+//where 
+//    p.survey_id = 2
+//    and 
+//    p.plot_obs_unit_id = 2
+group by
+    s.stratum_id,
+    s.stratum_no,
+    p.plot_obs_unit_id
+order by
+    s.stratum_no;
+

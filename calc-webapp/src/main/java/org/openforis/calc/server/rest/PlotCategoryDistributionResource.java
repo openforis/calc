@@ -4,34 +4,37 @@ import javax.ws.rs.GET;
 
 import org.openforis.calc.io.flat.FlatDataStream;
 import org.openforis.calc.service.ObservationService;
+import org.openforis.calc.service.ObservationService.PlotDistributionCalculationMethod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 /**
- * @author G. Miceli
+ * 
  * @author Mino Togna
+ * 
  */
 @Component
-@Lazy
 @Scope("request")
-public class SpecimenListResource extends SubResource<Void> {
-
-	@Autowired
-	private ObservationUnitResource observationUnitResource;
-
-	@Autowired
-	private ObservationService observationService;
+@Lazy
+public class PlotCategoryDistributionResource extends SubResource<Void> {
 
 	@Autowired
 	private SurveyResource surveyResource;
-
+	
+	@Autowired
+	private ObservationUnitResource observationUnitResource;
+	
+	@Autowired
+	private ObservationService observationService;
+	
 	@GET
-	public FlatDataStream getList() {
-		String observationUnitName = observationUnitResource.getKey();
+	public FlatDataStream getDistribution() {
 		String surveyName = surveyResource.getKey();
-
-		return observationService.getSpecimenDataStream(surveyName, observationUnitName, getFields());
+		String observationUnitName = observationUnitResource.getKey();
+		
+		return observationService.getPlotCategoryDistributionStream(surveyName , observationUnitName, PlotDistributionCalculationMethod.PRIMARY_SECTION_ONLY );
 	}
+
 }
