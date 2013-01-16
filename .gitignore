@@ -2,3 +2,4 @@
 target
 !.gitignore
 dev.properties
+.Rproj.user

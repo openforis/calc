@@ -1,0 +1,1 @@
+calcRestUri <- 'http://localhost:8080/calc/rest';

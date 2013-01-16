@@ -262,7 +262,7 @@ select
     s.stratum_id,
     a.aoi_id,    
     p.plot_obs_unit_id,
-    count(p.sample_plot_id) as plot1_cnt
+    count(p.sample_plot_id) as plot2_cnt
     -- count(p.sample_plot_id) / (select count(sample_plot_id) from calc.sample_plot)::numeric as prop,
     -- count(p.sample_plot_id) / (select count(sample_plot_id) from calc.sample_plot)::numeric * (select aoi_area from calc.aoi where aoi_id = 1)  as area    
 from
