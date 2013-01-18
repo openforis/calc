@@ -45,6 +45,7 @@ plotCatDistr$est_area <- with( plotCatDistr, plot_distribution * expf );
 #aoi$aoi_area
 stopifnot( sum(plotCatDistr$est_area) == aoi$aoi_area );
 
+upload(uri=saveAreaResultsUri, data=plotCatDistr)
 # == TO  REMOVE
 #f <- plotCatDistr[1:100,]
 #write.csv( f, file='~/tmp.csv', row.names=F)
@@ -56,14 +57,14 @@ stopifnot( sum(plotCatDistr$est_area) == aoi$aoi_area );
 #       .opts = list(verbose = TRUE, header = TRUE))
 
 # Gino
-closeAllConnections();
-conn = textConnection(NULL, "w");
-write.csv(plotCatDistr, conn, row.names=F);
-body = textConnectionValue(conn);
+#closeAllConnections();
+#conn = textConnection(NULL, "w");
+#write.csv(plotCatDistr, conn, row.names=F);
+#body = textConnectionValue(conn);
 
 
-postForm(saveAreaResultsUri, style="POST",
-         "fileData" = body,
-         .opts = list(verbose = TRUE, header = TRUE));
+#postForm(saveAreaResultsUri, style="POST",
+#         "fileData" = body,
+#         .opts = list(verbose = TRUE, header = TRUE));
 
-close(conn);
+#close(conn);
