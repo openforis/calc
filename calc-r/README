@@ -1,1 +1,5 @@
+1. 
+sudo apt-get install libcurl4-openssl-dev
 
+2.
+install.packages('RCurl');

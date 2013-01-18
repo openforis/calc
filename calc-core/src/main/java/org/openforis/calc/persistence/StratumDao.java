@@ -1,6 +1,6 @@
 package org.openforis.calc.persistence;
 
-import static org.openforis.calc.persistence.jooq.tables.Stratum.*;
+import static org.openforis.calc.persistence.jooq.tables.Stratum.STRATUM;
 
 import java.util.List;
 

@@ -4,7 +4,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,7 +43,7 @@ abstract class CsvProcessor {
 	}
 	
 	protected void setColumnNames(String[] headers) {
-		columns = new HashMap<String, Integer>();
+		columns = new LinkedHashMap<String, Integer>();
 		for (int i = 0; i < headers.length; i++) {
 			columns.put(headers[i], i);
 		}

@@ -93,8 +93,8 @@
 <!-- 		<description>ZK loader for ZUML pages</description> -->
 <!-- 		<servlet-name>zkLoader</servlet-name> -->
 <!-- 		<servlet-class>org.zkoss.zk.ui.http.DHtmlLayoutServlet</servlet-class> -->
-<!-- 		<!-- Must. Specifies URI of the update engine (DHtmlUpdateServlet). It  -->
-<!-- 			must be the same as <url-pattern> for the update engine. --> -->
+<!-- 		Must. Specifies URI of the update engine (DHtmlUpdateServlet). It  -->
+<!-- 			must be the same as <url-pattern> for the update engine. -->
 <!-- 		<init-param> -->
 <!-- 			<param-name>update-uri</param-name> -->
 <!-- 			<param-value>/zkau</param-value> -->

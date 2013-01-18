@@ -275,6 +275,8 @@ inner join
     calc.aoi a on a.aoi_id = 1
 where
     ps.visit_type = 'P'
+//and
+//    ps.primary_section
 //where 
 //    p.survey_id = 2
 //    and 

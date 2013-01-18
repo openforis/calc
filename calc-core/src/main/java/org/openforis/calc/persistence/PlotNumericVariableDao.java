@@ -12,9 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component 
 @Transactional
-public class PlotNumericVariabletDao extends JooqDaoSupport<PlotNumericValueRecord, PlotNumericValue> {
+public class PlotNumericVariableDao extends JooqDaoSupport<PlotNumericValueRecord, PlotNumericValue> {
 
-	public PlotNumericVariabletDao() {
+	public PlotNumericVariableDao() {
 		super(Tables.PLOT_NUMERIC_VALUE, PlotNumericValue.class);
 	}
 	

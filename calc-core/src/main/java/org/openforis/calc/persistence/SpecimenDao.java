@@ -1,6 +1,6 @@
 package org.openforis.calc.persistence;
 
-import static org.openforis.calc.persistence.jooq.Tables.*;
+import static org.openforis.calc.persistence.jooq.Tables.SPECIMEN;
 
 import org.openforis.calc.io.flat.FlatRecord;
 import org.openforis.calc.model.Specimen;

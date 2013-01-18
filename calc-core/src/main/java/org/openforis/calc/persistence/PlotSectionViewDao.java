@@ -65,18 +65,19 @@ public class PlotSectionViewDao extends JooqDaoSupport<PlotSectionViewRecord, Pl
 		//TODO change in future
 		query.addJoin( A, A.AOI_ID.eq(1) );
 		
-		query.addConditions(V.PLOT_OBS_UNIT_ID.eq(obsUnitId));
+		query.addConditions( V.PLOT_OBS_UNIT_ID.eq(obsUnitId) );
+		query.addConditions( V.VISIT_TYPE.eq("P") );
 		
-		query.addGroupBy(V.STRATUM_ID);
-		query.addGroupBy(A.AOI_ID);
+		query.addGroupBy( V.STRATUM_ID );
+		query.addGroupBy( A.AOI_ID );
 		
 		int varIndex = 0;
 		for ( VariableMetadata variable : variables ) {
 			String varName = variable.getVariableName();
-			if(variable.isCategorical()){
-				PlotCategoricalValueView plotCatValueView = PLOT_CATEGORICAL_VALUE_VIEW.as("c_"+ (varIndex++) );
+			if ( variable.isCategorical() ) {
+				PlotCategoricalValueView plotCatValueView = PLOT_CATEGORICAL_VALUE_VIEW.as( "c_"+ (varIndex++) );
 				
-				query.addSelect(plotCatValueView.CATEGORY_CODE.as(varName));
+				query.addSelect( plotCatValueView.CATEGORY_CODE.as(varName) );
 				
 				query.addJoin(
 						plotCatValueView, 
@@ -84,14 +85,14 @@ public class PlotSectionViewDao extends JooqDaoSupport<PlotSectionViewRecord, Pl
 						V.PLOT_SECTION_ID.eq(plotCatValueView.PLOT_SECTION_ID).and(plotCatValueView.VARIABLE_NAME.eq(varName))
 						);
 				
-				query.addGroupBy(plotCatValueView.CATEGORY_CODE);
+				query.addGroupBy( plotCatValueView.CATEGORY_CODE );
 			}
 		}
 		
 		if(useShares) {
 			query.addSelect( V.PLOT_SHARE.div(100).sum().as("plot_distribution") );
 		} else {
-			query.addSelect(V.PLOT_SECTION_ID.count().as("plot_distribution") );
+			query.addSelect( V.PLOT_SECTION_ID.count().as("plot_distribution") );
 			query.addConditions( V.PRIMARY_SECTION.eq(true) );
 		}
 		

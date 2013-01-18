@@ -283,6 +283,24 @@
 	      <groupId>javax.annotation</groupId>
 	      <artifactId>jsr250-api</artifactId>
 	    </dependency>
+	    
+	    <!-- Pentaho Kettle Api -->
+		<dependency>
+			<groupId>pentaho-kettle</groupId>
+			<artifactId>kettle-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>pentaho-kettle</groupId>
+			<artifactId>kettle-db</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>pentaho-kettle</groupId>
+			<artifactId>kettle-engine</artifactId>
+		</dependency>
+		 <dependency>
+	    	<groupId>commons-vfs</groupId>
+			<artifactId>commons-vfs</artifactId>
+	 	 </dependency>
 <!-- 	    <dependency> -->
 <!-- 	      <groupId>jcs</groupId> -->
 <!-- 	      <artifactId>jcs</artifactId> -->

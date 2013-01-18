@@ -21,10 +21,11 @@
 		<spring.version>3.1.0.RELEASE</spring.version>
 		<zk.version>6.0.1</zk.version>
 		<zk.spring.version>3.1</zk.spring.version>
-		<kettle.version>4.3.0-stable</kettle.version>
+		<kettle.version>4.4.0-stable</kettle.version>
 		<postgres-driver.version>9.1-901-1.jdbc4</postgres-driver.version>
 		<jooq.version>2.6.0</jooq.version>
 		<collect.version>3.0-Alpha5-SNAPSHOT</collect.version>
+		<commons-vfs.version>2.0-20090205</commons-vfs.version>	
 	</properties>
 
 <!-- 	<profiles> -->
@@ -69,14 +70,14 @@
 <!-- 			<name>ZK CE Repository</name> -->
 <!-- 			<url>http://mavensync.zkoss.org/maven2</url> -->
 <!-- 		</repository> -->
-<!-- 		<repository> -->
-<!-- 			<snapshots> -->
-<!-- 				<enabled>false</enabled> -->
-<!-- 			</snapshots> -->
-<!-- 			<id>pentaho</id> -->
-<!-- 			<name>repo</name> -->
-<!-- 			<url>http://repository.pentaho.org/artifactory/repo</url> -->
-<!-- 		</repository> -->
+		<repository>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>pentaho</id>
+			<name>repo</name>
+			<url>http://repository.pentaho.org/artifactory/repo</url>
+		</repository>
 <!-- 		<repository> -->
 <!-- 			<snapshots /> -->
 <!-- 			<id>pentaho snapshots</id> -->
@@ -222,21 +223,21 @@
 			</dependency>
 			
 			<!-- Pentaho -->
-<!-- 			<dependency> -->
-<!-- 				<groupId>pentaho-kettle</groupId> -->
-<!-- 				<artifactId>kettle-core</artifactId> -->
-<!-- 				<version>${kettle.version}</version> -->
-<!-- 			</dependency> -->
-<!-- 			<dependency> -->
-<!-- 				<groupId>pentaho-kettle</groupId> -->
-<!-- 				<artifactId>kettle-db</artifactId> -->
-<!-- 				<version>${kettle.version}</version> -->
-<!-- 			</dependency> -->
-<!-- 			<dependency> -->
-<!-- 				<groupId>pentaho-kettle</groupId> -->
-<!-- 				<artifactId>kettle-engine</artifactId> -->
-<!-- 				<version>${kettle.version}</version> -->
-<!-- 			</dependency> -->
+			<dependency>
+				<groupId>pentaho-kettle</groupId>
+				<artifactId>kettle-core</artifactId>
+				<version>${kettle.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>pentaho-kettle</groupId>
+				<artifactId>kettle-db</artifactId>
+				<version>${kettle.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>pentaho-kettle</groupId>
+				<artifactId>kettle-engine</artifactId>
+				<version>${kettle.version}</version>
+			</dependency>
 <!-- 			<dependency> -->
 <!-- 				<groupId>pentaho-kettle</groupId> -->
 <!-- 				<artifactId>kettle-gpload-plugin</artifactId> -->
@@ -259,6 +260,11 @@
 				<artifactId>commons-dbcp</artifactId>
 				<version>1.4</version>
 			</dependency>
+			<dependency>
+	    		<groupId>commons-vfs</groupId>
+				<artifactId>commons-vfs</artifactId>
+				<version>${commons-vfs.version}</version>
+	 	 	</dependency>
 			<dependency>
 				<groupId>org.jooq</groupId>
 				<artifactId>jooq</artifactId>
