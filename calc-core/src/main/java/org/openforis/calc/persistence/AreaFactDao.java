@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import javax.annotation.PostConstruct;
 
-import org.openforis.calc.io.csv.CsvReader;
+import org.openforis.calc.io.flat.FlatDataStream;
 import org.openforis.calc.transformation.InputDataTransformation;
 import org.openforis.calc.transformation.OutputDataTransformation;
 import org.pentaho.di.core.KettleEnvironment;
@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component
 @Transactional
-public class EstimationResultsDao {
+public class AreaFactDao {
 
 	// extends JooqDaoSupport<AoiRecord, Aoi> {
 	private static final String DB_META_NAME = "calcDb";
@@ -43,16 +43,14 @@ public class EstimationResultsDao {
 	private String schema;
 	private DatabaseMeta dbMeta;
 
-	public EstimationResultsDao() {
+	public AreaFactDao() {
 		super();
 	}
 
-	synchronized public void saveAreaResults(CsvReader csvReader, String tableName) {
+	synchronized 
+	public void createOrUpdateAreaFactTable(FlatDataStream data, String tableName) {
 
 		try {
-			// read csv headers
-			csvReader.readHeaders();
-
 			TransMeta transMeta = new TransMeta();
 
 			transMeta.addDatabase(dbMeta);
@@ -64,7 +62,7 @@ public class EstimationResultsDao {
 			dropResultsTable(transMeta, tableName, database);
 
 			// 2. read data in memory and create transformation
-			InputDataTransformation inputDataTransformation = new InputDataTransformation(csvReader);
+			InputDataTransformation inputDataTransformation = new InputDataTransformation(data);
 			StepMeta inputStep = inputDataTransformation.getStepMeta();
 
 			transMeta.addStep(inputStep);

@@ -46,6 +46,8 @@ plotCatDistr$est_area <- with( plotCatDistr, plot_distribution * expf );
 stopifnot( sum(plotCatDistr$est_area) == aoi$aoi_area );
 
 upload(uri=saveAreaResultsUri, data=plotCatDistr)
+
+
 # == TO  REMOVE
 #f <- plotCatDistr[1:100,]
 #write.csv( f, file='~/tmp.csv', row.names=F)

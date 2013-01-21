@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.openforis.calc.io.csv.CsvReader;
+import org.openforis.calc.io.flat.FlatDataStream;
 import org.openforis.calc.io.flat.FlatRecord;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.trans.step.StepMeta;
@@ -16,25 +16,26 @@ import org.pentaho.di.trans.steps.datagrid.DataGridMeta;
 
 /**
  * @author Mino Togna
+ * @author Gino Miceli
  * 
  */
 public class InputDataTransformation extends AbstractTransformation {
 
-	private CsvReader csvReader;
+	private FlatDataStream dataStream;
 	private StepMeta stepMeta;
 
 	/**
 	 * @throws IOException
 	 * 
 	 */
-	public InputDataTransformation(CsvReader csvReader) throws IOException {
-		this.csvReader = csvReader;
+	public InputDataTransformation(FlatDataStream dataStream) throws IOException {
+		this.dataStream = dataStream;
 
-		initStepMeta(csvReader);
+		initStepMeta();
 	}
 
-	private void initStepMeta(CsvReader csvReader) throws IOException {
-		List<String> columnNames = csvReader.getColumnNames();
+	private void initStepMeta() throws IOException {
+		List<String> columnNames = dataStream.getFieldNames();
 		int columnSize = columnNames.size();
 
 		DataGridMeta inputMeta = new DataGridMeta();
@@ -62,10 +63,10 @@ public class InputDataTransformation extends AbstractTransformation {
 
 	private void setInputValues(DataGridMeta inputMeta) throws IOException {
 		FlatRecord r;
-		List<String> fieldNames = csvReader.getFieldNames();
+		List<String> fieldNames = dataStream.getFieldNames();
 		List<List<String>> dataLines = new ArrayList<List<String>>();
 
-		while ( (r = csvReader.nextRecord()) != null ) {
+		while ( (r = dataStream.nextRecord()) != null ) {
 			List<String> line = new ArrayList<String>();
 			for ( String fName : fieldNames ) {
 				String value = r.getValue(fName, String.class);

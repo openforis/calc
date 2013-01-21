@@ -3,18 +3,14 @@ package org.openforis.calc.server.rest;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 import org.openforis.calc.io.flat.FlatDataStream;
+import org.openforis.calc.io.flat.FlatRecord;
 import org.openforis.calc.model.Survey;
 import org.openforis.calc.persistence.SurveyDao;
 import org.openforis.calc.service.ObservationService;
@@ -45,16 +41,27 @@ public class SurveyResource extends SubResource<String> {
     	return surveyDao.streamByName(getFields(), getKey());
     }
 	
-	@POST
-	@Consumes({MediaType.APPLICATION_FORM_URLENCODED, MediaType.MULTIPART_FORM_DATA, MediaType.TEXT_PLAIN})
+	@PATCH
 	@Path("/area-results")
-	public Response saveAreaResults(MultivaluedMap<String, String> formParams) throws URISyntaxException, IOException{		
-		List<String> data = formParams.get("fileData");
+	public Response updateAreaFacts(FlatDataStream dataStream) throws URISyntaxException, IOException {
+
+		// Process data stream and store results 
+		observationService.updateAreaFacts(getKey(), dataStream);
 		
-		observationService.saveAreaResults(getKey(), data);
-		
-		return Response.created(new URI("area-results")).entity("OK").build();
+		// Use OK response instead of created; HTTP PATCH may create or update
+		return Response.ok(new URI("area-results")).entity("OK").build();
 	}
+	
+//	@POST
+//	@Consumes({MediaType.APPLICATION_FORM_URLENCODED, MediaType.MULTIPART_FORM_DATA, MediaType.TEXT_PLAIN})
+//	@Path("/area-results")
+//	public Response saveAreaResults(MultivaluedMap<String, String> formParams) throws URISyntaxException, IOException{		
+//		List<String> data = formParams.get("fileData");
+//		
+//		observationService.saveAreaResults(getKey(), data);
+//		
+//		return Response.created(new URI("area-results")).entity("OK").build();
+//	}
 	
 	@Path("/units")
 	public ObservationUnitListResource getObservationUnitListResource() {

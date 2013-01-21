@@ -1,13 +1,9 @@
 package org.openforis.calc.service;
 
 import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
 import java.util.Collection;
-import java.util.List;
 
 import org.jooq.exception.DataAccessException;
-import org.openforis.calc.io.csv.CsvReader;
 import org.openforis.calc.io.flat.FlatDataStream;
 import org.openforis.calc.io.flat.FlatRecord;
 import org.openforis.calc.model.Category;
@@ -16,7 +12,7 @@ import org.openforis.calc.model.SpecimenCategoricalValue;
 import org.openforis.calc.model.SpecimenNumericValue;
 import org.openforis.calc.model.SurveyMetadata;
 import org.openforis.calc.model.VariableMetadata;
-import org.openforis.calc.persistence.EstimationResultsDao;
+import org.openforis.calc.persistence.AreaFactDao;
 import org.openforis.calc.persistence.PlotSectionViewDao;
 import org.openforis.calc.persistence.SpecimenCategoricalValueDao;
 import org.openforis.calc.persistence.SpecimenDao;
@@ -54,7 +50,7 @@ public class ObservationService extends CalcService {
 	private SpecimenViewDao specimenViewDao;
 	
 	@Autowired
-	private EstimationResultsDao resultsDao;
+	private AreaFactDao areaFactDao;
 	
 	public enum PlotDistributionCalculationMethod {
 		SHARED_PLOT, PRIMARY_SECTION_ONLY;
@@ -155,22 +151,22 @@ public class ObservationService extends CalcService {
 	}
 
 	
-	public void saveAreaResults(String surveyName, List<String> data) throws IOException {
-		Reader reader = convertDataToReader(data);
-		CsvReader csvReader = new CsvReader(reader);
+	public void updateAreaFacts(String surveyName, FlatDataStream data) {
+//		Reader reader = convertDataToReader(data);
+//		CsvReader csvReader = new CsvReader(reader);
 		
 		String tableName = surveyName + AREA_ESTIMATION_TABLE_SUFFIX;
 		
-		resultsDao.saveAreaResults(csvReader, tableName);
+		areaFactDao.createOrUpdateAreaFactTable(data, tableName);
 	}
 
-	private Reader convertDataToReader(List<String> data) {
-		StringBuilder builder = new StringBuilder();
-		for ( String string : data ) {
-			builder.append(string);
-			builder.append("\n");
-		}
-		String string = builder.toString();
-		return new StringReader(string);
-	}
+//	private Reader convertDataToReader(List<String> data) {
+//		StringBuilder builder = new StringBuilder();
+//		for ( String string : data ) {
+//			builder.append(string);
+//			builder.append("\n");
+//		}
+//		String string = builder.toString();
+//		return new StringReader(string);
+//	}
 }
