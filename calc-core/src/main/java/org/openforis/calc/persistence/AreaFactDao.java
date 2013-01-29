@@ -49,30 +49,11 @@ public class AreaFactDao {
 			// 4. exec transformation
 			transformation.executeAndWaitUntilFinished();
 		} catch ( KettleException e ) {
-			throw new PersistenceException("Error while importing estimation results", e);
+			throw new PersistenceException("Error while saving data into area fact table", e);
 		} catch ( IOException e ) {
 			throw new PersistenceException("Error while reading data input", e);
 		}
 
 	}
-
-	// public FlatDataStream streamByHierarchyName(String[] fieldNames, String hierarchyName) {
-	// Field<?>[] fields = getFields(fieldNames);
-	// if(fields == null || fields.length == 0) {
-	// fields = AOI.getFields().toArray(new Field[AOI.getFields().size()]);
-	// }
-	// Factory create = getJooqFactory();
-	//
-	// Result<?> result =
-	// create
-	// .select(fields)
-	// .from(AOI)
-	// .join(AOI_HIERARCHY)
-	// .on(AOI.AOI_HIERARCHY_ID.eq(AOI_HIERARCHY.AOI_HIERARCHY_ID))
-	// .where(AOI_HIERARCHY.AOI_HIERARCHY_NAME.eq(hierarchyName))
-	// .fetch();
-	//
-	// return stream( result );
-	// }
 
 }
