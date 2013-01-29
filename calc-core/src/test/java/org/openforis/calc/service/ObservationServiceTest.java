@@ -16,20 +16,23 @@ public class ObservationServiceTest {
 
 	@Autowired
 	private ObservationService observationService;
-	
-	public static void main(String[] args)  {
+
+	public static void main(String[] args) {
 		try {
+
 			ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("classpath:/applicationContext.xml");
 			ObservationServiceTest test = ctx.getBean(ObservationServiceTest.class);
 			test.run();
+
 		} catch ( Throwable ex ) {
 			ex.printStackTrace();
 		}
 	}
 
 	private void run() throws IOException {
-		CsvReader in = new CsvReader(testDataPath+"/trees.csv");
+		CsvReader in = new CsvReader(testDataPath + "/trees.csv");
 		in.readHeaders();
-		observationService.importSpecimenData("naforma1", "tree", in);
+		observationService.batchImportSpecimenData("naforma1", "tree", in);
+//		observationService.importSpecimenData("naforma1", "tree", in);
 	}
 }

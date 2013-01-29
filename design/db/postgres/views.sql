@@ -1,5 +1,6 @@
 //drop view if exists calc.specimen_numeric_value_view;
 //drop view if exists calc.plot_category_distribution_view;
+drop view if exists calc.plot_exp_factor;
 drop view if exists calc.sample_plot_visited_cnt_view;
 drop view if exists calc.sample_plot_cnt_view;
 drop view if exists calc.specimen_categorical_value_view;
@@ -152,6 +153,7 @@ AS
          ps.plot_section_area,
          ps.plot_share,
          v.variable_name,
+         v.variable_id,
          pm.value,
          pm.computed
   FROM plot_numeric_value pm
@@ -173,19 +175,25 @@ select
     p.sample_plot_id,
     p.plot_no,
     p.plot_section_id,
-    p.plot_section,    
+    p.plot_section,
+    p.plot_section_survey_date,
     s.specimen_id,
     s.obs_unit_id as specimen_obs_unit_id,
     u.obs_unit_name as specimen_obs_unit_name,
     s.specimen_no,
     s.specimen_taxon_id,
-    s.specimen_survey_date    
+    s.specimen_survey_date,
+    t.taxon_code,
+    t.taxon_parent_id,
+    t.scientific_name
 from
     calc.specimen s
 inner join
     calc.plot_section_view p on s.plot_section_id = p.plot_section_id
 inner join
-    calc.observation_unit u on s.obs_unit_id = u.obs_unit_id;
+    calc.observation_unit u on s.obs_unit_id = u.obs_unit_id
+left outer join
+    calc.taxon t on s.specimen_taxon_id = t.taxon_id;
 
 
 create or replace view calc.specimen_categorical_value_view
@@ -275,8 +283,8 @@ inner join
     calc.aoi a on a.aoi_id = 1
 where
     ps.visit_type = 'P'
-//and
-//    ps.primary_section
+and
+    ps.primary_section
 //where 
 //    p.survey_id = 2
 //    and 
@@ -289,3 +297,41 @@ group by
 order by
     s.stratum_no;
 
+create view calc.plot_exp_factor
+as
+select 
+    c.stratum_id,
+    c.stratum_no,
+    c.aoi_id,
+    (c1.plot1_cnt / 
+        (select 
+            sum(c2.plot1_cnt) 
+        from 
+            calc.sample_plot_cnt_view c2 
+        )
+    ) as prop,
+    a.aoi_area * 
+    (c1.plot1_cnt / 
+        (select 
+            sum(c2.plot1_cnt) 
+        from 
+            calc.sample_plot_cnt_view c2 
+        )
+    )
+    as area , 
+    c1.plot1_cnt,
+    c.plot2_cnt ,
+    a.aoi_area * 
+    (c1.plot1_cnt / 
+        (select 
+            sum(c2.plot1_cnt) 
+        from 
+            calc.sample_plot_cnt_view c2 
+        )
+    ) / c.plot2_cnt as expf
+from
+    calc.sample_plot_visited_cnt_view c
+inner join
+    calc.sample_plot_cnt_view c1 on c1.stratum_id = c.stratum_id 
+inner join 
+    calc.aoi a on c.aoi_id = a.aoi_id;

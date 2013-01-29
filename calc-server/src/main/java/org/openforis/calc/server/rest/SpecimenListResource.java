@@ -1,6 +1,12 @@
 package org.openforis.calc.server.rest;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+
 import javax.ws.rs.GET;
+import javax.ws.rs.core.Response;
 
 import org.openforis.calc.io.flat.FlatDataStream;
 import org.openforis.calc.service.ObservationService;
@@ -20,10 +26,8 @@ public class SpecimenListResource extends SubResource<Void> {
 
 	@Autowired
 	private ObservationUnitResource observationUnitResource;
-
 	@Autowired
 	private ObservationService observationService;
-
 	@Autowired
 	private SurveyResource surveyResource;
 
@@ -33,5 +37,22 @@ public class SpecimenListResource extends SubResource<Void> {
 		String surveyName = surveyResource.getKey();
 
 		return observationService.getSpecimenDataStream(surveyName, observationUnitName, getFields());
+	}
+
+	@PATCH
+	public Response update(FlatDataStream dataStream) throws URISyntaxException, IOException {
+		List<String> names = dataStream.getFieldNames();
+		String[] varNames = new String[names.size() - 1];
+		int i = 0;
+		for ( String name : names ) {
+			if ( !"specimen_id".equals(name) ) {
+				varNames[i++] = name;
+			}
+		}
+
+		observationService.updateSpecimenNumericalValue(surveyResource.getKey(), observationUnitResource.getKey(), dataStream, varNames);
+
+		// Use OK response instead of created; HTTP PATCH may create or update
+		return Response.ok(new URI("specimens")).entity("OK").build();
 	}
 }

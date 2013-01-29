@@ -39,8 +39,8 @@ public class AreaFactDao {
 	private String user;
 	@Value("${calc.jdbc.password}")
 	private String pass;
-	@Value("${calc.jdbc.schema}")
-	private String schema;
+//	@Value("${calc.jdbc.schema}")
+//	private String schema;
 	private DatabaseMeta dbMeta;
 
 	public AreaFactDao() {
@@ -48,18 +48,18 @@ public class AreaFactDao {
 	}
 
 	synchronized 
-	public void createOrUpdateAreaFactTable(FlatDataStream data, String tableName) {
+	public void createOrUpdateAreaFactTable(FlatDataStream data, String schema, String tableName) {
 
 		try {
 			TransMeta transMeta = new TransMeta();
 
-			transMeta.addDatabase(dbMeta);
+			transMeta.addDatabase( dbMeta );
 			transMeta.setName("importResults");
 
 			Database database = getDatabase(transMeta);
 
 			// 1. drop table
-			dropResultsTable(transMeta, tableName, database);
+			dropResultsTable(transMeta, schema, tableName, database);
 
 			// 2. read data in memory and create transformation
 			InputDataTransformation inputDataTransformation = new InputDataTransformation(data);
@@ -118,10 +118,11 @@ public class AreaFactDao {
 		KettleEnvironment.init();
 		dbMeta = new DatabaseMeta(DB_META_NAME, "postgreSQL", null, host, db, port, user, pass);
 	}
-
-	private Database dropResultsTable(TransMeta transMeta, String tableName, Database database) throws KettleDatabaseException {
+	
+	private Database dropResultsTable(TransMeta transMeta, String schema, String tableName, Database database) throws KettleDatabaseException {
 		database.connect();
-		database.execStatement("drop table if exists " + tableName + " cascade");
+		String dropTableSql = "drop table if exists " + schema + "." + tableName + " cascade";
+		database.execStatement(dropTableSql);
 		database.disconnect();
 		return database;
 	}

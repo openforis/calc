@@ -22,4 +22,21 @@ public class PlotSection extends org.openforis.calc.persistence.jooq.tables.pojo
 	public void setId(Integer id) {
 		super.setPlotSectionId(id);
 	}
+	
+	public static String getPlotIdentifer(String clusterCode, Integer plotNo, String plotSection, String surveyType) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(clusterCode);
+		sb.append(" ");
+		sb.append(plotNo);
+		if ( plotSection != null ) {
+			sb.append(" ");
+			sb.append(plotSection);
+		}
+		if ( !"P".equals(surveyType) ) { 
+			sb.append(" (");
+			sb.append(surveyType);
+			sb.append(")");
+		}
+		return sb.toString();
+	}
 }

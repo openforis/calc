@@ -11,13 +11,14 @@ getTrees <- function(fileName) {
   trees <- subset( trees, !is.na(trees$dbh) );
   
   #Remove baobab from trees (for growing stock volume estimation)
-  trees <- subset( trees, species_code != 'ADA/DIG' );
+  #TODO in calc
+  # trees <- subset( trees, species_code != 'ADA/DIG' );
   
   return (trees);
 }
 
 #setwd('/home/gino/workspace/minotz/')
-obsp = read.csv('~/tzdata/src/plot.csv')
+obsp = read.csv('~/tzdata/src/plot.csv');
 # collect can flatten and rename columns, exporting to this format
 # column names specified in calc:column and calc:table
 # each plot row includes key (rowno or id) of each ancestor
@@ -46,13 +47,18 @@ sp = with( obsp,
               canopy_coverage_north,
               canopy_coverage_east, 
               canopy_coverage_south, 
-              canopy_coverage_west
+              canopy_coverage_west,
+              slope       = slope_value
               )
            )
 
 # Fix known problems
 sp[sp$cluster_code=='152_63'  & sp$plot_no==3,]$plot_no[1] = 8
 sp[is.na(sp$percent_share),]$percent_share <- 100
+#Default slope is 0
+sp[is.na(sp$slope), ]$slope <- 0
+#default plot section = A
+sp[is.na(plot_section),]$plot_section <- 'A'
 
 write.csv(sp, '~/tzdata/plots.csv')
 
@@ -73,9 +79,10 @@ tr = with(
           stump_diameter = stump_diameter_value,
           stump_height  = stump_height_value,
           total_height  = total_height_value,
-          bole_height   = bole_height_value
+          bole_height   = bole_height_value,
+          taxon_code    = species_code
         )
       )
 
 tr$specimen_no = 1:nrow(tr)
-write.csv(tr, '~/tzdata/trees.csv')
+write.csv(tr, '~/tzdata/trees.csv', row.names = F)

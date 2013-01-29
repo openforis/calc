@@ -3,11 +3,31 @@ package org.openforis.calc.model;
 
 /**
  * @author G. Miceli
+ * @author Mino Togna
  */
 public class Variable extends org.openforis.calc.persistence.jooq.tables.pojos.Variable implements Identifiable {
+	
+	public enum Type {
+		BINARY("binary"), RATIO("ratio"), MULTIPLE("multiple"), NOMINAL("nominal");
 
+		private String type;
+
+		Type(String type) {
+			this.type = type;
+		}
+
+		public boolean equals(String otherType) {
+			return this.type.equals(otherType);
+		}
+		
+		@Override
+		public String toString() {
+			return type;
+		}
+	}
+	
 	private static final long serialVersionUID = 1L;
-
+		
 //	private Map<String, Category> categoryCodeMap;
 
 	public boolean isCategorical() {
@@ -18,7 +38,11 @@ public class Variable extends org.openforis.calc.persistence.jooq.tables.pojos.V
 	public boolean isNumeric() {
 		return !isCategorical();
 	}
-
+	
+	public void setType(Type type) {
+		super.setVariableType( type.toString() );
+	}
+	
 //	public void setCategories(List<Category> categories) {
 //		this.categoryCodeMap = new HashMap<String, Category>();
 //		for ( Category cat : categories ) {

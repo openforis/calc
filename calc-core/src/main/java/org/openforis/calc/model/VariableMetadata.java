@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 /**
  * 
  * @author G. Miceli
@@ -76,5 +78,8 @@ public class VariableMetadata {
 		return variable.getVariableDescription();
 	}
 	
-	
+	@Override
+	public String toString() {
+		return new ToStringBuilder(this).append(variable.getVariableName()).toString();
+	}
 }

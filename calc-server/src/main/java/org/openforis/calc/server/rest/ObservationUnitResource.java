@@ -77,8 +77,7 @@ public class ObservationUnitResource extends SubResource<String> {
 		assertType("specimen");
 		return getResource(SpecimenListResource.class);
 	}
-
-
+	
 	private void assertType(String type) {
 		ObservationUnit unit = getObservationUnit();
 		if ( !type.equals(unit.getObsUnitType()) ) {

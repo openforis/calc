@@ -1,5 +1,7 @@
 package org.openforis.calc.io.csv;
 
+import static au.com.bytecode.opencsv.CSVWriter.NO_QUOTE_CHARACTER;
+
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -11,8 +13,6 @@ import org.openforis.calc.io.flat.FlatDataStream;
 import org.openforis.calc.io.flat.FlatRecord;
 
 import au.com.bytecode.opencsv.CSVWriter;
-
-import static au.com.bytecode.opencsv.CSVWriter.*;
 /**
  * @author G. Miceli
  */

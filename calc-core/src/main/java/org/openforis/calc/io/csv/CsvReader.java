@@ -8,7 +8,6 @@ import java.util.List;
 import org.openforis.calc.io.flat.FlatDataStream;
 import org.openforis.calc.io.flat.FlatRecord;
 
-
 import au.com.bytecode.opencsv.CSVReader;
 
 /**
@@ -17,7 +16,9 @@ import au.com.bytecode.opencsv.CSVReader;
  *
  */
 public class CsvReader extends CsvProcessor implements FlatDataStream {
-
+	
+	private static final String EOF = "EOF"; 
+	
 	private CSVReader csv;
 	private long linesRead;
 	private boolean headersRead;
@@ -45,14 +46,19 @@ public class CsvReader extends CsvProcessor implements FlatDataStream {
 		if ( !headersRead ) {
 			throw new IllegalStateException("Headers must be read first");
 		}
+		
 		String[] line = csv.readNext();
-		if ( line == null ) {
+		if( isEndOfStream( line ) ) {
 			return null;
 		} else {
 			return new CsvLine(this, line);
 		}
 	}
 	
+	private boolean isEndOfStream(String[] line) {
+		return ( line == null || line.length == 0 || ( line.length == 1 && EOF.equals(line[0]) ) );
+	}
+
 	public void close() throws IOException {
 		csv.close();
 	}

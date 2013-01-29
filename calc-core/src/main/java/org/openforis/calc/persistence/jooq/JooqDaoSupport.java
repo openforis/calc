@@ -1,7 +1,7 @@
 package org.openforis.calc.persistence.jooq;
 
-import static java.util.Arrays.*;
-import static java.util.Collections.*;
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 
 import java.sql.Connection;
 import java.sql.Timestamp;
@@ -296,7 +296,6 @@ public abstract class JooqDaoSupport<R extends TableRecord<R>, P>
 		JooqDaoImpl jooqDao = getJooqDao();
 		return (P) jooqDao.fetchOne(field, value);
 	}
-
 
 	@Transactional
 	public <Z> FlatDataStream stream(Field<?>[] fields, Field<Z> filterField, Z... values) {

@@ -25,8 +25,9 @@ public class SurveyMetadata {
 		obsUnitMetadataByUnitId = new LinkedHashMap<Integer, ObservationUnitMetadata>();
 		obsUnitMetadataByUnitName = new HashMap<String, ObservationUnitMetadata>();
 		for ( ObservationUnitMetadata ou : ous ) {
-			obsUnitMetadataByUnitId.put(ou.getObsUnitId(), ou);
-			obsUnitMetadataByUnitName.put(ou.getObsUnitName(), ou);
+			ou.setSurveyMetadata( this );
+			obsUnitMetadataByUnitId.put( ou.getObsUnitId(), ou );
+			obsUnitMetadataByUnitName.put( ou.getObsUnitName(), ou );
 		}
 	}
 

@@ -18,7 +18,7 @@ public class SamplePlot extends org.openforis.calc.persistence.jooq.tables.pojos
 		this.observationUnit = observationUnit;
 	}
 
-	void setCluster(Cluster cluster) {
+	public void setCluster(Cluster cluster) {
 		this.cluster = cluster;
 	}
 

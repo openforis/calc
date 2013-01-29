@@ -37,7 +37,7 @@ stopifnot( sum(strata$area) == aoi$aoi_area );
 #Expansion factor
 strata$expf <- strata$area / strata$plot2_cnt;
 
-expf <- strata[, c('stratum_id','expf')]
+expf <- strata[, c('stratum_id','expf')];
 plotCatDistr <- merge( plotCatDistr, expf, by='stratum_id' );
 plotCatDistr$est_area <- with( plotCatDistr, plot_distribution * expf );
 
@@ -45,7 +45,9 @@ plotCatDistr$est_area <- with( plotCatDistr, plot_distribution * expf );
 #aoi$aoi_area
 stopifnot( sum(plotCatDistr$est_area) == aoi$aoi_area );
 
-upload(uri=saveAreaResultsUri, data=plotCatDistr)
+upload( uri=saveAreaResultsUri, data=plotCatDistr );
+
+# select columns for aggregation
 
 
 # == TO  REMOVE

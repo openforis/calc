@@ -8,13 +8,15 @@ import java.util.Map;
 /**
  * 
  * @author G. Miceli
- *
+ * @author Mino Togna
+ * 
  */
 public class ObservationUnitMetadata {
 
 	private ObservationUnit observationUnit;
 	private Map<String, VariableMetadata> variableMap;
-	
+	private SurveyMetadata surveyMetadata;
+
 	public ObservationUnitMetadata(ObservationUnit observationUnit, Collection<VariableMetadata> variables) {
 		this.observationUnit = observationUnit;
 		setVariableMetadata(variables);
@@ -26,7 +28,7 @@ public class ObservationUnitMetadata {
 			variableMap.put(var.getVariableName(), var);
 		}
 	}
-	
+
 	public Collection<VariableMetadata> getVariableMetadata() {
 		return Collections.unmodifiableCollection(variableMap.values());
 	}
@@ -64,5 +66,18 @@ public class ObservationUnitMetadata {
 
 	public String getObsUnitLabel() {
 		return observationUnit.getObsUnitLabel();
+	}
+
+	public ObservationUnitMetadata getObsUnitParent() {
+		Integer obsUnitParentId = getObsUnitParentId();
+		if ( obsUnitParentId == null ) {
+			return null;
+		} else {
+			return surveyMetadata.getObservationUnitMetadataById(obsUnitParentId);
+		}
+	}
+
+	void setSurveyMetadata(SurveyMetadata surveyMetadata) {
+		this.surveyMetadata = surveyMetadata;
 	}
 }

@@ -1,5 +1,4 @@
 package org.openforis.calc.service;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +20,7 @@ import org.springframework.stereotype.Component;
 /**
  * 
  * @author G. Miceli
- *
+ * 
  */
 @Component
 public class MetadataService {
@@ -36,19 +35,19 @@ public class MetadataService {
 	private CategoryDao categoryDao;
 	@Autowired
 	private CollectSurveyIdmlBinder idmlBinder;
-	
-//	public CollectSurvey loadIdml(String filename) throws FileNotFoundException, IdmlParseException {
-//		FileReader reader = new FileReader(filename);
-//		CollectSurvey cs = (CollectSurvey) idmlBinder.unmarshal(reader);
-//		return cs;
-//	}
+
+	// public CollectSurvey loadIdml(String filename) throws FileNotFoundException, IdmlParseException {
+	// FileReader reader = new FileReader(filename);
+	// CollectSurvey cs = (CollectSurvey) idmlBinder.unmarshal(reader);
+	// return cs;
+	// }
 
 	// TODO cache
 	public SurveyMetadata getSurveyMetadata(String surveyName) {
 		Survey survey = surveyDao.findByName(surveyName);
 		List<ObservationUnit> units = observationUnitDao.findBySurveyId(survey.getId());
 		List<ObservationUnitMetadata> oms = new ArrayList<ObservationUnitMetadata>();
-		for (ObservationUnit unit : units) {
+		for ( ObservationUnit unit : units ) {
 			ObservationUnitMetadata om = loadObservationMetadata(unit);
 			oms.add(om);
 		}
@@ -58,22 +57,28 @@ public class MetadataService {
 	private ObservationUnitMetadata loadObservationMetadata(ObservationUnit unit) {
 		List<Variable> vars = variableDao.findByObservationUnitId(unit.getId());
 		List<VariableMetadata> vms = new ArrayList<VariableMetadata>();
-		for (Variable var : vars) {
+		for ( Variable var : vars ) {
 			if ( var.isCategorical() ) {
 				List<Category> cats = categoryDao.findByVariableId(var.getId());
 				vms.add(new VariableMetadata(var, cats));
 			} else {
-				vms.add(new VariableMetadata(var));				
+				vms.add(new VariableMetadata(var));
 			}
 		}
 		return new ObservationUnitMetadata(unit, vms);
 	}
+	
+	public VariableMetadata insertVariable(Variable variable, int observationUnitIt){
+		variableDao.insert(variable);
+		Variable var = variableDao.findByName(variable.getVariableName(), observationUnitIt);
+		return new VariableMetadata( var );
+	}
 
-//	public ObservationUnit getObservationUnit(String surveyName, String observationUnitName) {
-//		Integer surveyId = surveyDao.getId(surveyName);
-//		if ( surveyId == null ) {
-//			return null;
-//		}
-//		return observationUnitDao.find(surveyId, observationUnitName); 
-//	}
+	// public ObservationUnit getObservationUnit(String surveyName, String observationUnitName) {
+	// Integer surveyId = surveyDao.getId(surveyName);
+	// if ( surveyId == null ) {
+	// return null;
+	// }
+	// return observationUnitDao.find(surveyId, observationUnitName);
+	// }
 }

@@ -1,8 +1,14 @@
-calcRestUri <- 'http://localhost:8080/calc/rest';
-saveAreaResultsUri <- paste(calcRestUri, 'surveys/naforma1/area-results', sep='/');
 library('RCurl');
+# patchCsv( '127.0.0.1','8080','/calc/rest/surveys/naforma1/test', data)
 
-upload <- function(uri, data){
+host <- '127.0.0.1';
+port <- '8080';
+# 'http://localhost:8080/calc/rest'
+calcRestUri <- sprintf('http://%s:%s/calc/rest', host, port);
+saveAreaResultsUri <- paste(calcRestUri, 'surveys/naforma1/area-results', sep='/');
+updateSpecimenValueUri <- '/calc/rest/surveys/naforma1/units/tree/specimens';
+
+patch <- function(uri, data) {
   # closeAllConnections();
   
   #conn = textConnection(NULL, "w");

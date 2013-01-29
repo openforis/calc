@@ -17,6 +17,13 @@ public class PlotNumericValue extends org.openforis.calc.persistence.jooq.tables
 		setComputed(computed);
 	}
 
+	public PlotNumericValue(PlotSection plot, int variableId, Double value, boolean computed) {
+		setPlotSectionId(plot.getId());
+		setVariableId(variableId);
+		setValue(value);
+		setComputed(computed);
+	}
+
 	@Override
 	public Integer getId() {
 		return super.getValueId();
