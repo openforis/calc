@@ -55,8 +55,14 @@ sp = with( obsp,
 # Fix known problems
 sp[sp$cluster_code=='152_63'  & sp$plot_no==3,]$plot_no[1] = 8
 sp[is.na(sp$percent_share),]$percent_share <- 100
+
 #Default slope is 0
 sp[is.na(sp$slope), ]$slope <- 0
+# Set slope limit to 80 %  
+sp$slope  <- with( sp,
+                      ifelse( slope > 80, 80, slope )
+                  );
+
 #default plot section = A
 sp[is.na(plot_section),]$plot_section <- 'A'
 
@@ -82,7 +88,7 @@ tr = with(
           bole_height   = bole_height_value,
           taxon_code    = species_code
         )
-      )
+      );
 
 tr$specimen_no = 1:nrow(tr)
 write.csv(tr, '~/tzdata/trees.csv', row.names = F)

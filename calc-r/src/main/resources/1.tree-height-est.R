@@ -65,7 +65,7 @@ trees <- estimateTreeHeight( trees );
 trees <- limitTreeHeight( trees );
 
 #names(trees)
-data <- trees[,c('specimen_id','est_height')];
+data <- trees[, c('specimen_id','est_height')];
 
 #uri = paste( calcRestUri, 'surveys/naforma1/units/tree/specimens', sep='/' );
 

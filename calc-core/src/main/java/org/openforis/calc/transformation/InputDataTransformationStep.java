@@ -19,7 +19,7 @@ import org.pentaho.di.trans.steps.datagrid.DataGridMeta;
  * @author Gino Miceli
  * 
  */
-public class InputDataTransformation extends AbstractTransformation {
+public class InputDataTransformationStep extends AbstractTransformationStep {
 
 	private FlatDataStream dataStream;
 	private StepMeta stepMeta;
@@ -28,7 +28,7 @@ public class InputDataTransformation extends AbstractTransformation {
 	 * @throws IOException
 	 * 
 	 */
-	public InputDataTransformation(FlatDataStream dataStream) throws IOException {
+	public InputDataTransformationStep(FlatDataStream dataStream) throws IOException {
 		this.dataStream = dataStream;
 
 		initStepMeta();

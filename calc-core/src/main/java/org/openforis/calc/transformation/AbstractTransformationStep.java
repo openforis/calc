@@ -9,7 +9,7 @@ import org.pentaho.di.trans.step.StepMeta;
  * @author Mino Togna
  *
  */
-public abstract class AbstractTransformation {
+public abstract class AbstractTransformationStep {
 
 	
 	public abstract StepMeta getStepMeta();
