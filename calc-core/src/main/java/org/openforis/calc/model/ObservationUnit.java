@@ -8,6 +8,19 @@ public class ObservationUnit extends org.openforis.calc.persistence.jooq.tables.
 
 	private static final long serialVersionUID = 1L;
 
+	public enum Type {
+		PLOT, SPECIMEN;
+		
+		public boolean equals(String other) {
+			if(other == null){
+				return false;
+			} else {
+				String strValue = this.toString();
+				return strValue.equalsIgnoreCase(other);
+			}
+		}
+	}
+	
 //	private Map<String, SamplePlot> groundPlotMap;
 //
 //	void clearGroundPlots() {

@@ -53,7 +53,7 @@ public class MetadataService {
 		}
 		return new SurveyMetadata(survey, oms);
 	}
-
+	
 	private ObservationUnitMetadata loadObservationMetadata(ObservationUnit unit) {
 		List<Variable> vars = variableDao.findByObservationUnitId(unit.getId());
 		List<VariableMetadata> vms = new ArrayList<VariableMetadata>();

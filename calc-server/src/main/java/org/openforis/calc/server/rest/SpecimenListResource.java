@@ -6,6 +6,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
 import org.openforis.calc.io.flat.FlatDataStream;
@@ -54,5 +55,14 @@ public class SpecimenListResource extends SubResource<Void> {
 
 		// Use OK response instead of created; HTTP PATCH may create or update
 		return Response.ok(new URI("specimens")).entity("OK").build();
+	}
+	
+	@PATCH
+	@Path("/exp-factor")
+	public Response updateSpecimenExpFactor(FlatDataStream dataStream) throws URISyntaxException, IOException {
+
+		observationService.updateSpecimenExpFactor(surveyResource.getKey(), observationUnitResource.getKey(), dataStream);
+
+		return Response.ok(new URI("exp-factor")).entity("OK").build();
 	}
 }

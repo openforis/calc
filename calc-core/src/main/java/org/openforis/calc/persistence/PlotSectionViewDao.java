@@ -96,9 +96,17 @@ public class PlotSectionViewDao extends JooqDaoSupport<PlotSectionViewRecord, Pl
 				fieldsToKeep.add( field );
 			}
 		}
-		aggrQuery.addSelect( fieldsToKeep );
+		for ( Field<?> field : fieldsToKeep ) {
+			aggrQuery.addSelect(Factory.coalesce(field, -1).as( field.getName() ) );
+		}
+//		aggrQuery.addSelect( fieldsToKeep );
 		aggrQuery.addGroupBy( fieldsToKeep );
 		aggrQuery.addSelect( estAreaTable.getField( EST_AREA_COLUMN_NAME ).sum().as( EST_AREA_COLUMN_NAME ) );
+		
+		if ( getLog().isDebugEnabled() ) {
+			getLog().debug("Creating area fact table");
+			getLog().debug(aggrQuery.toString());
+		}
 		
 		return stream( aggrQuery.fetch() );
 	}
@@ -136,11 +144,11 @@ public class PlotSectionViewDao extends JooqDaoSupport<PlotSectionViewRecord, Pl
 		
 		int varIndex = 0;
 		for ( VariableMetadata variable : variables ) {
-			String varName = variable.getVariableName();
-			if ( variable.isCategorical() ) {
+			if ( variable.isCategorical() && variable.isForAnalysis() ) {
+				String varName = variable.getVariableName();
 				PlotCategoricalValueView plotCatValueView = PLOT_CATEGORICAL_VALUE_VIEW.as( "c_"+ (varIndex++) );
 				
-				query.addSelect( plotCatValueView.CATEGORY_CODE.as(varName) );
+				query.addSelect( plotCatValueView.CATEGORY_ID.as(varName) );
 				
 				query.addJoin(
 						plotCatValueView, 
@@ -148,7 +156,7 @@ public class PlotSectionViewDao extends JooqDaoSupport<PlotSectionViewRecord, Pl
 						V.PLOT_SECTION_ID.eq(plotCatValueView.PLOT_SECTION_ID).and(plotCatValueView.VARIABLE_NAME.eq(varName))
 						);
 				
-				query.addGroupBy( plotCatValueView.CATEGORY_CODE );
+				query.addGroupBy( plotCatValueView.CATEGORY_ID );
 			}
 		}
 		return query;

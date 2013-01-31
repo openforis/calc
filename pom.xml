@@ -47,6 +47,11 @@
 <!-- 	</profiles> -->
 
 	<repositories>
+<!-- 		<repository> -->
+<!-- 			<id>openforis</id> -->
+<!-- 			<name>Open Foris</name> -->
+<!-- 			<url>http://www.openforis.org/nexus/</url> -->
+<!-- 		</repository> -->
 		<repository>
 			<id>opengeo</id>
 			<name>opengeo</name>

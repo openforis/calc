@@ -35,7 +35,6 @@ public class TransformationDatabase {
 	private DatabaseMeta databaseMeta;
 	
 	public TransformationDatabase() {
-		
 	}
 	
 	public DatabaseMeta getDatabaseMeta() {

@@ -183,6 +183,7 @@ select
     s.specimen_no,
     s.specimen_taxon_id,
     s.specimen_survey_date,
+    s.specimen_exp_factor,
     t.taxon_code,
     t.taxon_parent_id,
     t.scientific_name

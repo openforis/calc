@@ -20,6 +20,7 @@ import org.openforis.calc.persistence.AreaFactDao;
 import org.openforis.calc.persistence.PlotSectionViewDao;
 import org.openforis.calc.persistence.SpecimenCategoricalValueDao;
 import org.openforis.calc.persistence.SpecimenDao;
+import org.openforis.calc.persistence.SpecimenFactDao;
 import org.openforis.calc.persistence.SpecimenNumericValueDao;
 import org.openforis.calc.persistence.SpecimenViewDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,10 +35,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ObservationService extends CalcService {
 
-	private static final String AREA_ESTIMATION_TABLE_NAME = "area_fact";
-
-	@Autowired 
-	private MetadataService metadataService;
+	private static final String AREA_FACT_TABLE_NAME = "area_fact";
+	private static final String SPECIMEN_FACT_TABLE_NAME_SUFFIX = "_fact";
+	
+	
 	@Autowired
 	private PlotSectionViewDao plotSectionViewDao;
 	@Autowired
@@ -50,6 +51,8 @@ public class ObservationService extends CalcService {
 	private SpecimenViewDao specimenViewDao;
 	@Autowired
 	private AreaFactDao areaFactDao;
+	@Autowired
+	private SpecimenFactDao specimenFactDao;
 	@Autowired
 	private TaxonService taxonService;
 	
@@ -179,6 +182,7 @@ public class ObservationService extends CalcService {
 		return plotSectionViewDao.streamCategoryDistribution(variables, unitMetadata.getObsUnitId(), useShares);
 	}
 	
+	@Deprecated
 	public FlatDataStream getAreaFactData(String surveyName, String observationUnitName, PlotDistributionCalculationMethod plotDistributionCalculationMethod){
 		ObservationUnitMetadata unitMetadata = getObservationUnitMetadata(surveyName, observationUnitName);
 		Collection<VariableMetadata> variables = unitMetadata.getVariableMetadata();
@@ -186,10 +190,12 @@ public class ObservationService extends CalcService {
 		return plotSectionViewDao.streamAreaFactData(variables, unitMetadata.getObsUnitId(), useShares);
 	}
 	
-	private ObservationUnitMetadata getObservationUnitMetadata(String surveyName, String observationUnitName) {
-		SurveyMetadata surveyMetadata = metadataService.getSurveyMetadata(surveyName);
-		ObservationUnitMetadata unitMetadata = surveyMetadata.getObservationUnitMetadataByName(observationUnitName);
-		return unitMetadata;
+	@Deprecated
+	public FlatDataStream getSpecimenFactData(String surveyName, String observationUnitName){
+		ObservationUnitMetadata unitMetadata = getObservationUnitMetadata(surveyName, observationUnitName);
+		Collection<VariableMetadata> variables = unitMetadata.getVariableMetadata();
+		Collection<VariableMetadata> parentVariables = unitMetadata.getObsUnitParent().getVariableMetadata();
+		return specimenDao.streamSpecimenFactData(unitMetadata.getObsUnitId(), variables , parentVariables );
 	}
 	
 	private void importValues(ObservationUnitMetadata specimenMetadata, int specimenId, FlatRecord r) {
@@ -229,23 +235,39 @@ public class ObservationService extends CalcService {
 			specimenCategoricalValueDao.insert(scm);
 		}
 	}
-
 	
+	@Transactional
+	@Deprecated
 	public void updateAreaFacts(String surveyName, FlatDataStream data) {
-		areaFactDao.createOrUpdateAreaFactTable(data, surveyName, AREA_ESTIMATION_TABLE_NAME);
+		areaFactDao.createOrUpdateAreaFactTable(data, surveyName, AREA_FACT_TABLE_NAME);
 	}
 
-	synchronized
+	@Transactional
+	@Deprecated
+	public void updateSpecimenFacts(String surveyName, String obsUnitName, FlatDataStream data) {
+		String tableName = obsUnitName + SPECIMEN_FACT_TABLE_NAME_SUFFIX;
+		specimenFactDao.createOrUpdateFactTable(data, surveyName, tableName);
+	}
+	
+	@Transactional
+	synchronized 
 	public void updateSpecimenNumericalValue(String surveyName, String obsUnitName, FlatDataStream dataStream, String... variableNames) throws IOException {
 		VariableMetadata[] variables = new VariableMetadata[variableNames.length];
 		ObservationUnitMetadata unitMetadata = getObservationUnitMetadata(surveyName, obsUnitName);
 		int i = 0;
-		for ( String variableName : variableNames) {
-			VariableMetadata varMetadata = getVariableMetadata( unitMetadata, variableName );
+		for ( String variableName : variableNames ) {
+			VariableMetadata varMetadata = getVariableMetadata(unitMetadata, variableName);
 			variables[i++] = varMetadata;
 		}
-//		Integer obsUnitId = varMetadata.getObsUnitId();
+		// Integer obsUnitId = varMetadata.getObsUnitId();
 		specimenNumericValueDao.batchUpdate(unitMetadata.getObsUnitId(), dataStream, variables);
+	}
+	
+	@Transactional
+	synchronized
+	public void updateSpecimenExpFactor(String surveyName, String obsUnitName, FlatDataStream dataStream) throws IOException {
+//		ObservationUnitMetadata unitMetadata = getObservationUnitMetadata(surveyName, obsUnitName);
+		specimenDao.batchUpdateExpFactor( dataStream );
 	}
 	
 //	private Reader convertDataToReader(List<String> data) {
@@ -268,7 +290,7 @@ public class ObservationService extends CalcService {
 			variable.setObsUnitId(obsUnitId);
 			variable.setVariableName(varName);
 			variable.setType(Variable.Type.RATIO);
-			
+			variable.setForAnalysis( true );
 			varMetadata = metadataService.insertVariable( variable, obsUnitId );
 		}
 		return varMetadata;

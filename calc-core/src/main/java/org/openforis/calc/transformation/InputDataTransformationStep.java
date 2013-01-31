@@ -47,7 +47,9 @@ public class InputDataTransformationStep extends AbstractTransformationStep {
 		inputMeta.setDecimal(new String[columnSize]);
 		inputMeta.setFieldFormat(new String[columnSize]);
 		inputMeta.setFieldLength(new int[columnSize]);
-		inputMeta.setFieldPrecision(new int[columnSize]);
+		int[] precisions = new int[columnSize];
+		Arrays.fill(precisions, Double.MAX_EXPONENT);
+		inputMeta.setFieldPrecision(precisions);
 		inputMeta.setCurrency(new String[columnSize]);
 		inputMeta.setGroup(new String[columnSize]);
 

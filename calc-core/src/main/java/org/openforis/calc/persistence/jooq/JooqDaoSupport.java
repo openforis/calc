@@ -21,6 +21,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jooq.DAO;
 import org.jooq.Field;
+import org.jooq.Query;
 import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.SelectSelectStep;
@@ -44,8 +45,8 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Mino Togna
  */
 public abstract class JooqDaoSupport<R extends TableRecord<R>, P>
-	extends JdbcDaoSupport implements DAO<R, P, Integer>
-{
+	extends JdbcDaoSupport implements DAO<R, P, Integer> {
+	
 	private Log log = LogFactory.getLog(getClass());
 
 	private Table<R> table;
@@ -54,6 +55,9 @@ public abstract class JooqDaoSupport<R extends TableRecord<R>, P>
 	private Map<List<Object>, Integer> idCache;
 	// TODO sync cache on insert, update, delete - in jooq factory?
 	private Field<?>[] requiredFields;
+
+	private Factory batchFactory;
+	private List<Query> batchQueries;
 
 	
 	protected JooqDaoSupport(Table<R> table, Class<P> type, Field<?>... uniqueKeyFields) {
@@ -469,4 +473,46 @@ public abstract class JooqDaoSupport<R extends TableRecord<R>, P>
 		Field<?>[] fields = getFields(fieldNames);
 		return create.select(fields);		
 	}
+
+	public void startBatch() {
+		if( batchStarted() ) {
+			throw new IllegalStateException("Batch already started");
+		}
+		
+		batchFactory = getJooqFactory();
+		batchQueries = new ArrayList<Query>();
+	}
+
+	public void executeBatch() {
+		checkBachStarted();
+		
+		batchFactory.batch( batchQueries ).execute();
+		
+		closeBatch();
+	}
+
+	private void closeBatch() {
+		batchFactory = null;
+		batchQueries = null;
+	}
+
+	protected void checkBachStarted(){
+		if( !batchStarted() ) {
+			throw new IllegalStateException("Batch not started");
+		}
+	}
+	
+	protected boolean batchStarted() {
+		return batchFactory != null;
+	}
+	
+	protected void addQueryToBatch(Query query){
+		checkBachStarted();
+		batchQueries.add(query);
+	}
+
+	protected Factory getBatchFactory() {
+		return batchFactory;
+	}
+
 }

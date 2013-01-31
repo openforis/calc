@@ -10,7 +10,8 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 /**
  * 
  * @author G. Miceli
- *
+ * @author Mino Togna
+ * 
  */
 public class VariableMetadata {
 
@@ -27,21 +28,21 @@ public class VariableMetadata {
 	}
 
 	private void setCategories(Collection<Category> categories) {
-		categoriesByCode = new HashMap<String, Category>();		
-		for (Category category : categories) {
+		categoriesByCode = new HashMap<String, Category>();
+		for ( Category category : categories ) {
 			String code = category.getCategoryCode();
 			categoriesByCode.put(code, category);
 		}
 	}
-	
+
 	public Collection<Category> getCategories() {
 		return Collections.unmodifiableCollection(categoriesByCode.values());
 	}
-	
+
 	public Category getCategoryByCode(String code) {
 		return categoriesByCode.get(code);
 	}
-	
+
 	public String getVariableName() {
 		return variable.getVariableName();
 	}
@@ -77,7 +78,11 @@ public class VariableMetadata {
 	public String getVariableDescription() {
 		return variable.getVariableDescription();
 	}
-	
+
+	public boolean isForAnalysis() {
+		return variable.getForAnalysis();
+	}
+
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this).append(variable.getVariableName()).toString();
