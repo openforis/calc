@@ -26,6 +26,7 @@ public class ObservationUnitMetadata {
 		this.variableMap = new LinkedHashMap<String, VariableMetadata>();
 		for ( VariableMetadata var : variables ) {
 			variableMap.put(var.getVariableName(), var);
+			var.setObservationUnitMetadata( this );
 		}
 	}
 
@@ -80,4 +81,17 @@ public class ObservationUnitMetadata {
 	void setSurveyMetadata(SurveyMetadata surveyMetadata) {
 		this.surveyMetadata = surveyMetadata;
 	}
+	
+	public SurveyMetadata getSurveyMetadata() {
+		return surveyMetadata;
+	}
+	
+	public boolean isTypePlot(){
+		return ObservationUnit.Type.PLOT.equals( getObsUnitType() );
+	}
+	
+	public boolean isTypeSpecimen(){
+		return ObservationUnit.Type.SPECIMEN.equals( getObsUnitType() );
+	}
+	
 }

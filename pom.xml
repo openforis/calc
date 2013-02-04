@@ -317,6 +317,12 @@
 		      <version>1.3</version>
 		    </dependency>
 			
+			<!--  Jaxb -->
+		    <dependency>
+		    	<groupId>javax.xml.bind</groupId>
+		    	<artifactId>jaxb-api</artifactId>
+		    	<version>2.2.7</version>
+		    </dependency>
 		</dependencies>
 	</dependencyManagement>
 

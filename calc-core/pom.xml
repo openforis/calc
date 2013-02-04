@@ -309,5 +309,10 @@
 <!-- 	      <groupId>org.geotoolkit</groupId> -->
 <!-- 	      <artifactId>geotk-epsg</artifactId> -->
 <!-- 	    </dependency> -->
+		<!--  Jaxb -->
+		<dependency>
+	  		<groupId>javax.xml.bind</groupId>
+	  		<artifactId>jaxb-api</artifactId>
+	  	</dependency>
 	</dependencies>
 </project>

@@ -17,7 +17,8 @@ public class VariableMetadata {
 
 	private Variable variable;
 	private Map<String, Category> categoriesByCode;
-
+	private ObservationUnitMetadata observationUnitMetadata;
+	
 	public VariableMetadata(Variable variable) {
 		this.variable = variable;
 	}
@@ -86,5 +87,13 @@ public class VariableMetadata {
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this).append(variable.getVariableName()).toString();
+	}
+
+	void setObservationUnitMetadata(ObservationUnitMetadata observationUnitMetadata) {
+		this.observationUnitMetadata = observationUnitMetadata;
+	}
+	
+	public ObservationUnitMetadata getObservationUnitMetadata() {
+		return observationUnitMetadata;
 	}
 }

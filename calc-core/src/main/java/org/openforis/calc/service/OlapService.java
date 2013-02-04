@@ -1,12 +1,22 @@
 package org.openforis.calc.service;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Collection;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 
 import org.openforis.calc.io.flat.FlatDataStream;
 import org.openforis.calc.model.ObservationUnit;
 import org.openforis.calc.model.ObservationUnitMetadata;
 import org.openforis.calc.model.SurveyMetadata;
 import org.openforis.calc.model.VariableMetadata;
+import org.openforis.calc.olap.Schema;
 import org.openforis.calc.persistence.AreaFactDao;
 import org.openforis.calc.persistence.OlapDimensionDao;
 import org.openforis.calc.persistence.PlotSectionViewDao;
@@ -55,7 +65,25 @@ public class OlapService extends CalcService {
 
 			olapDimensionDao.generateOlapDimensions(surveyName, variables);
 		}
-
+	}
+	
+	public void saveSchema(Schema schema, String path) throws IOException, JAXBException{
+		JAXBContext context = JAXBContext.newInstance(Schema.class);
+		Marshaller marshaller = context.createMarshaller();
+		OutputStream out = new BufferedOutputStream( new FileOutputStream(new File(path)) );
+		marshaller.marshal(schema, out);
+		out.flush();
+		out.close();
+	}
+	
+	public Schema generateSchema(String surveyName){
+		SurveyMetadata surveyMetadata = metadataService.getSurveyMetadata(surveyName);
+		return generateSchema(surveyMetadata);
+	}
+	
+	public Schema generateSchema(SurveyMetadata surveyMetadata){
+		Schema schema = new Schema( surveyMetadata );
+		return schema;
 	}
 
 	@Transactional
