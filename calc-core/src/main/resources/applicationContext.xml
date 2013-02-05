@@ -20,24 +20,42 @@
     http://www.springframework.org/schema/tx/spring-tx-3.0.xsd"
 	default-lazy-init="true">
 
+	<!-- Spring -->
 	<context:component-scan base-package="org.openforis.calc" />
 
 	<context:annotation-config />
 	
 	<context:property-placeholder location="classpath:dev.properties" />
 	
+	  <bean id="log4jInitializer" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="staticMethod">
+			<value>org.springframework.util.Log4jConfigurer.initLogging</value>
+		</property>
+		<property name="arguments">
+			<list>
+				<value>classpath:log4j.properties</value>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- OF Collect / Idm -->
 	<bean id="dataMarshaller" class="org.openforis.collect.persistence.xml.DataMarshaller" lazy-init="false" autowire-candidate="true" autowire="byName" />
 
 	<bean id="expressionFactory" class="org.openforis.idm.model.expression.ExpressionFactory"/>
 
 	<bean id="validator" class="org.openforis.idm.metamodel.validation.Validator" />
 	
-<!-- 	<bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean"> -->
-<!-- 		<property name="jndiName" value="java:comp/env/jdbc/calcDs"/>    -->
-<!--       	<property name="resourceRef" value="true" /> -->
-<!--       	<property name="defaultObject" ref="defaultDataSource"/> -->
-<!-- 	</bean> -->
-	
+	<bean id="collectSurveyContext" class="org.openforis.collect.model.CollectSurveyContext">
+        <constructor-arg><ref bean="expressionFactory"/></constructor-arg>
+        <constructor-arg><ref bean="validator"/></constructor-arg>
+        <constructor-arg><null/></constructor-arg>
+    </bean>
+    
+    <bean id="idmlBinder" class="org.openforis.collect.persistence.xml.CollectSurveyIdmlBinder">
+    	<constructor-arg><ref bean="collectSurveyContext"/></constructor-arg>
+    </bean>
+    
+	<!-- Database -->
 	<bean id="dataSource" destroy-method="close" class="org.apache.commons.dbcp.BasicDataSource">
     	<property name="driverClassName" value="${calc.jdbc.driver}"/>
     	<property name="url" value="${calc.jdbc.url}"/>
@@ -53,48 +71,4 @@
     
     <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
     
-<!-- 	<bean class="org.openforis.calc.dataimport.collect.CollectMetadataLoader" /> -->
-<!-- 	<bean class="org.openforis.calc.dataimport.PlotDataCsvImporter" autowire="byType" /> -->
-
-	<!--  DAOs -->	
-<!-- 	<bean class="org.openforis.calc.persistence.SurveyDao" autowire="byName"/> -->
-<!-- 	<bean class="org.openforis.calc.persistence.ObservationUnitDao" autowire="byName"/> -->
-<!-- 	<bean class="org.openforis.calc.persistence.VariableDao" autowire="byName"/> -->
-<!-- 	<bean class="org.openforis.calc.persistence.CategoryDao" autowire="byName"/> -->
-<!-- 	<bean class="org.openforis.calc.persistence.StratumDao" autowire="byName"/> -->
-<!-- 	<bean class="org.openforis.calc.persistence.ClusterDao" autowire="byName"/> -->
-<!-- 	<bean class="org.openforis.calc.persistence.SamplePlotDao" autowire="byName"/> -->
-<!-- 	<bean class="org.openforis.calc.persistence.AoiDao" autowire="byName"/> -->
-<!-- 	<bean class="org.openforis.calc.persistence.PlotSectionDao" autowire="byName"/> -->
-<!-- 	<bean class="org.openforis.calc.persistence.PlotMeasurementDao" autowire="byName"/> -->
-<!-- 	<bean class="org.openforis.calc.persistence.PlotCategoryDao" autowire="byName"/> -->
-<!-- 	<bean class="org.openforis.calc.persistence.SpecimenDao" autowire="byName"/> -->
-<!-- 	<bean class="org.openforis.calc.persistence.SpecimenMeasurementDao" autowire="byName"/> -->
-<!-- 	<bean class="org.openforis.calc.persistence.SpecimenCategoryDao" autowire="byName"/> -->
-
-	<!-- Services -->	
-<!-- 	<bean class="org.openforis.calc.service.MetadataService" /> -->
-<!-- 	<bean class="org.openforis.calc.service.SamplingDesignService" /> -->
-<!-- 	<bean class="org.openforis.calc.service.DataService" /> -->
-	
-    <bean id="collectSurveyContext" class="org.openforis.collect.model.CollectSurveyContext">
-        <constructor-arg><ref bean="expressionFactory"/></constructor-arg>
-        <constructor-arg><ref bean="validator"/></constructor-arg>
-        <constructor-arg><null/></constructor-arg>
-    </bean>
-    
-    <bean id="idmlBinder" class="org.openforis.collect.persistence.xml.CollectSurveyIdmlBinder">
-    	<constructor-arg><ref bean="collectSurveyContext"/></constructor-arg>
-    </bean>
-    
-    <bean id="log4jInitializer" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-		<property name="staticMethod">
-			<value>org.springframework.util.Log4jConfigurer.initLogging</value>
-		</property>
-		<property name="arguments">
-			<list>
-				<value>classpath:log4j.properties</value>
-			</list>
-		</property>
-	</bean>
 </beans>
