@@ -11,6 +11,7 @@ import org.jooq.impl.Factory;
 import org.openforis.calc.io.flat.FlatDataStream;
 import org.openforis.calc.model.SamplePlot;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
+import org.openforis.calc.persistence.jooq.Sequences;
 import org.openforis.calc.persistence.jooq.tables.records.SamplePlotRecord;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +26,12 @@ public class SamplePlotDao extends JooqDaoSupport<SamplePlotRecord, SamplePlot> 
 
 	public SamplePlotDao() {
 		super(SAMPLE_PLOT, SamplePlot.class);
+	}
+
+
+	public int nextId() {
+		Factory create = getJooqFactory();
+		return create.nextval(Sequences.SAMPLE_PLOT_ID_SEQ).intValue();
 	}
 
 //	public List<SamplePlot> findGroundPlotsByObservationUnitId(int observationUnitId) {

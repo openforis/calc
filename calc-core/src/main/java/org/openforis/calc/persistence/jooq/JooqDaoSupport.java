@@ -491,6 +491,11 @@ public abstract class JooqDaoSupport<R extends TableRecord<R>, P>
 		closeBatch();
 	}
 
+	public int batchQuerySize(){
+		checkBachStarted();
+		return batchQueries.size();
+	}
+	
 	private void closeBatch() {
 		batchFactory = null;
 		batchQueries = null;

@@ -1,11 +1,17 @@
 package org.openforis.calc.service;
 
+import java.io.IOException;
 import java.util.List;
 
+import org.openforis.calc.dataimport.ImportException;
+import org.openforis.calc.dataimport.SamplingDesignImporter;
+import org.openforis.calc.io.flat.FlatDataStream;
 import org.openforis.calc.model.Cluster;
+import org.openforis.calc.model.ObservationUnitMetadata;
 import org.openforis.calc.model.SamplePlot;
 import org.openforis.calc.model.Stratum;
 import org.openforis.calc.model.Survey;
+import org.openforis.calc.model.SurveyMetadata;
 import org.openforis.calc.persistence.ClusterDao;
 import org.openforis.calc.persistence.ObservationUnitDao;
 import org.openforis.calc.persistence.SamplePlotDao;
@@ -17,6 +23,7 @@ import org.springframework.stereotype.Component;
 /**
  * 
  * @author G. Miceli
+ * @author Mino Togna
  *
  */
 @Component
@@ -32,7 +39,10 @@ public class SamplingDesignService {
 	private ObservationUnitDao observationUnitDao;
 	@Autowired
 	private SamplePlotDao samplePlotDao;
-	
+	@Autowired
+	private MetadataService metadataService;
+	@Autowired
+	private SamplingDesignImporter importer;
 //	/**
 //	 * Loads ground plots only
 //	 * @param survey
@@ -45,13 +55,20 @@ public class SamplingDesignService {
 //		survey.setSamplingDesign(clusters, strata, groundPlots);
 //	}
 	
+	public void importSamplingDesign(String surveyName, String obsUnitName, String srsId, FlatDataStream stream) throws ImportException, IOException{
+		SurveyMetadata surveyMetadata = metadataService.getSurveyMetadata(surveyName);
+		ObservationUnitMetadata unitMetadata = surveyMetadata.getObservationUnitMetadataByName(obsUnitName);
+		
+		importer.importSamplingDesign(surveyMetadata.getSurveyId(),unitMetadata.getObsUnitId(), srsId, stream);		
+	}
+	
 	private List<Cluster> getClusters(Survey survey){
 		int surveyId = survey.getId();
 		List<Cluster> clusters = clusterDao.findBySurveyId(surveyId);
 		return clusters;
 	}
 	
-	public List<SamplePlot> getGroundPlots (Survey survey){
+	public List<SamplePlot> getGroundPlots(Survey survey){
 		int surveyId = survey.getId();
 		List<Stratum> strata = stratumDao.findBySurveyId(surveyId);
 		List<SamplePlot> groundPlots = samplePlotDao.findGroundPlotsBySurveyId(surveyId);
@@ -67,4 +84,5 @@ public class SamplingDesignService {
 		}
 		return groundPlots;
 	}
+	
 }

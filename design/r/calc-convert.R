@@ -64,8 +64,8 @@ sp$slope  <- with( sp,
                   );
 
 #default plot section = A
-sp[is.na(plot_section),]$plot_section <- 'A'
-
+sp[is.na(sp$plot_section) | sp$plot_section=='',]$plot_section <- 'A'
+stopifnot( length(unique(sp$plot_section)) == 2)
 write.csv(sp, '~/tzdata/plots.csv')
 
 trees  = getTrees('~/tzdata/src/trees.csv')

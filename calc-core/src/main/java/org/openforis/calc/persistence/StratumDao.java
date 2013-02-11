@@ -4,8 +4,10 @@ import static org.openforis.calc.persistence.jooq.tables.Stratum.STRATUM;
 
 import java.util.List;
 
+import org.jooq.impl.Factory;
 import org.openforis.calc.model.Stratum;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
+import org.openforis.calc.persistence.jooq.Sequences;
 import org.openforis.calc.persistence.jooq.Tables;
 import org.openforis.calc.persistence.jooq.tables.records.StratumRecord;
 import org.springframework.stereotype.Component;
@@ -24,5 +26,10 @@ public class StratumDao extends JooqDaoSupport<StratumRecord, Stratum> {
 
 	public List<Stratum> findBySurveyId(int surveyId) {
 		return fetch(STRATUM.SURVEY_ID, surveyId);
+	}
+
+	public int nextId() {
+		Factory create = getJooqFactory();
+		return create.nextval(Sequences.STRATUM_ID_SEQ).intValue();
 	}
 }
