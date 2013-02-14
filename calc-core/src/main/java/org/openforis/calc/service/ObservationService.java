@@ -35,10 +35,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ObservationService extends CalcService {
 
-	private static final String AREA_FACT_TABLE_NAME = "area_fact";
-	private static final String SPECIMEN_FACT_TABLE_NAME_SUFFIX = "_fact";
-	
-	
 	@Autowired
 	private PlotSectionViewDao plotSectionViewDao;
 	@Autowired
@@ -235,20 +231,7 @@ public class ObservationService extends CalcService {
 			specimenCategoricalValueDao.insert(scm);
 		}
 	}
-	
-	@Transactional
-	@Deprecated
-	public void updateAreaFacts(String surveyName, FlatDataStream data) {
-		areaFactDao.createOrUpdateAreaFactTable(data, surveyName, AREA_FACT_TABLE_NAME);
-	}
 
-	@Transactional
-	@Deprecated
-	public void updateSpecimenFacts(String surveyName, String obsUnitName, FlatDataStream data) {
-		String tableName = obsUnitName + SPECIMEN_FACT_TABLE_NAME_SUFFIX;
-		specimenFactDao.createOrUpdateFactTable(data, surveyName, tableName);
-	}
-	
 	@Transactional
 	synchronized 
 	public void updateSpecimenNumericalValue(String surveyName, String obsUnitName, FlatDataStream dataStream, String... variableNames) throws IOException {

@@ -5,7 +5,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -88,13 +90,32 @@ public class OlapService extends CalcService {
 
 	@Transactional
 	private void updateAreaFacts(String surveyName, FlatDataStream data) {
-		areaFactDao.createOrUpdateAreaFactTable(data, surveyName, AREA_FACT_TABLE_NAME);
+		ObservationUnitMetadata plotMetadata = getPlotMetadata( surveyName );
+		areaFactDao.createOrUpdateAreaFactTable(data,plotMetadata.getVariableMetadata(), surveyName, AREA_FACT_TABLE_NAME);
+	}
+
+	private ObservationUnitMetadata getPlotMetadata(String surveyName) {
+		SurveyMetadata surveyMetadata = metadataService.getSurveyMetadata(surveyName);
+		Collection<ObservationUnitMetadata> observationMetadata = surveyMetadata.getObservationMetadata();
+		for ( ObservationUnitMetadata obsUnit : observationMetadata ) {
+			if( ObservationUnit.Type.PLOT.equals( obsUnit.getObsUnitType() ) ){
+				return obsUnit;
+			}
+		}
+		throw new IllegalArgumentException("Unable to find " + ObservationUnit.Type.PLOT.toString() + " observation unit for survey " + surveyName);
 	}
 
 	@Transactional
 	private void updateSpecimenFacts(String surveyName, String obsUnitName, FlatDataStream data) {
 		String tableName = obsUnitName + SPECIMEN_FACT_TABLE_NAME_SUFFIX;
-		specimenFactDao.createOrUpdateFactTable(data, surveyName, tableName);
+		ObservationUnitMetadata obs = getObservationUnitMetadata(surveyName, obsUnitName);
+		ObservationUnitMetadata obsParent = obs.getObsUnitParent();
+		
+		List<VariableMetadata> vars = new ArrayList<VariableMetadata>();
+		vars.addAll( obs.getVariableMetadata() );
+		vars.addAll( obsParent.getVariableMetadata() );
+		
+		specimenFactDao.createOrUpdateFactTable(data, vars, surveyName, tableName);
 	}
 
 	private FlatDataStream getAreaFactData(String surveyName, String observationUnitName, PlotDistributionCalculationMethod plotDistributionCalculationMethod) {

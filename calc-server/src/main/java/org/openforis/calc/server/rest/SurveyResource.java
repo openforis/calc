@@ -1,9 +1,5 @@
 package org.openforis.calc.server.rest;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
@@ -40,17 +36,17 @@ public class SurveyResource extends SubResource<String> {
     	return surveyDao.streamByName(getFields(), getKey());
     }
 	
-	@PATCH
-	@Path("/area-results")
-	@Deprecated
-	public Response updateAreaFacts(FlatDataStream dataStream) throws URISyntaxException, IOException {
-
-		// Process data stream and store results 
-		observationService.updateAreaFacts(getKey(), dataStream);
-		
-		// Use OK response instead of created; HTTP PATCH may create or update
-		return Response.ok(new URI("area-results")).entity("OK").build();
-	}
+//	@PATCH
+//	@Path("/area-results")
+//	@Deprecated
+//	public Response updateAreaFacts(FlatDataStream dataStream) throws URISyntaxException, IOException {
+//
+//		// Process data stream and store results 
+//		observationService.updateAreaFacts(getKey(), dataStream);
+//		
+//		// Use OK response instead of created; HTTP PATCH may create or update
+//		return Response.ok(new URI("area-results")).entity("OK").build();
+//	}
 	
 //	@PATCH
 //	@Path("/test")

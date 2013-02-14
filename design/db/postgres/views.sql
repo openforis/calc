@@ -1,7 +1,9 @@
-//drop view if exists calc.specimen_numeric_value_view;
-//drop view if exists calc.plot_category_distribution_view;
-drop view if exists calc.plot_exp_factor;
-drop view if exists calc.sample_plot_visited_cnt_view;
+drop view if exists calc.plot_section_aoi_view;
+drop view if exists calc.sample_plot_aoi_view;
+drop view if exists calc.aoi_stratum_view;
+drop view if exists calc.primary_plot_section_cnt_view;
+--drop view if exists calc.plot_exp_factor;
+--drop view if exists calc.sample_plot_visited_cnt_view;
 drop view if exists calc.sample_plot_cnt_view;
 drop view if exists calc.specimen_categorical_value_view;
 drop view if exists calc.specimen_view;
@@ -22,7 +24,8 @@ AS
          cat.category_code,
          cat.category_order
   FROM category cat
-       JOIN variable v ON cat.variable_id = v.variable_id;
+       JOIN variable v ON cat.variable_id = v.variable_id;       
+comment on view calc.category_view is 'Join between category and variable';
 
 CREATE OR REPLACE VIEW calc.plot_categorical_value_view
 AS
@@ -38,6 +41,7 @@ AS
          cat.category_order
   FROM plot_categorical_value pc
        JOIN category_view cat ON pc.category_id = cat.category_id;
+comment on view calc.plot_categorical_value_view is 'Join between plot_categorical_value and category_view';
 	   
 CREATE OR REPLACE VIEW calc.sample_plot_view
 AS
@@ -53,8 +57,8 @@ AS
          c.cluster_y,
          p.sample_plot_id,
          p.plot_no,
-         p.sample_plot_location,
-         p.sample_plot_shape,
+         p.plot_location,
+         p.plot_shape,
          p.sampling_phase,
          p.ground_plot,
          p.permanent_plot
@@ -62,31 +66,10 @@ AS
        JOIN cluster c ON p.cluster_id = c.cluster_id
        JOIN stratum str ON p.stratum_id = str.stratum_id
        JOIN observation_unit u ON p.obs_unit_id = u.obs_unit_id;
-	   
+--comment on view calc.plot_categorical_value_view is 'Used to get full sampling ';	   
 	   
 	   
 CREATE OR REPLACE VIEW calc.ground_plot_view
-AS
-  SELECT sample_plot_view.survey_id,        
-         sample_plot_view.plot_obs_unit_id,
-         sample_plot_view.plot_obs_unit_name,
-         sample_plot_view.stratum_id,
-         sample_plot_view.stratum_no,
-         sample_plot_view.cluster_id,
-         sample_plot_view.cluster_code,
-         sample_plot_view.cluster_x,
-         sample_plot_view.cluster_y,
-         sample_plot_view.sample_plot_id,
-         sample_plot_view.plot_no,
-         sample_plot_view.sample_plot_location,
-         sample_plot_view.sample_plot_shape,
-         sample_plot_view.sampling_phase,
-         sample_plot_view.ground_plot,
-         sample_plot_view.permanent_plot
-  FROM sample_plot_view 
-  WHERE sample_plot_view.ground_plot;
-  
-CREATE OR REPLACE VIEW calc.plot_section_view
 AS
   SELECT p.survey_id,         
          p.plot_obs_unit_id,
@@ -99,8 +82,8 @@ AS
          p.cluster_y,
          p.sample_plot_id,
          p.plot_no,         
-         p.sample_plot_location,
-         p.sample_plot_shape,
+         p.plot_location,
+         p.plot_shape,
          p.sampling_phase,
          p.ground_plot,
          p.permanent_plot,
@@ -111,15 +94,28 @@ AS
          ps.plot_gps_reading,
          ps.plot_direction,
          ps.plot_distance,
-         ps.plot_location,
+         ps.plot_actual_location,
          ps.accessible,
          ps.step,
          ps.plot_section_shape,
          ps.plot_section_area,
          ps.plot_share,
-         ps.primary_section
-  FROM plot_section ps
-       JOIN ground_plot_view p ON ps.sample_plot_id = p.sample_plot_id;
+         ps.primary_section,
+         st_distance( Geography(ps.plot_actual_location), Geography(p.plot_location) ) as plot_location_deviation         
+  FROM 
+        calc.sample_plot_view p  
+left outer join 
+        calc.plot_section ps ON ps.sample_plot_id = p.sample_plot_id 
+where
+        p.ground_plot;
+  
+CREATE OR REPLACE VIEW calc.plot_section_view
+AS
+SELECT 
+        * 
+from
+        calc.ground_plot_view p
+where p.plot_section_id is not null;
 	   
 CREATE OR REPLACE VIEW calc.plot_numeric_value_view
 AS
@@ -134,8 +130,8 @@ AS
          ps.cluster_y,
          ps.sample_plot_id,
          ps.plot_no,
-         ps.sample_plot_location,
-         ps.sample_plot_shape,
+         ps.plot_location,
+         ps.plot_shape,
          ps.sampling_phase,
          ps.ground_plot,
          ps.permanent_plot,
@@ -146,7 +142,7 @@ AS
          ps.plot_gps_reading,
          ps.plot_direction,
          ps.plot_distance,
-         ps.plot_location,
+         ps.plot_actual_location,
          ps.accessible,
          ps.step,
          ps.plot_section_shape,
@@ -236,103 +232,181 @@ inner join
 //inner join
 //    calc.variable va on va.variable_id = v.variable_id;
 
-create or replace view calc.sample_plot_cnt_view
-as
-select
-    s.stratum_no,
-    s.stratum_id,
-    a.aoi_id,    
-    p.plot_obs_unit_id,
-    count(p.sample_plot_id) as plot1_cnt
-    -- count(p.sample_plot_id) / (select count(sample_plot_id) from calc.sample_plot)::numeric as prop,
-    -- count(p.sample_plot_id) / (select count(sample_plot_id) from calc.sample_plot)::numeric * (select aoi_area from calc.aoi where aoi_id = 1)  as area    
-from
-    calc.sample_plot_view p
-inner join
-    calc.stratum s on p.stratum_id = s.stratum_id
-inner join
-    calc.aoi a on a.aoi_id = 1
-//where 
-//    p.survey_id = 2
-//    and 
-//    p.plot_obs_unit_id = 2
-group by
-    s.stratum_id,
-    s.stratum_no,
-    a.aoi_id,
-    p.plot_obs_unit_id
-order by
-    s.stratum_no;
+--
+--create or replace view calc.sample_plot_visited_cnt_view
+--as
+--select
+--    s.stratum_no,
+--    s.stratum_id,
+--    a.aoi_id,    
+--    p.plot_obs_unit_id,
+--    count(p.sample_plot_id) as plot2_cnt
+--    -- count(p.sample_plot_id) / (select count(sample_plot_id) from calc.sample_plot)::numeric as prop,
+--    -- count(p.sample_plot_id) / (select count(sample_plot_id) from calc.sample_plot)::numeric * (select aoi_area from calc.aoi where aoi_id = 1)  as area    
+--from
+--    calc.sample_plot_view p
+--inner join
+--    calc.stratum s on p.stratum_id = s.stratum_id
+--inner join
+--    calc.plot_section ps on p.sample_plot_id = ps.sample_plot_id
+--inner join
+--    calc.aoi a on a.aoi_id = 1
+--where
+--    ps.visit_type = 'P'
+--and
+--    ps.primary_section
+--//where 
+--//    p.survey_id = 2
+--//    and 
+--//    p.plot_obs_unit_id = 2
+--group by
+--    s.stratum_id,
+--    s.stratum_no,
+--    a.aoi_id,
+--    p.plot_obs_unit_id
+--order by
+--    s.stratum_no;
+--
+--create view calc.plot_exp_factor
+--as
+--select 
+--    c.stratum_id,
+--    c.stratum_no,
+--    c.aoi_id,
+--    (c1.plot1_cnt / 
+--        (select 
+--            sum(c2.plot1_cnt) 
+--        from 
+--            calc.sample_plot_cnt_view c2 
+--        )
+--    ) as prop,
+--    a.aoi_area * 
+--    (c1.plot1_cnt / 
+--        (select 
+--            sum(c2.plot1_cnt) 
+--        from 
+--            calc.sample_plot_cnt_view c2 
+--        )
+--    )
+--    as area , 
+--    c1.plot1_cnt,
+--    c.plot2_cnt ,
+--    a.aoi_area * 
+--    (c1.plot1_cnt / 
+--        (select 
+--            sum(c2.plot1_cnt) 
+--        from 
+--            calc.sample_plot_cnt_view c2 
+--        )
+--    ) / c.plot2_cnt as expf
+--from
+--    calc.sample_plot_visited_cnt_view c
+--inner join
+--    calc.sample_plot_cnt_view c1 on c1.stratum_id = c.stratum_id 
+--inner join 
+--    calc.aoi a on c.aoi_id = a.aoi_id;
 
-create or replace view calc.sample_plot_visited_cnt_view
-as
-select
-    s.stratum_no,
-    s.stratum_id,
-    a.aoi_id,    
-    p.plot_obs_unit_id,
-    count(p.sample_plot_id) as plot2_cnt
-    -- count(p.sample_plot_id) / (select count(sample_plot_id) from calc.sample_plot)::numeric as prop,
-    -- count(p.sample_plot_id) / (select count(sample_plot_id) from calc.sample_plot)::numeric * (select aoi_area from calc.aoi where aoi_id = 1)  as area    
+create view calc.sample_plot_cnt_view
+as                                
+select        
+        p.stratum_id,
+        a.aoi_id,
+        count(p.sample_plot_id)
 from
-    calc.sample_plot_view p
+        calc.sample_plot_aoi pa
 inner join
-    calc.stratum s on p.stratum_id = s.stratum_id
+        calc.sample_plot_view p on pa.sample_plot_id = p.sample_plot_id
 inner join
-    calc.plot_section ps on p.sample_plot_id = ps.sample_plot_id
-inner join
-    calc.aoi a on a.aoi_id = 1
-where
-    ps.visit_type = 'P'
-and
-    ps.primary_section
-//where 
-//    p.survey_id = 2
-//    and 
-//    p.plot_obs_unit_id = 2
-group by
-    s.stratum_id,
-    s.stratum_no,
-    a.aoi_id,
-    p.plot_obs_unit_id
-order by
-    s.stratum_no;
+        calc.aoi a on pa.aoi_id = a.aoi_id
+group by        
+        p.stratum_id,
+        a.aoi_id;
+        
+create view calc.primary_plot_section_cnt_view
+as
+        select        
+                pa.aoi_id,
+                p.stratum_id,        
+                count(pa.plot_section_id)
+        from
+                calc.plot_section_aoi pa
+        inner join
+                calc.plot_section_view p on pa.plot_section_id = p.plot_section_id
+--        inner join
+--                calc.stratum s on p.stratum_id = s.stratum_id
+        where
+                p.primary_section        
+        group by
+                pa.aoi_id,
+                p.stratum_id;
 
-create view calc.plot_exp_factor
+create view calc.aoi_stratum_view
 as
 select 
-    c.stratum_id,
-    c.stratum_no,
-    c.aoi_id,
-    (c1.plot1_cnt / 
-        (select 
-            sum(c2.plot1_cnt) 
-        from 
-            calc.sample_plot_cnt_view c2 
-        )
-    ) as prop,
-    a.aoi_area * 
-    (c1.plot1_cnt / 
-        (select 
-            sum(c2.plot1_cnt) 
-        from 
-            calc.sample_plot_cnt_view c2 
-        )
-    )
-    as area , 
-    c1.plot1_cnt,
-    c.plot2_cnt ,
-    a.aoi_area * 
-    (c1.plot1_cnt / 
-        (select 
-            sum(c2.plot1_cnt) 
-        from 
-            calc.sample_plot_cnt_view c2 
-        )
-    ) / c.plot2_cnt as expf
+        p.aoi_id,
+        p.stratum_id,        
+        --a.aoi_label,
+        --a.aoi_level,
+        --a.aoi_area,        
+        p.count as sample_plot_cnt,
+        ( p.count / (select sum(c.count) from calc.sample_plot_cnt_view c where c.aoi_id = p.aoi_id)::double precision ) as aoi_share,
+        coalesce( p2.count , 0) as obs_plot_cnt,        
+        a.aoi_land_area *
+        ( p.count / (select sum(c.count) from calc.sample_plot_aoi_stratum_cnt c where c.aoi_id = p.aoi_id)::double precision ) as area
 from
-    calc.sample_plot_visited_cnt_view c
+        calc.sample_plot_cnt_view p
+left outer join 
+        calc.primary_plot_section_cnt_view p2 on p.aoi_id = p2.aoi_id and p.stratum_id = p2.stratum_id
 inner join
-    calc.sample_plot_cnt_view c1 on c1.stratum_id = c.stratum_id 
-inner join 
-    calc.aoi a on c.aoi_id = a.aoi_id;
+        calc.aoi a on p.aoi_id = a.aoi_id      
+order by
+        p.aoi_id,
+        p.stratum_id
+;
+
+create view
+    calc.plot_section_aoi_view
+    (
+        plot_section_id,
+        aoi_id
+    ) as
+select
+    p.plot_section_id,
+    a.aoi_id
+from
+    (aoi a
+join
+    plot_section p
+on
+    (
+        st_contains(a.aoi_shape, p.plot_actual_location)))
+union
+select
+    p.plot_section_id,
+    1 as aoi_id
+from
+    plot_section p
+    ;
+
+create view
+    calc.sample_plot_aoi_view
+    (
+        sample_plot_id,
+        aoi_id
+    ) as
+select
+    p.sample_plot_id,
+    a.aoi_id
+from
+    (aoi a
+join
+    sample_plot p
+on
+    (
+        st_contains(a.aoi_shape, p.plot_location)))
+union
+select
+    p.sample_plot_id,
+    1 as aoi_id
+from
+    sample_plot p;

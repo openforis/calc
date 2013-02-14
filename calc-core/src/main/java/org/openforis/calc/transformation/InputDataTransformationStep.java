@@ -6,10 +6,13 @@ package org.openforis.calc.transformation;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.openforis.calc.io.flat.FlatDataStream;
 import org.openforis.calc.io.flat.FlatRecord;
+import org.openforis.calc.model.VariableMetadata;
+import org.openforis.calc.persistence.jooq.tables.Aoi;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.datagrid.DataGridMeta;
@@ -22,14 +25,16 @@ import org.pentaho.di.trans.steps.datagrid.DataGridMeta;
 public class InputDataTransformationStep extends AbstractTransformationStep {
 
 	private FlatDataStream dataStream;
+	private Collection<VariableMetadata> variables;
 	private StepMeta stepMeta;
 
 	/**
 	 * @throws IOException
 	 * 
 	 */
-	public InputDataTransformationStep(FlatDataStream dataStream) throws IOException {
+	public InputDataTransformationStep(FlatDataStream dataStream, Collection<VariableMetadata> variables) throws IOException {
 		this.dataStream = dataStream;
+		this.variables = variables;
 
 		initStepMeta();
 	}
@@ -40,8 +45,9 @@ public class InputDataTransformationStep extends AbstractTransformationStep {
 
 		DataGridMeta inputMeta = new DataGridMeta();
 		inputMeta.setFieldName(columnNames.toArray(new String[columnSize]));
-		String[] dataTypes = new String[columnSize];
-		Arrays.fill(dataTypes, ValueMeta.getTypeDesc(ValueMeta.TYPE_NUMBER));
+		String[] dataTypes = getDataTypes();
+		// new String[columnSize];
+		// Arrays.fill(dataTypes, ValueMeta.getTypeDesc(ValueMeta.TYPE_NUMBER));
 		inputMeta.setFieldType(dataTypes);
 
 		inputMeta.setDecimal(new String[columnSize]);
@@ -56,6 +62,28 @@ public class InputDataTransformationStep extends AbstractTransformationStep {
 		setInputValues(inputMeta);
 
 		stepMeta = new StepMeta("dataInputTrans", "dataInput", inputMeta);
+	}
+
+	private String[] getDataTypes() {
+		List<String> columnNames = dataStream.getFieldNames();
+		String[] dataTypes = new String[columnNames.size()];
+		int i = 0;
+		
+		for ( String colName : columnNames ) {
+			int type = ValueMeta.TYPE_NUMBER;
+			if ( Aoi.AOI.AOI_ID.getName().equals(colName) ) {
+				type = ValueMeta.TYPE_INTEGER;
+			} else {
+				for ( VariableMetadata var : variables ) {
+					if ( var.getVariableName().equals(colName) ) {
+						type = var.isCategorical() ? ValueMeta.TYPE_INTEGER : ValueMeta.TYPE_NUMBER;
+						break;
+					}
+				}
+			}
+			dataTypes[i++] = ValueMeta.getTypeDesc(type);
+		}
+		return dataTypes;
 	}
 
 	@Override

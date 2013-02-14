@@ -1,8 +1,10 @@
 package org.openforis.calc.persistence;
 
 import java.io.IOException;
+import java.util.Collection;
 
 import org.openforis.calc.io.flat.FlatDataStream;
+import org.openforis.calc.model.VariableMetadata;
 import org.openforis.calc.transformation.InputDataTransformationStep;
 import org.openforis.calc.transformation.OutputDataTransformationStep;
 import org.openforis.calc.transformation.Transformation;
@@ -26,8 +28,7 @@ public class SpecimenFactDao {
 		super();
 	}
 
-	synchronized 
-	public void createOrUpdateFactTable(FlatDataStream data, String schema, String tableName) {
+	synchronized public void createOrUpdateFactTable(FlatDataStream data, Collection<VariableMetadata> variables, String schema, String tableName) {
 		try {
 			Transformation transformation = new Transformation(transformationDatabase, "importResults");
 
@@ -36,7 +37,7 @@ public class SpecimenFactDao {
 			transformation.executeSql(dropTableSql);
 
 			// 2. read data in memory
-			InputDataTransformationStep inputDataTransformation = new InputDataTransformationStep(data);
+			InputDataTransformationStep inputDataTransformation = new InputDataTransformationStep(data, variables);
 			transformation.addStep(inputDataTransformation);
 
 			OutputDataTransformationStep outputDataTransformation = new OutputDataTransformationStep(transformationDatabase, schema, tableName);
