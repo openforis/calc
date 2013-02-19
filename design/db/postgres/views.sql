@@ -345,23 +345,28 @@ as
 select 
         p.aoi_id,
         p.stratum_id,        
-        --a.aoi_label,
-        --a.aoi_level,
-        --a.aoi_area,        
-        p.count as sample_plot_cnt,
-        ( p.count / (select sum(c.count) from calc.sample_plot_cnt_view c where c.aoi_id = p.aoi_id)::double precision ) as aoi_share,
-        coalesce( p2.count , 0) as obs_plot_cnt,        
-        a.aoi_land_area *
-        ( p.count / (select sum(c.count) from calc.sample_plot_aoi_stratum_cnt c where c.aoi_id = p.aoi_id)::double precision ) as area
+        p.count as sample_plot_cnt,        
+        p.count / p1_aoi_cnt.cnt as aoi_share,
+        coalesce( p2.count , 0) as obs_plot_cnt,
+        a.aoi_land_area * ( p.count / p1_aoi_cnt.cnt ) as area
 from
         calc.sample_plot_cnt_view p
+inner join
+        (
+        select 
+                c.aoi_id,
+                sum(c.count) as cnt
+        from 
+                calc.sample_plot_cnt_view c 
+        group by
+                c.aoi_id 
+        ) as p1_aoi_cnt
+on
+   p1_aoi_cnt.aoi_id = p.aoi_id               
 left outer join 
         calc.primary_plot_section_cnt_view p2 on p.aoi_id = p2.aoi_id and p.stratum_id = p2.stratum_id
 inner join
-        calc.aoi a on p.aoi_id = a.aoi_id      
-order by
-        p.aoi_id,
-        p.stratum_id
+        calc.aoi a on p.aoi_id = a.aoi_id
 ;
 
 create view

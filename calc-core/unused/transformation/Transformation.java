@@ -16,6 +16,7 @@ import org.pentaho.di.trans.step.StepMeta;
  * @author Mino Togna
  * 
  */
+@Deprecated
 public class Transformation {
 	private static final String DB_META_NAME = "calcDb";
 

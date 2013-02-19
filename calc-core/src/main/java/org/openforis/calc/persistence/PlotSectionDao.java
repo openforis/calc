@@ -69,7 +69,7 @@ public class PlotSectionDao extends JooqDaoSupport<PlotSectionRecord, PlotSectio
 		FlatRecord r;
 		int rowCount = 0;
 		
-		while( (r=dataStream.nextRecord()) != null ){
+		while( (r=dataStream.nextRecord()) != null ) {
 			rowCount ++;
 
 			String clusterCode = r.getValue("cluster_code",String.class);
@@ -115,7 +115,7 @@ public class PlotSectionDao extends JooqDaoSupport<PlotSectionRecord, PlotSectio
 			Long plotSectionId = create.select(s).fetchOne(s);
 			
 			Query insert = create
-				.insertInto(PLOT_SECTION, P.PLOT_SECTION_ID, P.SAMPLE_PLOT_ID, P.PLOT_SECTION_,P.PLOT_SECTION_SURVEY_DATE, P.VISIT_TYPE, P.STEP, P.PLOT_GPS_READING, P.PLOT_LOCATION,
+				.insertInto(PLOT_SECTION, P.PLOT_SECTION_ID, P.SAMPLE_PLOT_ID, P.PLOT_SECTION_,P.PLOT_SECTION_SURVEY_DATE, P.VISIT_TYPE, P.STEP, P.PLOT_GPS_READING, P.PLOT_ACTUAL_LOCATION,
 						P.ACCESSIBLE, P.PLOT_SHARE, P.PLOT_DIRECTION, P.PLOT_DISTANCE)
 				.values( plotSectionId, samplePlotId, plotSection, surveyDate, visitType, step, gpsReading.toPGGeometry(),gpsReading.toPGGeometry(),
 						accessible,share, direction, distance);

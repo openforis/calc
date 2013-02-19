@@ -43,7 +43,7 @@ public class SpecimenDao extends JooqDaoSupport<SpecimenRecord, Specimen> {
 	private org.openforis.calc.persistence.jooq.tables.SpecimenCategoricalValueView SCVV = org.openforis.calc.persistence.jooq.tables.SpecimenCategoricalValueView.SPECIMEN_CATEGORICAL_VALUE_VIEW;
 	private org.openforis.calc.persistence.jooq.tables.PlotCategoricalValueView PCVV = org.openforis.calc.persistence.jooq.tables.PlotCategoricalValueView.PLOT_CATEGORICAL_VALUE_VIEW;
 	private org.openforis.calc.persistence.jooq.tables.PlotSection PS = org.openforis.calc.persistence.jooq.tables.PlotSection.PLOT_SECTION;
-	private org.openforis.calc.persistence.jooq.tables.PlotExpFactor PEF = org.openforis.calc.persistence.jooq.tables.PlotExpFactor.PLOT_EXP_FACTOR;
+//	private org.openforis.calc.persistence.jooq.tables.PlotExpFactor PEF = org.openforis.calc.persistence.jooq.tables.PlotExpFactor.PLOT_EXP_FACTOR;
 	
 	public SpecimenDao() {
 		super(SPECIMEN, Specimen.class, SPECIMEN.PLOT_SECTION_ID, SPECIMEN.SPECIMEN_NO);
@@ -133,6 +133,7 @@ public class SpecimenDao extends JooqDaoSupport<SpecimenRecord, Specimen> {
 	}
 	
 	@Transactional
+	@Deprecated
 	synchronized
 	public FlatDataStream streamSpecimenFactData(int obsUnitId, Collection<VariableMetadata> variables, Collection<VariableMetadata> parentVariables) {
 		Set<String> dimensions = new HashSet<String>();
@@ -141,18 +142,19 @@ public class SpecimenDao extends JooqDaoSupport<SpecimenRecord, Specimen> {
 		Factory create = getJooqFactory();
 		SelectQuery select = create.selectQuery();
 		
-		select.addSelect( PEF.STRATUM_ID );
-		select.addSelect( PEF.AOI_ID );
+		//TODO commented out for compilation problems
+//		select.addSelect( PEF.STRATUM_ID );
+//		select.addSelect( PEF.AOI_ID );
 		select.addSelect( SV.SPECIMEN_TAXON_ID );
 		
 		select.addFrom(SV);
-		
-		select.addJoin( PEF, SV.STRATUM_ID.eq( PEF.STRATUM_ID ).and( PEF.AOI_ID.eq(1) ) );
+		//TODO commented out for compilation problems		
+//		select.addJoin( PEF, SV.STRATUM_ID.eq( PEF.STRATUM_ID ).and( PEF.AOI_ID.eq(1) ) );
 		select.addJoin( PS, SV.PLOT_SECTION_ID.eq( PS.PLOT_SECTION_ID) );
 				
 		select.addConditions( SV.SPECIMEN_OBS_UNIT_ID.eq(obsUnitId) );
-		
-		select.addGroupBy( SV.PLOT_SECTION_ID, PEF.STRATUM_ID, PEF.AOI_ID, PEF.EXPF, PS.PLOT_SHARE, SV.SPECIMEN_TAXON_ID );
+		//TODO commented out for compilation problems
+//		select.addGroupBy( SV.PLOT_SECTION_ID, PEF.STRATUM_ID, PEF.AOI_ID, PEF.EXPF, PS.PLOT_SHARE, SV.SPECIMEN_TAXON_ID );
 		
 		int idx = 0;
 		for ( VariableMetadata var : parentVariables ) {
@@ -195,7 +197,8 @@ public class SpecimenDao extends JooqDaoSupport<SpecimenRecord, Specimen> {
 					dimensions.add(variableName);
 				} else if ( var.isNumeric() ) {
 					SpecimenNumericValue V = SNV.as( "v_" + (idx++) );
-					select.addSelect( V.VALUE.div(SV.SPECIMEN_EXP_FACTOR).sum().mul(PEF.EXPF).div(PS.PLOT_SHARE).mul(100).as(variableName) );
+					//TODO commented out for compilation problems
+//					select.addSelect( V.VALUE.div(SV.SPECIMEN_EXP_FACTOR).sum().mul(PEF.EXPF).div(PS.PLOT_SHARE).mul(100).as(variableName) );
 					select.addJoin(V, JoinType.LEFT_OUTER_JOIN, SV.SPECIMEN_ID.eq(V.SPECIMEN_ID).and(V.VARIABLE_ID.eq(variableId)) );
 					
 					measures.add(variableName);
@@ -207,10 +210,11 @@ public class SpecimenDao extends JooqDaoSupport<SpecimenRecord, Specimen> {
 		Table<Record> table = select.asTable().as( "fact_table" );
 		
 		SelectQuery selectFacts = create.selectQuery();
-		Field<?>[] dimFields = new Field<?>[]{ table.getField(PEF.AOI_ID.getName()) , table.getField(SV.SPECIMEN_TAXON_ID.getName()) };
-		selectFacts.addSelect( dimFields );
+		//TODO commented out for compilation problems
+//		Field<?>[] dimFields = new Field<?>[]{ table.getField(PEF.AOI_ID.getName()) , table.getField(SV.SPECIMEN_TAXON_ID.getName()) };
+//		selectFacts.addSelect( dimFields );
 		selectFacts.addFrom( table );
-		selectFacts.addGroupBy( dimFields );
+//		selectFacts.addGroupBy( dimFields );
 		
 		for ( String measure : measures ) {
 			selectFacts.addSelect( table.getField(measure).sum().as(measure) );

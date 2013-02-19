@@ -31,16 +31,17 @@ public class SamplePlotCountResource extends SubResource<Void> {
 	private ObservationUnitResource observationUnitResource;
 
 	@GET
+	@Deprecated
 	public FlatDataStream getCounts(@QueryParam("observed") Boolean observed) {
-		int obsUnitId = observationUnitResource.getObservationUnitId();
-		FlatDataStream stream = null;
-		if ( Boolean.TRUE.equals(observed) ) {
-			stream = samplePlotVisitedCntViewDao.getCountsByObsUnit(obsUnitId);
-		} else {
-			stream = samplePlotCntViewDao.getCountsByObsUnit(obsUnitId);
-		}
-		return stream;
-
+//		int obsUnitId = observationUnitResource.getObservationUnitId();
+//		FlatDataStream stream = null;
+//		if ( Boolean.TRUE.equals(observed) ) {
+//			stream = samplePlotVisitedCntViewDao.getCountsByObsUnit(obsUnitId);
+//		} else {
+//			stream = samplePlotCntViewDao.getCountsByObsUnit(obsUnitId);
+//		}
+//		return stream;
+		return null;
 	}
 
 }

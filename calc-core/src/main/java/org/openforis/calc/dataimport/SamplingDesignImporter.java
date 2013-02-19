@@ -137,7 +137,7 @@ public class SamplingDesignImporter {
 				Point point = new Point(pos.getX(), pos.getY());
 				point.setSrid(4326);
 				PGgeometry geom = new PGgeometry(point);
-				p.setSamplePlotLocation(geom);
+				p.setPlotLocation(geom);
 				// p.setLocation("ST_SetSRID(ST_MakePoint("+plotX+", "+plotY+"), 4326)");
 				p.setGroundPlot(groundPlot);
 				p.setPermanentPlot(permanentPlot);

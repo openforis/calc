@@ -23,16 +23,18 @@ public class SamplePlotCntViewDao extends JooqDaoSupport<SamplePlotCntViewRecord
 		super(SAMPLE_PLOT_CNT_VIEW, SamplePlotCntView.class);
 	}
 
+	@Deprecated
 	public FlatDataStream getCountsByObsUnit(int obsUnitId) {
 		Factory create = getJooqFactory();
 		
-		Result<Record> result = 
-				create.select()
-				.from( SAMPLE_PLOT_CNT_VIEW )
-				.where( SAMPLE_PLOT_CNT_VIEW.PLOT_OBS_UNIT_ID.eq(obsUnitId) )
-				.fetch();
-		
-		return stream(result);
+//		Result<Record> result = 
+//				create.select()
+//				.from( SAMPLE_PLOT_CNT_VIEW )
+//				.where( SAMPLE_PLOT_CNT_VIEW.PLOT_OBS_UNIT_ID.eq(obsUnitId) )
+//				.fetch();
+//		
+//		return stream(result);
+		return null;
 	}
 	
 }

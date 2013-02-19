@@ -22,19 +22,21 @@ import org.pentaho.di.trans.steps.datagrid.DataGridMeta;
  * @author Gino Miceli
  * 
  */
+@Deprecated
 public class InputDataTransformationStep extends AbstractTransformationStep {
 
 	private FlatDataStream dataStream;
-	private Collection<VariableMetadata> variables;
+//	private DataType dataType;
 	private StepMeta stepMeta;
 
 	/**
 	 * @throws IOException
 	 * 
 	 */
-	public InputDataTransformationStep(FlatDataStream dataStream, Collection<VariableMetadata> variables) throws IOException {
+	//, DataType dataType
+	public InputDataTransformationStep(FlatDataStream dataStream) throws IOException {
 		this.dataStream = dataStream;
-		this.variables = variables;
+//		this.dataType = dataType;
 
 		initStepMeta();
 	}
@@ -70,18 +72,29 @@ public class InputDataTransformationStep extends AbstractTransformationStep {
 		int i = 0;
 		
 		for ( String colName : columnNames ) {
-			int type = ValueMeta.TYPE_NUMBER;
-			if ( Aoi.AOI.AOI_ID.getName().equals(colName) ) {
-				type = ValueMeta.TYPE_INTEGER;
-			} else {
-				for ( VariableMetadata var : variables ) {
-					if ( var.getVariableName().equals(colName) ) {
-						type = var.isCategorical() ? ValueMeta.TYPE_INTEGER : ValueMeta.TYPE_NUMBER;
-						break;
-					}
-				}
-			}
-			dataTypes[i++] = ValueMeta.getTypeDesc(type);
+			int kettleType = ValueMeta.TYPE_NUMBER;
+			
+			//OLD2
+//			String sqlType = dataType.getDataType(colName);
+//			if( DataType.TYPE_INTEGER.equals(sqlType)){
+////			if ( Aoi.AOI.AOI_ID.getName().equals(colName) ) {
+//				kettleType = ValueMeta.TYPE_INTEGER;
+//			} else if( DataType.TYPE_NUMBER_PRECISION.equals(sqlType)){
+//				kettleType = ValueMeta.TYPE_NUMBER;
+//			} else {
+//				kettleType = ValueMeta.TYPE_NONE;
+//			}
+			
+			// OLD
+//				for ( VariableMetadata var : variables ) {
+//					if ( var.getVariableName().equals(colName) ) {
+//						type = var.isCategorical() ? ValueMeta.TYPE_INTEGER : ValueMeta.TYPE_NUMBER;
+//						break;
+//					}
+//				}
+//			}
+			
+			dataTypes[i++] = ValueMeta.getTypeDesc(kettleType);
 		}
 		return dataTypes;
 	}
@@ -96,7 +109,7 @@ public class InputDataTransformationStep extends AbstractTransformationStep {
 		List<String> fieldNames = dataStream.getFieldNames();
 		List<List<String>> dataLines = new ArrayList<List<String>>();
 
-		while ( (r = dataStream.nextRecord()) != null ) {
+		while( (r = dataStream.nextRecord()) != null ) {
 			List<String> line = new ArrayList<String>();
 			for ( String fName : fieldNames ) {
 				String value = r.getValue(fName, String.class);

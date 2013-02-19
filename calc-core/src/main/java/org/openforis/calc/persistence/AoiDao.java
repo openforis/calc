@@ -2,6 +2,7 @@ package org.openforis.calc.persistence;
 
 import static org.openforis.calc.persistence.jooq.Tables.AOI;
 import static org.openforis.calc.persistence.jooq.Tables.AOI_HIERARCHY;
+import static org.openforis.calc.persistence.jooq.Tables.AOI_HIERARCHY_LEVEL;
 
 import org.jooq.Field;
 import org.jooq.Result;
@@ -36,8 +37,10 @@ public class AoiDao extends JooqDaoSupport<AoiRecord, Aoi> {
 				create
 				.select(fields)
 				.from(AOI)
+				.join(AOI_HIERARCHY_LEVEL)
+					.on(AOI.AOI_HIERARCHY_LEVEL_ID.eq(AOI_HIERARCHY_LEVEL.AOI_HIERARCHY_LEVEL_ID))
 				.join(AOI_HIERARCHY)
-				.on(AOI.AOI_HIERARCHY_ID.eq(AOI_HIERARCHY.AOI_HIERARCHY_ID))				
+					.on(AOI_HIERARCHY_LEVEL.AOI_HIERARCHY_ID.eq(AOI_HIERARCHY.AOI_HIERARCHY_ID))				
 				.where(AOI_HIERARCHY.AOI_HIERARCHY_NAME.eq(hierarchyName))
 				.fetch();
 		

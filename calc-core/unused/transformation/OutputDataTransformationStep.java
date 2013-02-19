@@ -8,6 +8,7 @@ import org.pentaho.di.trans.steps.tableoutput.TableOutputMeta;
  * @author Mino Togna
  *
  */
+@Deprecated
 public class OutputDataTransformationStep extends AbstractTransformationStep {
 
 	private StepMeta stepMeta;

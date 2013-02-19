@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component
 @Transactional
+@Deprecated
 public class AreaFactDao {
 	// extends JooqDaoSupport<AoiRecord, Aoi> {
 
@@ -31,30 +32,30 @@ public class AreaFactDao {
 
 	synchronized 
 	public void createOrUpdateAreaFactTable(FlatDataStream data, Collection<VariableMetadata> variables, String schema, String tableName) {
-		try {
-			Transformation transformation = new Transformation(transformationDatabase, "importResults");
-
-			// 1. drop table
-			String dropTableSql = "drop table if exists " + schema + "." + tableName + " cascade";
-			transformation.executeSql(dropTableSql);
-
-			// 2. read data in memory
-			InputDataTransformationStep inputDataTransformation = new InputDataTransformationStep(data, variables);
-			transformation.addStep(inputDataTransformation);
-
-			OutputDataTransformationStep outputDataTransformation = new OutputDataTransformationStep(transformationDatabase, schema, tableName);
-			transformation.addStep(outputDataTransformation);
-
-			// 3. create table
-			transformation.executeSQLStatementsString();
-
-			// 4. exec transformation
-			transformation.executeAndWaitUntilFinished();
-		} catch ( KettleException e ) {
-			throw new PersistenceException("Error while saving data into area fact table", e);
-		} catch ( IOException e ) {
-			throw new PersistenceException("Error while reading data input", e);
-		}
+//		try {
+//			Transformation transformation = new Transformation(transformationDatabase, "importResults");
+//
+//			// 1. drop table
+//			String dropTableSql = "drop table if exists " + schema + "." + tableName + " cascade";
+//			transformation.executeSql(dropTableSql);
+//
+//			// 2. read data in memory
+//			InputDataTransformationStep inputDataTransformation = new InputDataTransformationStep(data, variables);
+//			transformation.addStep(inputDataTransformation);
+//
+//			OutputDataTransformationStep outputDataTransformation = new OutputDataTransformationStep(transformationDatabase, schema, tableName);
+//			transformation.addStep(outputDataTransformation);
+//
+//			// 3. create table
+//			transformation.executeSQLStatementsString();
+//
+//			// 4. exec transformation
+//			transformation.executeAndWaitUntilFinished();
+//		} catch ( KettleException e ) {
+//			throw new PersistenceException("Error while saving data into area fact table", e);
+//		} catch ( IOException e ) {
+//			throw new PersistenceException("Error while reading data input", e);
+//		}
 
 	}
 

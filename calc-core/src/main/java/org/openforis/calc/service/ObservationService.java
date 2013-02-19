@@ -16,11 +16,10 @@ import org.openforis.calc.model.SurveyMetadata;
 import org.openforis.calc.model.Taxon;
 import org.openforis.calc.model.Variable;
 import org.openforis.calc.model.VariableMetadata;
-import org.openforis.calc.persistence.AreaFactDao;
+import org.openforis.calc.persistence.FactTableDao;
 import org.openforis.calc.persistence.PlotSectionViewDao;
 import org.openforis.calc.persistence.SpecimenCategoricalValueDao;
 import org.openforis.calc.persistence.SpecimenDao;
-import org.openforis.calc.persistence.SpecimenFactDao;
 import org.openforis.calc.persistence.SpecimenNumericValueDao;
 import org.openforis.calc.persistence.SpecimenViewDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,10 +44,10 @@ public class ObservationService extends CalcService {
 	private SpecimenCategoricalValueDao specimenCategoricalValueDao;
 	@Autowired
 	private SpecimenViewDao specimenViewDao;
+//	@Autowired
+//	private AreaFactDao areaFactDao;
 	@Autowired
-	private AreaFactDao areaFactDao;
-	@Autowired
-	private SpecimenFactDao specimenFactDao;
+	private FactTableDao specimenFactDao;
 	@Autowired
 	private TaxonService taxonService;
 	
@@ -178,21 +177,21 @@ public class ObservationService extends CalcService {
 		return plotSectionViewDao.streamCategoryDistribution(variables, unitMetadata.getObsUnitId(), useShares);
 	}
 	
-	@Deprecated
-	public FlatDataStream getAreaFactData(String surveyName, String observationUnitName, PlotDistributionCalculationMethod plotDistributionCalculationMethod){
-		ObservationUnitMetadata unitMetadata = getObservationUnitMetadata(surveyName, observationUnitName);
-		Collection<VariableMetadata> variables = unitMetadata.getVariableMetadata();
-		boolean useShares = plotDistributionCalculationMethod == PlotDistributionCalculationMethod.SHARED_PLOT;
-		return plotSectionViewDao.streamAreaFactData(variables, unitMetadata.getObsUnitId(), useShares);
-	}
+//	@Deprecated
+//	public FlatDataStream getAreaFactData(String surveyName, String observationUnitName, PlotDistributionCalculationMethod plotDistributionCalculationMethod){
+//		ObservationUnitMetadata unitMetadata = getObservationUnitMetadata(surveyName, observationUnitName);
+//		Collection<VariableMetadata> variables = unitMetadata.getVariableMetadata();
+//		boolean useShares = plotDistributionCalculationMethod == PlotDistributionCalculationMethod.SHARED_PLOT;
+//		return plotSectionViewDao.streamAreaFactData(variables, unitMetadata.getObsUnitId(), useShares);
+//	}
 	
-	@Deprecated
-	public FlatDataStream getSpecimenFactData(String surveyName, String observationUnitName){
-		ObservationUnitMetadata unitMetadata = getObservationUnitMetadata(surveyName, observationUnitName);
-		Collection<VariableMetadata> variables = unitMetadata.getVariableMetadata();
-		Collection<VariableMetadata> parentVariables = unitMetadata.getObsUnitParent().getVariableMetadata();
-		return specimenDao.streamSpecimenFactData(unitMetadata.getObsUnitId(), variables , parentVariables );
-	}
+//	@Deprecated
+//	public FlatDataStream getSpecimenFactData(String surveyName, String observationUnitName){
+//		ObservationUnitMetadata unitMetadata = getObservationUnitMetadata(surveyName, observationUnitName);
+//		Collection<VariableMetadata> variables = unitMetadata.getVariableMetadata();
+//		Collection<VariableMetadata> parentVariables = unitMetadata.getObsUnitParent().getVariableMetadata();
+//		return specimenDao.streamSpecimenFactData(unitMetadata.getObsUnitId(), variables , parentVariables );
+//	}
 	
 	private void importValues(ObservationUnitMetadata specimenMetadata, int specimenId, FlatRecord r) {
 		Collection<VariableMetadata> vars = specimenMetadata.getVariableMetadata();
