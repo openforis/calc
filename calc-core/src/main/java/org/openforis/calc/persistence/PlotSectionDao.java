@@ -117,7 +117,7 @@ public class PlotSectionDao extends JooqDaoSupport<PlotSectionRecord, PlotSectio
 			Query insert = create
 				.insertInto(PLOT_SECTION, P.PLOT_SECTION_ID, P.SAMPLE_PLOT_ID, P.PLOT_SECTION_,P.PLOT_SECTION_SURVEY_DATE, P.VISIT_TYPE, P.STEP, P.PLOT_GPS_READING, P.PLOT_ACTUAL_LOCATION,
 						P.ACCESSIBLE, P.PLOT_SHARE, P.PLOT_DIRECTION, P.PLOT_DISTANCE)
-				.values( plotSectionId, samplePlotId, plotSection, surveyDate, visitType, step, gpsReading.toPGGeometry(),gpsReading.toPGGeometry(),
+				.values( plotSectionId, samplePlotId, plotSection, surveyDate, visitType, step, gpsReading, gpsReading,
 						accessible,share, direction, distance);
 			
 			queries.add( insert );

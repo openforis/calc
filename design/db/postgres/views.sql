@@ -335,7 +335,9 @@ as
 --        inner join
 --                calc.stratum s on p.stratum_id = s.stratum_id
         where
-                p.primary_section        
+                p.primary_section
+        and 
+                p.visit_type = 'P'
         group by
                 pa.aoi_id,
                 p.stratum_id;

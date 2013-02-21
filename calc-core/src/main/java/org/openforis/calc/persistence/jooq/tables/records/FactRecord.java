@@ -18,5 +18,4 @@ public class FactRecord extends UpdatableRecordImpl<FactRecord> {
 		super(factTable);
 	}
 
-
 }

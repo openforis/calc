@@ -33,13 +33,7 @@ public class OlapDimensionDao extends JooqDaoSupport {
 		super(null, null);
 	}
 
-	/**
-	 * 
-	 */
-//	public OlapDimensionDao() {
-//		
-//	}
-
+ 	@Transactional
 	public void generateOlapDimensions(String surveyName, Collection<VariableMetadata> variables) {
 		startBatch();
 		Factory create = getBatchFactory();

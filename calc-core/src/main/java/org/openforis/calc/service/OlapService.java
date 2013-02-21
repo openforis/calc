@@ -18,7 +18,7 @@ import org.openforis.calc.model.ObservationUnitMetadata;
 import org.openforis.calc.model.SurveyMetadata;
 import org.openforis.calc.model.VariableMetadata;
 import org.openforis.calc.olap.Schema;
-import org.openforis.calc.persistence.FactTableDao;
+import org.openforis.calc.persistence.PlotFactTableDao;
 import org.openforis.calc.persistence.GroundPlotViewDao;
 import org.openforis.calc.persistence.OlapDimensionDao;
 import org.openforis.calc.persistence.PlotSectionViewDao;
@@ -48,7 +48,7 @@ public class OlapService extends CalcService {
 //	@Deprecated
 //	private AreaFactDao areaFactDao;
 	@Autowired
-	private FactTableDao factTableDao;
+	private PlotFactTableDao factTableDao;
 	@Autowired	
 	private GroundPlotViewDao groundPlotViewDao;
 	
@@ -81,7 +81,7 @@ public class OlapService extends CalcService {
 //		Collection<VariableMetadata> plotAnalysisVars = getVariableMetadataForAnalysis(obsUnitMetadata.getVariableMetadata());
 
 		// FlatDataStream stream = groundPlotViewDao.streamPlotFactData(plotAnalysisVars, obsUnitMetadata.getObsUnitId());
-		factTableDao.createOrUpdateFactTable(obsUnitMetadata);
+		factTableDao.createOrUpdatePlotFactTable(obsUnitMetadata);
 		// factTableDao.createOrUpdateFactTable(stream, plotAnalysisVars, surveyName, PLOT_FACT_TABLE_NAME);
 	}
 

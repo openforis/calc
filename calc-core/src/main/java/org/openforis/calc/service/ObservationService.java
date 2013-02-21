@@ -16,7 +16,7 @@ import org.openforis.calc.model.SurveyMetadata;
 import org.openforis.calc.model.Taxon;
 import org.openforis.calc.model.Variable;
 import org.openforis.calc.model.VariableMetadata;
-import org.openforis.calc.persistence.FactTableDao;
+import org.openforis.calc.persistence.PlotFactTableDao;
 import org.openforis.calc.persistence.PlotSectionViewDao;
 import org.openforis.calc.persistence.SpecimenCategoricalValueDao;
 import org.openforis.calc.persistence.SpecimenDao;
@@ -47,7 +47,7 @@ public class ObservationService extends CalcService {
 //	@Autowired
 //	private AreaFactDao areaFactDao;
 	@Autowired
-	private FactTableDao specimenFactDao;
+	private PlotFactTableDao specimenFactDao;
 	@Autowired
 	private TaxonService taxonService;
 	
