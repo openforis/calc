@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * Not thread-safe, callers must be synchronized
+ * Not thread-safe, callers must manage synchronization
  * 
  * @author G. Miceli
  * @author M. Togna

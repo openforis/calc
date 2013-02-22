@@ -9,6 +9,7 @@ import org.openforis.calc.io.flat.FlatRecord;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
+ * Not thread-safe, callers must manage synchronization
  * 
  * @author G. Miceli
  *
