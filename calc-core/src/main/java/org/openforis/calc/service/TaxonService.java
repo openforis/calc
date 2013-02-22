@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 /**
- * @author Mino Togna
+ * @author M. Togna
  * 
  */
 @Service

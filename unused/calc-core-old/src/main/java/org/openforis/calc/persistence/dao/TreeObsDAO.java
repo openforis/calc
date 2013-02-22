@@ -23,7 +23,7 @@ import org.openforis.calc.model.TreeObsView;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * @author Mino Togna
+ * @author M. Togna
  * 
  */
 public class TreeObsDAO extends AbstractDAO {

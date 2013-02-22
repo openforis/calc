@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 
 /**
- * @author Mino Togna
+ * @author M. Togna
  *
  */
 @Component 

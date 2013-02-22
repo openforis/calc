@@ -26,7 +26,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * @author Mino Togna
+ * @author M. Togna
  */
 @Component
 @Transactional

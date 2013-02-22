@@ -4,7 +4,7 @@
 package org.openforis.calc.operation;
 
 /**
- * @author Mino Togna
+ * @author M. Togna
  *
  */
 public class OperationException extends Exception {

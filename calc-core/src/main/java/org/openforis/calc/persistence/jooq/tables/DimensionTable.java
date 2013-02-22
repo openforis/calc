@@ -8,7 +8,7 @@ import org.jooq.impl.UpdatableTableImpl;
 import org.openforis.calc.persistence.jooq.tables.records.DimensionRecord;
 
 /**
- * @author Mino Togna
+ * @author M. Togna
  *
  */
 public class DimensionTable extends UpdatableTableImpl<DimensionRecord> {

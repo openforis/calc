@@ -17,7 +17,7 @@ import org.openforis.calc.persistence.jooq.tables.Stratum;
 
 /**
  * 
- * @author Mino Togna
+ * @author M. Togna
  * 
  */
 public class DataType {

@@ -16,7 +16,7 @@ import org.jooq.impl.UpdatableTableImpl;
 import org.openforis.calc.persistence.jooq.tables.records.FactRecord;
 
 /**
- * @author Mino Togna
+ * @author M. Togna
  * 
  */
 public class FactTable extends UpdatableTableImpl<FactRecord> {

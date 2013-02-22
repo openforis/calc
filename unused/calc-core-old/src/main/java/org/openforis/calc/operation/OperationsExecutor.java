@@ -12,7 +12,7 @@ import java.util.concurrent.Future;
 import javax.management.OperationsException;
 
 /**
- * @author Mino Togna
+ * @author M. Togna
  * 
  */
 public class OperationsExecutor extends Operation {

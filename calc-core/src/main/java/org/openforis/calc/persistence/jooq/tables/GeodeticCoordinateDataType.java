@@ -9,7 +9,7 @@ import org.jooq.impl.SQLDataType;
 import org.openforis.calc.geospatial.GeodeticCoordinate;
 
 /**
- * @author Mino Togna
+ * @author M. Togna
  * 
  */
 public class GeodeticCoordinateDataType extends AbstractDataType<Object> {

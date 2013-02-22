@@ -10,7 +10,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 /**
  * 
  * @author G. Miceli
- * @author Mino Togna
+ * @author M. Togna
  * 
  */
 public class VariableMetadata {

@@ -1,7 +1,7 @@
 package org.openforis.calc.model;
 
 /**
- * @author Mino Togna
+ * @author M. Togna
  */
 @Deprecated
 public class SamplePlotVisitedCntView {

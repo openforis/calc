@@ -16,7 +16,7 @@ import org.renjin.script.RenjinScriptEngine;
 import org.renjin.sexp.ExpressionVector;
 
 /**
- * @author Mino Togna
+ * @author M. Togna
  * 
  */
 public abstract class AbstractROperation extends Operation {

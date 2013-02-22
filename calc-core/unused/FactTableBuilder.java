@@ -17,7 +17,7 @@ import org.openforis.calc.persistence.jooq.tables.Cluster;
 import org.openforis.calc.persistence.jooq.tables.PlotSectionView;
 
 /**
- * @author Mino Togna
+ * @author M. Togna
  * 
  */
 public class FactTableBuilder {

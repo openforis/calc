@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * 
  * @author G. Miceli
- * @author Mino Togna
+ * @author M. Togna
  * 
  */
 public class ObservationUnitMetadata {

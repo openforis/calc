@@ -25,7 +25,7 @@ import org.rosuda.REngine.Rserve.RConnection;
 import org.rosuda.REngine.Rserve.RserveException;
 
 /**
- * @author Mino Togna
+ * @author M. Togna
  * 
  */
 public class RServer {

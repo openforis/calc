@@ -15,7 +15,7 @@ import org.rosuda.REngine.REXPString;
 import org.rosuda.REngine.REXPVector;
 
 /**
- * @author Mino Togna
+ * @author M. Togna
  * 
  */
 public class RUtils {

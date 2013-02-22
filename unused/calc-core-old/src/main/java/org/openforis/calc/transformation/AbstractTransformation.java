@@ -18,7 +18,7 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 
 /**
- * @author Mino Togna
+ * @author M. Togna
  * 
  */
 abstract class AbstractTransformation {

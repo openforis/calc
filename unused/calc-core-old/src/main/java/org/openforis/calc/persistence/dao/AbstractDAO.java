@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * @author Mino Togna
+ * @author M. Togna
  * 
  */
 @Transactional

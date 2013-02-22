@@ -1,7 +1,7 @@
 package org.openforis.calc.model;
 
 /**
- * @author Mino Togna
+ * @author M. Togna
  */
 public class SpecimenView extends org.openforis.calc.persistence.jooq.tables.pojos.SpecimenView {
 

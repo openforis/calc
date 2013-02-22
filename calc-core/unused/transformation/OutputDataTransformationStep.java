@@ -5,7 +5,7 @@ import org.pentaho.di.trans.steps.tableoutput.TableOutputMeta;
 
 /**
  * 
- * @author Mino Togna
+ * @author M. Togna
  *
  */
 @Deprecated

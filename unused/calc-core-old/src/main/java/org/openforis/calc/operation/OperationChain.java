@@ -10,7 +10,7 @@ import java.util.concurrent.Callable;
 import org.openforis.calc.operation.Operation.Status;
 
 /**
- * @author Mino Togna
+ * @author M. Togna
  * 
  */
 class OperationChain implements Callable<Void> {

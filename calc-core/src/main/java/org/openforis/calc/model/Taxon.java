@@ -2,7 +2,7 @@ package org.openforis.calc.model;
 
 /**
  * 
- * @author Mino Togna
+ * @author M. Togna
  * 
  */
 public class Taxon extends org.openforis.calc.persistence.jooq.tables.pojos.Taxon implements Identifiable {

@@ -11,7 +11,7 @@ import javax.sql.DataSource;
 import org.apache.commons.dbcp.BasicDataSourceFactory;
 
 /**
- * @author Mino Togna
+ * @author M. Togna
  * 
  */
 public class DataSourceManager {

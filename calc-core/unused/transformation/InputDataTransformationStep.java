@@ -18,7 +18,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.datagrid.DataGridMeta;
 
 /**
- * @author Mino Togna
+ * @author M. Togna
  * @author Gino Miceli
  * 
  */

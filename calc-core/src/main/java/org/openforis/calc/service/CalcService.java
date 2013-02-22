@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * 
  * @author G. Miceli
- * @author Mino Togna
+ * @author M. Togna
  * 
  */
 public class CalcService {

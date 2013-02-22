@@ -4,7 +4,7 @@
 package org.openforis.calc.persistence;
 
 /**
- * @author Mino Togna
+ * @author M. Togna
  * 
  */
 public class PersistenceException extends RuntimeException {

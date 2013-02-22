@@ -3,7 +3,7 @@ package org.openforis.calc.model;
 
 /**
  * @author G. Miceli
- * @author Mino Togna
+ * @author M. Togna
  */
 public class Variable extends org.openforis.calc.persistence.jooq.tables.pojos.Variable implements Identifiable {
 	

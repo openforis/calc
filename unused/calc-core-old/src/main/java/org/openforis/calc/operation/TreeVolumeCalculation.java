@@ -15,7 +15,7 @@ import org.renjin.sexp.ExpressionVector;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * @author Mino Togna
+ * @author M. Togna
  *
  */
 public class TreeVolumeCalculation extends AbstractROperation {

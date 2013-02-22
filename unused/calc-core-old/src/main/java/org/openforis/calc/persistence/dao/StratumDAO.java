@@ -5,7 +5,7 @@ package org.openforis.calc.persistence.dao;
 
 
 /**
- * @author Mino Togna
+ * @author M. Togna
  *
  */
 public class StratumDAO extends AbstractDAO {

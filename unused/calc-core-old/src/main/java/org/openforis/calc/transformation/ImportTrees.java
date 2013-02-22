@@ -4,7 +4,7 @@
 package org.openforis.calc.transformation;
 
 /**
- * @author Mino Togna
+ * @author M. Togna
  * 
  */
 public class ImportTrees extends AbstractTransformation {

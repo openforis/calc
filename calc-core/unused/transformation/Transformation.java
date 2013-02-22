@@ -13,7 +13,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 
 /**
- * @author Mino Togna
+ * @author M. Togna
  * 
  */
 @Deprecated

@@ -33,7 +33,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * @author Mino Togna
+ * @author M. Togna
  *
  */
 @SuppressWarnings("rawtypes")

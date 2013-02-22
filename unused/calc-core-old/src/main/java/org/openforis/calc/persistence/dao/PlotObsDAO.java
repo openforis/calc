@@ -11,7 +11,7 @@ import org.openforis.calc.model.PlotObs;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * @author Mino Togna
+ * @author M. Togna
  * 
  */
 public class PlotObsDAO extends AbstractDAO {

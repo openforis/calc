@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author G. Miceli
- * @author Mino Togna
+ * @author M. Togna
  */
 @Component
 @Transactional

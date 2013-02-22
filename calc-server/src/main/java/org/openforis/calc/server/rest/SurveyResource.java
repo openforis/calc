@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
  * Root resource containing first-level sub-resource locator methods.
 
  * @author G. Miceli
- * @author Mino Togna
+ * @author M. Togna
  *
  */
 @Component
