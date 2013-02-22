@@ -46,8 +46,6 @@ import org.springframework.transaction.annotation.Transactional;
 // TODO call from MetadataService
 public class IdmMetadataImporter {
 
-	
-
 	public static final String CALC_IDML_NAMESPACE = "http://www.openforis.org/calc/idml";
 	public static final QName OBS_UNIT_QNAME = new QName(CALC_IDML_NAMESPACE, "observationUnit");
 	public static final QName TYPE_QNAME = new QName(CALC_IDML_NAMESPACE, "type");
