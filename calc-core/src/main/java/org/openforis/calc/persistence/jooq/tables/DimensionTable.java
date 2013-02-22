@@ -3,19 +3,17 @@
  */
 package org.openforis.calc.persistence.jooq.tables;
 
-import org.jooq.impl.SchemaImpl;
-import org.jooq.impl.UpdatableTableImpl;
 import org.openforis.calc.persistence.jooq.tables.records.DimensionRecord;
 
 /**
  * @author M. Togna
  *
  */
-public class DimensionTable extends UpdatableTableImpl<DimensionRecord> {
+public class DimensionTable extends OlapTable<DimensionRecord> {
 
 	private static final long serialVersionUID = 1L;
 	
-	public final org.jooq.TableField<DimensionRecord, Integer> ID = createField("id", org.jooq.impl.SQLDataType.INTEGER, this);
+//	public final org.jooq.TableField<DimensionRecord, Integer> ID = createField("id", org.jooq.impl.SQLDataType.INTEGER, this);
 	
 	public final org.jooq.TableField<DimensionRecord, String> CODE = createField("code", org.jooq.impl.SQLDataType.VARCHAR, this);
 	
@@ -26,7 +24,7 @@ public class DimensionTable extends UpdatableTableImpl<DimensionRecord> {
 	 * @param schema
 	 */
 	public DimensionTable(String name, String schema) {
-		super( name, new SchemaImpl(schema) );
+		super( name, schema );
 	}
 
 }

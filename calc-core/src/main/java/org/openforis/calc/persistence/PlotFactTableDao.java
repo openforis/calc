@@ -1,6 +1,7 @@
 package org.openforis.calc.persistence;
 import static org.openforis.calc.persistence.jooq.Tables.AOI;
 import static org.openforis.calc.persistence.jooq.Tables.AOI_HIERARCHY_LEVEL;
+import static org.openforis.calc.persistence.jooq.Tables.AOI_HIERARCHY;
 import static org.openforis.calc.persistence.jooq.Tables.CLUSTER;
 import static org.openforis.calc.persistence.jooq.Tables.GROUND_PLOT_VIEW;
 import static org.openforis.calc.persistence.jooq.Tables.PLOT_CATEGORICAL_VALUE_VIEW;
@@ -8,15 +9,19 @@ import static org.openforis.calc.persistence.jooq.Tables.PLOT_SECTION_AOI;
 import static org.openforis.calc.persistence.jooq.Tables.PLOT_SECTION_VIEW;
 import static org.openforis.calc.persistence.jooq.Tables.STRATUM;
 import static org.openforis.calc.persistence.jooq.Tables.PLOT_EXPANSION_FACTOR;
+import static org.openforis.calc.persistence.jooq.Tables.AOI_STRATUM_VIEW;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.jooq.Condition;
 import org.jooq.Field;
 import org.jooq.Insert;
 import org.jooq.JoinType;
+import org.jooq.Record;
+import org.jooq.Result;
 import org.jooq.SelectQuery;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -27,7 +32,9 @@ import org.openforis.calc.model.VariableMetadata;
 import org.openforis.calc.persistence.jooq.JooqTableGenerator;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
 import org.openforis.calc.persistence.jooq.tables.Aoi;
+import org.openforis.calc.persistence.jooq.tables.AoiHierarchy;
 import org.openforis.calc.persistence.jooq.tables.AoiHierarchyLevel;
+import org.openforis.calc.persistence.jooq.tables.AoiStratumView;
 import org.openforis.calc.persistence.jooq.tables.Cluster;
 import org.openforis.calc.persistence.jooq.tables.FactTable;
 import org.openforis.calc.persistence.jooq.tables.GroundPlotView;
@@ -51,21 +58,24 @@ import org.springframework.transaction.annotation.Transactional;
 public class PlotFactTableDao extends JooqDaoSupport {
 
 	private static final Stratum S = STRATUM;
+	private static final AoiStratumView ASV = AOI_STRATUM_VIEW;
 	private static final Aoi A = AOI;
+	private static final AoiHierarchyLevel AHL = AOI_HIERARCHY_LEVEL;
+	private static final AoiHierarchy AH = AOI_HIERARCHY;
 	private static final Cluster C = CLUSTER;
 	private static final PlotSectionView P = PLOT_SECTION_VIEW;
 
 	private static final GroundPlotView V = GROUND_PLOT_VIEW;
-	private static final AoiHierarchyLevel AL = AOI_HIERARCHY_LEVEL;
 	private static final PlotSectionAoi PSA = PLOT_SECTION_AOI;
 	private static final PlotExpansionFactor PEF = PLOT_EXPANSION_FACTOR;
 	
 	private static final String COUNT_COLUMN_NAME = "cnt";
 	private static final String EST_AREA_COLUMN_NAME = "est_area";
 
-	private static final String[] POINTS = new String[] { P.PLOT_GPS_READING.getName(), P.PLOT_ACTUAL_LOCATION.getName(), P.PLOT_LOCATION.getName() };
-	private static final String[] DIMENSIONS = new String[] { A.AOI_ID.getName(), S.STRATUM_ID.getName(), C.CLUSTER_ID.getName(), P.PLOT_SECTION_ID.getName() };
-	private static final String[] MEASURES = new String[] { P.PLOT_LOCATION_DEVIATION.getName(), COUNT_COLUMN_NAME, EST_AREA_COLUMN_NAME };
+	private static final String[] PLOT_POINTS = new String[] { P.PLOT_GPS_READING.getName(), P.PLOT_ACTUAL_LOCATION.getName(), P.PLOT_LOCATION.getName() };
+	private static final String[] PLOT_DIMENSIONS = new String[] { S.STRATUM_ID.getName(), C.CLUSTER_ID.getName(), P.PLOT_SECTION_ID.getName() };
+	private static final String[] AGG_STRATUM_AOI_EXCLUDED_DIMENSIONS = new String[] { C.CLUSTER_ID.getName(), P.PLOT_SECTION_ID.getName() };
+	private static final String[] PLOT_MEASURES = new String[] { P.PLOT_LOCATION_DEVIATION.getName(), COUNT_COLUMN_NAME, EST_AREA_COLUMN_NAME };
 	
 	@Autowired
 	private JooqTableGenerator jooqTableGenerator;
@@ -78,35 +88,69 @@ public class PlotFactTableDao extends JooqDaoSupport {
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	synchronized
 	public void createPlotFactTable(ObservationUnitMetadata obsUnitMetadata) {
+		int surveyId = obsUnitMetadata.getSurveyId();
 		//1. Plot fact table
 		FactTable plotFactTable = getPlotFactTable(obsUnitMetadata);
+		String plotFactTableName = plotFactTable.getName();
 		jooqTableGenerator.create(plotFactTable);
 		
-		//2. agg plot fact at aoi/stratum level 
-//		FactTable aoiStratumPlotFact = getAggAoiStratumPlotFactTable(plotFactTable);
-//		jooqTableGenerator.create(aoiStratumPlotFact);
-		
-		//3. Aggg at  aoi level
-		
+		//2. Aoi / Stratum aggregation table
+		Result<Record> levelRecords = getAoiHierarchyLevelRecords(surveyId);
+		FactTable prevLevelTable = plotFactTable;
+		String prevLevel = "";
+		for ( Record record : levelRecords ) {
+			
+			String levelName = record.getValue(AHL.AOI_HIERARCHY_LEVEL_NAME);
+			String tableName = "agg_"+levelName+"_stratum_" + plotFactTableName;
+			FactTable aoiStratumFact = getAggFactTable(prevLevelTable, tableName, prevLevel);
+			
+			prevLevelTable = aoiStratumFact;
+			prevLevel = levelName;
+			jooqTableGenerator.create(aoiStratumFact);
+		}
+				
 	}
 
 	@Transactional
 	synchronized
 	public void populatePlotFactTable(ObservationUnitMetadata obsUnitMetadata) {
 		Factory create = getJooqFactory();
+		int surveyId = obsUnitMetadata.getSurveyId();
 		
 		//1. Plot fact table
 		FactTable plotFactTable = getPlotFactTable(obsUnitMetadata);
+		String plotFactTableName = plotFactTable.getName();
 		
 		SelectQuery plotFactSelect = getPlotFactSelect(create, obsUnitMetadata);
-		Insert<FactRecord> plotFactInsert = getPlotFactInsert(plotFactTable, create, plotFactSelect);
+		Insert<FactRecord> plotFactInsert = getInsertFromSelect(plotFactTable, plotFactSelect);
 		
 		if ( getLog().isDebugEnabled() ) {
 			getLog().debug("Plot fact table insert:");
 			getLog().debug(plotFactInsert.toString());
-		}
-		
+		}		
 		plotFactInsert.execute();
+		
+		Result<Record> levelRecords = getAoiHierarchyLevelRecords(surveyId);
+		FactTable prevLevelTable = plotFactTable;
+		String prevLevel = "";
+		for ( Record record : levelRecords ) {
+			
+			String levelName = record.getValue(AHL.AOI_HIERARCHY_LEVEL_NAME);
+			Integer levelRank = record.getValue(AHL.AOI_HIERARCHY_LEVEL_RANK);
+			String tableName = "agg_"+levelName+"_stratum_" + plotFactTableName;
+			FactTable aoiStratumFact = getAggFactTable(prevLevelTable, tableName, prevLevel);
+			// generate select
+			SelectQuery aggAoiStratumSelect = getAggAoiStratumSelect(prevLevelTable, levelName, levelRank, prevLevel, surveyId );
+			Insert<FactRecord> insert = getInsertFromSelect(aoiStratumFact, aggAoiStratumSelect);
+			if ( getLog().isDebugEnabled() ) {
+				getLog().debug(tableName + " insert:");
+				getLog().debug(insert.toString());
+			}	
+			insert.execute();
+			
+			prevLevelTable = aoiStratumFact;
+			prevLevel = levelName;
+		}
 		
 		
 		//2. agg plot fact at aoi/stratum level 
@@ -123,20 +167,99 @@ public class PlotFactTableDao extends JooqDaoSupport {
 //		aoiStratumInsert.execute();
 	}
 	
-	private Insert<FactRecord> getAggAoiStratumPlotFactInsert(Factory create, FactTable aoiStratumPlotFact, SelectQuery aoiStratumSelect) {
-		List<Field<?>> selectFields = aoiStratumSelect.getFields();
+	@SuppressWarnings("unchecked")
+	private SelectQuery getAggAoiStratumSelect(FactTable table, String aoiLevelName, int aoiLevelRank, String prevLevel, int surveyId) {
+		Factory create = getJooqFactory();
+		PlotExpansionFactor e = PEF.as("e");
+		AoiStratumView s = ASV.as("s");
+		
+		SelectQuery select = create.selectQuery();
+		
+		select.addSelect(s.STRATUM_ID);
+		select.addSelect(Factory.coalesce(table.getField(COUNT_COLUMN_NAME).sum(), 0).as(COUNT_COLUMN_NAME));
+		select.addSelect(Factory.coalesce(table.getField(COUNT_COLUMN_NAME).sum().mul(e.EXP_FACTOR), s.AREA).as(EST_AREA_COLUMN_NAME) );
+		
+		
+		select.addFrom(table);
+		
+		select.addJoin(
+				e, 
+				e.AOI_ID.eq( (Field<Integer>) table.getField(aoiLevelName))
+					.and(e.STRATUM_ID.eq( (Field<Integer>) table.getField(S.STRATUM_ID.getName())) )
+			);
+		select.addJoin(
+				s, 
+				JoinType.RIGHT_OUTER_JOIN, 
+				e.STRATUM_ID.eq( s.STRATUM_ID )
+				.and(e.AOI_ID.eq(s.AOI_ID))
+			);
+		
+		select.addGroupBy(s.STRATUM_ID);
+		select.addGroupBy(s.AREA);
+		select.addGroupBy(e.EXP_FACTOR);
+		
+		Result<Record> levelRecords = getAoiHierarchyLevelRecords(surveyId, aoiLevelRank);
+		Aoi childAoi = null;
+		int i = 0;
+		List<String> aoiNames = new ArrayList<String>();
+		aoiNames.add(prevLevel);
+		
+		for ( Record record : levelRecords ) {
+			
+			Aoi a = A.as("a"+(i++));
+			int aoiLevelId = record.getValue(AHL.AOI_HIERARCHY_LEVEL_ID);
+			String levelName = record.getValue(AHL.AOI_HIERARCHY_LEVEL_NAME);
+			aoiNames.add(levelName);
+			
+			select.addSelect( a.AOI_ID.as(levelName) );
+			
+			select.addJoin(a, 
+					( childAoi == null ) 
+					? s.AOI_ID.eq(a.AOI_ID).and(a.AOI_HIERARCHY_LEVEL_ID.eq(aoiLevelId))
+					: childAoi.AOI_PARENT_ID.eq( a.AOI_ID )
+				);
+			
+			select.addGroupBy(a.AOI_ID);
+			
+			childAoi = a;
+		}
+		List<TableField<FactRecord, Integer>> srcDimensions = table.getDimensionFields();
+		List<TableField<FactRecord, Integer>> dimensions = new ArrayList<TableField<FactRecord,Integer>>(srcDimensions.size());
+		for ( TableField<FactRecord, Integer> f : srcDimensions ) {
+			String fieldName = f.getName();
+			if(! (aoiNames.contains(fieldName) || ArrayUtils.contains( PLOT_DIMENSIONS, fieldName) ) ){
+				select.addSelect(Factory.coalesce(f, -1).as(fieldName));
+				dimensions.add(f);
+			}
+		}
+		
+		select.addGroupBy(dimensions);
+		return select;
+	}
+	
+	private Insert<FactRecord> getInsertFromSelect(FactTable table, SelectQuery select) {
+		Factory create = getJooqFactory();
+		
+		List<Field<?>> selectFields = select.getFields();
 		List<Field<?>> fields = new ArrayList<Field<?>>(selectFields.size());
 		for ( Field<?> field : selectFields ) {
 			String fieldName = field.getName();
-			fields.add( aoiStratumPlotFact.getField(fieldName ) );
+			Field<?> destField = table.getField( fieldName );
+			if( destField == null ){
+				throw new IllegalArgumentException("Field " + fieldName + " not found in table " + table.getName());
+			}
+			fields.add( destField );
 		}		
 
-		Insert<FactRecord> insertAoiStratumAgg = create.insertInto(aoiStratumPlotFact, fields)
-			.select(aoiStratumSelect);
-		return insertAoiStratumAgg;
+		Insert<FactRecord> insert = 
+					create.insertInto(table, fields)
+					.select(select);
+		
+		return insert;
 	}
 
 	@SuppressWarnings("unchecked")
+	@Deprecated
 	private SelectQuery getAggAoiStratumPlotFactSelect(Factory create, FactTable plotFactTable, FactTable aoiStratumPlotFact) {
 		Table<FactRecord> p = plotFactTable.as("p");
 		PlotSectionAoi psa = PSA.as("psa");
@@ -173,63 +296,93 @@ public class PlotFactTableDao extends JooqDaoSupport {
 		select.addGroupBy(pef.EXP_FACTOR);
 		return select;
 	}
-
-	private Insert<FactRecord> getPlotFactInsert(FactTable plotFactTable, Factory create, SelectQuery plotFactSelect) {
-		List<Field<?>> selectFields = plotFactSelect.getFields();
-		List<Field<?>> fields = new ArrayList<Field<?>>(selectFields.size());
-		for ( Field<?> field : selectFields ) {
-			String fieldName = field.getName();
-			fields.add( plotFactTable.getField(fieldName ) );
-		}		
-		
-		Insert<FactRecord> insert = create
-			.insertInto(plotFactTable, fields)
-			.select(plotFactSelect);
-		
-		return insert;
-	}
 	
-	private FactTable getAggAoiStratumPlotFactTable(FactTable plotFactTable){
-		String[] exludedDimensions = new String[]{C.CLUSTER_ID.getName(), P.PLOT_SECTION_ID.getName()};
-		String[] excludedMeasures = new String[]{P.PLOT_LOCATION_DEVIATION.getName()};
-		String[] excludedPoints = POINTS;
-		String tableName = "agg_aoi_stratum_" + plotFactTable.getName();
-		FactTable aggStratumPlotFact = plotFactTable.aggregate(tableName, exludedDimensions, excludedMeasures, excludedPoints);
-		return aggStratumPlotFact;
+	private FactTable getAggFactTable(FactTable factTable, String tableName, String... excludeLevel) {
+		String[] excludedDimensions = new String[] { C.CLUSTER_ID.getName(), P.PLOT_SECTION_ID.getName() };
+		excludedDimensions = ArrayUtils.addAll(excludedDimensions, excludeLevel);
+		
+		String[] excludedMeasures = new String[] { P.PLOT_LOCATION_DEVIATION.getName() };
+		String[] excludedPoints = PLOT_POINTS;
+
+		FactTable aggFactTable = factTable.aggregate(tableName, excludedDimensions, excludedMeasures, excludedPoints);
+		return aggFactTable;
 	}
 	
 	private FactTable getPlotFactTable(ObservationUnitMetadata obsUnitMetadata) {
 		SurveyMetadata surveyMetadata = obsUnitMetadata.getSurveyMetadata();
 		String schema = surveyMetadata.getSurveyName();
+		int surveyId = surveyMetadata.getSurveyId();
 		String table = obsUnitMetadata.getObsUnitName() + "_fact";
 		
 		Collection<VariableMetadata> vars = obsUnitMetadata.getVariableMetadata();
-		String[] dimensions = ArrayUtils.clone(DIMENSIONS);
+		String[] dimensions = ArrayUtils.clone(PLOT_DIMENSIONS);
+		
+		// add aoi dimensions
+		Result<Record> result = getAoiHierarchyLevelRecords(surveyId);
+		for ( Record record : result ) {
+			String levelName = record.getValue(AHL.AOI_HIERARCHY_LEVEL_NAME);
+			dimensions = ArrayUtils.add(dimensions, levelName);
+		}		
+		
+		
 		for ( VariableMetadata var : vars ) {
 			if( var.isForAnalysis() && var.isCategorical() ) {
 				dimensions = ArrayUtils.add(dimensions, var.getVariableName());
 			}
 		}
 		
-		return new FactTable(schema, table, MEASURES, dimensions, POINTS);
+		return new FactTable(schema, table, PLOT_MEASURES, dimensions, PLOT_POINTS);
 	}
 
+	private Result<Record> getAoiHierarchyLevelRecords(int surveyId) {
+//		Factory create = getJooqFactory();
+//		
+//		Result<Record> result = create
+//			.select()
+//			.from(AHL)
+//			.join(AH)
+//				.on(AHL.AOI_HIERARCHY_ID.eq(AH.AOI_HIERARCHY_ID))
+//			.where( AH.SURVEY_ID.eq(surveyId) )
+//			.orderBy(AHL.AOI_HIERARCHY_LEVEL_RANK.desc())
+//			.fetch();
+//		
+//		return result;
+		return getAoiHierarchyLevelRecords(surveyId, null);
+	}
+
+	private Result<Record> getAoiHierarchyLevelRecords(int surveyId, Integer fromLevel) {
+		Factory create = getJooqFactory();
+		
+		Condition condition = fromLevel != null ? AH.SURVEY_ID.eq(surveyId).and(AHL.AOI_HIERARCHY_LEVEL_RANK.lessOrEqual(fromLevel)) :  AH.SURVEY_ID.eq(surveyId);
+		
+		Result<Record> result = create
+			.select()
+			.from(AHL)
+			.join(AH)
+				.on(AHL.AOI_HIERARCHY_ID.eq(AH.AOI_HIERARCHY_ID))
+			.where(  condition )
+			.orderBy(AHL.AOI_HIERARCHY_LEVEL_RANK.desc())
+			.fetch();
+		
+		return result;
+	}
 	
 	@SuppressWarnings("unchecked")
 	private SelectQuery getPlotFactSelect(Factory create, ObservationUnitMetadata obsUnitMetadata){
 		int obsUnitId = obsUnitMetadata.getObsUnitId();
+		Integer surveyId = obsUnitMetadata.getSurveyId();
 		Collection<VariableMetadata> variables = obsUnitMetadata.getVariableMetadata();	
 				
 		GroundPlotView p = V.as("p");
 		PlotSectionAoi pa = PSA.as("pa");
 		Aoi a = A.as("a");
-		AoiHierarchyLevel al = AL.as("al");
-		AoiHierarchyLevel al2 = AL.as("al");
+		AoiHierarchyLevel al = AHL.as("al");
+		AoiHierarchyLevel al2 = AHL.as("al");
 		
 		SelectQuery select = create.selectQuery();
 		
 		select.addSelect(p.STRATUM_ID);
-		select.addSelect(pa.AOI_ID);
+		
 		select.addSelect(p.CLUSTER_ID);
 		select.addSelect(p.PLOT_SECTION_ID);
 		select.addSelect(p.PLOT_LOCATION);
@@ -258,7 +411,25 @@ public class PlotFactTableDao extends JooqDaoSupport {
 						)
 				);
 		
-		int varIndex = 0;
+		Result<Record> levelRecords = getAoiHierarchyLevelRecords(surveyId);
+		int i = 0;
+		Aoi childAoi = a;
+		for ( Record record : levelRecords ) {
+			String levelName = record.getValue(AHL.AOI_HIERARCHY_LEVEL_NAME);
+			if((i++==0)){
+				select.addSelect(pa.AOI_ID.as(levelName));
+			} else {
+				Aoi parentAoi = A.as("a"+i);
+				
+				select.addSelect(parentAoi.AOI_ID.as(levelName ));
+				
+				select.addJoin(parentAoi, childAoi.AOI_PARENT_ID.eq(parentAoi.AOI_ID));
+				childAoi = parentAoi;
+			}
+		}
+		
+		
+		int varIndex = 0;		
 		for ( VariableMetadata variable : variables ) {
 			if ( variable.isCategorical() && variable.isForAnalysis() ) {
 				String varName = variable.getVariableName();

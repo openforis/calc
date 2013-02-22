@@ -11,28 +11,26 @@ import java.util.List;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jooq.TableField;
 import org.jooq.impl.SQLDataType;
-import org.jooq.impl.SchemaImpl;
-import org.jooq.impl.UpdatableTableImpl;
 import org.openforis.calc.persistence.jooq.tables.records.FactRecord;
 
 /**
  * @author M. Togna
  * 
  */
-public class FactTable extends UpdatableTableImpl<FactRecord> {
+public class FactTable extends OlapTable<FactRecord> {
 
 	private static final long serialVersionUID = 1L;
 
 	private List<TableField<FactRecord, Integer>> dimensionFields;
 	private List<TableField<FactRecord, BigDecimal>> measureFields;
 	private List<TableField<FactRecord, Object>> pointFields;
-	private TableField<FactRecord, Integer> idField;
+	// private TableField<FactRecord, Integer> idField;
 	private String[] measures;
 	private String[] dimensions;
 	private String[] points;
 
 	public FactTable(String schema, String table, String[] measures, String[] dimensions, String[] points) {
-		super(table, new SchemaImpl(schema));
+		super(table, schema);
 
 		measureFields = new ArrayList<TableField<FactRecord, BigDecimal>>();
 		pointFields = new ArrayList<TableField<FactRecord, Object>>();
@@ -42,16 +40,16 @@ public class FactTable extends UpdatableTableImpl<FactRecord> {
 		this.measures = measures;
 		this.points = points;
 
-		createId();
+		// createId();
 
 		setMeasures();
 		setDimensions();
 		setPoints();
 	}
 
-	private void createId() {
-		idField = createField("id", SQLDataType.INTEGER, this);
-	}
+	// private void createId() {
+	// idField = createField("id", SQLDataType.INTEGER, this);
+	// }
 
 	public FactTable(String schema, String table, String[] measures, String[] dimensions) {
 		this(schema, table, measures, dimensions, null);
@@ -98,9 +96,9 @@ public class FactTable extends UpdatableTableImpl<FactRecord> {
 		return Collections.unmodifiableList(pointFields);
 	}
 
-	public TableField<FactRecord, Integer> getIdField() {
-		return idField;
-	}
+	// public TableField<FactRecord, Integer> getIdField() {
+	// return idField;
+	// }
 
 	public FactTable aggregate(String table, String[] exludedDimensions) {
 		return aggregate(table, exludedDimensions, null, null);
