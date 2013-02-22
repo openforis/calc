@@ -75,10 +75,10 @@ public class OlapService extends CalcService {
 		for ( ObservationUnitMetadata obsUnitMetadata : observationMetadata ) {
 			Collection<VariableMetadata> variables = obsUnitMetadata.getVariableMetadata();
 //			olapDimensionDao.createOlapDimensionTables(surveyMetadata.getSurveyId(), variables);
-			olapDimensionDao.populateOlapDimensionTables(surveyId, variables);
 //			String obsUnitName = obsUnitMetadata.getObsUnitName();
 			
 			if ( ObservationUnit.Type.PLOT.equals(obsUnitMetadata.getObsUnitType()) ) {
+				olapDimensionDao.populateOlapDimensionTables(surveyId, variables);
 				// plot fact table
 				plotFactTableDao.populatePlotFactTable(obsUnitMetadata);
 				
@@ -102,18 +102,20 @@ public class OlapService extends CalcService {
 		Collection<ObservationUnitMetadata> observationMetadata = surveyMetadata.getObservationMetadata();
 		for ( ObservationUnitMetadata obsUnitMetadata : observationMetadata ) {
 			Collection<VariableMetadata> variables = obsUnitMetadata.getVariableMetadata();
-			olapDimensionDao.createOlapDimensionTables(variables);
+			
 			
 //			String obsUnitName = obsUnitMetadata.getObsUnitName();
 			
 			if ( ObservationUnit.Type.PLOT.equals(obsUnitMetadata.getObsUnitType()) ) {
-				// plot fact table
+				olapDimensionDao.createOlapDimensionTables(variables);
+				// plot fact table				
 				plotFactTableDao.createPlotFactTable(obsUnitMetadata);
 				
 //				FlatDataStream areaFactData = getAreaFactData(surveyName, obsUnitName, PlotDistributionCalculationMethod.PRIMARY_SECTION_ONLY);
 //				updateAreaFacts(surveyName, areaFactData);
 
 			} else if ( ObservationUnit.Type.SPECIMEN.equals(obsUnitMetadata.getObsUnitType()) ) {
+				olapDimensionDao.createOlapDimensionTables(variables);
 //				FlatDataStream specimenFactData = getSpecimenFactData(surveyName, obsUnitName);
 //				updateSpecimenFacts(surveyName, obsUnitName, specimenFactData);
 			}

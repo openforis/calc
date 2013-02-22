@@ -20,8 +20,7 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.TableImpl;
 import org.jooq.impl.UpdatableTableImpl;
 import org.openforis.calc.geospatial.GeodeticCoordinate;
-import org.openforis.calc.persistence.jooq.tables.DimensionTable;
-import org.openforis.calc.persistence.jooq.tables.FactTable;
+import org.openforis.calc.persistence.jooq.tables.OlapTable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -52,47 +51,44 @@ public class JooqTableGenerator {
 		platformInfo.setMaxTableNameLength(maxTableNameLength);
 	}
 
-	
-//	@Transactional(propagation = Propagation.REQUIRES_NEW)
-//	synchronized 
-//	public void drop(UpdatableTableImpl<?> jooqTable) {
-//		Database database = initDatabase();
-//		Table table = initTable(database, jooqTable);
-//
-//		dropTable(database, table);
-//	}
+	// @Transactional(propagation = Propagation.REQUIRES_NEW)
+	// synchronized
+	// public void drop(UpdatableTableImpl<?> jooqTable) {
+	// Database database = initDatabase();
+	// Table table = initTable(database, jooqTable);
+	//
+	// dropTable(database, table);
+	// }
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	synchronized 
-	public void create(UpdatableTableImpl<?> jooqTable) {
+	synchronized public void create(UpdatableTableImpl<?> jooqTable) {
 		Database database = initDatabase();
 		Table table = initTable(database, jooqTable);
 		initColumns(table, jooqTable);
 
-//		dropTable(database, table);
+		// dropTable(database, table);
 		createTable(database);
 	}
 
-	
-//	@Transactional
-//	synchronized 
-//	public void generate(UpdatableTableImpl<?> jooqTable) {
-//		Database database = initDatabase();
-//		Table table = initTable(database, jooqTable);
-//		initColumns(table, jooqTable);
-//
-//		dropTable(database, table);
-//		createTable(database);
-//	}
+	// @Transactional
+	// synchronized
+	// public void generate(UpdatableTableImpl<?> jooqTable) {
+	// Database database = initDatabase();
+	// Table table = initTable(database, jooqTable);
+	// initColumns(table, jooqTable);
+	//
+	// dropTable(database, table);
+	// createTable(database);
+	// }
 
-//	private void dropTable(Database database, Table table) {
-//		
-//		try {
-//			platform.dropTable(database, table, false);
-//		} catch ( DatabaseOperationException e ) {
-//			e.printStackTrace();
-//		}
-//	}
+	// private void dropTable(Database database, Table table) {
+	//
+	// try {
+	// platform.dropTable(database, table, false);
+	// } catch ( DatabaseOperationException e ) {
+	// e.printStackTrace();
+	// }
+	// }
 
 	private void createTable(Database database) {
 		platform.createTables(database, false, false);
@@ -105,17 +101,15 @@ public class JooqTableGenerator {
 			DataType<?> dataType = field.getDataType();
 			int sqlType = dataType.getSQLType();
 
-			boolean isPkey = isPkey(field, jooqTable);
+			boolean primarykey = isPrimarykey(field, jooqTable);
 
-			addColumn(table, field.getName(), sqlType, isPkey);
+			addColumn(table, field.getName(), sqlType, primarykey);
 		}
 	}
 
-	private boolean isPkey(Field<?> field, UpdatableTableImpl<?> jooqTable) {
-		if ( jooqTable instanceof FactTable ) {
-			return ((FactTable) jooqTable).getIdField().equals(field);
-		} else if ( jooqTable instanceof DimensionTable ) {
-			return ((DimensionTable) jooqTable).ID.equals(field);
+	private boolean isPrimarykey(Field<?> field, UpdatableTableImpl<?> jooqTable) {
+		if ( jooqTable instanceof OlapTable ) {
+			return ((OlapTable<?>) jooqTable).ID.equals(field);
 		} else {
 			UniqueKey<?> mainKey = jooqTable.getMainKey();
 			return mainKey.getFields().contains(field);
@@ -137,12 +131,13 @@ public class JooqTableGenerator {
 		return database;
 	}
 
-	private Column addColumn(Table table, String name, int typeCode, boolean autoIncrement) {
+	private Column addColumn(Table table, String name, int typeCode, boolean primaryKey) {
 		Column col = new Column();
 		col.setName(name);
 		col.setTypeCode(typeCode);
-		if ( autoIncrement ) {
-			col.setAutoIncrement(autoIncrement);
+		if ( primaryKey ) {
+			col.setAutoIncrement(true);
+			col.setPrimaryKey(true);
 		}
 		table.addColumn(col);
 		return col;
