@@ -14,28 +14,38 @@ import org.springframework.transaction.annotation.Transactional;
  * @author G. Miceli
  *
  */
-public abstract class AbstractImporter {
+public abstract class AbstractFlatFileImporter {
+	private static final int DEFAULT_INSERT_FREQUENCY = 10000;
+	private static final int DEFAULT_REPORT_FREQUENCY = 10000;
 	private int rowCount;
-	private int duration;
 	private int reportFrequency;
 	private int insertFrequency;
 	private long startTime;
+	private long endTime;
 	private Log log = LogFactory.getLog(getClass());
+	private boolean active;
 
-	public AbstractImporter() {
-		reportFrequency = 10000;
-		insertFrequency = 10000;
+	public AbstractFlatFileImporter() {
+		reportFrequency = DEFAULT_REPORT_FREQUENCY;
+		insertFrequency = DEFAULT_INSERT_FREQUENCY;
 		startTime = -1;
+		endTime = -1;
+		active = false;
 	}
 	
 	@Transactional
 	public void importData(FlatDataStream stream) throws ImportException, IOException {
 		try {
-			onStart();
+			startTime = System.currentTimeMillis();
+			endTime = -1;
+			rowCount = 0;
+			active = true;
 			
+			onStart();
+
 			FlatRecord record;
 			while ( (record = stream.nextRecord()) != null ) {
-				processRow(record);
+				processRecord(record);
 				rowCount += 1;
 				if ( rowCount % insertFrequency == 0 ) {
 					performInserts();
@@ -51,9 +61,11 @@ public abstract class AbstractImporter {
 			if ( rowCount % reportFrequency != 0 ) {
 				reportProgress();
 			}
+			endTime = System.currentTimeMillis();
 			onEnd();
 		} finally {
 			cleanup();
+			active = false;
 		}
 	}
 
@@ -63,24 +75,20 @@ public abstract class AbstractImporter {
 
 	protected abstract void performInserts();
 
-	protected abstract void processRow(FlatRecord record);
-
+	protected abstract void processRecord(FlatRecord record);
 
 	protected void onStart() {
-		startTime = System.currentTimeMillis();
-		rowCount = 0;
 	}
 
 	protected void onEnd() {
-		duration = (int) (System.currentTimeMillis() - startTime);
 	}
 
 	protected void cleanup() {
-		startTime = -1;
 	}
 
-	public int getDuration() {
-		return duration;
+	public long getDuration() {
+		return active ? (System.currentTimeMillis() - startTime) :
+			endTime - startTime;
 	}
 
 	public int getReportFrequency() {
@@ -100,6 +108,11 @@ public abstract class AbstractImporter {
 	}
 
 	public boolean isActive() {
-		return startTime > 0;
+		return active;
 	}
+	
+	protected String nvl(String code, Integer no) {
+		return code == null ? no + "" : code;
+	}
+
 }

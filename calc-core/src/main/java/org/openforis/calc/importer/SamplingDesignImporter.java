@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
  * 
  */
 @Component
-public class SamplingDesignImporter extends AbstractImporter {
+public class SamplingDesignImporter extends AbstractFlatFileImporter {
 
 	private int clusterCount;
 	private int stratumCount;
@@ -50,7 +50,7 @@ public class SamplingDesignImporter extends AbstractImporter {
 	private SamplePlotDao samplePlotDao;
 
 	@Override
-	protected void processRow(FlatRecord record) {
+	protected void processRecord(FlatRecord record) {
 		if ( surveyId == null || unitId == null || srsId == null ) {
 			throw new NullPointerException("Survey, unit and/or SRS not set");
 		}
@@ -146,10 +146,6 @@ public class SamplingDesignImporter extends AbstractImporter {
 		newClusters = null;
 		newStrata = null;
 		newSamplePlots = null;
-	}
-
-	private String nvl(String code, Integer no) {
-		return code == null ? no + "" : code;
 	}
 
 	public int getPlotCount() {

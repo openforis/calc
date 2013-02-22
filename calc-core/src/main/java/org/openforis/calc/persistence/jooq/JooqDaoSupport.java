@@ -1,7 +1,7 @@
 package org.openforis.calc.persistence.jooq;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
+import static java.util.Arrays.*;
+import static java.util.Collections.*;
 
 import java.sql.Connection;
 import java.sql.Timestamp;

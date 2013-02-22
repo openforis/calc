@@ -1,7 +1,7 @@
 package org.openforis.calc.importer.collect;
 
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.List;
 
 import javax.xml.namespace.QName;
@@ -33,7 +33,6 @@ import org.openforis.idm.metamodel.NumberAttributeDefinition;
 import org.openforis.idm.metamodel.Schema;
 import org.openforis.idm.metamodel.xml.IdmlParseException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -78,21 +77,9 @@ public class IdmMetadataImporter {
 	private String codeListItemLabelSeparator = " > ";
 	// TODO add progress states item counts (plot types, specimen types, variables, etc)
 	
-	// TODO test - remove
-	public static void main(String[] args)  {
-		try {
-			ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
-			IdmMetadataImporter loader = ctx.getBean(IdmMetadataImporter.class);
-			loader.importMetadata("naforma1", "/home/gino/tzdata/idml.xml");
-		} catch ( Throwable ex ) {
-			ex.printStackTrace();
-		}
-	}
-
 	@Transactional
 	synchronized
-	public void importMetadata(String surveyName, String idmlFilename) throws IOException, IdmlParseException, InvalidMetadataException {		
-		FileReader reader = new FileReader(idmlFilename);
+	public void importMetadata(String surveyName, Reader reader) throws IOException, IdmlParseException, InvalidMetadataException {		
 		idmSurvey = (CollectSurvey) idmlBinder.unmarshal(reader);
 		survey = new Survey();
 		survey.setSurveyLabel(idmSurvey.getProjectName(lang));
