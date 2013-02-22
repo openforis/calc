@@ -1,12 +1,14 @@
 package org.openforis.calc.importer;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.openforis.calc.io.flat.FlatRecord;
 import org.openforis.calc.model.Interview;
 import org.openforis.calc.model.InterviewCategoricalValue;
 import org.openforis.calc.model.InterviewNumericValue;
+import org.openforis.calc.persistence.ClusterDao;
 import org.openforis.calc.persistence.InterviewCategoricalValueDao;
 import org.openforis.calc.persistence.InterviewDao;
 import org.openforis.calc.persistence.InterviewNumericValueDao;
@@ -34,31 +36,42 @@ public class InterviewImporter extends AbstractFlatFileImporter {
 	private InterviewCategoricalValueDao interviewCategoricalValueDao;
 	@Autowired
 	private InterviewNumericValueDao interviewNumericValueDao;
-	
+	@Autowired
+	private ClusterDao clusterDao;
+
 	public InterviewImporter() {
 		setInsertFrequency(1000);
 		setReportFrequency(1000);
 	}
 	
 	@Override
-	protected void processRecord(FlatRecord record) {
+	protected boolean processRecord(FlatRecord record) {
 		if ( surveyId == null || unitId == null ) {
 			throw new NullPointerException("Survey or unit ID not set");
 		}
-		//TODO
-//		Integer stratumNo = record.getValue("stratum_no", Integer.class);
-//		Integer clusterX = record.getValue("cluster_x", Integer.class);
-//		Integer clusterY = record.getValue("cluster_y", Integer.class);
-//		Integer clusterNo = record.getValue("cluster_no", Integer.class);
-//		String clusterCode = record.getValue("cluster_code", String.class);
-//		Integer plotNo = record.getValue("plot_no", Integer.class);
-//		Integer plotX = record.getValue("plot_x", Integer.class);
-//		Integer plotY = record.getValue("plot_y", Integer.class);
-//		Integer phase = record.getValue("phase", Integer.class);
-//		Boolean groundPlot = record.getValue("ground_plot", Boolean.class);
-//		Boolean permanentPlot = record.getValue("permanent_plot", Boolean.class);
-//		
-//		SamplePlot p = new SamplePlot();				
+		// cluster code
+		String clusterCode = record.getValue("cluster_id", String.class);
+		Integer clusterId = getClusterId(clusterCode);
+		if ( clusterCode != null && clusterId == null) {
+			log.warn("Invalid cluster code: "+clusterCode);
+			return false;
+		}
+		// interview no
+		Integer interviewNo = record.getValue("id", Integer.class);
+		if ( interviewNo == null ) {
+			log.warn("Missing interview number!");
+			return false;
+		}
+		// interview date
+		Date interviewDate = record.getValue("interview_date", Date.class);
+		
+		Interview iv = new Interview();
+		iv.setClusterId(clusterId);
+		iv.setInterviewNo(interviewNo);
+		iv.setInterviewDate(interviewDate);
+		// TODO other fields
+		
+		return true;
 //		p.setPlotNo(plotNo);
 //		p.setSamplingPhase(phase);
 //		p.setObsUnitId(unitId);
@@ -68,7 +81,15 @@ public class InterviewImporter extends AbstractFlatFileImporter {
 //		p.setPermanentPlot(permanentPlot);
 //		interviews.add(p);
 	}
-	
+
+	private Integer getClusterId(String clusterCode) {
+		if ( clusterCode == null ) {
+			return null;
+		} else {
+			return clusterDao.getIdByKey(surveyId, clusterCode);
+		}
+	}
+
 	@Override
 	protected void performInserts() {
 		interviewDao.insert(interviews);

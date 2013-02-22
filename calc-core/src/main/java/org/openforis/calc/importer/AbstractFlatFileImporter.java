@@ -17,12 +17,13 @@ import org.springframework.transaction.annotation.Transactional;
 public abstract class AbstractFlatFileImporter {
 	private static final int DEFAULT_INSERT_FREQUENCY = 10000;
 	private static final int DEFAULT_REPORT_FREQUENCY = 10000;
-	private int rowCount;
+	private int readRows;
+	private int skippedRows;
 	private int reportFrequency;
 	private int insertFrequency;
 	private long startTime;
 	private long endTime;
-	private Log log = LogFactory.getLog(getClass());
+	protected final Log log = LogFactory.getLog(getClass());
 	private boolean active;
 
 	public AbstractFlatFileImporter() {
@@ -38,27 +39,32 @@ public abstract class AbstractFlatFileImporter {
 		try {
 			startTime = System.currentTimeMillis();
 			endTime = -1;
-			rowCount = 0;
+			readRows = 0;
+			skippedRows = 0;
 			active = true;
 			
 			onStart();
 
 			FlatRecord record;
 			while ( (record = stream.nextRecord()) != null ) {
-				processRecord(record);
-				rowCount += 1;
-				if ( rowCount % insertFrequency == 0 ) {
+				boolean ok = processRecord(record);
+				readRows += 1;
+				if ( !ok ) {
+					log.warn("Skipping row "+readRows);
+					skippedRows += 1;
+				}
+				if ( getProcessedRows() % insertFrequency == 0 ) {
 					performInserts();
 				}
-				if ( rowCount % reportFrequency == 0 ) {
+				if ( readRows % reportFrequency == 0 ) {
 					reportProgress();
 				}
 			}
 
-			if ( rowCount % insertFrequency != 0 ) {
+			if ( getProcessedRows() % insertFrequency != 0 ) {
 				performInserts();
 			}
-			if ( rowCount % reportFrequency != 0 ) {
+			if ( readRows % reportFrequency != 0 ) {
 				reportProgress();
 			}
 			endTime = System.currentTimeMillis();
@@ -69,13 +75,17 @@ public abstract class AbstractFlatFileImporter {
 		}
 	}
 
+	public int getProcessedRows() {
+		return readRows-skippedRows;
+	}
+
 	protected void reportProgress() {
-		log.info(rowCount + " rows processed");
+		log.info(readRows + " rows read, "+getSkippedRows()+" skipped, "+getProcessedRows()+" processed");
 	}
 
 	protected abstract void performInserts();
 
-	protected abstract void processRecord(FlatRecord record);
+	protected abstract boolean processRecord(FlatRecord record);
 
 	protected void onStart() {
 	}
@@ -115,4 +125,11 @@ public abstract class AbstractFlatFileImporter {
 		return code == null ? no + "" : code;
 	}
 
+	public int getSkippedRows() {
+		return skippedRows;
+	}
+	
+	public int getReadRows() {
+		return readRows;
+	}
 }

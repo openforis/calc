@@ -1,5 +1,6 @@
 package org.openforis.calc.model;
 
+
 /**
  * @author G. Miceli
  */
@@ -17,4 +18,7 @@ public class Interview extends org.openforis.calc.persistence.jooq.tables.pojos.
 		super.setInterviewId(id);
 	}
 
+	public void setInterviewDate(java.util.Date interviewDate) {
+		super.setInterviewDate(new java.sql.Date(interviewDate.getTime()));
+	}
 }

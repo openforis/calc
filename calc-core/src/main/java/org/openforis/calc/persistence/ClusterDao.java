@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ClusterDao extends JooqDaoSupport<ClusterRecord, Cluster> {
 
 	public ClusterDao() {
-		super(Tables.CLUSTER, Cluster.class);
+		super(CLUSTER, Cluster.class, CLUSTER.SURVEY_ID, CLUSTER.CLUSTER_CODE);
 	}
 
 	public List<Cluster> findBySurveyId(int surveyId) {

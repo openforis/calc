@@ -50,7 +50,7 @@ public class SamplingDesignImporter extends AbstractFlatFileImporter {
 	private SamplePlotDao samplePlotDao;
 
 	@Override
-	protected void processRecord(FlatRecord record) {
+	protected boolean processRecord(FlatRecord record) {
 		if ( surveyId == null || unitId == null || srsId == null ) {
 			throw new NullPointerException("Survey, unit and/or SRS not set");
 		}
@@ -112,6 +112,8 @@ public class SamplingDesignImporter extends AbstractFlatFileImporter {
 		p.setPermanentPlot(permanentPlot);
 		newSamplePlots.add(p);
 		plotCount += 1;
+		
+		return true;
 	}
 	
 	@Override
