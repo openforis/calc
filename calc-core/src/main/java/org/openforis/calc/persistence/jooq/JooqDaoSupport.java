@@ -520,4 +520,10 @@ public abstract class JooqDaoSupport<R extends TableRecord<R>, P>
 		return batchFactory;
 	}
 
+	@Transactional
+	protected void executeSql(String sql) {
+		Factory create = getJooqFactory();
+		create.execute(sql);
+	}
+
 }

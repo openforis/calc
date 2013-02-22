@@ -3,13 +3,14 @@ package org.openforis.calc.model;
 
 /**
  * @author G. Miceli
+ * @author Mino Togna 
  */
 public class ObservationUnit extends org.openforis.calc.persistence.jooq.tables.pojos.ObservationUnit implements Identifiable {
 
 	private static final long serialVersionUID = 1L;
 
 	public enum Type {
-		PLOT, SPECIMEN;
+		PLOT, SPECIMEN, INTERVIEW;
 		
 		public boolean equals(String other) {
 			if(other == null){

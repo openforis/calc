@@ -20,9 +20,11 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.TableImpl;
 import org.jooq.impl.UpdatableTableImpl;
 import org.openforis.calc.geospatial.GeodeticCoordinate;
+import org.openforis.calc.persistence.jooq.tables.DimensionTable;
 import org.openforis.calc.persistence.jooq.tables.FactTable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -50,20 +52,47 @@ public class JooqTableGenerator {
 		platformInfo.setMaxTableNameLength(maxTableNameLength);
 	}
 
-	@Transactional
+	
+//	@Transactional(propagation = Propagation.REQUIRES_NEW)
+//	synchronized 
+//	public void drop(UpdatableTableImpl<?> jooqTable) {
+//		Database database = initDatabase();
+//		Table table = initTable(database, jooqTable);
+//
+//		dropTable(database, table);
+//	}
+
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	synchronized 
-	public void generate(UpdatableTableImpl<?> jooqTable) {
+	public void create(UpdatableTableImpl<?> jooqTable) {
 		Database database = initDatabase();
 		Table table = initTable(database, jooqTable);
 		initColumns(table, jooqTable);
 
-		dropTable(database, table);
+//		dropTable(database, table);
 		createTable(database);
 	}
 
-	private void dropTable(Database database, Table table) {
-		platform.dropTable(database, table, true);
-	}
+	
+//	@Transactional
+//	synchronized 
+//	public void generate(UpdatableTableImpl<?> jooqTable) {
+//		Database database = initDatabase();
+//		Table table = initTable(database, jooqTable);
+//		initColumns(table, jooqTable);
+//
+//		dropTable(database, table);
+//		createTable(database);
+//	}
+
+//	private void dropTable(Database database, Table table) {
+//		
+//		try {
+//			platform.dropTable(database, table, false);
+//		} catch ( DatabaseOperationException e ) {
+//			e.printStackTrace();
+//		}
+//	}
 
 	private void createTable(Database database) {
 		platform.createTables(database, false, false);
@@ -85,6 +114,8 @@ public class JooqTableGenerator {
 	private boolean isPkey(Field<?> field, UpdatableTableImpl<?> jooqTable) {
 		if ( jooqTable instanceof FactTable ) {
 			return ((FactTable) jooqTable).getIdField().equals(field);
+		} else if ( jooqTable instanceof DimensionTable ) {
+			return ((DimensionTable) jooqTable).ID.equals(field);
 		} else {
 			UniqueKey<?> mainKey = jooqTable.getMainKey();
 			return mainKey.getFields().contains(field);

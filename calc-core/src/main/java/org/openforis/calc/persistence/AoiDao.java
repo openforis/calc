@@ -21,7 +21,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Component 
 @Transactional
 public class AoiDao extends JooqDaoSupport<AoiRecord, Aoi> {
-
+	
+	private static final org.openforis.calc.persistence.jooq.tables.Aoi A = AOI;
+	private static final org.openforis.calc.persistence.jooq.tables.AoiHierarchyLevel L = AOI_HIERARCHY_LEVEL;
+	private static final org.openforis.calc.persistence.jooq.tables.AoiHierarchy H = AOI_HIERARCHY;
+	
 	public AoiDao() {
 		super(AOI, Aoi.class);
 	}
@@ -36,14 +40,15 @@ public class AoiDao extends JooqDaoSupport<AoiRecord, Aoi> {
 		Result<?> result = 
 				create
 				.select(fields)
-				.from(AOI)
-				.join(AOI_HIERARCHY_LEVEL)
-					.on(AOI.AOI_HIERARCHY_LEVEL_ID.eq(AOI_HIERARCHY_LEVEL.AOI_HIERARCHY_LEVEL_ID))
-				.join(AOI_HIERARCHY)
-					.on(AOI_HIERARCHY_LEVEL.AOI_HIERARCHY_ID.eq(AOI_HIERARCHY.AOI_HIERARCHY_ID))				
-				.where(AOI_HIERARCHY.AOI_HIERARCHY_NAME.eq(hierarchyName))
+				.from(A)
+				.join(L)
+					.on(A.AOI_HIERARCHY_LEVEL_ID.eq(L.AOI_HIERARCHY_LEVEL_ID))
+				.join(H)
+					.on(L.AOI_HIERARCHY_ID.eq(H.AOI_HIERARCHY_ID))				
+				.where(H.AOI_HIERARCHY_NAME.eq(hierarchyName))
 				.fetch();
 		
 		return stream( result );
 	}
+	
 }

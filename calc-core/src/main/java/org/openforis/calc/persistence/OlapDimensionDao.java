@@ -2,16 +2,34 @@
  * 
  */
 package org.openforis.calc.persistence;
+import static org.openforis.calc.persistence.jooq.Tables.AOI;
+import static org.openforis.calc.persistence.jooq.Tables.AOI_HIERARCHY;
+import static org.openforis.calc.persistence.jooq.Tables.AOI_HIERARCHY_LEVEL;
+import static org.openforis.calc.persistence.jooq.Tables.SURVEY;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
-import org.jooq.Query;
+import org.jooq.Insert;
+import org.jooq.Record;
+import org.jooq.Result;
+import org.jooq.SelectQuery;
 import org.jooq.impl.Factory;
+import org.openforis.calc.model.ObservationUnitMetadata;
+import org.openforis.calc.model.SurveyMetadata;
 import org.openforis.calc.model.VariableMetadata;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
+import org.openforis.calc.persistence.jooq.JooqTableGenerator;
+import org.openforis.calc.persistence.jooq.tables.AoiHierarchy;
+import org.openforis.calc.persistence.jooq.tables.AoiHierarchyLevel;
 import org.openforis.calc.persistence.jooq.tables.Category;
-import org.openforis.calc.persistence.jooq.tables.Variable;
+import org.openforis.calc.persistence.jooq.tables.DimensionTable;
+import org.openforis.calc.persistence.jooq.tables.Survey;
+import org.openforis.calc.persistence.jooq.tables.records.DimensionRecord;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -25,145 +43,162 @@ public class OlapDimensionDao extends JooqDaoSupport {
 
 	private static final String DIMENSION_NA_VALUE = "No Data";
 	private static final String DIMENSION_NA_ID = "-1";
-	private static Category C = Category.CATEGORY;
-	private static Variable V = Variable.VARIABLE;
+	private static final Category C = Category.CATEGORY;
+//	private static final Variable V = Variable.VARIABLE;
+	
+	private static final org.openforis.calc.persistence.jooq.tables.Aoi A = AOI;
+	private static final org.openforis.calc.persistence.jooq.tables.AoiHierarchyLevel L = AOI_HIERARCHY_LEVEL;
+	private static final org.openforis.calc.persistence.jooq.tables.AoiHierarchy H = AOI_HIERARCHY;
+	private static final org.openforis.calc.persistence.jooq.tables.Survey S = SURVEY;
+	
+	@Autowired
+	private JooqTableGenerator jooqTableGenerator;
 	
  	@SuppressWarnings("unchecked")
 	public OlapDimensionDao() {
 		super(null, null);
 	}
 
- 	@Transactional
-	public void generateOlapDimensions(String surveyName, Collection<VariableMetadata> variables) {
-		startBatch();
-		Factory create = getBatchFactory();
-		
-		/**
-
-
-CREATE TABLE "naforma1"."accessibility"  ( 
-	"category_id"   	integer NOT NULL,
-	"category_code" 	varchar(256) NULL,
-	"category_label"	varchar(256) NULL 
-	);
-
-insert into naforma1.accessibility
-select
-    category_id,
-    category_code,
-    category_label
-from
-    category c
-inner join
-    variable v on v.variable_id = c.variable_id and v.variable_id = 3    
-
-		 */
-		for ( VariableMetadata variable : variables ) {
-			if( variable.isCategorical() && variable.isForAnalysis() ) {
-				String variableName = variable.getVariableName();
-				Integer variableId = variable.getVariableId();
-				String tableName = surveyName+"."+ variableName ;
-				
-				Query dropTable = getDropTableQuery(create, tableName);
-				addQueryToBatch(dropTable);
-				
-				Query createTable = getCreateTableQuery(create, tableName);
-				addQueryToBatch(createTable);
-				
-				Query insertValues = getInsertValuesQuery(create, variableId, tableName);
-				addQueryToBatch(insertValues);
-				
-				Query insertNaValue = getInsertNaValueQuery(create, variableId, tableName);
-				addQueryToBatch(insertNaValue);
-			}
+ 	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	public void createAoiOlapDimensionTables(int surveyId) {
+		List<DimensionTable> aoiDimTables = getAoiDimensionTables(surveyId);
+		for ( DimensionTable aoiDimTable : aoiDimTables ) {
+			jooqTableGenerator.create(aoiDimTable);
 		}
-		
-		executeBatch();
+ 	}
+ 	
+ 	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	public void createOlapDimensionTables(Collection<VariableMetadata> variables) {
+
+ 		for ( VariableMetadata variable : variables ) {
+ 			if( variable.isCategorical() && variable.isForAnalysis() ) {
+ 				DimensionTable dimTable = getDimensionTable(variable);
+ 				jooqTableGenerator.create(dimTable);
+ 			}
+		}
+ 		
 	}
 
-	private Query getDropTableQuery(Factory create, String tableName) {
-		StringBuffer sb = new StringBuffer();
-		sb.append("drop table if exists ");
-		sb.append(tableName);
-		Query dropTable = create.query( sb.toString() );
-		return dropTable;
+ 	private DimensionTable getDimensionTable(VariableMetadata variable){
+ 		ObservationUnitMetadata obsUnitMetadata = variable.getObservationUnitMetadata();
+ 		SurveyMetadata surveyMetadata = obsUnitMetadata.getSurveyMetadata();
+ 		String surveyName = surveyMetadata.getSurveyName();
+ 		
+ 		String varName = variable.getVariableName();
+ 		
+ 		DimensionTable dimTable = new DimensionTable(varName, surveyName);
+ 		return dimTable;
+ 	}
+ 	
+ 	@Transactional
+	public void populateOlapDimensionTables(int surveyId, Collection<VariableMetadata> variables) {
+ 		for ( VariableMetadata variable : variables ) {
+ 			if( variable.isCategorical() && variable.isForAnalysis() ) {
+ 				DimensionTable dimTable = getDimensionTable(variable);
+ 				populateDimensionTable(dimTable, variable.getVariableId());
+ 			}
+		}
+ 	}
+ 	
+ 	@Transactional
+ 	private void populateDimensionTable(DimensionTable dimTable, Integer variableId) {
+ 		Factory create = getJooqFactory();
+		Category c = C.as("c");
+		
+ 		SelectQuery select = create.selectQuery();
+ 		select.addSelect(c.CATEGORY_ID, c.CATEGORY_CODE, c.CATEGORY_LABEL);
+ 		select.addFrom(c);
+ 		select.addConditions(c.VARIABLE_ID.eq( variableId));
+ 		
+ 		create
+ 			.insertInto(dimTable, dimTable.ID, dimTable.CODE, dimTable.LABEL)
+ 			.select(select)
+ 			.execute();
+ 		
+ 		create
+			.insertInto(dimTable, dimTable.ID, dimTable.CODE, dimTable.LABEL)
+			.values( DIMENSION_NA_ID, DIMENSION_NA_VALUE, DIMENSION_NA_VALUE)
+			.execute();
 	}
 
-	private Query getInsertValuesQuery(Factory create, Integer variableId, String tableName) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("insert into ");
-		sb.append(tableName);
-		sb.append(" select ");
-		sb.append("c.");
-		sb.append(C.CATEGORY_ID.getName());
-		sb.append(",");
-		sb.append("c.");
-		sb.append(C.CATEGORY_CODE.getName());
-		sb.append(",");
-		sb.append("c.");
-		sb.append(C.CATEGORY_LABEL.getName());				
-		sb.append(" from ");
-		sb.append(C.getName());
-		sb.append(" c");
-		sb.append(" inner join ");
-		sb.append(V.getName());
-		sb.append(" v ");
-		sb.append("on ");
-		sb.append("c.");
-		sb.append(C.VARIABLE_ID.getName());
-		sb.append(" = ");
-		sb.append("v.");
-		sb.append(V.VARIABLE_ID.getName());
-		sb.append(" and ");
-		sb.append("v.");
-		sb.append(V.VARIABLE_ID.getName());
-		sb.append(" = ");
-		sb.append(variableId);
-		Query insertValues = create.query( sb.toString() );
-		return insertValues;
-	}
-
-	private Query getInsertNaValueQuery(Factory create, Integer variableId, String tableName) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("insert into ");
-		sb.append(tableName);
-		sb.append("(");
-		sb.append(C.CATEGORY_ID.getName());
-		sb.append(",");
-		sb.append(C.CATEGORY_CODE.getName());
-		sb.append(",");
-		sb.append(C.CATEGORY_LABEL.getName());
-		sb.append(")");
-		sb.append(" values");
-		sb.append("(");
-		sb.append(DIMENSION_NA_ID);
-		sb.append(",");
-		sb.append("'");
-		sb.append(DIMENSION_NA_VALUE);
-		sb.append("'");
-		sb.append(",");
-		sb.append("'");
-		sb.append(DIMENSION_NA_VALUE);
-		sb.append("'");
-		sb.append(")");
+	/**
+	 * 
+	 * @return
+	 */
+	@Transactional
+	private List<DimensionTable> getAoiDimensionTables(int surveyId) {
+		List<DimensionTable> dimTables = new ArrayList<DimensionTable>();
 		
-		Query insertValues = create.query( sb.toString() );
-		return insertValues;
+		Factory create = getJooqFactory();
+		AoiHierarchyLevel l = L.as("l");
+		AoiHierarchy h = H.as("h");
+		Survey s = S.as("s");
+//		select l.aoi_hierarchy_level_rank, l.aoi_hierarchy_level_name from  calc.aoi_hierarchy_level l;
+		Result<Record> result = create
+			.selectDistinct(l.AOI_HIERARCHY_LEVEL_ID, l.AOI_HIERARCHY_LEVEL_RANK, l.AOI_HIERARCHY_LEVEL_NAME, s.SURVEY_NAME)
+			.from(l)
+			.join(h)
+			.on( l.AOI_HIERARCHY_ID.eq(h.AOI_HIERARCHY_ID) )
+			.join(s)
+			.on( h.SURVEY_ID.eq(s.SURVEY_ID) )
+			.where( h.SURVEY_ID.eq(surveyId) )
+			.fetch();
+		for ( Record record : result ) {
+			
+			String name = record.getValue(l.AOI_HIERARCHY_LEVEL_NAME);
+			String surveyName = record.getValue(s.SURVEY_NAME);
+			DimensionTable dimTable = new DimensionTable(name, surveyName);
+			
+			dimTables.add(dimTable);
+		}
+			
+		return dimTables;
 	}
-	
-	private Query getCreateTableQuery(Factory create, String tableName) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("create table ");
-		sb.append(tableName);
-		sb.append(" ( ");
-		sb.append("\""+C.CATEGORY_ID.getName()+"\"   	integer NOT NULL,");
-		sb.append("\""+C.CATEGORY_CODE.getName()+"\" 	varchar(256) NULL,");
-		sb.append("\""+C.CATEGORY_LABEL.getName()+"\"	varchar(256) NULL");
-		sb.append(" );");
-		String createTableSql = sb.toString();
+ 	
+ 	@Transactional
+	public void populateAoiDimensionTables(int surveyId) {
+		List<DimensionTable> aoiDimTables = getAoiDimensionTables(surveyId);
+		for ( DimensionTable aoiDimTable : aoiDimTables ) {
+			populateAoiDimensionTable(surveyId, aoiDimTable);
+		}
+ 	}
+ 	
+	@Transactional
+	private int populateAoiDimensionTable(int surveyId, DimensionTable dimensionTable) {
+		Factory create = getJooqFactory();
 		
-		Query createTable = create.query(createTableSql);
-		return createTable;
+		String dimTableName = dimensionTable.getName();
+		
+//		Factory create = getJooqFactory();
+		AoiHierarchyLevel l = L.as("l");
+		AoiHierarchy h = H.as("h");
+		org.openforis.calc.persistence.jooq.tables.Aoi a = A.as("a");
+		
+		SelectQuery select = create.selectQuery();
+			select.addSelect( a.AOI_ID , a.AOI_CODE , a.AOI_LABEL );
+			select.addFrom( a );
+			select.addJoin( 
+					l, 
+					a.AOI_HIERARCHY_LEVEL_ID.eq(l.AOI_HIERARCHY_LEVEL_ID) 
+				);
+			
+			select.addJoin( 
+					h ,
+					l.AOI_HIERARCHY_ID.eq( h.AOI_HIERARCHY_ID ) 
+				);
+			select.addConditions( 
+					l.AOI_HIERARCHY_LEVEL_NAME.eq(dimTableName) 
+					.and( h.SURVEY_ID.eq(surveyId) ) 
+				);
+		
+		Insert<DimensionRecord> insert = create
+			.insertInto( dimensionTable , dimensionTable.ID, dimensionTable.CODE, dimensionTable.LABEL )
+			.select( select );
+		
+		
+		int r = insert.execute();
+		
+		return r;
 	}
 	
 }

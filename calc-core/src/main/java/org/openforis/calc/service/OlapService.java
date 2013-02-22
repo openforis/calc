@@ -18,6 +18,8 @@ import org.openforis.calc.model.ObservationUnitMetadata;
 import org.openforis.calc.model.SurveyMetadata;
 import org.openforis.calc.model.VariableMetadata;
 import org.openforis.calc.olap.Schema;
+import org.openforis.calc.persistence.AoiDao;
+import org.openforis.calc.persistence.OlapSchemaDao;
 import org.openforis.calc.persistence.PlotFactTableDao;
 import org.openforis.calc.persistence.GroundPlotViewDao;
 import org.openforis.calc.persistence.OlapDimensionDao;
@@ -34,36 +36,51 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class OlapService extends CalcService {
-//	private static final String AREA_FACT_TABLE_NAME = "area_fact";
-//	private static final String SPECIMEN_FACT_TABLE_NAME_SUFFIX = "_fact";
-//	private static final String PLOT_FACT_TABLE_NAME = "plot_fact";
 
+	@Autowired
+	private AoiDao aoiDao;
 	@Autowired
 	private OlapDimensionDao olapDimensionDao;
 	@Autowired
 	private PlotSectionViewDao plotSectionViewDao;
 	@Autowired
 	private SpecimenDao specimenDao;
-//	@Autowired
-//	@Deprecated
-//	private AreaFactDao areaFactDao;
 	@Autowired
-	private PlotFactTableDao factTableDao;
+	private PlotFactTableDao plotFactTableDao;
 	@Autowired	
 	private GroundPlotViewDao groundPlotViewDao;
-	
+	@Autowired	
+	private OlapSchemaDao olapSchemaDao;
 	
 	@Transactional
 	public void publishData(String surveyName) {
-		SurveyMetadata surveyMetadata = metadataService.getSurveyMetadata(surveyName);
+		SurveyMetadata surveyMetadata = getSurveyMetadata(surveyName);
+		
+		dropSchema(surveyName);
+		createSchema(surveyName);
+		
+		createTables(surveyMetadata);
+		
+		populateTables(surveyMetadata);
+	}
+
+	@Transactional
+	private void populateTables(SurveyMetadata surveyMetadata) {
+		int surveyId = surveyMetadata.getSurveyId();
+//		String surveyName = surveyMetadata.getSurveyName();
+		
+		olapDimensionDao.populateAoiDimensionTables(surveyId);
+		
 		Collection<ObservationUnitMetadata> observationMetadata = surveyMetadata.getObservationMetadata();
 		for ( ObservationUnitMetadata obsUnitMetadata : observationMetadata ) {
-//			String obsUnitName = obsUnitMetadata.getObsUnitName();
 			Collection<VariableMetadata> variables = obsUnitMetadata.getVariableMetadata();
+//			olapDimensionDao.createOlapDimensionTables(surveyMetadata.getSurveyId(), variables);
+			olapDimensionDao.populateOlapDimensionTables(surveyId, variables);
+//			String obsUnitName = obsUnitMetadata.getObsUnitName();
 			
 			if ( ObservationUnit.Type.PLOT.equals(obsUnitMetadata.getObsUnitType()) ) {
 				// plot fact table
-				createPlotFactTable( surveyName, obsUnitMetadata );
+				plotFactTableDao.populatePlotFactTable(obsUnitMetadata);
 				
 //				FlatDataStream areaFactData = getAreaFactData(surveyName, obsUnitName, PlotDistributionCalculationMethod.PRIMARY_SECTION_ONLY);
 //				updateAreaFacts(surveyName, areaFactData);
@@ -72,17 +89,53 @@ public class OlapService extends CalcService {
 //				FlatDataStream specimenFactData = getSpecimenFactData(surveyName, obsUnitName);
 //				updateSpecimenFacts(surveyName, obsUnitName, specimenFactData);
 			}
+			
+		}
+	}
+	
+	private void createTables(SurveyMetadata surveyMetadata) {
+		int surveyId = surveyMetadata.getSurveyId();
+//		String surveyName = surveyMetadata.getSurveyName();
+		
+		olapDimensionDao.createAoiOlapDimensionTables(surveyId);
+		
+		Collection<ObservationUnitMetadata> observationMetadata = surveyMetadata.getObservationMetadata();
+		for ( ObservationUnitMetadata obsUnitMetadata : observationMetadata ) {
+			Collection<VariableMetadata> variables = obsUnitMetadata.getVariableMetadata();
+			olapDimensionDao.createOlapDimensionTables(variables);
+			
+//			String obsUnitName = obsUnitMetadata.getObsUnitName();
+			
+			if ( ObservationUnit.Type.PLOT.equals(obsUnitMetadata.getObsUnitType()) ) {
+				// plot fact table
+				plotFactTableDao.createPlotFactTable(obsUnitMetadata);
+				
+//				FlatDataStream areaFactData = getAreaFactData(surveyName, obsUnitName, PlotDistributionCalculationMethod.PRIMARY_SECTION_ONLY);
+//				updateAreaFacts(surveyName, areaFactData);
 
-			olapDimensionDao.generateOlapDimensions(surveyName, variables);
+			} else if ( ObservationUnit.Type.SPECIMEN.equals(obsUnitMetadata.getObsUnitType()) ) {
+//				FlatDataStream specimenFactData = getSpecimenFactData(surveyName, obsUnitName);
+//				updateSpecimenFacts(surveyName, obsUnitName, specimenFactData);
+			}
+			
 		}
 	}
 
-	private void createPlotFactTable(String surveyName, ObservationUnitMetadata obsUnitMetadata) {
-//		Collection<VariableMetadata> plotAnalysisVars = getVariableMetadataForAnalysis(obsUnitMetadata.getVariableMetadata());
+	private SurveyMetadata getSurveyMetadata(String surveyName) {
+		SurveyMetadata surveyMetadata = metadataService.getSurveyMetadata(surveyName);
+		if( surveyMetadata == null){
+			throw new IllegalArgumentException("Survey " + surveyName + " not found");
+		}
+		return surveyMetadata;
+	}
 
-		// FlatDataStream stream = groundPlotViewDao.streamPlotFactData(plotAnalysisVars, obsUnitMetadata.getObsUnitId());
-		factTableDao.createOrUpdatePlotFactTable(obsUnitMetadata);
-		// factTableDao.createOrUpdateFactTable(stream, plotAnalysisVars, surveyName, PLOT_FACT_TABLE_NAME);
+	private void createSchema(String schema) {
+		olapSchemaDao.createSchema(schema);
+	}
+
+	private void dropSchema(String schema) {
+		olapSchemaDao.dropSchema(schema);
+		
 	}
 
 	public void saveSchema(Schema schema, String path) throws IOException, JAXBException {
@@ -95,7 +148,7 @@ public class OlapService extends CalcService {
 	}
 
 	public Schema generateSchema(String surveyName) {
-		SurveyMetadata surveyMetadata = metadataService.getSurveyMetadata(surveyName);
+		SurveyMetadata surveyMetadata = getSurveyMetadata(surveyName);
 		return generateSchema(surveyMetadata);
 	}
 
@@ -112,7 +165,7 @@ public class OlapService extends CalcService {
 //	}
 
 	private ObservationUnitMetadata getPlotMetadata(String surveyName) {
-		SurveyMetadata surveyMetadata = metadataService.getSurveyMetadata(surveyName);
+		SurveyMetadata surveyMetadata = getSurveyMetadata(surveyName);
 		Collection<ObservationUnitMetadata> observationMetadata = surveyMetadata.getObservationMetadata();
 		for ( ObservationUnitMetadata obsUnit : observationMetadata ) {
 			if ( ObservationUnit.Type.PLOT.equals(obsUnit.getObsUnitType()) ) {

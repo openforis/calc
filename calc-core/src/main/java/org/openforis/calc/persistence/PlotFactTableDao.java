@@ -39,6 +39,7 @@ import org.openforis.calc.persistence.jooq.tables.Stratum;
 import org.openforis.calc.persistence.jooq.tables.records.FactRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -67,22 +68,35 @@ public class PlotFactTableDao extends JooqDaoSupport {
 	private static final String[] MEASURES = new String[] { P.PLOT_LOCATION_DEVIATION.getName(), COUNT_COLUMN_NAME, EST_AREA_COLUMN_NAME };
 	
 	@Autowired
-	private JooqTableGenerator factTableGenerator;
+	private JooqTableGenerator jooqTableGenerator;
 
 	@SuppressWarnings("unchecked")
 	public PlotFactTableDao() {
 		super(null, null);
 	}
 
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	synchronized
+	public void createPlotFactTable(ObservationUnitMetadata obsUnitMetadata) {
+		//1. Plot fact table
+		FactTable plotFactTable = getPlotFactTable(obsUnitMetadata);
+		jooqTableGenerator.create(plotFactTable);
+		
+		//2. agg plot fact at aoi/stratum level 
+//		FactTable aoiStratumPlotFact = getAggAoiStratumPlotFactTable(plotFactTable);
+//		jooqTableGenerator.create(aoiStratumPlotFact);
+		
+		//3. Aggg at  aoi level
+		
+	}
+
 	@Transactional
 	synchronized
-	public void createOrUpdatePlotFactTable(ObservationUnitMetadata obsUnitMetadata) {
-		
+	public void populatePlotFactTable(ObservationUnitMetadata obsUnitMetadata) {
 		Factory create = getJooqFactory();
 		
 		//1. Plot fact table
 		FactTable plotFactTable = getPlotFactTable(obsUnitMetadata);
-		factTableGenerator.generate(plotFactTable);
 		
 		SelectQuery plotFactSelect = getPlotFactSelect(create, obsUnitMetadata);
 		Insert<FactRecord> plotFactInsert = getPlotFactInsert(plotFactTable, create, plotFactSelect);
@@ -96,23 +110,19 @@ public class PlotFactTableDao extends JooqDaoSupport {
 		
 		
 		//2. agg plot fact at aoi/stratum level 
-		FactTable aoiStratumPlotFact = getAggAoiStratumPlotFactTable(plotFactTable);
-		factTableGenerator.generate(aoiStratumPlotFact);
-		
-		SelectQuery aoiStratumSelect = getAggAoiStratumPlotFactSelect(create, plotFactTable, aoiStratumPlotFact);
-		Insert<FactRecord> aoiStratumInsert = getAggAoiStratumPlotFactInsert(create, aoiStratumPlotFact, aoiStratumSelect);
-		
-		if ( getLog().isDebugEnabled() ) {
-			getLog().debug("Aoi Stratum aggregate plot fact table insert:");
-			getLog().debug(aoiStratumInsert.toString());		
-		}
-		
-		aoiStratumInsert.execute();
-		
-		//3. Aggg at  aoi level
-		
+//		FactTable aoiStratumPlotFact = getAggAoiStratumPlotFactTable(plotFactTable);
+//		
+//		SelectQuery aoiStratumSelect = getAggAoiStratumPlotFactSelect(create, plotFactTable, aoiStratumPlotFact);
+//		Insert<FactRecord> aoiStratumInsert = getAggAoiStratumPlotFactInsert(create, aoiStratumPlotFact, aoiStratumSelect);
+//		
+//		if ( getLog().isDebugEnabled() ) {
+//			getLog().debug("Aoi Stratum aggregate plot fact table insert:");
+//			getLog().debug(aoiStratumInsert.toString());		
+//		}
+//		
+//		aoiStratumInsert.execute();
 	}
-
+	
 	private Insert<FactRecord> getAggAoiStratumPlotFactInsert(Factory create, FactTable aoiStratumPlotFact, SelectQuery aoiStratumSelect) {
 		List<Field<?>> selectFields = aoiStratumSelect.getFields();
 		List<Field<?>> fields = new ArrayList<Field<?>>(selectFields.size());
