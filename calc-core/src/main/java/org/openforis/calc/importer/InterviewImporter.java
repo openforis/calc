@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.openforis.calc.geospatial.GeodeticCoordinate;
 import org.openforis.calc.io.flat.FlatRecord;
 import org.openforis.calc.model.Interview;
 import org.openforis.calc.model.InterviewCategoricalValue;
@@ -22,10 +23,8 @@ import org.springframework.stereotype.Component;
  * 
  */
 @Component
-public class InterviewImporter extends AbstractFlatFileImporter {
+public class InterviewImporter extends AbstractObservationImporter {
 
-	private Integer surveyId;
-	private Integer unitId;
 	private List<Interview> interviews;
 	private List<InterviewCategoricalValue> categoricalValues;
 	private List<InterviewNumericValue> numericValues;
@@ -38,7 +37,7 @@ public class InterviewImporter extends AbstractFlatFileImporter {
 	private InterviewNumericValueDao interviewNumericValueDao;
 	@Autowired
 	private ClusterDao clusterDao;
-
+	
 	public InterviewImporter() {
 		setInsertFrequency(1000);
 		setReportFrequency(1000);
@@ -46,9 +45,6 @@ public class InterviewImporter extends AbstractFlatFileImporter {
 	
 	@Override
 	protected boolean processRecord(FlatRecord record) {
-		if ( surveyId == null || unitId == null ) {
-			throw new NullPointerException("Survey or unit ID not set");
-		}
 		// cluster code
 		String clusterCode = record.getValue("cluster_id", String.class);
 		Integer clusterId = getClusterId(clusterCode);
@@ -64,6 +60,15 @@ public class InterviewImporter extends AbstractFlatFileImporter {
 		}
 		// interview date
 		Date interviewDate = record.getValue("interview_date", Date.class);
+		// location
+		Double locationX = record.getValue("location_x", Double.class);
+		Double locationY = record.getValue("location_y", Double.class);
+		String srsId = record.getValue("location_srs_id", String.class);
+		if ( locationX == null || locationY == null || srsId == null ) {
+			log.warn("Missing or incomplete location");
+			return false;
+		}
+		GeodeticCoordinate location = GeodeticCoordinate.toInstance(locationX, locationX, srsId);
 		
 		Interview iv = new Interview();
 		iv.setClusterId(clusterId);
@@ -86,7 +91,7 @@ public class InterviewImporter extends AbstractFlatFileImporter {
 		if ( clusterCode == null ) {
 			return null;
 		} else {
-			return clusterDao.getIdByKey(surveyId, clusterCode);
+			return clusterDao.getIdByKey(getObservationUnit().getSurveyId(), clusterCode);
 		}
 	}
 
@@ -112,21 +117,5 @@ public class InterviewImporter extends AbstractFlatFileImporter {
 		interviews = null;
 		categoricalValues = null;
 		numericValues = null;
-	}
-
-	public int getSurveyId() {
-		return surveyId;
-	}
-
-	public void setSurveyId(int surveyId) {
-		this.surveyId = surveyId;
-	}
-
-	public int getUnitId() {
-		return unitId;
-	}
-
-	public void setUnitId(int unitId) {
-		this.unitId = unitId;
 	}
 }
