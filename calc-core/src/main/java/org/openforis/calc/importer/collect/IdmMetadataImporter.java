@@ -1,12 +1,24 @@
-package org.openforis.calc.dataimport.collect;
+package org.openforis.calc.importer.collect;
 
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 
+import javax.xml.namespace.QName;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openforis.calc.model.Category;
 import org.openforis.calc.model.ObservationUnit;
 import org.openforis.calc.model.Survey;
 import org.openforis.calc.model.Variable;
+import org.openforis.calc.persistence.CategoryDao;
+import org.openforis.calc.persistence.ObservationUnitDao;
+import org.openforis.calc.persistence.SurveyDao;
+import org.openforis.calc.persistence.VariableDao;
+import org.openforis.calc.service.MetadataService;
+import org.openforis.collect.model.CollectSurvey;
+import org.openforis.collect.persistence.xml.CollectSurveyIdmlBinder;
 import org.openforis.idm.metamodel.AttributeDefinition;
 import org.openforis.idm.metamodel.BooleanAttributeDefinition;
 import org.openforis.idm.metamodel.CodeAttributeDefinition;
@@ -20,6 +32,7 @@ import org.openforis.idm.metamodel.NodeLabel.Type;
 import org.openforis.idm.metamodel.NumberAttributeDefinition;
 import org.openforis.idm.metamodel.Schema;
 import org.openforis.idm.metamodel.xml.IdmlParseException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,21 +43,49 @@ import org.springframework.transaction.annotation.Transactional;
  *
  */
 @Component
-public class IdmMetadataLoader extends IdmLoaderBase {
+// TODO call from MetadataService
+public class IdmMetadataImporter {
 
-	// TODO to partially refactor into MetadataService?
-	private static final String TEST_SURVEY_NAME = "naforma1";
+	
+
+	public static final String CALC_IDML_NAMESPACE = "http://www.openforis.org/calc/idml";
+	public static final QName OBS_UNIT_QNAME = new QName(CALC_IDML_NAMESPACE, "observationUnit");
+	public static final QName TYPE_QNAME = new QName(CALC_IDML_NAMESPACE, "type");
+	public static final QName ATTRIBUTE_QNAME = new QName(CALC_IDML_NAMESPACE, "attribute");
+	public static final String FALSE_CATEGORY_LABEL = "False";
+	public static final String FALSE_CATEGORY_CODE = "F";
+	public static final String TRUE_CATEGORY_LABEL = "True";
+	public static final String TRUE_CATEGORY_CODE = "T";
+	
+	@Autowired
+	private MetadataService metadataService;
+	@Autowired
+	private SurveyDao surveyDao;
+	@Autowired
+	private ObservationUnitDao surveyUnitDao;
+	@Autowired
+	private VariableDao variableDao;
+	@Autowired
+	private CategoryDao categoryDao;
+	@Autowired
+	private CollectSurveyIdmlBinder idmlBinder;
+
+	private Survey survey;
+	private org.openforis.idm.metamodel.Survey idmSurvey;
+	
+	private Log log = LogFactory.getLog(getClass());
 
 	private String lang = "en";
 	private String codeSeparator = "/";
 	private String codeListItemLabelSeparator = " > ";
-	// TODO add inserted item counts (plot types, specimen types, variables, etc)
+	// TODO add progress states item counts (plot types, specimen types, variables, etc)
 	
+	// TODO test - remove
 	public static void main(String[] args)  {
 		try {
 			ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
-			IdmMetadataLoader loader = ctx.getBean(IdmMetadataLoader.class);
-			loader.importMetadata(TEST_SURVEY_NAME, TEST_PATH+IDML_FILENAME);
+			IdmMetadataImporter loader = ctx.getBean(IdmMetadataImporter.class);
+			loader.importMetadata("naforma1", "/home/gino/tzdata/idml.xml");
 		} catch ( Throwable ex ) {
 			ex.printStackTrace();
 		}
@@ -53,30 +94,35 @@ public class IdmMetadataLoader extends IdmLoaderBase {
 	@Transactional
 	synchronized
 	public void importMetadata(String surveyName, String idmlFilename) throws IOException, IdmlParseException, InvalidMetadataException {		
-		idmSurvey = metadataService.loadIdml(idmlFilename);
+		FileReader reader = new FileReader(idmlFilename);
+		idmSurvey = (CollectSurvey) idmlBinder.unmarshal(reader);
 		survey = new Survey();
 		survey.setSurveyLabel(idmSurvey.getProjectName(lang));
 		survey.setSurveyUri(idmSurvey.getUri());
 		survey.setSurveyName(surveyName);
-//		survey.setId(1);
-		surveyDao.insert(survey);
-		log.info("Survey: " +survey.getSurveyName()+" ("+survey.getId()+")");
+		survey.setId(2);
+//		surveyDao.insert(survey);
 		Schema schema = idmSurvey.getSchema();
-		traverse(schema);
-	}
-
-	private void traverse(Schema schema) throws InvalidMetadataException {
+		// TODO remove existing metadata
+		log.debug("Importing survey " +survey.getSurveyName()+" ("+survey.getId()+")");
 		List<EntityDefinition> roots = schema.getRootEntityDefinitions();
 		for (EntityDefinition root : roots) {
-			traverse(root, null);
+			importMetadata(root, null);
 		}
+		log.info("Imported survey " +survey.getSurveyName()+" ("+survey.getId()+")");
 	}
 
-	private void traverse(EntityDefinition node, ObservationUnit parentUnit) throws InvalidMetadataException {
+	/**
+	 * Recursively imports all relevant entity metadata
+	 * @param node
+	 * @param parentUnit
+	 * @throws InvalidMetadataException
+	 */
+	private void importMetadata(EntityDefinition node, ObservationUnit parentUnit) throws InvalidMetadataException {
 		EntityType type = getEntityType(node);
 		if ( type == null ) {
 			if ( node.isMultiple() ) {
-				log.info("Skipping unmapped multiple entity: "+node.getPath());
+				log.debug("Skipping unmapped multiple entity: "+node.getPath());
 				return;
 			}
 		} else {
@@ -85,19 +131,21 @@ public class IdmMetadataLoader extends IdmLoaderBase {
 					throw new InvalidMetadataException("'cluster' entity found inside observation unit '" +
 							parentUnit.getObsUnitName() + "' instead of top level");
 				}
-				log.info("Cluster entity found: "+node.getPath());
+				log.debug("Cluster entity found: "+node.getPath());
 			} else if ( type.isObservationUnit() ){
-				parentUnit = importObservationUnit(parentUnit, node, type);
+				if ( type == EntityType.INTERVIEW ) 
+					parentUnit = importObservationUnit(parentUnit, node, type);
 			} else {
 				throw new RuntimeException("Unimplemented entity type '"+type+"'");
 			}
 		}
 		
+		// Import metadata from all children
 		for (NodeDefinition child : node.getChildDefinitions()) {
 			if ( parentUnit != null && child instanceof AttributeDefinition ) {
 				importVariable(parentUnit, (AttributeDefinition) child);
 			} else if ( child instanceof EntityDefinition ){
-				traverse((EntityDefinition) child, parentUnit);
+				importMetadata((EntityDefinition) child, parentUnit);
 			}
 		}
 	}
@@ -106,13 +154,13 @@ public class IdmMetadataLoader extends IdmLoaderBase {
 		if ( attr instanceof CodeAttributeDefinition && ((CodeAttributeDefinition) attr).getList().getLookupTable() == null ) {
 			importCatVariable(parentUnit, (CodeAttributeDefinition) attr);
 		} else if ( attr instanceof BooleanAttributeDefinition && !attr.isMultiple() ) {
-			importCatVariable(parentUnit, (BooleanAttributeDefinition) attr);
+			importBinaryCatVariable(parentUnit, (BooleanAttributeDefinition) attr);
 		} else if ( attr instanceof NumberAttributeDefinition  && !attr.isMultiple() ) {
 			importNumVariable(parentUnit, (NumberAttributeDefinition) attr);
 		} else if ( attr instanceof CoordinateAttributeDefinition ) {
-			log.info("GPS location: "+attr.getName());
+			log.debug("GPS location: "+attr.getName());
 		} else {
-			log.info("Skipping unsupported attribute: "+attr.getPath());
+			log.debug("Skipping unsupported attribute: "+attr.getPath());
 		}
 	}
 
@@ -122,31 +170,33 @@ public class IdmMetadataLoader extends IdmLoaderBase {
 		var.setObsUnitId(parentUnit.getId());
 		var.setVariableLabel(attr.getLabel(Type.INSTANCE, lang));
 		var.setVariableType("ratio");
+		var.setForAnalysis(true);
 		variableDao.insert(var);
-		log.info("Num. variable: "+parentUnit.getObsUnitName()+"."+var.getVariableName()+" ("+var.getId()+")");
+		log.debug("Num. variable: "+parentUnit.getObsUnitName()+"."+var.getVariableName()+" ("+var.getId()+")");
 	}
 
-	private void importCatVariable(ObservationUnit parentUnit, BooleanAttributeDefinition attr) {
+	private void importBinaryCatVariable(ObservationUnit parentUnit, BooleanAttributeDefinition attr) {
 		Variable var = new Variable();
 		var.setVariableName(attr.getCompoundName());
 		var.setObsUnitId(parentUnit.getId());
 		var.setVariableLabel(attr.getLabel(Type.INSTANCE, lang));
 		var.setVariableType("binary");
+		var.setForAnalysis(true);
 		variableDao.insert(var);
-		log.info("Cat. variable: " + parentUnit.getObsUnitName() + "." + var.getVariableName() + " (" + var.getId() + ")");
-		insertCategory(var, TRUE_CATEGORY_CODE, TRUE_CATEGORY_LABEL, 1);
-		insertCategory(var, FALSE_CATEGORY_CODE, FALSE_CATEGORY_LABEL, 2);
+		log.debug("Cat. variable: " + parentUnit.getObsUnitName() + "." + var.getVariableName() + " (" + var.getId() + ")");
+		importCategory(var, TRUE_CATEGORY_CODE, TRUE_CATEGORY_LABEL, 1);
+		importCategory(var, FALSE_CATEGORY_CODE, FALSE_CATEGORY_LABEL, 2);
 		
 	}
 
-	private void insertCategory(Variable var, String code, String defaultLabel, int idx) {
+	private void importCategory(Variable var, String code, String defaultLabel, int idx) {
 		Category cat = new Category();
 		cat.setVariableId(var.getId());
 		cat.setCategoryCode(code);
 		cat.setCategoryLabel(defaultLabel);
 		cat.setCategoryOrder(idx);
 		categoryDao.insert(cat);
-		log.info("Category: "+cat.getCategoryCode()+" ("+cat.getId()+")");		
+		log.debug("Category: "+cat.getCategoryCode()+" ("+cat.getId()+")");		
 	}
 
 	private void importCatVariable(ObservationUnit parentUnit, CodeAttributeDefinition attr) {
@@ -155,8 +205,9 @@ public class IdmMetadataLoader extends IdmLoaderBase {
 		var.setObsUnitId(parentUnit.getId());
 		var.setVariableLabel(attr.getLabel(Type.INSTANCE, lang));
 		var.setVariableType(attr.isMultiple() ? "multiple" : "nominal");
+		var.setForAnalysis(true);
 		variableDao.insert(var);
-		log.info("Cat. variable: " + parentUnit.getObsUnitName() + "." + var.getVariableName() + " (" + var.getId() + ")");
+		log.debug("Cat. variable: " + parentUnit.getObsUnitName() + "." + var.getVariableName() + " (" + var.getId() + ")");
 		importCategories(var, attr);
 	}
 
@@ -166,20 +217,10 @@ public class IdmMetadataLoader extends IdmLoaderBase {
 		List<CodeListItem> items = list.getItems(level);
 		int idx = 1;
 		for (CodeListItem item : items) {
-			importCategory(var, item, idx++);
+			String code = getCode(item);
+			String label = getCodeListItemLabel(item);
+			importCategory(var, code, label, idx++);
 		}
-	}
-
-	private void importCategory(Variable var, CodeListItem item, int idx) {
-		String code = getCode(item);
-		String label = getCodeListItemLabel(item);
-		Category cat = new Category();
-		cat.setVariableId(var.getId());
-		cat.setCategoryCode(code);
-		cat.setCategoryLabel(label);
-		cat.setCategoryOrder(idx);
-		categoryDao.insert(cat);
-		log.info("Category: " + cat.getCategoryCode() + " (" + cat.getId() + ")");
 	}
 
 	private String getCodeListItemLabel(CodeListItem item) {
@@ -227,8 +268,13 @@ public class IdmMetadataLoader extends IdmLoaderBase {
 			unit.setObsUnitParentId(parentUnit.getId());
 		}
 		surveyUnitDao.insert(unit);
-		log.info("Survey unit: " + unit.getObsUnitName() + " (" + unit.getId() + ")");
+		log.debug("Survey unit: " + unit.getObsUnitName() + " (" + unit.getId() + ")");
 		return unit;
 	}
-	
+
+	private EntityType getEntityType(EntityDefinition node) throws InvalidMetadataException {
+		String type = node.getAnnotation(TYPE_QNAME);
+		
+		return type == null ? null : EntityType.get(type);
+	}
 }

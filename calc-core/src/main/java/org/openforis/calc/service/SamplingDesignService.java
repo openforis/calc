@@ -3,8 +3,8 @@ package org.openforis.calc.service;
 import java.io.IOException;
 import java.util.List;
 
-import org.openforis.calc.dataimport.ImportException;
-import org.openforis.calc.dataimport.SamplingDesignImporter;
+import org.openforis.calc.importer.ImportException;
+import org.openforis.calc.importer.SamplingDesignImporter;
 import org.openforis.calc.io.flat.FlatDataStream;
 import org.openforis.calc.model.Cluster;
 import org.openforis.calc.model.ObservationUnitMetadata;

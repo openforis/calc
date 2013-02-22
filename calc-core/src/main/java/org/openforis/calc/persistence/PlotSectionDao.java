@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author G. Miceli
+ * @author M. Togna
  */
 @Component 
 @Transactional

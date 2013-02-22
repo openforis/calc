@@ -1,4 +1,4 @@
-package org.openforis.calc.dataimport;
+package org.openforis.calc.importer;
 
 import java.awt.geom.Point2D;
 import java.io.IOException;

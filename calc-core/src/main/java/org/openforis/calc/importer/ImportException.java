@@ -1,4 +1,4 @@
-package org.openforis.calc.dataimport;
+package org.openforis.calc.importer;
 
 /**
  * 

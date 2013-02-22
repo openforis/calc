@@ -13,7 +13,6 @@ import org.openforis.calc.persistence.CategoryDao;
 import org.openforis.calc.persistence.ObservationUnitDao;
 import org.openforis.calc.persistence.SurveyDao;
 import org.openforis.calc.persistence.VariableDao;
-import org.openforis.collect.persistence.xml.CollectSurveyIdmlBinder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -33,14 +32,6 @@ public class MetadataService {
 	private VariableDao variableDao;
 	@Autowired
 	private CategoryDao categoryDao;
-	@Autowired
-	private CollectSurveyIdmlBinder idmlBinder;
-
-	// public CollectSurvey loadIdml(String filename) throws FileNotFoundException, IdmlParseException {
-	// FileReader reader = new FileReader(filename);
-	// CollectSurvey cs = (CollectSurvey) idmlBinder.unmarshal(reader);
-	// return cs;
-	// }
 
 	// TODO cache
 	public SurveyMetadata getSurveyMetadata(String surveyName) {

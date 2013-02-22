@@ -1,11 +1,13 @@
-package org.openforis.calc.dataimport.collect;
+package org.openforis.calc.importer.collect;
 
-
+/**
+ * @author G. Miceli
+ */
 public enum EntityType {
-	CLUSTER, PLOT, SPECIMEN;
+	CLUSTER, PLOT, SPECIMEN, INTERVIEW;
 	
 	public boolean isObservationUnit() {
-		return this == PLOT || this == SPECIMEN;
+		return this == PLOT || this == SPECIMEN || this == INTERVIEW;
 	}
 
 	public boolean isCluster() {
