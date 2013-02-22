@@ -116,7 +116,12 @@ public class SamplingDesignImporter extends AbstractImporter {
 	
 	@Override
 	protected void performInserts() {
-		batchInsert(newStrata, newClusters, newSamplePlots);
+		stratumDao.insert(newStrata);
+		clusterDao.insert(newClusters);
+		samplePlotDao.insert(newSamplePlots);
+		newStrata.clear();
+		newClusters.clear();
+		newSamplePlots.clear();
 	}
 
 	@Override
@@ -141,15 +146,6 @@ public class SamplingDesignImporter extends AbstractImporter {
 		newClusters = null;
 		newStrata = null;
 		newSamplePlots = null;
-	}
-
-	private void batchInsert(List<Stratum> newStrata, List<Cluster> newClusters, List<SamplePlot> newSamplePlots) {
-		stratumDao.insert(newStrata);
-		clusterDao.insert(newClusters);
-		samplePlotDao.insert(newSamplePlots);
-		newStrata.clear();
-		newClusters.clear();
-		newSamplePlots.clear();
 	}
 
 	private String nvl(String code, Integer no) {
