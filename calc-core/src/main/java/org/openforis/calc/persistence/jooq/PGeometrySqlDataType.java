@@ -1,4 +1,4 @@
-package org.openforis.calc.persistence.jooq.tables;
+package org.openforis.calc.persistence.jooq;
 
 public class PGeometrySqlDataType {
 

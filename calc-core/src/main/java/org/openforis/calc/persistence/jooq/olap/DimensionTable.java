@@ -1,9 +1,8 @@
 /**
  * 
  */
-package org.openforis.calc.persistence.jooq.tables;
+package org.openforis.calc.persistence.jooq.olap;
 
-import org.openforis.calc.persistence.jooq.tables.records.DimensionRecord;
 
 /**
  * @author M. Togna

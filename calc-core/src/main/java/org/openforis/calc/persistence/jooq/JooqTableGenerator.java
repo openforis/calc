@@ -20,7 +20,7 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.TableImpl;
 import org.jooq.impl.UpdatableTableImpl;
 import org.openforis.calc.geospatial.GeodeticCoordinate;
-import org.openforis.calc.persistence.jooq.tables.OlapTable;
+import org.openforis.calc.persistence.jooq.olap.OlapTable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;

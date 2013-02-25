@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.openforis.calc.persistence.jooq.tables;
+package org.openforis.calc.persistence.jooq;
 
 import org.jooq.SQLDialect;
 import org.jooq.impl.AbstractDataType;

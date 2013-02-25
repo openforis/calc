@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.openforis.calc.persistence.jooq.tables;
+package org.openforis.calc.persistence.jooq.olap;
 
 import org.jooq.Record;
 import org.jooq.impl.SchemaImpl;

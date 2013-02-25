@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.openforis.calc.persistence.jooq.tables;
+package org.openforis.calc.persistence.jooq.olap;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ import java.util.List;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jooq.TableField;
 import org.jooq.impl.SQLDataType;
-import org.openforis.calc.persistence.jooq.tables.records.FactRecord;
+import org.openforis.calc.persistence.jooq.GeodeticCoordinateDataType;
 
 /**
  * @author M. Togna
