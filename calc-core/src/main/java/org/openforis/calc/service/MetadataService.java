@@ -67,12 +67,4 @@ public class MetadataService {
 		Variable var = variableDao.findByName(variable.getVariableName(), observationUnitIt);
 		return new VariableMetadata( var );
 	}
-
-	// public ObservationUnit getObservationUnit(String surveyName, String observationUnitName) {
-	// Integer surveyId = surveyDao.getId(surveyName);
-	// if ( surveyId == null ) {
-	// return null;
-	// }
-	// return observationUnitDao.find(surveyId, observationUnitName);
-	// }
 }

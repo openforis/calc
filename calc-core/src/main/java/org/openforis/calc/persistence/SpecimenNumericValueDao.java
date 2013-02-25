@@ -1,7 +1,5 @@
 package org.openforis.calc.persistence;
 
-import static org.jooq.impl.Factory.row;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,6 +14,7 @@ import org.openforis.calc.model.VariableMetadata;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
 import org.openforis.calc.persistence.jooq.Sequences;
 import org.openforis.calc.persistence.jooq.Tables;
+
 import org.openforis.calc.persistence.jooq.tables.records.SpecimenNumericValueRecord;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -79,7 +78,7 @@ public class SpecimenNumericValueDao extends JooqDaoSupport<SpecimenNumericValue
 		
 		if( getLog().isDebugEnabled() ){
 			long end = System.currentTimeMillis() - start;
-			getLog().debug("===================== Saving " + Arrays.toString(variables) + " Executed in("+end+" mills): " + TimeUnit.MILLISECONDS.toSeconds(end)+" seconds");
+			getLog().debug("Saving " + Arrays.toString(variables) + " Executed in("+end+" mills): " + TimeUnit.MILLISECONDS.toSeconds(end)+" seconds");
 		}
 	}
 
@@ -92,7 +91,7 @@ public class SpecimenNumericValueDao extends JooqDaoSupport<SpecimenNumericValue
 	private Query getNumericValuesDelete(Factory create, int transactionId) {
 		return create.delete( S )
 				.where( 
-						row(S.SPECIMEN_ID, S.VARIABLE_ID)
+						Factory.row(S.SPECIMEN_ID, S.VARIABLE_ID)
 								.in( 
 									create.select(TNV.OBJECT_ID,TNV.VARIABLE_ID)
 									.from(TNV)
@@ -103,7 +102,7 @@ public class SpecimenNumericValueDao extends JooqDaoSupport<SpecimenNumericValue
 
 	private Query getNumericValuesInsert(Factory create, int transactionId) {
 		return create
-			.insertInto( S, S.SPECIMEN_ID, S.VARIABLE_ID, S.VALUE, S.COMPUTED )
+			.insertInto( S, S.SPECIMEN_ID, S.VARIABLE_ID, S.VALUE, S.ORIGINAL, S.CURRENT )
 			.select( 
 					create
 						.select( TNV.OBJECT_ID, TNV.VARIABLE_ID, TNV.VALUE, Factory.value(true, Boolean.class) )

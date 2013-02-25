@@ -5,11 +5,7 @@ package org.openforis.calc.model;
  * @author G. Miceli
  *
  */
-public interface NumericValue extends Identifiable {
-	Integer getValueId();
-	void setValueId(Integer valueId);
-	Integer getObservationId();
-	void setObservationId(Integer obsId);
+public interface NumericValue extends Value {
 	Integer getVariableId();
 	void setVariableId(Integer variableId);
 	Double getValue();

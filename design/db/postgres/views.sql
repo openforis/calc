@@ -32,7 +32,7 @@ AS
   SELECT pc.value_id,
          pc.plot_section_id,
          pc.category_id,
-         pc.computed,
+         pc.original,
          cat.variable_id,
          cat.variable_type,
          cat.variable_name,
@@ -40,7 +40,8 @@ AS
          cat.category_code,
          cat.category_order
   FROM plot_categorical_value pc
-       JOIN category_view cat ON pc.category_id = cat.category_id;
+       JOIN category_view cat ON pc.category_id = cat.category_id
+  WHERE pc.current;
 comment on view calc.plot_categorical_value_view is 'Join between plot_categorical_value and category_view';
 	   
 CREATE OR REPLACE VIEW calc.sample_plot_view
@@ -151,10 +152,11 @@ AS
          v.variable_name,
          v.variable_id,
          pm.value,
-         pm.computed
+         pm.original
   FROM plot_numeric_value pm
        JOIN plot_section_view ps ON pm.plot_section_id = ps.plot_section_id
-       JOIN variable v ON pm.variable_id = v.variable_id;
+       JOIN variable v ON pm.variable_id = v.variable_id
+  WHERE pm.current;
 
 
 create or replace view calc.specimen_view
@@ -199,7 +201,7 @@ select
     cv.value_id,
     cv.specimen_id,
     cv.category_id,
-    cv.computed,
+    cv.original,
     c.variable_id,
     c.category_code,
     c.category_label,
@@ -210,8 +212,9 @@ select
 from
     calc.specimen_categorical_value cv
 inner join
-    calc.category c on cv.category_id = c.category_id ;
-
+    calc.category c on cv.category_id = c.category_id 
+where
+    cv.current;
 
 //create or replace view calc.specimen_numeric_value_view
 //as
@@ -220,7 +223,7 @@ inner join
 //    v.specimen_id,
 //    v.variable_id,
 //    v.value,
-//    v.computed,
+//    v.original,
 //    va.obs_unit_id,
 //    va.variable_name,
 //    va.variable_type,
@@ -230,8 +233,8 @@ inner join
 //from
 //    calc.specimen_numeric_value v
 //inner join
-//    calc.variable va on va.variable_id = v.variable_id;
-
+//    calc.variable va on va.variable_id = v.variable_id
+// where v.current;
 --
 --create or replace view calc.sample_plot_visited_cnt_view
 --as

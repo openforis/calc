@@ -103,6 +103,7 @@ public abstract class AbstractObservationImporter
 		if ( obs == null ) {
 			return false;
 		}
+		observations.add(obs);
 		processValues(record, obs);
 		return true;
 	}
@@ -120,23 +121,29 @@ public abstract class AbstractObservationImporter
 
 	private void processCategoricalValue(FlatRecord record, Observation o, VariableMetadata var, String name) {
 		try {
-			String code = record.getValue(name, String.class);
-			if ( code != null ) {
+			String codeStr = record.getValue(name, String.class);
+			if ( codeStr != null ) {
 				if ( var.isBinary() ) {
-					if ( "true".equalsIgnoreCase(code) ) {
-						code = "T";
-					} else if ("false".equalsIgnoreCase(code) ){
-						code = "F";
-					}
+					codeStr = translateBinaryCategoryCode(codeStr);
+				} 
+				String[] codes = codeStr.split(",");
+				if ( codes.length > 1 && !var.isMultipleResponse() ) {
+					log.warn("Single-response variable '"+var.getVariableName()+"' contains multiple codes in line "+getReadRows()+1);
+					return;
 				}
-				Category cat = var.getCategoryByCode(code);
-				if ( cat == null ) {
-					log.warn("Skipping unknown code: "+code);
-				} else {
-					C val = catValueClass.newInstance();
-					val.setObservationId(o.getId());
-					val.setCategoryId(cat.getId());
-					catVals.add(val);
+				for ( String code : codes ) {
+					code = code.trim();
+					Category cat = var.getCategoryByCode(code);
+					if ( cat == null ) {
+						log.warn("Skipping unknown code: "+codeStr+" for variable '"+var.getVariableName()+"' line "+getReadRows()+1);
+					} else {
+						C val = catValueClass.newInstance();
+						val.setObservationId(o.getId());
+						val.setCategoryId(cat.getId());
+						val.setOriginal(true);
+						val.setCurrent(true);
+						catVals.add(val);
+					}
 				}
 			}
 		} catch (InstantiationException e) {
@@ -144,6 +151,15 @@ public abstract class AbstractObservationImporter
 		} catch (IllegalAccessException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private String translateBinaryCategoryCode(String code) {
+		if ( "true".equalsIgnoreCase(code) ) {
+			code = "T";
+		} else if ("false".equalsIgnoreCase(code) ){
+			code = "F";
+		}
+		return code;
 	}
 
 	private void processNumericValue(FlatRecord record, Observation o, VariableMetadata var, String name) {
@@ -154,6 +170,8 @@ public abstract class AbstractObservationImporter
 				val.setObservationId(o.getId());
 				val.setVariableId(var.getId());
 				val.setValue(value);
+				val.setOriginal(true);
+				val.setCurrent(true);
 				numVals.add(val);
 			}
 		} catch ( NumberFormatException e ) {
@@ -183,7 +201,7 @@ public abstract class AbstractObservationImporter
 		this.surveyName = survey;
 	}
 
-	public String getObservationUnit() {
+	public String getObservationUnitName() {
 		return observationUnitName;
 	}
 

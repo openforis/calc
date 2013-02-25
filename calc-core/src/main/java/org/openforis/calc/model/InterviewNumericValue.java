@@ -26,5 +26,4 @@ public class InterviewNumericValue extends org.openforis.calc.persistence.jooq.t
 	public void setObservationId(Integer obsId) {
 		setInterviewId(obsId);
 	}
-
 }

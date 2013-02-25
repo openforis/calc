@@ -27,11 +27,4 @@ public class InterviewCategoricalValue extends org.openforis.calc.persistence.jo
 		setInterviewId(obsId);
 		
 	}
-
-	@Override
-	public Integer getCategoryId() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

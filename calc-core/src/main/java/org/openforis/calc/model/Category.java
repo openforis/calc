@@ -16,5 +16,4 @@ public class Category extends org.openforis.calc.persistence.jooq.tables.pojos.C
 	public void setId(Integer id) {
 		super.setCategoryId(id);
 	}
-
 }

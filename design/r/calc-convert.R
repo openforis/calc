@@ -95,6 +95,8 @@ write.csv(tr, '~/tzdata/trees.csv', row.names = F)
 
 hh = read.csv('~/tzdata/src/household.csv')
 
+hh = hh[!duplicated(hh[,c('cluster_id','id')]),]
+
 hh$interview_date =  with(hh, paste(task_fieldInterview_date_year, task_fieldInterview_date_month, task_fieldInterview_date_day, sep="-"))
 
 write.csv(hh, '~/tzdata/household.csv', row.names = F)

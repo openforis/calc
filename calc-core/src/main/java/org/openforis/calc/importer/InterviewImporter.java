@@ -65,7 +65,11 @@ public class InterviewImporter extends AbstractObservationImporter<Interview,
 		}
 		GeodeticCoordinate location = GeodeticCoordinate.toInstance(locationX, locationX, srsId);
 		
+		int id = interviewDao.nextId();
+		
 		Interview iv = new Interview();
+		iv.setId(id);
+		iv.setObsUnitId(getObservationUnitMetadata().getObsUnitId());
 		iv.setClusterId(clusterId);
 		iv.setInterviewNo(interviewNo);
 		iv.setInterviewDate(interviewDate);
