@@ -85,30 +85,35 @@ public class PlotFactTableDao extends JooqDaoSupport {
 		super(null, null);
 	}
 
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	@Transactional
 	synchronized
 	public void createPlotFactTable(ObservationUnitMetadata obsUnitMetadata) {
 		int surveyId = obsUnitMetadata.getSurveyId();
 		//1. Plot fact table
 		FactTable plotFactTable = getPlotFactTable(obsUnitMetadata);
 		String plotFactTableName = plotFactTable.getName();
-		jooqTableGenerator.create(plotFactTable);
+		createFactTable(plotFactTable);
 		
 		//2. Aoi / Stratum aggregation table
 		Result<Record> levelRecords = getAoiHierarchyLevelRecords(surveyId);
 		FactTable prevLevelTable = plotFactTable;
-		String prevLevel = "";
+		List<String> prevLevels = new ArrayList<String>();
 		for ( Record record : levelRecords ) {
 			
 			String levelName = record.getValue(AHL.AOI_HIERARCHY_LEVEL_NAME);
 			String tableName = "agg_"+levelName+"_stratum_" + plotFactTableName;
-			FactTable aoiStratumFact = getAggFactTable(prevLevelTable, tableName, prevLevel);
+			FactTable aoiStratumFact = getAggFactTable(prevLevelTable, tableName, prevLevels);
 			
 			prevLevelTable = aoiStratumFact;
-			prevLevel = levelName;
-			jooqTableGenerator.create(aoiStratumFact);
+			prevLevels.add( levelName );
+			createFactTable(aoiStratumFact);
 		}
 				
+	}
+	
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	private void createFactTable(FactTable factTable) {
+		jooqTableGenerator.create(factTable);
 	}
 
 	@Transactional
@@ -132,15 +137,15 @@ public class PlotFactTableDao extends JooqDaoSupport {
 		
 		Result<Record> levelRecords = getAoiHierarchyLevelRecords(surveyId);
 		FactTable prevLevelTable = plotFactTable;
-		String prevLevel = "";
+		List<String> prevLevels = new ArrayList<String>();
 		for ( Record record : levelRecords ) {
 			
 			String levelName = record.getValue(AHL.AOI_HIERARCHY_LEVEL_NAME);
 			Integer levelRank = record.getValue(AHL.AOI_HIERARCHY_LEVEL_RANK);
 			String tableName = "agg_"+levelName+"_stratum_" + plotFactTableName;
-			FactTable aoiStratumFact = getAggFactTable(prevLevelTable, tableName, prevLevel);
+			FactTable aoiStratumFact = getAggFactTable(prevLevelTable, tableName, prevLevels);
 			// generate select
-			SelectQuery aggAoiStratumSelect = getAggAoiStratumSelect(prevLevelTable, levelName, levelRank, prevLevel, surveyId );
+			SelectQuery aggAoiStratumSelect = getAggAoiStratumSelect(plotFactTable, levelName, levelRank, prevLevels, surveyId );
 			Insert<FactRecord> insert = getInsertFromSelect(aoiStratumFact, aggAoiStratumSelect);
 			if ( getLog().isDebugEnabled() ) {
 				getLog().debug(tableName + " insert:");
@@ -149,7 +154,7 @@ public class PlotFactTableDao extends JooqDaoSupport {
 			insert.execute();
 			
 			prevLevelTable = aoiStratumFact;
-			prevLevel = levelName;
+			prevLevels.add( levelName );
 		}
 		
 		
@@ -168,7 +173,7 @@ public class PlotFactTableDao extends JooqDaoSupport {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private SelectQuery getAggAoiStratumSelect(FactTable table, String aoiLevelName, int aoiLevelRank, String prevLevel, int surveyId) {
+	private SelectQuery getAggAoiStratumSelect(FactTable table, String aoiLevelName, int aoiLevelRank, List<String> prevLevels, int surveyId) {
 		Factory create = getJooqFactory();
 		PlotExpansionFactor e = PEF.as("e");
 		AoiStratumView s = ASV.as("s");
@@ -202,7 +207,7 @@ public class PlotFactTableDao extends JooqDaoSupport {
 		Aoi childAoi = null;
 		int i = 0;
 		List<String> aoiNames = new ArrayList<String>();
-		aoiNames.add(prevLevel);
+		aoiNames.addAll(prevLevels);
 		
 		for ( Record record : levelRecords ) {
 			
@@ -297,9 +302,9 @@ public class PlotFactTableDao extends JooqDaoSupport {
 		return select;
 	}
 	
-	private FactTable getAggFactTable(FactTable factTable, String tableName, String... excludeLevel) {
+	private FactTable getAggFactTable(FactTable factTable, String tableName, List<String> excludeLevel) {
 		String[] excludedDimensions = new String[] { C.CLUSTER_ID.getName(), P.PLOT_SECTION_ID.getName() };
-		excludedDimensions = ArrayUtils.addAll(excludedDimensions, excludeLevel);
+		excludedDimensions = ArrayUtils.addAll(excludedDimensions, excludeLevel.toArray(new String[]{}));
 		
 		String[] excludedMeasures = new String[] { P.PLOT_LOCATION_DEVIATION.getName() };
 		String[] excludedPoints = PLOT_POINTS;

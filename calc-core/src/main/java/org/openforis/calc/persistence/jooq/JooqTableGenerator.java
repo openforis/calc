@@ -60,7 +60,8 @@ public class JooqTableGenerator {
 	// dropTable(database, table);
 	// }
 
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	@Transactional
+	//(propagation = Propagation.REQUIRES_NEW)
 	synchronized public void create(UpdatableTableImpl<?> jooqTable) {
 		Database database = initDatabase();
 		Table table = initTable(database, jooqTable);

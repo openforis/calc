@@ -107,7 +107,7 @@ public class OlapService extends CalcService {
 //			String obsUnitName = obsUnitMetadata.getObsUnitName();
 			
 			if ( ObservationUnit.Type.PLOT.equals(obsUnitMetadata.getObsUnitType()) ) {
-				olapDimensionDao.createOlapDimensionTables(variables);
+				olapDimensionDao.createVariableDimensionTables(variables);
 				// plot fact table				
 				plotFactTableDao.createPlotFactTable(obsUnitMetadata);
 				
@@ -115,7 +115,7 @@ public class OlapService extends CalcService {
 //				updateAreaFacts(surveyName, areaFactData);
 
 			} else if ( ObservationUnit.Type.SPECIMEN.equals(obsUnitMetadata.getObsUnitType()) ) {
-				olapDimensionDao.createOlapDimensionTables(variables);
+				olapDimensionDao.createVariableDimensionTables(variables);
 //				FlatDataStream specimenFactData = getSpecimenFactData(surveyName, obsUnitName);
 //				updateSpecimenFacts(surveyName, obsUnitName, specimenFactData);
 			}

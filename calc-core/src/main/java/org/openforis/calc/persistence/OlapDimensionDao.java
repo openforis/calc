@@ -59,16 +59,21 @@ public class OlapDimensionDao extends JooqDaoSupport {
 		super(null, null);
 	}
 
- 	@Transactional(propagation = Propagation.REQUIRES_NEW)
+ 	@Transactional
 	public void createAoiOlapDimensionTables(int surveyId) {
 		List<DimensionTable> aoiDimTables = getAoiDimensionTables(surveyId);
-		for ( DimensionTable aoiDimTable : aoiDimTables ) {
-			jooqTableGenerator.create(aoiDimTable);
-		}
+		creteAoiDimensionTables(aoiDimTables);
  	}
  	
  	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void createOlapDimensionTables(Collection<VariableMetadata> variables) {
+	private void creteAoiDimensionTables(List<DimensionTable> aoiDimTables) {
+		for ( DimensionTable aoiDimTable : aoiDimTables ) {
+			jooqTableGenerator.create(aoiDimTable);
+		}
+	}
+ 	
+ 	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	public void createVariableDimensionTables(Collection<VariableMetadata> variables) {
 
  		for ( VariableMetadata variable : variables ) {
  			if( variable.isCategorical() && variable.isForAnalysis() ) {
