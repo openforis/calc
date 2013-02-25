@@ -68,6 +68,7 @@ public abstract class AbstractFlatFileImporter {
 				reportProgress();
 			}
 			endTime = System.currentTimeMillis();
+			log.info("Import complete. "+readRows + " rows read in "+Math.round(getDuration()/100)/10+"s");
 			onEnd();
 		} finally {
 			cleanup();
@@ -80,7 +81,7 @@ public abstract class AbstractFlatFileImporter {
 	}
 
 	protected void reportProgress() {
-		log.info(readRows + " rows read, "+getSkippedRows()+" skipped, "+getProcessedRows()+" processed");
+		log.info(readRows + " rows read");
 	}
 
 	protected abstract void performInserts();

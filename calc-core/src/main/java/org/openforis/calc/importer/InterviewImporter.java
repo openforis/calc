@@ -69,6 +69,7 @@ public class InterviewImporter extends AbstractObservationImporter<Interview,
 		
 		Interview iv = new Interview();
 		iv.setId(id);
+		iv.setObsUnitId(getObservationUnitMetadata().getObsUnitId());
 		iv.setClusterId(clusterId);
 		iv.setInterviewNo(interviewNo);
 		iv.setInterviewDate(interviewDate);
@@ -87,8 +88,8 @@ public class InterviewImporter extends AbstractObservationImporter<Interview,
 
 	@Override
 	protected void doInserts(List<Interview> interviews, List<InterviewNumericValue> numVals, List<InterviewCategoricalValue> catVals) {
+		interviewDao.insert(interviews);
 		interviewNumericValueDao.insert(numVals);
 		interviewCategoricalValueDao.insert(catVals);
-		interviewDao.insert(interviews);
 	}
 }

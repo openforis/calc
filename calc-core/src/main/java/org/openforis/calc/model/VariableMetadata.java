@@ -114,4 +114,12 @@ public class VariableMetadata extends Variable {
 	public boolean equals(Object obj) {
 		return variable.equals(obj);
 	}
+
+	public boolean isBinary() {
+		return variable.isBinary();
+	}
+
+	public boolean isMultipleResponse() {
+		return variable.isMultipleResponse();
+	}
 }

@@ -40,6 +40,11 @@ public class Variable extends org.openforis.calc.persistence.jooq.tables.pojos.V
 		return "binary".equals(type);
 	}
 
+	public boolean isMultipleResponse() {
+		String type = getVariableType();
+		return "multiple".equals(type);
+	}
+
 	public boolean isNumeric() {
 		return !isCategorical();
 	}
