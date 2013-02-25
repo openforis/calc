@@ -51,7 +51,7 @@ public class SpecimenListResource extends SubResource<Void> {
 			}
 		}
 
-		observationService.updateSpecimenNumericalValue(surveyResource.getKey(), observationUnitResource.getKey(), dataStream, varNames);
+		observationService.updateSpecimenNumericValue(surveyResource.getKey(), observationUnitResource.getKey(), dataStream, varNames);
 
 		// Use OK response instead of created; HTTP PATCH may create or update
 		return Response.ok(new URI("specimens")).entity("OK").build();

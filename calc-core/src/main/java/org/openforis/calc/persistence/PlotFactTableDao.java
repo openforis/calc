@@ -1,15 +1,5 @@
 package org.openforis.calc.persistence;
-import static org.openforis.calc.persistence.jooq.Tables.AOI;
-import static org.openforis.calc.persistence.jooq.Tables.AOI_HIERARCHY_LEVEL;
-import static org.openforis.calc.persistence.jooq.Tables.AOI_HIERARCHY;
-import static org.openforis.calc.persistence.jooq.Tables.CLUSTER;
-import static org.openforis.calc.persistence.jooq.Tables.GROUND_PLOT_VIEW;
-import static org.openforis.calc.persistence.jooq.Tables.PLOT_CATEGORICAL_VALUE_VIEW;
-import static org.openforis.calc.persistence.jooq.Tables.PLOT_SECTION_AOI;
-import static org.openforis.calc.persistence.jooq.Tables.PLOT_SECTION_VIEW;
-import static org.openforis.calc.persistence.jooq.Tables.STRATUM;
-import static org.openforis.calc.persistence.jooq.Tables.PLOT_EXPANSION_FACTOR;
-import static org.openforis.calc.persistence.jooq.Tables.AOI_STRATUM_VIEW;
+import static org.openforis.calc.persistence.jooq.Tables.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,8 +19,8 @@ import org.jooq.impl.Factory;
 import org.openforis.calc.model.ObservationUnitMetadata;
 import org.openforis.calc.model.SurveyMetadata;
 import org.openforis.calc.model.VariableMetadata;
-import org.openforis.calc.persistence.jooq.JooqTableGenerator;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
+import org.openforis.calc.persistence.jooq.JooqTableGenerator;
 import org.openforis.calc.persistence.jooq.tables.Aoi;
 import org.openforis.calc.persistence.jooq.tables.AoiHierarchy;
 import org.openforis.calc.persistence.jooq.tables.AoiHierarchyLevel;
