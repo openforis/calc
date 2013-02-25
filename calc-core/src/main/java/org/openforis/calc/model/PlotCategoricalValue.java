@@ -3,15 +3,15 @@ package org.openforis.calc.model;
 /**
  * @author G. Miceli
  */
-public class PlotCategoricalValue extends org.openforis.calc.persistence.jooq.tables.pojos.PlotCategoricalValue implements Identifiable {
+public class PlotCategoricalValue extends org.openforis.calc.persistence.jooq.tables.pojos.PlotCategoricalValue implements CategoricalValue {
 
 	private static final long serialVersionUID = 1L;
 
 	public PlotCategoricalValue() {
 	}
 
-	public PlotCategoricalValue(PlotSection plot, Category cat, boolean computed) {
-		setPlotSectionId(plot.getId());
+	public PlotCategoricalValue(int plotSectionId, Category cat, boolean computed) {
+		setPlotSectionId(plotSectionId);
 		setCategoryId(cat.getId());
 		setComputed(computed);
 	}
@@ -24,5 +24,15 @@ public class PlotCategoricalValue extends org.openforis.calc.persistence.jooq.ta
 	@Override
 	public void setId(Integer id) {
 		super.setValueId(id);
+	}
+
+	@Override
+	public Integer getObservationId() {
+		return getPlotSectionId();
+	}
+
+	@Override
+	public void setObservationId(Integer obsId) {
+		setPlotSectionId(obsId);
 	}
 }

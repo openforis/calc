@@ -5,7 +5,7 @@ import java.util.Date;
 /**
  * @author G. Miceli
  */
-public class PlotSection extends org.openforis.calc.persistence.jooq.tables.pojos.PlotSection implements Identifiable {
+public class PlotSection extends org.openforis.calc.persistence.jooq.tables.pojos.PlotSection implements Observation {
 
 	private static final long serialVersionUID = 1L;
 

@@ -43,7 +43,7 @@ public abstract class AbstractFlatFileImporter {
 			skippedRows = 0;
 			active = true;
 			
-			onStart();
+			onStart(stream);
 
 			FlatRecord record;
 			while ( (record = stream.nextRecord()) != null ) {
@@ -87,7 +87,7 @@ public abstract class AbstractFlatFileImporter {
 
 	protected abstract boolean processRecord(FlatRecord record);
 
-	protected void onStart() {
+	protected void onStart(FlatDataStream stream) {
 	}
 
 	protected void onEnd() {

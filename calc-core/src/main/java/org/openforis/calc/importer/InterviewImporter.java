@@ -1,6 +1,5 @@
 package org.openforis.calc.importer;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -23,12 +22,9 @@ import org.springframework.stereotype.Component;
  * 
  */
 @Component
-public class InterviewImporter extends AbstractObservationImporter {
+public class InterviewImporter extends AbstractObservationImporter<Interview, 
+	InterviewNumericValue, InterviewCategoricalValue> {
 
-	private List<Interview> interviews;
-	private List<InterviewCategoricalValue> categoricalValues;
-	private List<InterviewNumericValue> numericValues;
-	
 	@Autowired
 	private InterviewDao interviewDao;
 	@Autowired
@@ -39,24 +35,23 @@ public class InterviewImporter extends AbstractObservationImporter {
 	private ClusterDao clusterDao;
 	
 	public InterviewImporter() {
+		super(InterviewNumericValue.class, InterviewCategoricalValue.class);
 		setInsertFrequency(1000);
 		setReportFrequency(1000);
 	}
 	
-	@Override
-	protected boolean processRecord(FlatRecord record) {
-		// cluster code
+	protected Interview processObservation(FlatRecord record) {
 		String clusterCode = record.getValue("cluster_id", String.class);
 		Integer clusterId = getClusterId(clusterCode);
 		if ( clusterCode != null && clusterId == null) {
 			log.warn("Invalid cluster code: "+clusterCode);
-			return false;
+			return null;
 		}
 		// interview no
 		Integer interviewNo = record.getValue("id", Integer.class);
 		if ( interviewNo == null ) {
 			log.warn("Missing interview number!");
-			return false;
+			return null;
 		}
 		// interview date
 		Date interviewDate = record.getValue("interview_date", Date.class);
@@ -66,7 +61,7 @@ public class InterviewImporter extends AbstractObservationImporter {
 		String srsId = record.getValue("location_srs_id", String.class);
 		if ( locationX == null || locationY == null || srsId == null ) {
 			log.warn("Missing or incomplete location");
-			return false;
+			return null;
 		}
 		GeodeticCoordinate location = GeodeticCoordinate.toInstance(locationX, locationX, srsId);
 		
@@ -74,48 +69,23 @@ public class InterviewImporter extends AbstractObservationImporter {
 		iv.setClusterId(clusterId);
 		iv.setInterviewNo(interviewNo);
 		iv.setInterviewDate(interviewDate);
-		// TODO other fields
-		
-		return true;
-//		p.setPlotNo(plotNo);
-//		p.setSamplingPhase(phase);
-//		p.setObsUnitId(unitId);
-//		GeodeticCoordinate plotLocation = GeodeticCoordinate.toInstance(plotX, plotY, srsId);
-//		p.setPlotLocation(plotLocation);
-//		p.setGroundPlot(groundPlot);
-//		p.setPermanentPlot(permanentPlot);
-//		interviews.add(p);
+		iv.setInterviewLocation(location);
+		return iv;
 	}
 
 	private Integer getClusterId(String clusterCode) {
 		if ( clusterCode == null ) {
 			return null;
 		} else {
-			return clusterDao.getIdByKey(getObservationUnit().getSurveyId(), clusterCode);
+			Integer surveyId = getObservationUnitMetadata().getSurveyId();
+			return clusterDao.getIdByKey(surveyId, clusterCode);
 		}
 	}
 
 	@Override
-	protected void performInserts() {
+	protected void doInserts(List<Interview> interviews, List<InterviewNumericValue> numVals, List<InterviewCategoricalValue> catVals) {
 		interviewDao.insert(interviews);
-		interviewCategoricalValueDao.insert(categoricalValues);
-		interviewNumericValueDao.insert(numericValues);
-		interviews.clear();
-		categoricalValues.clear();
-		numericValues.clear();
-	}
-
-	@Override
-	protected void onStart() {
-		numericValues = new ArrayList<InterviewNumericValue>();
-		categoricalValues = new ArrayList<InterviewCategoricalValue>();
-		interviews = new ArrayList<Interview>();
-	}
-
-	@Override
-	protected void cleanup() {
-		interviews = null;
-		categoricalValues = null;
-		numericValues = null;
+		interviewNumericValueDao.insert(numVals);
+		interviewCategoricalValueDao.insert(catVals);
 	}
 }

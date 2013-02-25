@@ -36,6 +36,9 @@ public class MetadataService {
 	// TODO cache
 	public SurveyMetadata getSurveyMetadata(String surveyName) {
 		Survey survey = surveyDao.findByName(surveyName);
+		if ( survey == null ) {
+			return null;
+		}
 		List<ObservationUnit> units = observationUnitDao.findBySurveyId(survey.getId());
 		List<ObservationUnitMetadata> oms = new ArrayList<ObservationUnitMetadata>();
 		for ( ObservationUnit unit : units ) {

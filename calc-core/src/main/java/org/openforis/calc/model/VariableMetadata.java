@@ -13,8 +13,10 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  * @author M. Togna
  * 
  */
-public class VariableMetadata {
+public class VariableMetadata extends Variable {
 
+	private static final long serialVersionUID = 1L;
+	
 	private Variable variable;
 	private Map<String, Category> categoriesByCode;
 	private ObservationUnitMetadata observationUnitMetadata;
@@ -95,5 +97,21 @@ public class VariableMetadata {
 	
 	public ObservationUnitMetadata getObservationUnitMetadata() {
 		return observationUnitMetadata;
+	}
+
+	public Integer getId() {
+		return variable.getId();
+	}
+
+	public int hashCode() {
+		return variable.hashCode();
+	}
+
+	public Boolean getForAnalysis() {
+		return variable.getForAnalysis();
+	}
+
+	public boolean equals(Object obj) {
+		return variable.equals(obj);
 	}
 }

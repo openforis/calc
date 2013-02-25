@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.openforis.calc.geospatial.GeodeticCoordinate;
+import org.openforis.calc.io.flat.FlatDataStream;
 import org.openforis.calc.io.flat.FlatRecord;
 import org.openforis.calc.model.Cluster;
 import org.openforis.calc.model.SamplePlot;
@@ -127,7 +128,7 @@ public class SamplingDesignImporter extends AbstractFlatFileImporter {
 	}
 
 	@Override
-	protected void onStart() {
+	protected void onStart(FlatDataStream stream) {
 		clusterCount = 0;
 		stratumCount = 0;
 		plotCount = 0;

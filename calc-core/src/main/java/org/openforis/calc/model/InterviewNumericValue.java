@@ -3,7 +3,7 @@ package org.openforis.calc.model;
 /**
  * @author G. Miceli
  */
-public class InterviewNumericValue extends org.openforis.calc.persistence.jooq.tables.pojos.InterviewNumericValue implements Identifiable {
+public class InterviewNumericValue extends org.openforis.calc.persistence.jooq.tables.pojos.InterviewNumericValue implements NumericValue {
 
 	private static final long serialVersionUID = 1L;
 
@@ -15,6 +15,16 @@ public class InterviewNumericValue extends org.openforis.calc.persistence.jooq.t
 	@Override
 	public void setId(Integer id) {
 		super.setValueId(id);
+	}
+
+	@Override
+	public Integer getObservationId() {
+		return getInterviewId();
+	}
+
+	@Override
+	public void setObservationId(Integer obsId) {
+		setInterviewId(obsId);
 	}
 
 }

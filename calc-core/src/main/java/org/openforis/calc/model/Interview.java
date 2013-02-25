@@ -4,7 +4,7 @@ package org.openforis.calc.model;
 /**
  * @author G. Miceli
  */
-public class Interview extends org.openforis.calc.persistence.jooq.tables.pojos.Interview implements Identifiable {
+public class Interview extends org.openforis.calc.persistence.jooq.tables.pojos.Interview implements Observation {
 
 	private static final long serialVersionUID = 1L;
 

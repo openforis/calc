@@ -35,10 +35,16 @@ abstract class CsvProcessor {
 	}
 
 	public List<String> getColumnNames() {
+		if ( columns == null ) {
+			throw new IllegalStateException("Filed headers never read");
+		}
 		return Collections.unmodifiableList(new ArrayList<String>(columns.keySet()));
 	}
 	
 	Map<String, Integer> getColumnIndices() {
+		if ( columns == null ) {
+			throw new IllegalStateException("File headers never read");
+		}
 		return Collections.unmodifiableMap(columns);
 	}
 	
