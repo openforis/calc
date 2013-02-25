@@ -40,11 +40,11 @@ public class ObservationUnitResource extends SubResource<String> {
 		return getResource( SamplePlotListResource.class );
 	}
 
-	@Path("counts")
-	public SamplePlotCountResource getSamplePlotCountResource() {
-		assertType("plot");
-		return getResource(SamplePlotCountResource.class);
-	}
+//	@Path("counts")
+//	public SamplePlotCountResource getSamplePlotCountResource() {
+//		assertType("plot");
+//		return getResource(SamplePlotCountResource.class);
+//	}
 	
 	@Path("category-distribution")
 	public PlotCategoryDistributionResource getPlotCategoryDistributionResource(){
@@ -52,12 +52,12 @@ public class ObservationUnitResource extends SubResource<String> {
 		return getResource(PlotCategoryDistributionResource.class);
 	}
 	
-	@Deprecated
-	@Path("ground-plots")
-	private GroundPlotListResource getGroundPlotListResource() {
-		assertType("plot");
-		return getResource(GroundPlotListResource.class);
-	}
+//	@Deprecated
+//	@Path("ground-plots")
+//	private GroundPlotListResource getGroundPlotListResource() {
+//		assertType("plot");
+//		return getResource(GroundPlotListResource.class);
+//	}
 
 	@Deprecated
 	@Path("permanent-plots")

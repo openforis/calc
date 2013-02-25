@@ -20,4 +20,6 @@ public interface FlatRecord {
 	boolean isMissing(int idx);
 	
 	boolean isMissing(String name);
+
+	<T> T getValue(String string, Class<T> type, T object);
 }

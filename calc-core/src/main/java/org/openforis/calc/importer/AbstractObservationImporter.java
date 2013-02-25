@@ -122,7 +122,13 @@ public abstract class AbstractObservationImporter
 		try {
 			String code = record.getValue(name, String.class);
 			if ( code != null ) {
-				// TODO doesn't work for categorical variables
+				if ( var.isBinary() ) {
+					if ( "true".equalsIgnoreCase(code) ) {
+						code = "T";
+					} else if ("false".equalsIgnoreCase(code) ){
+						code = "F";
+					}
+				}
 				Category cat = var.getCategoryByCode(code);
 				if ( cat == null ) {
 					log.warn("Skipping unknown code: "+code);

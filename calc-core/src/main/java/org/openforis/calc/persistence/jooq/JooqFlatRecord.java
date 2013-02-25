@@ -54,5 +54,14 @@ class JooqFlatRecord implements FlatRecord {
 	public boolean isMissing(String name) {
 		return jooqRecord.getValue(name) == null;
 	}
+	@Override
+	public <T> T getValue(String name, Class<T> type, T defaultValue) {
+		T val = getValue(name, type);
+		if ( val == null ) {
+			return defaultValue;
+		} else {
+			return val;
+		}
+	}
 	
 }

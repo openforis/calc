@@ -142,5 +142,20 @@ public class CsvLine implements FlatRecord {
 	public String toString() {
 		return Arrays.toString(line);
 	}
+
+	@Override
+	public <T> T getValue(String column, Class<T> type, T defaultValue) {
+		try {
+			T val = getValue(column, type);
+			if ( val == null ) {
+				return defaultValue;
+			}
+			return val;
+		} catch ( DateFormatException e ) {
+			return defaultValue;
+		} catch ( NumberFormatException e ) {
+			return defaultValue;
+		}
+	}
 }
  

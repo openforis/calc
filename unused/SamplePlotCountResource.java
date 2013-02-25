@@ -5,7 +5,6 @@ import javax.ws.rs.QueryParam;
 
 import org.openforis.calc.io.flat.FlatDataStream;
 import org.openforis.calc.persistence.SamplePlotCntViewDao;
-import org.openforis.calc.persistence.SamplePlotVisitedCntViewDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
@@ -23,9 +22,6 @@ public class SamplePlotCountResource extends SubResource<Void> {
 
 	@Autowired
 	private SamplePlotCntViewDao samplePlotCntViewDao;
-
-	@Autowired
-	private SamplePlotVisitedCntViewDao samplePlotVisitedCntViewDao;
 
 	@Autowired
 	private ObservationUnitResource observationUnitResource;

@@ -54,10 +54,10 @@ public class InterviewImporter extends AbstractObservationImporter<Interview,
 			return null;
 		}
 		// interview date
-		Date interviewDate = record.getValue("interview_date", Date.class);
+		Date interviewDate = record.getValue("interview_date", Date.class, null);
 		// location
-		Double locationX = record.getValue("location_x", Double.class);
-		Double locationY = record.getValue("location_y", Double.class);
+		Double locationX = record.getValue("location_x", Double.class, null);
+		Double locationY = record.getValue("location_y", Double.class, null);
 		String srsId = record.getValue("location_srs_id", String.class);
 		if ( locationX == null || locationY == null || srsId == null ) {
 			log.warn("Missing or incomplete location");

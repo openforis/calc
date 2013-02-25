@@ -32,7 +32,12 @@ public class Variable extends org.openforis.calc.persistence.jooq.tables.pojos.V
 
 	public boolean isCategorical() {
 		String type = getVariableType();
-		return "nominal".equals(type) || "multiple".equals(type) || "ordinal".equals(type);
+		return "nominal".equals(type) || "multiple".equals(type) || "ordinal".equals(type) || "binary".equals(type);
+	}
+
+	public boolean isBinary() {
+		String type = getVariableType();
+		return "binary".equals(type);
 	}
 
 	public boolean isNumeric() {
