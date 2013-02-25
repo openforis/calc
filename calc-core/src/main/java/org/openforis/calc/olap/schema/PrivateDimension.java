@@ -6,7 +6,7 @@
 //
 
 
-package org.openforis.calc.olap;
+package org.openforis.calc.olap.schema;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,32 +15,28 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
-
-import org.openforis.calc.model.VariableMetadata;
 
 
 /**
  * 
- *                 Shared dimensions in this schema.
+ *                 Private dimensions in the cube.
  *                 A Dimension is a collection of hierarchies. There are two kinds: a public
  *                 dimension belongs to a Schema, and be used by several cubes;
  *                 a private dimension belongs to a Cube.
  *                 The foreignKey field is only applicable to private dimensions. 
  *             
  * 
+ * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "SharedDimension", propOrder = {
+@XmlType(name = "PrivateDimension", propOrder = {
     "annotations",
     "hierarchy"
 })
-public class SharedDimension {
+public class PrivateDimension {
 
-    static final String TYPE_STANDARD_DIMENSION = "StandardDimension";
-    
-	@XmlElement(name = "Annotations")
+    @XmlElement(name = "Annotations")
     protected List<Annotations> annotations;
     @XmlElement(name = "Hierarchy", required = true)
     protected List<Hierarchy> hierarchy;
@@ -53,26 +49,10 @@ public class SharedDimension {
     @XmlAttribute
     protected String description;
     @XmlAttribute
-    protected Boolean visible;
+    protected String foreignKey;
     @XmlAttribute
     protected Boolean highCardinality;
-    
-    @XmlTransient
-    private VariableMetadata variableMetadata;
-    
-    public SharedDimension() {
-	
-	}
-    
-    public SharedDimension(VariableMetadata variableMetadata) {
-    	this.variableMetadata = variableMetadata;
-    	setType( TYPE_STANDARD_DIMENSION );
-    	setVisible( true );
-    	setHighCardinality( false );
-    	setName( Schema.getMdxName(variableMetadata.getVariableName()) );
-    	getHierarchies().add( new Hierarchy(variableMetadata) );
-	}
-    
+
     /**
      * Gets the value of the annotations property.
      * 
@@ -124,7 +104,7 @@ public class SharedDimension {
      * 
      * 
      */
-    public List<Hierarchy> getHierarchies() {
+    public List<Hierarchy> getHierarchy() {
         if (hierarchy == null) {
             hierarchy = new ArrayList<Hierarchy>();
         }
@@ -231,19 +211,56 @@ public class SharedDimension {
         this.description = value;
     }
 
-    public Boolean getVisible() {
-		return visible;
-	}
-    
-    public void setVisible(Boolean visible) {
-		this.visible = visible;
-	}
+    /**
+     * Gets the value of the foreignKey property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getForeignKey() {
+        return foreignKey;
+    }
 
-    public Boolean getHighCardinality() {
-		return highCardinality;
-	}
-    
-    public void setHighCardinality(Boolean highCardinality) {
-		this.highCardinality = highCardinality;
-	}
+    /**
+     * Sets the value of the foreignKey property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setForeignKey(String value) {
+        this.foreignKey = value;
+    }
+
+    /**
+     * Gets the value of the highCardinality property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public boolean isHighCardinality() {
+        if (highCardinality == null) {
+            return false;
+        } else {
+            return highCardinality;
+        }
+    }
+
+    /**
+     * Sets the value of the highCardinality property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setHighCardinality(Boolean value) {
+        this.highCardinality = value;
+    }
+
 }

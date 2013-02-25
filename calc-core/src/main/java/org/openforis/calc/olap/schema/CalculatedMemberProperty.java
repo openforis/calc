@@ -6,39 +6,17 @@
 //
 
 
-package org.openforis.calc.olap;
+package org.openforis.calc.olap.schema;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-
-/**
- * 
- *                 Defines a named set which can be used in queries in the same way as a set
- *                 defined using a WITH SET clause. A named set can be defined against a particular cube,
- *                 or can be global to a schema. If it is defined against a cube, it is only available to queries which use that cube.
- *                 A named set defined against a cube is not inherited by a virtual cubes defined against that cube.
- *                 (But you can define a named set against a virtual cube). A named set defined against a schema
- *                 is available in all cubes and virtual cubes in that schema.
- *                 However, it is only valid if the cube contains dimensions with the names required to make the formula valid.
- *             
- * 
- * <p>Java class for NamedSet complex type.
- * 
- * 
- * 
- */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "NamedSet", propOrder = {
-    "annotations"
-})
-public class NamedSet {
+@XmlType(name = "CalculatedMemberProperty")
+public class CalculatedMemberProperty {
 
-    @XmlElement(name = "Annotations")
-    protected Annotations annotations;
     @XmlAttribute(required = true)
     protected String name;
     @XmlAttribute
@@ -46,31 +24,9 @@ public class NamedSet {
     @XmlAttribute
     protected String description;
     @XmlAttribute
-    protected String formula;
-
-    /**
-     * Gets the value of the annotations property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Annotations }
-     *     
-     */
-    public Annotations getAnnotations() {
-        return annotations;
-    }
-
-    /**
-     * Sets the value of the annotations property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Annotations }
-     *     
-     */
-    public void setAnnotations(Annotations value) {
-        this.annotations = value;
-    }
+    protected String expression;
+    @XmlAttribute
+    protected String value;
 
     /**
      * Gets the value of the name property.
@@ -145,27 +101,51 @@ public class NamedSet {
     }
 
     /**
-     * Gets the value of the formula property.
+     * Gets the value of the expression property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getFormula() {
-        return formula;
+    public String getExpression() {
+        return expression;
     }
 
     /**
-     * Sets the value of the formula property.
+     * Sets the value of the expression property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setFormula(String value) {
-        this.formula = value;
+    public void setExpression(String value) {
+        this.expression = value;
+    }
+
+    /**
+     * Gets the value of the value property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getValue() {
+        return value;
+    }
+
+    /**
+     * Sets the value of the value property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setValue(String value) {
+        this.value = value;
     }
 
 }

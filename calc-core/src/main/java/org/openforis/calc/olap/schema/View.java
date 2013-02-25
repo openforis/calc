@@ -6,25 +6,35 @@
 //
 
 
-package org.openforis.calc.olap;
+package org.openforis.calc.olap.schema;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 
+/**
+ * 
+ *                 A collection of SQL statements, one per dialect. 
+ *             
+ * 
+ * 
+ */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ExpressionView", propOrder = {
+@XmlType(name = "View", propOrder = {
     "sql"
 })
-public class ExpressionView {
+public class View {
 
     @XmlElement(name = "SQL", required = true)
     protected List<SQL> sql;
+    @XmlAttribute(required = true)
+    protected String alias;
 
     /**
      * Gets the value of the sql property.
@@ -53,6 +63,30 @@ public class ExpressionView {
             sql = new ArrayList<SQL>();
         }
         return this.sql;
+    }
+
+    /**
+     * Gets the value of the alias property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getAlias() {
+        return alias;
+    }
+
+    /**
+     * Sets the value of the alias property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setAlias(String value) {
+        this.alias = value;
     }
 
 }

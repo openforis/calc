@@ -6,7 +6,7 @@
 //
 
 
-package org.openforis.calc.olap;
+package org.openforis.calc.olap.schema;
 
 import java.util.ArrayList;
 import java.util.List;

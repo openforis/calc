@@ -1,4 +1,4 @@
-package org.openforis.calc.olap;
+package org.openforis.calc.olap.schema;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -27,7 +27,7 @@ public class VirtualCubeDimension {
 	public VirtualCubeDimension(VariableMetadata var) {
 		ObservationUnitMetadata obsUnit = var.getObservationUnitMetadata();
 
-		String cube = obsUnit.isTypePlot() ? "Area" : "_" + Schema.getMdxName(obsUnit.getObsUnitName());
+		String cube = obsUnit.isPlot() ? "Area" : "_" + Schema.getMdxName(obsUnit.getObsUnitName());
 		setCubeName(cube);
 		
 		String name = Schema.getMdxName(var.getVariableName());

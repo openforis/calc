@@ -1,4 +1,4 @@
-package org.openforis.calc.olap;
+package org.openforis.calc.olap.schema;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,7 +50,7 @@ public class VirtualCube {
 	}
 
 	public VirtualCube(ObservationUnitMetadata obsUnitMetadata) {
-		if ( !obsUnitMetadata.isTypeSpecimen() ) {
+		if ( !obsUnitMetadata.isSpecimen() ) {
 			throw new IllegalArgumentException("Virtual cube can be created only from specimen observation unit");
 		}
 		this.obsUnitMetadata = obsUnitMetadata;

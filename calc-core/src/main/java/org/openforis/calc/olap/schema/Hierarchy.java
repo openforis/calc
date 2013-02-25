@@ -6,7 +6,7 @@
 //
 
 
-package org.openforis.calc.olap;
+package org.openforis.calc.olap.schema;
 
 import java.math.BigInteger;
 import java.util.ArrayList;

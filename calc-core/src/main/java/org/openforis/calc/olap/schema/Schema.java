@@ -5,7 +5,7 @@
 // Generated on: 2013.02.01 at 03:55:36 PM CET 
 //
 
-package org.openforis.calc.olap;
+package org.openforis.calc.olap.schema;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,7 +22,7 @@ import javax.xml.bind.annotation.XmlType;
 import org.openforis.calc.model.ObservationUnitMetadata;
 import org.openforis.calc.model.SurveyMetadata;
 import org.openforis.calc.model.VariableMetadata;
-import org.openforis.calc.olap.Hierarchy.Level;
+import org.openforis.calc.olap.schema.Hierarchy.Level;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = { "annotations", "parameter", "dimension", "cube", "virtualCube", "namedSet", "role", "userDefinedFunction" })
@@ -213,7 +213,7 @@ public class Schema {
 			if( isValidCube(obsUnitMetadata) ) {
 				Cube cube = new Cube(obsUnitMetadata);
 				getCubes().add(cube);
-				if ( obsUnitMetadata.isTypeSpecimen() ) {
+				if ( obsUnitMetadata.isSpecimen() ) {
 					VirtualCube virtualCube = new VirtualCube(obsUnitMetadata);
 					getVirtualCubes().add(virtualCube);
 				}
@@ -222,9 +222,9 @@ public class Schema {
 	}
 
 	private boolean isValidCube(ObservationUnitMetadata obsUnitMetadata) {
-		if( obsUnitMetadata.isTypePlot() ){
+		if( obsUnitMetadata.isPlot() ){
 			return true;
-		} else if(obsUnitMetadata.isTypeSpecimen()){
+		} else if(obsUnitMetadata.isSpecimen()){
 			Collection<VariableMetadata> vars = obsUnitMetadata.getVariableMetadata();
 			for ( VariableMetadata var : vars ) {
 				// it has to contain measures

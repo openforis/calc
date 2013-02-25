@@ -11,8 +11,10 @@ import java.util.Map;
  * @author M. Togna
  * 
  */
-public class ObservationUnitMetadata {
+public class ObservationUnitMetadata extends ObservationUnit {
 
+	private static final long serialVersionUID = 1L;
+	
 	private ObservationUnit observationUnit;
 	private Map<String, VariableMetadata> variableMap;
 	private SurveyMetadata surveyMetadata;
@@ -86,12 +88,23 @@ public class ObservationUnitMetadata {
 		return surveyMetadata;
 	}
 	
-	public boolean isTypePlot(){
-		return ObservationUnit.Type.PLOT.equals( getObsUnitType() );
+	public Type getObsUnitTypeEnum() {
+		return observationUnit.getObsUnitTypeEnum();
 	}
-	
-	public boolean isTypeSpecimen(){
-		return ObservationUnit.Type.SPECIMEN.equals( getObsUnitType() );
+
+	public Integer getId() {
+		return observationUnit.getId();
 	}
-	
+
+	public boolean isPlot() {
+		return observationUnit.isPlot();
+	}
+
+	public boolean isSpecimen() {
+		return observationUnit.isSpecimen();
+	}
+
+	public boolean isInterview() {
+		return observationUnit.isInterview();
+	}
 }

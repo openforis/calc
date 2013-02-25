@@ -1,4 +1,4 @@
-package org.openforis.calc.olap;
+package org.openforis.calc.olap.schema;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

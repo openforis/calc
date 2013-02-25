@@ -96,7 +96,7 @@ public class OlapDimensionDao extends JooqDaoSupport {
  	}
  	
  	@Transactional
-	public void populateOlapDimensionTables(int surveyId, Collection<VariableMetadata> variables) {
+	public void populateDimensionTables(int surveyId, Collection<VariableMetadata> variables) {
  		for ( VariableMetadata variable : variables ) {
  			if( variable.isCategorical() && variable.isForAnalysis() ) {
  				DimensionTable dimTable = getDimensionTable(variable);

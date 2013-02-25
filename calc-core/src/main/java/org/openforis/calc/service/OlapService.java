@@ -1,23 +1,19 @@
 package org.openforis.calc.service;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
 import org.openforis.calc.model.ObservationUnit;
+import org.openforis.calc.model.ObservationUnit.Type;
 import org.openforis.calc.model.ObservationUnitMetadata;
 import org.openforis.calc.model.SurveyMetadata;
 import org.openforis.calc.model.VariableMetadata;
-import org.openforis.calc.olap.Schema;
+import org.openforis.calc.olap.schema.Schema;
+import org.openforis.calc.olap.schema.SchemaGenerator;
 import org.openforis.calc.persistence.AoiDao;
 import org.openforis.calc.persistence.GroundPlotViewDao;
 import org.openforis.calc.persistence.OlapDimensionDao;
@@ -76,20 +72,24 @@ public class OlapService extends CalcService {
 			Collection<VariableMetadata> variables = obsUnitMetadata.getVariableMetadata();
 //			olapDimensionDao.createOlapDimensionTables(surveyMetadata.getSurveyId(), variables);
 //			String obsUnitName = obsUnitMetadata.getObsUnitName();
-			
-			if ( ObservationUnit.Type.PLOT.equals(obsUnitMetadata.getObsUnitType()) ) {
-				olapDimensionDao.populateOlapDimensionTables(surveyId, variables);
-				// plot fact table
-				plotFactTableDao.populatePlotFactTable(obsUnitMetadata);
-				
-//				FlatDataStream areaFactData = getAreaFactData(surveyName, obsUnitName, PlotDistributionCalculationMethod.PRIMARY_SECTION_ONLY);
-//				updateAreaFacts(surveyName, areaFactData);
-
-			} else if ( ObservationUnit.Type.SPECIMEN.equals(obsUnitMetadata.getObsUnitType()) ) {
+			Type unitType = obsUnitMetadata.getObsUnitTypeEnum();
+			switch (unitType) {
+			case PLOT:
+//				olapDimensionDao.populateOlapDimensionTables(surveyId, variables);
+//				// plot fact table
+//				plotFactTableDao.populatePlotFactTable(obsUnitMetadata);
+//				
+////				FlatDataStream areaFactData = getAreaFactData(surveyName, obsUnitName, PlotDistributionCalculationMethod.PRIMARY_SECTION_ONLY);
+////				updateAreaFacts(surveyName, areaFactData);
+				break;
+			case SPECIMEN:
 //				FlatDataStream specimenFactData = getSpecimenFactData(surveyName, obsUnitName);
 //				updateSpecimenFacts(surveyName, obsUnitName, specimenFactData);
+				break;
+			case INTERVIEW:
+				olapDimensionDao.populateDimensionTables(surveyId, variables);
+				break;
 			}
-			
 		}
 	}
 	
@@ -103,23 +103,27 @@ public class OlapService extends CalcService {
 		for ( ObservationUnitMetadata obsUnitMetadata : observationMetadata ) {
 			Collection<VariableMetadata> variables = obsUnitMetadata.getVariableMetadata();
 			
-			
-//			String obsUnitName = obsUnitMetadata.getObsUnitName();
-			
-			if ( ObservationUnit.Type.PLOT.equals(obsUnitMetadata.getObsUnitType()) ) {
-				olapDimensionDao.createVariableDimensionTables(variables);
-				// plot fact table				
-				plotFactTableDao.createPlotFactTable(obsUnitMetadata);
-				
-//				FlatDataStream areaFactData = getAreaFactData(surveyName, obsUnitName, PlotDistributionCalculationMethod.PRIMARY_SECTION_ONLY);
-//				updateAreaFacts(surveyName, areaFactData);
+			Type unitType = obsUnitMetadata.getObsUnitTypeEnum();
+			switch (unitType) {
+			case PLOT:
+//				olapDimensionDao.createVariableDimensionTables(variables);
+//				// plot fact table				
+//				plotFactTableDao.createPlotFactTable(obsUnitMetadata);
+//				
+////				FlatDataStream areaFactData = getAreaFactData(surveyName, obsUnitName, PlotDistributionCalculationMethod.PRIMARY_SECTION_ONLY);
+////				updateAreaFacts(surveyName, areaFactData);
 
-			} else if ( ObservationUnit.Type.SPECIMEN.equals(obsUnitMetadata.getObsUnitType()) ) {
+				break;
+			case SPECIMEN:
+//				olapDimensionDao.createVariableDimensionTables(variables);
+////				FlatDataStream specimenFactData = getSpecimenFactData(surveyName, obsUnitName);
+////				updateSpecimenFacts(surveyName, obsUnitName, specimenFactData);
+				break;
+			case INTERVIEW:
 				olapDimensionDao.createVariableDimensionTables(variables);
-//				FlatDataStream specimenFactData = getSpecimenFactData(surveyName, obsUnitName);
-//				updateSpecimenFacts(surveyName, obsUnitName, specimenFactData);
+				plotFactTableDao.createPlotFactTable(obsUnitMetadata);
+				break;
 			}
-			
 		}
 	}
 
@@ -140,23 +144,27 @@ public class OlapService extends CalcService {
 		
 	}
 
-	public void saveSchema(Schema schema, String path) throws IOException, JAXBException {
-		JAXBContext context = JAXBContext.newInstance(Schema.class);
-		Marshaller marshaller = context.createMarshaller();
-		OutputStream out = new BufferedOutputStream(new FileOutputStream(new File(path)));
-		marshaller.marshal(schema, out);
-		out.flush();
-		out.close();
+//	public void saveSchema(Schema schema, String path) throws IOException, JAXBException {
+//		OutputStream out = new BufferedOutputStream(new FileOutputStream(new File(path)));
+//		marshalOlapSchema(schema, out);
+//		out.flush();
+//		out.close();
+//	}
+
+	public void marshalOlapSchema(Schema schema, OutputStream out)  {
+		try {
+			JAXBContext context = JAXBContext.newInstance(Schema.class);
+			Marshaller marshaller = context.createMarshaller();
+			marshaller.marshal(schema, out);
+		} catch (JAXBException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public Schema generateSchema(String surveyName) {
 		SurveyMetadata surveyMetadata = getSurveyMetadata(surveyName);
-		return generateSchema(surveyMetadata);
-	}
-
-	public Schema generateSchema(SurveyMetadata surveyMetadata) {
-		Schema schema = new Schema(surveyMetadata);
-		return schema;
+		SchemaGenerator schemagen = new SchemaGenerator(surveyMetadata);
+		return schemagen.generateSchema();
 	}
 
 //	@Deprecated
@@ -166,16 +174,16 @@ public class OlapService extends CalcService {
 //		areaFactDao.createOrUpdateAreaFactTable(data, plotMetadata.getVariableMetadata(), surveyName, AREA_FACT_TABLE_NAME);
 //	}
 
-	private ObservationUnitMetadata getPlotMetadata(String surveyName) {
-		SurveyMetadata surveyMetadata = getSurveyMetadata(surveyName);
-		Collection<ObservationUnitMetadata> observationMetadata = surveyMetadata.getObservationMetadata();
-		for ( ObservationUnitMetadata obsUnit : observationMetadata ) {
-			if ( ObservationUnit.Type.PLOT.equals(obsUnit.getObsUnitType()) ) {
-				return obsUnit;
-			}
-		}
-		throw new IllegalArgumentException("Unable to find " + ObservationUnit.Type.PLOT.toString() + " observation unit for survey " + surveyName);
-	}
+//	private ObservationUnitMetadata getPlotMetadata(String surveyName) {
+//		SurveyMetadata surveyMetadata = getSurveyMetadata(surveyName);
+//		Collection<ObservationUnitMetadata> observationMetadata = surveyMetadata.getObservationMetadata();
+//		for ( ObservationUnitMetadata obsUnit : observationMetadata ) {
+//			if ( ObservationUnit.Type.PLOT.equals(obsUnit.getObsUnitType()) ) {
+//				return obsUnit;
+//			}
+//		}
+//		throw new IllegalArgumentException("Unable to find " + ObservationUnit.Type.PLOT.toString() + " observation unit for survey " + surveyName);
+//	}
 
 //	@Transactional
 //	@Deprecated
@@ -207,15 +215,15 @@ public class OlapService extends CalcService {
 //		return specimenDao.streamSpecimenFactData(unitMetadata.getObsUnitId(), variables, parentVariables);
 //	}
 
-	@Deprecated
-	private Collection<VariableMetadata> getVariableMetadataForAnalysis(Collection<VariableMetadata> variables) {
-		List<VariableMetadata> varsForAnalysis = new ArrayList<VariableMetadata>();
-		for ( VariableMetadata variable : variables ) {
-			if ( variable.isCategorical() && variable.isForAnalysis() ) {
-				varsForAnalysis.add(variable);
-			}
-		}
-		return varsForAnalysis;
-	}
+//	@Deprecated
+//	private Collection<VariableMetadata> getVariableMetadataForAnalysis(Collection<VariableMetadata> variables) {
+//		List<VariableMetadata> varsForAnalysis = new ArrayList<VariableMetadata>();
+//		for ( VariableMetadata variable : variables ) {
+//			if ( variable.isCategorical() && variable.isForAnalysis() ) {
+//				varsForAnalysis.add(variable);
+//			}
+//		}
+//		return varsForAnalysis;
+//	}
 
 }

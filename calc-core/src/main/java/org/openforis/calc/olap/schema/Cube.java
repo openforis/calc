@@ -1,4 +1,4 @@
-package org.openforis.calc.olap;
+package org.openforis.calc.olap.schema;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -58,12 +58,12 @@ public class Cube {
 	public Cube(ObservationUnitMetadata obsUnitMetadata) {
 		this.obsUnitMetadata = obsUnitMetadata;
 
-		String name = obsUnitMetadata.isTypePlot() ? "Area" : "_" + Schema.getMdxName(obsUnitMetadata.getObsUnitName());
+		String name = obsUnitMetadata.isPlot() ? "Area" : "_" + Schema.getMdxName(obsUnitMetadata.getObsUnitName());
 		setName(name);
 
 		setCache(true);
 		setEnabled(true);
-		boolean visible = obsUnitMetadata.isTypePlot() ? true : false;
+		boolean visible = obsUnitMetadata.isPlot() ? true : false;
 		setVisible(visible);
 
 		initTable();
@@ -72,7 +72,7 @@ public class Cube {
 	}
 
 	private void initMeasures() {
-		if ( obsUnitMetadata.isTypePlot() ) {
+		if ( obsUnitMetadata.isPlot() ) {
 			Measure areaMeasure = getAreaMeasure();
 			getMeasures().add(areaMeasure);
 		} else {
@@ -103,7 +103,7 @@ public class Cube {
 		getDimensionUsageOrDimension().add(aoiDim);
 
 		initDimensions(obsUnitMetadata);
-		if ( obsUnitMetadata.isTypeSpecimen() ) {
+		if ( obsUnitMetadata.isSpecimen() ) {
 			ObservationUnitMetadata obsUnitParent = obsUnitMetadata.getObsUnitParent();
 			initDimensions(obsUnitParent);
 
@@ -145,7 +145,7 @@ public class Cube {
 
 	private void initTable() {
 		Table table = new Table();
-		String name = obsUnitMetadata.isTypePlot() ? "area_fact" : obsUnitMetadata.getObsUnitName() + "_fact";
+		String name = obsUnitMetadata.isPlot() ? "area_fact" : obsUnitMetadata.getObsUnitName() + "_fact";
 		table.setName(name);
 
 		SurveyMetadata surveyMetadata = obsUnitMetadata.getSurveyMetadata();

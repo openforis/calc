@@ -12,13 +12,8 @@ public class ObservationUnit extends org.openforis.calc.persistence.jooq.tables.
 	public enum Type {
 		PLOT, SPECIMEN, INTERVIEW;
 		
-		public boolean equals(String other) {
-			if(other == null){
-				return false;
-			} else {
-				String strValue = this.toString();
-				return strValue.equalsIgnoreCase(other);
-			}
+		public static Type get(String name) {
+			return name == null ? null : Type.valueOf(name.toUpperCase());
 		}
 	}
 	
@@ -56,6 +51,21 @@ public class ObservationUnit extends org.openforis.calc.persistence.jooq.tables.
 	@Override
 	public void setId(Integer id) {
 		super.setObsUnitId(id);
+	}
+	
+	public ObservationUnit.Type getObsUnitTypeEnum() {
+		return Type.get(getObsUnitType());
+	}
+	
+	public boolean isPlot() {
+		return getObsUnitTypeEnum() == Type.PLOT;
+	}
+	
+	public boolean isSpecimen() {
+		return getObsUnitTypeEnum() == Type.SPECIMEN;
+	}
 
+	public boolean isInterview() {
+		return getObsUnitTypeEnum() == Type.INTERVIEW;
 	}
 }
