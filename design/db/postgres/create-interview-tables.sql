@@ -59,3 +59,49 @@ CREATE TABLE
         CONSTRAINT interview_numeric_value_interview_fkey FOREIGN KEY (interview_id) REFERENCES interview (interview_id),
         CONSTRAINT interview_numeric_value_variable_fkey FOREIGN KEY (variable_id) REFERENCES variable (variable_id)
     );
+
+
+
+ALTER TABLE
+    calc.calc.plot_numeric_value ADD COLUMN original BOOLEAN NOT NULL DEFAULT true;
+ALTER TABLE
+    calc.calc.plot_numeric_value ADD COLUMN current BOOLEAN NOT NULL DEFAULT true;
+ALTER TABLE
+    calc.calc.plot_numeric_value ALTER COLUMN original DROP DEFAULT;
+ALTER TABLE
+    calc.calc.plot_numeric_value ALTER COLUMN current DROP DEFAULT;  
+ALTER TABLE
+    calc.calc.plot_categorical_value ADD COLUMN original BOOLEAN NOT NULL DEFAULT true;
+ALTER TABLE
+    calc.calc.plot_categorical_value ADD COLUMN current BOOLEAN NOT NULL DEFAULT true;
+ALTER TABLE
+    calc.calc.plot_categorical_value ALTER COLUMN original DROP DEFAULT;
+ALTER TABLE
+    calc.calc.plot_categorical_value ALTER COLUMN current DROP DEFAULT;
+
+ALTER TABLE
+    calc.calc.specimen_numeric_value ADD COLUMN original BOOLEAN NOT NULL DEFAULT true;
+ALTER TABLE
+    calc.calc.specimen_numeric_value ADD COLUMN current BOOLEAN NOT NULL DEFAULT true;
+ALTER TABLE
+    calc.calc.specimen_numeric_value ALTER COLUMN original DROP DEFAULT;
+ALTER TABLE
+    calc.calc.specimen_numeric_value ALTER COLUMN current DROP DEFAULT;  
+ALTER TABLE
+    calc.calc.specimen_categorical_value ADD COLUMN original BOOLEAN NOT NULL DEFAULT true;
+ALTER TABLE
+    calc.calc.specimen_categorical_value ADD COLUMN current BOOLEAN NOT NULL DEFAULT true;
+ALTER TABLE
+    calc.calc.specimen_categorical_value ALTER COLUMN original DROP DEFAULT;
+ALTER TABLE
+    calc.calc.specimen_categorical_value ALTER COLUMN current DROP DEFAULT;
+   
+ALTER TABLE
+    calc.calc.plot_numeric_value DROP COLUMN computed;
+ALTER TABLE
+    calc.calc.plot_categorical_value DROP COLUMN computed;
+ALTER TABLE
+    calc.calc.specimen_numeric_value DROP COLUMN computed;
+ALTER TABLE
+    calc.calc.specimen_categorical_value DROP COLUMN computed;
+        

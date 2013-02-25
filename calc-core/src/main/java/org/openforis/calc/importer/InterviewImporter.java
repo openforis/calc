@@ -65,7 +65,10 @@ public class InterviewImporter extends AbstractObservationImporter<Interview,
 		}
 		GeodeticCoordinate location = GeodeticCoordinate.toInstance(locationX, locationX, srsId);
 		
+		int id = interviewDao.nextId();
+		
 		Interview iv = new Interview();
+		iv.setId(id);
 		iv.setClusterId(clusterId);
 		iv.setInterviewNo(interviewNo);
 		iv.setInterviewDate(interviewDate);
@@ -84,8 +87,8 @@ public class InterviewImporter extends AbstractObservationImporter<Interview,
 
 	@Override
 	protected void doInserts(List<Interview> interviews, List<InterviewNumericValue> numVals, List<InterviewCategoricalValue> catVals) {
-		interviewDao.insert(interviews);
 		interviewNumericValueDao.insert(numVals);
 		interviewCategoricalValueDao.insert(catVals);
+		interviewDao.insert(interviews);
 	}
 }

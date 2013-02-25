@@ -136,6 +136,8 @@ public abstract class AbstractObservationImporter
 					C val = catValueClass.newInstance();
 					val.setObservationId(o.getId());
 					val.setCategoryId(cat.getId());
+					val.setOriginal(true);
+					val.setCurrent(true);
 					catVals.add(val);
 				}
 			}
@@ -154,6 +156,8 @@ public abstract class AbstractObservationImporter
 				val.setObservationId(o.getId());
 				val.setVariableId(var.getId());
 				val.setValue(value);
+				val.setOriginal(true);
+				val.setCurrent(true);
 				numVals.add(val);
 			}
 		} catch ( NumberFormatException e ) {

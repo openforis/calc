@@ -3,7 +3,9 @@ package org.openforis.calc.persistence.jooq;
 import static java.util.Arrays.*;
 import static java.util.Collections.*;
 
+import java.sql.BatchUpdateException;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,6 +32,7 @@ import org.jooq.TableRecord;
 import org.jooq.UniqueKey;
 import org.jooq.UpdatableRecord;
 import org.jooq.UpdatableTable;
+import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DAOImpl;
 import org.jooq.impl.Factory;
 import org.openforis.calc.io.flat.FlatDataStream;
@@ -181,7 +184,16 @@ public abstract class JooqDaoSupport<R extends TableRecord<R>, P>
         
         // Execute a batch INSERT
 		if (objects.size() > 1) {
-            create.batchStore(records).execute();
+			try {
+				create.batchStore(records).execute();
+			} catch ( DataAccessException e ) {
+				if ( e.getCause() instanceof BatchUpdateException ) {
+					BatchUpdateException c = (BatchUpdateException) e.getCause();
+					SQLException ne = c.getNextException();
+					log.error(ne);
+					throw e;
+				}
+			}
         }
         // Execute a regular INSERT
         else if (objects.size() == 1) {
