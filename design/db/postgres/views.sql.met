@@ -1,5 +1,5 @@
 #Extended file properties defined by DbVisualizer
-#Mon Feb 25 11:17:37 CET 2013
+#Mon Feb 25 14:32:34 CET 2013
 chart.type=result-set-chartviewer-area-chart-command
 chart.line_width=2
 exec.catalog=calc
@@ -10,24 +10,24 @@ chart.xaxis_date_as_text=false
 chart.line_point_labels_visible=false
 exec.connection=1
 chart.xaxis_title=
-chart.legend_location=East
 chart.bg_bottom_color=\#b4b4fa
+chart.legend_location=East
 chart.legend_visible=true
 monitor.default_view=Grid
 chart.series_shadow_visible=true
-chart.xaxis_major_grid_visible=false
 file.comment=
+chart.xaxis_major_grid_visible=false
 chart.pie_label_type=Line Labels
 chart.bar_type=Raised
-chart.category_column=variable_type
 exec.schema=calc
+chart.category_column=variable_type
 file.encoding=UTF-8
 chart.bg_top_color=\#ffffff
 chart.line_type=Straight
 chart.xaxis_title_visible=true
 chart.bar_group_gap=4
-chart.title=
 monitor.frame_bounds=
+chart.title=
 chart.yaxis_major_grid_visible=true
 chart.yaxis_title=
 chart.bar_gap=2

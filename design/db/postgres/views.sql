@@ -390,12 +390,11 @@ join
 on
     (
         st_contains(a.aoi_shape, p.plot_actual_location)))
-union
-select
-    p.plot_section_id,
-    1 as aoi_id
-from
-    plot_section p
+join 
+        calc.aoi_hierarchy_level l
+        on l.aoi_hierarchy_level_id = a.aoi_hierarchy_level_id
+where 
+        l.aoi_hierarchy_level_rank = (select max(aoi_hierarchy_level_rank) from calc.aoi_hierarchy_level) 
     ;
 
 create view
@@ -408,15 +407,14 @@ select
     p.sample_plot_id,
     a.aoi_id
 from
-    (aoi a
+    aoi a
 join
     sample_plot p
-on
-    (
-        st_contains(a.aoi_shape, p.plot_location)))
-union
-select
-    p.sample_plot_id,
-    1 as aoi_id
-from
-    sample_plot p;
+on   
+        st_contains(a.aoi_shape, p.plot_location)
+join 
+        calc.aoi_hierarchy_level l
+        on l.aoi_hierarchy_level_id = a.aoi_hierarchy_level_id
+where 
+        l.aoi_hierarchy_level_rank = (select max(aoi_hierarchy_level_rank) from calc.aoi_hierarchy_level)        
+;
