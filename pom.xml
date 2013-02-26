@@ -59,7 +59,7 @@
 		<repository>
 			<id>openforis-snapshots</id>
 			<name>Open Foris Snapshots</name>
-			<url>http://www.openforis.org/nexus/</url>
+			<url>http://www.openforis.org/nexus/content/groups/public/</url>
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
