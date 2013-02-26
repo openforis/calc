@@ -341,5 +341,9 @@
 			<groupId>org.apache.ddlutils</groupId>
 			<artifactId>ddlutils</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>pentaho</groupId>
+			<artifactId>mondrian</artifactId>
+		</dependency>
 	</dependencies>
 </project>
