@@ -50,7 +50,7 @@
 		<repository>
 			<id>openforis-releases</id>
 			<name>Open Foris Releases</name>
-			<url>http://www.openforis.org/nexus/</url>
+			<url>http://www.openforis.org/nexus/content/groups/public/</url>
 			<releases>
 				<enabled>true</enabled>
 			</releases>
