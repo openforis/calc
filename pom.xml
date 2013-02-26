@@ -47,42 +47,53 @@
 <!-- 	</profiles> -->
 
 	<repositories>
-<!-- 		<repository> -->
-<!-- 			<id>openforis</id> -->
-<!-- 			<name>Open Foris</name> -->
-<!-- 			<url>http://www.openforis.org/nexus/</url> -->
-<!-- 		</repository> -->
 		<repository>
-			<id>opengeo</id>
-			<name>opengeo</name>
+			<id>openforis-releases</id>
+			<name>Open Foris Releases</name>
+			<url>http://www.openforis.org/nexus/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+		<repository>
+			<id>openforis-snapshots</id>
+			<name>Open Foris Snapshots</name>
+			<url>http://www.openforis.org/nexus/</url>
 			<snapshots>
 				<enabled>true</enabled>
-				<updatePolicy>never</updatePolicy>
-			</snapshots>
-			<url>http://repo.opengeo.org/</url>
-		</repository>
-		<repository>
-			<id>osgeo</id>
-			<name>Open Source Geospatial Foundation Repository</name>
-			<url>http://download.osgeo.org/webdav/geotools/</url>
-			<snapshots>
-				<enabled>false</enabled>
-				<updatePolicy>never</updatePolicy>
 			</snapshots>
 		</repository>
+<!-- 		<repository> -->
+<!-- 			<id>opengeo</id> -->
+<!-- 			<name>opengeo</name> -->
+<!-- 			<snapshots> -->
+<!-- 				<enabled>true</enabled> -->
+<!-- 				<updatePolicy>never</updatePolicy> -->
+<!-- 			</snapshots> -->
+<!-- 			<url>http://repo.opengeo.org/</url> -->
+<!-- 		</repository> -->
+<!-- 		<repository> -->
+<!-- 			<id>osgeo</id> -->
+<!-- 			<name>Open Source Geospatial Foundation Repository</name> -->
+<!-- 			<url>http://download.osgeo.org/webdav/geotools/</url> -->
+<!-- 			<snapshots> -->
+<!-- 				<enabled>false</enabled> -->
+<!-- 				<updatePolicy>never</updatePolicy> -->
+<!-- 			</snapshots> -->
+<!-- 		</repository> -->
 <!-- 		<repository> -->
 <!-- 			<id>ZK_CE</id> -->
 <!-- 			<name>ZK CE Repository</name> -->
 <!-- 			<url>http://mavensync.zkoss.org/maven2</url> -->
 <!-- 		</repository> -->
-		<repository>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-			<id>pentaho</id>
-			<name>repo</name>
-			<url>http://repository.pentaho.org/artifactory/repo</url>
-		</repository>
+<!-- 		<repository> -->
+<!-- 			<snapshots> -->
+<!-- 				<enabled>false</enabled> -->
+<!-- 			</snapshots> -->
+<!-- 			<id>pentaho</id> -->
+<!-- 			<name>repo</name> -->
+<!-- 			<url>http://repository.pentaho.org/artifactory/repo</url> -->
+<!-- 		</repository> -->
 <!-- 		<repository> -->
 <!-- 			<snapshots /> -->
 <!-- 			<id>pentaho snapshots</id> -->
