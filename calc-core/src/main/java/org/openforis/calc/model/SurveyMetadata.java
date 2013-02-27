@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -15,9 +16,11 @@ public class SurveyMetadata {
 	private Survey survey;
 	private Map<Integer, ObservationUnitMetadata> obsUnitMetadataByUnitId;
 	private Map<String, ObservationUnitMetadata> obsUnitMetadataByUnitName;
+	private List<AoiHierarchyMetadata> aoiHierarchyMetadata;
 	
-	public SurveyMetadata(Survey survey, Collection<ObservationUnitMetadata> ous) {
+	public SurveyMetadata(Survey survey, Collection<ObservationUnitMetadata> ous, List<AoiHierarchyMetadata> aoiHierarchyMetadata) {
 		this.survey = survey;
+		this.aoiHierarchyMetadata = aoiHierarchyMetadata;
 		setObservationUnitMetadata(ous);
 	}
 	
@@ -72,5 +75,9 @@ public class SurveyMetadata {
 
 	public String getSurveyDescription() {
 		return survey.getSurveyDescription();
+	}
+	
+	public List<AoiHierarchyMetadata> getAoiHierarchyMetadata() {
+		return Collections.unmodifiableList(aoiHierarchyMetadata);
 	}
 }

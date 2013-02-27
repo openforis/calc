@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.openforis.calc.persistence.jooq.olap;
+package org.openforis.calc.persistence.jooq.rolap;
 
 import org.jooq.impl.UpdatableRecordImpl;
 

@@ -23,9 +23,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jooq.DAO;
 import org.jooq.Field;
+import org.jooq.Insert;
 import org.jooq.Query;
 import org.jooq.Record;
 import org.jooq.Result;
+import org.jooq.SelectQuery;
 import org.jooq.SelectSelectStep;
 import org.jooq.Table;
 import org.jooq.TableRecord;
@@ -538,4 +540,24 @@ public abstract class JooqDaoSupport<R extends TableRecord<R>, P>
 		create.execute(sql);
 	}
 
+	protected Insert<?> createInsertFromSelect(UpdatableTable<?> table, SelectQuery select) {
+		Factory create = getJooqFactory();
+		
+		List<Field<?>> selectFields = select.getFields();
+		List<Field<?>> fields = new ArrayList<Field<?>>(selectFields.size());
+		for ( Field<?> field : selectFields ) {
+			String fieldName = field.getName();
+			Field<?> destField = table.getField( fieldName );
+			if( destField == null ){
+				throw new IllegalArgumentException("Field " + fieldName + " not found in table " + table.getName());
+			}
+			fields.add( destField );
+		}		
+
+		Insert<?> insert = 
+					create.insertInto(table, fields)
+					.select(select);
+		
+		return insert;
+	}
 }

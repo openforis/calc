@@ -2,6 +2,10 @@ package org.openforis.calc.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openforis.calc.model.AoiHierarchy;
+import org.openforis.calc.model.AoiHierarchyLevel;
+import org.openforis.calc.model.AoiHierarchyLevelMetadata;
+import org.openforis.calc.model.AoiHierarchyMetadata;
 import org.openforis.calc.model.Category;
 import org.openforis.calc.model.ObservationUnit;
 import org.openforis.calc.model.ObservationUnitMetadata;
@@ -9,6 +13,8 @@ import org.openforis.calc.model.Survey;
 import org.openforis.calc.model.SurveyMetadata;
 import org.openforis.calc.model.Variable;
 import org.openforis.calc.model.VariableMetadata;
+import org.openforis.calc.persistence.AoiHierarchyDao;
+import org.openforis.calc.persistence.AoiHierarchyLevelDao;
 import org.openforis.calc.persistence.CategoryDao;
 import org.openforis.calc.persistence.ObservationUnitDao;
 import org.openforis.calc.persistence.SurveyDao;
@@ -32,6 +38,10 @@ public class MetadataService {
 	private VariableDao variableDao;
 	@Autowired
 	private CategoryDao categoryDao;
+	@Autowired
+	private AoiHierarchyDao aoiHierarchyDao;
+	@Autowired
+	private AoiHierarchyLevelDao aoiHierarchyLevelDao;
 
 	// TODO cache
 	public SurveyMetadata getSurveyMetadata(String surveyName) {
@@ -39,13 +49,31 @@ public class MetadataService {
 		if ( survey == null ) {
 			return null;
 		}
+		List<ObservationUnitMetadata> oms = getObservationUnitMetadata(survey);
+		List<AoiHierarchyMetadata> aoiHierarchies = getAoiHierarchyMetadata(survey);
+		return new SurveyMetadata(survey, oms, aoiHierarchies);
+	}
+
+	private List<ObservationUnitMetadata> getObservationUnitMetadata(Survey survey) {
 		List<ObservationUnit> units = observationUnitDao.findBySurveyId(survey.getId());
 		List<ObservationUnitMetadata> oms = new ArrayList<ObservationUnitMetadata>();
 		for ( ObservationUnit unit : units ) {
 			ObservationUnitMetadata om = loadObservationMetadata(unit);
 			oms.add(om);
 		}
-		return new SurveyMetadata(survey, oms);
+		return oms;
+	}
+
+	private List<AoiHierarchyMetadata> getAoiHierarchyMetadata(Survey survey) {
+		List<AoiHierarchy> hierarchies = aoiHierarchyDao.findBySurveyId(survey.getSurveyId());
+		List<AoiHierarchyMetadata> hms = new ArrayList<AoiHierarchyMetadata>();
+		for (AoiHierarchy h : hierarchies) {
+			List<AoiHierarchyLevel> levels = aoiHierarchyLevelDao.findByHierarchyId(h.getId());
+			List<AoiHierarchyLevelMetadata> levelMetadata = AoiHierarchyLevelMetadata.fromList(levels);
+			AoiHierarchyMetadata hm = new AoiHierarchyMetadata(h, levelMetadata);
+			hms.add(hm);
+		}
+		return hms;
 	}
 	
 	private ObservationUnitMetadata loadObservationMetadata(ObservationUnit unit) {

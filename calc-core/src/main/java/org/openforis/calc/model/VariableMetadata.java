@@ -122,4 +122,8 @@ public class VariableMetadata extends Variable {
 	public boolean isMultipleResponse() {
 		return variable.isMultipleResponse();
 	}
+
+	public String getDimensionTableName() {
+		return getVariableName();
+	}
 }

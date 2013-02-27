@@ -6,7 +6,7 @@ import java.util.Collection;
 import org.openforis.calc.io.flat.FlatDataStream;
 import org.openforis.calc.model.ObservationUnitMetadata;
 import org.openforis.calc.model.VariableMetadata;
-import org.openforis.calc.persistence.PlotFactTableDao;
+import org.openforis.calc.persistence.PlotFactDao;
 import org.openforis.calc.persistence.PlotSectionViewDao;
 import org.openforis.calc.persistence.SpecimenCategoricalValueDao;
 import org.openforis.calc.persistence.SpecimenDao;
@@ -37,7 +37,7 @@ public class ObservationService extends CalcService {
 //	@Autowired
 //	private AreaFactDao areaFactDao;
 	@Autowired
-	private PlotFactTableDao specimenFactDao;
+	private PlotFactDao specimenFactDao;
 	@Autowired
 	private TaxonService taxonService;
 	

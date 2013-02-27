@@ -1,6 +1,8 @@
 package org.openforis.calc.persistence;
 
-import static org.openforis.calc.persistence.jooq.Tables.AOI_HIERARCHY;
+import static org.openforis.calc.persistence.jooq.Tables.*;
+
+import java.util.List;
 
 import org.openforis.calc.io.flat.FlatDataStream;
 import org.openforis.calc.model.AoiHierarchy;
@@ -11,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author M. Togna
+ * @author G. Miceli
  */
 @Component
 @Transactional
@@ -24,4 +27,7 @@ public class AoiHierarchyDao extends JooqDaoSupport<AoiHierarchyRecord, AoiHiera
 		return stream(fieldNames, AOI_HIERARCHY.AOI_HIERARCHY_NAME, name);
 	}
 	
+	public List<AoiHierarchy> findBySurveyId(int surveyId) {
+		return fetch(AOI_HIERARCHY.SURVEY_ID, surveyId);
+	}
 }

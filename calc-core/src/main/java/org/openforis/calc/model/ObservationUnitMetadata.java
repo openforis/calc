@@ -14,6 +14,9 @@ import java.util.Map;
 public class ObservationUnitMetadata extends ObservationUnit {
 
 	private static final long serialVersionUID = 1L;
+	private static final String FACT_TABLE_SUFFIX = "_fact";
+	private static final String AGG_TABLE_PREFIX = "agg_";
+	private static final String UNDERSCORE = "_";
 	
 	private ObservationUnit observationUnit;
 	private Map<String, VariableMetadata> variableMap;
@@ -106,5 +109,23 @@ public class ObservationUnitMetadata extends ObservationUnit {
 
 	public boolean isInterview() {
 		return observationUnit.isInterview();
+	}
+	
+	public boolean hasNumericVariablesForAnalysis() {
+		Collection<VariableMetadata> vars = getVariableMetadata();
+		for ( VariableMetadata var : vars ) {
+			if( var.isNumeric() && var.isForAnalysis()){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public String getFactTableName() {
+		return getObsUnitName() + FACT_TABLE_SUFFIX;
+	}
+
+	public String getAggregateTableName(String infix) {
+		return AGG_TABLE_PREFIX + infix + UNDERSCORE + getFactTableName();
 	}
 }

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.openforis.calc.persistence.jooq.olap;
+package org.openforis.calc.persistence.jooq.rolap;
 
 import org.jooq.impl.UpdatableRecordImpl;
 
@@ -9,25 +9,25 @@ import org.jooq.impl.UpdatableRecordImpl;
  * @author M. Togna
  * 
  */
-public class DimensionRecord extends UpdatableRecordImpl<DimensionRecord> {
+public abstract class DimensionRecord<R extends DimensionRecord<R>> extends UpdatableRecordImpl<R> {
 
 	private static final long serialVersionUID = 1L;
 
-	private DimensionTable table;
+	private DimensionTable<?> table;
 
 	/**
 	 * @param table
 	 */
-	public DimensionRecord(DimensionTable table) {
+	public DimensionRecord(DimensionTable<R> table) {
 		super(table);
 		this.table = table;
 	}
 
-	public int getId() {
+	public Integer getId() {
 		return getValue(table.ID);
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		setValue(table.ID, id);
 	}
 
@@ -46,5 +46,4 @@ public class DimensionRecord extends UpdatableRecordImpl<DimensionRecord> {
 	public void setLabel(String label) {
 		setValue(table.LABEL, label);
 	}
-
 }

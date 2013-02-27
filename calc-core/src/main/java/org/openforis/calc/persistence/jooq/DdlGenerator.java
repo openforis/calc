@@ -20,10 +20,9 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.TableImpl;
 import org.jooq.impl.UpdatableTableImpl;
 import org.openforis.calc.geospatial.GeodeticCoordinate;
-import org.openforis.calc.persistence.jooq.olap.OlapTable;
+import org.openforis.calc.persistence.jooq.rolap.RolapTable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -31,16 +30,18 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  */
 @Component
-public class JooqTableGenerator {
+public class DdlGenerator {
 
-	private static final int maxTableNameLength = 256;
+	private static final int MAX_TABLE_NAME_LENGTH = 256;
+
+	private static final int MAX_IDENTIFIER_LENGTH = 256;
 
 	@Autowired
 	private DataSource dataSource;
 
 	private Platform platform;
 
-	public JooqTableGenerator() {
+	public DdlGenerator() {
 	}
 
 	@PostConstruct
@@ -48,7 +49,8 @@ public class JooqTableGenerator {
 		platform = PlatformFactory.createNewPlatformInstance(dataSource);
 		PlatformInfo platformInfo = platform.getPlatformInfo();
 		platformInfo.addNativeTypeMapping(GeodeticCoordinate.SQL_TYPE_CODE, GeodeticCoordinate.SQL_TYPE_NAME);
-		platformInfo.setMaxTableNameLength(maxTableNameLength);
+		platformInfo.setMaxTableNameLength(MAX_TABLE_NAME_LENGTH);
+		platformInfo.setMaxIdentifierLength(MAX_IDENTIFIER_LENGTH);
 	}
 
 	// @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -62,7 +64,8 @@ public class JooqTableGenerator {
 
 	@Transactional
 	//(propagation = Propagation.REQUIRES_NEW)
-	synchronized public void create(UpdatableTableImpl<?> jooqTable) {
+	synchronized 
+	public void createTable(UpdatableTableImpl<?> jooqTable) {
 		Database database = initDatabase();
 		Table table = initTable(database, jooqTable);
 		initColumns(table, jooqTable);
@@ -109,8 +112,8 @@ public class JooqTableGenerator {
 	}
 
 	private boolean isPrimarykey(Field<?> field, UpdatableTableImpl<?> jooqTable) {
-		if ( jooqTable instanceof OlapTable ) {
-			return ((OlapTable<?>) jooqTable).ID.equals(field);
+		if ( jooqTable instanceof RolapTable ) {
+			return ((RolapTable<?>) jooqTable).ID.equals(field);
 		} else {
 			UniqueKey<?> mainKey = jooqTable.getMainKey();
 			return mainKey.getFields().contains(field);
