@@ -12,6 +12,8 @@ public class AggregateTable extends FactTable {
 	private static final long serialVersionUID = 1L;
 	private FactTable factTable;
 
+	public final org.jooq.TableField<FactRecord, Integer> AGG_COUNT = createField("agg_cnt", org.jooq.impl.SQLDataType.INTEGER, this);
+
 	AggregateTable(FactTable factTable, 
 			String infix, List<String> measures, List<String> dimensions) {
 		super(

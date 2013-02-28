@@ -53,7 +53,16 @@ public class AoiHierarchyMetadata extends AoiHierarchy {
 		return Collections.unmodifiableList(levels);
 	}
 	
-	public int getMaxRank() {
-		return levels.get(levels.size()-1).getAoiHierarchyLevelRank();
+	public AoiHierarchyLevelMetadata getMaxLevel() {
+		return levels.get(levels.size()-1);
+	}
+
+	public boolean hasLevel(String name) {
+		for (AoiHierarchyLevelMetadata level : levels) {
+			if ( level.getAoiHierarchyLevelName().equals(name) ) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

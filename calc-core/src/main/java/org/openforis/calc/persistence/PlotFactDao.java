@@ -12,8 +12,8 @@ import org.openforis.calc.model.AoiHierarchyMetadata;
 import org.openforis.calc.model.ObservationUnitMetadata;
 import org.openforis.calc.model.SurveyMetadata;
 import org.openforis.calc.model.VariableMetadata;
+import org.openforis.calc.persistence.jooq.rolap.FactTable;
 import org.openforis.calc.persistence.jooq.tables.Aoi;
-import org.openforis.calc.persistence.jooq.tables.AoiHierarchyLevel;
 import org.openforis.calc.persistence.jooq.tables.GroundPlotView;
 import org.openforis.calc.persistence.jooq.tables.PlotCategoricalValueView;
 import org.openforis.calc.persistence.jooq.tables.PlotSectionAoi;
@@ -27,8 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class PlotFactDao extends RolapFactDao {
 
-//	private static final String COUNT_COLUMN_NAME = "cnt";
-//	private static final String EST_AREA_COLUMN_NAME = "est_area";
+	static final String EST_AREA_COLUMN_NAME = "est_area";
 
 //	private static final String[] PLOT_POINTS = new String[] { P.PLOT_GPS_READING.getName(), P.PLOT_ACTUAL_LOCATION.getName(), P.PLOT_LOCATION.getName() };
 //	private static final String[] PLOT_DIMENSIONS = new String[] { S.STRATUM_ID.getName(), C.CLUSTER_ID.getName(), P.PLOT_SECTION_ID.getName() };
@@ -36,7 +35,8 @@ public class PlotFactDao extends RolapFactDao {
 //	private static final String[] PLOT_MEASURES = new String[] { P.PLOT_LOCATION_DEVIATION.getName(), COUNT_COLUMN_NAME, EST_AREA_COLUMN_NAME };
 	
 	@Override
-	protected SelectQuery createFactSelect(ObservationUnitMetadata unit){
+	protected SelectQuery createFactSelect(FactTable fact){
+		ObservationUnitMetadata unit = fact.getObservationUnitMetadata();
 		Factory create = getJooqFactory();
 		int unitId = unit.getObsUnitId();
 
@@ -50,9 +50,9 @@ public class PlotFactDao extends RolapFactDao {
 		select.addSelect(p.PLOT_GPS_READING);
 		select.addSelect(p.PLOT_ACTUAL_LOCATION);
 		select.addSelect(p.PLOT_LOCATION_DEVIATION);
-		select.addSelect(Factory.val(1).as("cnt"));
+		select.addSelect(Factory.val(1).as(fact.COUNT.getName()));
 		//TODO join with plot numeric value to get the right area
-		select.addSelect(Factory.val(706.8583470577034).as("est_area"));
+		select.addSelect(Factory.val(706.8583470577034).as(EST_AREA_COLUMN_NAME));
 		
 		select.addFrom(p);
 		
@@ -75,29 +75,26 @@ public class PlotFactDao extends RolapFactDao {
 		List<AoiHierarchyMetadata> aoiHierarchies = survey.getAoiHierarchyMetadata();
 		// TODO multiple AOI hierarchies
 		AoiHierarchyMetadata aoiHierarchy = aoiHierarchies.get(0);
-		int leafAoiRank = aoiHierarchy.getMaxRank();
-		List<AoiHierarchyLevelMetadata> aoiLevels = aoiHierarchy.getLevelMetadata();
+		AoiHierarchyLevelMetadata leafLevel = aoiHierarchy.getMaxLevel();
+		String leafLevelName = leafLevel.getAoiHierarchyLevelName();
 		
+		// Select leaf AOI
 		Aoi a = AOI.as("a");
-		AoiHierarchyLevel al = AOI_HIERARCHY_LEVEL.as("al");
 		select.addJoin(a, a.AOI_ID.eq(pa.AOI_ID));
-		select.addJoin(al, a.AOI_HIERARCHY_LEVEL_ID.eq(al.AOI_HIERARCHY_LEVEL_ID));
-		select.addConditions(al.AOI_HIERARCHY_LEVEL_RANK.eq(leafAoiRank));
+		select.addConditions(a.AOI_HIERARCHY_LEVEL_ID.eq(leafLevel.getAoiHierarchyLevelId()));
+		select.addSelect(pa.AOI_ID.as(leafLevelName));
 		
-		Aoi childAoi = a;
-		for (int i = 0; i < aoiLevels.size(); i++) {
+		// Add select and join for non-leaf AOIs
+		List<AoiHierarchyLevelMetadata> aoiLevels = aoiHierarchy.getLevelMetadata();
+		Aoi table = a;
+		for (int i = aoiLevels.size()-2; i >= 0; i--) {
 			AoiHierarchyLevelMetadata level = aoiLevels.get(i);
 			String levelName = level.getAoiHierarchyLevelName();
-			if ( i==0 ) {
-				select.addSelect(pa.AOI_ID.as(levelName));
-			} else {
-				Aoi parentAoi = AOI.as("a"+i);
-				
-				select.addSelect(parentAoi.AOI_ID.as(levelName ));
-				
-				select.addJoin(parentAoi, childAoi.AOI_PARENT_ID.eq(parentAoi.AOI_ID));
-				childAoi = parentAoi;
-			}
+			
+			Aoi parentTable = AOI.as("a"+i);
+			select.addSelect(parentTable.AOI_ID.as(levelName));
+			select.addJoin(parentTable, table.AOI_PARENT_ID.eq(parentTable.AOI_ID));
+			table = parentTable;
 		}
 	}
 

@@ -19,11 +19,11 @@ import org.openforis.calc.persistence.jooq.tables.GroundPlotView;
  */
 public class PlotCubeGenerator extends CubeGenerator {
 
-	private static final String[] FIXED_DIM_COLS = new String[] { 
-    	STRATUM.STRATUM_ID.getName(), 
-    	CLUSTER.CLUSTER_ID.getName(), 
-    	PLOT_SECTION.PLOT_SECTION_ID.getName() 
-    };
+//	private static final String[] FIXED_DIM_COLS = new String[] { 
+//    	STRATUM.STRATUM_ID.getName(), 
+//    	CLUSTER.CLUSTER_ID.getName(), 
+//    	PLOT_SECTION.PLOT_SECTION_ID.getName() 
+//    };
 	
 	PlotCubeGenerator(String dbSchema, ObservationUnitMetadata unit) {
 		super(dbSchema, unit);
@@ -35,6 +35,8 @@ public class PlotCubeGenerator extends CubeGenerator {
 		// TODO dynamic stratum and AOI dimension names
 		dims.add(createDimensionUsage("Stratum", "stratum_id"));
 		dims.add(createDimensionUsage("Plot", "plot_id"));
+		dims.add(createDimensionUsage("AOI", "country"));
+		dims.add(createDimensionUsage("AOI", "region"));
 		dims.add(createDimensionUsage("AOI", "district"));
 		// TODO
 		return dims;
@@ -52,10 +54,19 @@ public class PlotCubeGenerator extends CubeGenerator {
 	@Override
 	protected List<Measure> getMeasures() {
 		GroundPlotView G = GROUND_PLOT_VIEW;
+		// TODO use Field objects for column names
 		return Arrays.asList(
 				createMeasure(G.PLOT_LOCATION_DEVIATION.getName(), "Location deviation"),
 				createMeasure("est_area", "Est. area"),
 				createMeasure("cnt", "Count")
 				);
+	}
+	
+	@Override
+	protected void initAggregateTables() {
+		FactTable factTable = getFactTable();
+		String rootInfix = "district_stratum";
+		AggregateTable rootAggTable = factTable.createAggregateTable(rootInfix, "plot_id");
+		addTable(rootAggTable);
 	}
 }

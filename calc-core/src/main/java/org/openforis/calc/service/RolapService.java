@@ -11,9 +11,11 @@ import org.openforis.calc.model.ObservationUnit.Type;
 import org.openforis.calc.model.ObservationUnitMetadata;
 import org.openforis.calc.model.SurveyMetadata;
 import org.openforis.calc.olap.schema.Schema;
+import org.openforis.calc.persistence.PlotAggregateDao;
 import org.openforis.calc.persistence.PlotFactDao;
 import org.openforis.calc.persistence.RolapDimensionDao;
 import org.openforis.calc.persistence.RolapSchemaDao;
+import org.openforis.calc.persistence.jooq.rolap.AggregateTable;
 import org.openforis.calc.persistence.jooq.rolap.AoiDimensionTable;
 import org.openforis.calc.persistence.jooq.rolap.CategoryDimensionTable;
 import org.openforis.calc.persistence.jooq.rolap.FactTable;
@@ -41,6 +43,8 @@ public class RolapService extends CalcService {
 	private RolapSchemaDao rolapSchemaDao;
 	@Autowired	
 	private PlotFactDao plotFactDao;
+	@Autowired	
+	private PlotAggregateDao plotAggregateDao;
 //	@Autowired
 //	private PlotSectionViewDao plotSectionViewDao;
 //	@Autowired
@@ -83,7 +87,11 @@ public class RolapService extends CalcService {
 				Type unitType = unit.getObsUnitTypeEnum();
 				switch (unitType) {
 				case PLOT:
-					plotFactDao.populate(factTable);
+					if ( table instanceof AggregateTable ) {
+						plotAggregateDao.populate((AggregateTable) factTable, 3);					
+					} else {
+						plotFactDao.populate(factTable);
+					}
 					break;
 				case SPECIMEN:
 					break;

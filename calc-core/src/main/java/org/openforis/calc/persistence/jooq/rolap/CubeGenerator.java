@@ -22,12 +22,11 @@ import org.openforis.calc.model.VariableMetadata;
  *
  */
 public abstract class CubeGenerator {
-
+	
 	private static final String MDX_NUMERIC = "Numeric";
 	private static final String MDX_SUM_AGGREGATOR = "sum";
-	private static final String FORMAT_STRING_0_DECIMAL = "#,###";
+//	private static final String FORMAT_STRING_0_DECIMAL = "#,###";
 	private static final String FORMAT_STRING_5_DECIMAL = "#,###.#####";
-
 	// IN
 	private String dbSchema;
 	private ObservationUnitMetadata unit;
@@ -35,6 +34,9 @@ public abstract class CubeGenerator {
 	// OUT
 	private Cube cube;
 	private List<RolapTable<?>> tables;
+	
+	// TEMP
+	private FactTable factTable;
 	
 	CubeGenerator(String dbSchema, ObservationUnitMetadata unit) {
 		this.dbSchema = dbSchema;
@@ -46,7 +48,8 @@ public abstract class CubeGenerator {
 
 		initCube();
 		initFactTable();
-		// TODO aggregate tables
+		initAggregateTables();
+		
 		return cube;
 	}
 
@@ -88,13 +91,12 @@ public abstract class CubeGenerator {
 		List<String> measureColumns = extractMeasureColumns(measures);
 		List<String> pointColumns = getPointColumns();
 				
-		FactTable table = new FactTable(dbSchema, unit, dimColumns, measureColumns, pointColumns);
+		factTable = new FactTable(dbSchema, unit, measureColumns, dimColumns, pointColumns);
 		
 		cube.fact = new Table();
 		
-		tables.add(table);
+		addTable(factTable);
 	}
-
 
 	private static List<String> extractDimensionColumns(List<DimensionUsage> dimUsages) {
 		List<String> dimColumns = new ArrayList<String>();
@@ -110,6 +112,10 @@ public abstract class CubeGenerator {
 			cols.add( m.column );
 		}
 		return cols;
+	}
+
+	protected void addTable(RolapTable<?> table) {
+		tables.add(table);
 	}
 
 	protected List<DimensionUsage> getDimensionUsages() {
@@ -191,4 +197,11 @@ public abstract class CubeGenerator {
 		return unit;
 	}
 
+	protected FactTable getFactTable() {
+		return factTable;
+	}
+	
+	protected void initAggregateTables() {
+		// Implement in subclasses if needed
+	}
 }

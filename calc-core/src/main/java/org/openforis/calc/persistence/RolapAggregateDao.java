@@ -1,6 +1,7 @@
 package org.openforis.calc.persistence;
 import org.jooq.Insert;
 import org.jooq.SelectQuery;
+import org.openforis.calc.model.ObservationUnitMetadata;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
 import org.openforis.calc.persistence.jooq.rolap.FactRecord;
 import org.openforis.calc.persistence.jooq.rolap.FactTable;
@@ -14,10 +15,10 @@ import org.springframework.transaction.annotation.Transactional;
 @SuppressWarnings("rawtypes")
 @Component
 @Transactional
-public abstract class RolapFactDao extends JooqDaoSupport {
+public abstract class RolapAggregateDao extends JooqDaoSupport {
 
 	@SuppressWarnings("unchecked")
-	public RolapFactDao() {
+	public RolapAggregateDao() {
 		super(null, null);
 	}
 
@@ -25,7 +26,9 @@ public abstract class RolapFactDao extends JooqDaoSupport {
 	@Transactional
 	synchronized
 	public void populate(FactTable table) {
-		SelectQuery select = createFactSelect(table);
+		ObservationUnitMetadata unit = table.getObservationUnitMetadata();
+		
+		SelectQuery select = createFactSelect(unit);
 		Insert<FactRecord> insert = createInsertFromSelect(table, select);
 		
 		getLog().debug("Inserting fact data:");
@@ -72,7 +75,7 @@ public abstract class RolapFactDao extends JooqDaoSupport {
 //		aoiStratumInsert.execute();
 	}
 
-	protected abstract SelectQuery createFactSelect(FactTable table);
+	protected abstract SelectQuery createFactSelect(ObservationUnitMetadata unit);
 	
 //	@SuppressWarnings("unchecked")
 //	private SelectQuery getAggAoiStratumSelect(FactTable table, String aoiLevelName, int aoiLevelRank, List<String> prevLevels, int surveyId) {

@@ -5,6 +5,7 @@ package org.openforis.calc.persistence.jooq.rolap;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -28,6 +29,8 @@ public class FactTable extends RolapTable<FactRecord> {
 	
 	private List<String> measures;
 	private List<String> dimensions;
+
+	public final org.jooq.TableField<FactRecord, Integer> COUNT = createField("cnt", org.jooq.impl.SQLDataType.INTEGER, this);
 
 	private ObservationUnitMetadata observationUnitMetadata;
 	
@@ -53,7 +56,8 @@ public class FactTable extends RolapTable<FactRecord> {
 	public ObservationUnitMetadata getObservationUnitMetadata() {
 		return observationUnitMetadata;
 	}
-	
+
+	// TODO move to PlotFact as constant fields
 	private void setPoints(List<String> points) {
 		if ( points != null ) {
 			for ( String point : points ) {
@@ -67,8 +71,10 @@ public class FactTable extends RolapTable<FactRecord> {
 		this.dimensions = dimensions;
 		if ( dimensions != null ) {
 			for ( String dimension : dimensions ) {
-				TableField<FactRecord, Integer> field = createField(dimension, SQLDataType.INTEGER, this);
-				dimensionFields.add(field);
+				if ( getField(dimension) == null ) {
+					TableField<FactRecord, Integer> field = createField(dimension, SQLDataType.INTEGER, this);
+					dimensionFields.add(field);
+				}
 			}
 		}
 	}
@@ -77,8 +83,10 @@ public class FactTable extends RolapTable<FactRecord> {
 		this.measures = measures;
 		if ( measures != null ) {
 			for ( String measure : measures ) {
-				TableField<FactRecord, BigDecimal> field = createField(measure, SQLDataType.NUMERIC, this);
-				measureFields.add(field);
+				if ( getField(measure) == null ) {
+					TableField<FactRecord, BigDecimal> field = createField(measure, SQLDataType.NUMERIC, this);
+					measureFields.add(field);
+				}
 			}
 		}
 	}
@@ -95,10 +103,10 @@ public class FactTable extends RolapTable<FactRecord> {
 		return Collections.unmodifiableList(pointFields);
 	}
 
-	public AggregateTable createAggregateTable(String table, String infix, List<String> excludedDimensions) {
+	public AggregateTable createAggregateTable(String infix, String... excludedDimensionColumns) {
 
 		List<String> aggDimensions = new ArrayList<String>(dimensions);
-		aggDimensions.removeAll(excludedDimensions);
+		aggDimensions.removeAll(Arrays.asList(excludedDimensionColumns));
 
 		return new AggregateTable(this, infix, measures, aggDimensions);
 	}
