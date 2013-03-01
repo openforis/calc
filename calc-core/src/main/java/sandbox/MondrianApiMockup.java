@@ -35,7 +35,7 @@ public class MondrianApiMockup {
 		try {
 			ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
 			RolapService rolapService = ctx.getBean(RolapService.class);
-			rolapService.publishData("naforma1", "testschema");
+			rolapService.publishRolapSchema("naforma1", "testschema");
 //			printSchema();
 //			testQuery();
 //			manuallyCreateSchema();

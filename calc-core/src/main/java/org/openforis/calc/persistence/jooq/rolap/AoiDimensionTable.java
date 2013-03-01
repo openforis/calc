@@ -14,8 +14,8 @@ public class AoiDimensionTable extends HierarchicalDimensionTable {
 
 	private AoiHierarchyLevelMetadata aoiHierarchyLevelMetadata;
 	
-	AoiDimensionTable(String schema, AoiHierarchyLevelMetadata level) {
-		super(schema, level.getAoiHierarchyLevelName());
+	AoiDimensionTable(String schema, AoiHierarchyLevelMetadata level, AoiDimensionTable parentTable) {
+		super(schema, level.getAoiHierarchyLevelName(), parentTable);
 		this.aoiHierarchyLevelMetadata = level;
 	}
 	

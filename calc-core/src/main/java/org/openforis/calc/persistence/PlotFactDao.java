@@ -13,6 +13,7 @@ import org.openforis.calc.model.ObservationUnitMetadata;
 import org.openforis.calc.model.SurveyMetadata;
 import org.openforis.calc.model.VariableMetadata;
 import org.openforis.calc.persistence.jooq.rolap.FactTable;
+import org.openforis.calc.persistence.jooq.rolap.PlotFactTable;
 import org.openforis.calc.persistence.jooq.tables.Aoi;
 import org.openforis.calc.persistence.jooq.tables.GroundPlotView;
 import org.openforis.calc.persistence.jooq.tables.PlotCategoricalValueView;
@@ -27,15 +28,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class PlotFactDao extends RolapFactDao {
 
-	static final String EST_AREA_COLUMN_NAME = "est_area";
-
-//	private static final String[] PLOT_POINTS = new String[] { P.PLOT_GPS_READING.getName(), P.PLOT_ACTUAL_LOCATION.getName(), P.PLOT_LOCATION.getName() };
-//	private static final String[] PLOT_DIMENSIONS = new String[] { S.STRATUM_ID.getName(), C.CLUSTER_ID.getName(), P.PLOT_SECTION_ID.getName() };
-//	private static final String[] AGG_STRATUM_AOI_EXCLUDED_DIMENSIONS = new String[] { C.CLUSTER_ID.getName(), P.PLOT_SECTION_ID.getName() };
-//	private static final String[] PLOT_MEASURES = new String[] { P.PLOT_LOCATION_DEVIATION.getName(), COUNT_COLUMN_NAME, EST_AREA_COLUMN_NAME };
-	
 	@Override
 	protected SelectQuery createFactSelect(FactTable fact){
+		PlotFactTable plotFact = (PlotFactTable) fact;
 		ObservationUnitMetadata unit = fact.getObservationUnitMetadata();
 		Factory create = getJooqFactory();
 		int unitId = unit.getObsUnitId();
@@ -44,15 +39,15 @@ public class PlotFactDao extends RolapFactDao {
 		PlotSectionAoi pa = PLOT_SECTION_AOI.as("pa");
 		SelectQuery select = create.selectQuery();
 		select.addSelect(p.STRATUM_ID);
-//		select.addSelect(p.CLUSTER_ID);
-		select.addSelect(p.PLOT_SECTION_ID.as("plot_id"));
+		select.addSelect(p.CLUSTER_ID);
+		select.addSelect(p.SAMPLE_PLOT_ID.as("plot_id"));
 		select.addSelect(p.PLOT_LOCATION);
 		select.addSelect(p.PLOT_GPS_READING);
 		select.addSelect(p.PLOT_ACTUAL_LOCATION);
 		select.addSelect(p.PLOT_LOCATION_DEVIATION);
 		select.addSelect(Factory.val(1).as(fact.COUNT.getName()));
 		//TODO join with plot numeric value to get the right area
-		select.addSelect(Factory.val(706.8583470577034).as(EST_AREA_COLUMN_NAME));
+		select.addSelect(Factory.val(706.8583470577034).as(plotFact.EST_AREA.getName()));
 		
 		select.addFrom(p);
 		

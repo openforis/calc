@@ -11,13 +11,18 @@ import org.jooq.SelectQuery;
 import org.jooq.impl.Factory;
 import org.openforis.calc.model.AoiHierarchyLevelMetadata;
 import org.openforis.calc.model.AoiHierarchyMetadata;
+import org.openforis.calc.model.ObservationUnitMetadata;
 import org.openforis.calc.model.VariableMetadata;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
 import org.openforis.calc.persistence.jooq.rolap.AoiDimensionTable;
 import org.openforis.calc.persistence.jooq.rolap.CategoryDimensionTable;
+import org.openforis.calc.persistence.jooq.rolap.ClusterDimensionTable;
+import org.openforis.calc.persistence.jooq.rolap.PlotDimensionTable;
+import org.openforis.calc.persistence.jooq.rolap.StratumDimensionTable;
 import org.openforis.calc.persistence.jooq.tables.AoiHierarchy;
 import org.openforis.calc.persistence.jooq.tables.AoiHierarchyLevel;
 import org.openforis.calc.persistence.jooq.tables.Category;
+import org.openforis.calc.persistence.jooq.tables.SamplePlotView;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,8 +43,8 @@ public class RolapDimensionDao extends JooqDaoSupport {
 	public RolapDimensionDao() {
 		super(null, null);
 	}
-	
- 	@Transactional
+
+	@Transactional
  	public void populate(CategoryDimensionTable table) {
  		VariableMetadata var = table.getVariableMetadata();
  		int variableId = var.getVariableId();
@@ -58,7 +63,7 @@ public class RolapDimensionDao extends JooqDaoSupport {
  		
  		create
 			.insertInto(table, table.ID, table.CODE, table.LABEL)
-			.values( DIMENSION_NA_ID, DIMENSION_NA_VALUE, DIMENSION_NA_VALUE)
+			.values(DIMENSION_NA_ID, DIMENSION_NA_VALUE, DIMENSION_NA_VALUE)
 			.execute();
 	}
  	
@@ -98,6 +103,48 @@ public class RolapDimensionDao extends JooqDaoSupport {
 		int r = insert.execute();
 		
 		return r;
+	}
+
+	public void populate(ClusterDimensionTable table) {
+		int surveyId = table.getSurveyId();
+ 		Factory create = getJooqFactory();
+ 		SelectQuery select = create.selectQuery();
+ 		select.addSelect(CLUSTER.CLUSTER_ID, CLUSTER.CLUSTER_CODE);
+ 		select.addFrom(CLUSTER);
+ 		select.addConditions(CLUSTER.SURVEY_ID.eq(surveyId));
+		Insert<Record> insert = create
+				.insertInto(table, table.ID, table.LABEL)
+				.select(select);
+		insert.execute();
+	}
+
+	public void populate(PlotDimensionTable table) {
+		ObservationUnitMetadata unit = table.getObservationUnitMetadata();
+		int unitId = unit.getObsUnitId();
+ 		Factory create = getJooqFactory();
+ 		SelectQuery select = create.selectQuery();
+ 		SamplePlotView s = SAMPLE_PLOT_VIEW.as("s");
+ 		select.addSelect(s.SAMPLE_PLOT_ID, s.CLUSTER_ID, s.PLOT_NO);
+ 		select.addFrom(s);
+ 		select.addConditions(s.PLOT_OBS_UNIT_ID.eq(unitId));
+ 		select.addConditions(s.GROUND_PLOT.isTrue());
+		Insert<Record> insert = create
+				.insertInto(table, table.ID, table.PARENT_ID, table.LABEL)
+				.select(select);
+		insert.execute();
+	}
+
+	public void populate(StratumDimensionTable table) {
+		int surveyId = table.getSurveyId();
+ 		Factory create = getJooqFactory();
+ 		SelectQuery select = create.selectQuery();
+ 		select.addSelect(STRATUM.STRATUM_ID, STRATUM.STRATUM_NO);
+ 		select.addFrom(STRATUM);
+ 		select.addConditions(STRATUM.SURVEY_ID.eq(surveyId));
+		Insert<Record> insert = create
+				.insertInto(table, table.ID, table.LABEL)
+				.select(select);
+		insert.execute();
 	}
 	
 }

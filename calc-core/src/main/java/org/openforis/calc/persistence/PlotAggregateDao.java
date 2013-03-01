@@ -1,7 +1,6 @@
 package org.openforis.calc.persistence;
 
 import static org.jooq.impl.Factory.*;
-import static org.openforis.calc.persistence.PlotFactDao.*;
 import static org.openforis.calc.persistence.jooq.Tables.*;
 
 import java.util.List;
@@ -18,9 +17,9 @@ import org.openforis.calc.model.AoiHierarchyMetadata;
 import org.openforis.calc.model.ObservationUnitMetadata;
 import org.openforis.calc.model.SurveyMetadata;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
-import org.openforis.calc.persistence.jooq.rolap.AggregateTable;
 import org.openforis.calc.persistence.jooq.rolap.FactTable;
 import org.openforis.calc.persistence.jooq.rolap.PlotAoiStratumAggregateTable;
+import org.openforis.calc.persistence.jooq.rolap.PlotFactTable;
 import org.openforis.calc.persistence.jooq.tables.Aoi;
 import org.openforis.calc.persistence.jooq.tables.AoiStratumView;
 import org.openforis.calc.persistence.jooq.tables.PlotExpansionFactor;
@@ -60,7 +59,7 @@ public class PlotAggregateDao extends JooqDaoSupport {
 	
 	@SuppressWarnings("unchecked")
 	private SelectQuery createAggregateSelect(PlotAoiStratumAggregateTable agg) {
-		FactTable fact = agg.getFactTable();
+		PlotFactTable fact = agg.getFactTable();
 		ObservationUnitMetadata unit = fact.getObservationUnitMetadata();
 		SurveyMetadata survey = unit.getSurveyMetadata();
 		List<AoiHierarchyMetadata> aoiHierarchies = survey.getAoiHierarchyMetadata();
@@ -79,7 +78,7 @@ public class PlotAggregateDao extends JooqDaoSupport {
 		select.addSelect(s.STRATUM_ID);
 		select.addSelect(coalesce(fact.COUNT.sum(), 1).as(agg.AGG_COUNT.getName()));
 		select.addSelect(coalesce(fact.COUNT.sum(), 0).as(fact.COUNT.getName()));
-		select.addSelect(coalesce(fact.COUNT.sum().mul(e.EXP_FACTOR), s.AREA).as(EST_AREA_COLUMN_NAME) );
+		select.addSelect(coalesce(fact.COUNT.sum().mul(e.EXP_FACTOR), s.AREA).as(fact.EST_AREA.getName()) );
 		
 		
 		select.addFrom(fact);

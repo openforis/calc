@@ -21,6 +21,8 @@ public class PlotFactTable extends FactTable {
 	private static final long serialVersionUID = 1L;
 	
 	// Fixed dimensions
+	public final TableField<Record, Integer> CLUSTER_ID = 
+			createFixedDimensionField("cluster_id");
 	public final TableField<Record, Integer> PLOT_ID = 
 			createFixedDimensionField("plot_id");
 	public final TableField<Record, Integer> STRATUM_ID = 

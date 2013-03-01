@@ -15,7 +15,7 @@ import org.openforis.calc.model.SurveyMetadata;
  * @author M. Togna
  *
  */
-public class PlotCubeGenerator extends CubeGenerator {
+public class PlotCubeGenerator extends RolapCubeGenerator {
 
 	PlotCubeGenerator(RolapSchemaGenerator schemaGenerator, ObservationUnitMetadata unit) {
 		super(schemaGenerator, unit);

@@ -23,7 +23,7 @@ import org.openforis.calc.model.VariableMetadata;
  * @author M. Togna
  *
  */
-public abstract class CubeGenerator {
+public abstract class RolapCubeGenerator {
 	
 	private static final String MDX_NUMERIC = "Numeric";
 	private static final String MDX_SUM_AGGREGATOR = "sum";
@@ -46,7 +46,7 @@ public abstract class CubeGenerator {
 	// OUT
 	private Cube cube;
 	
-	CubeGenerator(RolapSchemaGenerator schemaGenerator, ObservationUnitMetadata unit) {
+	RolapCubeGenerator(RolapSchemaGenerator schemaGenerator, ObservationUnitMetadata unit) {
 		this.schemaGenerator = schemaGenerator;
 		this.dbSchema = schemaGenerator.getDatabaseSchema();
 		this.unit = unit;
@@ -64,12 +64,14 @@ public abstract class CubeGenerator {
 		initMeasures();
 
 		cube = new Cube();
-		cube.cache = true;
+		cube.cache = false; // TODO set to true in prod
 		cube.enabled = true;
 		cube.visible = true;
 		cube.name = toMdxName(unit.getObsUnitName());
 		cube.fact = mondrianTable;
-		mondrianTable.aggTables = mondrianAggregateTables.toArray(new AggTable[0]);
+		if ( !mondrianAggregateTables.isEmpty() ) {
+			mondrianTable.aggTables = mondrianAggregateTables.toArray(new AggTable[0]);
+		}
 		cube.dimensions = dimensionUsages.toArray(new CubeDimension[0]);
 		cube.measures = measures.toArray(new Measure[0]);
 		
@@ -84,7 +86,7 @@ public abstract class CubeGenerator {
 		return dbSchema;
 	}
 	
-	public static CubeGenerator createInstance(RolapSchemaGenerator schemaGen, ObservationUnitMetadata unit) {
+	public static RolapCubeGenerator createInstance(RolapSchemaGenerator schemaGen, ObservationUnitMetadata unit) {
 		Type unitType = unit.getObsUnitTypeEnum();
 		switch (unitType) {
 		case PLOT:
@@ -110,10 +112,6 @@ public abstract class CubeGenerator {
 	
 	protected abstract void initMeasures();
 	
-//		List<DimensionUsage> dims = createUserDefinedDimensionUsages();
-//		// Add AOIs and Fixed Dimensions
-//		List<Measure> measures = createUserDefinedMeasures();		
-
 	protected final void initUserDefinedDimensionUsages() {
 		createUserDefinedDimensionUsages(unit, dimensionUsages);
 	}

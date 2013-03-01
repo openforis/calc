@@ -5,11 +5,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import mondrian.olap.MondrianDef;
 import mondrian.olap.MondrianDef.Cube;
 import mondrian.olap.MondrianDef.Dimension;
 import mondrian.olap.MondrianDef.Hierarchy;
 import mondrian.olap.MondrianDef.Level;
 import mondrian.olap.MondrianDef.Schema;
+import mondrian.olap.MondrianDef.View;
 
 import org.openforis.calc.model.AoiHierarchyLevelMetadata;
 import org.openforis.calc.model.AoiHierarchyMetadata;
@@ -34,7 +36,7 @@ public class RolapSchemaGenerator {
 	private String stratumCaption;
 	private String sesuDimensionName;
 	private String sesuCaption;
-	private String dbSchema;
+	private String databaseSchema;
 	private SurveyMetadata survey;
 	private Collection<ObservationUnitMetadata> units;
 
@@ -56,7 +58,7 @@ public class RolapSchemaGenerator {
 		stratumCaption = "Stratum";
 		sesuDimensionName = "SESU";
 		sesuCaption = "Socioeconomic SU";
-		dbSchema = surveyMetadata.getSurveyName();
+		databaseSchema = surveyMetadata.getSurveyName();
 	}
 	
 	public SurveyMetadata getSurveyMetadata() {
@@ -84,11 +86,11 @@ public class RolapSchemaGenerator {
 	}
 
 	public String getDatabaseSchema() {
-		return dbSchema;
+		return databaseSchema;
 	}
 
 	public void setDatabaseSchema(String name) {
-		this.dbSchema = name;
+		this.databaseSchema = name;
 	}
 
 	static String getVariableDimensionName(VariableMetadata var) {
@@ -152,9 +154,6 @@ public class RolapSchemaGenerator {
 		level.uniqueMembers = false;
 		level.levelType = "Regular";
 		level.hideMemberIf = "Never";
-		if ( table instanceof HierarchicalDimensionTable ) {
-			level.parentColumn = ((HierarchicalDimensionTable) table).PARENT_ID.getName();
-		}
 		return level;
 	}
 
@@ -170,12 +169,15 @@ public class RolapSchemaGenerator {
 		return dim;
 	}
 
-	private static Hierarchy createHierarchy(String name, Level... levels) {
+	private Hierarchy createHierarchy(String name, String table, Level... levels) {
 		Hierarchy hier = new Hierarchy();
 		hier.name = name;
 		hier.visible = true;
-		hier.hasAll = false;
+		hier.hasAll = false;		
 		hier.levels = levels;
+		if ( table != null ) {
+			hier.relation = new MondrianDef.Table(databaseSchema, table, null, null);
+		}
 		return hier;
 	}
 	
@@ -195,20 +197,37 @@ public class RolapSchemaGenerator {
 		String name = toMdxName(hierMetadata.getAoiHierarchyName());
 		List<AoiHierarchyLevelMetadata> levelMeta = hierMetadata.getLevelMetadata();
 		Level[] levels = new Level[levelMeta.size()];
+		AoiDimensionTable lastTable = null; 
 		for (int i = 0; i < levelMeta.size(); i++) {
 			AoiHierarchyLevelMetadata level = levelMeta.get(i);
-			AoiDimensionTable table = new AoiDimensionTable(dbSchema, level);
-			String levelName = toMdxName(table.getName());
+			AoiDimensionTable table = new AoiDimensionTable(databaseSchema, level, lastTable);
+			String tableName = table.getName();
+			String levelName = toMdxName(tableName);
 			levels[i] = createDimensionHierarchyLevel(table, levelName);
+			levels[i].table = null;
+			levels[i].column = table.getDenormalizedIdColumn(); 
+			levels[i].nameColumn = table.getDenormalizedLabelColumn();
 			dbTables.add(table);
+			lastTable = table;
 		}
-		return createHierarchy(name, levels); 
+		Hierarchy hier = createHierarchy(name, null, levels);
+		hier.relation = createJoinView(lastTable);
+		return hier;
+	}
+
+	private View createJoinView(HierarchicalDimensionTable leafTable) {
+		View view = new MondrianDef.View();
+		MondrianDef.SQL mondrianSql = new MondrianDef.SQL();
+		mondrianSql.dialect = "generic";
+		mondrianSql.cdata = leafTable.getDenormalizedSelectSql();
+		view.selects = new MondrianDef.SQL[] {mondrianSql};
+		return view;
 	}
 
 	// SAMPLING DESIGN DIMENSIONS
 	
 	private void initSamplingDesignDimensions() {
-		ClusterDimensionTable clusterTable = new ClusterDimensionTable(dbSchema);
+		ClusterDimensionTable clusterTable = new ClusterDimensionTable(databaseSchema, survey.getSurveyId());
 		dbTables.add(clusterTable);
 		initStratumDimension();
 		initSesuDimension(clusterTable);
@@ -216,12 +235,13 @@ public class RolapSchemaGenerator {
 	}
 
 	private void initStratumDimension() {
-		StratumDimensionTable stratumTable = new StratumDimensionTable(dbSchema);
+		StratumDimensionTable stratumTable = new StratumDimensionTable(databaseSchema, survey.getSurveyId());
 		dbTables.add(stratumTable);
 		
-		String stratumMdxName = toMdxName(stratumTable.getName());
+		String tableName = stratumTable.getName();
+		String stratumMdxName = toMdxName(tableName);
 		Level level = createDimensionHierarchyLevel(stratumTable, stratumMdxName);
-		Hierarchy hier = createHierarchy(stratumMdxName, level);
+		Hierarchy hier = createHierarchy(stratumMdxName, tableName, level);
 		Dimension dim = createDimension(stratumMdxName, stratumCaption, hier);
 		sharedDimensions.add(dim);
 	}
@@ -229,12 +249,12 @@ public class RolapSchemaGenerator {
 	private void initSesuDimension(DimensionTable table) {
 		String mdxName = toMdxName(table.getName());
 		Level level = createDimensionHierarchyLevel(table, mdxName);
-		Hierarchy hier = createHierarchy(mdxName, level);
+		Hierarchy hier = createHierarchy(mdxName, table.getName(), level);
 		Dimension dim = createDimension(sesuDimensionName, sesuCaption, hier);
 		sharedDimensions.add(dim);
 	}
 	
-	private void initPlotDimensions(DimensionTable clusterTable) {
+	private void initPlotDimensions(ClusterDimensionTable clusterTable) {
 		for ( ObservationUnitMetadata unit : units ) {
 			if ( unit.isPlot() ) {
 				Hierarchy hier = createPlotDimensionHierarchy(unit, clusterTable);
@@ -245,28 +265,16 @@ public class RolapSchemaGenerator {
 		}
 	}
 
-	private Hierarchy createPlotDimensionHierarchy(ObservationUnitMetadata unit, DimensionTable clusterTable) {
+	private Hierarchy createPlotDimensionHierarchy(ObservationUnitMetadata unit, ClusterDimensionTable clusterTable) {
 		String name = toMdxName(unit.getObsUnitName());
+		Level clusterLevel = createDimensionHierarchyLevel(clusterTable, toMdxName(clusterTable.getName()));
+		PlotDimensionTable plotTable = new PlotDimensionTable(databaseSchema, unit, clusterTable);
+		dbTables.add(plotTable);
+		Level plotLevel = createDimensionHierarchyLevel(plotTable, toMdxName(plotTable.getName()));
 		// TODO exclude cluster if not clustered design
-		Level clusterLevel = createClusterDimensionHierarchyLevel(unit, clusterTable);
-		Level plotLevel = createPlotDimensionHierarchyLevel(unit);
-		return createHierarchy(name, clusterLevel, plotLevel);
-	}
-
-	private Level createClusterDimensionHierarchyLevel(ObservationUnitMetadata unit, DimensionTable clusterTable) {
-		String tableName = clusterTable.getName();
-		String levelName = toMdxName(tableName);
-		Level level = createDimensionHierarchyLevel(clusterTable, levelName);
-		return level;
-	}
-
-	private Level createPlotDimensionHierarchyLevel(ObservationUnitMetadata unit) {
-		PlotDimensionTable table = new PlotDimensionTable(dbSchema, unit);
-		String tableName = table.getName();
-		String levelName = toMdxName(tableName);
-		dbTables.add(table);
-		Level level = createDimensionHierarchyLevel(table, levelName);
-		return level;
+		Hierarchy hier = createHierarchy(name, null, clusterLevel, plotLevel);
+		hier.relation = createJoinView(plotTable);
+		return hier;
 	}
 
 	// USER-DEFINED DIMENSIONS
@@ -287,11 +295,12 @@ public class RolapSchemaGenerator {
 
 	private Hierarchy createUserDefinedDimensionHierarchy(VariableMetadata var) {
 		String name = getVariableDimensionName(var);
-		DimensionTable table = new CategoryDimensionTable(dbSchema, var);
-		String levelName = toMdxName(table.getName());
+		DimensionTable table = new CategoryDimensionTable(databaseSchema, var);
+		String tableName = table.getName();
+		String levelName = toMdxName(tableName);
 		Level level = createDimensionHierarchyLevel(table, levelName);
 		dbTables.add(table);
-		return createHierarchy(name, level);
+		return createHierarchy(name, tableName, level);
 	}
 
 	////////// CUBES
@@ -300,7 +309,7 @@ public class RolapSchemaGenerator {
 		List<Cube> cubes = new ArrayList<Cube>();
 		for ( ObservationUnitMetadata unit : units ) {
 			if( unit.isPlot() || unit.hasNumericVariablesForAnalysis() ) {
-				CubeGenerator cubeGen = CubeGenerator.createInstance(this, unit);
+				RolapCubeGenerator cubeGen = RolapCubeGenerator.createInstance(this, unit);
 				Cube cube = cubeGen.createCube();
 				cubes.add(cube);
 				dbTables.addAll(cubeGen.getDatabaseTables());

@@ -13,8 +13,8 @@ public class PlotDimensionTable extends HierarchicalDimensionTable {
 	private static final long serialVersionUID = 1L;
 
 	private ObservationUnitMetadata observationUnitMetadata;
-	PlotDimensionTable(String schema, ObservationUnitMetadata unit) {
-		super(schema, unit.getObsUnitName());
+	PlotDimensionTable(String schema, ObservationUnitMetadata unit, ClusterDimensionTable parentTable) {
+		super(schema, unit.getObsUnitName(), parentTable);
 		this.observationUnitMetadata = unit;
 	}
 

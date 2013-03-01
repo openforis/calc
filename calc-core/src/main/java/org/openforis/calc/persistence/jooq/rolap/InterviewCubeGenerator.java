@@ -9,7 +9,7 @@ import org.openforis.calc.model.ObservationUnitMetadata;
  * @author G. Miceli
  *
  */
-public class InterviewCubeGenerator extends CubeGenerator {
+public class InterviewCubeGenerator extends RolapCubeGenerator {
 
 	InterviewCubeGenerator(RolapSchemaGenerator schemaGenerator, ObservationUnitMetadata unit) {
 		super(schemaGenerator, unit);
