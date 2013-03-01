@@ -8,14 +8,13 @@ import org.openforis.calc.model.ObservationUnitMetadata;
  * @author M. Togna
  *
  */
-// TODO remove record classes?
-public class PlotDimensionTable extends HierarchicalDimensionTable<PlotDimensionRecord> {
+public class PlotDimensionTable extends HierarchicalDimensionTable {
 
 	private static final long serialVersionUID = 1L;
 
 	private ObservationUnitMetadata observationUnitMetadata;
 	PlotDimensionTable(String schema, ObservationUnitMetadata unit) {
-		super(schema, unit.getObsUnitName(), PlotDimensionRecord.class);
+		super(schema, unit.getObsUnitName());
 		this.observationUnitMetadata = unit;
 	}
 

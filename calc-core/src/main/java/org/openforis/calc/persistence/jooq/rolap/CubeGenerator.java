@@ -33,7 +33,7 @@ public abstract class CubeGenerator {
 	
 	// OUT
 	private Cube cube;
-	private List<RolapTable<?>> tables;
+	private List<RolapTable> tables;
 	
 	// TEMP
 	private FactTable factTable;
@@ -44,7 +44,7 @@ public abstract class CubeGenerator {
 	}
 	
 	Cube createCube() {
-		tables = new ArrayList<RolapTable<?>>();
+		tables = new ArrayList<RolapTable>();
 
 		initCube();
 		initFactTable();
@@ -53,7 +53,7 @@ public abstract class CubeGenerator {
 		return cube;
 	}
 
-	List<RolapTable<?>> getDatabaseTables() {
+	List<RolapTable> getDatabaseTables() {
 		return tables;
 	}
 	
@@ -114,7 +114,7 @@ public abstract class CubeGenerator {
 		return cols;
 	}
 
-	protected void addTable(RolapTable<?> table) {
+	protected void addTable(RolapTable table) {
 		tables.add(table);
 	}
 

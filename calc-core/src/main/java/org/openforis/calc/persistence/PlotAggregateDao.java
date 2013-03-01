@@ -1,5 +1,6 @@
 package org.openforis.calc.persistence;
 
+import static org.jooq.impl.Factory.*;
 import static org.openforis.calc.persistence.PlotFactDao.*;
 import static org.openforis.calc.persistence.jooq.Tables.*;
 
@@ -8,18 +9,16 @@ import java.util.List;
 import org.jooq.Field;
 import org.jooq.Insert;
 import org.jooq.JoinType;
+import org.jooq.Record;
 import org.jooq.SelectQuery;
 import org.jooq.TableField;
 import org.jooq.impl.Factory;
-
-import static org.jooq.impl.Factory.*;
 import org.openforis.calc.model.AoiHierarchyLevelMetadata;
 import org.openforis.calc.model.AoiHierarchyMetadata;
 import org.openforis.calc.model.ObservationUnitMetadata;
 import org.openforis.calc.model.SurveyMetadata;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
 import org.openforis.calc.persistence.jooq.rolap.AggregateTable;
-import org.openforis.calc.persistence.jooq.rolap.FactRecord;
 import org.openforis.calc.persistence.jooq.rolap.FactTable;
 import org.openforis.calc.persistence.jooq.tables.Aoi;
 import org.openforis.calc.persistence.jooq.tables.AoiStratumView;
@@ -47,7 +46,7 @@ public class PlotAggregateDao extends JooqDaoSupport {
 	public void populate(AggregateTable aggTable, int aoiLevelRank) {
 		
 		SelectQuery select = createAggregateSelect(aggTable, aoiLevelRank);
-		Insert<FactRecord> insert = createInsertFromSelect(aggTable, select);
+		Insert<Record> insert = createInsertFromSelect(aggTable, select);
 		
 		getLog().debug("Inserting aggregate data:");
 		getLog().debug(insert);
@@ -131,8 +130,8 @@ public class PlotAggregateDao extends JooqDaoSupport {
 	@SuppressWarnings("unchecked")
 	private void addDimensionsToSelect(AggregateTable agg, AoiHierarchyMetadata aoiHierarchy, SelectQuery select) {
 		FactTable fact = agg.getFactTable();
-		List<TableField<FactRecord, Integer>> srcDimensions = agg.getDimensionFields();
-		for ( TableField<FactRecord, Integer> f : srcDimensions ) {
+		List<TableField<Record, Integer>> srcDimensions = agg.getDimensionFields();
+		for ( TableField<Record, Integer> f : srcDimensions ) {
 			String fieldName = f.getName();
 			// TODO take from field name
 			if ( !aoiHierarchy.hasLevel(fieldName) && !fieldName.equals("stratum_id") ) {

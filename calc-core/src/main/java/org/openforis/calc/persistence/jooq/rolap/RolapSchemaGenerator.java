@@ -40,7 +40,7 @@ public class RolapSchemaGenerator {
 	
 	private Schema schema;
 	private List<Dimension> sharedDimensions;
-	private List<RolapTable<?>> dbTables;
+	private List<RolapTable> dbTables;
 
 	
 	public RolapSchemaGenerator(SurveyMetadata surveyMetadata) {
@@ -111,7 +111,7 @@ public class RolapSchemaGenerator {
 
 	synchronized
 	public RolapSchemaDefinition generateDefinition() {
-		dbTables = new ArrayList<RolapTable<?>>();
+		dbTables = new ArrayList<RolapTable>();
 		
 		initSchema();
 		initSharedDimensions();

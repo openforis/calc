@@ -56,7 +56,7 @@ public class MondrianApiMockup {
 		System.out.println(defn.getMondrianSchemaXml());
 		
 		System.out.println("TABLES ---------------------------------------");
-		for (RolapTable<?> dt : defn.getDatabaseTables()) {
+		for (RolapTable dt : defn.getDatabaseTables()) {
 			System.out.println(dt.getClass().getSimpleName()+"\t\t"+ dt.getName());
 		}
 	}

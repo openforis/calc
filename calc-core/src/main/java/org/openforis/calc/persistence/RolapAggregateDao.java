@@ -1,9 +1,9 @@
 package org.openforis.calc.persistence;
 import org.jooq.Insert;
+import org.jooq.Record;
 import org.jooq.SelectQuery;
 import org.openforis.calc.model.ObservationUnitMetadata;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
-import org.openforis.calc.persistence.jooq.rolap.FactRecord;
 import org.openforis.calc.persistence.jooq.rolap.FactTable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +29,7 @@ public abstract class RolapAggregateDao extends JooqDaoSupport {
 		ObservationUnitMetadata unit = table.getObservationUnitMetadata();
 		
 		SelectQuery select = createFactSelect(unit);
-		Insert<FactRecord> insert = createInsertFromSelect(table, select);
+		Insert<Record> insert = createInsertFromSelect(table, select);
 		
 		getLog().debug("Inserting fact data:");
 		getLog().debug(insert);
@@ -49,7 +49,7 @@ public abstract class RolapAggregateDao extends JooqDaoSupport {
 //			FactTable aoiStratumFact = getAggFactTable(prevLevelTable, tableName, prevLevels);
 //			// generate select
 //			SelectQuery aggAoiStratumSelect = getAggAoiStratumSelect(plotFactTable, levelName, levelRank, prevLevels, surveyId );
-//			Insert<FactRecord> insert = getInsertFromSelect(aoiStratumFact, aggAoiStratumSelect);
+//			Insert<Record> insert = getInsertFromSelect(aoiStratumFact, aggAoiStratumSelect);
 //			if ( getLog().isDebugEnabled() ) {
 //				getLog().debug(tableName + " insert:");
 //				getLog().debug(insert.toString());
@@ -65,7 +65,7 @@ public abstract class RolapAggregateDao extends JooqDaoSupport {
 //		FactTable aoiStratumPlotFact = getAggAoiStratumPlotFactTable(plotFactTable);
 //		
 //		SelectQuery aoiStratumSelect = getAggAoiStratumPlotFactSelect(create, plotFactTable, aoiStratumPlotFact);
-//		Insert<FactRecord> aoiStratumInsert = getAggAoiStratumPlotFactInsert(create, aoiStratumPlotFact, aoiStratumSelect);
+//		Insert<Record> aoiStratumInsert = getAggAoiStratumPlotFactInsert(create, aoiStratumPlotFact, aoiStratumSelect);
 //		
 //		if ( getLog().isDebugEnabled() ) {
 //			getLog().debug("Aoi Stratum aggregate plot fact table insert:");
@@ -133,9 +133,9 @@ public abstract class RolapAggregateDao extends JooqDaoSupport {
 //			
 //			childAoi = a;
 //		}
-//		List<TableField<FactRecord, Integer>> srcDimensions = table.getDimensionFields();
-//		List<TableField<FactRecord, Integer>> dimensions = new ArrayList<TableField<FactRecord,Integer>>(srcDimensions.size());
-//		for ( TableField<FactRecord, Integer> f : srcDimensions ) {
+//		List<TableField<Record, Integer>> srcDimensions = table.getDimensionFields();
+//		List<TableField<Record, Integer>> dimensions = new ArrayList<TableField<Record,Integer>>(srcDimensions.size());
+//		for ( TableField<Record, Integer> f : srcDimensions ) {
 //			String fieldName = f.getName();
 //			if(! (aoiNames.contains(fieldName) || ArrayUtils.contains( PLOT_DIMENSIONS, fieldName) ) ){
 //				select.addSelect(Factory.coalesce(f, -1).as(fieldName));
@@ -150,14 +150,14 @@ public abstract class RolapAggregateDao extends JooqDaoSupport {
 //	@SuppressWarnings("unchecked")
 //	@Deprecated
 //	private SelectQuery getAggAoiStratumPlotFactSelect(Factory create, FactTable plotFactTable, FactTable aoiStratumPlotFact) {
-//		Table<FactRecord> p = plotFactTable.as("p");
+//		Table<Record> p = plotFactTable.as("p");
 //		PlotSectionAoi psa = PSA.as("psa");
 //		PlotExpansionFactor pef = PEF.as("pef");
 //		
 //		SelectQuery select = create.selectQuery();
-//		List<TableField<FactRecord, Integer>> dims = aoiStratumPlotFact.getDimensionFields();
+//		List<TableField<Record, Integer>> dims = aoiStratumPlotFact.getDimensionFields();
 //		List<Field<?>> stratumDims = new ArrayList<Field<?>>();
-//		for ( TableField<FactRecord, Integer> f : dims ) {
+//		for ( TableField<Record, Integer> f : dims ) {
 //			if(!A.AOI_ID.getName().equals(f.getName())){
 //				stratumDims.add( p.getField(f.getName()) );
 //			}

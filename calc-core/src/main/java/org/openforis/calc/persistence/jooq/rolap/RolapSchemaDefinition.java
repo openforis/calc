@@ -13,9 +13,9 @@ import mondrian.olap.MondrianDef.Schema;
  */
 public class RolapSchemaDefinition {
 	private Schema mondrianSchema;
-	private List<RolapTable<?>> databaseTables;
+	private List<RolapTable> databaseTables;
 	
-	RolapSchemaDefinition(Schema mondrianSchema, List<RolapTable<?>> tables) {
+	RolapSchemaDefinition(Schema mondrianSchema, List<RolapTable> tables) {
 		this.mondrianSchema = mondrianSchema;
 		this.databaseTables = tables;
 	}
@@ -28,7 +28,7 @@ public class RolapSchemaDefinition {
 		return databaseTables.get(0).getSchema().getName();
 	}
 	
-	public List<RolapTable<?>> getDatabaseTables() {
+	public List<RolapTable> getDatabaseTables() {
 		return Collections.unmodifiableList(databaseTables);
 	}
 }

@@ -43,8 +43,8 @@ public class RolapSchemaDao extends JooqDaoSupport {
 	}
 	
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void createTables(List<RolapTable<?>> tables) {
-		for (RolapTable<?> table : tables) {
+	public void createTables(List<RolapTable> tables) {
+		for (RolapTable table : tables) {
 			dllGenerator.createTable(table);
 		}
 	}

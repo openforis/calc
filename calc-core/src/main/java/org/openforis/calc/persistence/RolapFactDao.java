@@ -1,8 +1,8 @@
 package org.openforis.calc.persistence;
 import org.jooq.Insert;
+import org.jooq.Record;
 import org.jooq.SelectQuery;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
-import org.openforis.calc.persistence.jooq.rolap.FactRecord;
 import org.openforis.calc.persistence.jooq.rolap.FactTable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +26,7 @@ public abstract class RolapFactDao extends JooqDaoSupport {
 	synchronized
 	public void populate(FactTable table) {
 		SelectQuery select = createFactSelect(table);
-		Insert<FactRecord> insert = createInsertFromSelect(table, select);
+		Insert<Record> insert = createInsertFromSelect(table, select);
 		
 		getLog().debug("Inserting fact data:");
 		getLog().debug(insert);

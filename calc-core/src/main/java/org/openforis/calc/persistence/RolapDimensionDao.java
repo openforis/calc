@@ -6,13 +6,13 @@ package org.openforis.calc.persistence;
 import static org.openforis.calc.persistence.jooq.Tables.*;
 
 import org.jooq.Insert;
+import org.jooq.Record;
 import org.jooq.SelectQuery;
 import org.jooq.impl.Factory;
 import org.openforis.calc.model.AoiHierarchyLevelMetadata;
 import org.openforis.calc.model.AoiHierarchyMetadata;
 import org.openforis.calc.model.VariableMetadata;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
-import org.openforis.calc.persistence.jooq.rolap.AoiDimensionRecord;
 import org.openforis.calc.persistence.jooq.rolap.AoiDimensionTable;
 import org.openforis.calc.persistence.jooq.rolap.CategoryDimensionTable;
 import org.openforis.calc.persistence.jooq.tables.AoiHierarchy;
@@ -91,7 +91,7 @@ public class RolapDimensionDao extends JooqDaoSupport {
 					.and( h.SURVEY_ID.eq(surveyId) ) 
 				);
 		
-		Insert<AoiDimensionRecord> insert = create
+		Insert<Record> insert = create
 			.insertInto( table , table.ID, table.CODE, table.LABEL, table.PARENT_ID )
 			.select( select );
 		

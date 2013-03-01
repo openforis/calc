@@ -68,15 +68,15 @@ public class RolapService extends CalcService {
 		rsg.setDatabaseSchema(targetDatabaseSchema);
 		
 		RolapSchemaDefinition defn = rsg.generateDefinition();
-		List<RolapTable<?>> tables = defn.getDatabaseTables();
+		List<RolapTable> tables = defn.getDatabaseTables();
 		
 		rolapSchemaDao.createTables(tables);
 		
 		populateTables(tables);
 	}
 	
-	private void populateTables(List<RolapTable<?>> tables) {
-		for (RolapTable<?> table : tables) {
+	private void populateTables(List<RolapTable> tables) {
+		for (RolapTable table : tables) {
 			if ( table instanceof AoiDimensionTable ) {
 				rolapDimensionDao.populate((AoiDimensionTable) table);
 			} else if ( table instanceof CategoryDimensionTable ) {

@@ -113,7 +113,7 @@ public class DdlGenerator {
 
 	private boolean isPrimarykey(Field<?> field, UpdatableTableImpl<?> jooqTable) {
 		if ( jooqTable instanceof RolapTable ) {
-			return ((RolapTable<?>) jooqTable).ID.equals(field);
+			return ((RolapTable) jooqTable).ID.equals(field);
 		} else {
 			UniqueKey<?> mainKey = jooqTable.getMainKey();
 			return mainKey.getFields().contains(field);

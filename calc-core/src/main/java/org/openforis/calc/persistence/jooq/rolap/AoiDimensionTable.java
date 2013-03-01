@@ -8,14 +8,14 @@ import org.openforis.calc.model.AoiHierarchyLevelMetadata;
  * @author M. Togna
  *
  */
-public class AoiDimensionTable extends HierarchicalDimensionTable<AoiDimensionRecord> {
+public class AoiDimensionTable extends HierarchicalDimensionTable {
 
 	private static final long serialVersionUID = 1L;
 
 	private AoiHierarchyLevelMetadata aoiHierarchyLevelMetadata;
 	
 	AoiDimensionTable(String schema, AoiHierarchyLevelMetadata level) {
-		super(schema, level.getAoiHierarchyLevelName(), AoiDimensionRecord.class);
+		super(schema, level.getAoiHierarchyLevelName());
 		this.aoiHierarchyLevelMetadata = level;
 	}
 	

@@ -3,12 +3,15 @@
  */
 package org.openforis.calc.persistence.jooq.rolap;
 
+import static org.jooq.impl.SQLDataType.*;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.jooq.Record;
 import org.jooq.TableField;
 import org.jooq.impl.SQLDataType;
 import org.openforis.calc.model.ObservationUnitMetadata;
@@ -19,18 +22,18 @@ import org.openforis.calc.persistence.jooq.GeodeticCoordinateDataType;
  * @author G. Miceli
  * 
  */
-public class FactTable extends RolapTable<FactRecord> {
+public class FactTable extends RolapTable {
 
 	private static final long serialVersionUID = 1L;
 
-	private List<TableField<FactRecord, Integer>> dimensionFields;
-	private List<TableField<FactRecord, BigDecimal>> measureFields;
-	private List<TableField<FactRecord, Object>> pointFields;
+	private List<TableField<Record, Integer>> dimensionFields;
+	private List<TableField<Record, BigDecimal>> measureFields;
+	private List<TableField<Record, Object>> pointFields;
 	
 	private List<String> measures;
 	private List<String> dimensions;
 
-	public final org.jooq.TableField<FactRecord, Integer> COUNT = createField("cnt", org.jooq.impl.SQLDataType.INTEGER, this);
+	public final TableField<Record, Integer> COUNT = createField("cnt", INTEGER, this);
 
 	private ObservationUnitMetadata observationUnitMetadata;
 	
@@ -41,12 +44,12 @@ public class FactTable extends RolapTable<FactRecord> {
 
 	protected FactTable(String schema, String name, ObservationUnitMetadata unit, List<String> measures,
 			List<String> dimensions, List<String> points) {
-		super(schema, name, FactRecord.class);
+		super(schema, name);
 		this.observationUnitMetadata = unit;
 		
-		measureFields = new ArrayList<TableField<FactRecord, BigDecimal>>();
-		pointFields = new ArrayList<TableField<FactRecord, Object>>();
-		dimensionFields = new ArrayList<TableField<FactRecord, Integer>>();
+		measureFields = new ArrayList<TableField<Record, BigDecimal>>();
+		pointFields = new ArrayList<TableField<Record, Object>>();
+		dimensionFields = new ArrayList<TableField<Record, Integer>>();
 
 		setMeasures(measures);
 		setDimensions(dimensions);
@@ -61,7 +64,7 @@ public class FactTable extends RolapTable<FactRecord> {
 	private void setPoints(List<String> points) {
 		if ( points != null ) {
 			for ( String point : points ) {
-				TableField<FactRecord, Object> field = createField(point, new GeodeticCoordinateDataType(), this);
+				TableField<Record, Object> field = createField(point, new GeodeticCoordinateDataType(), this);
 				pointFields.add(field);
 			}
 		}
@@ -72,7 +75,7 @@ public class FactTable extends RolapTable<FactRecord> {
 		if ( dimensions != null ) {
 			for ( String dimension : dimensions ) {
 				if ( getField(dimension) == null ) {
-					TableField<FactRecord, Integer> field = createField(dimension, SQLDataType.INTEGER, this);
+					TableField<Record, Integer> field = createField(dimension, SQLDataType.INTEGER, this);
 					dimensionFields.add(field);
 				}
 			}
@@ -84,22 +87,22 @@ public class FactTable extends RolapTable<FactRecord> {
 		if ( measures != null ) {
 			for ( String measure : measures ) {
 				if ( getField(measure) == null ) {
-					TableField<FactRecord, BigDecimal> field = createField(measure, SQLDataType.NUMERIC, this);
+					TableField<Record, BigDecimal> field = createField(measure, SQLDataType.NUMERIC, this);
 					measureFields.add(field);
 				}
 			}
 		}
 	}
 
-	public List<TableField<FactRecord, Integer>> getDimensionFields() {
+	public List<TableField<Record, Integer>> getDimensionFields() {
 		return Collections.unmodifiableList(dimensionFields);
 	}
 
-	public List<TableField<FactRecord, BigDecimal>> getMeasureFields() {
+	public List<TableField<Record, BigDecimal>> getMeasureFields() {
 		return Collections.unmodifiableList(measureFields);
 	}
 
-	public List<TableField<FactRecord, Object>> getPointFields() {
+	public List<TableField<Record, Object>> getPointFields() {
 		return Collections.unmodifiableList(pointFields);
 	}
 
