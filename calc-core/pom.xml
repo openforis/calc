@@ -15,7 +15,6 @@
 	<properties>
 		<jooq-codegen.target.directory>${project.build.directory}/generated-sources/jooq</jooq-codegen.target.directory>
 		<jooq-codegen.target.packageName>org.openforis.calc.persistence.jooq</jooq-codegen.target.packageName>
-		<jaxb-codegen.target.directory>${project.build.directory}/generated-sources/jaxb</jaxb-codegen.target.directory>
 	</properties>
 		
 	<build>
@@ -98,26 +97,6 @@
 					</generator>
 				</configuration>
 			</plugin>
-			<!-- Generate JAXB classes for Mondrian MDX Schema generation -->
-<!--     		<plugin> -->
-<!--                 <groupId>org.codehaus.mojo</groupId> -->
-<!--                 <artifactId>jaxb2-maven-plugin</artifactId> -->
-<!--                 <version>1.5</version> -->
-<!--                 <executions> -->
-<!--                     <execution> -->
-<!--                         <id>xjc</id> -->
-<!--                         <goals> -->
-<!--                             <goal>xjc</goal> -->
-<!--                         </goals> -->
-<!--                     </execution> -->
-<!--                 </executions> -->
-<!-- 				<configuration> -->
-<!--                    	<schemaFiles>mondrian.xsd</schemaFiles> -->
-<!--                     <packageName>org.openforis.calc.olap.schema.base</packageName>  -->
-<!--                    	<staleFile>${project.build.directory}/jaxb2/.schema1XjcStaleFlag</staleFile> -->
-<!--                    	<outputDirectory>${jaxb-codegen.target.directory}</outputDirectory> -->
-<!--                	</configuration>                         -->
-<!--             </plugin>		 -->
 <!-- 			<plugin> -->
 <!-- 				<groupId>org.apache.maven.plugins</groupId> -->
 <!-- 				<artifactId>maven-surefire-plugin</artifactId> -->
@@ -165,7 +144,6 @@
 						<configuration>
 							<sources>
 								<source>${jooq-codegen.target.directory}</source>
-								<source>${jaxb-codegen.target.directory}</source>
 							</sources>
 						</configuration>
 					</execution>
@@ -332,11 +310,6 @@
 <!-- 	      <groupId>org.geotoolkit</groupId> -->
 <!-- 	      <artifactId>geotk-epsg</artifactId> -->
 <!-- 	    </dependency> -->
-		<!--  Jaxb -->
-		<dependency>
-	  		<groupId>javax.xml.bind</groupId>
-	  		<artifactId>jaxb-api</artifactId>
-	  	</dependency>
 		<dependency>
 			<groupId>org.apache.ddlutils</groupId>
 			<artifactId>ddlutils</artifactId>

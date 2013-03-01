@@ -1,16 +1,10 @@
 package org.openforis.calc.service;
 
-import java.io.OutputStream;
 import java.util.List;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 
 import org.openforis.calc.model.ObservationUnit.Type;
 import org.openforis.calc.model.ObservationUnitMetadata;
 import org.openforis.calc.model.SurveyMetadata;
-import org.openforis.calc.olap.schema.Schema;
 import org.openforis.calc.persistence.PlotAggregateDao;
 import org.openforis.calc.persistence.PlotFactDao;
 import org.openforis.calc.persistence.RolapDimensionDao;
@@ -194,15 +188,15 @@ public class RolapService extends CalcService {
 //		out.close();
 //	}
 
-	public void marshalOlapSchema(Schema schema, OutputStream out)  {
-		try {
-			JAXBContext context = JAXBContext.newInstance(Schema.class);
-			Marshaller marshaller = context.createMarshaller();
-			marshaller.marshal(schema, out);
-		} catch (JAXBException e) {
-			throw new RuntimeException(e);
-		}
-	}
+//	public void marshalOlapSchema(Schema schema, OutputStream out)  {
+//		try {
+//			JAXBContext context = JAXBContext.newInstance(Schema.class);
+//			Marshaller marshaller = context.createMarshaller();
+//			marshaller.marshal(schema, out);
+//		} catch (JAXBException e) {
+//			throw new RuntimeException(e);
+//		}
+//	}
 
 //	public Schema generateSchema(String surveyName) {
 //		SurveyMetadata surveyMetadata = getSurveyMetadata(surveyName);
