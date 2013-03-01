@@ -6,7 +6,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import mondrian.olap.MondrianDef;
+import mondrian.olap.MondrianDef.AggTable;
 import mondrian.olap.MondrianDef.Cube;
+import mondrian.olap.MondrianDef.CubeDimension;
 import mondrian.olap.MondrianDef.DimensionUsage;
 import mondrian.olap.MondrianDef.Measure;
 import mondrian.olap.MondrianDef.Table;
@@ -25,113 +28,139 @@ public abstract class CubeGenerator {
 	private static final String MDX_NUMERIC = "Numeric";
 	private static final String MDX_SUM_AGGREGATOR = "sum";
 //	private static final String FORMAT_STRING_0_DECIMAL = "#,###";
+
 	private static final String FORMAT_STRING_5_DECIMAL = "#,###.#####";
 	// IN
 	private String dbSchema;
 	private ObservationUnitMetadata unit;
-	
+	private RolapSchemaGenerator schemaGenerator;
+
+	// TEMP
+	private List<RolapTable> databaseTables;
+	private FactTable databaseFactTable;
+	private List<DimensionUsage> dimensionUsages;
+	private List<Measure> measures;
+	private Table mondrianTable;
+	private List<AggTable> mondrianAggregateTables;
+
 	// OUT
 	private Cube cube;
-	private List<RolapTable> tables;
 	
-	// TEMP
-	private FactTable factTable;
-	
-	CubeGenerator(String dbSchema, ObservationUnitMetadata unit) {
-		this.dbSchema = dbSchema;
+	CubeGenerator(RolapSchemaGenerator schemaGenerator, ObservationUnitMetadata unit) {
+		this.schemaGenerator = schemaGenerator;
+		this.dbSchema = schemaGenerator.getDatabaseSchema();
 		this.unit = unit;
 	}
 	
 	Cube createCube() {
-		tables = new ArrayList<RolapTable>();
-
-		initCube();
+		databaseTables = new ArrayList<RolapTable>();
+		
+		dimensionUsages = new ArrayList<MondrianDef.DimensionUsage>();
+		measures = new ArrayList<MondrianDef.Measure>();
+		mondrianAggregateTables = new ArrayList<MondrianDef.AggTable>();
+		
 		initFactTable();
-		initAggregateTables();
+		initDimensionUsages();
+		initMeasures();
+
+		cube = new Cube();
+		cube.cache = true;
+		cube.enabled = true;
+		cube.visible = true;
+		cube.name = toMdxName(unit.getObsUnitName());
+		cube.fact = mondrianTable;
+		mondrianTable.aggTables = mondrianAggregateTables.toArray(new AggTable[0]);
+		cube.dimensions = dimensionUsages.toArray(new CubeDimension[0]);
+		cube.measures = measures.toArray(new Measure[0]);
 		
 		return cube;
 	}
 
 	List<RolapTable> getDatabaseTables() {
-		return tables;
+		return databaseTables;
 	}
 	
 	public String getDatabaseSchema() {
 		return dbSchema;
 	}
 	
-	public static CubeGenerator createInstance(String dbSchema, ObservationUnitMetadata unit) {
+	public static CubeGenerator createInstance(RolapSchemaGenerator schemaGen, ObservationUnitMetadata unit) {
 		Type unitType = unit.getObsUnitTypeEnum();
 		switch (unitType) {
 		case PLOT:
-			return new PlotCubeGenerator(dbSchema, unit);
+			return new PlotCubeGenerator(schemaGen, unit);
 		case SPECIMEN:
-			return new SpecimenCubeGenerator(dbSchema, unit);
+			return new SpecimenCubeGenerator(schemaGen, unit);
 		case INTERVIEW:
-			return new InterviewCubeGenerator(dbSchema, unit);
+			return new InterviewCubeGenerator(schemaGen, unit);
 		default:
 			throw new UnsupportedOperationException();
 		}
 	}
+
+	/**
+	 * Create fact table and aggregates. Should add new databases tables
+	 * with addDatabaseTable and Mondrian defs with setMondrianTable and
+	 * addMondrianAggregateTable
+	 * @return
+	 */
+	protected abstract void initFactTable();
+
+	protected abstract void initDimensionUsages();
 	
-	private void initCube() {
-		cube = new Cube();
-		cube.name = toMdxName(unit.getObsUnitName());
-		cube.cache = true;
-		cube.enabled = true;
-		cube.visible = true;
+	protected abstract void initMeasures();
+	
+//		List<DimensionUsage> dims = createUserDefinedDimensionUsages();
+//		// Add AOIs and Fixed Dimensions
+//		List<Measure> measures = createUserDefinedMeasures();		
+
+	protected final void initUserDefinedDimensionUsages() {
+		createUserDefinedDimensionUsages(unit, dimensionUsages);
 	}
 
-	private void initFactTable() {
-		List<DimensionUsage> dimUsages = getDimensionUsages();
-		List<Measure> measures = getMeasures();		
-		List<String> dimColumns = extractDimensionColumns(dimUsages);
-		List<String> measureColumns = extractMeasureColumns(measures);
-				
-		factTable = createFactTable(measureColumns, dimColumns);
-		
-		cube.fact = new Table();
-		
-		addTable(factTable);
-	}
-
-	protected abstract FactTable createFactTable(List<String> measureColumns, List<String> dimColumns);
-
-	private static List<String> extractDimensionColumns(List<DimensionUsage> dimUsages) {
-		List<String> dimColumns = new ArrayList<String>();
-		for (DimensionUsage dim : dimUsages) {
-			dimColumns.add( dim.foreignKey );
-		}
-		return dimColumns;
-	}
-
-	private static List<String> extractMeasureColumns(List<Measure> measures) {
-		List<String> cols = new ArrayList<String>();
-		for (Measure m : measures) {
-			cols.add( m.column );
-		}
-		return cols;
-	}
-
-	protected void addTable(RolapTable table) {
-		tables.add(table);
-	}
-
-	protected List<DimensionUsage> getDimensionUsages() {
-		return getVariableDimensions(unit);
+	protected void addDatabaseTable(RolapTable table) {
+		databaseTables.add(table);
 	}
 	
-	protected List<Measure> getMeasures() {
-		List<Measure> measures = new ArrayList<Measure>();
+	protected void setDatabaseFactTable(FactTable table) {
+		if ( databaseFactTable != null ) {
+			throw new IllegalStateException("Fact table set more than once");
+		}
+		databaseFactTable = table;
+		addDatabaseTable(table);
+	}
+	
+	protected void setMondrianTable(MondrianDef.Table table) {
+		mondrianTable = table;
+	}
+	
+	protected FactTable getDatabaseFactTable() {
+		return databaseFactTable;
+	};
+//	protected Table getMondrianTable() {
+//		return mondrianTable;
+//	}
+	
+	protected void addMondrianAggegateTable(MondrianDef.AggTable table) {
+		mondrianAggregateTables.add(table);
+	}
 
+	protected void addDimensionUsage(DimensionUsage dim) {
+		dimensionUsages.add(dim);
+	}
+
+	protected void addMeasure(Measure m) {
+		measures.add(m);
+	}
+	
+	protected final void initUserDefinedMeasures() {
 		Collection<VariableMetadata> vars = unit.getVariableMetadata();
 		for ( VariableMetadata var : vars ) {
 			if( var.isForAnalysis() && var.isNumeric() ) {
 				Measure m = createVariableMeasure(var);
-				measures.add(m);
+				addMeasure(m);
 			}
 		}
-		return measures;
 	}
 	
 	private Measure createVariableMeasure(VariableMetadata var) {
@@ -154,31 +183,25 @@ public abstract class CubeGenerator {
 
 	/**
 	 * Recursively get dimensions derived from categorical variables
-	 * marked forAnalysis.
+	 * marked forAnalysis.  
 	 * 
 	 * @param unit
 	 * @return
 	 */
-	private static List<DimensionUsage> getVariableDimensions(ObservationUnitMetadata unit) {
-		List<DimensionUsage> dims = new ArrayList<DimensionUsage>();
+	private void createUserDefinedDimensionUsages(ObservationUnitMetadata unit, List<DimensionUsage> dims) {
 		ObservationUnitMetadata parentUnit = unit.getObsUnitParent();
 		if ( parentUnit != null ) {
-			dims.addAll( getVariableDimensions(parentUnit) );
+			createUserDefinedDimensionUsages(parentUnit, dims);
 		}
 		Collection<VariableMetadata> vars = unit.getVariableMetadata();
 		for ( VariableMetadata var : vars ) {
 			if( var.isForAnalysis() && var.isCategorical() ) {
-				DimensionUsage dim = createVariableDimensionUsage(var);
-				dims.add(dim);
+				String source = RolapSchemaGenerator.getVariableDimensionName(var);
+				String varName = var.getVariableName();
+				DimensionUsage dim = createDimensionUsage(source, varName);
+				addDimensionUsage(dim);
 			}
 		}
-		return dims;
-	}
-
-	private static DimensionUsage createVariableDimensionUsage(VariableMetadata var) {
-		String source = RolapSchemaGenerator.getVariableDimensionName(var);
-		String varName = var.getVariableName();
-		return createDimensionUsage(source, varName);
 	}
 
 	protected static DimensionUsage createDimensionUsage(String source, String foreignKey) {
@@ -191,16 +214,18 @@ public abstract class CubeGenerator {
 		return dim;
 	}
 
+	protected RolapSchemaGenerator getSchemaGenerator() {
+		return schemaGenerator;
+	}
 
 	public ObservationUnitMetadata getObservationUnitMetadata() {
 		return unit;
 	}
 
-	protected FactTable getFactTable() {
-		return factTable;
-	}
-	
-	protected void initAggregateTables() {
-		// Implement in subclasses if needed
+	protected MondrianDef.Table createMondrianTable(String name) {
+		MondrianDef.Table table = new MondrianDef.Table();
+		table.schema = getDatabaseSchema();
+		table.name = name;
+		return table;
 	}
 }

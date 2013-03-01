@@ -20,6 +20,7 @@ import org.openforis.calc.model.SurveyMetadata;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
 import org.openforis.calc.persistence.jooq.rolap.AggregateTable;
 import org.openforis.calc.persistence.jooq.rolap.FactTable;
+import org.openforis.calc.persistence.jooq.rolap.PlotAoiStratumAggregateTable;
 import org.openforis.calc.persistence.jooq.tables.Aoi;
 import org.openforis.calc.persistence.jooq.tables.AoiStratumView;
 import org.openforis.calc.persistence.jooq.tables.PlotExpansionFactor;
@@ -43,9 +44,10 @@ public class PlotAggregateDao extends JooqDaoSupport {
 	@SuppressWarnings("unchecked")
 	@Transactional
 	synchronized
-	public void populate(AggregateTable aggTable, int aoiLevelRank) {
+	public void populate(PlotAoiStratumAggregateTable aggTable) {
 		
-		SelectQuery select = createAggregateSelect(aggTable, aoiLevelRank);
+		// TODO
+		SelectQuery select = createAggregateSelect(aggTable);
 		Insert<Record> insert = createInsertFromSelect(aggTable, select);
 		
 		getLog().debug("Inserting aggregate data:");
@@ -57,15 +59,16 @@ public class PlotAggregateDao extends JooqDaoSupport {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private SelectQuery createAggregateSelect(AggregateTable agg, int aoiLevelRank) {
+	private SelectQuery createAggregateSelect(PlotAoiStratumAggregateTable agg) {
 		FactTable fact = agg.getFactTable();
 		ObservationUnitMetadata unit = fact.getObservationUnitMetadata();
 		SurveyMetadata survey = unit.getSurveyMetadata();
 		List<AoiHierarchyMetadata> aoiHierarchies = survey.getAoiHierarchyMetadata();
 		// TODO multiple AOI hierarchies
 		AoiHierarchyMetadata aoiHierarchy = aoiHierarchies.get(0);
-		AoiHierarchyLevelMetadata aoiLevel = aoiHierarchy.getLevelMetadata().get(aoiLevelRank-1);
-		String aoiLevelName = aoiLevel.getAoiHierarchyLevelName();
+		
+		String aoiLevelName = agg.getAoiLevel();
+		AoiHierarchyLevelMetadata aoiLevel = aoiHierarchy.getLevelMetadata(aoiLevelName);
 		
 		Factory create = getJooqFactory();
 		PlotExpansionFactor e = PLOT_EXPANSION_FACTOR.as("e");
@@ -96,8 +99,9 @@ public class PlotAggregateDao extends JooqDaoSupport {
 		select.addGroupBy(s.AREA);
 		select.addGroupBy(e.EXP_FACTOR);
 		select.addGroupBy(s.STRATUM_ID);
-		addAoisToSelect(aoiHierarchy, aoiLevelRank, s, select);
-		addDimensionsToSelect(agg, aoiHierarchy, select);
+		
+		addAoisToSelect(aoiHierarchy, aoiLevel.getAoiHierarchyLevelRank(), s, select);
+		addUserDefinedDimensionsToSelect(agg, select);
 		
 		return select;
 	}
@@ -111,7 +115,6 @@ public class PlotAggregateDao extends JooqDaoSupport {
 			Aoi a = AOI.as("a"+i);
 			int aoiLevelId = level.getAoiHierarchyLevelId();
 			String levelName = level.getAoiHierarchyLevelName();
-//			aoiNames.add(levelName);
 			
 			select.addSelect( a.AOI_ID.as(levelName) );
 			
@@ -128,17 +131,13 @@ public class PlotAggregateDao extends JooqDaoSupport {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void addDimensionsToSelect(AggregateTable agg, AoiHierarchyMetadata aoiHierarchy, SelectQuery select) {
+	private void addUserDefinedDimensionsToSelect(PlotAoiStratumAggregateTable agg, SelectQuery select) {
 		FactTable fact = agg.getFactTable();
-		List<TableField<Record, Integer>> srcDimensions = agg.getDimensionFields();
+		List<TableField<Record, Integer>> srcDimensions = fact.getUserDefinedDimensionFields();
 		for ( TableField<Record, Integer> f : srcDimensions ) {
 			String fieldName = f.getName();
-			// TODO take from field name
-			if ( !aoiHierarchy.hasLevel(fieldName) && !fieldName.equals("stratum_id") ) {
-				Field<?> srcFld = fact.getField(fieldName);
-				select.addSelect(Factory.coalesce(srcFld, -1).as(fieldName));
-				select.addGroupBy(srcFld);
-			}
+			select.addSelect(Factory.coalesce(f, -1).as(fieldName));
+			select.addGroupBy(f);
 		}
 	}
 }

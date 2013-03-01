@@ -1,6 +1,6 @@
 package org.openforis.calc.persistence.jooq.rolap;
 
-import java.util.List;
+import mondrian.olap.MondrianDef;
 
 import org.openforis.calc.model.ObservationUnitMetadata;
 
@@ -11,12 +11,29 @@ import org.openforis.calc.model.ObservationUnitMetadata;
  */
 public class InterviewCubeGenerator extends CubeGenerator {
 
-	InterviewCubeGenerator(String dbSchema, ObservationUnitMetadata unit) {
-		super(dbSchema, unit);
+	InterviewCubeGenerator(RolapSchemaGenerator schemaGenerator, ObservationUnitMetadata unit) {
+		super(schemaGenerator, unit);
 	}
 
 	@Override
-	protected FactTable createFactTable(List<String> measureColumns, List<String> dimColumns) {
-		return new InterviewFactTable(getDatabaseSchema(), getObservationUnitMetadata(), measureColumns, dimColumns);
+	protected void initFactTable() {
+		// Database
+		InterviewFactTable dbTable = new InterviewFactTable(getDatabaseSchema(), getObservationUnitMetadata());
+		setDatabaseFactTable(dbTable);
+//		initAggregateTables(dbTable);
+		
+		// Mondrian
+		MondrianDef.Table table = createMondrianTable(dbTable.getName());
+		setMondrianTable(table);
+	}
+
+	@Override
+	protected void initDimensionUsages() {
+		initUserDefinedDimensionUsages();
+	}
+
+	@Override
+	protected void initMeasures() {
+		initUserDefinedMeasures();
 	}
 }

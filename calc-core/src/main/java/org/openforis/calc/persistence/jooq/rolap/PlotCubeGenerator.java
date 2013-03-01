@@ -1,15 +1,13 @@
 package org.openforis.calc.persistence.jooq.rolap;
 
-import static org.openforis.calc.persistence.jooq.Tables.*;
-
-import java.util.Arrays;
 import java.util.List;
 
-import mondrian.olap.MondrianDef.DimensionUsage;
-import mondrian.olap.MondrianDef.Measure;
+import mondrian.olap.MondrianDef;
+import mondrian.olap.MondrianDef.AggName;
 
+import org.openforis.calc.model.AoiHierarchyMetadata;
 import org.openforis.calc.model.ObservationUnitMetadata;
-import org.openforis.calc.persistence.jooq.tables.GroundPlotView;
+import org.openforis.calc.model.SurveyMetadata;
 
 /**
  * 
@@ -19,50 +17,61 @@ import org.openforis.calc.persistence.jooq.tables.GroundPlotView;
  */
 public class PlotCubeGenerator extends CubeGenerator {
 
-//	private static final String[] FIXED_DIM_COLS = new String[] { 
-//    	STRATUM.STRATUM_ID.getName(), 
-//    	CLUSTER.CLUSTER_ID.getName(), 
-//    	PLOT_SECTION.PLOT_SECTION_ID.getName() 
-//    };
-	
-	PlotCubeGenerator(String dbSchema, ObservationUnitMetadata unit) {
-		super(dbSchema, unit);
+	PlotCubeGenerator(RolapSchemaGenerator schemaGenerator, ObservationUnitMetadata unit) {
+		super(schemaGenerator, unit);
 	}
 
 	@Override
-	protected List<DimensionUsage> getDimensionUsages() {
-		List<DimensionUsage> dims = super.getDimensionUsages();
-		// TODO dynamic stratum and AOI dimension names
-		dims.add(createDimensionUsage("Stratum", "stratum_id"));
-		dims.add(createDimensionUsage("Plot", "plot_id"));
-		dims.add(createDimensionUsage("AOI", "country"));
-		dims.add(createDimensionUsage("AOI", "region"));
-		dims.add(createDimensionUsage("AOI", "district"));
+	protected void initFactTable() {
+		// Database
+		PlotFactTable dbTable = new PlotFactTable(getDatabaseSchema(), getObservationUnitMetadata());
+		setDatabaseFactTable(dbTable);
+		initAggregateTables(dbTable);
+		
+		// Mondrian
+		MondrianDef.Table table = createMondrianTable(dbTable.getName());
+		setMondrianTable(table);
+	}
+
+	private void initAggregateTables(PlotFactTable factTable) {
+		// Database
+		PlotAoiStratumAggregateTable dbTable = new PlotAoiStratumAggregateTable(factTable, "district");
+		addDatabaseTable(dbTable);
+		
+		// Mondrian
+		AggName aggName = new AggName();
 		// TODO
-		return dims;
+		addMondrianAggegateTable(aggName);
 	}
 	
 	@Override
-	protected List<Measure> getMeasures() {
-		GroundPlotView G = GROUND_PLOT_VIEW;
-		// TODO use Field objects for column names
-		return Arrays.asList(
-				createMeasure(G.PLOT_LOCATION_DEVIATION.getName(), "Location deviation"),
-				createMeasure("est_area", "Est. area"),
-				createMeasure("cnt", "Count")
-				);
-	}
-	
-	@Override
-	protected void initAggregateTables() {
-		FactTable factTable = getFactTable();
-		String rootInfix = "district_stratum";
-		AggregateTable rootAggTable = factTable.createAggregateTable(rootInfix, "plot_id");
-		addTable(rootAggTable);
+	protected void initDimensionUsages() {
+		PlotFactTable fact = (PlotFactTable) getDatabaseFactTable();
+		
+		// Main key dimensions
+		addDimensionUsage(createDimensionUsage("Stratum", fact.STRATUM_ID.getName()));
+		addDimensionUsage(createDimensionUsage("Plot", fact.PLOT_ID.getName()));
+		
+		// AOI dimensions
+		ObservationUnitMetadata unit = getObservationUnitMetadata();
+		SurveyMetadata survey = unit.getSurveyMetadata();
+		List<AoiHierarchyMetadata> aoi = survey.getAoiHierarchyMetadata();
+		// TODO multiple hierarchies (one dimension per AOI hierarchy)
+		AoiHierarchyMetadata hier = aoi.get(0);		
+		String aoiDimName = RolapSchemaGenerator.toMdxName(hier.getAoiHierarchyName());
+		String fk = hier.getMaxLevel().getAoiHierarchyLevelName();
+		addDimensionUsage(createDimensionUsage(aoiDimName, fk));
+		
+		// User-defined dimensions 
+		initUserDefinedDimensionUsages();
 	}
 
 	@Override
-	protected FactTable createFactTable(List<String> measureColumns, List<String> dimColumns) {
-		return new PlotFactTable(getDatabaseSchema(), getObservationUnitMetadata(), measureColumns, dimColumns);
+	protected void initMeasures() {
+		PlotFactTable fact = (PlotFactTable) getDatabaseFactTable();
+		addMeasure(createMeasure(fact.PLOT_LOCATION_DEVIATION.getName(), "Location deviation"));
+		addMeasure(createMeasure(fact.EST_AREA.getName(), "Est. area"));
+		addMeasure(createMeasure(fact.COUNT.getName(), "Count"));
+		initUserDefinedMeasures();
 	}
 }

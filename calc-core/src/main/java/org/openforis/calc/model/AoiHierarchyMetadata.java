@@ -58,11 +58,15 @@ public class AoiHierarchyMetadata extends AoiHierarchy {
 	}
 
 	public boolean hasLevel(String name) {
+		return getLevelMetadata(name) != null;
+	}
+
+	public AoiHierarchyLevelMetadata getLevelMetadata(String  name) {
 		for (AoiHierarchyLevelMetadata level : levels) {
 			if ( level.getAoiHierarchyLevelName().equals(name) ) {
-				return true;
+				return level;
 			}
 		}
-		return false;
+		return null;
 	}
 }

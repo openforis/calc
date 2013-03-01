@@ -2,6 +2,7 @@ package org.openforis.calc.persistence.jooq.rolap;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import mondrian.olap.MondrianDef.Cube;
@@ -26,20 +27,23 @@ public class RolapSchemaGenerator {
 //	private static final String GRANT_ACCESS_NONE = "none";
     private static final String TYPE_STANDARD_DIMENSION = "StandardDimension";
 
+    // IN
 	private String adminRole;
 	private String userRole;
-	private String aoiDimensionName;
 	private String aoiCaption;
 	private String stratumCaption;
 	private String sesuDimensionName;
 	private String sesuCaption;
 	private String dbSchema;
-	
 	private SurveyMetadata survey;
 	private Collection<ObservationUnitMetadata> units;
-	
-	private Schema schema;
+
+	// TEMP
+	private List<Dimension> aoiDimensions;
 	private List<Dimension> sharedDimensions;
+
+	// OUT
+	private Schema schema;
 	private List<RolapTable> dbTables;
 
 	
@@ -48,7 +52,6 @@ public class RolapSchemaGenerator {
 		this.units = surveyMetadata.getObservationMetadata();
 		adminRole = "ROLE_ADMIN";
 		userRole = "ROLE_USER";
-		aoiDimensionName = "AOI";
 		aoiCaption = "Areas of Interest";
 		stratumCaption = "Stratum";
 		sesuDimensionName = "SESU";
@@ -76,12 +79,8 @@ public class RolapSchemaGenerator {
 		this.userRole = userRole;
 	}
 	
-	public String getAoiDimensionName() {
-		return aoiDimensionName;
-	}
-
-	public void setAoiDimensionName(String aoiDimensionName) {
-		this.aoiDimensionName = aoiDimensionName;
+	public List<Dimension> getAoiDimensions() {
+		return Collections.unmodifiableList(aoiDimensions);
 	}
 
 	public String getDatabaseSchema() {
@@ -112,6 +111,7 @@ public class RolapSchemaGenerator {
 	synchronized
 	public RolapSchemaDefinition generateDefinition() {
 		dbTables = new ArrayList<RolapTable>();
+		aoiDimensions = new ArrayList<Dimension>();
 		
 		initSchema();
 		initSharedDimensions();
@@ -135,7 +135,7 @@ public class RolapSchemaGenerator {
 		initSamplingDesignDimensions();
 		// TODO species dimension
 //		initSpeciesDimension();
-		initVariableDimensions();
+		initUserDefinedDimensions();
 		schema.dimensions = sharedDimensions.toArray(new Dimension[0]);
 	}
 
@@ -178,15 +178,17 @@ public class RolapSchemaGenerator {
 		hier.levels = levels;
 		return hier;
 	}
+	
 	// AOI DIMENSIONS
 	
 	private void initAoiDimensions() {
 		List<AoiHierarchyMetadata> hiers = survey.getAoiHierarchyMetadata();
-		AoiHierarchyMetadata hierMetadata = hiers.get(0);
-		Hierarchy hier = createAoiDimensionHierarchy(hierMetadata);
-		Dimension dim = createDimension(aoiDimensionName, aoiCaption, hier);
-		// TODO Multiple AOI hierarchies
-		sharedDimensions.add(dim);
+		for (AoiHierarchyMetadata hierMetadata : hiers) {
+			Hierarchy hier = createAoiDimensionHierarchy(hierMetadata);
+			String aoiDimensionName = hier.getName();
+			Dimension dim = createDimension(aoiDimensionName, aoiCaption, hier);		
+			sharedDimensions.add(dim);
+		}
 	}
 
 	private Hierarchy createAoiDimensionHierarchy(AoiHierarchyMetadata hierMetadata) {
@@ -267,15 +269,15 @@ public class RolapSchemaGenerator {
 		return level;
 	}
 
-	// VARIABLE DIMENSIONS
+	// USER-DEFINED DIMENSIONS
 	
-	private void initVariableDimensions() {
+	private void initUserDefinedDimensions() {
 		for ( ObservationUnitMetadata obsUnitMetadata : units ) {
 			Collection<VariableMetadata> vars = obsUnitMetadata.getVariableMetadata();
 			for ( VariableMetadata var : vars ) {
 				if ( var.isCategorical() && var.isForAnalysis() ) {
 					String name = getVariableDimensionName(var);
-					Hierarchy hier = createVariableDimensionHierarchy(var);
+					Hierarchy hier = createUserDefinedDimensionHierarchy(var);
 					Dimension dim = createDimension(name, var.getVariableLabel(), hier);
 					sharedDimensions.add(dim);
 				}
@@ -283,7 +285,7 @@ public class RolapSchemaGenerator {
 		}
 	}
 
-	private Hierarchy createVariableDimensionHierarchy(VariableMetadata var) {
+	private Hierarchy createUserDefinedDimensionHierarchy(VariableMetadata var) {
 		String name = getVariableDimensionName(var);
 		DimensionTable table = new CategoryDimensionTable(dbSchema, var);
 		String levelName = toMdxName(table.getName());
@@ -298,7 +300,7 @@ public class RolapSchemaGenerator {
 		List<Cube> cubes = new ArrayList<Cube>();
 		for ( ObservationUnitMetadata unit : units ) {
 			if( unit.isPlot() || unit.hasNumericVariablesForAnalysis() ) {
-				CubeGenerator cubeGen = CubeGenerator.createInstance(dbSchema, unit);
+				CubeGenerator cubeGen = CubeGenerator.createInstance(this, unit);
 				Cube cube = cubeGen.createCube();
 				cubes.add(cube);
 				dbTables.addAll(cubeGen.getDatabaseTables());

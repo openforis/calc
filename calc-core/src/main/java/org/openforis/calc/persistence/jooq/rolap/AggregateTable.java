@@ -1,34 +1,32 @@
 package org.openforis.calc.persistence.jooq.rolap;
 
-import java.util.List;
+import java.math.BigDecimal;
 
 import org.jooq.Record;
 import org.jooq.TableField;
 
-import static org.jooq.impl.SQLDataType.*;
 /**
  * 
  * @author G. Miceli
+ * @author M. Togna
  *
  */
-public class AggregateTable extends FactTable {
+public abstract class AggregateTable<T extends FactTable> extends FactTable {
 
 	private static final long serialVersionUID = 1L;
-	private FactTable factTable;
+	private T factTable;
 
-	public final TableField<Record, Integer> AGG_COUNT = createField("agg_cnt", INTEGER);
+	public final TableField<Record, BigDecimal> AGG_COUNT = createFixedMeasureField("agg_cnt");
 
-	AggregateTable(FactTable factTable, 
-			String infix, List<String> measures, List<String> dimensions) {
+	AggregateTable(T factTable, String infix) {
 		super(
 				factTable.getSchema().getName(), 
 				factTable.getObservationUnitMetadata().getAggregateTableName(infix), 
-				factTable.getObservationUnitMetadata(), 
-				measures, dimensions);
+				factTable.getObservationUnitMetadata());
 		this.factTable = factTable;
 	}
 	
-	public FactTable getFactTable() {
+	public T getFactTable() {
 		return factTable;
 	}
 }

@@ -2,17 +2,15 @@ package org.openforis.calc.service;
 
 import java.util.List;
 
-import org.openforis.calc.model.ObservationUnit.Type;
-import org.openforis.calc.model.ObservationUnitMetadata;
 import org.openforis.calc.model.SurveyMetadata;
 import org.openforis.calc.persistence.PlotAggregateDao;
 import org.openforis.calc.persistence.PlotFactDao;
 import org.openforis.calc.persistence.RolapDimensionDao;
 import org.openforis.calc.persistence.RolapSchemaDao;
-import org.openforis.calc.persistence.jooq.rolap.AggregateTable;
 import org.openforis.calc.persistence.jooq.rolap.AoiDimensionTable;
 import org.openforis.calc.persistence.jooq.rolap.CategoryDimensionTable;
-import org.openforis.calc.persistence.jooq.rolap.FactTable;
+import org.openforis.calc.persistence.jooq.rolap.PlotAoiStratumAggregateTable;
+import org.openforis.calc.persistence.jooq.rolap.PlotFactTable;
 import org.openforis.calc.persistence.jooq.rolap.RolapSchemaDefinition;
 import org.openforis.calc.persistence.jooq.rolap.RolapSchemaGenerator;
 import org.openforis.calc.persistence.jooq.rolap.RolapTable;
@@ -75,25 +73,12 @@ public class RolapService extends CalcService {
 				rolapDimensionDao.populate((AoiDimensionTable) table);
 			} else if ( table instanceof CategoryDimensionTable ) {
 				rolapDimensionDao.populate((CategoryDimensionTable) table);
-			} else if ( table instanceof FactTable ) {
-				FactTable factTable = (FactTable) table;
-				ObservationUnitMetadata unit = factTable.getObservationUnitMetadata();
-				Type unitType = unit.getObsUnitTypeEnum();
-				switch (unitType) {
-				case PLOT:
-					if ( table instanceof AggregateTable ) {
-						plotAggregateDao.populate((AggregateTable) factTable, 3);					
-					} else {
-						plotFactDao.populate(factTable);
-					}
-					break;
-				case SPECIMEN:
-					break;
-				case INTERVIEW:
-					break;
-				default:
-					throw new UnsupportedOperationException("Unimplement unit type "+unitType);
-				}
+			} else if ( table instanceof PlotFactTable ) {
+				PlotFactTable factTable = (PlotFactTable) table;
+				plotFactDao.populate(factTable);
+			} else if ( table instanceof PlotAoiStratumAggregateTable ) {
+				plotAggregateDao.populate((PlotAoiStratumAggregateTable) table);
+				// TODO
 			} else {
 //				throw new UnsupportedOperationException("Unknown table "+table.getClass());
 			}
