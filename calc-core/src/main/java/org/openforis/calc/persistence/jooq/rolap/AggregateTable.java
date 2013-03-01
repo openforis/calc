@@ -16,7 +16,7 @@ public class AggregateTable extends FactTable {
 	private static final long serialVersionUID = 1L;
 	private FactTable factTable;
 
-	public final TableField<Record, Integer> AGG_COUNT = createField("agg_cnt", INTEGER, this);
+	public final TableField<Record, Integer> AGG_COUNT = createField("agg_cnt", INTEGER);
 
 	AggregateTable(FactTable factTable, 
 			String infix, List<String> measures, List<String> dimensions) {
@@ -24,7 +24,7 @@ public class AggregateTable extends FactTable {
 				factTable.getSchema().getName(), 
 				factTable.getObservationUnitMetadata().getAggregateTableName(infix), 
 				factTable.getObservationUnitMetadata(), 
-				measures, dimensions, null);
+				measures, dimensions);
 		this.factTable = factTable;
 	}
 	

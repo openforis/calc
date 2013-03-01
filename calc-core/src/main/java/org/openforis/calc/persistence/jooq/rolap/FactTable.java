@@ -22,7 +22,7 @@ import org.openforis.calc.persistence.jooq.GeodeticCoordinateDataType;
  * @author G. Miceli
  * 
  */
-public class FactTable extends RolapTable {
+public abstract class FactTable extends RolapTable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -37,37 +37,19 @@ public class FactTable extends RolapTable {
 
 	private ObservationUnitMetadata observationUnitMetadata;
 	
-	FactTable(String schema, ObservationUnitMetadata unit, List<String> measures, 
-			List<String> dimensions, List<String> points) {
-		this(schema, unit.getFactTableName(), unit, measures, dimensions, points);
-	}
-
-	protected FactTable(String schema, String name, ObservationUnitMetadata unit, List<String> measures,
-			List<String> dimensions, List<String> points) {
+	FactTable(String schema, String name, ObservationUnitMetadata unit, List<String> measures, List<String> dimensions) {
 		super(schema, name);
 		this.observationUnitMetadata = unit;
 		
 		measureFields = new ArrayList<TableField<Record, BigDecimal>>();
-		pointFields = new ArrayList<TableField<Record, Object>>();
 		dimensionFields = new ArrayList<TableField<Record, Integer>>();
 
 		setMeasures(measures);
 		setDimensions(dimensions);
-		setPoints(points);
 	}
 
 	public ObservationUnitMetadata getObservationUnitMetadata() {
 		return observationUnitMetadata;
-	}
-
-	// TODO move to PlotFact as constant fields
-	private void setPoints(List<String> points) {
-		if ( points != null ) {
-			for ( String point : points ) {
-				TableField<Record, Object> field = createField(point, new GeodeticCoordinateDataType(), this);
-				pointFields.add(field);
-			}
-		}
 	}
 
 	private void setDimensions(List<String> dimensions) {

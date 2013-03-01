@@ -4,7 +4,6 @@ import static org.openforis.calc.persistence.jooq.rolap.RolapSchemaGenerator.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import mondrian.olap.MondrianDef.Cube;
@@ -57,10 +56,10 @@ public abstract class CubeGenerator {
 		return tables;
 	}
 	
-	protected List<String> getPointColumns() {
-		return Collections.emptyList();
+	public String getDatabaseSchema() {
+		return dbSchema;
 	}
-
+	
 	public static CubeGenerator createInstance(String dbSchema, ObservationUnitMetadata unit) {
 		Type unitType = unit.getObsUnitTypeEnum();
 		switch (unitType) {
@@ -84,19 +83,19 @@ public abstract class CubeGenerator {
 	}
 
 	private void initFactTable() {
-//		String tableName = getName();
 		List<DimensionUsage> dimUsages = getDimensionUsages();
 		List<Measure> measures = getMeasures();		
 		List<String> dimColumns = extractDimensionColumns(dimUsages);
 		List<String> measureColumns = extractMeasureColumns(measures);
-		List<String> pointColumns = getPointColumns();
 				
-		factTable = new FactTable(dbSchema, unit, measureColumns, dimColumns, pointColumns);
+		factTable = createFactTable(measureColumns, dimColumns);
 		
 		cube.fact = new Table();
 		
 		addTable(factTable);
 	}
+
+	protected abstract FactTable createFactTable(List<String> measureColumns, List<String> dimColumns);
 
 	private static List<String> extractDimensionColumns(List<DimensionUsage> dimUsages) {
 		List<String> dimColumns = new ArrayList<String>();
@@ -193,7 +192,7 @@ public abstract class CubeGenerator {
 	}
 
 
-	protected ObservationUnitMetadata getUnit() {
+	public ObservationUnitMetadata getObservationUnitMetadata() {
 		return unit;
 	}
 

@@ -3,6 +3,7 @@
  */
 package org.openforis.calc.persistence.jooq.rolap;
 
+import org.jooq.DataType;
 import org.jooq.Record;
 import org.jooq.TableField;
 import org.jooq.impl.SchemaImpl;
@@ -26,5 +27,13 @@ public abstract class RolapTable extends UpdatableTableImpl<Record> {
 	 */
 	RolapTable(String schema, String name) {
 		super(name, new SchemaImpl(schema));
+	}
+	
+	protected <T> TableField<Record, T> createField(TableField<? extends Record, T> field, DataType<T> type) {
+		return createField(field.getName(), type);
+	}
+	
+	protected <T> TableField<Record, T> createField(String name, DataType<T> type) {
+		return createField(name, type, this);
 	}
 }

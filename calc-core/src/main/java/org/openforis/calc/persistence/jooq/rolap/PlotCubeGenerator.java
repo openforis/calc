@@ -43,15 +43,6 @@ public class PlotCubeGenerator extends CubeGenerator {
 	}
 	
 	@Override
-	protected List<String> getPointColumns() {
-		GroundPlotView G = GROUND_PLOT_VIEW;
-		return Arrays.asList(
-					G.PLOT_ACTUAL_LOCATION.getName(),
-					G.PLOT_GPS_READING.getName(),
-					G.PLOT_LOCATION.getName());
-	}
-	
-	@Override
 	protected List<Measure> getMeasures() {
 		GroundPlotView G = GROUND_PLOT_VIEW;
 		// TODO use Field objects for column names
@@ -68,5 +59,10 @@ public class PlotCubeGenerator extends CubeGenerator {
 		String rootInfix = "district_stratum";
 		AggregateTable rootAggTable = factTable.createAggregateTable(rootInfix, "plot_id");
 		addTable(rootAggTable);
+	}
+
+	@Override
+	protected FactTable createFactTable(List<String> measureColumns, List<String> dimColumns) {
+		return new PlotFactTable(getDatabaseSchema(), getObservationUnitMetadata(), measureColumns, dimColumns);
 	}
 }
