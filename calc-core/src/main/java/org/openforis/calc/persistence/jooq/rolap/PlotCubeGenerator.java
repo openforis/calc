@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mondrian.olap.MondrianDef;
-import mondrian.olap.MondrianDef.AggName;
 import mondrian.olap.MondrianDef.AggTable;
 
 import org.openforis.calc.model.AoiHierarchyMetadata;
@@ -49,9 +48,9 @@ public class PlotCubeGenerator extends RolapCubeGenerator {
 		addDatabaseTable(dbTable);
 		
 		// Mondrian
-		AggName aggName = new AggName();
+//		AggName aggName = new AggName();
 		// TODO
-		aggTables.add(aggName);
+//		aggTables.add(aggName);
 	}
 	
 	@Override
@@ -61,6 +60,7 @@ public class PlotCubeGenerator extends RolapCubeGenerator {
 		// Main key dimensions
 		addDimensionUsage(mdf.createDimensionUsage("Stratum", fact.STRATUM_ID));
 		addDimensionUsage(mdf.createDimensionUsage("Plot", fact.PLOT_ID));
+		// TODO common place for fixed dimension names
 		
 		// AOI dimensions
 		ObservationUnitMetadata unit = getObservationUnitMetadata();

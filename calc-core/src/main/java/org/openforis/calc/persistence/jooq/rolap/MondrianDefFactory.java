@@ -17,6 +17,7 @@ import mondrian.olap.MondrianDef.Schema;
 import mondrian.olap.MondrianDef.Table;
 import mondrian.olap.MondrianDef.View;
 
+import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.TableField;
 
@@ -104,15 +105,15 @@ public class MondrianDefFactory {
 		return level;
 	}
 
-	public Level createLevel(String levelName, RolapTable table, TableField<Record, Integer> idField,
-			TableField<Record, String> labelField) {
+	public Level createLevel(String levelName, RolapTable table, Field<Integer> idField,
+			Field<String> labelField) {
 		return createLevel(levelName, table.getName(), idField.getName(), labelField.getName());
 	}
 	
 	public Level createLevel(String levelName, String column, String nameColumn) {
 		return createLevel(levelName, null, column, nameColumn);
 	}
-	
+
 	public View createJoinView(HierarchicalDimensionTable leafTable, String alias) {
 		View view = new MondrianDef.View();
 		MondrianDef.SQL mondrianSql = new MondrianDef.SQL();
@@ -146,8 +147,8 @@ public class MondrianDefFactory {
 		return dim;
 	}
 
-	public DimensionUsage createDimensionUsage(String name, TableField<Record, Integer> field) {
-		return createDimensionUsage(name, field.getTable().getName(), field.getName());
+	public DimensionUsage createDimensionUsage(String source, Field<Integer> field) {
+		return createDimensionUsage(source, source, field.getName());
 	}
 	
 	public MondrianDef.Table createTable(String name) {
@@ -169,7 +170,7 @@ public class MondrianDefFactory {
 		return m;
 	}
 
-	public Measure createMeasure(TableField<Record, BigDecimal> field, String caption) {
+	public Measure createMeasure(Field<BigDecimal> field, String caption) {
 		return createMeasure(field.getName(), caption);
 	}
 	

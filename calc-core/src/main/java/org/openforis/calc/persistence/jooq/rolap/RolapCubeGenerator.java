@@ -40,7 +40,7 @@ public abstract class RolapCubeGenerator {
 	RolapCubeGenerator(RolapSchemaGenerator schemaGenerator, ObservationUnitMetadata unit) {
 		this.schemaGenerator = schemaGenerator;
 		this.databaseSchema = schemaGenerator.getDatabaseSchema();
-		mdf = schemaGenerator.getMondrianDefFactory();
+		this.mdf = schemaGenerator.getMondrianDefFactory();
 		this.unit = unit;
 	}
 	

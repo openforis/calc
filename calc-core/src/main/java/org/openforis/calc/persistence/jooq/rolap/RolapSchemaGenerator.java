@@ -48,13 +48,13 @@ public class RolapSchemaGenerator {
 	public RolapSchemaGenerator(SurveyMetadata surveyMetadata, String databaseSchema) {
 		this.survey = surveyMetadata;
 		this.units = surveyMetadata.getObservationMetadata();
-		adminRole = "ROLE_ADMIN";
-		userRole = "ROLE_USER";
-		stratumCaption = "Stratum";
-		sesuDimensionName = "SESU";
-		sesuCaption = "Socioeconomic SU";
+		this.adminRole = "ROLE_ADMIN";
+		this.userRole = "ROLE_USER";
+		this.stratumCaption = "Stratum";
+		this.sesuDimensionName = "SESU";
+		this.sesuCaption = "Socioeconomic SU";
 		this.databaseSchema = databaseSchema;
-		mdf = new MondrianDefFactory(databaseSchema);
+		this.mdf = new MondrianDefFactory(databaseSchema);
 	}
 	
 	public SurveyMetadata getSurveyMetadata() {
@@ -192,10 +192,12 @@ public class RolapSchemaGenerator {
 	}
 
 	private Hierarchy createPlotDimensionHierarchy(ObservationUnitMetadata unit, ClusterDimensionTable clusterTable) {
-		Level clusterLevel = mdf.createLevel(clusterTable.getName(), clusterTable, clusterTable.ID, clusterTable.LABEL);
+		String clusterLevelName = clusterTable.getName();
+		Level clusterLevel = mdf.createLevel(clusterLevelName, clusterTable.getDenormalizedIdColumn(), clusterTable.getDenormalizedLabelColumn());
 		PlotDimensionTable plotTable = new PlotDimensionTable(databaseSchema, unit, clusterTable);
 		dbTables.add(plotTable);
-		Level plotLevel = mdf.createLevel(plotTable.getName(), plotTable, plotTable.ID, plotTable.LABEL);
+		String plotLevelName = plotTable.getName();
+		Level plotLevel = mdf.createLevel(plotLevelName, plotTable.getDenormalizedIdColumn(), plotTable.getDenormalizedLabelColumn());
 		// TODO exclude cluster if not clustered design
 		View joinView = mdf.createJoinView(plotTable, unit.getObsUnitName());
 		Hierarchy hier = mdf.createHierarchy(unit.getObsUnitName(), joinView, clusterLevel, plotLevel);
@@ -210,7 +212,9 @@ public class RolapSchemaGenerator {
 			for ( VariableMetadata var : vars ) {
 				if ( var.isCategorical() && var.isForAnalysis() ) {
 					Hierarchy hier = createUserDefinedDimensionHierarchy(var);
-					Dimension dim = mdf.createDimension(var.getVariableName(), var.getVariableLabel(), hier);
+					String name = var.getVariableName();
+					String caption = var.getVariableLabel();
+					Dimension dim = mdf.createDimension(name, caption, hier);
 					sharedDimensions.add(dim);
 				}
 			}

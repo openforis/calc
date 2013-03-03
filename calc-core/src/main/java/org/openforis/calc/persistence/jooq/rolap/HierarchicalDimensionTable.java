@@ -13,6 +13,8 @@ import org.jooq.impl.Factory;
  */
 public abstract class HierarchicalDimensionTable extends DimensionTable {
 	private static final long serialVersionUID = 1L;
+	private static final String ID_COLUMN_SUFFIX = "_id";
+	private static final String LABEL_COLUMN_SUFFIX = "_label";
 	
 	public final org.jooq.TableField<Record, Integer> PARENT_ID = createField("parent_id", INTEGER, this);
 
@@ -42,15 +44,14 @@ public abstract class HierarchicalDimensionTable extends DimensionTable {
 	}
 
 	public String getDenormalizedIdColumn() {
-		return getName()+"_id";
+		return getName()+ID_COLUMN_SUFFIX;
 	}
 
 	public String getDenormalizedLabelColumn() {
-		return getName()+"_label";
+		return getName()+LABEL_COLUMN_SUFFIX;
 	}
 
 	public HierarchicalDimensionTable getParentTable() {
 		return parentTable;
 	}
-
 }
