@@ -1,15 +1,11 @@
 package org.openforis.calc.persistence.jooq.rolap;
 
-import static org.openforis.calc.persistence.jooq.rolap.RolapSchemaGenerator.*;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import mondrian.olap.MondrianDef;
-import mondrian.olap.MondrianDef.AggTable;
 import mondrian.olap.MondrianDef.Cube;
-import mondrian.olap.MondrianDef.CubeDimension;
 import mondrian.olap.MondrianDef.DimensionUsage;
 import mondrian.olap.MondrianDef.Measure;
 import mondrian.olap.MondrianDef.Table;
@@ -25,57 +21,39 @@ import org.openforis.calc.model.VariableMetadata;
  */
 public abstract class RolapCubeGenerator {
 	
-	private static final String MDX_NUMERIC = "Numeric";
-	private static final String MDX_SUM_AGGREGATOR = "sum";
-//	private static final String FORMAT_STRING_0_DECIMAL = "#,###";
-
-	private static final String FORMAT_STRING_5_DECIMAL = "#,###.#####";
 	// IN
-	private String dbSchema;
+	private String databaseSchema;
 	private ObservationUnitMetadata unit;
 	private RolapSchemaGenerator schemaGenerator;
 
-	// TEMP
+	// INTERNAL
 	private List<RolapTable> databaseTables;
 	private FactTable databaseFactTable;
 	private List<DimensionUsage> dimensionUsages;
 	private List<Measure> measures;
 	private Table mondrianTable;
-	private List<AggTable> mondrianAggregateTables;
+	private MondrianDefFactory mdf;
 
 	// OUT
-	private Cube cube;
+//	private Cube cube;
 	
 	RolapCubeGenerator(RolapSchemaGenerator schemaGenerator, ObservationUnitMetadata unit) {
 		this.schemaGenerator = schemaGenerator;
-		this.dbSchema = schemaGenerator.getDatabaseSchema();
+		this.databaseSchema = schemaGenerator.getDatabaseSchema();
+		mdf = schemaGenerator.getMondrianDefFactory();
 		this.unit = unit;
 	}
 	
 	Cube createCube() {
 		databaseTables = new ArrayList<RolapTable>();
-		
-		dimensionUsages = new ArrayList<MondrianDef.DimensionUsage>();
-		measures = new ArrayList<MondrianDef.Measure>();
-		mondrianAggregateTables = new ArrayList<MondrianDef.AggTable>();
+		dimensionUsages = new ArrayList<DimensionUsage>();
+		measures = new ArrayList<Measure>();
 		
 		initFactTable();
 		initDimensionUsages();
 		initMeasures();
 
-		cube = new Cube();
-		cube.cache = false; // TODO set to true in prod
-		cube.enabled = true;
-		cube.visible = true;
-		cube.name = toMdxName(unit.getObsUnitName());
-		cube.fact = mondrianTable;
-		if ( !mondrianAggregateTables.isEmpty() ) {
-			mondrianTable.aggTables = mondrianAggregateTables.toArray(new AggTable[0]);
-		}
-		cube.dimensions = dimensionUsages.toArray(new CubeDimension[0]);
-		cube.measures = measures.toArray(new Measure[0]);
-		
-		return cube;
+		return mdf.createCube(unit.getObsUnitName(), mondrianTable, dimensionUsages, measures);
 	}
 
 	List<RolapTable> getDatabaseTables() {
@@ -83,7 +61,7 @@ public abstract class RolapCubeGenerator {
 	}
 	
 	public String getDatabaseSchema() {
-		return dbSchema;
+		return databaseSchema;
 	}
 	
 	public static RolapCubeGenerator createInstance(RolapSchemaGenerator schemaGen, ObservationUnitMetadata unit) {
@@ -135,13 +113,6 @@ public abstract class RolapCubeGenerator {
 	protected FactTable getDatabaseFactTable() {
 		return databaseFactTable;
 	};
-//	protected Table getMondrianTable() {
-//		return mondrianTable;
-//	}
-	
-	protected void addMondrianAggegateTable(MondrianDef.AggTable table) {
-		mondrianAggregateTables.add(table);
-	}
 
 	protected void addDimensionUsage(DimensionUsage dim) {
 		dimensionUsages.add(dim);
@@ -155,28 +126,11 @@ public abstract class RolapCubeGenerator {
 		Collection<VariableMetadata> vars = unit.getVariableMetadata();
 		for ( VariableMetadata var : vars ) {
 			if( var.isForAnalysis() && var.isNumeric() ) {
-				Measure m = createVariableMeasure(var);
+				String variableName = var.getVariableName();
+				Measure m = mdf.createMeasure(variableName, var.getVariableLabel());
 				addMeasure(m);
 			}
 		}
-	}
-	
-	private Measure createVariableMeasure(VariableMetadata var) {
-		Measure m = createMeasure(var.getVariableName(), var.getVariableLabel());
-		// TODO other number formats and aggregators based on metadata
-		return m;
-	}
-
-	protected static Measure createMeasure(String column, String caption) {
-		Measure m = new Measure();
-		m.column = column;
-		m.name = toMdxName(m.column);
-		m.datatype = MDX_NUMERIC;
-		m.aggregator = MDX_SUM_AGGREGATOR;
-		m.caption = caption;
-		m.formatString = FORMAT_STRING_5_DECIMAL;
-		m.visible = true;
-		return m;
 	}
 
 	/**
@@ -194,22 +148,12 @@ public abstract class RolapCubeGenerator {
 		Collection<VariableMetadata> vars = unit.getVariableMetadata();
 		for ( VariableMetadata var : vars ) {
 			if( var.isForAnalysis() && var.isCategorical() ) {
-				String source = RolapSchemaGenerator.getVariableDimensionName(var);
 				String varName = var.getVariableName();
-				DimensionUsage dim = createDimensionUsage(source, varName);
+				// TODO add _id to foreign key names
+				DimensionUsage dim = mdf.createDimensionUsage(varName, varName, varName);
 				addDimensionUsage(dim);
 			}
 		}
-	}
-
-	protected static DimensionUsage createDimensionUsage(String source, String foreignKey) {
-		DimensionUsage dim = new DimensionUsage();
-		dim.source = source;
-		dim.name = dim.source;
-		dim.foreignKey = foreignKey;  // TODO add _id
-		dim.visible = true;
-		dim.highCardinality = false;
-		return dim;
 	}
 
 	protected RolapSchemaGenerator getSchemaGenerator() {
@@ -218,12 +162,5 @@ public abstract class RolapCubeGenerator {
 
 	public ObservationUnitMetadata getObservationUnitMetadata() {
 		return unit;
-	}
-
-	protected MondrianDef.Table createMondrianTable(String name) {
-		MondrianDef.Table table = new MondrianDef.Table();
-		table.schema = getDatabaseSchema();
-		table.name = name;
-		return table;
 	}
 }

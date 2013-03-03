@@ -11,8 +11,11 @@ import org.openforis.calc.model.ObservationUnitMetadata;
  */
 public class InterviewCubeGenerator extends RolapCubeGenerator {
 
+	private MondrianDefFactory mdf;
+
 	InterviewCubeGenerator(RolapSchemaGenerator schemaGenerator, ObservationUnitMetadata unit) {
 		super(schemaGenerator, unit);
+		mdf = schemaGenerator.getMondrianDefFactory();
 	}
 
 	@Override
@@ -23,7 +26,7 @@ public class InterviewCubeGenerator extends RolapCubeGenerator {
 //		initAggregateTables(dbTable);
 		
 		// Mondrian
-		MondrianDef.Table table = createMondrianTable(dbTable.getName());
+		MondrianDef.Table table = mdf.createTable(dbTable.getName());
 		setMondrianTable(table);
 	}
 

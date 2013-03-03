@@ -49,7 +49,7 @@ public class MondrianApiMockup {
 		ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
 		MetadataService metadataService = ctx.getBean(MetadataService.class);
 		SurveyMetadata surveyMetadata = metadataService.getSurveyMetadata("naforma1");
-		RolapSchemaGenerator rsg = new RolapSchemaGenerator(surveyMetadata);
+		RolapSchemaGenerator rsg = new RolapSchemaGenerator(surveyMetadata, "testschema");
 		RolapSchemaDefinition defn = rsg.generateDefinition();
 		System.out.println("SCHEMA ---------------------------------------");
 		
