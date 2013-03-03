@@ -94,25 +94,28 @@ public class PlotFactDao extends RolapFactDao {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void addVariablesToSelect(ObservationUnitMetadata unit, GroundPlotView p, SelectQuery select) {
+	private void addVariablesToSelect(ObservationUnitMetadata unit, GroundPlotView view, SelectQuery select) {
 		Collection<VariableMetadata> variables = unit.getVariableMetadata();	
 		int varIndex = 0;		
-		for ( VariableMetadata variable : variables ) {
-			if ( variable.isCategorical() && variable.isForAnalysis() ) {
-				String varName = variable.getVariableName();
+		for ( VariableMetadata var : variables ) {
+			if ( var.isCategorical() && var.isForAnalysis() ) {
+				Integer varId = var.getVariableId();
+				String varName = var.getVariableName();
 				varIndex += 1;
-				PlotCategoricalValueView plotCatValueView = PLOT_CATEGORICAL_VALUE_VIEW.as("c_" + varIndex);
+				PlotCategoricalValueView catView = PLOT_CATEGORICAL_VALUE_VIEW.as("c" + varIndex);
 	
-				select.addSelect( Factory.coalesce(plotCatValueView.CATEGORY_ID, -1).as(varName) );
+				select.addSelect( Factory.coalesce(catView.CATEGORY_ID, -1).as(varName) );
 	
 				select.addJoin(
-						plotCatValueView, 
+						catView, 
 						JoinType.LEFT_OUTER_JOIN, 
-						p.PLOT_SECTION_ID.eq(plotCatValueView.PLOT_SECTION_ID)
-							.and(plotCatValueView.VARIABLE_NAME.eq(varName)
+						view.PLOT_SECTION_ID.eq(catView.PLOT_SECTION_ID)
+							.and(catView.VARIABLE_ID.eq(varId)
 						)
 				);
 			}
+			// TODO select numeric variables (see InterviewFactDao)
+			// TODO remove unneeded joins from num and cat value views (see interview_*_value_view)
 		}
 	}
 }

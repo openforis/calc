@@ -3,8 +3,7 @@ package org.openforis.calc.persistence.jooq.rolap;
 import java.util.Collections;
 import java.util.List;
 
-import org.jooq.Record;
-import org.jooq.TableField;
+import org.jooq.Field;
 
 /**
  * 
@@ -18,7 +17,7 @@ public class PlotAoiStratumAggregateTable extends AggregateTable<PlotFactTable> 
 	
 	private static final String INFIX_SUFFIX = "_stratum";
 
-	private List<TableField<Record, Integer>> aoiFields;
+	private List<Field<Integer>> aoiFields;
 
 	private String aoiLevel;
 
@@ -40,7 +39,7 @@ public class PlotAoiStratumAggregateTable extends AggregateTable<PlotFactTable> 
 		initUserDefinedFields();
 	}
 
-	public List<TableField<Record, Integer>> getAoiFields() {
+	public List<Field<Integer>> getAoiFields() {
 		return Collections.unmodifiableList(aoiFields);
 	}
 	

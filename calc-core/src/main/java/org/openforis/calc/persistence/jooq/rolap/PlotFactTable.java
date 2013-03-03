@@ -6,10 +6,8 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
-import org.jooq.Record;
-import org.jooq.TableField;
+import org.jooq.Field;
 import org.openforis.calc.model.ObservationUnitMetadata;
-import org.openforis.calc.persistence.jooq.GeodeticCoordinateDataType;
 import org.openforis.calc.persistence.jooq.tables.GroundPlotView;
 
 /**
@@ -20,30 +18,24 @@ public class PlotFactTable extends FactTable {
 
 	private static final long serialVersionUID = 1L;
 	
-	// Fixed dimensions
-	public final TableField<Record, Integer> CLUSTER_ID = 
-			createFixedDimensionField("cluster_id");
-	public final TableField<Record, Integer> PLOT_ID = 
-			createFixedDimensionField("plot_id");
-	public final TableField<Record, Integer> STRATUM_ID = 
-			createFixedDimensionField("stratum_id");
+	private static final GroundPlotView G = GROUND_PLOT_VIEW;
 	
-	// Fixed measure
-	public final TableField<Record, BigDecimal> EST_AREA = 
-			createFixedMeasureField("est_area");
-	public final TableField<Record, BigDecimal> PLOT_LOCATION_DEVIATION = 
-			createFixedMeasureField(G.PLOT_LOCATION_DEVIATION.getName());
+	// Fixed dimensions
+	public final Field<Integer> CLUSTER_ID = createFixedDimensionField(G.CLUSTER_ID);
+	public final Field<Integer> PLOT_ID =    createFixedDimensionField("plot_id");
+	public final Field<Integer> STRATUM_ID = createFixedDimensionField(G.STRATUM_ID);
+	
+	// Fixed measures
+	// TODO take from user-defined measures?
+	public final Field<BigDecimal> EST_AREA = createFixedMeasureField("est_area");
+	public final Field<BigDecimal> PLOT_LOCATION_DEVIATION = createFixedMeasureField(G.PLOT_LOCATION_DEVIATION);
 
 	// Plot coordinates
-	private static final GroundPlotView G = GROUND_PLOT_VIEW;
-	public final TableField<Record, Object> PLOT_LOCATION = 
-			createField(G.PLOT_LOCATION, new GeodeticCoordinateDataType());
-	public final TableField<Record, Object> PLOT_ACTUAL_LOCATION = 
-			createField(G.PLOT_ACTUAL_LOCATION, new GeodeticCoordinateDataType());
-	public final TableField<Record, Object> PLOT_GPS_READING = 
-			createField(G.PLOT_GPS_READING, new GeodeticCoordinateDataType());
+	public final Field<Object> PLOT_LOCATION = createField(G.PLOT_LOCATION);
+	public final Field<Object> PLOT_ACTUAL_LOCATION = createField(G.PLOT_ACTUAL_LOCATION);
+	public final Field<Object> PLOT_GPS_READING = createField(G.PLOT_GPS_READING);
 
-	private List<TableField<Record, Integer>> aoiFields;
+	private List<Field<Integer>> aoiFields;
 	
 	PlotFactTable(String schema, ObservationUnitMetadata unit) {
 		super(schema, unit.getFactTableName(), unit);
@@ -55,7 +47,7 @@ public class PlotFactTable extends FactTable {
 		initUserDefinedFields();
 	}
 
-	public List<TableField<Record, Integer>> getAoiFields() {
+	public List<Field<Integer>> getAoiFields() {
 		return Collections.unmodifiableList(aoiFields);
 	}
 }

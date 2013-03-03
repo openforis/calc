@@ -10,7 +10,6 @@ import org.jooq.Insert;
 import org.jooq.JoinType;
 import org.jooq.Record;
 import org.jooq.SelectQuery;
-import org.jooq.TableField;
 import org.jooq.impl.Factory;
 import org.openforis.calc.model.AoiHierarchyLevelMetadata;
 import org.openforis.calc.model.AoiHierarchyMetadata;
@@ -132,8 +131,8 @@ public class PlotAggregateDao extends JooqDaoSupport {
 	@SuppressWarnings("unchecked")
 	private void addUserDefinedDimensionsToSelect(PlotAoiStratumAggregateTable agg, SelectQuery select) {
 		FactTable fact = agg.getFactTable();
-		List<TableField<Record, Integer>> srcDimensions = fact.getUserDefinedDimensionFields();
-		for ( TableField<Record, Integer> f : srcDimensions ) {
+		List<Field<Integer>> srcDimensions = fact.getUserDefinedDimensionFields();
+		for ( Field<Integer> f : srcDimensions ) {
 			String fieldName = f.getName();
 			select.addSelect(Factory.coalesce(f, -1).as(fieldName));
 			select.addGroupBy(f);

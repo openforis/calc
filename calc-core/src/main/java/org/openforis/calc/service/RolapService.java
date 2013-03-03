@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.openforis.calc.model.SurveyMetadata;
+import org.openforis.calc.persistence.InterviewFactDao;
 import org.openforis.calc.persistence.PlotAggregateDao;
 import org.openforis.calc.persistence.PlotFactDao;
 import org.openforis.calc.persistence.RolapDimensionDao;
@@ -11,12 +12,14 @@ import org.openforis.calc.persistence.RolapSchemaDao;
 import org.openforis.calc.persistence.jooq.rolap.AoiDimensionTable;
 import org.openforis.calc.persistence.jooq.rolap.CategoryDimensionTable;
 import org.openforis.calc.persistence.jooq.rolap.ClusterDimensionTable;
+import org.openforis.calc.persistence.jooq.rolap.InterviewFactTable;
 import org.openforis.calc.persistence.jooq.rolap.PlotAoiStratumAggregateTable;
 import org.openforis.calc.persistence.jooq.rolap.PlotDimensionTable;
 import org.openforis.calc.persistence.jooq.rolap.PlotFactTable;
 import org.openforis.calc.persistence.jooq.rolap.RolapSchemaDefinition;
 import org.openforis.calc.persistence.jooq.rolap.RolapSchemaGenerator;
 import org.openforis.calc.persistence.jooq.rolap.RolapTable;
+import org.openforis.calc.persistence.jooq.rolap.SpecimenFactTable;
 import org.openforis.calc.persistence.jooq.rolap.StratumDimensionTable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,6 +42,10 @@ public class RolapService extends CalcService {
 	private PlotFactDao plotFactDao;
 	@Autowired	
 	private PlotAggregateDao plotAggregateDao;
+//	@Autowired	
+//	private SpecimenFactDao specimenFactDao;
+	@Autowired	
+	private InterviewFactDao interviewFactDao;
 	
 	@Transactional
 	public void publishRolapSchema(String surveyName, String targetDatabaseSchema) throws IOException {
@@ -48,15 +55,15 @@ public class RolapService extends CalcService {
 		RolapSchemaDefinition defn = rsg.generateDefinition();
 
 		// Create database
-//		rolapSchemaDao.dropSchema(targetDatabaseSchema);
-//		rolapSchemaDao.createSchema(targetDatabaseSchema);
-//		
-//		List<RolapTable> tables = defn.getDatabaseTables();
-//		rolapSchemaDao.createTables(tables);
-//		
-//		// Insert data
-//		populateTables(tables);
-//		
+		rolapSchemaDao.dropSchema(targetDatabaseSchema);
+		rolapSchemaDao.createSchema(targetDatabaseSchema);
+		
+		List<RolapTable> tables = defn.getDatabaseTables();
+		rolapSchemaDao.createTables(tables);
+		
+		// Insert data
+		populateTables(tables);
+		
 		// Save Mondrian schema
 		// TODO create dirs, dynamically set path, etc.
 		defn.saveMondrianSchemaXml("/opt/saiku/saiku-server/tomcat/webapps/saiku/WEB-INF/classes/naforma1/Naforma1.xml");
@@ -80,6 +87,13 @@ public class RolapService extends CalcService {
 			} else if ( table instanceof PlotAoiStratumAggregateTable ) {
 				plotAggregateDao.populate((PlotAoiStratumAggregateTable) table);
 				// TODO
+			} else if ( table instanceof SpecimenFactTable ) {
+				SpecimenFactTable factTable = (SpecimenFactTable) table;
+				// TODO
+//				specimenFactDao.populate(factTable);
+			} else if ( table instanceof InterviewFactTable ) {
+				InterviewFactTable factTable = (InterviewFactTable) table;
+				interviewFactDao.populate(factTable);
 			} else {
 //				throw new UnsupportedOperationException("Unknown table "+table.getClass());
 			}

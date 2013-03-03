@@ -5,8 +5,10 @@ drop view if exists calc.primary_plot_section_cnt_view;
 --drop view if exists calc.plot_exp_factor;
 --drop view if exists calc.sample_plot_visited_cnt_view;
 drop view if exists calc.sample_plot_cnt_view;
+drop view if exists calc.interview_categorical_value_view;
 drop view if exists calc.specimen_categorical_value_view;
 drop view if exists calc.specimen_view;
+--drop view if exists calc.interview_numeric_value_view;
 drop view if exists calc.plot_numeric_value_view;
 drop view if exists calc.plot_section_view;
 drop view if exists calc.ground_plot_view;
@@ -215,6 +217,18 @@ inner join
     calc.category c on cv.category_id = c.category_id 
 where
     cv.current;
+
+CREATE OR REPLACE VIEW calc.interview_categorical_value_view
+AS
+  SELECT cv.value_id,
+         cv.interview_id,
+         cv.category_id,
+         cv.original,
+         cat.variable_id
+  FROM interview_categorical_value cv
+       JOIN category cat ON cv.category_id = cat.category_id
+  WHERE cv.current;
+
 
 //create or replace view calc.specimen_numeric_value_view
 //as

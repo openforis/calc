@@ -37,6 +37,8 @@ public class InterviewCubeGenerator extends RolapCubeGenerator {
 
 	@Override
 	protected void initMeasures() {
+		InterviewFactTable fact = (InterviewFactTable) getDatabaseFactTable();
+		addMeasure(mdf.createMeasure(fact.COUNT, "Count"));
 		initUserDefinedMeasures();
 	}
 }

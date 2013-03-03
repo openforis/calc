@@ -2,8 +2,7 @@ package org.openforis.calc.persistence.jooq.rolap;
 
 import java.math.BigDecimal;
 
-import org.jooq.Record;
-import org.jooq.TableField;
+import org.jooq.Field;
 
 /**
  * 
@@ -16,7 +15,7 @@ public abstract class AggregateTable<T extends FactTable> extends FactTable {
 	private static final long serialVersionUID = 1L;
 	private T factTable;
 
-	public final TableField<Record, BigDecimal> AGG_COUNT = createFixedMeasureField("agg_cnt");
+	public final Field<BigDecimal> AGG_COUNT = createFixedMeasureField("agg_cnt");
 
 	AggregateTable(T factTable, String infix) {
 		super(

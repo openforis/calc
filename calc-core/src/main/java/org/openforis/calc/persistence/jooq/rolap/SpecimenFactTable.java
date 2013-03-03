@@ -22,7 +22,8 @@ public class SpecimenFactTable extends FactTable {
 	}
 
 	protected void initFields() {
-		aoiFields = createAoiFields();
+		// TODO 
+//		aoiFields = createAoiFields();
 		initUserDefinedFields();
 	}
 	

@@ -15,7 +15,7 @@ public class ObservationUnitMetadata extends ObservationUnit {
 
 	private static final long serialVersionUID = 1L;
 	private static final String FACT_TABLE_SUFFIX = "_fact";
-	private static final String AGG_TABLE_PREFIX = "agg_";
+	private static final String AGG_TABLE_PREFIX = "_agg_";
 	private static final String UNDERSCORE = "_";
 	
 	private ObservationUnit observationUnit;
