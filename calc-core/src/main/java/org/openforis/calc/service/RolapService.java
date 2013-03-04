@@ -48,7 +48,7 @@ public class RolapService extends CalcService {
 	private InterviewFactDao interviewFactDao;
 	
 	@Transactional
-	public void publishRolapSchema(String surveyName, String targetDatabaseSchema) throws IOException {
+	public void publishRolapSchema(String surveyName, String targetDatabaseSchema, String fileName) throws IOException {
 		SurveyMetadata surveyMetadata = getSurveyMetadata(surveyName);
 	
 		RolapSchemaGenerator rsg = new RolapSchemaGenerator(surveyMetadata, targetDatabaseSchema);
@@ -66,7 +66,7 @@ public class RolapService extends CalcService {
 		
 		// Save Mondrian schema
 		// TODO create dirs, dynamically set path, etc.
-		defn.saveMondrianSchemaXml("/opt/saiku/saiku-server/tomcat/webapps/saiku/WEB-INF/classes/naforma1/Naforma1.xml");
+		defn.saveMondrianSchemaXml(fileName);
 	}
 	
 	private void populateTables(List<RolapTable> tables) {
