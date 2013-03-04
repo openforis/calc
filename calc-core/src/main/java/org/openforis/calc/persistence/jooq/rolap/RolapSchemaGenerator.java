@@ -201,6 +201,7 @@ public class RolapSchemaGenerator {
 		// TODO exclude cluster if not clustered design
 		View joinView = mdf.createJoinView(plotTable, unit.getObsUnitName());
 		Hierarchy hier = mdf.createHierarchy(unit.getObsUnitName(), joinView, clusterLevel, plotLevel);
+		
 		return hier;
 	}
 
