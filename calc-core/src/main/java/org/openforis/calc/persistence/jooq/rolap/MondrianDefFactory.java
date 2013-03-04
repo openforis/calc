@@ -66,28 +66,28 @@ public class MondrianDefFactory {
 		return dim;
 	}
 
-	public Hierarchy createHierarchy(String name, Relation relation, Level... levels) {
+	public Hierarchy createHierarchy(String name, boolean hasAll, Relation relation, Level... levels) {
 		Hierarchy hier = new Hierarchy();
 		hier.name = toMdxName(name);
 		hier.visible = true;
-		hier.hasAll = false;		
+		hier.hasAll = hasAll;		
 		hier.levels = levels;
 		hier.relation = relation;
 		return hier;
 	}
 
-	public Hierarchy createHierarchy(String name, Relation relation, Collection<Level> levels) {
-		return createHierarchy(name, relation, levels.toArray(new Level[0]));
+	public Hierarchy createHierarchy(String name, boolean hasAll, Relation relation, Collection<Level> levels) {
+		return createHierarchy(name, hasAll, relation, levels.toArray(new Level[0]));
 	}
 	
-	public Hierarchy createHierarchy(String name, String table, Collection<Level> levels) {
-		return createHierarchy(name, table, levels.toArray(new Level[0]));
+	public Hierarchy createHierarchy(String name, boolean hasAll, String table, Collection<Level> levels) {
+		return createHierarchy(name, hasAll, table, levels.toArray(new Level[0]));
 	}
 	
-	public Hierarchy createHierarchy(String name, String table, Level... levels) {
+	public Hierarchy createHierarchy(String name,  boolean hasAll, String table, Level... levels) {
 		MondrianDef.Table relation = new MondrianDef.Table(databaseSchema, table, null, null);
 		
-		return createHierarchy(name, relation, levels);
+		return createHierarchy(name, hasAll, relation, levels);
 	}
 
 	public Level createLevel(String levelName, String table, String column, String nameColumn) {

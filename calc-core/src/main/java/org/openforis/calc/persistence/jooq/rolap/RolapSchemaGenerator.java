@@ -150,7 +150,7 @@ public class RolapSchemaGenerator {
 		}
 		String name = hier.getAoiHierarchyName();
 		View joinView = mdf.createJoinView(lastTable, name);
-		return mdf.createHierarchy(name, joinView, levels);
+		return mdf.createHierarchy(name, false, joinView, levels);
 	}
 
 	// SAMPLING DESIGN DIMENSIONS
@@ -169,14 +169,14 @@ public class RolapSchemaGenerator {
 		
 		String tableName = stratumTable.getName();
 		Level level = mdf.createLevel(tableName, stratumTable, stratumTable.ID, stratumTable.LABEL);
-		Hierarchy hier = mdf.createHierarchy(tableName, tableName, level);
+		Hierarchy hier = mdf.createHierarchy(tableName, true, tableName, level);
 		Dimension dim = mdf.createDimension(tableName, stratumCaption, hier);
 		sharedDimensions.add(dim);
 	}
 	
 	private void initSesuDimension(DimensionTable table) {
 		Level level = mdf.createLevel(table.getName(), table, table.ID, table.LABEL);
-		Hierarchy hier = mdf.createHierarchy(table.getName(), table.getName(), level);
+		Hierarchy hier = mdf.createHierarchy(table.getName(), true, table.getName(), level);
 		Dimension dim = mdf.createDimension(sesuDimensionName, sesuCaption, hier);
 		sharedDimensions.add(dim);
 	}
@@ -200,7 +200,7 @@ public class RolapSchemaGenerator {
 		Level plotLevel = mdf.createLevel(plotLevelName, plotTable.getDenormalizedIdColumn(), plotTable.getDenormalizedLabelColumn());
 		// TODO exclude cluster if not clustered design
 		View joinView = mdf.createJoinView(plotTable, unit.getObsUnitName());
-		Hierarchy hier = mdf.createHierarchy(unit.getObsUnitName(), joinView, clusterLevel, plotLevel);
+		Hierarchy hier = mdf.createHierarchy(unit.getObsUnitName(), true, joinView, clusterLevel, plotLevel);
 		
 		return hier;
 	}
@@ -227,7 +227,7 @@ public class RolapSchemaGenerator {
 		String tableName = table.getName();
 		Level level = mdf.createLevel(tableName, table, table.ID, table.LABEL);
 		dbTables.add(table);
-		return mdf.createHierarchy(var.getVariableName(), tableName, level);
+		return mdf.createHierarchy(var.getVariableName(), true, tableName, level);
 	}
 
 	////////// CUBES
