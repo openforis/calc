@@ -65,8 +65,8 @@ public class PlotAggregateDao extends JooqDaoSupport {
 		// TODO multiple AOI hierarchies
 		AoiHierarchyMetadata aoiHierarchy = aoiHierarchies.get(0);
 		
-		String aoiLevelName = agg.getAoiLevel();
-		AoiHierarchyLevelMetadata aoiLevel = aoiHierarchy.getLevelMetadata(aoiLevelName);
+		AoiHierarchyLevelMetadata aoiLevel = agg.getAoiHierarchyLevelMetadata();
+		String aoiLevelName = aoiLevel.getAoiHierarchyLevelName();
 		
 		Factory create = getJooqFactory();
 		PlotExpansionFactor e = PLOT_EXPANSION_FACTOR.as("e");

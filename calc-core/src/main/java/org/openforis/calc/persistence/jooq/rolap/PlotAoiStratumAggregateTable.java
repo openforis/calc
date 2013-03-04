@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.jooq.Field;
+import org.openforis.calc.model.AoiHierarchyLevelMetadata;
 
 /**
  * 
@@ -11,7 +12,7 @@ import org.jooq.Field;
  * @author M. Togna
  *
  */
-public class PlotAoiStratumAggregateTable extends AggregateTable<PlotFactTable> {
+public class PlotAoiStratumAggregateTable extends AoiAggregateTable<PlotFactTable> {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -19,11 +20,11 @@ public class PlotAoiStratumAggregateTable extends AggregateTable<PlotFactTable> 
 
 	private List<Field<Integer>> aoiFields;
 
-	private String aoiLevel;
+	private AoiHierarchyLevelMetadata aoiHierarchyLevelMetadata;
 
-	PlotAoiStratumAggregateTable(PlotFactTable factTable, String aoiLevel) {
-		super(factTable, getInfix(aoiLevel));
-		this.aoiLevel = aoiLevel;
+	PlotAoiStratumAggregateTable(PlotFactTable factTable, AoiHierarchyLevelMetadata aoiHierarchyLevel) {
+		super(factTable, getInfix(aoiHierarchyLevel.getAoiHierarchyLevelName()));
+		this.aoiHierarchyLevelMetadata = aoiHierarchyLevel;
 		initFields();
 	}
 
@@ -35,7 +36,7 @@ public class PlotAoiStratumAggregateTable extends AggregateTable<PlotFactTable> 
 		PlotFactTable fact = getFactTable();
 		createFixedDimensionField(fact.STRATUM_ID);
 		createFixedMeasureField(fact.EST_AREA);
-		aoiFields = createAoiFields(aoiLevel);
+		aoiFields = createAoiFields(aoiHierarchyLevelMetadata.getAoiHierarchyLevelName());
 		initUserDefinedFields();
 	}
 
@@ -43,7 +44,12 @@ public class PlotAoiStratumAggregateTable extends AggregateTable<PlotFactTable> 
 		return Collections.unmodifiableList(aoiFields);
 	}
 	
-	public String getAoiLevel() {
-		return aoiLevel;
+	@Override
+	public AoiHierarchyLevelMetadata getAoiHierarchyLevelMetadata() {
+		return aoiHierarchyLevelMetadata;
 	}
+	
+//	public String getAoiLevel() {
+//		return aoiLevel;
+//	}
 }

@@ -1,10 +1,16 @@
 package org.openforis.calc.persistence.jooq.rolap;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import mondrian.olap.MondrianDef;
+import mondrian.olap.MondrianDef.AggFactCount;
+import mondrian.olap.MondrianDef.AggForeignKey;
+import mondrian.olap.MondrianDef.AggLevel;
+import mondrian.olap.MondrianDef.AggMeasure;
+import mondrian.olap.MondrianDef.AggName;
 import mondrian.olap.MondrianDef.Cube;
 import mondrian.olap.MondrianDef.CubeDimension;
 import mondrian.olap.MondrianDef.Dimension;
@@ -18,13 +24,15 @@ import mondrian.olap.MondrianDef.Table;
 import mondrian.olap.MondrianDef.View;
 
 import org.jooq.Field;
+import org.openforis.calc.model.AoiHierarchyLevelMetadata;
+import org.openforis.calc.model.AoiHierarchyMetadata;
 
 /**
  * 
  * @author G. Miceli
  *
  */
-public class MondrianDefFactory {
+class MondrianDefFactory {
 	
 //	private static final String GRANT_ACCESS_ALL = "all";
 //	private static final String GRANT_ACCESS_NONE = "none";
@@ -170,6 +178,96 @@ public class MondrianDefFactory {
 
 	public Measure createMeasure(Field<BigDecimal> field, String caption) {
 		return createMeasure(field.getName(), caption);
+	}
+	
+	public AggName createAggregateName(AggregateTable<?> table) {
+		AggName aggName = new AggName();
+		aggName.name = table.getName();
+		
+		//Fact count
+		AggFactCount factCount = new AggFactCount();
+		factCount.column = table.AGG_COUNT.getName(); 
+		aggName.factcount = factCount;
+
+		//Foreign Keys
+		initAggForeignKeys(table, aggName);
+		
+		//Measures
+		initAggMeasures(table, aggName);
+		
+		//Aoi levels
+		if( table instanceof AoiAggregateTable ){
+			initAoiAggLevels((AoiAggregateTable<?>) table, aggName);
+		}
+		return aggName;
+	}
+
+	private void initAoiAggLevels(AoiAggregateTable<?> table, AggName aggName) {
+		List<AggLevel> aggLevels = new ArrayList<AggLevel>();
+		
+		AoiHierarchyLevelMetadata aggregationLevel = table.getAoiHierarchyLevelMetadata();
+		AoiHierarchyMetadata hierachy = aggregationLevel.getAoiHierachyMetadata();
+		List<AoiHierarchyLevelMetadata> levels = hierachy.getLevelMetadata();
+		for ( AoiHierarchyLevelMetadata level : levels ) {
+			AggLevel aggLevel = new AggLevel();
+			String levelName = level.getAoiHierarchyLevelName();
+			aggLevel.column = levelName;
+			aggLevel.name = "["+toMdxName(hierachy.getAoiHierarchyName())+"].["+toMdxName(levelName)+"]";
+			
+			aggLevels.add(aggLevel);
+			
+			if(level.equals(aggregationLevel)){
+				break;
+			}
+		}
+		aggName.levels = aggLevels.toArray( new AggLevel[0]);
+	}
+
+	private void initAggForeignKeys(AggregateTable<?> table, AggName aggName) {
+		List<AggForeignKey> foreignKeys = new ArrayList<MondrianDef.AggForeignKey>();
+		
+		for ( Field<Integer> field : table.getFixedDimensionFields() ) {
+			AggForeignKey foreignKey = createAggForeignKey(field);			
+			foreignKeys.add(foreignKey);
+		}
+		for ( Field<Integer> field : table.getUserDefinedDimensionFields() ) {
+			AggForeignKey foreignKey = createAggForeignKey(field);			
+			foreignKeys.add(foreignKey);
+		}
+		
+		aggName.foreignKeys = foreignKeys.toArray(new AggForeignKey[0]);
+	}
+
+	private AggForeignKey createAggForeignKey(Field<Integer> field) {
+		String name = field.getName();
+		AggForeignKey foreignKey = new AggForeignKey();
+		foreignKey.aggColumn = name;
+		foreignKey.factColumn = name;
+		return foreignKey;
+	}
+
+	private void initAggMeasures(AggregateTable<?> table, AggName aggName) {
+		List<AggMeasure> measures = new ArrayList<AggMeasure>();
+		
+		for ( Field<BigDecimal> field : table.getUserDefinedMeasureFields() ) {
+			AggMeasure measure = createAggMeasure(field);
+			measures.add(measure);
+		}
+		for ( Field<BigDecimal> field : table.getFixedMeasureFields() ) {
+			if(!field.equals(table.AGG_COUNT)){
+				AggMeasure measure = createAggMeasure(field);
+				measures.add(measure);
+			}
+		}
+		aggName.measures = measures.toArray(new AggMeasure[0]);
+	}
+
+	private AggMeasure createAggMeasure(Field<BigDecimal> field) {
+		AggMeasure measure = new AggMeasure();
+		String name = field.getName();
+		measure.column = name;
+		measure.name = "[Measures].[" + toMdxName(name) + "]";
+		return measure;
 	}
 	
 	public static String toMdxName(String name) {

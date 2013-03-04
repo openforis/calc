@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mondrian.olap.MondrianDef;
+import mondrian.olap.MondrianDef.AggName;
 import mondrian.olap.MondrianDef.AggTable;
 
+import org.openforis.calc.model.AoiHierarchyLevelMetadata;
 import org.openforis.calc.model.AoiHierarchyMetadata;
 import org.openforis.calc.model.ObservationUnitMetadata;
 import org.openforis.calc.model.SurveyMetadata;
@@ -43,14 +45,23 @@ public class PlotCubeGenerator extends RolapCubeGenerator {
 	}
 
 	private void initAggregateTables(PlotFactTable factTable) {
-		// Database
-		PlotAoiStratumAggregateTable dbTable = new PlotAoiStratumAggregateTable(factTable, "district");
-		addDatabaseTable(dbTable);
 		
-		// Mondrian
-//		AggName aggName = new AggName();
-		// TODO
-//		aggTables.add(aggName);
+		RolapSchemaGenerator schemaGenerator = getSchemaGenerator();
+		SurveyMetadata surveyMetadata = schemaGenerator.getSurveyMetadata();
+		List<AoiHierarchyMetadata> aoiHierarchyMetadata = surveyMetadata.getAoiHierarchyMetadata();
+		for ( AoiHierarchyMetadata aoiHierarchy : aoiHierarchyMetadata ) {
+			List<AoiHierarchyLevelMetadata> levels = aoiHierarchy.getLevelMetadata();
+			for ( AoiHierarchyLevelMetadata level : levels ) {
+				// Database
+				PlotAoiStratumAggregateTable dbTable = new PlotAoiStratumAggregateTable(factTable, level);
+				addDatabaseTable(dbTable);
+				
+				// Mondrian
+				AggName aggName = mdf.createAggregateName(dbTable);
+				aggTables.add(aggName);
+			}
+		}
+		
 	}
 	
 	@Override
