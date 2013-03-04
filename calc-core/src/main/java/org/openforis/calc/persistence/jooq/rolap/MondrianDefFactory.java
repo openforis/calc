@@ -18,8 +18,6 @@ import mondrian.olap.MondrianDef.Table;
 import mondrian.olap.MondrianDef.View;
 
 import org.jooq.Field;
-import org.jooq.Record;
-import org.jooq.TableField;
 
 /**
  * 
@@ -35,7 +33,7 @@ public class MondrianDefFactory {
 	private static final String MDX_SUM_AGGREGATOR = "sum";
 //	private static final String FORMAT_STRING_0_DECIMAL = "#,###";
 
-	private static final String FORMAT_STRING_5_DECIMAL = "#,###.#####";
+	private static final String FORMAT_STRING_5_DECIMAL = "#,###.##";
 
 	private String databaseSchema;
 	
