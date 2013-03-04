@@ -187,7 +187,7 @@ public class RolapSchemaGenerator {
 		List<AoiHierarchyMetadata> hiers = survey.getAoiHierarchyMetadata();
 		for (AoiHierarchyMetadata hierMetadata : hiers) {
 			Hierarchy hier = createAoiDimensionHierarchy(hierMetadata);
-			String aoiDimensionName = hier.getName();
+			String aoiDimensionName = toMdxName( hierMetadata.getAoiHierarchyName() ); //hier.getName();
 			Dimension dim = createDimension(aoiDimensionName, aoiCaption, hier);		
 			sharedDimensions.add(dim);
 		}
@@ -211,16 +211,17 @@ public class RolapSchemaGenerator {
 			lastTable = table;
 		}
 		Hierarchy hier = createHierarchy(name, null, levels);
-		hier.relation = createJoinView(lastTable);
+		hier.relation = createJoinView(lastTable, hierMetadata.getAoiHierarchyName());
 		return hier;
 	}
 
-	private View createJoinView(HierarchicalDimensionTable leafTable) {
+	private View createJoinView(HierarchicalDimensionTable leafTable, String viewName) {
 		View view = new MondrianDef.View();
 		MondrianDef.SQL mondrianSql = new MondrianDef.SQL();
 		mondrianSql.dialect = "generic";
 		mondrianSql.cdata = leafTable.getDenormalizedSelectSql();
 		view.selects = new MondrianDef.SQL[] {mondrianSql};
+		view.alias = viewName;
 		return view;
 	}
 
@@ -268,12 +269,20 @@ public class RolapSchemaGenerator {
 	private Hierarchy createPlotDimensionHierarchy(ObservationUnitMetadata unit, ClusterDimensionTable clusterTable) {
 		String name = toMdxName(unit.getObsUnitName());
 		Level clusterLevel = createDimensionHierarchyLevel(clusterTable, toMdxName(clusterTable.getName()));
+		clusterLevel.table = null;
+		clusterLevel.column = clusterTable.getDenormalizedIdColumn(); 
+		clusterLevel.nameColumn = clusterTable.getDenormalizedLabelColumn();
+		
 		PlotDimensionTable plotTable = new PlotDimensionTable(databaseSchema, unit, clusterTable);
 		dbTables.add(plotTable);
 		Level plotLevel = createDimensionHierarchyLevel(plotTable, toMdxName(plotTable.getName()));
+		plotLevel.table = null;
+		plotLevel.column = plotTable.getDenormalizedIdColumn(); 
+		plotLevel.nameColumn = plotTable.getDenormalizedLabelColumn();
+
 		// TODO exclude cluster if not clustered design
 		Hierarchy hier = createHierarchy(name, null, clusterLevel, plotLevel);
-		hier.relation = createJoinView(plotTable);
+		hier.relation = createJoinView(plotTable, unit.getObsUnitName());
 		return hier;
 	}
 

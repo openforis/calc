@@ -39,9 +39,9 @@ public class PlotCubeGenerator extends RolapCubeGenerator {
 		addDatabaseTable(dbTable);
 		
 		// Mondrian
-		AggName aggName = new AggName();
+//		AggName aggName = new AggName();
 		// TODO
-		addMondrianAggegateTable(aggName);
+//		addMondrianAggegateTable(aggName);
 	}
 	
 	@Override
