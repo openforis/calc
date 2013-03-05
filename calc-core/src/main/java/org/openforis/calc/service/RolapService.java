@@ -55,11 +55,8 @@ public class RolapService extends CalcService {
 		RolapSchemaDefinition defn = rsg.generateDefinition();
 
 		// Create database
-		rolapSchemaDao.dropSchema(targetDatabaseSchema);
-		rolapSchemaDao.createSchema(targetDatabaseSchema);
-		
 		List<RolapTable> tables = defn.getDatabaseTables();
-		rolapSchemaDao.createTables(tables);
+		rolapSchemaDao.createSchema(tables);
 		
 		// Insert data
 		populateTables(tables);
