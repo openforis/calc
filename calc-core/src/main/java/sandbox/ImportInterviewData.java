@@ -1,7 +1,7 @@
 package sandbox;
 
 import org.openforis.calc.importer.InterviewImporter;
-import org.openforis.calc.io.csv.CsvReader;
+import org.openforis.commons.io.csv.CsvReader;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**

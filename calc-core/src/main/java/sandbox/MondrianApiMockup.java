@@ -1,26 +1,5 @@
 package sandbox;
 
-import java.io.PrintWriter;
-
-import mondrian.olap.Connection;
-import mondrian.olap.DriverManager;
-import mondrian.olap.MondrianDef.AggFactCount;
-import mondrian.olap.MondrianDef.AggForeignKey;
-import mondrian.olap.MondrianDef.AggName;
-import mondrian.olap.MondrianDef.AggTable;
-import mondrian.olap.MondrianDef.Cube;
-import mondrian.olap.MondrianDef.Schema;
-import mondrian.olap.MondrianDef.Table;
-import mondrian.olap.Query;
-import mondrian.olap.Result;
-import mondrian.rolap.RolapSchema;
-
-import org.eigenbase.xom.XMLOutput;
-import org.openforis.calc.model.SurveyMetadata;
-import org.openforis.calc.persistence.jooq.rolap.RolapSchemaDefinition;
-import org.openforis.calc.persistence.jooq.rolap.RolapSchemaGenerator;
-import org.openforis.calc.persistence.jooq.rolap.RolapTable;
-import org.openforis.calc.service.MetadataService;
 import org.openforis.calc.service.RolapService;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 //import mondrian.olap.MondrianDef.*;

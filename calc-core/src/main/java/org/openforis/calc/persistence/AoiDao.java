@@ -7,10 +7,10 @@ import static org.openforis.calc.persistence.jooq.Tables.AOI_HIERARCHY_LEVEL;
 import org.jooq.Field;
 import org.jooq.Result;
 import org.jooq.impl.Factory;
-import org.openforis.calc.io.flat.FlatDataStream;
 import org.openforis.calc.model.Aoi;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
 import org.openforis.calc.persistence.jooq.tables.records.AoiRecord;
+import org.openforis.commons.io.flat.FlatDataStream;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 

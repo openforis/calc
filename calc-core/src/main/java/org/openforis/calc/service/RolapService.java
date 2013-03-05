@@ -13,6 +13,7 @@ import org.openforis.calc.persistence.jooq.rolap.AoiDimensionTable;
 import org.openforis.calc.persistence.jooq.rolap.CategoryDimensionTable;
 import org.openforis.calc.persistence.jooq.rolap.ClusterDimensionTable;
 import org.openforis.calc.persistence.jooq.rolap.InterviewFactTable;
+import org.openforis.calc.persistence.jooq.rolap.PlotAoiAggregateTable;
 import org.openforis.calc.persistence.jooq.rolap.PlotAoiStratumAggregateTable;
 import org.openforis.calc.persistence.jooq.rolap.PlotDimensionTable;
 import org.openforis.calc.persistence.jooq.rolap.PlotFactTable;
@@ -83,7 +84,8 @@ public class RolapService extends CalcService {
 				plotFactDao.populate(factTable);
 			} else if ( table instanceof PlotAoiStratumAggregateTable ) {
 				plotAggregateDao.populate((PlotAoiStratumAggregateTable) table);
-				// TODO
+			} else if ( table instanceof PlotAoiAggregateTable ) {
+				plotAggregateDao.populate((PlotAoiAggregateTable) table);
 			} else if ( table instanceof SpecimenFactTable ) {
 				SpecimenFactTable factTable = (SpecimenFactTable) table;
 				// TODO

@@ -225,17 +225,20 @@ class MondrianDefFactory {
 
 	private void initAggForeignKeys(AggregateTable<?> table, AggName aggName) {
 		List<AggForeignKey> foreignKeys = new ArrayList<MondrianDef.AggForeignKey>();
-		
-		for ( Field<Integer> field : table.getFixedDimensionFields() ) {
-			AggForeignKey foreignKey = createAggForeignKey(field);			
-			foreignKeys.add(foreignKey);
-		}
-		for ( Field<Integer> field : table.getUserDefinedDimensionFields() ) {
-			AggForeignKey foreignKey = createAggForeignKey(field);			
-			foreignKeys.add(foreignKey);
-		}
-		
+
+		initAggForeignKeys(foreignKeys, table.getFixedDimensionFields());
+		initAggForeignKeys(foreignKeys, table.getUserDefinedDimensionFields());
+
 		aggName.foreignKeys = foreignKeys.toArray(new AggForeignKey[0]);
+	}
+
+	private void initAggForeignKeys(List<AggForeignKey> foreignKeys, List<Field<Integer>> dims) {
+		if ( dims != null ) {
+			for ( Field<Integer> field : dims ) {
+				AggForeignKey foreignKey = createAggForeignKey(field);
+				foreignKeys.add(foreignKey);
+			}
+		}
 	}
 
 	private AggForeignKey createAggForeignKey(Field<Integer> field) {
@@ -249,17 +252,21 @@ class MondrianDefFactory {
 	private void initAggMeasures(AggregateTable<?> table, AggName aggName) {
 		List<AggMeasure> measures = new ArrayList<AggMeasure>();
 		
-		for ( Field<BigDecimal> field : table.getUserDefinedMeasureFields() ) {
-			AggMeasure measure = createAggMeasure(field);
-			measures.add(measure);
-		}
-		for ( Field<BigDecimal> field : table.getFixedMeasureFields() ) {
-			if(!field.equals(table.AGG_COUNT)){
-				AggMeasure measure = createAggMeasure(field);
-				measures.add(measure);
+		initAggMeasures(table, measures, table.getUserDefinedMeasureFields());
+		initAggMeasures(table, measures, table.getFixedMeasureFields());
+
+		aggName.measures = measures.toArray(new AggMeasure[0]);
+	}
+
+	private void initAggMeasures(AggregateTable<?> table, List<AggMeasure> measures, List<Field<BigDecimal>> fields) {
+		if ( fields != null ) {
+			for ( Field<BigDecimal> field : fields ) {
+				if( !field.equals(table.AGG_COUNT) ) {
+					AggMeasure measure = createAggMeasure(field);
+					measures.add(measure);
+				}
 			}
 		}
-		aggName.measures = measures.toArray(new AggMeasure[0]);
 	}
 
 	private AggMeasure createAggMeasure(Field<BigDecimal> field) {

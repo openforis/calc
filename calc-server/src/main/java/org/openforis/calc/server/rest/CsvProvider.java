@@ -15,9 +15,9 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 
-import org.openforis.calc.io.csv.CsvReader;
-import org.openforis.calc.io.csv.CsvWriter;
-import org.openforis.calc.io.flat.FlatDataStream;
+import org.openforis.commons.io.csv.CsvReader;
+import org.openforis.commons.io.csv.CsvWriter;
+import org.openforis.commons.io.flat.FlatDataStream;
 
 import com.sun.jersey.core.provider.AbstractMessageReaderWriterProvider;
 

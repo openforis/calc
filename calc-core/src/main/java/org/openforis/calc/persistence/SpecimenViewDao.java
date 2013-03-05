@@ -10,7 +10,6 @@ import org.jooq.Field;
 import org.jooq.JoinType;
 import org.jooq.SelectQuery;
 import org.jooq.impl.Factory;
-import org.openforis.calc.io.flat.FlatDataStream;
 import org.openforis.calc.model.SpecimenView;
 import org.openforis.calc.model.VariableMetadata;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
@@ -19,6 +18,7 @@ import org.openforis.calc.persistence.jooq.tables.PlotNumericValueView;
 import org.openforis.calc.persistence.jooq.tables.SpecimenCategoricalValueView;
 import org.openforis.calc.persistence.jooq.tables.SpecimenNumericValue;
 import org.openforis.calc.persistence.jooq.tables.records.SpecimenViewRecord;
+import org.openforis.commons.io.flat.FlatDataStream;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 

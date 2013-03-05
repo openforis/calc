@@ -169,6 +169,8 @@ public class PlotAggregateDao extends JooqDaoSupport {
 		
 		select.addSelect(s.STRATUM_ID);
 		select.addSelect(s.AREA.as(plotFactTable.EST_AREA.getName()));
+		select.addSelect(s.OBS_PLOT_CNT.as(agg.COUNT.getName()));
+		select.addSelect(Factory.val(1).as(agg.AGG_COUNT.getName()));
 		
 		select.addFrom(s);
 		

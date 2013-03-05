@@ -1,10 +1,10 @@
 package org.openforis.calc.persistence.jooq.rolap;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.jooq.Field;
 import org.openforis.calc.model.AoiHierarchyLevelMetadata;
+import org.openforis.commons.collection.CollectionUtils;
 
 /**
  * 
@@ -35,7 +35,7 @@ public class PlotAoiAggregateTable extends AoiAggregateTable<PlotAoiStratumAggre
 	}
 
 	public List<Field<Integer>> getAoiFields() {
-		return Collections.unmodifiableList(aoiFields);
+		return CollectionUtils.unmodifiableList(aoiFields);
 	}
 	
 	@Override
@@ -43,7 +43,4 @@ public class PlotAoiAggregateTable extends AoiAggregateTable<PlotAoiStratumAggre
 		return aoiHierarchyLevelMetadata;
 	}
 	
-//	public String getAoiLevel() {
-//		return aoiLevel;
-//	}
 }

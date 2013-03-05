@@ -1,7 +1,7 @@
 package org.openforis.calc.persistence.jooq;
 
-import static java.util.Arrays.*;
-import static java.util.Collections.*;
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 
 import java.sql.BatchUpdateException;
 import java.sql.Connection;
@@ -37,9 +37,9 @@ import org.jooq.UpdatableTable;
 import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DAOImpl;
 import org.jooq.impl.Factory;
-import org.openforis.calc.io.flat.FlatDataStream;
-import org.openforis.calc.io.flat.FlatRecord;
 import org.openforis.calc.model.Identifiable;
+import org.openforis.commons.io.flat.FlatDataStream;
+import org.openforis.commons.io.flat.FlatRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;

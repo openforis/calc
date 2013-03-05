@@ -1,5 +1,7 @@
 package org.openforis.calc.persistence;
-import static org.openforis.calc.persistence.jooq.Tables.*;
+import static org.openforis.calc.persistence.jooq.Tables.INTERVIEW;
+import static org.openforis.calc.persistence.jooq.Tables.INTERVIEW_CATEGORICAL_VALUE_VIEW;
+import static org.openforis.calc.persistence.jooq.Tables.INTERVIEW_NUMERIC_VALUE;
 
 import java.util.Collection;
 

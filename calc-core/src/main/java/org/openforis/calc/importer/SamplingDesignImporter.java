@@ -6,14 +6,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.openforis.calc.geospatial.GeodeticCoordinate;
-import org.openforis.calc.io.flat.FlatDataStream;
-import org.openforis.calc.io.flat.FlatRecord;
 import org.openforis.calc.model.Cluster;
 import org.openforis.calc.model.SamplePlot;
 import org.openforis.calc.model.Stratum;
 import org.openforis.calc.persistence.ClusterDao;
 import org.openforis.calc.persistence.SamplePlotDao;
 import org.openforis.calc.persistence.StratumDao;
+import org.openforis.commons.io.flat.FlatDataStream;
+import org.openforis.commons.io.flat.FlatRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

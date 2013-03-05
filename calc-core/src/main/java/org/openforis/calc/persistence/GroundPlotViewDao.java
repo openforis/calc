@@ -12,8 +12,6 @@ import org.jooq.Field;
 import org.jooq.JoinType;
 import org.jooq.SelectQuery;
 import org.jooq.impl.Factory;
-import org.openforis.calc.io.flat.FlatDataStream;
-import org.openforis.calc.io.flat.FlatRecord;
 import org.openforis.calc.model.VariableMetadata;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
 import org.openforis.calc.persistence.jooq.tables.Aoi;
@@ -22,6 +20,8 @@ import org.openforis.calc.persistence.jooq.tables.GroundPlotView;
 import org.openforis.calc.persistence.jooq.tables.PlotCategoricalValueView;
 import org.openforis.calc.persistence.jooq.tables.PlotSectionAoi;
 import org.openforis.calc.persistence.jooq.tables.records.GroundPlotViewRecord;
+import org.openforis.commons.io.flat.FlatDataStream;
+import org.openforis.commons.io.flat.FlatRecord;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 

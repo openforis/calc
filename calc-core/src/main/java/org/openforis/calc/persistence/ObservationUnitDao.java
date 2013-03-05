@@ -9,10 +9,10 @@ import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.SelectConditionStep;
 import org.jooq.impl.Factory;
-import org.openforis.calc.io.flat.FlatDataStream;
 import org.openforis.calc.model.ObservationUnit;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
 import org.openforis.calc.persistence.jooq.tables.records.ObservationUnitRecord;
+import org.openforis.commons.io.flat.FlatDataStream;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -15,8 +15,6 @@ import org.jooq.Record;
 import org.jooq.SelectQuery;
 import org.jooq.Table;
 import org.jooq.impl.Factory;
-import org.openforis.calc.io.flat.FlatDataStream;
-import org.openforis.calc.io.flat.FlatRecord;
 import org.openforis.calc.model.VariableMetadata;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
 import org.openforis.calc.persistence.jooq.tables.PlotCategoricalValueView;
@@ -24,6 +22,8 @@ import org.openforis.calc.persistence.jooq.tables.PlotExpansionFactor;
 import org.openforis.calc.persistence.jooq.tables.PlotSectionAoi;
 import org.openforis.calc.persistence.jooq.tables.PlotSectionView;
 import org.openforis.calc.persistence.jooq.tables.records.PlotSectionViewRecord;
+import org.openforis.commons.io.flat.FlatDataStream;
+import org.openforis.commons.io.flat.FlatRecord;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 

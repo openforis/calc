@@ -3,12 +3,12 @@
  */
 package org.openforis.calc.persistence.jooq.rolap;
 
-import static org.jooq.impl.SQLDataType.*;
+import static org.jooq.impl.SQLDataType.INTEGER;
+import static org.jooq.impl.SQLDataType.NUMERIC;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import org.jooq.Field;
@@ -17,6 +17,7 @@ import org.openforis.calc.model.AoiHierarchyMetadata;
 import org.openforis.calc.model.ObservationUnitMetadata;
 import org.openforis.calc.model.SurveyMetadata;
 import org.openforis.calc.model.VariableMetadata;
+import org.openforis.commons.collection.CollectionUtils;
 
 /**
  * @author M. Togna
@@ -88,19 +89,19 @@ public abstract class FactTable extends RolapTable {
 	}
 
 	public List<Field<Integer>> getUserDefinedDimensionFields() {
-		return Collections.unmodifiableList(userDefinedDimensionFields);
+		return CollectionUtils.unmodifiableList(userDefinedDimensionFields);
 	}
 
 	public List<Field<BigDecimal>> getUserDefinedMeasureFields() {
-		return Collections.unmodifiableList(userDefinedMeasureFields);
+		return CollectionUtils.unmodifiableList(userDefinedMeasureFields);
 	}
 
 	public List<Field<Integer>> getFixedDimensionFields() {
-		return Collections.unmodifiableList(fixedDimensionFields);
+		return CollectionUtils.unmodifiableList(fixedDimensionFields);
 	}
 
 	public List<Field<BigDecimal>> getFixedMeasureFields() {
-		return Collections.unmodifiableList(fixedMeasureFields);
+		return CollectionUtils.unmodifiableList(fixedMeasureFields);
 	}
 	
 	protected Field<BigDecimal> createFixedMeasureField(String name) {

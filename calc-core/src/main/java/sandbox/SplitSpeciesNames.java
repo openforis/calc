@@ -2,8 +2,8 @@ package sandbox;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import org.openforis.calc.io.csv.CsvLine;
-import org.openforis.calc.io.csv.CsvReader;
+import org.openforis.commons.io.csv.CsvLine;
+import org.openforis.commons.io.csv.CsvReader;
 
 
 public class SplitSpeciesNames {

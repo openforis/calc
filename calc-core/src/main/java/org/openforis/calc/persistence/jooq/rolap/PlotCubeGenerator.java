@@ -67,7 +67,7 @@ public class PlotCubeGenerator extends RolapCubeGenerator {
 				addDatabaseTable(aoiAggTable);
 				
 				// Mondrian
-				aggName = mdf.createAggregateName(aoiStratumAggTable);
+				aggName = mdf.createAggregateName(aoiAggTable);
 				aggTables.add(aggName);
 
 			}

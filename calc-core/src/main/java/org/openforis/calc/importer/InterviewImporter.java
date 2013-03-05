@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.openforis.calc.geospatial.GeodeticCoordinate;
-import org.openforis.calc.io.flat.FlatRecord;
 import org.openforis.calc.model.Interview;
 import org.openforis.calc.model.InterviewCategoricalValue;
 import org.openforis.calc.model.InterviewNumericValue;
@@ -12,6 +11,7 @@ import org.openforis.calc.persistence.ClusterDao;
 import org.openforis.calc.persistence.InterviewCategoricalValueDao;
 import org.openforis.calc.persistence.InterviewDao;
 import org.openforis.calc.persistence.InterviewNumericValueDao;
+import org.openforis.commons.io.flat.FlatRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
