@@ -23,7 +23,6 @@ with recursive ah(aoi_parent, aoi, plot_section_id) as (
         where 
                 a.aoi_id = ah.aoi_parent
 ) 
-
 insert into
         calc.plot_section_aoi
 (plot_section_id, aoi_id)

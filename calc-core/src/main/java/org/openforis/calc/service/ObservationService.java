@@ -34,8 +34,6 @@ public class ObservationService extends CalcService {
 	private SpecimenCategoricalValueDao specimenCategoricalValueDao;
 	@Autowired
 	private SpecimenViewDao specimenViewDao;
-//	@Autowired
-//	private AreaFactDao areaFactDao;
 	@Autowired
 	private PlotFactDao specimenFactDao;
 	@Autowired

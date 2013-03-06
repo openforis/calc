@@ -54,8 +54,11 @@ public abstract class AbstractObservationImporter
 		observations = new ArrayList<O>();
 		numVals = new ArrayList<N>();
 		catVals = new ArrayList<C>();
+		onStart();
 	}
 	
+	protected void onStart(){}
+
 	@Override
 	protected final void cleanup() {
 		observationUnitMetadata = null;

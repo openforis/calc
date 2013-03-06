@@ -355,6 +355,8 @@ as
                 p.primary_section
         and 
                 p.visit_type = 'P'
+        and 
+                p.accessible
         group by
                 pa.aoi_id,
                 p.stratum_id;

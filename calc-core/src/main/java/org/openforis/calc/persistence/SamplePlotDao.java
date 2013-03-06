@@ -28,7 +28,6 @@ public class SamplePlotDao extends JooqDaoSupport<SamplePlotRecord, SamplePlot> 
 		super(SAMPLE_PLOT, SamplePlot.class);
 	}
 
-
 	public int nextId() {
 		Factory create = getJooqFactory();
 		return create.nextval(Sequences.SAMPLE_PLOT_ID_SEQ).intValue();

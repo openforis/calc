@@ -8,6 +8,7 @@ import org.jooq.Query;
 import org.jooq.impl.Factory;
 import org.openforis.calc.model.Specimen;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
+import org.openforis.calc.persistence.jooq.Sequences;
 import org.openforis.calc.persistence.jooq.tables.records.SpecimenRecord;
 import org.openforis.commons.io.flat.FlatDataStream;
 import org.openforis.commons.io.flat.FlatRecord;
@@ -116,6 +117,11 @@ public class SpecimenDao extends JooqDaoSupport<SpecimenRecord, Specimen> {
 		}
 		
 		executeBatch();
+	}
+
+	public Integer nextId() {
+		Factory create = getJooqFactory();
+		return create.nextval(Sequences.SPECIMEN_ID_SEQ).intValue();
 	}
 	
 //	@Transactional

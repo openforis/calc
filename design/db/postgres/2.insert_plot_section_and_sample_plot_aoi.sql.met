@@ -1,9 +1,9 @@
 #Extended file properties defined by DbVisualizer
-#Mon Feb 25 14:30:32 CET 2013
+#Wed Mar 06 14:45:54 CET 2013
 chart.type=result-set-chartviewer-area-chart-command
 chart.line_width=2
-chart.serie.0.label=aoi_parent_id
 chart.serie.0.name=aoi_parent_id
+chart.serie.0.label=aoi_parent_id
 chart.serie.1.label=sample_plot_id
 exec.catalog=calc
 chart.serie.0.visible=true
@@ -24,11 +24,11 @@ chart.xaxis_major_grid_visible=false
 chart.pie_label_type=Line Labels
 chart.serie.1.visible=false
 chart.bar_type=Raised
-chart.category_column=sample_plot_id
 exec.schema=calc
+chart.category_column=sample_plot_id
 file.encoding=UTF-8
-chart.serie.1.name=sample_plot_id
 chart.bg_top_color=\#ffffff
+chart.serie.1.name=sample_plot_id
 chart.line_type=Straight
 chart.xaxis_title_visible=true
 chart.bar_group_gap=4
