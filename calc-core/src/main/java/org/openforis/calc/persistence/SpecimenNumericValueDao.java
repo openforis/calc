@@ -2,7 +2,7 @@ package org.openforis.calc.persistence;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.jooq.Query;
@@ -35,7 +35,7 @@ public class SpecimenNumericValueDao extends JooqDaoSupport<SpecimenNumericValue
 	
 	@Transactional
 	synchronized
-	public void batchUpdate(int obsUnitId, FlatDataStream dataStream, VariableMetadata... variables) throws IOException {
+	public void updateCurrentValue(int obsUnitId, FlatDataStream dataStream, List<VariableMetadata> variables) throws IOException {
 		long start = System.currentTimeMillis();
 		ArrayList<Query> queries = new ArrayList<Query>();
 		
@@ -59,16 +59,19 @@ public class SpecimenNumericValueDao extends JooqDaoSupport<SpecimenNumericValue
 				
 				if( cnt % 1000 == 0 ) {
 					create.batch( queries ).execute();
-					queries = new ArrayList<Query>();
+					queries.clear();
 				}
 			}
 		}
 		
-		Query deleteNumericValues = getNumericValuesDelete(create, transactionId);
-		queries.add( deleteNumericValues );
+		Query delete = getDeleteCurrentValues(create, transactionId);
+		queries.add(delete);
 		
-		Query insertNumericValues = getNumericValuesInsert(create, transactionId);
-		queries.add( insertNumericValues );
+		Query update = getUpdateCurrentValue(create, transactionId, false);
+		queries.add( update );
+		
+		Query insert = getNumericValuesInsert(create, transactionId);
+		queries.add( insert );
 		
 		Query deleteTmpValues = getTempValuesDelete(create, transactionId);
 		queries.add( deleteTmpValues );
@@ -77,7 +80,7 @@ public class SpecimenNumericValueDao extends JooqDaoSupport<SpecimenNumericValue
 		
 		if( getLog().isDebugEnabled() ){
 			long end = System.currentTimeMillis() - start;
-			getLog().debug("Saving " + Arrays.toString(variables) + " Executed in("+end+" mills): " + TimeUnit.MILLISECONDS.toSeconds(end)+" seconds");
+			getLog().debug("Updating specimen numerical values executed in("+end+" mills): " + TimeUnit.MILLISECONDS.toSeconds(end)+" seconds");
 		}
 	}
 
@@ -87,16 +90,41 @@ public class SpecimenNumericValueDao extends JooqDaoSupport<SpecimenNumericValue
 			.values(transactionId, specimenId, variableId, value);
 	}
 
-	private Query getNumericValuesDelete(Factory create, int transactionId) {
+	private Query getDeleteCurrentValues(Factory create, int transactionId) {
 		return create.delete( S )
 				.where( 
 						Factory.row(S.SPECIMEN_ID, S.VARIABLE_ID)
 								.in( 
 									create.select(TNV.OBJECT_ID,TNV.VARIABLE_ID)
 									.from(TNV)
-									.where( TNV.TRANSACTION_ID.eq( transactionId ) )
+									.where( TNV.TRANSACTION_ID.eq( transactionId ).and(S.ORIGINAL.isFalse()) )
 						)
 				);
+	}
+	
+	private Query getUpdateCurrentValue(Factory create, int transactionId, boolean currentValue) {
+		return 
+				create
+				.update( S )
+				.set( S.CURRENT, currentValue )
+				.where(
+						Factory.row(S.SPECIMEN_ID, S.VARIABLE_ID)
+						.in(
+								create.select(TNV.OBJECT_ID, TNV.VARIABLE_ID)
+								.from(TNV)
+								.where( TNV.TRANSACTION_ID.eq( transactionId ) ) 
+							)
+					);
+		
+//				create.delete( S )
+//				.where( 
+//						Factory.row(S.SPECIMEN_ID, S.VARIABLE_ID)
+//								.in(
+//									create.select(TNV.OBJECT_ID, TNV.VARIABLE_ID)
+//									.from(TNV)
+//									.where( TNV.TRANSACTION_ID.eq( transactionId ) )
+//						)
+//				);
 	}
 
 	private Query getNumericValuesInsert(Factory create, int transactionId) {
@@ -104,7 +132,7 @@ public class SpecimenNumericValueDao extends JooqDaoSupport<SpecimenNumericValue
 			.insertInto( S, S.SPECIMEN_ID, S.VARIABLE_ID, S.VALUE, S.ORIGINAL, S.CURRENT )
 			.select( 
 					create
-						.select( TNV.OBJECT_ID, TNV.VARIABLE_ID, TNV.VALUE, Factory.value(true, Boolean.class) )
+						.select( TNV.OBJECT_ID, TNV.VARIABLE_ID, TNV.VALUE, Factory.value(false, Boolean.class), Factory.value(true, Boolean.class) )
 						.from( TNV )
 						.where( TNV.TRANSACTION_ID.eq(transactionId).and( TNV.VALUE.isNotNull() ) )
 					);

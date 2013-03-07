@@ -6,7 +6,8 @@ port <- '8080';
 # 'http://localhost:8080/calc/rest'
 calcRestUri <- sprintf('http://%s:%s/calc/rest', host, port);
 saveAreaResultsUri <- paste(calcRestUri, 'surveys/naforma1/area-results', sep='/');
-updateSpecimenValueUri <- '/calc/rest/surveys/naforma1/units/tree/specimens';
+updateSpecimenValueUri <- '/surveys/naforma1/units/tree/specimens';
+updateSpecimenValueUri <-  sprintf('%s%s', calcRestUri, updateSpecimenValueUri );           
 
 patch <- function(uri, data) {
   # closeAllConnections();

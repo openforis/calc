@@ -6,7 +6,6 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 import javax.ws.rs.GET;
-import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
 import org.openforis.calc.service.ObservationService;
@@ -42,27 +41,20 @@ public class SpecimenListResource extends SubResource<Void> {
 
 	@PATCH
 	public Response update(FlatDataStream dataStream) throws URISyntaxException, IOException {
-		List<String> names = dataStream.getFieldNames();
-		String[] varNames = new String[names.size() - 1];
-		int i = 0;
-		for ( String name : names ) {
-			if ( !"specimen_id".equals(name) ) {
-				varNames[i++] = name;
-			}
-		}
+		List<String> varNames = dataStream.getFieldNames();
 
 		observationService.updateSpecimenNumericValue(surveyResource.getKey(), observationUnitResource.getKey(), dataStream, varNames);
 
 		// Use OK response instead of created; HTTP PATCH may create or update
 		return Response.ok(new URI("specimens")).entity("OK").build();
 	}
-	
-	@PATCH
-	@Path("/exp-factor")
-	public Response updateSpecimenExpFactor(FlatDataStream dataStream) throws URISyntaxException, IOException {
-
-		observationService.updateSpecimenExpFactor(surveyResource.getKey(), observationUnitResource.getKey(), dataStream);
-
-		return Response.ok(new URI("exp-factor")).entity("OK").build();
-	}
+//	
+//	@PATCH
+//	@Path("/exp-factor")
+//	public Response updateSpecimenExpFactor(FlatDataStream dataStream) throws URISyntaxException, IOException {
+//
+//		observationService.updateSpecimenExpFactor(surveyResource.getKey(), observationUnitResource.getKey(), dataStream);
+//
+//		return Response.ok(new URI("exp-factor")).entity("OK").build();
+//	}
 }

@@ -35,6 +35,7 @@ AS
          pc.plot_section_id,
          pc.category_id,
          pc.original,
+         pc.current,
          cat.variable_id,
          cat.variable_type,
          cat.variable_name,
@@ -154,7 +155,8 @@ AS
          v.variable_name,
          v.variable_id,
          pm.value,
-         pm.original
+         pm.original,
+         pm.current
   FROM plot_numeric_value pm
        JOIN plot_section_view ps ON pm.plot_section_id = ps.plot_section_id
        JOIN variable v ON pm.variable_id = v.variable_id
@@ -204,6 +206,7 @@ select
     cv.specimen_id,
     cv.category_id,
     cv.original,
+    cv.current,
     c.variable_id,
     c.category_code,
     c.category_label,

@@ -1,7 +1,9 @@
 package org.openforis.calc.service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.openforis.calc.model.ObservationUnitMetadata;
 import org.openforis.calc.model.VariableMetadata;
@@ -65,16 +67,18 @@ public class ObservationService extends CalcService {
 
 	@Transactional
 	synchronized 
-	public void updateSpecimenNumericValue(String surveyName, String obsUnitName, FlatDataStream dataStream, String... variableNames) throws IOException {
-		VariableMetadata[] variables = new VariableMetadata[variableNames.length];
+	public void updateSpecimenNumericValue(String surveyName, String obsUnitName, FlatDataStream dataStream, List<String> variableNames) throws IOException {
+		List<VariableMetadata> variables = new ArrayList<VariableMetadata>(variableNames.size());
 		ObservationUnitMetadata unitMetadata = getObservationUnitMetadata(surveyName, obsUnitName);
 		int i = 0;
 		for ( String variableName : variableNames ) {
 			VariableMetadata varMetadata = unitMetadata.getVariableMetadataByName(variableName);
-			variables[i++] = varMetadata;
+			if( varMetadata != null ) {
+				variables.add( varMetadata );
+			}
 		}
 		// Integer obsUnitId = varMetadata.getObsUnitId();
-		specimenNumericValueDao.batchUpdate(unitMetadata.getObsUnitId(), dataStream, variables);
+		specimenNumericValueDao.updateCurrentValue(unitMetadata.getObsUnitId(), dataStream, variables);
 	}
 	
 	@Deprecated
