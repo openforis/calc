@@ -1,16 +1,17 @@
 package org.openforis.calc.persistence;
 
-import static org.openforis.calc.persistence.jooq.Tables.*;
+import static org.openforis.calc.persistence.jooq.Tables.SPECIMEN;
 
 import java.io.IOException;
 
 import org.jooq.Query;
 import org.jooq.impl.Factory;
-import org.openforis.calc.io.flat.FlatDataStream;
-import org.openforis.calc.io.flat.FlatRecord;
 import org.openforis.calc.model.Specimen;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
+import org.openforis.calc.persistence.jooq.Sequences;
 import org.openforis.calc.persistence.jooq.tables.records.SpecimenRecord;
+import org.openforis.commons.io.flat.FlatDataStream;
+import org.openforis.commons.io.flat.FlatRecord;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -116,6 +117,11 @@ public class SpecimenDao extends JooqDaoSupport<SpecimenRecord, Specimen> {
 		}
 		
 		executeBatch();
+	}
+
+	public Integer nextId() {
+		Factory create = getJooqFactory();
+		return create.nextval(Sequences.SPECIMEN_ID_SEQ).intValue();
 	}
 	
 //	@Transactional

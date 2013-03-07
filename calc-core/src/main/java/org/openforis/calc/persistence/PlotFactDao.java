@@ -1,5 +1,8 @@
 package org.openforis.calc.persistence;
-import static org.openforis.calc.persistence.jooq.Tables.*;
+import static org.openforis.calc.persistence.jooq.Tables.AOI;
+import static org.openforis.calc.persistence.jooq.Tables.GROUND_PLOT_VIEW;
+import static org.openforis.calc.persistence.jooq.Tables.PLOT_CATEGORICAL_VALUE_VIEW;
+import static org.openforis.calc.persistence.jooq.Tables.PLOT_SECTION_AOI;
 
 import java.util.Collection;
 import java.util.List;

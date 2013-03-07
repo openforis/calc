@@ -2,13 +2,11 @@ package org.openforis.calc.persistence;
 
 import static org.openforis.calc.persistence.jooq.Tables.SAMPLE_PLOT_CNT_VIEW;
 
-import org.jooq.Record;
-import org.jooq.Result;
 import org.jooq.impl.Factory;
-import org.openforis.calc.io.flat.FlatDataStream;
 import org.openforis.calc.model.SamplePlotCntView;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
 import org.openforis.calc.persistence.jooq.tables.records.SamplePlotCntViewRecord;
+import org.openforis.commons.io.flat.FlatDataStream;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 

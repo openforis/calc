@@ -2,8 +2,8 @@ package org.openforis.calc.server.rest;
 
 import javax.ws.rs.GET;
 
-import org.openforis.calc.io.flat.FlatDataStream;
 import org.openforis.calc.persistence.AoiDao;
+import org.openforis.commons.io.flat.FlatDataStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;

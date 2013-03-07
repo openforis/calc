@@ -15,15 +15,15 @@ import org.jooq.Record;
 import org.jooq.SelectQuery;
 import org.jooq.Table;
 import org.jooq.impl.Factory;
-import org.openforis.calc.io.flat.FlatDataStream;
-import org.openforis.calc.io.flat.FlatRecord;
+import org.openforis.calc.model.PlotSectionView;
 import org.openforis.calc.model.VariableMetadata;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
 import org.openforis.calc.persistence.jooq.tables.PlotCategoricalValueView;
 import org.openforis.calc.persistence.jooq.tables.PlotExpansionFactor;
 import org.openforis.calc.persistence.jooq.tables.PlotSectionAoi;
-import org.openforis.calc.persistence.jooq.tables.PlotSectionView;
 import org.openforis.calc.persistence.jooq.tables.records.PlotSectionViewRecord;
+import org.openforis.commons.io.flat.FlatDataStream;
+import org.openforis.commons.io.flat.FlatRecord;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,7 +37,7 @@ public class PlotSectionViewDao extends JooqDaoSupport<PlotSectionViewRecord, Pl
 
 	private static final String PLOT_DISTRIBUTION_COLUMN_NAME = "plot_distribution";
 	private static final String EST_AREA_COLUMN_NAME = "est_area";
-	private static final PlotSectionView V = PLOT_SECTION_VIEW;
+	private static final org.openforis.calc.persistence.jooq.tables.PlotSectionView V = PLOT_SECTION_VIEW;
 //	private static final Aoi A = AOI;
 	private static final PlotSectionAoi PSA = PLOT_SECTION_AOI;
 	

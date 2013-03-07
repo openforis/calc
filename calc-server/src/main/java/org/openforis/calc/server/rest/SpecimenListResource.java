@@ -9,8 +9,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
-import org.openforis.calc.io.flat.FlatDataStream;
 import org.openforis.calc.service.ObservationService;
+import org.openforis.commons.io.flat.FlatDataStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;

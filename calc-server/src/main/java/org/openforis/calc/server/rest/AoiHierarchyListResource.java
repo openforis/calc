@@ -4,8 +4,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
-import org.openforis.calc.io.flat.FlatDataStream;
 import org.openforis.calc.persistence.AoiHierarchyDao;
+import org.openforis.commons.io.flat.FlatDataStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;

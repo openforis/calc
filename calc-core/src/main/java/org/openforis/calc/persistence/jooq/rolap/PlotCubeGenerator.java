@@ -52,13 +52,24 @@ public class PlotCubeGenerator extends RolapCubeGenerator {
 		for ( AoiHierarchyMetadata aoiHierarchy : aoiHierarchyMetadata ) {
 			List<AoiHierarchyLevelMetadata> levels = aoiHierarchy.getLevelMetadata();
 			for ( AoiHierarchyLevelMetadata level : levels ) {
+				// Stratum/Aoi aggragates 
 				// Database
-				PlotAoiStratumAggregateTable dbTable = new PlotAoiStratumAggregateTable(factTable, level);
-				addDatabaseTable(dbTable);
+				PlotAoiStratumAggregateTable aoiStratumAggTable = new PlotAoiStratumAggregateTable(factTable, level);
+				addDatabaseTable(aoiStratumAggTable);
 				
 				// Mondrian
-				AggName aggName = mdf.createAggregateName(dbTable);
+				AggName aggName = mdf.createAggregateName(aoiStratumAggTable);
 				aggTables.add(aggName);
+				
+				// Aoi aggragates 
+				// Database
+				PlotAoiAggregateTable aoiAggTable = new PlotAoiAggregateTable(aoiStratumAggTable, level);
+				addDatabaseTable(aoiAggTable);
+				
+				// Mondrian
+				aggName = mdf.createAggregateName(aoiAggTable);
+				aggTables.add(aggName);
+
 			}
 		}
 		

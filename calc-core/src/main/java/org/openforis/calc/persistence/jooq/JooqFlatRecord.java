@@ -3,8 +3,8 @@ package org.openforis.calc.persistence.jooq;
 import java.util.List;
 
 import org.jooq.Record;
-import org.openforis.calc.io.flat.FlatDataStream;
-import org.openforis.calc.io.flat.FlatRecord;
+import org.openforis.commons.io.flat.FlatDataStream;
+import org.openforis.commons.io.flat.FlatRecord;
 
 /**
  * @author G. Miceli

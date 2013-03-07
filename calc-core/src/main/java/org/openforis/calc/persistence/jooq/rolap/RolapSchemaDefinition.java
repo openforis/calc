@@ -2,12 +2,12 @@ package org.openforis.calc.persistence.jooq.rolap;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 import mondrian.olap.MondrianDef.Schema;
 
 import org.eigenbase.xom.XMLOutput;
+import org.openforis.commons.collection.CollectionUtils;
 
 /**
  * 
@@ -33,7 +33,7 @@ public class RolapSchemaDefinition {
 	}
 	
 	public List<RolapTable> getDatabaseTables() {
-		return Collections.unmodifiableList(databaseTables);
+		return CollectionUtils.unmodifiableList(databaseTables);
 	}
 
 	public void saveMondrianSchemaXml(String filename) throws IOException {

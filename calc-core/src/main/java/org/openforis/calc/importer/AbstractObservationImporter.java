@@ -3,8 +3,6 @@ package org.openforis.calc.importer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openforis.calc.io.flat.FlatDataStream;
-import org.openforis.calc.io.flat.FlatRecord;
 import org.openforis.calc.model.CategoricalValue;
 import org.openforis.calc.model.Category;
 import org.openforis.calc.model.NumericValue;
@@ -14,6 +12,8 @@ import org.openforis.calc.model.SurveyMetadata;
 import org.openforis.calc.model.VariableMetadata;
 import org.openforis.calc.model.VariableType;
 import org.openforis.calc.service.MetadataService;
+import org.openforis.commons.io.flat.FlatDataStream;
+import org.openforis.commons.io.flat.FlatRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.openforis.calc.model.VariableType.*;
@@ -56,8 +56,11 @@ public abstract class AbstractObservationImporter
 		observations = new ArrayList<O>();
 		numVals = new ArrayList<N>();
 		catVals = new ArrayList<C>();
+		onStart();
 	}
 	
+	protected void onStart(){}
+
 	@Override
 	protected final void cleanup() {
 		observationUnitMetadata = null;

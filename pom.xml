@@ -27,6 +27,7 @@
 		<collect.version>3.0-Alpha5-SNAPSHOT</collect.version>
 <!-- 		<commons-vfs.version>2.0-20090205</commons-vfs.version> -->
 		<mondrian.version>3.5.0</mondrian.version>	
+		<of-commons-version>0.0.1</of-commons-version>
 	</properties>
 
 <!-- 	<profiles> -->
@@ -173,6 +174,18 @@
 				<groupId>org.openforis.collect</groupId>
 				<artifactId>collect-core</artifactId>
 				<version>${collect.version}</version>
+			</dependency>
+			
+			<!-- Open Foris Commmons -->
+			<dependency>
+				<groupId>org.openforis.commons</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>${of-commons-version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openforis.commons</groupId>
+				<artifactId>commons-collections</artifactId>
+				<version>${of-commons-version}</version>
 			</dependency>
 			
 			<!-- Spring -->

@@ -3,7 +3,12 @@
  */
 package org.openforis.calc.persistence;
 
-import static org.openforis.calc.persistence.jooq.Tables.*;
+import static org.openforis.calc.persistence.jooq.Tables.AOI;
+import static org.openforis.calc.persistence.jooq.Tables.AOI_HIERARCHY;
+import static org.openforis.calc.persistence.jooq.Tables.AOI_HIERARCHY_LEVEL;
+import static org.openforis.calc.persistence.jooq.Tables.CLUSTER;
+import static org.openforis.calc.persistence.jooq.Tables.SAMPLE_PLOT_VIEW;
+import static org.openforis.calc.persistence.jooq.Tables.STRATUM;
 
 import org.jooq.Insert;
 import org.jooq.Record;

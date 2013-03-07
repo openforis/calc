@@ -1,6 +1,6 @@
 package org.openforis.calc.persistence;
 
-import static org.openforis.calc.persistence.jooq.Tables.*;
+import static org.openforis.calc.persistence.jooq.Tables.INTERVIEW_CATEGORICAL_VALUE;
 
 import org.openforis.calc.model.InterviewCategoricalValue;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;

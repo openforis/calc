@@ -8,8 +8,8 @@ import java.util.List;
 
 import org.jooq.Field;
 import org.jooq.Result;
-import org.openforis.calc.io.flat.FlatDataStream;
-import org.openforis.calc.io.flat.FlatRecord;
+import org.openforis.commons.io.flat.FlatDataStream;
+import org.openforis.commons.io.flat.FlatRecord;
 
 /**
  * @author G. Miceli

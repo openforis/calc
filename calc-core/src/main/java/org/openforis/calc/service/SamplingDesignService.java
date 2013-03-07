@@ -4,9 +4,9 @@ import java.io.IOException;
 
 import org.openforis.calc.importer.ImportException;
 import org.openforis.calc.importer.SamplingDesignImporter;
-import org.openforis.calc.io.flat.FlatDataStream;
 import org.openforis.calc.model.ObservationUnitMetadata;
 import org.openforis.calc.model.SurveyMetadata;
+import org.openforis.commons.io.flat.FlatDataStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

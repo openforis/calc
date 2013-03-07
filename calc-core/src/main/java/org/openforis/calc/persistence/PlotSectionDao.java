@@ -1,6 +1,8 @@
 package org.openforis.calc.persistence;
 
-import static org.openforis.calc.persistence.jooq.Tables.*;
+import static org.openforis.calc.persistence.jooq.Tables.PLOT_CATEGORICAL_VALUE;
+import static org.openforis.calc.persistence.jooq.Tables.PLOT_NUMERIC_VALUE;
+import static org.openforis.calc.persistence.jooq.Tables.PLOT_SECTION;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

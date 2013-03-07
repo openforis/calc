@@ -3,7 +3,6 @@ package org.openforis.calc.service;
 import java.io.IOException;
 import java.util.Collection;
 
-import org.openforis.calc.io.flat.FlatDataStream;
 import org.openforis.calc.model.ObservationUnitMetadata;
 import org.openforis.calc.model.VariableMetadata;
 import org.openforis.calc.persistence.PlotFactDao;
@@ -12,6 +11,7 @@ import org.openforis.calc.persistence.SpecimenCategoricalValueDao;
 import org.openforis.calc.persistence.SpecimenDao;
 import org.openforis.calc.persistence.SpecimenNumericValueDao;
 import org.openforis.calc.persistence.SpecimenViewDao;
+import org.openforis.commons.io.flat.FlatDataStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,8 +34,6 @@ public class ObservationService extends CalcService {
 	private SpecimenCategoricalValueDao specimenCategoricalValueDao;
 	@Autowired
 	private SpecimenViewDao specimenViewDao;
-//	@Autowired
-//	private AreaFactDao areaFactDao;
 	@Autowired
 	private PlotFactDao specimenFactDao;
 	@Autowired

@@ -1,25 +1,28 @@
 package sandbox;
 
-import org.openforis.calc.importer.InterviewImporter;
+import org.openforis.calc.importer.SpecimenImporter;
 import org.openforis.commons.io.csv.CsvReader;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * 
- * @author G. Miceli
+ * @author M. Togna
  *
  */
-public class ImportInterviewData {
+public class ImportSpecimenData {
 
 	public static void main(String[] args)  {
 		try {
 			ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
-			InterviewImporter imp = ctx.getBean(InterviewImporter.class);
-			imp.setSurveyName("naforma1");
-			imp.setObservationUnitName("household");
-			CsvReader csv = new CsvReader("/home/gino/tzdata/household.csv");
+			
+			SpecimenImporter importer = ctx.getBean(SpecimenImporter.class);
+			importer.setSurveyName("naforma1");
+			importer.setObservationUnitName("tree");
+			
+			CsvReader csv = new CsvReader("/home/minotogna/tzdata/trees.csv");
 			csv.readHeaders();
-			imp.importData(csv);
+			importer.importData(csv);
+			
 		} catch ( Throwable ex ) {
 			ex.printStackTrace();
 		}

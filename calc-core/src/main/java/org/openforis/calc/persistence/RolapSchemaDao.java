@@ -31,7 +31,7 @@ public class RolapSchemaDao extends JooqDaoSupport {
 		super(null, null);
 	}
 
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	@Transactional(propagation = Propagation.NOT_SUPPORTED)
 	public void createSchema(List<RolapTable> tables) {
 		String schema = tables.get(0).getSchema().getName();
 		if ( !isValidSchemaName(schema) ) {
