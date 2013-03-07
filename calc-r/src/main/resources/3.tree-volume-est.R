@@ -10,13 +10,13 @@ estimateTreeVolume <- function(trees) {
   # Woodlands (Malimbwi) V    = 0.0001 DBH^2.032*H^0.66
   # else 0.5 *pi * (0.01 * dbh / 2)^2 * est_height
   
-  trees$est_volume <- with(trees,
-                           ifelse(taxon_code == 'EUC/GRA', 0.000065 * dbh^1.633 * est_height^1.137 ,
-                                  ifelse(taxon_code == 'PIN/PAT' , 0.00002117 * dbh^1.8644 * est_height^1.3246 ,
-                                         ifelse(taxon_code == 'TCT/GRA', 0.0001 * dbh^1.91 * est_height^0.75 ,
+  trees$volume <- with(trees,
+                           ifelse(taxon_code == 'EUC/GRA', 0.000065 * dbh^1.633 * total_height^1.137 ,
+                                  ifelse(taxon_code == 'PIN/PAT' , 0.00002117 * dbh^1.8644 * total_height^1.3246 ,
+                                         ifelse(taxon_code == 'TCT/GRA', 0.0001 * dbh^1.91 * total_height^0.75 ,
                                                 ifelse(taxon_code == 'DAL/MEL' , 0.00023 * dbh^2.231, 
-                                                       ifelse(round(vegetation_type/100) == 2, 0.0001 * dbh^2.032 * est_height^0.66,
-                                                              0.5 * pi * (0.01 * dbh / 2)^2 * est_height)
+                                                       ifelse(round(vegetation_type/100) == 2, 0.0001 * dbh^2.032 * total_height^0.66,
+                                                              0.5 * pi * (0.01 * dbh / 2)^2 * total_height)
                                                 )
                                          )
                                   )
@@ -43,7 +43,7 @@ estimateTreeVolume <- function(trees) {
   return (trees);
 }
 
-f <- c('specimen_id','dbh','est_height','taxon_code','vegetation_type');
+f <- c('specimen_id','dbh','total_height','taxon_code','vegetation_type');
 trees <- getTrees( f );
 trees <- subset( trees, !is.na(trees$dbh) );
 trees[is.na(trees$vegetation_type),]$vegetation_type <- 0;
@@ -53,8 +53,9 @@ trees <- estimateTreeVolume( trees=trees );
 
 #Upload results
 #data <- trees[ ,c('specimen_id','est_volume', 'est_volume_per_ha') ];
-data <- trees[ ,c('specimen_id','est_volume') ];
-patchCsv( host, port, updateSpecimenValueUri, data );
+data <- trees[ ,c('specimen_id','volume') ];
+patch( updateSpecimenValueUri, data);
 
+#patchCsv( host, port, updateSpecimenValueUri, data );
 #data <- trees[ ,c('specimen_id','est_volume_per_ha') ];
 #patchCsv( host, port, updateSpecimenValueUri, data);

@@ -66,7 +66,6 @@ trees <- limitTreeHeight( trees );
 
 #names(trees)
 data <- trees[, c('specimen_id','est_height')];
+names(data) <- c('specimen_id','total_height')
 
-#uri = paste( calcRestUri, 'surveys/naforma1/units/tree/specimens', sep='/' );
-
-patchCsv( host, port, updateSpecimenValueUri, data);
+patch( updateSpecimenValueUri, data);

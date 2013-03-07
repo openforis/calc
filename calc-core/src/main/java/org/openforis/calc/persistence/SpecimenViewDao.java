@@ -64,7 +64,9 @@ public class SpecimenViewDao extends JooqDaoSupport<SpecimenViewRecord, Specimen
 						select.addJoin(
 								aliasTable, 
 								JoinType.LEFT_OUTER_JOIN, 
-								V.SPECIMEN_ID.eq(aliasTable.SPECIMEN_ID).and(aliasTable.VARIABLE_ID.eq(variableId))
+								V.SPECIMEN_ID.eq(aliasTable.SPECIMEN_ID)
+									.and(aliasTable.VARIABLE_ID.eq(variableId))
+									.and( aliasTable.CURRENT.isTrue() )
 								);
 					} else if ( variable.isNumeric() ) {
 						SpecimenNumericValue aliasTable = SPECIMEN_NUMERIC_VALUE.as( "alias_"+ (fieldIndex++) );
@@ -72,7 +74,9 @@ public class SpecimenViewDao extends JooqDaoSupport<SpecimenViewRecord, Specimen
 						select.addJoin(
 								aliasTable, 
 								JoinType.LEFT_OUTER_JOIN, 
-								V.SPECIMEN_ID.eq(aliasTable.SPECIMEN_ID).and(aliasTable.VARIABLE_ID.eq(variableId))
+								V.SPECIMEN_ID.eq(aliasTable.SPECIMEN_ID)
+									.and(aliasTable.VARIABLE_ID.eq(variableId))
+									.and( aliasTable.CURRENT.isTrue() )
 								);
 					}
 				} else if ( parentVariable != null ) {
@@ -86,7 +90,9 @@ public class SpecimenViewDao extends JooqDaoSupport<SpecimenViewRecord, Specimen
 						select.addJoin(
 								pcv, 
 								JoinType.LEFT_OUTER_JOIN,
-								V.PLOT_SECTION_ID.eq( pcv.PLOT_SECTION_ID ).and( pcv.VARIABLE_ID.eq(variableId) )								
+								V.PLOT_SECTION_ID.eq( pcv.PLOT_SECTION_ID )
+									.and( pcv.VARIABLE_ID.eq(variableId) )
+									.and( pcv.CURRENT.isTrue() )
 								);
 					} else if ( parentVariable.isNumeric() ) {
 						PlotNumericValueView pnv = PlotNumericValueView.PLOT_NUMERIC_VALUE_VIEW.as( "pnv_" + (fieldIndex++) );
@@ -95,7 +101,9 @@ public class SpecimenViewDao extends JooqDaoSupport<SpecimenViewRecord, Specimen
 						select.addJoin(
 								pnv, 
 								JoinType.LEFT_OUTER_JOIN,
-								V.PLOT_SECTION_ID.eq( pnv.PLOT_SECTION_ID ).and( pnv.VARIABLE_ID.eq(variableId) )				
+								V.PLOT_SECTION_ID.eq( pnv.PLOT_SECTION_ID )
+									.and( pnv.VARIABLE_ID.eq(variableId) )
+									.and( pnv.CURRENT.isTrue() )
 								);
 					}
 				} else {
