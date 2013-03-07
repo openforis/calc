@@ -1,5 +1,7 @@
 package org.openforis.calc.importer.collect;
 
+import static org.openforis.calc.model.VariableType.*;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.util.List;
@@ -154,7 +156,8 @@ public class IdmMetadataImporter {
 		var.setVariableName(attr.getCompoundName());
 		var.setObsUnitId(parentUnit.getId());
 		var.setVariableLabel(attr.getLabel(Type.INSTANCE, lang));
-		var.setVariableType("ratio");
+		// TODO differentiate interval variables 
+		var.setType(RATIO);
 		var.setForAnalysis(true);
 		variableDao.insert(var);
 		log.debug("Num. variable: "+parentUnit.getObsUnitName()+"."+var.getVariableName()+" ("+var.getId()+")");
@@ -165,7 +168,7 @@ public class IdmMetadataImporter {
 		var.setVariableName(attr.getCompoundName());
 		var.setObsUnitId(parentUnit.getId());
 		var.setVariableLabel(attr.getLabel(Type.INSTANCE, lang));
-		var.setVariableType("binary");
+		var.setType(BOOLEAN);
 		var.setForAnalysis(true);
 		variableDao.insert(var);
 		log.debug("Cat. variable: " + parentUnit.getObsUnitName() + "." + var.getVariableName() + " (" + var.getId() + ")");
@@ -189,7 +192,7 @@ public class IdmMetadataImporter {
 		var.setVariableName(attr.getCompoundName());
 		var.setObsUnitId(parentUnit.getId());
 		var.setVariableLabel(attr.getLabel(Type.INSTANCE, lang));
-		var.setVariableType(attr.isMultiple() ? "multiple" : "nominal");
+		var.setType(attr.isMultiple() ? MULTIPLE_RESPONSE : NOMINAL);
 		var.setForAnalysis(true);
 		variableDao.insert(var);
 		log.debug("Cat. variable: " + parentUnit.getObsUnitName() + "." + var.getVariableName() + " (" + var.getId() + ")");
