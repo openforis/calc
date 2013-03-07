@@ -69,10 +69,6 @@ public class VariableMetadata extends Variable {
 		return variable.getObsUnitId();
 	}
 
-	public String getVariableType() {
-		return variable.getVariableType();
-	}
-
 	public Integer getVariableOrder() {
 		return variable.getVariableOrder();
 	}
