@@ -12,9 +12,11 @@ import org.openforis.calc.model.Observation;
 import org.openforis.calc.model.ObservationUnitMetadata;
 import org.openforis.calc.model.SurveyMetadata;
 import org.openforis.calc.model.VariableMetadata;
+import org.openforis.calc.model.VariableType;
 import org.openforis.calc.service.MetadataService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import static org.openforis.calc.model.VariableType.*;
 /**
  * @author G. Miceli
  */
@@ -123,11 +125,12 @@ public abstract class AbstractObservationImporter
 		try {
 			String codeStr = record.getValue(name, String.class);
 			if ( codeStr != null ) {
-				if ( var.isBinary() ) {
+				VariableType type = var.getType();
+				if ( type == BOOLEAN ) {
 					codeStr = translateBinaryCategoryCode(codeStr);
 				} 
 				String[] codes = codeStr.split(",");
-				if ( codes.length > 1 && !var.isMultipleResponse() ) {
+				if ( codes.length > 1 && type != MULTIPLE_RESPONSE ) {
 					log.warn("Single-response variable '"+var.getVariableName()+"' contains multiple codes in line "+getReadRows()+1);
 					return;
 				}

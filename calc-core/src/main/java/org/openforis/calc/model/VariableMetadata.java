@@ -5,6 +5,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.measure.quantity.Quantity;
+import javax.measure.unit.Unit;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
@@ -115,15 +118,19 @@ public class VariableMetadata extends Variable {
 		return variable.equals(obj);
 	}
 
-	public boolean isBinary() {
-		return variable.isBinary();
-	}
-
-	public boolean isMultipleResponse() {
-		return variable.isMultipleResponse();
-	}
-
 	public String getDimensionTableName() {
 		return getVariableName();
+	}
+
+	public VariableType getType() {
+		return variable.getType();
+	}
+
+	public String getUom() {
+		return variable.getUom();
+	}
+
+	public Unit<? extends Quantity> getUnit() {
+		return variable.getUnit();
 	}
 }
