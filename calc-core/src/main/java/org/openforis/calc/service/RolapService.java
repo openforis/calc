@@ -9,6 +9,7 @@ import org.openforis.calc.persistence.PlotAggregateDao;
 import org.openforis.calc.persistence.PlotFactDao;
 import org.openforis.calc.persistence.RolapDimensionDao;
 import org.openforis.calc.persistence.RolapSchemaDao;
+import org.openforis.calc.persistence.SpecimenFactDao;
 import org.openforis.calc.persistence.jooq.rolap.AoiDimensionTable;
 import org.openforis.calc.persistence.jooq.rolap.CategoryDimensionTable;
 import org.openforis.calc.persistence.jooq.rolap.ClusterDimensionTable;
@@ -43,8 +44,8 @@ public class RolapService extends CalcService {
 	private PlotFactDao plotFactDao;
 	@Autowired	
 	private PlotAggregateDao plotAggregateDao;
-//	@Autowired	
-//	private SpecimenFactDao specimenFactDao;
+	@Autowired	
+	private SpecimenFactDao specimenFactDao;
 	@Autowired	
 	private InterviewFactDao interviewFactDao;
 	
@@ -88,8 +89,8 @@ public class RolapService extends CalcService {
 				plotAggregateDao.populate((PlotAoiAggregateTable) table);
 			} else if ( table instanceof SpecimenFactTable ) {
 				SpecimenFactTable factTable = (SpecimenFactTable) table;
-				// TODO
-//				specimenFactDao.populate(factTable);
+				specimenFactDao.populate(factTable);
+				//TODO speciemn aggregates
 			} else if ( table instanceof InterviewFactTable ) {
 				InterviewFactTable factTable = (InterviewFactTable) table;
 				interviewFactDao.populate(factTable);

@@ -1,20 +1,31 @@
 package org.openforis.calc.persistence.jooq.rolap;
 
-import java.util.Collections;
+import static org.openforis.calc.persistence.jooq.Tables.SPECIMEN_VIEW;
+
 import java.util.List;
 
-import org.jooq.Record;
-import org.jooq.TableField;
+import org.jooq.Field;
 import org.openforis.calc.model.ObservationUnitMetadata;
+import org.openforis.calc.persistence.jooq.tables.SpecimenView;
+import org.openforis.commons.collection.CollectionUtils;
 
 /**
  * @author G. Miceli
  * @author M. Togna
  */
 public class SpecimenFactTable extends FactTable {
+
 	private static final long serialVersionUID = 1L;
 
-	private List<TableField<Record, Integer>> aoiFields;
+	private static final SpecimenView S = SPECIMEN_VIEW;
+
+	// Fixed dimensions
+	public final Field<Integer> STRATUM_ID = createFixedDimensionField(S.STRATUM_ID);
+	public final Field<Integer> CLUSTER_ID = createFixedDimensionField(S.CLUSTER_ID);
+	public final Field<Integer> PLOT_ID = createFixedDimensionField("plot_id");
+	public final Field<Integer> SPECIMEN_ID = createFixedDimensionField(S.SPECIMEN_ID);
+
+	private List<Field<Integer>> aoiFields;
 
 	SpecimenFactTable(String schema, ObservationUnitMetadata unit) {
 		super(schema, unit.getFactTableName(), unit);
@@ -22,12 +33,11 @@ public class SpecimenFactTable extends FactTable {
 	}
 
 	protected void initFields() {
-		// TODO 
-//		aoiFields = createAoiFields();
+		aoiFields = createAoiFields();
 		initUserDefinedFields();
 	}
-	
-	public List<TableField<Record, Integer>> getAoiFields() {
-		return Collections.unmodifiableList(aoiFields);
+
+	public List<Field<Integer>> getAoiFields() {
+		return CollectionUtils.unmodifiableList(aoiFields);
 	}
 }
