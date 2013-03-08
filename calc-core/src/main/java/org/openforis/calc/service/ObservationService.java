@@ -109,7 +109,7 @@ public class ObservationService extends CalcService {
 
 	@Transactional
 	synchronized 
-	public void removeData(String surveyName, String obsUnitName) throws IOException {
+	public void removeData(String surveyName, String obsUnitName) {
 		ObservationUnitMetadata unit = getObservationUnitMetadata(surveyName, obsUnitName);
 		if ( unit == null ) {
 			return;

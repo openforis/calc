@@ -12,14 +12,18 @@ import org.openforis.calc.model.SurveyMetadata;
 import org.openforis.calc.model.VariableMetadata;
 import org.openforis.calc.model.VariableType;
 import org.openforis.calc.service.MetadataService;
+import org.openforis.calc.service.ObservationService;
 import org.openforis.commons.io.flat.FlatDataStream;
 import org.openforis.commons.io.flat.FlatRecord;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import static org.openforis.calc.model.VariableType.*;
+
 /**
  * @author G. Miceli
  */
+@Component
 public abstract class AbstractObservationImporter
 		<O extends Observation, N extends NumericValue, C extends CategoricalValue> 
 		extends AbstractFlatFileImporter {
@@ -29,6 +33,8 @@ public abstract class AbstractObservationImporter
 	
 	@Autowired
 	private MetadataService metadataService;
+	@Autowired
+	private ObservationService observationService;
 	
 	private ObservationUnitMetadata observationUnitMetadata;
 
@@ -39,6 +45,7 @@ public abstract class AbstractObservationImporter
 	private List<O> observations;
 	private List<N> numVals;
 	private List<C> catVals;
+	private boolean incremental;
 
 	AbstractObservationImporter(Class<N> numValueClass, Class<C> catValueClass) {
 		this.numValueClass = numValueClass;
@@ -53,6 +60,9 @@ public abstract class AbstractObservationImporter
 	protected final void onStart(FlatDataStream stream) {
 		List<String> fieldNames = stream.getFieldNames();
 		loadMetadata(fieldNames);
+		if ( !incremental ) {
+			observationService.removeData(surveyName, observationUnitName);
+		}
 		observations = new ArrayList<O>();
 		numVals = new ArrayList<N>();
 		catVals = new ArrayList<C>();
@@ -106,7 +116,7 @@ public abstract class AbstractObservationImporter
 	protected boolean processRecord(FlatRecord record) {
 		O obs = processObservation(record);
 		if ( obs == null ) {
-			return false;
+			observationService.removeData(surveyName, observationUnitName);
 		}
 		observations.add(obs);
 		processValues(record, obs);
@@ -217,5 +227,13 @@ public abstract class AbstractObservationImporter
 	
 	protected ObservationUnitMetadata getObservationUnitMetadata() {
 		return observationUnitMetadata;
+	}
+
+	protected boolean isIncremental() {
+		return incremental;
+	}
+
+	protected void setIncremental(boolean incremental) {
+		this.incremental = incremental;
 	}
 }
