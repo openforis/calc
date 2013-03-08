@@ -17,6 +17,7 @@ public class ObservationUnitMetadata extends ObservationUnit {
 	private static final String FACT_TABLE_SUFFIX = "_fact";
 	private static final String AGG_TABLE_PREFIX = "_agg_";
 	private static final String UNDERSCORE = "_";
+	private static final String DIMENSION_NAME_SUFFIX = "_no";
 
 	private ObservationUnit observationUnit;
 	private Map<String, VariableMetadata> variableMap;
@@ -129,6 +130,10 @@ public class ObservationUnitMetadata extends ObservationUnit {
 		return getObsUnitName() + FACT_TABLE_SUFFIX;
 	}
 
+	public String getDimensionTableName() {
+		return getObsUnitName() + DIMENSION_NAME_SUFFIX;
+	}
+	
 	public String getAggregateTableName(String infix) {
 		return AGG_TABLE_PREFIX + infix + UNDERSCORE + getFactTableName();
 	}

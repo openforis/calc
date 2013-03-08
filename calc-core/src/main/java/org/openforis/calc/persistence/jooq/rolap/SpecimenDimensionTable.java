@@ -14,7 +14,7 @@ public class SpecimenDimensionTable extends HierarchicalDimensionTable {
 	private ObservationUnitMetadata observationUnitMetadata;
 
 	SpecimenDimensionTable(String schema, ObservationUnitMetadata unit, PlotDimensionTable parentTable) {
-		super(schema, unit.getObsUnitName(), parentTable);
+		super(schema, unit.getDimensionTableName(), parentTable);
 		this.observationUnitMetadata = unit;
 	}
 

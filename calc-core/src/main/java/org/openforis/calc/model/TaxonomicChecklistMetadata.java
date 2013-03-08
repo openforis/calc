@@ -7,7 +7,7 @@ package org.openforis.calc.model;
  */
 public class TaxonomicChecklistMetadata {
 
-	private static final String SUFFIX = "_taxon";
+//	private static final String SUFFIX = "_taxon";
 
 	private SurveyMetadata surveyMetadata;
 	private TaxonomicChecklist taxonomicChecklist;
@@ -53,6 +53,6 @@ public class TaxonomicChecklistMetadata {
 	}
 
 	public String getTableName() {
-		return getChecklistName() + SUFFIX;
+		return getChecklistName();
 	}
 }

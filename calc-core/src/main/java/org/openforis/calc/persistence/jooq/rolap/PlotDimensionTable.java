@@ -15,7 +15,7 @@ public class PlotDimensionTable extends HierarchicalDimensionTable {
 	private ObservationUnitMetadata observationUnitMetadata;
 
 	PlotDimensionTable(String schema, ObservationUnitMetadata unit, ClusterDimensionTable parentTable) {
-		super(schema, unit.getObsUnitName(), parentTable);
+		super(schema, unit.getDimensionTableName(), parentTable);
 		this.observationUnitMetadata = unit;
 	}
 

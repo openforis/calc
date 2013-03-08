@@ -78,14 +78,14 @@ public class PlotCubeGenerator extends RolapCubeGenerator {
 	@Override
 	protected void initDimensionUsages() {
 		PlotFactTable fact = (PlotFactTable) getDatabaseFactTable();
+		ObservationUnitMetadata unit = getObservationUnitMetadata();
 		
 		// Main key dimensions
 		addDimensionUsage(mdf.createDimensionUsage("Stratum", fact.STRATUM_ID));
-		addDimensionUsage(mdf.createDimensionUsage("Plot", fact.PLOT_ID));
+		addDimensionUsage(mdf.createDimensionUsage(unit.getDimensionTableName(), fact.PLOT_ID));
 		// TODO common place for fixed dimension names
 		
 		// AOI dimensions
-		ObservationUnitMetadata unit = getObservationUnitMetadata();
 		SurveyMetadata survey = unit.getSurveyMetadata();
 		List<AoiHierarchyMetadata> aoi = survey.getAoiHierarchyMetadata();
 		// TODO multiple hierarchies (one dimension per AOI hierarchy)
