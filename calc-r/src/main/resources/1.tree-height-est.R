@@ -24,7 +24,11 @@ estimateTreeHeight <- function( trees ) {
   
   #summary(height_model)  
   trees$est_height <- predict( height_model, newdata = trees[,c('dbh','total_height')] );  
-  trees$est_height <- with( trees, ifelse(is.na(total_height), est_height, total_height) );
+  trees$est_height <- with( trees, ifelse(
+                                      is.na(total_height), 
+                                        est_height, 
+                                      total_height) 
+                            );
   
   # Cap predicted height at 40m  
   #trees$est_height <- with( trees, ifelse(est_height > 40, 40, est_height) );
@@ -65,7 +69,8 @@ trees <- estimateTreeHeight( trees );
 trees <- limitTreeHeight( trees );
 
 #names(trees)
+#data <- subset(trees, is.na(trees$total_height) );
 data <- trees[, c('specimen_id','est_height')];
-names(data) <- c('specimen_id','total_height')
+names(data) <- c('specimen_id','total_height');
 
-patch( updateSpecimenValueUri, data);
+patchCsv( host, port, updateSpecimenValueUri, data );

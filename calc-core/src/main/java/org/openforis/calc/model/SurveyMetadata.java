@@ -2,35 +2,46 @@ package org.openforis.calc.model;
 
 import java.sql.Date;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.openforis.commons.collection.CollectionUtils;
+
 /**
  * @author G. Miceli
+ * @author M. Togna
  */
 public class SurveyMetadata {
-	
+
 	private Survey survey;
 	private Map<Integer, ObservationUnitMetadata> obsUnitMetadataByUnitId;
 	private Map<String, ObservationUnitMetadata> obsUnitMetadataByUnitName;
 	private List<AoiHierarchyMetadata> aoiHierarchyMetadata;
-	
-	public SurveyMetadata(Survey survey, Collection<ObservationUnitMetadata> ous, List<AoiHierarchyMetadata> aoiHierarchyMetadata) {
+	private List<TaxonomicChecklistMetadata> taxonomicChecklists;
+
+	public SurveyMetadata(Survey survey, Collection<ObservationUnitMetadata> ous, List<AoiHierarchyMetadata> aoiHierarchyMetadata, List<TaxonomicChecklistMetadata> taxonomicChecklists) {
 		this.survey = survey;
 		this.aoiHierarchyMetadata = aoiHierarchyMetadata;
+		setTaxonomicChecklists(taxonomicChecklists);
 		setObservationUnitMetadata(ous);
 	}
-	
+
 	private void setObservationUnitMetadata(Collection<ObservationUnitMetadata> ous) {
 		obsUnitMetadataByUnitId = new LinkedHashMap<Integer, ObservationUnitMetadata>();
 		obsUnitMetadataByUnitName = new HashMap<String, ObservationUnitMetadata>();
 		for ( ObservationUnitMetadata ou : ous ) {
-			ou.setSurveyMetadata( this );
-			obsUnitMetadataByUnitId.put( ou.getObsUnitId(), ou );
-			obsUnitMetadataByUnitName.put( ou.getObsUnitName(), ou );
+			ou.setSurveyMetadata(this);
+			obsUnitMetadataByUnitId.put(ou.getObsUnitId(), ou);
+			obsUnitMetadataByUnitName.put(ou.getObsUnitName(), ou);
+		}
+	}
+
+	private void setTaxonomicChecklists(List<TaxonomicChecklistMetadata> taxonomicChecklists) {
+		this.taxonomicChecklists = taxonomicChecklists;
+		for ( TaxonomicChecklistMetadata checklist : this.taxonomicChecklists ) {
+			checklist.setSurveyMetadata(this);
 		}
 	}
 
@@ -46,7 +57,7 @@ public class SurveyMetadata {
 	}
 
 	public Collection<ObservationUnitMetadata> getObservationMetadata() {
-		return Collections.unmodifiableCollection(obsUnitMetadataByUnitId.values());
+		return CollectionUtils.unmodifiableCollection(obsUnitMetadataByUnitId.values());
 	}
 
 	public Integer getSurveyId() {
@@ -76,8 +87,22 @@ public class SurveyMetadata {
 	public String getSurveyDescription() {
 		return survey.getSurveyDescription();
 	}
-	
+
 	public List<AoiHierarchyMetadata> getAoiHierarchyMetadata() {
-		return Collections.unmodifiableList(aoiHierarchyMetadata);
+		return CollectionUtils.unmodifiableList(aoiHierarchyMetadata);
 	}
+
+	public TaxonomicChecklistMetadata getTaxonomicChecklistByObsUnitId(int obsUnitId) {
+		for ( TaxonomicChecklistMetadata checklist : getTaxonomicChecklists() ) {
+			if ( checklist.getObsUnitId().equals(obsUnitId) ) {
+				return checklist;
+			}
+		}
+		return null;
+	}
+
+	public List<TaxonomicChecklistMetadata> getTaxonomicChecklists() {
+		return CollectionUtils.unmodifiableList(taxonomicChecklists);
+	}
+
 }

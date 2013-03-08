@@ -15,6 +15,7 @@ import org.openforis.calc.model.AoiHierarchyLevelMetadata;
 import org.openforis.calc.model.AoiHierarchyMetadata;
 import org.openforis.calc.model.ObservationUnitMetadata;
 import org.openforis.calc.model.SurveyMetadata;
+import org.openforis.calc.model.TaxonomicChecklistMetadata;
 import org.openforis.calc.model.VariableMetadata;
 
 /**
@@ -112,7 +113,7 @@ public class RolapSchemaGenerator {
 		initAoiDimensions();
 		initSamplingDesignDimensions();
 		// TODO species dimension
-//		initSpeciesDimension();
+		initSpeciesDimensions();
 		initUserDefinedDimensions();
 	}
 
@@ -161,6 +162,7 @@ public class RolapSchemaGenerator {
 		initStratumDimension();
 		initSesuDimension(clusterTable);
 		initPlotDimensions(clusterTable);
+		initSpecimenDimensions(clusterTable);
 	}
 
 	private void initStratumDimension() {
@@ -204,7 +206,54 @@ public class RolapSchemaGenerator {
 		
 		return hier;
 	}
-
+	
+	private void initSpecimenDimensions(ClusterDimensionTable clusterTable) {
+		for ( ObservationUnitMetadata unit : units ) {
+			if ( unit.isSpecimen()  ) {
+				Hierarchy hier = createSpecimenDimensionHierarchy(unit, clusterTable);
+				Dimension dim = mdf.createDimension(unit.getObsUnitName(), unit.getObsUnitLabel(), hier);
+				sharedDimensions.add(dim);
+			}
+		}
+	}
+	
+	private Hierarchy createSpecimenDimensionHierarchy(ObservationUnitMetadata unit, ClusterDimensionTable clusterTable) {
+		String clusterLevelName = clusterTable.getName();
+		Level clusterLevel = mdf.createLevel(clusterLevelName, clusterTable.getDenormalizedIdColumn(), clusterTable.getDenormalizedLabelColumn());
+		PlotDimensionTable plotTable = new PlotDimensionTable(databaseSchema, unit.getObsUnitParent(), clusterTable);
+//		dbTables.add(plotTable);
+		String plotLevelName = plotTable.getName();
+		Level plotLevel = mdf.createLevel(plotLevelName, plotTable.getDenormalizedIdColumn(), plotTable.getDenormalizedLabelColumn());
+		
+		SpecimenDimensionTable specimenTable = new SpecimenDimensionTable(databaseSchema, unit, plotTable);
+		dbTables.add(specimenTable);
+		
+		String specimenLevelName = specimenTable.getName();
+		Level specimenLevel = mdf.createLevel(specimenLevelName , specimenTable.getDenormalizedIdColumn(), specimenTable.getDenormalizedLabelColumn());
+		
+		// TODO exclude cluster if not clustered design
+		View joinView = mdf.createJoinView(specimenTable, unit.getObsUnitName());
+		Hierarchy hier = mdf.createHierarchy(unit.getObsUnitName(), true, joinView, clusterLevel, plotLevel, specimenLevel);
+		
+		return hier;
+	}
+	
+	// SPECIES DIMENSIONS
+	private void initSpeciesDimensions() {
+		List<TaxonomicChecklistMetadata> checklists = getSurveyMetadata().getTaxonomicChecklists();
+		for ( TaxonomicChecklistMetadata checklist : checklists ) {
+			//TODO Create hierarchical taxon check lists 
+			TaxonDimensionTable table = new TaxonDimensionTable(databaseSchema, checklist, null);
+			dbTables.add(table);
+			
+			String tableName = table.getName();
+			Level level = mdf.createLevel(tableName, table.getDenormalizedIdColumn(), table.getDenormalizedLabelColumn());
+			Hierarchy hier = mdf.createHierarchy(tableName, true, tableName, level);
+			Dimension dim = mdf.createDimension(tableName, MondrianDefFactory.toMdxName(tableName), hier);
+			sharedDimensions.add(dim);
+		}
+		
+	}
 	// USER-DEFINED DIMENSIONS
 	
 	private void initUserDefinedDimensions() {

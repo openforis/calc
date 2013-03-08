@@ -57,55 +57,61 @@ public class SpecimenNumericValueDao extends JooqDaoSupport<SpecimenNumericValue
 				Double value = r.getValue( varMetadata.getVariableName(), Double.class );
 				
 				//1. insert into tmp table
-				Query insert = getTempValueInsert(create, transactionId, specimenId, variableId, value);
+				Query insert = createTmpValuesInsertQuery(create, transactionId, specimenId, variableId, value);
 				queries.add( insert );
 				
-				if( cnt % 1000 == 0 ) {
-					create.batch( queries ).execute();
-					queries.clear();
+				if( cnt % 2000 == 0 ) {
+					executeQueries(queries);
 				}
 			}
 		}
 		
-		Query delete = getDeleteCurrentValues(create, transactionId);
+		Query delete = createCurrentValuesDeleteQuery(create, transactionId);
 		queries.add(delete);
+
+		Query update = createCurrentValuesUpdateQuery(create, transactionId, false);
+		queries.add(update);
+
+		Query insert = createCurrentValuesInsertQuery(create, transactionId);
+		queries.add(insert);
+
+		Query deleteTmp = createTmpValuesDeleteQuery(create, transactionId);
+		queries.add(deleteTmp);
+
+		executeQueries(queries);
 		
-		Query update = getUpdateCurrentValue(create, transactionId, false);
-		queries.add( update );
-		
-		Query insert = getNumericValuesInsert(create, transactionId);
-		queries.add( insert );
-		
-		Query deleteTmpValues = getTempValuesDelete(create, transactionId);
-		queries.add( deleteTmpValues );
-		
-		create.batch( queries ).execute();
-		
-		if( getLog().isDebugEnabled() ){
-			long end = System.currentTimeMillis() - start;
-			getLog().debug("Updating specimen numerical values executed in("+end+" mills): " + TimeUnit.MILLISECONDS.toSeconds(end)+" seconds");
-		}
+		long end = System.currentTimeMillis() - start;
+		getLog().debug("Updating specimen numerical values for variables "+variables.toString()+" executed in " + TimeUnit.MILLISECONDS.toSeconds(end)+" seconds");
 	}
 
-	private Query getTempValueInsert(Factory create, int transactionId, Integer specimenId, Integer variableId, Double value) {
+	@Transactional
+	private void executeQueries(ArrayList<Query> queries) {
+		Factory create = getJooqFactory();
+		create.batch( queries ).execute();
+		queries.clear();
+	}
+
+	private Query createTmpValuesInsertQuery(Factory create, int transactionId, Integer specimenId, Integer variableId, Double value) {
 		return create
 			.insertInto(TNV, TNV.TRANSACTION_ID, TNV.OBJECT_ID, TNV.VARIABLE_ID, TNV.VALUE)
 			.values(transactionId, specimenId, variableId, value);
 	}
 
-	private Query getDeleteCurrentValues(Factory create, int transactionId) {
+	private Query createCurrentValuesDeleteQuery(Factory create, int transactionId) {
 		return create.delete( S )
 				.where( 
-						Factory.row(S.SPECIMEN_ID, S.VARIABLE_ID)
-								.in( 
-									create.select(TNV.OBJECT_ID,TNV.VARIABLE_ID)
-									.from(TNV)
-									.where( TNV.TRANSACTION_ID.eq( transactionId ).and(S.ORIGINAL.isFalse()) )
+						S.ORIGINAL.isFalse()
+						.and(
+							Factory.row(S.SPECIMEN_ID, S.VARIABLE_ID)
+									.in( 
+										create.select(TNV.OBJECT_ID,TNV.VARIABLE_ID)
+										.from(TNV)
+										.where( TNV.TRANSACTION_ID.eq( transactionId )) )
 						)
 				);
 	}
 	
-	private Query getUpdateCurrentValue(Factory create, int transactionId, boolean currentValue) {
+	private Query createCurrentValuesUpdateQuery(Factory create, int transactionId, boolean currentValue) {
 		return 
 				create
 				.update( S )
@@ -118,30 +124,20 @@ public class SpecimenNumericValueDao extends JooqDaoSupport<SpecimenNumericValue
 								.where( TNV.TRANSACTION_ID.eq( transactionId ) ) 
 							)
 					);
-		
-//				create.delete( S )
-//				.where( 
-//						Factory.row(S.SPECIMEN_ID, S.VARIABLE_ID)
-//								.in(
-//									create.select(TNV.OBJECT_ID, TNV.VARIABLE_ID)
-//									.from(TNV)
-//									.where( TNV.TRANSACTION_ID.eq( transactionId ) )
-//						)
-//				);
 	}
 
-	private Query getNumericValuesInsert(Factory create, int transactionId) {
+	private Query createCurrentValuesInsertQuery(Factory create, int transactionId) {
 		return create
 			.insertInto( S, S.SPECIMEN_ID, S.VARIABLE_ID, S.VALUE, S.ORIGINAL, S.CURRENT )
 			.select( 
 					create
 						.select( TNV.OBJECT_ID, TNV.VARIABLE_ID, TNV.VALUE, Factory.value(false, Boolean.class), Factory.value(true, Boolean.class) )
 						.from( TNV )
-						.where( TNV.TRANSACTION_ID.eq(transactionId).and( TNV.VALUE.isNotNull() ) )
+						.where( TNV.TRANSACTION_ID.eq(transactionId) )
 					);
 	}
 
-	private Query getTempValuesDelete(Factory create, int transactionId) {
+	private Query createTmpValuesDeleteQuery(Factory create, int transactionId) {
 		return create.delete( TNV ).where( TNV.TRANSACTION_ID.eq(transactionId) );
 	}
 	

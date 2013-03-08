@@ -73,7 +73,6 @@ public class ObservationService extends CalcService {
 		boolean useShares = plotDistributionCalculationMethod == PlotDistributionCalculationMethod.SHARED_PLOT;
 		return plotSectionViewDao.streamCategoryDistribution(variables, unitMetadata.getObsUnitId(), useShares);
 	}
-	
 
 	@Transactional
 	synchronized 

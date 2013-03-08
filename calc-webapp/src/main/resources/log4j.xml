@@ -67,7 +67,7 @@
 		name="org.openforis"
 		additivity="false"
 	>
-		<priority value="info" />
+		<priority value="debug" />
 		<appender-ref ref="of-calc" />
 	</category>
 	

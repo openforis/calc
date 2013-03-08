@@ -3,9 +3,9 @@ package org.openforis.calc.persistence;
 import static org.openforis.calc.persistence.jooq.Tables.*;
 
 import org.jooq.impl.Factory;
+import org.openforis.calc.model.InterviewNumericValue;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
 import org.openforis.calc.persistence.jooq.tables.Interview;
-import org.openforis.calc.persistence.jooq.tables.InterviewNumericValue;
 import org.openforis.calc.persistence.jooq.tables.records.InterviewNumericValueRecord;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +23,7 @@ public class InterviewNumericValueDao extends JooqDaoSupport<InterviewNumericVal
 
 	public void deleteByObsUnit(int id) {
 		Factory create = getJooqFactory();
-		InterviewNumericValue v = INTERVIEW_NUMERIC_VALUE.as("v");
+		org.openforis.calc.persistence.jooq.tables.InterviewNumericValue v = INTERVIEW_NUMERIC_VALUE.as("v");
 		Interview o = INTERVIEW.as("o");
 		create.delete(v)
 			  .where(v.INTERVIEW_ID.in(

@@ -113,8 +113,8 @@ public class PlotFactDao extends RolapFactDao {
 						catView, 
 						JoinType.LEFT_OUTER_JOIN, 
 						view.PLOT_SECTION_ID.eq(catView.PLOT_SECTION_ID)
-							.and(catView.VARIABLE_ID.eq(varId)
-						)
+						.and( catView.VARIABLE_ID.eq(varId) )
+						.and( catView.CURRENT.isTrue() )
 				);
 			}
 			// TODO select numeric variables (see InterviewFactDao)

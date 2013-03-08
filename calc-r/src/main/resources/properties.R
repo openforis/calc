@@ -5,38 +5,29 @@ host <- '127.0.0.1';
 port <- '8080';
 # 'http://localhost:8080/calc/rest'
 calcRestUri <- sprintf('http://%s:%s/calc/rest', host, port);
-saveAreaResultsUri <- paste(calcRestUri, 'surveys/naforma1/area-results', sep='/');
-updateSpecimenValueUri <- '/surveys/naforma1/units/tree/specimens';
-updateSpecimenValueUri <-  sprintf('%s%s', calcRestUri, updateSpecimenValueUri );           
+saveAreaResultsUri <- paste(calcRestUri, '/surveys/naforma1/area-results', sep='/');
+updateSpecimenValueUri <- '/calc/rest/surveys/naforma1/units/tree/specimens';
+#updateSpecimenValueUri <-  sprintf('%s%s', calcRestUri, updateSpecimenValueUri );           
 
-patch <- function(uri, data) {
-  # closeAllConnections();
+source('src/main/resources/sockets.R')
+
+#patch <- function(uri, data) {
   
+  #closeAllConnections();
   #conn = textConnection(NULL, "w");
-  #write.csv(data, conn, row.names=F);
-  #body = textConnectionValue(conn);
-    
-  #postForm(uri, style="POST",
-  #        "fileData" = body,
-  #         .opts = list(verbose = TRUE, header = TRUE));
-  
-  #close(conn);
-  
-  closeAllConnections();
-  conn = textConnection(NULL, "w");
-  write.csv(data, conn, row.names=F, quote=F);
-  lines = textConnectionValue(conn);
+  #write.csv(data, conn, row.names=F, quote=F);
+  #lines = textConnectionValue(conn);
   
   # Concat array of lines together in one string (!!!)
-  body = paste(lines, collapse='\n');
+  #body = paste(lines, collapse='\n');
   
   # HTTP PATCH allows for partial update of a resource
-  curlPerform(url           = uri,          
-              httpheader    =  c(Accept="text/csv", 'Content-Type' = "text/csv; charset=utf-8"),
-              customrequest = "PATCH",            
-              postfields    = body
-  );
+  #curlPerform(url           = uri,          
+   #           httpheader    =  c(Accept="text/csv", 'Content-Type' = "text/csv; charset=utf-8"),
+    #          customrequest = "PATCH",            
+     #         postfields    = body
+  #);
   
   # Close the connection when done!
-  close(conn);
-}
+  #close(conn);
+#}

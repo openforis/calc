@@ -9,6 +9,7 @@ import org.openforis.calc.persistence.PlotAggregateDao;
 import org.openforis.calc.persistence.PlotFactDao;
 import org.openforis.calc.persistence.RolapDimensionDao;
 import org.openforis.calc.persistence.RolapSchemaDao;
+import org.openforis.calc.persistence.SpecimenFactDao;
 import org.openforis.calc.persistence.jooq.rolap.AoiDimensionTable;
 import org.openforis.calc.persistence.jooq.rolap.CategoryDimensionTable;
 import org.openforis.calc.persistence.jooq.rolap.ClusterDimensionTable;
@@ -20,8 +21,10 @@ import org.openforis.calc.persistence.jooq.rolap.PlotFactTable;
 import org.openforis.calc.persistence.jooq.rolap.RolapSchemaDefinition;
 import org.openforis.calc.persistence.jooq.rolap.RolapSchemaGenerator;
 import org.openforis.calc.persistence.jooq.rolap.RolapTable;
+import org.openforis.calc.persistence.jooq.rolap.SpecimenDimensionTable;
 import org.openforis.calc.persistence.jooq.rolap.SpecimenFactTable;
 import org.openforis.calc.persistence.jooq.rolap.StratumDimensionTable;
+import org.openforis.calc.persistence.jooq.rolap.TaxonDimensionTable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,8 +46,8 @@ public class RolapService extends CalcService {
 	private PlotFactDao plotFactDao;
 	@Autowired	
 	private PlotAggregateDao plotAggregateDao;
-//	@Autowired	
-//	private SpecimenFactDao specimenFactDao;
+	@Autowired	
+	private SpecimenFactDao specimenFactDao;
 	@Autowired	
 	private InterviewFactDao interviewFactDao;
 	
@@ -79,6 +82,10 @@ public class RolapService extends CalcService {
 				rolapDimensionDao.populate((PlotDimensionTable)table);
 			} else if ( table instanceof StratumDimensionTable ) {
 				rolapDimensionDao.populate((StratumDimensionTable)table);
+			} else if ( table instanceof SpecimenDimensionTable ) {
+				rolapDimensionDao.populate((SpecimenDimensionTable)table);
+			} else if ( table instanceof TaxonDimensionTable ) {
+				rolapDimensionDao.populate((TaxonDimensionTable)table);
 			} else if ( table instanceof PlotFactTable ) {
 				PlotFactTable factTable = (PlotFactTable) table;
 				plotFactDao.populate(factTable);
@@ -88,8 +95,8 @@ public class RolapService extends CalcService {
 				plotAggregateDao.populate((PlotAoiAggregateTable) table);
 			} else if ( table instanceof SpecimenFactTable ) {
 				SpecimenFactTable factTable = (SpecimenFactTable) table;
-				// TODO
-//				specimenFactDao.populate(factTable);
+				specimenFactDao.populate(factTable);
+				//TODO speciemn aggregates
 			} else if ( table instanceof InterviewFactTable ) {
 				InterviewFactTable factTable = (InterviewFactTable) table;
 				interviewFactDao.populate(factTable);
