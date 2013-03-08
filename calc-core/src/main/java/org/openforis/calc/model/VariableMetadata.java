@@ -118,8 +118,8 @@ public class VariableMetadata extends Variable {
 		return getVariableName();
 	}
 
-	public VariableType getType() {
-		return variable.getType();
+	public VariableType getVariableTypeEnum() {
+		return variable.getVariableTypeEnum();
 	}
 
 	public String getUom() {

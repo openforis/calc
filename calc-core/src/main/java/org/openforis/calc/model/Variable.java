@@ -13,7 +13,7 @@ public class Variable extends org.openforis.calc.persistence.jooq.tables.pojos.V
 	private static final long serialVersionUID = 1L;
 
 	public boolean isCategorical() {
-		switch (getType()) {
+		switch (getVariableTypeEnum()) {
 		case NOMINAL:
 		case ORDINAL:
 		case MULTIPLE_RESPONSE:
@@ -29,14 +29,14 @@ public class Variable extends org.openforis.calc.persistence.jooq.tables.pojos.V
 	}
 	
 	public boolean isBoolean() {
-		return getType() == VariableType.BOOLEAN;
+		return getVariableTypeEnum() == VariableType.BOOLEAN;
 	}
 	
-	public void setType(VariableType type) {
+	public void setVariableTypeEnum(VariableType type) {
 		super.setVariableType( type.toString() );
 	}
 
-	public VariableType getType() {
+	public VariableType getVariableTypeEnum() {
 		return VariableType.get(getVariableType());
 	}
 	

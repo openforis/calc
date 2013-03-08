@@ -5,8 +5,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.openforis.calc.model.ObservationUnit.Type;
 import org.openforis.calc.model.ObservationUnitMetadata;
 import org.openforis.calc.model.VariableMetadata;
+import org.openforis.calc.persistence.InterviewCategoricalValueDao;
+import org.openforis.calc.persistence.InterviewDao;
+import org.openforis.calc.persistence.InterviewNumericValueDao;
 import org.openforis.calc.persistence.PlotFactDao;
 import org.openforis.calc.persistence.PlotSectionViewDao;
 import org.openforis.calc.persistence.SpecimenCategoricalValueDao;
@@ -36,6 +40,12 @@ public class ObservationService extends CalcService {
 	private SpecimenCategoricalValueDao specimenCategoricalValueDao;
 	@Autowired
 	private SpecimenViewDao specimenViewDao;
+	@Autowired
+	private InterviewDao interviewDao;
+	@Autowired
+	private InterviewNumericValueDao interviewNumericValueDao;
+	@Autowired
+	private InterviewCategoricalValueDao interviewCategoricalValueDao;
 	@Autowired
 	private PlotFactDao specimenFactDao;
 	@Autowired
@@ -70,7 +80,6 @@ public class ObservationService extends CalcService {
 	public void updateSpecimenNumericValue(String surveyName, String obsUnitName, FlatDataStream dataStream, List<String> variableNames) throws IOException {
 		List<VariableMetadata> variables = new ArrayList<VariableMetadata>(variableNames.size());
 		ObservationUnitMetadata unitMetadata = getObservationUnitMetadata(surveyName, obsUnitName);
-		int i = 0;
 		for ( String variableName : variableNames ) {
 			VariableMetadata varMetadata = unitMetadata.getVariableMetadataByName(variableName);
 			if( varMetadata != null ) {
@@ -90,4 +99,21 @@ public class ObservationService extends CalcService {
 	}
 	
 
+	@Transactional
+	synchronized 
+	public void removeData(String surveyName, String obsUnitName) throws IOException {
+		ObservationUnitMetadata unit = getObservationUnitMetadata(surveyName, obsUnitName);
+		if ( unit == null ) {
+			return;
+		}
+		Type type = unit.getObsUnitTypeEnum();
+		switch (type) {
+		case INTERVIEW:
+			interviewNumericValueDao.deleteByObsUnit(unit.getId());
+			break;
+
+		default:
+			break;
+		} 
+	}
 }

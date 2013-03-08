@@ -79,18 +79,22 @@ public class IdmMetadataImporter {
 	private String codeListItemLabelSeparator = " > ";
 	// TODO add progress states item counts (plot types, specimen types, variables, etc)
 	
+	/**
+	 * Requires a clean before importing; stop if exists!  
+	 */
 	@Transactional
 	synchronized
-	public void importMetadata(String surveyName, Reader reader) throws IOException, IdmlParseException, InvalidMetadataException {		
+	public void importMetadata(String surveyName, Reader reader) throws IOException, IdmlParseException, InvalidMetadataException {
+		
+		
 		idmSurvey = (CollectSurvey) idmlBinder.unmarshal(reader);
 		survey = new Survey();
 		survey.setSurveyLabel(idmSurvey.getProjectName(lang));
 		survey.setSurveyUri(idmSurvey.getUri());
 		survey.setSurveyName(surveyName);
-		survey.setId(2);
-//		surveyDao.insert(survey);
+		surveyDao.insert(survey);
 		Schema schema = idmSurvey.getSchema();
-		// TODO remove existing metadata
+
 		log.debug("Importing survey " +survey.getSurveyName()+" ("+survey.getId()+")");
 		List<EntityDefinition> roots = schema.getRootEntityDefinitions();
 		for (EntityDefinition root : roots) {
@@ -157,7 +161,7 @@ public class IdmMetadataImporter {
 		var.setObsUnitId(parentUnit.getId());
 		var.setVariableLabel(attr.getLabel(Type.INSTANCE, lang));
 		// TODO differentiate interval variables 
-		var.setType(RATIO);
+		var.setVariableTypeEnum(RATIO);
 		var.setForAnalysis(true);
 		variableDao.insert(var);
 		log.debug("Num. variable: "+parentUnit.getObsUnitName()+"."+var.getVariableName()+" ("+var.getId()+")");
@@ -168,7 +172,7 @@ public class IdmMetadataImporter {
 		var.setVariableName(attr.getCompoundName());
 		var.setObsUnitId(parentUnit.getId());
 		var.setVariableLabel(attr.getLabel(Type.INSTANCE, lang));
-		var.setType(BOOLEAN);
+		var.setVariableTypeEnum(BOOLEAN);
 		var.setForAnalysis(true);
 		variableDao.insert(var);
 		log.debug("Cat. variable: " + parentUnit.getObsUnitName() + "." + var.getVariableName() + " (" + var.getId() + ")");
@@ -192,7 +196,7 @@ public class IdmMetadataImporter {
 		var.setVariableName(attr.getCompoundName());
 		var.setObsUnitId(parentUnit.getId());
 		var.setVariableLabel(attr.getLabel(Type.INSTANCE, lang));
-		var.setType(attr.isMultiple() ? MULTIPLE_RESPONSE : NOMINAL);
+		var.setVariableTypeEnum(attr.isMultiple() ? MULTIPLE_RESPONSE : NOMINAL);
 		var.setForAnalysis(true);
 		variableDao.insert(var);
 		log.debug("Cat. variable: " + parentUnit.getObsUnitName() + "." + var.getVariableName() + " (" + var.getId() + ")");

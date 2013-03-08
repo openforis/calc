@@ -1,5 +1,7 @@
 package org.openforis.calc.persistence;
 
+import static org.openforis.calc.persistence.jooq.Tables.*;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +14,7 @@ import org.openforis.calc.model.VariableMetadata;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
 import org.openforis.calc.persistence.jooq.Sequences;
 import org.openforis.calc.persistence.jooq.Tables;
+import org.openforis.calc.persistence.jooq.tables.Specimen;
 import org.openforis.calc.persistence.jooq.tables.records.SpecimenNumericValueRecord;
 import org.openforis.commons.io.flat.FlatDataStream;
 import org.openforis.commons.io.flat.FlatRecord;
@@ -142,4 +145,14 @@ public class SpecimenNumericValueDao extends JooqDaoSupport<SpecimenNumericValue
 		return create.delete( TNV ).where( TNV.TRANSACTION_ID.eq(transactionId) );
 	}
 	
+	public void deleteByObsUnit(int id) {
+		Factory create = getJooqFactory();
+		org.openforis.calc.persistence.jooq.tables.SpecimenNumericValue v = SPECIMEN_NUMERIC_VALUE.as("v");
+		Specimen o = SPECIMEN.as("o");
+		create.delete(v)
+			  .where(v.SPECIMEN_ID.in(
+					  	create.select(o.SPECIMEN_ID)
+					  		  .from(o)
+					  		  .where(o.OBS_UNIT_ID.eq(id))));
+	}
 }

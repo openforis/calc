@@ -128,7 +128,7 @@ public abstract class AbstractObservationImporter
 		try {
 			String codeStr = record.getValue(name, String.class);
 			if ( codeStr != null ) {
-				VariableType type = var.getType();
+				VariableType type = var.getVariableTypeEnum();
 				if ( type == BOOLEAN ) {
 					codeStr = translateBinaryCategoryCode(codeStr);
 				} 
