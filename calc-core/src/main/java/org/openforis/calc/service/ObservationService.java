@@ -11,7 +11,10 @@ import org.openforis.calc.model.VariableMetadata;
 import org.openforis.calc.persistence.InterviewCategoricalValueDao;
 import org.openforis.calc.persistence.InterviewDao;
 import org.openforis.calc.persistence.InterviewNumericValueDao;
+import org.openforis.calc.persistence.PlotCategoricalValueDao;
 import org.openforis.calc.persistence.PlotFactDao;
+import org.openforis.calc.persistence.PlotNumericVariableDao;
+import org.openforis.calc.persistence.PlotSectionDao;
 import org.openforis.calc.persistence.PlotSectionViewDao;
 import org.openforis.calc.persistence.SpecimenCategoricalValueDao;
 import org.openforis.calc.persistence.SpecimenDao;
@@ -32,6 +35,12 @@ public class ObservationService extends CalcService {
 
 	@Autowired
 	private PlotSectionViewDao plotSectionViewDao;
+	@Autowired
+	private PlotSectionDao plotSectionDao;
+	@Autowired
+	private PlotNumericVariableDao plotNumericVariableDao;
+	@Autowired
+	private PlotCategoricalValueDao plotCategoricalValueDao;
 	@Autowired
 	private SpecimenDao specimenDao;
 	@Autowired
@@ -106,11 +115,20 @@ public class ObservationService extends CalcService {
 			return;
 		}
 		Type type = unit.getObsUnitTypeEnum();
+		int unitId = unit.getId();
 		switch (type) {
-		case INTERVIEW:
-			interviewNumericValueDao.deleteByObsUnit(unit.getId());
+		case PLOT:
+			plotNumericVariableDao.deleteByObsUnit(unitId);
+			plotCategoricalValueDao.deleteByObsUnit(unitId);
 			break;
-
+		case SPECIMEN:
+			specimenNumericValueDao.deleteByObsUnit(unitId);
+			specimenCategoricalValueDao.deleteByObsUnit(unitId);
+			break;
+		case INTERVIEW:
+			interviewNumericValueDao.deleteByObsUnit(unitId);
+			interviewCategoricalValueDao.deleteByObsUnit(unitId);
+			break;
 		default:
 			break;
 		} 
