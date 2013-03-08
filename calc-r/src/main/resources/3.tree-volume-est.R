@@ -54,7 +54,8 @@ trees <- estimateTreeVolume( trees=trees );
 #Upload results
 #data <- trees[ ,c('specimen_id','est_volume', 'est_volume_per_ha') ];
 data <- trees[ ,c('specimen_id','volume') ];
-patch( updateSpecimenValueUri, data);
+#data <- data[1:10,]
+patchCsv( host, port, updateSpecimenValueUri, data );
 
 #patchCsv( host, port, updateSpecimenValueUri, data );
 #data <- trees[ ,c('specimen_id','est_volume_per_ha') ];
