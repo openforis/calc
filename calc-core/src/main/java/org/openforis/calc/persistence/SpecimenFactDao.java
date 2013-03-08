@@ -53,6 +53,7 @@ public class SpecimenFactDao extends RolapFactDao {
 		select.addSelect(s.CLUSTER_ID);
 		select.addSelect(s.SAMPLE_PLOT_ID.as("plot_id"));
 		select.addSelect(s.SPECIMEN_ID);
+		select.addSelect(s.SPECIMEN_TAXON_ID);
 		select.addSelect(Factory.val(1).as(fact.COUNT.getName()));
 		
 		select.addFrom(s);
@@ -66,7 +67,7 @@ public class SpecimenFactDao extends RolapFactDao {
 		addUnitVariablesToSelect(unit, s, select);
 		
 		ObservationUnitMetadata parentUnit = unit.getObsUnitParent();
-		if( parentUnit != null ){
+		if( parentUnit != null ) {
 			addParentVariablesToSelect(parentUnit, s, select);
 		}
 		

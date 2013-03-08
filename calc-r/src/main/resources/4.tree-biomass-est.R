@@ -31,10 +31,14 @@ estimateTreeBiomass <- function(trees) {
   
   trees$belowground_biomass <- trees$aboveground_biomass * 0.28;
   
+  trees$aboveground_biomass  <- trees$aboveground_biomass / trees$inclusion_area;
+  trees$belowground_biomass  <- trees$belowground_biomass / trees$inclusion_area;
+  
   return (trees);
 }
 
-f <- c('specimen_id','taxon_code','volume','vegetation_type')
+f <- c('specimen_id','taxon_code','volume','vegetation_type','inclusion_area');
+
 trees <- getTrees(fields=f);
 trees[is.na(trees$vegetation_type),]$vegetation_type <- 0;
 

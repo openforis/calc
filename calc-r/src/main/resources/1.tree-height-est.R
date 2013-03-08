@@ -69,8 +69,8 @@ trees <- estimateTreeHeight( trees );
 trees <- limitTreeHeight( trees );
 
 #names(trees)
+#data <- subset(trees, is.na(trees$total_height) );
 data <- trees[, c('specimen_id','est_height')];
-names(data) <- c('specimen_id','total_height')
+names(data) <- c('specimen_id','total_height');
 
-#patch( updateSpecimenValueUri, data);
 patchCsv( host, port, updateSpecimenValueUri, data );

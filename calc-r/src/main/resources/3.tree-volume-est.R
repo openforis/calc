@@ -40,10 +40,12 @@ estimateTreeVolume <- function(trees) {
   
   # Vol per ha per tree (m3/ha)
   #trees$est_volume_per_ha <- with(trees, 10000 * est_volume / plot_area);    
+  
+  trees$volume <- trees$volume / trees$inclusion_area;
   return (trees);
 }
 
-f <- c('specimen_id','dbh','total_height','taxon_code','vegetation_type');
+f <- c('specimen_id','dbh','total_height','taxon_code','vegetation_type','inclusion_area');
 trees <- getTrees( f );
 trees <- subset( trees, !is.na(trees$dbh) );
 trees[is.na(trees$vegetation_type),]$vegetation_type <- 0;

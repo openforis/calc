@@ -8,7 +8,9 @@ import static org.openforis.calc.persistence.jooq.Tables.AOI_HIERARCHY;
 import static org.openforis.calc.persistence.jooq.Tables.AOI_HIERARCHY_LEVEL;
 import static org.openforis.calc.persistence.jooq.Tables.CLUSTER;
 import static org.openforis.calc.persistence.jooq.Tables.SAMPLE_PLOT_VIEW;
+import static org.openforis.calc.persistence.jooq.Tables.SPECIMEN_VIEW;
 import static org.openforis.calc.persistence.jooq.Tables.STRATUM;
+import static org.openforis.calc.persistence.jooq.Tables.TAXON;
 
 import org.jooq.Insert;
 import org.jooq.Record;
@@ -17,17 +19,22 @@ import org.jooq.impl.Factory;
 import org.openforis.calc.model.AoiHierarchyLevelMetadata;
 import org.openforis.calc.model.AoiHierarchyMetadata;
 import org.openforis.calc.model.ObservationUnitMetadata;
+import org.openforis.calc.model.TaxonomicChecklistMetadata;
 import org.openforis.calc.model.VariableMetadata;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
 import org.openforis.calc.persistence.jooq.rolap.AoiDimensionTable;
 import org.openforis.calc.persistence.jooq.rolap.CategoryDimensionTable;
 import org.openforis.calc.persistence.jooq.rolap.ClusterDimensionTable;
 import org.openforis.calc.persistence.jooq.rolap.PlotDimensionTable;
+import org.openforis.calc.persistence.jooq.rolap.SpecimenDimensionTable;
 import org.openforis.calc.persistence.jooq.rolap.StratumDimensionTable;
+import org.openforis.calc.persistence.jooq.rolap.TaxonDimensionTable;
 import org.openforis.calc.persistence.jooq.tables.AoiHierarchy;
 import org.openforis.calc.persistence.jooq.tables.AoiHierarchyLevel;
 import org.openforis.calc.persistence.jooq.tables.Category;
 import org.openforis.calc.persistence.jooq.tables.SamplePlotView;
+import org.openforis.calc.persistence.jooq.tables.SpecimenView;
+import org.openforis.calc.persistence.jooq.tables.Taxon;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -110,6 +117,8 @@ public class RolapDimensionDao extends JooqDaoSupport {
 		return r;
 	}
 
+	
+	@Transactional
 	public void populate(ClusterDimensionTable table) {
 		int surveyId = table.getSurveyId();
  		Factory create = getJooqFactory();
@@ -123,6 +132,7 @@ public class RolapDimensionDao extends JooqDaoSupport {
 		insert.execute();
 	}
 
+	@Transactional
 	public void populate(PlotDimensionTable table) {
 		ObservationUnitMetadata unit = table.getObservationUnitMetadata();
 		int unitId = unit.getObsUnitId();
@@ -139,6 +149,7 @@ public class RolapDimensionDao extends JooqDaoSupport {
 		insert.execute();
 	}
 
+	@Transactional
 	public void populate(StratumDimensionTable table) {
 		int surveyId = table.getSurveyId();
  		Factory create = getJooqFactory();
@@ -148,6 +159,44 @@ public class RolapDimensionDao extends JooqDaoSupport {
  		select.addConditions(STRATUM.SURVEY_ID.eq(surveyId));
 		Insert<Record> insert = create
 				.insertInto(table, table.ID, table.LABEL)
+				.select(select);
+		insert.execute();
+	}
+	
+	@Transactional
+	public void populate(SpecimenDimensionTable table){
+		ObservationUnitMetadata unit = table.getObservationUnitMetadata();
+		int unitId = unit.getObsUnitId();
+		
+		SpecimenView s = SPECIMEN_VIEW.as("s");
+		
+		Factory create = getJooqFactory();
+		SelectQuery select = create.selectQuery();
+		select.addSelect(s.SPECIMEN_ID, s.SAMPLE_PLOT_ID, s.SPECIMEN_NO);
+		select.addFrom(s);
+		select.addConditions( s.SPECIMEN_OBS_UNIT_ID.eq(unitId) );
+		
+		Insert<Record> insert = create
+				.insertInto(table, table.ID, table.PARENT_ID, table.LABEL)
+				.select(select);
+		insert.execute();
+	}
+	
+	@Transactional
+	public void populate(TaxonDimensionTable table){
+		TaxonomicChecklistMetadata checkList = table.getTaxonomicChecklistMetadata();
+		Integer checklistId = checkList.getChecklistId();
+		
+		Taxon t = TAXON.as("t");
+		
+		Factory create = getJooqFactory();
+		SelectQuery select = create.selectQuery();
+		select.addSelect( t.TAXON_ID, t.TAXON_PARENT_ID , t.SCIENTIFIC_NAME );
+		select.addFrom( t );
+		select.addConditions( t.CHECKLIST_ID.eq(checklistId) );
+		
+		Insert<Record> insert = create
+				.insertInto(table, table.ID, table.PARENT_ID, table.LABEL)
 				.select(select);
 		insert.execute();
 	}

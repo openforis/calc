@@ -7,6 +7,7 @@ import mondrian.olap.MondrianDef;
 import org.openforis.calc.model.AoiHierarchyMetadata;
 import org.openforis.calc.model.ObservationUnitMetadata;
 import org.openforis.calc.model.SurveyMetadata;
+import org.openforis.calc.model.TaxonomicChecklistMetadata;
 
 /**
  * 
@@ -37,17 +38,24 @@ public class SpecimenCubeGenerator extends RolapCubeGenerator {
 
 	@Override
 	protected void initDimensionUsages() {
+		ObservationUnitMetadata unit = getObservationUnitMetadata();
+		SurveyMetadata survey = unit.getSurveyMetadata();
+		
+		
 		SpecimenFactTable fact = (SpecimenFactTable) getDatabaseFactTable();
-
 		// Main key dimensions
 		addDimensionUsage(mdf.createDimensionUsage("Stratum", fact.STRATUM_ID));
-		addDimensionUsage(mdf.createDimensionUsage("Plot", fact.PLOT_ID));
-		addDimensionUsage(mdf.createDimensionUsage("Specimen", fact.SPECIMEN_ID));
+//		addDimensionUsage(mdf.createDimensionUsage("Plot", fact.PLOT_ID));
+		addDimensionUsage(mdf.createDimensionUsage(MondrianDefFactory.toMdxName(unit.getObsUnitName()), fact.SPECIMEN_ID));
+		
+		TaxonomicChecklistMetadata checklistMetadata = unit.getTaxonomicChecklistMetadata();
+		if( checklistMetadata != null ) {
+			String taxonDimName = MondrianDefFactory.toMdxName(checklistMetadata.getTableName());
+			addDimensionUsage(mdf.createDimensionUsage(taxonDimName, fact.SPECIMEN_TAXON_ID));
+		}
 		// TODO common place for fixed dimension names
 
 		// AOI dimensions
-		ObservationUnitMetadata unit = getObservationUnitMetadata();
-		SurveyMetadata survey = unit.getSurveyMetadata();
 		List<AoiHierarchyMetadata> aoi = survey.getAoiHierarchyMetadata();
 		// TODO multiple hierarchies (one dimension per AOI hierarchy)
 		AoiHierarchyMetadata hier = aoi.get(0);

@@ -21,8 +21,10 @@ import org.openforis.calc.persistence.jooq.rolap.PlotFactTable;
 import org.openforis.calc.persistence.jooq.rolap.RolapSchemaDefinition;
 import org.openforis.calc.persistence.jooq.rolap.RolapSchemaGenerator;
 import org.openforis.calc.persistence.jooq.rolap.RolapTable;
+import org.openforis.calc.persistence.jooq.rolap.SpecimenDimensionTable;
 import org.openforis.calc.persistence.jooq.rolap.SpecimenFactTable;
 import org.openforis.calc.persistence.jooq.rolap.StratumDimensionTable;
+import org.openforis.calc.persistence.jooq.rolap.TaxonDimensionTable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -80,6 +82,10 @@ public class RolapService extends CalcService {
 				rolapDimensionDao.populate((PlotDimensionTable)table);
 			} else if ( table instanceof StratumDimensionTable ) {
 				rolapDimensionDao.populate((StratumDimensionTable)table);
+			} else if ( table instanceof SpecimenDimensionTable ) {
+				rolapDimensionDao.populate((SpecimenDimensionTable)table);
+			} else if ( table instanceof TaxonDimensionTable ) {
+				rolapDimensionDao.populate((TaxonDimensionTable)table);
 			} else if ( table instanceof PlotFactTable ) {
 				PlotFactTable factTable = (PlotFactTable) table;
 				plotFactDao.populate(factTable);

@@ -11,6 +11,8 @@ import org.openforis.calc.model.ObservationUnit;
 import org.openforis.calc.model.ObservationUnitMetadata;
 import org.openforis.calc.model.Survey;
 import org.openforis.calc.model.SurveyMetadata;
+import org.openforis.calc.model.TaxonomicChecklist;
+import org.openforis.calc.model.TaxonomicChecklistMetadata;
 import org.openforis.calc.model.Variable;
 import org.openforis.calc.model.VariableMetadata;
 import org.openforis.calc.persistence.AoiHierarchyDao;
@@ -18,6 +20,7 @@ import org.openforis.calc.persistence.AoiHierarchyLevelDao;
 import org.openforis.calc.persistence.CategoryDao;
 import org.openforis.calc.persistence.ObservationUnitDao;
 import org.openforis.calc.persistence.SurveyDao;
+import org.openforis.calc.persistence.TaxonomicChecklistDao;
 import org.openforis.calc.persistence.VariableDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,6 +28,7 @@ import org.springframework.stereotype.Component;
 /**
  * 
  * @author G. Miceli
+ * @author M. Togna
  * 
  */
 @Component
@@ -42,7 +46,9 @@ public class MetadataService {
 	private AoiHierarchyDao aoiHierarchyDao;
 	@Autowired
 	private AoiHierarchyLevelDao aoiHierarchyLevelDao;
-
+	@Autowired
+	private TaxonomicChecklistDao taxonomicChecklistDao;
+	
 	// TODO cache
 	public SurveyMetadata getSurveyMetadata(String surveyName) {
 		Survey survey = surveyDao.findByName(surveyName);
@@ -51,7 +57,9 @@ public class MetadataService {
 		}
 		List<ObservationUnitMetadata> oms = getObservationUnitMetadata(survey);
 		List<AoiHierarchyMetadata> aoiHierarchies = getAoiHierarchyMetadata(survey);
-		return new SurveyMetadata(survey, oms, aoiHierarchies);
+		List<TaxonomicChecklistMetadata> taxonomicChecklists = getTaxonomicChecklistMetadata(survey);
+		
+		return new SurveyMetadata(survey, oms, aoiHierarchies, taxonomicChecklists);
 	}
 
 	private List<ObservationUnitMetadata> getObservationUnitMetadata(Survey survey) {
@@ -74,6 +82,16 @@ public class MetadataService {
 			hms.add(hm);
 		}
 		return hms;
+	}
+	
+	private List<TaxonomicChecklistMetadata> getTaxonomicChecklistMetadata(Survey survey) {
+		List<TaxonomicChecklist> list =  taxonomicChecklistDao.findBySurveyId(survey.getSurveyId());
+		List<TaxonomicChecklistMetadata> metadataList = new ArrayList<TaxonomicChecklistMetadata>();
+		for ( TaxonomicChecklist checklist : list ) {
+			TaxonomicChecklistMetadata metadata = new TaxonomicChecklistMetadata(checklist);
+			metadataList.add(metadata);
+		}
+		return metadataList;
 	}
 	
 	private ObservationUnitMetadata loadObservationMetadata(ObservationUnit unit) {

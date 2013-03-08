@@ -17,7 +17,7 @@ public class ObservationUnitMetadata extends ObservationUnit {
 	private static final String FACT_TABLE_SUFFIX = "_fact";
 	private static final String AGG_TABLE_PREFIX = "_agg_";
 	private static final String UNDERSCORE = "_";
-	
+
 	private ObservationUnit observationUnit;
 	private Map<String, VariableMetadata> variableMap;
 	private SurveyMetadata surveyMetadata;
@@ -31,7 +31,7 @@ public class ObservationUnitMetadata extends ObservationUnit {
 		this.variableMap = new LinkedHashMap<String, VariableMetadata>();
 		for ( VariableMetadata var : variables ) {
 			variableMap.put(var.getVariableName(), var);
-			var.setObservationUnitMetadata( this );
+			var.setObservationUnitMetadata(this);
 		}
 	}
 
@@ -83,14 +83,18 @@ public class ObservationUnitMetadata extends ObservationUnit {
 		}
 	}
 
+	public TaxonomicChecklistMetadata getTaxonomicChecklistMetadata() {
+		return surveyMetadata.getTaxonomicChecklistByObsUnitId(getObsUnitId());
+	}
+
 	void setSurveyMetadata(SurveyMetadata surveyMetadata) {
 		this.surveyMetadata = surveyMetadata;
 	}
-	
+
 	public SurveyMetadata getSurveyMetadata() {
 		return surveyMetadata;
 	}
-	
+
 	public Type getObsUnitTypeEnum() {
 		return observationUnit.getObsUnitTypeEnum();
 	}
@@ -110,11 +114,11 @@ public class ObservationUnitMetadata extends ObservationUnit {
 	public boolean isInterview() {
 		return observationUnit.isInterview();
 	}
-	
+
 	public boolean hasNumericVariablesForAnalysis() {
 		Collection<VariableMetadata> vars = getVariableMetadata();
 		for ( VariableMetadata var : vars ) {
-			if( var.isNumeric() && var.isForAnalysis()){
+			if ( var.isNumeric() && var.isForAnalysis() ) {
 				return true;
 			}
 		}

@@ -24,7 +24,8 @@ public class SpecimenFactTable extends FactTable {
 	public final Field<Integer> CLUSTER_ID = createFixedDimensionField(S.CLUSTER_ID);
 	public final Field<Integer> PLOT_ID = createFixedDimensionField("plot_id");
 	public final Field<Integer> SPECIMEN_ID = createFixedDimensionField(S.SPECIMEN_ID);
-
+	public final Field<Integer> SPECIMEN_TAXON_ID = createFixedDimensionField(S.SPECIMEN_TAXON_ID);
+	
 	private List<Field<Integer>> aoiFields;
 
 	SpecimenFactTable(String schema, ObservationUnitMetadata unit) {
