@@ -46,7 +46,7 @@ public class SpecimenCubeGenerator extends RolapCubeGenerator {
 		// Main key dimensions
 		addDimensionUsage(mdf.createDimensionUsage("Stratum", fact.STRATUM_ID));
 //		addDimensionUsage(mdf.createDimensionUsage("Plot", fact.PLOT_ID));
-		addDimensionUsage(mdf.createDimensionUsage(MondrianDefFactory.toMdxName(unit.getObsUnitName()), fact.SPECIMEN_ID));
+		addDimensionUsage(mdf.createDimensionUsage(unit.getDimensionTableName(), fact.SPECIMEN_ID));
 		
 		TaxonomicChecklistMetadata checklistMetadata = unit.getTaxonomicChecklistMetadata();
 		if( checklistMetadata != null ) {

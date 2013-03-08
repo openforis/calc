@@ -187,7 +187,7 @@ public class RolapSchemaGenerator {
 		for ( ObservationUnitMetadata unit : units ) {
 			if ( unit.isPlot() ) {
 				Hierarchy hier = createPlotDimensionHierarchy(unit, clusterTable);
-				Dimension dim = mdf.createDimension(unit.getObsUnitName(), unit.getObsUnitLabel(), hier);
+				Dimension dim = mdf.createDimension(unit.getDimensionTableName(), unit.getObsUnitLabel(), hier);
 				sharedDimensions.add(dim);
 			}
 		}
@@ -211,7 +211,7 @@ public class RolapSchemaGenerator {
 		for ( ObservationUnitMetadata unit : units ) {
 			if ( unit.isSpecimen()  ) {
 				Hierarchy hier = createSpecimenDimensionHierarchy(unit, clusterTable);
-				Dimension dim = mdf.createDimension(unit.getObsUnitName(), unit.getObsUnitLabel(), hier);
+				Dimension dim = mdf.createDimension(unit.getDimensionTableName(), unit.getObsUnitLabel(), hier);
 				sharedDimensions.add(dim);
 			}
 		}
