@@ -1,5 +1,6 @@
 package org.openforis.calc.persistence;
 
+import static org.openforis.calc.persistence.jooq.Tables.*;
 import static org.openforis.calc.persistence.jooq.Tables.SPECIMEN;
 
 import java.io.IOException;
@@ -57,5 +58,9 @@ public class SpecimenDao extends JooqDaoSupport<SpecimenRecord, Specimen> {
 		return create.nextval(Sequences.SPECIMEN_ID_SEQ).intValue();
 	}
 	
-
+	public void deleteByObsUnit(int id) {
+		Factory create = getJooqFactory();
+		org.openforis.calc.persistence.jooq.tables.Specimen s = SPECIMEN.as("s");
+		create.delete(s).where(s.OBS_UNIT_ID.eq(id));
+	}
 }

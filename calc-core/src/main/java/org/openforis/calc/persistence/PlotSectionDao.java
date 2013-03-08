@@ -1,13 +1,13 @@
 package org.openforis.calc.persistence;
 
-import static org.openforis.calc.persistence.jooq.Tables.PLOT_CATEGORICAL_VALUE;
-import static org.openforis.calc.persistence.jooq.Tables.PLOT_NUMERIC_VALUE;
-import static org.openforis.calc.persistence.jooq.Tables.PLOT_SECTION;
+import static org.openforis.calc.persistence.jooq.Tables.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jooq.impl.Factory;
 import org.openforis.calc.model.PlotSection;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
+import org.openforis.calc.persistence.jooq.tables.SamplePlot;
 import org.openforis.calc.persistence.jooq.tables.records.PlotSectionRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -161,5 +161,16 @@ public class PlotSectionDao extends JooqDaoSupport<PlotSectionRecord, PlotSectio
 //			return clusterCode + "_" + plotNo;
 //		}
 //	}
+	
+	public void deleteByObsUnit(int id) {
+		Factory create = getJooqFactory();
+		org.openforis.calc.persistence.jooq.tables.PlotSection ps = PLOT_SECTION.as("PS");
+		SamplePlot sp = SAMPLE_PLOT.as("sp");
+		create.delete(ps)
+			  .where(ps.SAMPLE_PLOT_ID.in(
+					  	create.select(sp.SAMPLE_PLOT_ID)
+					  		  .from(sp)
+					  		  .where(sp.OBS_UNIT_ID.eq(id))));
+	}
 	
 }
