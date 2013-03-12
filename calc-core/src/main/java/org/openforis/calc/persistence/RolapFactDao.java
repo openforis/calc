@@ -1,4 +1,5 @@
 package org.openforis.calc.persistence;
+
 import org.jooq.Insert;
 import org.jooq.Record;
 import org.jooq.SelectQuery;
@@ -14,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 @SuppressWarnings("rawtypes")
 @Component
 @Transactional
-public abstract class RolapFactDao extends JooqDaoSupport {
+public abstract class RolapFactDao<T extends FactTable> extends JooqDaoSupport {
 
 	@SuppressWarnings("unchecked")
 	public RolapFactDao() {
@@ -24,7 +25,7 @@ public abstract class RolapFactDao extends JooqDaoSupport {
 	@SuppressWarnings("unchecked")
 	@Transactional
 	synchronized
-	public void populate(FactTable table) {
+	public void populate(T table) {
 		SelectQuery select = createFactSelect(table);
 		Insert<Record> insert = createInsertFromSelect(table, select);
 		
@@ -36,6 +37,6 @@ public abstract class RolapFactDao extends JooqDaoSupport {
 		getLog().debug("Complete");
 	}
 
-	protected abstract SelectQuery createFactSelect(FactTable table);
+	protected abstract SelectQuery createFactSelect(T table);
 	
 }

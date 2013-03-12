@@ -18,7 +18,7 @@ import org.openforis.calc.model.AoiHierarchyMetadata;
 import org.openforis.calc.model.ObservationUnitMetadata;
 import org.openforis.calc.model.SurveyMetadata;
 import org.openforis.calc.model.VariableMetadata;
-import org.openforis.calc.persistence.jooq.rolap.FactTable;
+import org.openforis.calc.persistence.jooq.rolap.SpecimenFactTable;
 import org.openforis.calc.persistence.jooq.tables.Aoi;
 import org.openforis.calc.persistence.jooq.tables.PlotCategoricalValueView;
 import org.openforis.calc.persistence.jooq.tables.PlotSectionAoi;
@@ -33,10 +33,10 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component
 @Transactional
-public class SpecimenFactDao extends RolapFactDao {
+public class SpecimenFactDao extends RolapFactDao<SpecimenFactTable> {
 
 	@Override
-	protected SelectQuery createFactSelect(FactTable fact){
+	protected SelectQuery createFactSelect(SpecimenFactTable fact){
 //		SpecimenFactTable specimenFact = (SpecimenFactTable) fact;
 		ObservationUnitMetadata unit = fact.getObservationUnitMetadata();
 		int unitId = unit.getObsUnitId();
@@ -51,7 +51,7 @@ public class SpecimenFactDao extends RolapFactDao {
 		SelectQuery select = create.selectQuery();
 		select.addSelect(s.STRATUM_ID);
 		select.addSelect(s.CLUSTER_ID);
-		select.addSelect(s.SAMPLE_PLOT_ID.as("plot_id"));
+		select.addSelect(s.SAMPLE_PLOT_ID.as(fact.PLOT_ID.getName()));
 		select.addSelect(s.SPECIMEN_ID);
 		select.addSelect(s.SPECIMEN_TAXON_ID);
 		select.addSelect(Factory.val(1).as(fact.COUNT.getName()));

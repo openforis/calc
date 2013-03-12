@@ -11,6 +11,7 @@ import org.jooq.impl.Factory;
 import org.openforis.calc.model.ObservationUnitMetadata;
 import org.openforis.calc.model.VariableMetadata;
 import org.openforis.calc.persistence.jooq.rolap.FactTable;
+import org.openforis.calc.persistence.jooq.rolap.InterviewFactTable;
 import org.openforis.calc.persistence.jooq.tables.Interview;
 import org.openforis.calc.persistence.jooq.tables.InterviewCategoricalValueView;
 import org.openforis.calc.persistence.jooq.tables.InterviewNumericValue;
@@ -22,10 +23,10 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component
 @Transactional
-public class InterviewFactDao extends RolapFactDao {
+public class InterviewFactDao extends RolapFactDao<InterviewFactTable> {
 
 	@Override
-	protected SelectQuery createFactSelect(FactTable fact){
+	protected SelectQuery createFactSelect(InterviewFactTable fact){
 //		InterviewFactTable interviewFact = (InterviewFactTable) fact;
 		ObservationUnitMetadata unit = fact.getObservationUnitMetadata();
 		Factory create = getJooqFactory();

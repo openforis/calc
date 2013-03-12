@@ -15,7 +15,6 @@ import org.openforis.calc.model.AoiHierarchyMetadata;
 import org.openforis.calc.model.ObservationUnitMetadata;
 import org.openforis.calc.model.SurveyMetadata;
 import org.openforis.calc.model.VariableMetadata;
-import org.openforis.calc.persistence.jooq.rolap.FactTable;
 import org.openforis.calc.persistence.jooq.rolap.PlotFactTable;
 import org.openforis.calc.persistence.jooq.tables.Aoi;
 import org.openforis.calc.persistence.jooq.tables.GroundPlotView;
@@ -29,11 +28,10 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component
 @Transactional
-public class PlotFactDao extends RolapFactDao {
+public class PlotFactDao extends RolapFactDao<PlotFactTable> {
 
 	@Override
-	protected SelectQuery createFactSelect(FactTable fact){
-		PlotFactTable plotFact = (PlotFactTable) fact;
+	protected SelectQuery createFactSelect(PlotFactTable fact){
 		ObservationUnitMetadata unit = fact.getObservationUnitMetadata();
 		Factory create = getJooqFactory();
 		int unitId = unit.getObsUnitId();
@@ -50,7 +48,7 @@ public class PlotFactDao extends RolapFactDao {
 		select.addSelect(p.PLOT_LOCATION_DEVIATION);
 		select.addSelect(Factory.val(1).as(fact.COUNT.getName()));
 		//TODO join with plot numeric value to get the right area
-		select.addSelect(Factory.val(706.8583470577034).as(plotFact.EST_AREA.getName()));
+		select.addSelect(Factory.val(706.8583470577034).as(fact.EST_AREA.getName()));
 		
 		select.addFrom(p);
 		
