@@ -40,18 +40,16 @@ public class SpecimenFactDao extends RolapFactDao<SpecimenFactTable> {
 //		SpecimenFactTable specimenFact = (SpecimenFactTable) fact;
 		ObservationUnitMetadata unit = fact.getObservationUnitMetadata();
 		int unitId = unit.getObsUnitId();
-		
-		Factory create = getJooqFactory();
-
 
 		SpecimenView s = SPECIMEN_VIEW.as("s");
-		
-		
 		PlotSectionAoi pa = PLOT_SECTION_AOI.as("pa");
+		
+		Factory create = getJooqFactory();
 		SelectQuery select = create.selectQuery();
+		
 		select.addSelect(s.STRATUM_ID);
 		select.addSelect(s.CLUSTER_ID);
-		select.addSelect(s.SAMPLE_PLOT_ID.as(fact.PLOT_ID.getName()));
+		select.addSelect(s.PLOT_SECTION_ID.as(fact.PLOT_ID.getName()));
 		select.addSelect(s.SPECIMEN_ID);
 		select.addSelect(s.SPECIMEN_TAXON_ID);
 		select.addSelect(Factory.val(1).as(fact.COUNT.getName()));
@@ -145,7 +143,6 @@ public class SpecimenFactDao extends RolapFactDao<SpecimenFactTable> {
 							.and( v.VARIABLE_ID.eq(varId) )
 							.and( v.CURRENT.isTrue() )
 							);
-					
 				}
 			}
 		}

@@ -1,5 +1,7 @@
 package org.openforis.calc.persistence;
 
+import static org.jooq.impl.Factory.sum;
+
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -40,7 +42,7 @@ public class SpecimenAggregateDao extends JooqDaoSupport {
 		insert.execute();
 
 		getLog().debug("Complete");
-	}
+	} 
 
 	@Transactional
 	private SelectQuery createPlotAggregateSelect(SpecimenPlotAggregateTable aggTable) {
@@ -56,11 +58,11 @@ public class SpecimenAggregateDao extends JooqDaoSupport {
 		select.addSelect(fact.SPECIMEN_TAXON_ID);
 		select.addSelect(fact.getAoiFields());
 		select.addSelect(userDefinedDimensions);
-		select.addSelect(fact.COUNT.sum().as(aggTable.AGG_COUNT.getName()));
-		select.addSelect(fact.COUNT.sum().as(aggTable.COUNT.getName()));
+		select.addSelect( sum(fact.COUNT).as(aggTable.AGG_COUNT.getName()) );
+		select.addSelect( sum(fact.COUNT).as(aggTable.COUNT.getName()) );
 		
 		for ( Field<BigDecimal> measure : fact.getUserDefinedMeasureFields() ) {
-			select.addSelect(measure.sum().as(measure.getName()));
+			select.addSelect( sum(measure).as(measure.getName()) );
 		}
 
 		select.addFrom(fact);

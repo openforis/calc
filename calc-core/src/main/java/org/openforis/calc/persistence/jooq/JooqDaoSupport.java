@@ -552,8 +552,8 @@ public abstract class JooqDaoSupport<R extends TableRecord<R>, P>
 				throw new IllegalArgumentException("Field " + fieldName + " not found in table " + table.getName());
 			}
 			fields.add( destField );
-		}		
-
+		}
+		
 		Insert<?> insert = 
 					create.insertInto(table, fields)
 					.select(select);
