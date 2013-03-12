@@ -247,7 +247,7 @@ public class RolapSchemaGenerator {
 			dbTables.add(table);
 			
 			String tableName = table.getName();
-			Level level = mdf.createLevel(tableName, table.getDenormalizedIdColumn(), table.getDenormalizedLabelColumn());
+			Level level = mdf.createLevel(tableName, table.ID.getName(), table.LABEL.getName());
 			Hierarchy hier = mdf.createHierarchy(tableName, true, tableName, level);
 			Dimension dim = mdf.createDimension(tableName, MondrianDefFactory.toMdxName(tableName), hier);
 			sharedDimensions.add(dim);

@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import mondrian.olap.MondrianDef;
+import mondrian.olap.MondrianDef.AggTable;
 import mondrian.olap.MondrianDef.Cube;
 import mondrian.olap.MondrianDef.DimensionUsage;
 import mondrian.olap.MondrianDef.Measure;
@@ -33,6 +34,8 @@ public abstract class RolapCubeGenerator {
 	private List<Measure> measures;
 	private Table mondrianTable;
 	private MondrianDefFactory mdf;
+	
+	protected List<AggTable> aggTables;
 
 	// OUT
 //	private Cube cube;

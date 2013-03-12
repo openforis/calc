@@ -9,6 +9,7 @@ import org.openforis.calc.persistence.PlotAggregateDao;
 import org.openforis.calc.persistence.PlotFactDao;
 import org.openforis.calc.persistence.RolapDimensionDao;
 import org.openforis.calc.persistence.RolapSchemaDao;
+import org.openforis.calc.persistence.SpecimenAggregateDao;
 import org.openforis.calc.persistence.SpecimenFactDao;
 import org.openforis.calc.persistence.jooq.rolap.AoiDimensionTable;
 import org.openforis.calc.persistence.jooq.rolap.CategoryDimensionTable;
@@ -23,6 +24,7 @@ import org.openforis.calc.persistence.jooq.rolap.RolapSchemaGenerator;
 import org.openforis.calc.persistence.jooq.rolap.RolapTable;
 import org.openforis.calc.persistence.jooq.rolap.SpecimenDimensionTable;
 import org.openforis.calc.persistence.jooq.rolap.SpecimenFactTable;
+import org.openforis.calc.persistence.jooq.rolap.SpecimenPlotAggregateTable;
 import org.openforis.calc.persistence.jooq.rolap.StratumDimensionTable;
 import org.openforis.calc.persistence.jooq.rolap.TaxonDimensionTable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,15 +42,17 @@ public class RolapService extends CalcService {
 
 	@Autowired
 	private RolapDimensionDao rolapDimensionDao;
-	@Autowired	
+	@Autowired
 	private RolapSchemaDao rolapSchemaDao;
-	@Autowired	
+	@Autowired
 	private PlotFactDao plotFactDao;
-	@Autowired	
+	@Autowired
 	private PlotAggregateDao plotAggregateDao;
-	@Autowired	
+	@Autowired
 	private SpecimenFactDao specimenFactDao;
-	@Autowired	
+	@Autowired
+	private SpecimenAggregateDao specimenAggregateDao;
+	@Autowired
 	private InterviewFactDao interviewFactDao;
 	
 	@Transactional
@@ -71,21 +75,21 @@ public class RolapService extends CalcService {
 	}
 	
 	private void populateTables(List<RolapTable> tables) {
-		for (RolapTable table : tables) {
+		for ( RolapTable table : tables ) {
 			if ( table instanceof AoiDimensionTable ) {
 				rolapDimensionDao.populate((AoiDimensionTable) table);
 			} else if ( table instanceof CategoryDimensionTable ) {
 				rolapDimensionDao.populate((CategoryDimensionTable) table);
 			} else if ( table instanceof ClusterDimensionTable ) {
-				rolapDimensionDao.populate((ClusterDimensionTable)table);
+				rolapDimensionDao.populate((ClusterDimensionTable) table);
 			} else if ( table instanceof PlotDimensionTable ) {
-				rolapDimensionDao.populate((PlotDimensionTable)table);
+				rolapDimensionDao.populate((PlotDimensionTable) table);
 			} else if ( table instanceof StratumDimensionTable ) {
-				rolapDimensionDao.populate((StratumDimensionTable)table);
+				rolapDimensionDao.populate((StratumDimensionTable) table);
 			} else if ( table instanceof SpecimenDimensionTable ) {
-				rolapDimensionDao.populate((SpecimenDimensionTable)table);
+				rolapDimensionDao.populate((SpecimenDimensionTable) table);
 			} else if ( table instanceof TaxonDimensionTable ) {
-				rolapDimensionDao.populate((TaxonDimensionTable)table);
+				rolapDimensionDao.populate((TaxonDimensionTable) table);
 			} else if ( table instanceof PlotFactTable ) {
 				PlotFactTable factTable = (PlotFactTable) table;
 				plotFactDao.populate(factTable);
@@ -96,15 +100,17 @@ public class RolapService extends CalcService {
 			} else if ( table instanceof SpecimenFactTable ) {
 				SpecimenFactTable factTable = (SpecimenFactTable) table;
 				specimenFactDao.populate(factTable);
-				//TODO speciemn aggregates
+			} else if ( table instanceof SpecimenPlotAggregateTable ) {
+				specimenAggregateDao.populate((SpecimenPlotAggregateTable) table);
+				// TODO speciemn aggregates
 			} else if ( table instanceof InterviewFactTable ) {
 				InterviewFactTable factTable = (InterviewFactTable) table;
 				interviewFactDao.populate(factTable);
 			} else {
-//				throw new UnsupportedOperationException("Unknown table "+table.getClass());
+				// throw new UnsupportedOperationException("Unknown table "+table.getClass());
 			}
 		}
-		
+
 	}
 
 //	@Transactional

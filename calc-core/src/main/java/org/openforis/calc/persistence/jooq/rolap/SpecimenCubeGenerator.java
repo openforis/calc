@@ -1,8 +1,11 @@
 package org.openforis.calc.persistence.jooq.rolap;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import mondrian.olap.MondrianDef;
+import mondrian.olap.MondrianDef.AggName;
+import mondrian.olap.MondrianDef.AggTable;
 
 import org.openforis.calc.model.AoiHierarchyMetadata;
 import org.openforis.calc.model.ObservationUnitMetadata;
@@ -26,10 +29,13 @@ public class SpecimenCubeGenerator extends RolapCubeGenerator {
 
 	@Override
 	protected void initFactTable() {
+		aggTables = new ArrayList<AggTable>();
+		
 		// Database
 		SpecimenFactTable dbTable = new SpecimenFactTable(getDatabaseSchema(), getObservationUnitMetadata());
 		setDatabaseFactTable(dbTable);
-		// initAggregateTables(dbTable);
+		
+		initAggregateTables(dbTable);
 
 		// Mondrian
 		MondrianDef.Table table = mdf.createTable(dbTable.getName());
@@ -40,16 +46,14 @@ public class SpecimenCubeGenerator extends RolapCubeGenerator {
 	protected void initDimensionUsages() {
 		ObservationUnitMetadata unit = getObservationUnitMetadata();
 		SurveyMetadata survey = unit.getSurveyMetadata();
-		
-		
+
 		SpecimenFactTable fact = (SpecimenFactTable) getDatabaseFactTable();
 		// Main key dimensions
 		addDimensionUsage(mdf.createDimensionUsage("Stratum", fact.STRATUM_ID));
-//		addDimensionUsage(mdf.createDimensionUsage("Plot", fact.PLOT_ID));
 		addDimensionUsage(mdf.createDimensionUsage(unit.getDimensionTableName(), fact.SPECIMEN_ID));
-		
+
 		TaxonomicChecklistMetadata checklistMetadata = unit.getTaxonomicChecklistMetadata();
-		if( checklistMetadata != null ) {
+		if ( checklistMetadata != null ) {
 			String taxonDimName = MondrianDefFactory.toMdxName(checklistMetadata.getTableName());
 			addDimensionUsage(mdf.createDimensionUsage(taxonDimName, fact.SPECIMEN_TAXON_ID));
 		}
@@ -71,5 +75,17 @@ public class SpecimenCubeGenerator extends RolapCubeGenerator {
 		addMeasure(mdf.createMeasure(fact.COUNT, "Count"));
 
 		initUserDefinedMeasures();
+	}
+	
+
+	private void initAggregateTables(SpecimenFactTable dbTable) {
+		// TODO Auto-generated method stub
+		SpecimenPlotAggregateTable plotAggtable = new SpecimenPlotAggregateTable(dbTable);
+		addDatabaseTable(plotAggtable);
+		
+		AggName plotAggName = mdf.createAggregateName(plotAggtable);
+		aggTables.add(plotAggName);
+		//TODO stratum / aoi agg levels
+		
 	}
 }

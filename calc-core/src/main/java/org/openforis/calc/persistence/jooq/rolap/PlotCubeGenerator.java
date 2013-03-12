@@ -19,7 +19,6 @@ import org.openforis.calc.model.SurveyMetadata;
  *
  */
 public class PlotCubeGenerator extends RolapCubeGenerator {
-	private List<AggTable> aggTables;
 	private MondrianDefFactory mdf;
 
 	PlotCubeGenerator(RolapSchemaGenerator schemaGenerator, ObservationUnitMetadata unit) {
