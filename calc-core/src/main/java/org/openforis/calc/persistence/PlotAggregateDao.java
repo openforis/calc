@@ -137,7 +137,7 @@ public class PlotAggregateDao extends JooqDaoSupport {
 		select.addJoin(
 				e, 
 				e.AOI_ID.eq( (Field<Integer>) fact.getField(aoiLevelName))
-					.and(e.STRATUM_ID.eq( (Field<Integer>) fact.getField(STRATUM.STRATUM_ID.getName())) )
+					.and( e.STRATUM_ID.eq( (Field<Integer>) fact.getField(STRATUM.STRATUM_ID.getName())) )
 			);
 		select.addJoin(
 				s, 

@@ -31,8 +31,8 @@ estimateTreeBiomass <- function(trees) {
   
   trees$belowground_biomass <- trees$aboveground_biomass * 0.28;
   
-  trees$aboveground_biomass  <- trees$aboveground_biomass / trees$inclusion_area;
-  trees$belowground_biomass  <- trees$belowground_biomass / trees$inclusion_area;
+  #trees$avg_aboveground_biomass  <- trees$aboveground_biomass / trees$inclusion_area;
+  #trees$avg_belowground_biomass  <- trees$belowground_biomass / trees$inclusion_area;
   
   return (trees);
 }
@@ -44,5 +44,6 @@ trees[is.na(trees$vegetation_type),]$vegetation_type <- 0;
 
 trees <- estimateTreeBiomass( trees=trees );
 
+#data <- trees[, c('specimen_id','aboveground_biomass','belowground_biomass', 'avg_aboveground_biomass', 'avg_belowground_biomass')];
 data <- trees[, c('specimen_id','aboveground_biomass','belowground_biomass')];
 patchCsv( host, port, updateSpecimenValueUri, data );

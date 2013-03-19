@@ -16,6 +16,8 @@ import org.openforis.calc.persistence.jooq.tables.GroundPlotView;
  */
 public class PlotFactTable extends FactTable {
 
+	public static final String MEASURE_EST_AREA = "est_area";
+
 	private static final long serialVersionUID = 1L;
 
 	private static final GroundPlotView G = GROUND_PLOT_VIEW;
@@ -27,7 +29,7 @@ public class PlotFactTable extends FactTable {
 
 	// Fixed measures
 	// TODO take from user-defined measures?
-	public final Field<BigDecimal> EST_AREA = createFixedMeasureField("est_area");
+	public final Field<BigDecimal> EST_AREA = createFixedMeasureField(MEASURE_EST_AREA);
 	public final Field<BigDecimal> PLOT_LOCATION_DEVIATION = createFixedMeasureField(G.PLOT_LOCATION_DEVIATION);
 
 	// Plot coordinates

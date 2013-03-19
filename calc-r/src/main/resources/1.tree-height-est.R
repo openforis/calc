@@ -6,16 +6,6 @@
 
 #surveys/naforma1/units/tree/specimens?f=specimen_id,stratum_id,cluster_id,plot_section_id,dbh,total_height,health
 
-getTrees <- function( fields ) {
-  params <- paste( fields, collapse=',' );
-  
-  uri <- paste( calcRestUri, 'surveys/naforma1/units/tree/specimens?f=',sep='/' );
-  uri <- paste( uri, params, sep='' );
-#  print(uri)
-  trees <- read.csv( uri );
-  return ( trees );
-}
-
 estimateTreeHeight <- function( trees ) {
   sample_trees <- subset( trees, total_height > 0 );
   

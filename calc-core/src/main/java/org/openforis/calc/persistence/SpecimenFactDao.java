@@ -1,5 +1,5 @@
 package org.openforis.calc.persistence;
-import static org.jooq.impl.Factory.coalesce;
+import static org.jooq.impl.Factory.*;
 import static org.openforis.calc.persistence.jooq.Tables.AOI;
 import static org.openforis.calc.persistence.jooq.Tables.PLOT_CATEGORICAL_VALUE_VIEW;
 import static org.openforis.calc.persistence.jooq.Tables.PLOT_SECTION_AOI;
@@ -47,12 +47,14 @@ public class SpecimenFactDao extends RolapFactDao<SpecimenFactTable> {
 		Factory create = getJooqFactory();
 		SelectQuery select = create.selectQuery();
 		
-		select.addSelect(s.STRATUM_ID);
-		select.addSelect(s.CLUSTER_ID);
-		select.addSelect(s.PLOT_SECTION_ID.as(fact.PLOT_ID.getName()));
-		select.addSelect(s.SPECIMEN_ID);
-		select.addSelect(s.SPECIMEN_TAXON_ID);
-		select.addSelect(Factory.val(1).as(fact.COUNT.getName()));
+		select.addSelect( s.STRATUM_ID );
+		select.addSelect( s.CLUSTER_ID );
+		select.addSelect( s.PLOT_SECTION_ID.as(fact.PLOT_ID.getName()) );
+		select.addSelect( s.SPECIMEN_ID );
+		select.addSelect( s.SPECIMEN_TAXON_ID );
+		select.addSelect( s.INCLUSION_AREA );
+		select.addSelect( s.PLOT_SECTION_AREA );		
+		select.addSelect( val(1).as(fact.COUNT.getName()) );
 		
 		select.addFrom(s);
 		
@@ -62,13 +64,13 @@ public class SpecimenFactDao extends RolapFactDao<SpecimenFactTable> {
 		
 		addAoisToSelect(unit, pa, select);
 		
-		addUnitVariablesToSelect(unit, s, select);
+		addUnitVariablesToSelect(unit, s, select, fact);
 		
 		ObservationUnitMetadata parentUnit = unit.getObsUnitParent();
 		if( parentUnit != null ) {
 			addParentVariablesToSelect(parentUnit, s, select);
 		}
-		
+				
 		return select;
 	}
 
@@ -105,7 +107,7 @@ public class SpecimenFactDao extends RolapFactDao<SpecimenFactTable> {
 	}
 	
 	@SuppressWarnings("unchecked")	
-	private void addUnitVariablesToSelect(ObservationUnitMetadata unit, SpecimenView s, SelectQuery select) {
+	private void addUnitVariablesToSelect(ObservationUnitMetadata unit, SpecimenView s, SelectQuery select, SpecimenFactTable fact) {
 		Collection<VariableMetadata> variables = unit.getVariableMetadata();
 		int idx = 0;
 		for ( VariableMetadata var : variables ) {			
@@ -115,7 +117,7 @@ public class SpecimenFactDao extends RolapFactDao<SpecimenFactTable> {
 				String varName = var.getVariableName();
 				idx += 1;
 				
-				if( var.isCategorical() ){
+				if( var.isCategorical() ) {
 					SpecimenCategoricalValueView v = SPECIMEN_CATEGORICAL_VALUE_VIEW.as("v"+idx);
 					
 					select.addSelect( 
@@ -132,6 +134,7 @@ public class SpecimenFactDao extends RolapFactDao<SpecimenFactTable> {
 					
 				} else if ( var.isNumeric() ){
 					// join with specimen_numeric_value
+					//
 					SpecimenNumericValue v = SPECIMEN_NUMERIC_VALUE.as("v"+idx);
 					
 					select.addSelect( v.VALUE.as(varName) );

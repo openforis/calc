@@ -55,9 +55,10 @@ public class PlotFactDao extends RolapFactDao<PlotFactTable> {
 		select.addJoin(pa, p.PLOT_SECTION_ID.eq(pa.PLOT_SECTION_ID));
 		
 		select.addConditions(p.PLOT_OBS_UNIT_ID.eq(unitId));
-		// Only primary sections, planned plots
-		select.addConditions(p.VISIT_TYPE.eq("P"));
-		select.addConditions(p.PRIMARY_SECTION.isTrue());
+		// Only primary sections, planned and accessible plots 
+		select.addConditions( p.VISIT_TYPE.eq("P") );
+		select.addConditions( p.PRIMARY_SECTION.isTrue() );
+		select.addConditions( p.ACCESSIBLE.isTrue() );
 		
 		addAoisToSelect(unit, pa, select);
 		

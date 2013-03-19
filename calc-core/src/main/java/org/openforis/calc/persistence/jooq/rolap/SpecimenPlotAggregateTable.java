@@ -18,6 +18,8 @@ public class SpecimenPlotAggregateTable extends AggregateTable<SpecimenFactTable
 
 	private List<Field<Integer>> aoiFields;
 
+	public Field<Integer> PLOT_FIELD;
+
 	SpecimenPlotAggregateTable(SpecimenFactTable factTable) {
 		super(factTable, INFIX);
 		initFields();
@@ -26,10 +28,11 @@ public class SpecimenPlotAggregateTable extends AggregateTable<SpecimenFactTable
 	protected void initFields() {
 		SpecimenFactTable fact = getFactTable();
 		createFixedDimensionField(fact.STRATUM_ID);
-		createFixedDimensionField(fact.CLUSTER_ID);
-		createFixedDimensionField(fact.PLOT_ID);
+//		createFixedDimensionField(fact.CLUSTER_ID);
+		createField(fact.CLUSTER_ID);
+		PLOT_FIELD = createField(fact.PLOT_ID);
 		createFixedDimensionField(fact.SPECIMEN_TAXON_ID);
-
+		
 		aoiFields = createAoiFields();
 
 		initUserDefinedFields();

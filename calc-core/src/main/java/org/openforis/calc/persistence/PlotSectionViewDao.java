@@ -2,6 +2,7 @@ package org.openforis.calc.persistence;
 
 import static org.openforis.calc.persistence.jooq.Tables.PLOT_CATEGORICAL_VALUE_VIEW;
 import static org.openforis.calc.persistence.jooq.Tables.PLOT_EXPANSION_FACTOR;
+import static org.openforis.calc.persistence.jooq.Tables.PLOT_NUMERIC_VALUE;
 import static org.openforis.calc.persistence.jooq.Tables.PLOT_SECTION_AOI;
 import static org.openforis.calc.persistence.jooq.Tables.PLOT_SECTION_VIEW;
 
@@ -20,6 +21,7 @@ import org.openforis.calc.model.VariableMetadata;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
 import org.openforis.calc.persistence.jooq.tables.PlotCategoricalValueView;
 import org.openforis.calc.persistence.jooq.tables.PlotExpansionFactor;
+import org.openforis.calc.persistence.jooq.tables.PlotNumericValue;
 import org.openforis.calc.persistence.jooq.tables.PlotSectionAoi;
 import org.openforis.calc.persistence.jooq.tables.records.PlotSectionViewRecord;
 import org.openforis.commons.io.flat.FlatDataStream;
@@ -60,6 +62,62 @@ public class PlotSectionViewDao extends JooqDaoSupport<PlotSectionViewRecord, Pl
 
 	public FlatDataStream streamAll(String[] fields, int observationUnitId) {
 		return stream(fields, V.PLOT_OBS_UNIT_ID, observationUnitId);
+	}
+	
+	public FlatDataStream streamAll(int obsUnitId, String[] fieldNames, Collection<VariableMetadata> variables) {
+		if ( fieldNames != null ) {
+			Factory create = getJooqFactory();
+
+			SelectQuery select = create.selectQuery();
+			
+			select.addFrom(V);
+			
+			select.addConditions(V.PLOT_OBS_UNIT_ID.eq(obsUnitId));
+			
+			int idx = 0;
+			for ( String fieldName : fieldNames ) {
+				VariableMetadata variable = getVariableMetadata(variables, fieldName);
+
+				if ( variable != null ) {
+					Integer variableId = variable.getVariableId();
+					String variableName = variable.getVariableName();
+					idx ++ ;
+					
+					if ( variable.isCategorical() ) {
+						PlotCategoricalValueView p = PLOT_CATEGORICAL_VALUE_VIEW.as("v" + idx);
+						
+						select.addSelect(p.CATEGORY_CODE.as(variableName));
+						
+						select.addJoin(
+								p,
+								JoinType.LEFT_OUTER_JOIN,
+								p.PLOT_SECTION_ID.eq(V.PLOT_SECTION_ID)
+								.and(p.VARIABLE_ID.eq(variableId))
+								.and(p.CURRENT.isTrue())
+								);
+					} else if ( variable.isNumeric() ) {
+						PlotNumericValue p = PLOT_NUMERIC_VALUE.as("v"+ idx);
+						
+						select.addSelect(p.VALUE.as(variableName));
+						
+						select.addJoin(
+								p,
+								JoinType.LEFT_OUTER_JOIN,
+								p.PLOT_SECTION_ID.eq(V.PLOT_SECTION_ID)
+								.and(p.VARIABLE_ID.eq(variableId))
+								.and(p.CURRENT.isTrue())
+								);
+					}
+				} else {
+					select.addSelect( getFields(fieldName) );
+				}
+			}
+			
+			return stream( select.fetch() );
+			
+		} else {
+			return streamAll(fieldNames, obsUnitId);
+		}
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -166,4 +224,15 @@ public class PlotSectionViewDao extends JooqDaoSupport<PlotSectionViewRecord, Pl
 		return query;
 	}
 	
+	private VariableMetadata getVariableMetadata(Collection<VariableMetadata> variables, String fieldName) {
+		VariableMetadata variable = null;
+		if ( variables != null ) {
+			for ( VariableMetadata variableMetadata : variables ) {
+				if ( variableMetadata.getVariableName().equals(fieldName) ) {
+					variable = variableMetadata;
+				}
+			}
+		}
+		return variable;
+	}
 }

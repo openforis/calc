@@ -22,6 +22,7 @@ import org.openforis.calc.persistence.jooq.rolap.PlotFactTable;
 import org.openforis.calc.persistence.jooq.rolap.RolapSchemaDefinition;
 import org.openforis.calc.persistence.jooq.rolap.RolapSchemaGenerator;
 import org.openforis.calc.persistence.jooq.rolap.RolapTable;
+import org.openforis.calc.persistence.jooq.rolap.SpecimenAoiStratumAggregateTable;
 import org.openforis.calc.persistence.jooq.rolap.SpecimenDimensionTable;
 import org.openforis.calc.persistence.jooq.rolap.SpecimenFactTable;
 import org.openforis.calc.persistence.jooq.rolap.SpecimenPlotAggregateTable;
@@ -102,7 +103,11 @@ public class RolapService extends CalcService {
 				specimenFactDao.populate(factTable);
 			} else if ( table instanceof SpecimenPlotAggregateTable ) {
 				specimenAggregateDao.populate((SpecimenPlotAggregateTable) table);
+			} else if( table instanceof SpecimenAoiStratumAggregateTable ) {
+				specimenAggregateDao.populate( (SpecimenAoiStratumAggregateTable) table );
 				// TODO speciemn aggregates
+			
+				
 			} else if ( table instanceof InterviewFactTable ) {
 				InterviewFactTable factTable = (InterviewFactTable) table;
 				interviewFactDao.populate(factTable);

@@ -64,6 +64,13 @@ public class ObservationService extends CalcService {
 		SHARED_PLOT, PRIMARY_SECTION_ONLY;
 	}
 
+	public FlatDataStream getPlotSectionDataStream(String surveyName, String observationUnitName, String[] fieldNames) {
+		ObservationUnitMetadata unitMetadata = getObservationUnitMetadata(surveyName, observationUnitName);
+		Collection<VariableMetadata> variables = unitMetadata.getVariableMetadata();
+		
+		return plotSectionViewDao.streamAll(unitMetadata.getObsUnitId(), fieldNames, variables);
+	}
+	
 	public FlatDataStream getSpecimenDataStream(String surveyName, String observationUnitName, String[] fieldNames) {
 		ObservationUnitMetadata unitMetadata = getObservationUnitMetadata(surveyName, observationUnitName);
 		Collection<VariableMetadata> variables = unitMetadata.getVariableMetadata();
@@ -98,12 +105,16 @@ public class ObservationService extends CalcService {
 		specimenNumericValueDao.updateCurrentValue(unitMetadata.getObsUnitId(), dataStream, variables);
 	}
 	
-	@Deprecated
 	@Transactional
 	synchronized
-	public void updateSpecimenExpFactor(String surveyName, String obsUnitName, FlatDataStream dataStream) throws IOException {
-//		ObservationUnitMetadata unitMetadata = getObservationUnitMetadata(surveyName, obsUnitName);
-		specimenDao.batchUpdateExpFactor( dataStream );
+	public void updateSpecimenInlcusionArea(FlatDataStream dataStream) throws Exception {
+		specimenDao.updateInclusionArea( dataStream );
+	}
+	
+	@Transactional
+	synchronized
+	public void updatePlotSectionArea(FlatDataStream dataStream) throws IOException {
+		plotSectionDao.updateArea(dataStream);
 	}
 	
 

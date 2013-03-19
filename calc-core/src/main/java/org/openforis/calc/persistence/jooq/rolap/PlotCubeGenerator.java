@@ -37,9 +37,7 @@ public class PlotCubeGenerator extends RolapCubeGenerator {
 
 		// Mondrian
 		MondrianDef.Table table = mdf.createTable(dbTable.getName());
-//		if ( !mondrianAggregateTables.isEmpty() ) {
-		table.aggTables = aggTables.toArray(new AggTable[0]);
-//		}
+		
 		setMondrianTable(table);
 	}
 
@@ -68,7 +66,6 @@ public class PlotCubeGenerator extends RolapCubeGenerator {
 				// Mondrian
 				aggName = mdf.createAggregateName(aoiAggTable);
 				aggTables.add(aggName);
-
 			}
 		}
 		

@@ -11,17 +11,19 @@ import mondrian.olap.MondrianDef.DimensionUsage;
 import mondrian.olap.MondrianDef.Measure;
 import mondrian.olap.MondrianDef.Table;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.openforis.calc.model.ObservationUnit.Type;
 import org.openforis.calc.model.ObservationUnitMetadata;
 import org.openforis.calc.model.VariableMetadata;
+
 /**
  * 
  * @author G. Miceli
  * @author M. Togna
- *
+ * 
  */
 public abstract class RolapCubeGenerator {
-	
+
 	// IN
 	private String databaseSchema;
 	private ObservationUnitMetadata unit;
@@ -34,65 +36,74 @@ public abstract class RolapCubeGenerator {
 	private List<Measure> measures;
 	private Table mondrianTable;
 	private MondrianDefFactory mdf;
-	
+
 	protected List<AggTable> aggTables;
 
 	// OUT
-//	private Cube cube;
-	
+	private Cube cube;
+
 	RolapCubeGenerator(RolapSchemaGenerator schemaGenerator, ObservationUnitMetadata unit) {
 		this.schemaGenerator = schemaGenerator;
 		this.databaseSchema = schemaGenerator.getDatabaseSchema();
 		this.mdf = schemaGenerator.getMondrianDefFactory();
 		this.unit = unit;
 	}
-	
+
 	Cube createCube() {
 		databaseTables = new ArrayList<RolapTable>();
 		dimensionUsages = new ArrayList<DimensionUsage>();
 		measures = new ArrayList<Measure>();
-		
+
 		initFactTable();
 		initDimensionUsages();
 		initMeasures();
 
-		return mdf.createCube(unit.getObsUnitName(), mondrianTable, dimensionUsages, measures);
+		if ( !CollectionUtils.isEmpty(aggTables) ) {
+			mondrianTable.aggTables = aggTables.toArray(new AggTable[0]);
+		}
+
+		cube = mdf.createCube(getCubeName(), mondrianTable, dimensionUsages, measures);
+		return cube;
 	}
 
 	List<RolapTable> getDatabaseTables() {
 		return databaseTables;
 	}
-	
+
 	public String getDatabaseSchema() {
 		return databaseSchema;
 	}
-	
+
 	public static RolapCubeGenerator createInstance(RolapSchemaGenerator schemaGen, ObservationUnitMetadata unit) {
 		Type unitType = unit.getObsUnitTypeEnum();
-		switch (unitType) {
-		case PLOT:
-			return new PlotCubeGenerator(schemaGen, unit);
-		case SPECIMEN:
-			return new SpecimenCubeGenerator(schemaGen, unit);
-		case INTERVIEW:
-			return new InterviewCubeGenerator(schemaGen, unit);
-		default:
-			throw new UnsupportedOperationException();
+		switch ( unitType ) {
+			case PLOT :
+				return new PlotCubeGenerator(schemaGen, unit);
+			case SPECIMEN :
+				return new SpecimenCubeGenerator(schemaGen, unit);
+			case INTERVIEW :
+				return new InterviewCubeGenerator(schemaGen, unit);
+			default :
+				throw new UnsupportedOperationException();
 		}
 	}
 
 	/**
-	 * Create fact table and aggregates. Should add new databases tables
-	 * with addDatabaseTable and Mondrian defs with setMondrianTable and
+	 * Create fact table and aggregates. Should add new databases tables with addDatabaseTable and Mondrian defs with setMondrianTable and
 	 * addMondrianAggregateTable
+	 * 
 	 * @return
 	 */
 	protected abstract void initFactTable();
 
 	protected abstract void initDimensionUsages();
-	
+
 	protected abstract void initMeasures();
-	
+
+	protected String getCubeName() {
+		return unit.getObsUnitName();
+	}
+
 	protected final void initUserDefinedDimensionUsages() {
 		createUserDefinedDimensionUsages(unit, dimensionUsages);
 	}
@@ -100,7 +111,7 @@ public abstract class RolapCubeGenerator {
 	protected void addDatabaseTable(RolapTable table) {
 		databaseTables.add(table);
 	}
-	
+
 	protected void setDatabaseFactTable(FactTable table) {
 		if ( databaseFactTable != null ) {
 			throw new IllegalStateException("Fact table set more than once");
@@ -108,11 +119,11 @@ public abstract class RolapCubeGenerator {
 		databaseFactTable = table;
 		addDatabaseTable(table);
 	}
-	
+
 	protected void setMondrianTable(MondrianDef.Table table) {
 		mondrianTable = table;
 	}
-	
+
 	protected FactTable getDatabaseFactTable() {
 		return databaseFactTable;
 	};
@@ -124,11 +135,11 @@ public abstract class RolapCubeGenerator {
 	protected void addMeasure(Measure m) {
 		measures.add(m);
 	}
-	
+
 	protected final void initUserDefinedMeasures() {
 		Collection<VariableMetadata> vars = unit.getVariableMetadata();
 		for ( VariableMetadata var : vars ) {
-			if( var.isForAnalysis() && var.isNumeric() ) {
+			if ( var.isForAnalysis() && var.isNumeric() ) {
 				String variableName = var.getVariableName();
 				Measure m = mdf.createMeasure(variableName, var.getVariableLabel());
 				addMeasure(m);
@@ -137,8 +148,7 @@ public abstract class RolapCubeGenerator {
 	}
 
 	/**
-	 * Recursively get dimensions derived from categorical variables
-	 * marked forAnalysis.  
+	 * Recursively get dimensions derived from categorical variables marked forAnalysis.
 	 * 
 	 * @param unit
 	 * @return
@@ -150,7 +160,7 @@ public abstract class RolapCubeGenerator {
 		}
 		Collection<VariableMetadata> vars = unit.getVariableMetadata();
 		for ( VariableMetadata var : vars ) {
-			if( var.isForAnalysis() && var.isCategorical() ) {
+			if ( var.isForAnalysis() && var.isCategorical() ) {
 				String varName = var.getVariableName();
 				// TODO add _id to foreign key names
 				DimensionUsage dim = mdf.createDimensionUsage(varName, varName, varName);
@@ -166,4 +176,12 @@ public abstract class RolapCubeGenerator {
 	public ObservationUnitMetadata getObservationUnitMetadata() {
 		return unit;
 	}
+
+	Cube getCube() {
+		if ( cube == null ) {
+			throw new IllegalStateException("Cube not yet initialized. createCube() must be called in order to init the cube");
+		}
+		return cube;
+	}
+
 }

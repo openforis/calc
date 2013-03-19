@@ -29,6 +29,9 @@ public class InterviewDao extends JooqDaoSupport<InterviewRecord, Interview> {
 	public void deleteByObsUnit(int id) {
 		Factory create = getJooqFactory();
 		org.openforis.calc.persistence.jooq.tables.Interview i = INTERVIEW.as("i");
-		create.delete(i).where(i.OBS_UNIT_ID.eq(id));
+		create
+			.delete(i)
+			.where(i.OBS_UNIT_ID.eq(id))
+			.execute();
 	}
 }

@@ -26,9 +26,11 @@ import org.openforis.commons.collection.CollectionUtils;
  */
 public abstract class FactTable extends RolapTable {
 
+	public static final String MEASURE_COUNT = "cnt";
+
 	private static final long serialVersionUID = 1L;
 
-	public final Field<BigDecimal> COUNT = createFixedMeasureField("cnt");
+	public final Field<BigDecimal> COUNT = createFixedMeasureField(MEASURE_COUNT);
 	
 	private List<Field<Integer>> userDefinedDimensionFields;
 	private List<Field<BigDecimal>> userDefinedMeasureFields;

@@ -54,4 +54,5 @@ public class Variable extends org.openforis.calc.persistence.jooq.tables.pojos.V
 		String uom = getUom();
 		return uom == null ? null : Unit.valueOf(uom);
 	}
+	
 }

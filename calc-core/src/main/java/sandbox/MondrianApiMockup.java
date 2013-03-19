@@ -16,7 +16,7 @@ public class MondrianApiMockup {
 			RolapService rolapService = ctx.getBean(RolapService.class);
 			String mdxFileName = ctx.getBeanFactory().resolveEmbeddedValue("${mdxOutputPath}");
 			//"/opt/dev/saiku-server/tomcat/webapps/saiku/WEB-INF/classes/naforma1/Naforma1.xml";
-			rolapService.publishRolapSchema("naforma1", "testschema", mdxFileName);
+			rolapService.publishRolapSchema("naforma1", "testschema_mino1", mdxFileName);
 //			printSchema();
 //			testQuery();
 //			manuallyCreateSchema();

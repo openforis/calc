@@ -1,14 +1,22 @@
 package org.openforis.calc.persistence;
 
-import static org.openforis.calc.persistence.jooq.Tables.*;
+import static org.openforis.calc.persistence.jooq.Tables.PLOT_CATEGORICAL_VALUE;
+import static org.openforis.calc.persistence.jooq.Tables.PLOT_NUMERIC_VALUE;
+import static org.openforis.calc.persistence.jooq.Tables.PLOT_SECTION;
+import static org.openforis.calc.persistence.jooq.Tables.SAMPLE_PLOT;
+
+import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jooq.Query;
 import org.jooq.impl.Factory;
 import org.openforis.calc.model.PlotSection;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
 import org.openforis.calc.persistence.jooq.tables.SamplePlot;
 import org.openforis.calc.persistence.jooq.tables.records.PlotSectionRecord;
+import org.openforis.commons.io.flat.FlatDataStream;
+import org.openforis.commons.io.flat.FlatRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -170,7 +178,29 @@ public class PlotSectionDao extends JooqDaoSupport<PlotSectionRecord, PlotSectio
 			  .where(ps.SAMPLE_PLOT_ID.in(
 					  	create.select(sp.SAMPLE_PLOT_ID)
 					  		  .from(sp)
-					  		  .where(sp.OBS_UNIT_ID.eq(id))));
+					  		  .where(sp.OBS_UNIT_ID.eq(id))))
+	  		  .execute();
+	}
+
+	public void updateArea(FlatDataStream dataStream) throws IOException {
+		startBatch();
+		Factory create = getBatchFactory();
+		
+		FlatRecord r ;
+		while( (r=dataStream.nextRecord()) != null ) {
+			Double area = r.getValue("area", Double.class);
+			Integer plotSectionId = r.getValue("plot_section_id", Integer.class);
+			
+			Query update = 
+					create
+					.update(P)
+					.set(P.PLOT_SECTION_AREA, area)
+					.where(P.PLOT_SECTION_ID.eq(plotSectionId));
+			
+			addQueryToBatch( update );
+		}
+		
+		executeBatch();
 	}
 	
 }

@@ -10,6 +10,7 @@ import mondrian.olap.MondrianDef.Hierarchy;
 import mondrian.olap.MondrianDef.Level;
 import mondrian.olap.MondrianDef.Schema;
 import mondrian.olap.MondrianDef.View;
+import mondrian.olap.MondrianDef.VirtualCube;
 
 import org.openforis.calc.model.AoiHierarchyLevelMetadata;
 import org.openforis.calc.model.AoiHierarchyMetadata;
@@ -38,6 +39,7 @@ public class RolapSchemaGenerator {
 //	private Collection<Dimension> aoiDimensions;
 	private Collection<Dimension> sharedDimensions;
 	private Collection<Cube> cubes;
+	private Collection<VirtualCube> virtualCubes;
 	private MondrianDefFactory mdf; 
 	
 	// OUT
@@ -105,7 +107,7 @@ public class RolapSchemaGenerator {
 	
 	private void initSchema() {
 		String surveyName = survey.getSurveyName();
-		schema = mdf.createSchema(surveyName, sharedDimensions, cubes);
+		schema = mdf.createSchema(surveyName, sharedDimensions, cubes, virtualCubes);
 	}
 	
 	private void initSharedDimensions() {
@@ -283,12 +285,21 @@ public class RolapSchemaGenerator {
 	
 	private void initCubes() {
 		cubes = new ArrayList<Cube>();
+		virtualCubes = new ArrayList<VirtualCube>();
+		
 		for ( ObservationUnitMetadata unit : units ) {
 			if( unit.isPlot() || unit.hasNumericVariablesForAnalysis() ) {
 				RolapCubeGenerator cubeGen = RolapCubeGenerator.createInstance(this, unit);
 				Cube cube = cubeGen.createCube();
 				cubes.add(cube);
 				dbTables.addAll(cubeGen.getDatabaseTables());
+				
+				if( unit.isSpecimen() ){
+					SpecimenVirtualCubeGenerator virtualCubeGenerator = new SpecimenVirtualCubeGenerator( (SpecimenCubeGenerator) cubeGen );
+					VirtualCube virtualCube = virtualCubeGenerator.createCube();
+					virtualCubes.add(virtualCube);
+				}
+				
 			}
 		}
 	}
