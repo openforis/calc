@@ -326,6 +326,12 @@
 		<dependency>
 			<groupId>pentaho</groupId>
 			<artifactId>mondrian</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>servlet-api</artifactId>
+					<groupId>javax.servlet</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.olap4j</groupId>

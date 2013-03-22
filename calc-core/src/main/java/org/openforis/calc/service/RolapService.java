@@ -5,12 +5,15 @@ import java.util.List;
 
 import org.openforis.calc.model.SurveyMetadata;
 import org.openforis.calc.persistence.InterviewFactDao;
-import org.openforis.calc.persistence.PlotAggregateDao;
+import org.openforis.calc.persistence.PlotAoiAggregateDao;
+import org.openforis.calc.persistence.PlotAoiStratumAggregateDao;
 import org.openforis.calc.persistence.PlotFactDao;
 import org.openforis.calc.persistence.RolapDimensionDao;
 import org.openforis.calc.persistence.RolapSchemaDao;
-import org.openforis.calc.persistence.SpecimenAggregateDao;
+import org.openforis.calc.persistence.SpecimenAoiAggregateDao;
+import org.openforis.calc.persistence.SpecimenAoiStratumAggregateDao;
 import org.openforis.calc.persistence.SpecimenFactDao;
+import org.openforis.calc.persistence.SpecimenPlotAggregateDao;
 import org.openforis.calc.persistence.jooq.rolap.AoiDimensionTable;
 import org.openforis.calc.persistence.jooq.rolap.CategoryDimensionTable;
 import org.openforis.calc.persistence.jooq.rolap.ClusterDimensionTable;
@@ -22,6 +25,7 @@ import org.openforis.calc.persistence.jooq.rolap.PlotFactTable;
 import org.openforis.calc.persistence.jooq.rolap.RolapSchemaDefinition;
 import org.openforis.calc.persistence.jooq.rolap.RolapSchemaGenerator;
 import org.openforis.calc.persistence.jooq.rolap.RolapTable;
+import org.openforis.calc.persistence.jooq.rolap.SpecimenAoiAggregateTable;
 import org.openforis.calc.persistence.jooq.rolap.SpecimenAoiStratumAggregateTable;
 import org.openforis.calc.persistence.jooq.rolap.SpecimenDimensionTable;
 import org.openforis.calc.persistence.jooq.rolap.SpecimenFactTable;
@@ -45,14 +49,23 @@ public class RolapService extends CalcService {
 	private RolapDimensionDao rolapDimensionDao;
 	@Autowired
 	private RolapSchemaDao rolapSchemaDao;
+	
 	@Autowired
 	private PlotFactDao plotFactDao;
 	@Autowired
-	private PlotAggregateDao plotAggregateDao;
+	private PlotAoiAggregateDao plotAoiAggregateDao;
+	@Autowired
+	private PlotAoiStratumAggregateDao plotAoiStratumAggregateDao;
+	
 	@Autowired
 	private SpecimenFactDao specimenFactDao;
 	@Autowired
-	private SpecimenAggregateDao specimenAggregateDao;
+	private SpecimenAoiStratumAggregateDao specimenAoiStratumAggregateDao;
+	@Autowired
+	private SpecimenAoiAggregateDao specimenAoiAggregateDao;
+	@Autowired
+	private SpecimenPlotAggregateDao specimenPlotAggregateDao;
+	
 	@Autowired
 	private InterviewFactDao interviewFactDao;
 	
@@ -95,19 +108,18 @@ public class RolapService extends CalcService {
 				PlotFactTable factTable = (PlotFactTable) table;
 				plotFactDao.populate(factTable);
 			} else if ( table instanceof PlotAoiStratumAggregateTable ) {
-				plotAggregateDao.populate((PlotAoiStratumAggregateTable) table);
+				plotAoiStratumAggregateDao.populate((PlotAoiStratumAggregateTable) table);
 			} else if ( table instanceof PlotAoiAggregateTable ) {
-				plotAggregateDao.populate((PlotAoiAggregateTable) table);
+				plotAoiAggregateDao.populate((PlotAoiAggregateTable) table);
 			} else if ( table instanceof SpecimenFactTable ) {
 				SpecimenFactTable factTable = (SpecimenFactTable) table;
 				specimenFactDao.populate(factTable);
 			} else if ( table instanceof SpecimenPlotAggregateTable ) {
-				specimenAggregateDao.populate((SpecimenPlotAggregateTable) table);
+				specimenPlotAggregateDao.populate((SpecimenPlotAggregateTable) table);
 			} else if( table instanceof SpecimenAoiStratumAggregateTable ) {
-				specimenAggregateDao.populate( (SpecimenAoiStratumAggregateTable) table );
-				// TODO speciemn aggregates
-			
-				
+				specimenAoiStratumAggregateDao.populate( (SpecimenAoiStratumAggregateTable) table );
+			} else if ( table instanceof SpecimenAoiAggregateTable ){
+				specimenAoiAggregateDao.populate( (SpecimenAoiAggregateTable) table );
 			} else if ( table instanceof InterviewFactTable ) {
 				InterviewFactTable factTable = (InterviewFactTable) table;
 				interviewFactDao.populate(factTable);

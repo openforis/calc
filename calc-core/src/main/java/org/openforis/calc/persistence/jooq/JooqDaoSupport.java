@@ -27,6 +27,7 @@ import org.jooq.Insert;
 import org.jooq.Query;
 import org.jooq.Record;
 import org.jooq.Result;
+import org.jooq.Select;
 import org.jooq.SelectQuery;
 import org.jooq.SelectSelectStep;
 import org.jooq.Table;
@@ -540,7 +541,7 @@ public abstract class JooqDaoSupport<R extends TableRecord<R>, P>
 		create.execute(sql);
 	}
 
-	protected Insert<?> createInsertFromSelect(UpdatableTable<?> table, SelectQuery select) {
+	protected Insert<?> createInsertFromSelect(UpdatableTable<?> table, Select<?> select) {
 		Factory create = getJooqFactory();
 		
 		List<Field<?>> selectFields = select.getFields();

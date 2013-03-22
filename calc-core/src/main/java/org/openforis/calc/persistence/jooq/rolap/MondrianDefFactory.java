@@ -350,9 +350,9 @@ class MondrianDefFactory {
 		Formula formula = new Formula();
 		
 		formula.cdata = 
-				"CASE [TreeNo].CurrentMember.Level.Name\n" +
-				"WHEN \"" + plotLevel + "\" THEN [" + MEASURES + "].[" + toMdxName(SpecimenFactTable.MEASURE_PLOT_SECTION_AREA) + "].Value\n" +
-				"WHEN \"" + specimenLevel + "\" THEN [" + MEASURES + "].[" + toMdxName(SpecimenFactTable.MEASURE_INCLUSION_AREA) + "].Value\n" +         
+				"CASE [" + specimenLevel + "].CurrentMember.Level.Name\n" +
+				"WHEN \"" + plotLevel + "\" THEN [" + MEASURES + "].[" + toMdxName( SpecimenFactTable.MEASURE_PLOT_SECTION_AREA ) + "].Value\n" +
+				"WHEN \"" + specimenLevel + "\" THEN [" + MEASURES + "].[" + toMdxName( SpecimenFactTable.MEASURE_INCLUSION_AREA ) + "].Value\n" +         
 				"ELSE [" + MEASURES + "].[" + toMdxName( PlotFactTable.MEASURE_EST_AREA ) + "].Value END ";
 		
 		c.formulaElement = formula ;

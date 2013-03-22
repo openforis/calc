@@ -47,25 +47,37 @@ public class PlotCubeGenerator extends RolapCubeGenerator {
 		SurveyMetadata surveyMetadata = schemaGenerator.getSurveyMetadata();
 		List<AoiHierarchyMetadata> aoiHierarchyMetadata = surveyMetadata.getAoiHierarchyMetadata();
 		for ( AoiHierarchyMetadata aoiHierarchy : aoiHierarchyMetadata ) {
+			
+			int rowCount = 50;
+			PlotAoiStratumAggregateTable stratumAggTable = null;
+			
 			List<AoiHierarchyLevelMetadata> levels = aoiHierarchy.getLevelMetadata();
 			for ( AoiHierarchyLevelMetadata level : levels ) {
 				// Stratum/Aoi aggragates 
 				// Database
 				PlotAoiStratumAggregateTable aoiStratumAggTable = new PlotAoiStratumAggregateTable(factTable, level);
 				addDatabaseTable(aoiStratumAggTable);
+
+				if( level.getAoiHierarchyLevelRank() == 1 ) {
+					stratumAggTable = aoiStratumAggTable;	
+				}	
 				
-				// Mondrian
-				AggName aggName = mdf.createAggregateName(aoiStratumAggTable);
-				aggTables.add(aggName);
 				
 				// Aoi aggragates 
 				// Database
-				PlotAoiAggregateTable aoiAggTable = new PlotAoiAggregateTable(aoiStratumAggTable, level);
+				PlotAoiAggregateTable aoiAggTable = new PlotAoiAggregateTable(aoiStratumAggTable, level, stratumAggTable);
 				addDatabaseTable(aoiAggTable);
 				
 				// Mondrian
-				aggName = mdf.createAggregateName(aoiAggTable);
-				aggTables.add(aggName);
+				rowCount += 50;
+				AggName aoiAggName = mdf.createAggregateName(aoiAggTable);
+				aoiAggName.approxRowCount = rowCount + "";
+				aggTables.add(aoiAggName);
+				
+				rowCount += 50;
+				AggName aoiStratumAggName = mdf.createAggregateName(aoiStratumAggTable);
+				aoiStratumAggName.approxRowCount = rowCount + "";
+				aggTables.add(aoiStratumAggName);
 			}
 		}
 		

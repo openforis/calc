@@ -35,8 +35,11 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component
 @SuppressWarnings("rawtypes")
+@Deprecated
 public class PlotAggregateDao extends JooqDaoSupport {
 
+	final long threshold = 20;
+	
 	@SuppressWarnings("unchecked")
 	PlotAggregateDao() {
 		super(null, null);
@@ -47,7 +50,6 @@ public class PlotAggregateDao extends JooqDaoSupport {
 	synchronized
 	public void populate(PlotAoiStratumAggregateTable aggTable) {
 		//Minimum number of observations per substratum
-		long threshold = 10;
 		
 		// Estimable areas
 		SelectQuery select = createEstimableAggregateSelect(aggTable, threshold);
@@ -89,7 +91,7 @@ public class PlotAggregateDao extends JooqDaoSupport {
 		select.addFrom(plotAoiStratumAggTable);
 		
 		addAoisToAoiAggSelect(select, plotAoiStratumAggTable);
-		addUserDefinedDimensionsToSelect(aggTable, select);
+		addUserDefinedDimensionsToSelect(aggTable.getFactTable(), select);
 		
 		
 		@SuppressWarnings("unchecked")
@@ -151,7 +153,7 @@ public class PlotAggregateDao extends JooqDaoSupport {
 		select.addGroupBy(s.STRATUM_ID);
 		
 		addAoisToAggAoiStratumSelect(aoiHierarchy, aoiLevel.getAoiHierarchyLevelRank(), s, select, true);
-		addUserDefinedDimensionsToSelect(agg, select);
+		addUserDefinedDimensionsToSelect(agg.getFactTable(), select);
 		
 		return select;
 	}
@@ -214,8 +216,8 @@ public class PlotAggregateDao extends JooqDaoSupport {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void addUserDefinedDimensionsToSelect(AoiAggregateTable<?> agg, SelectQuery select) {
-		FactTable fact = agg.getFactTable();
+	private void addUserDefinedDimensionsToSelect(FactTable fact, SelectQuery select) {
+//		FactTable fact = agg.getFactTable();
 		List<Field<Integer>> srcDimensions = fact.getUserDefinedDimensionFields();
 		for ( Field<Integer> f : srcDimensions ) {
 			String fieldName = f.getName();

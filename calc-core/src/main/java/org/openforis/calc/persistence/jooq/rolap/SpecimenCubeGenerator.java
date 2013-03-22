@@ -83,27 +83,46 @@ public class SpecimenCubeGenerator extends RolapCubeGenerator {
 		SpecimenPlotAggregateTable plotAggTable = new SpecimenPlotAggregateTable(factTable);
 		addDatabaseTable(plotAggTable);
 
+		int rowCount = 50;
+		
 		AggName plotAggName = mdf.createAggregateName(plotAggTable);
-		aggTables.add(plotAggName);
-		// TODO stratum / aoi agg levels
 
 		RolapSchemaGenerator schemaGenerator = getSchemaGenerator();
 		SurveyMetadata surveyMetadata = schemaGenerator.getSurveyMetadata();
 		List<AoiHierarchyMetadata> aoiHierarchyMetadata = surveyMetadata.getAoiHierarchyMetadata();
 		for ( AoiHierarchyMetadata aoiHierarchy : aoiHierarchyMetadata ) {
 			List<AoiHierarchyLevelMetadata> levels = aoiHierarchy.getLevelMetadata();
+			
+			SpecimenAoiStratumAggregateTable stratumAggTable = null;
 			for ( AoiHierarchyLevelMetadata level : levels ) {
-				
+				// Aoi Stratum Aggregation level
 				SpecimenAoiStratumAggregateTable aoiStratumAggTable = new SpecimenAoiStratumAggregateTable(plotAggTable, level);
 				addDatabaseTable(aoiStratumAggTable);
 				
+				if( level.getAoiHierarchyLevelRank() == 1 ) {
+					stratumAggTable = aoiStratumAggTable;	
+				}				
+				
+//				 Aoi Aggregation level
+				SpecimenAoiAggregateTable aoiAggTable = new SpecimenAoiAggregateTable(aoiStratumAggTable, stratumAggTable);
+				addDatabaseTable(aoiAggTable);				
+				
+				
+				rowCount += 50;
+				AggName aoiAggName = mdf.createAggregateName(aoiAggTable);
+				aoiAggName.approxRowCount = rowCount + "";
+				aggTables.add(aoiAggName);
+				
+				rowCount += 50;
 				AggName aoiStratumAggName = mdf.createAggregateName(aoiStratumAggTable);
+				aoiStratumAggName.approxRowCount = rowCount + "";
 				aggTables.add(aoiStratumAggName);
-				
-				
 			}
 		}
-
+		
+		rowCount += 50;
+		plotAggName.approxRowCount = rowCount + "";		
+		aggTables.add(plotAggName);
 	}
 
 	@Override
