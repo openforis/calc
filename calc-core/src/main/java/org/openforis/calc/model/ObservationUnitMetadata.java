@@ -22,6 +22,7 @@ public class ObservationUnitMetadata extends ObservationUnit {
 	private ObservationUnit observationUnit;
 	private Map<String, VariableMetadata> variableMap;
 	private SurveyMetadata surveyMetadata;
+	private TaxonomicChecklistMetadata taxonomicChecklistMetadata;
 
 	public ObservationUnitMetadata(ObservationUnit observationUnit, Collection<VariableMetadata> variables) {
 		this.observationUnit = observationUnit;
@@ -84,8 +85,16 @@ public class ObservationUnitMetadata extends ObservationUnit {
 		}
 	}
 
+	public Integer getTaxonomicChecklistId() {
+		return observationUnit.getTaxonomicChecklistId();
+	}
+
 	public TaxonomicChecklistMetadata getTaxonomicChecklistMetadata() {
-		return surveyMetadata.getTaxonomicChecklistByObsUnitId(getObsUnitId());
+		return taxonomicChecklistMetadata;
+	}
+
+	void setTaxonomicChecklistMetadata(TaxonomicChecklistMetadata checkList) {
+		this.taxonomicChecklistMetadata = checkList;
 	}
 
 	void setSurveyMetadata(SurveyMetadata surveyMetadata) {
@@ -133,8 +142,9 @@ public class ObservationUnitMetadata extends ObservationUnit {
 	public String getDimensionTableName() {
 		return getObsUnitName() + DIMENSION_NAME_SUFFIX;
 	}
-	
+
 	public String getAggregateTableName(String infix) {
 		return AGG_TABLE_PREFIX + infix + UNDERSCORE + getFactTableName();
 	}
+
 }

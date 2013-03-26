@@ -33,6 +33,6 @@ public class PlotCategoricalValueDao extends JooqDaoSupport<PlotCategoricalValue
 					  	create.select(ps.PLOT_SECTION_ID)
 					  		  .from(ps)
 					  		  .join(ps).on(ps.SAMPLE_PLOT_ID.eq(sp.SAMPLE_PLOT_ID))
-					  		  .where(sp.OBS_UNIT_ID.eq(id))));
+					  		  .where(sp.OBS_UNIT_ID.eq(id)))).execute();
 	}
 }

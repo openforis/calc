@@ -34,7 +34,7 @@ public class PlotNumericVariableDao extends JooqDaoSupport<PlotNumericValueRecor
 					  	create.select(ps.PLOT_SECTION_ID)
 					  		  .from(ps)
 					  		  .join(sp).on(sp.SAMPLE_PLOT_ID.eq(ps.SAMPLE_PLOT_ID))
-					  		  .where(sp.OBS_UNIT_ID.eq(id))));
+					  		  .where(sp.OBS_UNIT_ID.eq(id)))).execute();
 	}
 
 }

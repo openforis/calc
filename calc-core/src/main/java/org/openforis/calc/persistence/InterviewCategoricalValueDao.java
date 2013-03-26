@@ -29,6 +29,6 @@ public class InterviewCategoricalValueDao extends JooqDaoSupport<InterviewCatego
 			  .where(v.INTERVIEW_ID.in(
 					  	create.select(o.INTERVIEW_ID)
 					  		  .from(o)
-					  		  .where(o.OBS_UNIT_ID.eq(id))));
+					  		  .where(o.OBS_UNIT_ID.eq(id)))).execute();
 	}
 }

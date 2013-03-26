@@ -1,11 +1,15 @@
 package org.openforis.calc.persistence;
-import static org.jooq.impl.Factory.*;
+import static org.jooq.impl.Factory.coalesce;
+import static org.jooq.impl.Factory.val;
 import static org.openforis.calc.persistence.jooq.Tables.AOI;
 import static org.openforis.calc.persistence.jooq.Tables.PLOT_CATEGORICAL_VALUE_VIEW;
+import static org.openforis.calc.persistence.jooq.Tables.PLOT_SECTION;
 import static org.openforis.calc.persistence.jooq.Tables.PLOT_SECTION_AOI;
+import static org.openforis.calc.persistence.jooq.Tables.SAMPLE_PLOT;
+import static org.openforis.calc.persistence.jooq.Tables.SPECIMEN;
 import static org.openforis.calc.persistence.jooq.Tables.SPECIMEN_CATEGORICAL_VALUE_VIEW;
 import static org.openforis.calc.persistence.jooq.Tables.SPECIMEN_NUMERIC_VALUE;
-import static org.openforis.calc.persistence.jooq.Tables.SPECIMEN_VIEW;
+import static org.openforis.calc.persistence.jooq.Tables.STRATUM;
 
 import java.util.Collection;
 import java.util.List;
@@ -21,10 +25,13 @@ import org.openforis.calc.model.VariableMetadata;
 import org.openforis.calc.persistence.jooq.rolap.SpecimenFactTable;
 import org.openforis.calc.persistence.jooq.tables.Aoi;
 import org.openforis.calc.persistence.jooq.tables.PlotCategoricalValueView;
+import org.openforis.calc.persistence.jooq.tables.PlotSection;
 import org.openforis.calc.persistence.jooq.tables.PlotSectionAoi;
+import org.openforis.calc.persistence.jooq.tables.SamplePlot;
+import org.openforis.calc.persistence.jooq.tables.Specimen;
 import org.openforis.calc.persistence.jooq.tables.SpecimenCategoricalValueView;
 import org.openforis.calc.persistence.jooq.tables.SpecimenNumericValue;
-import org.openforis.calc.persistence.jooq.tables.SpecimenView;
+import org.openforis.calc.persistence.jooq.tables.Stratum;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,30 +44,36 @@ public class SpecimenFactDao extends RolapFactDao<SpecimenFactTable> {
 
 	@Override
 	protected SelectQuery createFactSelect(SpecimenFactTable fact){
-//		SpecimenFactTable specimenFact = (SpecimenFactTable) fact;
 		ObservationUnitMetadata unit = fact.getObservationUnitMetadata();
 		int unitId = unit.getObsUnitId();
 
-		SpecimenView s = SPECIMEN_VIEW.as("s");
+		Specimen s = SPECIMEN.as("s");
 		PlotSectionAoi pa = PLOT_SECTION_AOI.as("pa");
+		Stratum st = STRATUM.as("st");
+		SamplePlot sp = SAMPLE_PLOT.as("sp");
+		PlotSection ps = PLOT_SECTION.as("ps");
 		
 		Factory create = getJooqFactory();
 		SelectQuery select = create.selectQuery();
 		
-		select.addSelect( s.STRATUM_ID );
-		select.addSelect( s.CLUSTER_ID );
+		select.addSelect( st.STRATUM_ID );
+		select.addSelect( sp.CLUSTER_ID );
 		select.addSelect( s.PLOT_SECTION_ID.as(fact.PLOT_ID.getName()) );
 		select.addSelect( s.SPECIMEN_ID );
 		select.addSelect( s.SPECIMEN_TAXON_ID );
 		select.addSelect( s.INCLUSION_AREA );
-		select.addSelect( s.PLOT_SECTION_AREA );		
+		select.addSelect( ps.PLOT_SECTION_AREA );		
 		select.addSelect( val(1).as(fact.COUNT.getName()) );
 		
 		select.addFrom(s);
 		
+		select.addJoin( ps, s.PLOT_SECTION_ID.eq(ps.PLOT_SECTION_ID) );
+		select.addJoin( sp , ps.SAMPLE_PLOT_ID.eq(sp.SAMPLE_PLOT_ID) );
+		select.addJoin( st, sp.STRATUM_ID.eq(st.STRATUM_ID) );
+		
 		select.addJoin(pa, s.PLOT_SECTION_ID.eq(pa.PLOT_SECTION_ID));
 		
-		select.addConditions(s.SPECIMEN_OBS_UNIT_ID.eq(unitId));
+		select.addConditions(s.OBS_UNIT_ID.eq(unitId));
 		
 		addAoisToSelect(unit, pa, select);
 		
@@ -107,7 +120,7 @@ public class SpecimenFactDao extends RolapFactDao<SpecimenFactTable> {
 	}
 	
 	@SuppressWarnings("unchecked")	
-	private void addUnitVariablesToSelect(ObservationUnitMetadata unit, SpecimenView s, SelectQuery select, SpecimenFactTable fact) {
+	private void addUnitVariablesToSelect(ObservationUnitMetadata unit, Specimen s, SelectQuery select, SpecimenFactTable fact) {
 		Collection<VariableMetadata> variables = unit.getVariableMetadata();
 		int idx = 0;
 		for ( VariableMetadata var : variables ) {			
@@ -152,7 +165,7 @@ public class SpecimenFactDao extends RolapFactDao<SpecimenFactTable> {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void addParentVariablesToSelect(ObservationUnitMetadata unit, SpecimenView view, SelectQuery select) {
+	private void addParentVariablesToSelect(ObservationUnitMetadata unit, Specimen view, SelectQuery select) {
 		Collection<VariableMetadata> variables = unit.getVariableMetadata();	
 		int idx = 0;		
 		for ( VariableMetadata var : variables ) {

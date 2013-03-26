@@ -143,12 +143,15 @@ public class SpecimenNumericValueDao extends JooqDaoSupport<SpecimenNumericValue
 	
 	public void deleteByObsUnit(int id) {
 		Factory create = getJooqFactory();
-		org.openforis.calc.persistence.jooq.tables.SpecimenNumericValue v = SPECIMEN_NUMERIC_VALUE.as("v");
+		org.openforis.calc.persistence.jooq.tables.SpecimenNumericValue v = SPECIMEN_NUMERIC_VALUE;
 		Specimen o = SPECIMEN.as("o");
 		create.delete(v)
 			  .where(v.SPECIMEN_ID.in(
 					  	create.select(o.SPECIMEN_ID)
 					  		  .from(o)
-					  		  .where(o.OBS_UNIT_ID.eq(id))));
+					  		  .where(o.OBS_UNIT_ID.eq(id))
+			  		  	)
+	  		  )
+	  		  .execute();
 	}
 }

@@ -7,33 +7,14 @@ port <- '8080';
 calcRestUri <- sprintf('http://%s:%s/calc/rest', host, port);
 saveAreaResultsUri <- paste(calcRestUri, '/surveys/naforma1/area-results', sep='/');
 updateSpecimenValueUri <- '/calc/rest/surveys/naforma1/units/tree/specimens';
+updateDeadWoodValueUri <- '/calc/rest/surveys/naforma1/units/dead_wood/specimens';
 updateSpecimenInclusionAreaUri <- '/calc/rest/surveys/naforma1/units/tree/specimens/inclusion-area';
+updateDeadWoodInclusionAreaUri <- "/calc/rest/surveys/naforma1/units/dead_wood/specimens/inclusion-area";
 updatePlotSectionAreaUri <- '/calc/rest/surveys/naforma1/units/plot/observations/area';
 #updateSpecimenValueUri <-  sprintf('%s%s', calcRestUri, updateSpecimenValueUri );           
 
 source('src/main/resources/sockets.R');
-
-
-getTrees <- function( fields ) {
-  params <- paste( fields, collapse=',' );
-  
-  uri <- paste( calcRestUri, 'surveys/naforma1/units/tree/specimens?f=',sep='/' );
-  uri <- paste( uri, params, sep='' );
-  #  print(uri)
-  trees <- read.csv( uri );
-  return ( trees );
-}
-
-getPlotSections <- function( fields ) {
-  
-  params <- paste( fields, collapse=',' );
-  uri <- sprintf('%s/%s?f=%s', calcRestUri, 'surveys/naforma1/units/plot/observations' , params );
-  #uri <- paste( calcRestUri, 'surveys/naforma1/units/plot/observations?f=',sep='/' );
-  #uri <- paste( uri, params, sep='' );
-  #  print(uri)
-  plots <- read.csv( uri );
-  return ( plots );
-}
+source('src/main/resources/functions.R');
 
 #patch <- function(uri, data) {
   

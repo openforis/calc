@@ -24,12 +24,15 @@ public class SpecimenCategoricalValueDao extends JooqDaoSupport<SpecimenCategori
 
 	public void deleteByObsUnit(int id) {
 		Factory create = getJooqFactory();
-		org.openforis.calc.persistence.jooq.tables.SpecimenCategoricalValue v = SPECIMEN_CATEGORICAL_VALUE.as("v");
+		org.openforis.calc.persistence.jooq.tables.SpecimenCategoricalValue v = SPECIMEN_CATEGORICAL_VALUE;
 		Specimen o = SPECIMEN.as("o");
 		create.delete(v)
 			  .where(v.SPECIMEN_ID.in(
 					  	create.select(o.SPECIMEN_ID)
 					  		  .from(o)
-					  		  .where(o.OBS_UNIT_ID.eq(id))));
+					  		  .where(o.OBS_UNIT_ID.eq(id))
+					  		  )
+	  		  )
+	  		  .execute();
 	}
 }

@@ -33,9 +33,20 @@ public class SurveyMetadata {
 		obsUnitMetadataByUnitName = new HashMap<String, ObservationUnitMetadata>();
 		for ( ObservationUnitMetadata ou : ous ) {
 			ou.setSurveyMetadata(this);
+			TaxonomicChecklistMetadata checkList = getTaxonomicChecklist( ou.getTaxonomicChecklistId() );
+			ou.setTaxonomicChecklistMetadata(checkList);
 			obsUnitMetadataByUnitId.put(ou.getObsUnitId(), ou);
 			obsUnitMetadataByUnitName.put(ou.getObsUnitName(), ou);
 		}
+	}
+
+	private TaxonomicChecklistMetadata getTaxonomicChecklist(Integer taxonomicChecklistId) {
+		for ( TaxonomicChecklistMetadata checklist : getTaxonomicChecklists() ) {
+			if ( checklist.getChecklistId().equals(taxonomicChecklistId) ) {
+				return checklist;
+			}
+		}
+		return null;
 	}
 
 	private void setTaxonomicChecklists(List<TaxonomicChecklistMetadata> taxonomicChecklists) {
@@ -92,14 +103,14 @@ public class SurveyMetadata {
 		return CollectionUtils.unmodifiableList(aoiHierarchyMetadata);
 	}
 
-	public TaxonomicChecklistMetadata getTaxonomicChecklistByObsUnitId(int obsUnitId) {
-		for ( TaxonomicChecklistMetadata checklist : getTaxonomicChecklists() ) {
-			if ( checklist.getObsUnitId().equals(obsUnitId) ) {
-				return checklist;
-			}
-		}
-		return null;
-	}
+//	public TaxonomicChecklistMetadata getTaxonomicChecklistByObsUnitId(int obsUnitId) {
+//		for ( TaxonomicChecklistMetadata checklist : getTaxonomicChecklists() ) {
+//			if ( checklist.getObsUnitId().equals(obsUnitId) ) {
+//				return checklist;
+//			}
+//		}
+//		return null;
+//	}
 
 	public List<TaxonomicChecklistMetadata> getTaxonomicChecklists() {
 		return CollectionUtils.unmodifiableList(taxonomicChecklists);

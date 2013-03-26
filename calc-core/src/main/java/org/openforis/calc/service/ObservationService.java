@@ -19,7 +19,6 @@ import org.openforis.calc.persistence.PlotSectionViewDao;
 import org.openforis.calc.persistence.SpecimenCategoricalValueDao;
 import org.openforis.calc.persistence.SpecimenDao;
 import org.openforis.calc.persistence.SpecimenNumericValueDao;
-import org.openforis.calc.persistence.SpecimenViewDao;
 import org.openforis.commons.io.flat.FlatDataStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,24 +40,28 @@ public class ObservationService extends CalcService {
 	private PlotNumericVariableDao plotNumericVariableDao;
 	@Autowired
 	private PlotCategoricalValueDao plotCategoricalValueDao;
+	
 	@Autowired
 	private SpecimenDao specimenDao;
 	@Autowired
 	private SpecimenNumericValueDao specimenNumericValueDao;
 	@Autowired
 	private SpecimenCategoricalValueDao specimenCategoricalValueDao;
-	@Autowired
-	private SpecimenViewDao specimenViewDao;
+//	@Autowired
+//	private SpecimenViewDao specimenViewDao;
+	
 	@Autowired
 	private InterviewDao interviewDao;
 	@Autowired
 	private InterviewNumericValueDao interviewNumericValueDao;
 	@Autowired
 	private InterviewCategoricalValueDao interviewCategoricalValueDao;
-	@Autowired
-	private PlotFactDao specimenFactDao;
+	
 	@Autowired
 	private TaxonService taxonService;
+	
+	@Autowired
+	private PlotFactDao specimenFactDao;
 	
 	public enum PlotDistributionCalculationMethod {
 		SHARED_PLOT, PRIMARY_SECTION_ONLY;
@@ -79,7 +82,7 @@ public class ObservationService extends CalcService {
 		if( obsUnitParent != null ){
 			parentVariables = obsUnitParent.getVariableMetadata();
 		}
-		return specimenViewDao.streamAll(variables, parentVariables, fieldNames, unitMetadata.getObsUnitId());
+		return specimenDao.streamAll(variables, parentVariables, fieldNames, unitMetadata.getObsUnitId());
 	}
 	
 	@Deprecated
@@ -131,14 +134,17 @@ public class ObservationService extends CalcService {
 		case PLOT:
 			plotNumericVariableDao.deleteByObsUnit(unitId);
 			plotCategoricalValueDao.deleteByObsUnit(unitId);
+			plotSectionDao.deleteByObsUnit(unitId);
 			break;
 		case SPECIMEN:
 			specimenNumericValueDao.deleteByObsUnit(unitId);
 			specimenCategoricalValueDao.deleteByObsUnit(unitId);
+			specimenDao.deleteByObsUnit(unitId);
 			break;
 		case INTERVIEW:
 			interviewNumericValueDao.deleteByObsUnit(unitId);
 			interviewCategoricalValueDao.deleteByObsUnit(unitId);
+			interviewDao.deleteByObsUnit(unitId);
 			break;
 		default:
 			break;

@@ -24,9 +24,9 @@ public class TaxonomicChecklistMetadata {
 		return taxonomicChecklist.getChecklistId();
 	}
 
-	public Integer getObsUnitId() {
-		return taxonomicChecklist.getObsUnitId();
-	}
+//	public Integer getObsUnitId() {
+//		return taxonomicChecklist.getObsUnitId();
+//	}
 
 	public String getChecklistName() {
 		return taxonomicChecklist.getChecklistName();
@@ -48,9 +48,9 @@ public class TaxonomicChecklistMetadata {
 		return surveyMetadata;
 	}
 
-	public ObservationUnitMetadata getObservationUnitMetadata() {
-		return getSurveyMetadata().getObservationUnitMetadataById(getObsUnitId());
-	}
+//	public ObservationUnitMetadata getObservationUnitMetadata() {
+//		return getSurveyMetadata().getObservationUnitMetadataById(getObsUnitId());
+//	}
 
 	public String getTableName() {
 		return getChecklistName();

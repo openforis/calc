@@ -5,9 +5,11 @@ import static org.openforis.calc.persistence.jooq.Tables.TAXONOMIC_CHECKLIST;
 
 import java.util.List;
 
+import org.jooq.Select;
 import org.jooq.impl.Factory;
 import org.openforis.calc.model.TaxonomicChecklist;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
+import org.openforis.calc.persistence.jooq.tables.ObservationUnit;
 import org.openforis.calc.persistence.jooq.tables.records.TaxonomicChecklistRecord;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,16 +26,26 @@ public class TaxonomicChecklistDao extends JooqDaoSupport<TaxonomicChecklistReco
 	}
 
 	public List<TaxonomicChecklist> findBySurveyId(int surveyId) {
+		ObservationUnit o = OBSERVATION_UNIT.as("o");
+		org.openforis.calc.persistence.jooq.tables.TaxonomicChecklist t = TAXONOMIC_CHECKLIST.as("t");
+		
 		Factory create = getJooqFactory();
 		
-		List<TaxonomicChecklist> result = 
-				create.select()
-					.from(TAXONOMIC_CHECKLIST)
-					.join(OBSERVATION_UNIT)
-					.on(TAXONOMIC_CHECKLIST.OBS_UNIT_ID.eq(OBSERVATION_UNIT.OBS_UNIT_ID))
-					.where(OBSERVATION_UNIT.SURVEY_ID.eq(surveyId))
-					.fetch()
-					.into(getType());
+		Select<?> selectCheckListIds = 
+				create
+					.selectDistinct( o.TAXONOMIC_CHECKLIST_ID )
+					.from( o )
+					.where( o.SURVEY_ID.eq(surveyId) );
+		
+		Select<?> selectTaxonomicChecklist = 
+				create
+					.select()		
+					.from( t )
+					.where( 
+							t.CHECKLIST_ID.in( selectCheckListIds )
+						);
+		
+		List<TaxonomicChecklist> result = selectTaxonomicChecklist.fetch().into(getType());
 		
 		return result;
 	}

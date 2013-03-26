@@ -1,3 +1,5 @@
+# ============================================================================================
+# Functions
 getTrees <- function(fileName) {
   trees <- read.csv(fileName);
   
@@ -17,6 +19,10 @@ getTrees <- function(fileName) {
   return (trees);
 }
 
+
+
+# ============================================================================================
+# Plot
 #setwd('/home/gino/workspace/minotz/')
 obsp = read.csv('~/tzdata/src/plot.csv');
 # collect can flatten and rename columns, exporting to this format
@@ -68,6 +74,9 @@ sp[is.na(sp$plot_section) | sp$plot_section=='',]$plot_section <- 'A'
 stopifnot( length(unique(sp$plot_section)) == 2)
 write.csv(sp, '~/tzdata/plots.csv')
 
+
+# ============================================================================================
+# Trees
 trees  = getTrees('~/tzdata/src/trees.csv')
 
 tr = with(
@@ -93,6 +102,10 @@ tr = with(
 tr$specimen_no = 1:nrow(tr)
 write.csv(tr, '~/tzdata/trees.csv', row.names = F)
 
+
+
+# ============================================================================================
+# Household
 hh = read.csv('~/tzdata/src/household.csv')
 
 hh = hh[hh$cluster_measurement=='P',]
@@ -102,3 +115,29 @@ hh = hh[!duplicated(hh[,c('cluster_id','id')]),]
 hh$interview_date =  with(hh, paste(task_fieldInterview_date_year, task_fieldInterview_date_month, task_fieldInterview_date_day, sep="-"))
 
 write.csv(hh, '~/tzdata/household.csv', row.names = F)
+
+# ============================================================================================
+# Deadwoods 
+deadWoods <- read.csv('~/tzdata/src/dead_wood.csv');
+
+dw <- 
+      with(deadWoods,
+        data.frame( 
+          cluster_code  = cluster_id, 
+          visit_type    = cluster_measurement, 
+          plot_no       = cluster_plot_no, 
+          plot_section  = cluster_plot_subplot, 
+          taxon_code    = species_code,
+          stem_cnt      = stem_cnt,
+          diameter1     = diameter1_value,
+          diameter2     = diameter2_value,
+          length        = length_value,
+          decay         = decay
+       )
+    );
+
+dw[ is.na(dw$plot_section) | dw$plot_section=='', ]$plot_section <- 'A';
+dw <- subset( dw , diameter1 >= 10 | diameter2 >= 10 );
+dw$specimen_no = 1:nrow(dw);
+
+write.csv(dw, '~/tzdata/dead_wood.csv', row.names = F);
