@@ -24,6 +24,7 @@ AS
          v.variable_order,
          cat.category_id,
          cat.category_code,
+         cat.category_label,
          cat.category_order
   FROM category cat
        JOIN variable v ON cat.variable_id = v.variable_id;       
@@ -41,6 +42,7 @@ AS
          cat.variable_name,
          cat.variable_order,
          cat.category_code,
+         cat.category_label,       
          cat.category_order
   FROM plot_categorical_value pc
        JOIN category_view cat ON pc.category_id = cat.category_id

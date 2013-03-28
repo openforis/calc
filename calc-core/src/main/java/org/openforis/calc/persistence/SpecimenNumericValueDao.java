@@ -4,7 +4,9 @@ import static org.openforis.calc.persistence.jooq.Tables.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.jooq.Query;
@@ -14,10 +16,12 @@ import org.openforis.calc.model.VariableMetadata;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
 import org.openforis.calc.persistence.jooq.Sequences;
 import org.openforis.calc.persistence.jooq.Tables;
+import org.openforis.calc.persistence.jooq.tables.CategoryView;
 import org.openforis.calc.persistence.jooq.tables.Specimen;
 import org.openforis.calc.persistence.jooq.tables.records.SpecimenNumericValueRecord;
 import org.openforis.commons.io.flat.FlatDataStream;
 import org.openforis.commons.io.flat.FlatRecord;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,119 +32,171 @@ import org.springframework.transaction.annotation.Transactional;
 @Component 
 @Transactional
 public class SpecimenNumericValueDao extends JooqDaoSupport<SpecimenNumericValueRecord, SpecimenNumericValue> {
-
-	private org.openforis.calc.persistence.jooq.tables.SpecimenNumericValue S = org.openforis.calc.persistence.jooq.tables.SpecimenNumericValue.SPECIMEN_NUMERIC_VALUE;
-	private org.openforis.calc.persistence.jooq.tables.TmpNumericValue TNV = org.openforis.calc.persistence.jooq.tables.TmpNumericValue.TMP_NUMERIC_VALUE; 
+	
+	@Autowired
+	private SpecimenValueDao specimenValueDao;
 	
 	public SpecimenNumericValueDao() {
 		super(Tables.SPECIMEN_NUMERIC_VALUE, SpecimenNumericValue.class);
 	}
 	
-	@Transactional
-	synchronized
-	public void updateCurrentValue(int obsUnitId, FlatDataStream dataStream, List<VariableMetadata> variables) throws IOException {
-		long start = System.currentTimeMillis();
-		ArrayList<Query> queries = new ArrayList<Query>();
+//	@Transactional
+//	synchronized
+//	public void updateCurrentValues(int obsUnitId, FlatDataStream dataStream, List<VariableMetadata> variables) throws IOException {
+//		
+//		specimenValueDao.updateCurrentValues(obsUnitId, dataStream, variables);
 		
-		Factory create = getJooqFactory();
-		
-		int transactionId = create.nextval( Sequences.TRANSACTION_ID_SEQ ).intValue();
-		
-		FlatRecord r = null;
-		int cnt = 0;
-		while ( (r = dataStream.nextRecord() ) != null ) {
-			for( VariableMetadata varMetadata : variables ) {
-				cnt++;
-				
-				Integer specimenId = r.getValue("specimen_id", Integer.class);
-				Integer variableId = varMetadata.getVariableId();
-				Double value = r.getValue( varMetadata.getVariableName(), Double.class );
-				
-				//1. insert into tmp table
-				Query insert = createTmpValuesInsertQuery(create, transactionId, specimenId, variableId, value);
-				queries.add( insert );
-				
-				if( cnt % 2000 == 0 ) {
-					executeQueries(queries);
-				}
-			}
-		}
-		
-		Query delete = createCurrentValuesDeleteQuery(create, transactionId);
-		queries.add(delete);
+//		long start = System.currentTimeMillis();
+//		ArrayList<Query> queries = new ArrayList<Query>();
+//		
+//		Factory create = getJooqFactory();
+//		
+//		int transactionId = create.nextval( Sequences.TRANSACTION_ID_SEQ ).intValue();
+//		
+//		FlatRecord r = null;
+//		int cnt = 0;
+//		while ( (r = dataStream.nextRecord() ) != null ) {
+//			for( VariableMetadata var : variables ) {
+////				cnt++;
+////				
+////				Integer specimenId = r.getValue("specimen_id", Integer.class);
+////				Integer variableId = varMetadata.getVariableId();
+////				Double value = r.getValue( varMetadata.getVariableName(), Double.class );
+////				
+////				//1. insert into tmp table
+////				Query insert = createTmpValuesInsertQuery(create, transactionId, specimenId, variableId, value);
+////				queries.add( insert );
+////				
+////				if( cnt % 2000 == 0 ) {
+////					executeQueries(queries);
+////				}
+//				
+//				cnt++;
+//
+//				String varName = var.getVariableName();
+//				Integer varId = var.getVariableId();
+//
+//				Integer specimenId = r.getValue("specimen_id", Integer.class);
+//
+//				if ( var.isCategorical() ) {
+//					String categoryCode = r.getValue(varName, String.class);
+//					Integer categoryId = getCategoryId(varId, varName, categoryCode);
+//
+//					Query insert = createTmpCategoricalValueInsert(transactionId, specimenId, categoryId);
+//					queries.add(insert);
+//				} else if ( var.isNumeric() ) {
+//					Double value = r.getValue(varName, Double.class);
+//
+//					Query insert = createTmpValuesInsertQuery(transactionId, specimenId, varId, value);
+//					queries.add(insert);
+//				}
+//
+//				if( cnt % 2000 == 0 ) {
+//					executeQueries(queries);
+//				}
+//				
+//			
+//			}
+//		}
+//		
+//		Query delete = createCurrentValuesDeleteQuery( transactionId );
+//		queries.add(delete);
+//
+//		Query update = createCurrentValuesUpdateQuery( transactionId, false );
+//		queries.add(update);
+//
+//		Query insert = createCurrentValuesInsertQuery( transactionId );
+//		queries.add(insert);
+//
+//		Query deleteTmp = createTmpValuesDeleteQuery( transactionId );
+//		queries.add(deleteTmp);
+//
+//		executeQueries(queries);
+//		
+//		long end = System.currentTimeMillis() - start;
+//		getLog().debug("Updating specimen numerical values for variables "+variables.toString()+" executed in " + TimeUnit.MILLISECONDS.toSeconds(end)+" seconds");
+//	}
 
-		Query update = createCurrentValuesUpdateQuery(create, transactionId, false);
-		queries.add(update);
-
-		Query insert = createCurrentValuesInsertQuery(create, transactionId);
-		queries.add(insert);
-
-		Query deleteTmp = createTmpValuesDeleteQuery(create, transactionId);
-		queries.add(deleteTmp);
-
-		executeQueries(queries);
-		
-		long end = System.currentTimeMillis() - start;
-		getLog().debug("Updating specimen numerical values for variables "+variables.toString()+" executed in " + TimeUnit.MILLISECONDS.toSeconds(end)+" seconds");
-	}
-
-	@Transactional
-	private void executeQueries(ArrayList<Query> queries) {
-		Factory create = getJooqFactory();
-		create.batch( queries ).execute();
-		queries.clear();
-	}
-
-	private Query createTmpValuesInsertQuery(Factory create, int transactionId, Integer specimenId, Integer variableId, Double value) {
-		return create
-			.insertInto(TNV, TNV.TRANSACTION_ID, TNV.OBJECT_ID, TNV.VARIABLE_ID, TNV.VALUE)
-			.values(transactionId, specimenId, variableId, value);
-	}
-
-	private Query createCurrentValuesDeleteQuery(Factory create, int transactionId) {
-		return create.delete( S )
-				.where( 
-						S.ORIGINAL.isFalse()
-						.and(
-							Factory.row(S.SPECIMEN_ID, S.VARIABLE_ID)
-									.in( 
-										create.select(TNV.OBJECT_ID,TNV.VARIABLE_ID)
-										.from(TNV)
-										.where( TNV.TRANSACTION_ID.eq( transactionId )) )
-						)
-				);
-	}
+//	@Transactional
+//	private void executeQueries(ArrayList<Query> queries) {
+//		Factory create = getJooqFactory();
+//		
+//		create.batch( queries ).execute();
+//		queries.clear();
+//	}
+//
+//	@Transactional
+//	private Query createTmpValuesInsertQuery(int transactionId, Integer specimenId, Integer variableId, Double value) {
+//		Factory create = getJooqFactory();
+//		
+//		return create
+//			.insertInto(TNV, TNV.TRANSACTION_ID, TNV.OBJECT_ID, TNV.VARIABLE_ID, TNV.VALUE)
+//			.values(transactionId, specimenId, variableId, value);
+//	}
+//	
+//	@Transactional
+//	private Query createTmpCategoricalValueInsert(int transactionId, Integer objectId, Integer categoryId) {
+//		Factory create = getJooqFactory();
+//		return create
+//			.insertInto(TCV, TCV.TRANSACTION_ID, TCV.OBJECT_ID, TCV.CATEGORY_ID)
+//			.values(transactionId, objectId, categoryId);
+//	}
 	
-	private Query createCurrentValuesUpdateQuery(Factory create, int transactionId, boolean currentValue) {
-		return 
-				create
-				.update( S )
-				.set( S.CURRENT, currentValue )
-				.where(
-						Factory.row(S.SPECIMEN_ID, S.VARIABLE_ID)
-						.in(
-								create.select(TNV.OBJECT_ID, TNV.VARIABLE_ID)
-								.from(TNV)
-								.where( TNV.TRANSACTION_ID.eq( transactionId ) ) 
-							)
-					);
-	}
+//	@Transactional
+//	private Query createCurrentValuesDeleteQuery(int transactionId) {
+//		Factory create = getJooqFactory();
+//		
+//		return create.delete( SNV )
+//				.where( 
+//						SNV.ORIGINAL.isFalse()
+//						.and(
+//							Factory.row(SNV.SPECIMEN_ID, SNV.VARIABLE_ID)
+//									.in( 
+//										create.select(TNV.OBJECT_ID,TNV.VARIABLE_ID)
+//										.from(TNV)
+//										.where( TNV.TRANSACTION_ID.eq( transactionId )) )
+//						)
+//				);
+//	}
+//	
+//	@Transactional
+//	private Query createCurrentValuesUpdateQuery(int transactionId, boolean currentValue) {
+//		Factory create = getJooqFactory();
+//		
+//		return 
+//				create
+//				.update( SNV )
+//				.set( SNV.CURRENT, currentValue )
+//				.where(
+//						Factory.row(SNV.SPECIMEN_ID, SNV.VARIABLE_ID)
+//						.in(
+//								create.select(TNV.OBJECT_ID, TNV.VARIABLE_ID)
+//								.from(TNV)
+//								.where( TNV.TRANSACTION_ID.eq( transactionId ) ) 
+//							)
+//					);
+//	}
+//
+//	@Transactional
+//	private Query createCurrentValuesInsertQuery(int transactionId) {
+//		Factory create = getJooqFactory();
+//		return create
+//			.insertInto( SNV, SNV.SPECIMEN_ID, SNV.VARIABLE_ID, SNV.VALUE, SNV.ORIGINAL, SNV.CURRENT )
+//			.select( 
+//					create
+//						.select( TNV.OBJECT_ID, TNV.VARIABLE_ID, TNV.VALUE, Factory.value(false, Boolean.class), Factory.value(true, Boolean.class) )
+//						.from( TNV )
+//						.where( TNV.TRANSACTION_ID.eq(transactionId) )
+//					);
+//	}
 
-	private Query createCurrentValuesInsertQuery(Factory create, int transactionId) {
-		return create
-			.insertInto( S, S.SPECIMEN_ID, S.VARIABLE_ID, S.VALUE, S.ORIGINAL, S.CURRENT )
-			.select( 
-					create
-						.select( TNV.OBJECT_ID, TNV.VARIABLE_ID, TNV.VALUE, Factory.value(false, Boolean.class), Factory.value(true, Boolean.class) )
-						.from( TNV )
-						.where( TNV.TRANSACTION_ID.eq(transactionId) )
-					);
-	}
-
-	private Query createTmpValuesDeleteQuery(Factory create, int transactionId) {
-		return create.delete( TNV ).where( TNV.TRANSACTION_ID.eq(transactionId) );
-	}
+//	@Transactional
+//	private Query createTmpValuesDeleteQuery(int transactionId) {
+//		Factory create = getJooqFactory();
+//		return create.delete( TNV ).where( TNV.TRANSACTION_ID.eq(transactionId) );
+//	}
 	
+	@Transactional
 	public void deleteByObsUnit(int id) {
 		Factory create = getJooqFactory();
 		org.openforis.calc.persistence.jooq.tables.SpecimenNumericValue v = SPECIMEN_NUMERIC_VALUE;
@@ -154,4 +210,29 @@ public class SpecimenNumericValueDao extends JooqDaoSupport<SpecimenNumericValue
 	  		  )
 	  		  .execute();
 	}
+	
+//	@Transactional
+//	private Integer getCategoryId(Integer varId, String varName, String categoryCode) {
+//		List<org.openforis.calc.persistence.jooq.tables.pojos.CategoryView> values = categories.get(varName);
+//		if( values == null ) {
+//			Factory create = getJooqFactory();
+//			
+//			values = create
+//					.select( CAT.getFields() )
+//					.from( CAT )
+//					.where( CAT.VARIABLE_ID.eq(varId) )
+//					.fetch()
+//					.into(org.openforis.calc.persistence.jooq.tables.pojos.CategoryView.class);
+//
+//			categories.put(varName, values);
+//		} 
+//		
+//		for ( org.openforis.calc.persistence.jooq.tables.pojos.CategoryView c : values ) {
+//			if( c.getCategoryCode().equals(categoryCode) ){
+//				return c.getCategoryId();
+//			}
+//		}
+//		
+//		return null;
+//	}
 }

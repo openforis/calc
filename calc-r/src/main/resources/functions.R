@@ -235,3 +235,11 @@ estimateDeadWoodInclusionArea <- function( data ) {
   
   return (data);
 }
+
+estimateTreeBoleVolume <- function( data ) {
+  
+  data$bole_volume <- data$volume *  0.68;
+  
+  return (data);
+  
+}

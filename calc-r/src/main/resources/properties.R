@@ -11,6 +11,7 @@ updateDeadWoodValueUri <- '/calc/rest/surveys/naforma1/units/dead_wood/specimens
 updateSpecimenInclusionAreaUri <- '/calc/rest/surveys/naforma1/units/tree/specimens/inclusion-area';
 updateDeadWoodInclusionAreaUri <- "/calc/rest/surveys/naforma1/units/dead_wood/specimens/inclusion-area";
 updatePlotSectionAreaUri <- '/calc/rest/surveys/naforma1/units/plot/observations/area';
+updatePlotSectionValues <- '/calc/rest/surveys/naforma1/units/plot/observations/updateValues';
 #updateSpecimenValueUri <-  sprintf('%s%s', calcRestUri, updateSpecimenValueUri );           
 
 source('src/main/resources/sockets.R');

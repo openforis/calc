@@ -95,7 +95,7 @@ public class ObservationService extends CalcService {
 
 	@Transactional
 	synchronized 
-	public void updateSpecimenNumericValue(String surveyName, String obsUnitName, FlatDataStream dataStream, List<String> variableNames) throws IOException {
+	public void updateSpecimenValues(String surveyName, String obsUnitName, FlatDataStream dataStream, List<String> variableNames) throws IOException {
 		List<VariableMetadata> variables = new ArrayList<VariableMetadata>(variableNames.size());
 		ObservationUnitMetadata unitMetadata = getObservationUnitMetadata(surveyName, obsUnitName);
 		for ( String variableName : variableNames ) {
@@ -105,7 +105,22 @@ public class ObservationService extends CalcService {
 			}
 		}
 		// Integer obsUnitId = varMetadata.getObsUnitId();
-		specimenNumericValueDao.updateCurrentValue(unitMetadata.getObsUnitId(), dataStream, variables);
+		specimenDao.updateCurrentValues(unitMetadata.getObsUnitId(), dataStream, variables);
+	}
+	
+	@Transactional
+	synchronized 
+	public void updatePlotSectionValues(String surveyName, String obsUnitName, FlatDataStream dataStream, List<String> variableNames) throws IOException {
+		List<VariableMetadata> variables = new ArrayList<VariableMetadata>(variableNames.size());
+		ObservationUnitMetadata unitMetadata = getObservationUnitMetadata(surveyName, obsUnitName);
+		for ( String variableName : variableNames ) {
+			VariableMetadata varMetadata = unitMetadata.getVariableMetadataByName(variableName);
+			if( varMetadata != null ) {
+				variables.add( varMetadata );
+			}
+		}
+		
+		plotSectionDao.updateCurrentValues(unitMetadata.getObsUnitId(), dataStream, variables);
 	}
 	
 	@Transactional

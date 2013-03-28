@@ -41,10 +41,11 @@ public class SpecimenListResource extends SubResource<Void> {
 	}
 
 	@PATCH
+	
 	public Response update(FlatDataStream dataStream) throws URISyntaxException, IOException {
 		List<String> varNames = dataStream.getFieldNames();
 
-		observationService.updateSpecimenNumericValue(surveyResource.getKey(), observationUnitResource.getKey(), dataStream, varNames);
+		observationService.updateSpecimenValues(surveyResource.getKey(), observationUnitResource.getKey(), dataStream, varNames);
 
 		// Use OK response instead of created; HTTP PATCH may create or update
 		return Response.ok(new URI("specimens")).entity("OK").build();

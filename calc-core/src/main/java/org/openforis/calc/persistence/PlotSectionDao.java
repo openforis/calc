@@ -1,17 +1,15 @@
 package org.openforis.calc.persistence;
 
-import static org.openforis.calc.persistence.jooq.Tables.PLOT_CATEGORICAL_VALUE;
-import static org.openforis.calc.persistence.jooq.Tables.PLOT_NUMERIC_VALUE;
 import static org.openforis.calc.persistence.jooq.Tables.PLOT_SECTION;
 import static org.openforis.calc.persistence.jooq.Tables.SAMPLE_PLOT;
 
 import java.io.IOException;
+import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jooq.Query;
 import org.jooq.impl.Factory;
 import org.openforis.calc.model.PlotSection;
+import org.openforis.calc.model.VariableMetadata;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
 import org.openforis.calc.persistence.jooq.tables.SamplePlot;
 import org.openforis.calc.persistence.jooq.tables.records.PlotSectionRecord;
@@ -29,18 +27,22 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class PlotSectionDao extends JooqDaoSupport<PlotSectionRecord, PlotSection> {
 
-	private static final Log log = LogFactory.getLog( PlotSectionDao.class );
+//	private static final Log log = LogFactory.getLog( PlotSectionDao.class );
 	
 	private final static org.openforis.calc.persistence.jooq.tables.PlotSection P = PLOT_SECTION;
-	private final static org.openforis.calc.persistence.jooq.tables.PlotNumericValue PNV = PLOT_NUMERIC_VALUE;
-	private final static org.openforis.calc.persistence.jooq.tables.PlotCategoricalValue PCV = PLOT_CATEGORICAL_VALUE;
+	
 	
 	@Autowired
 	private SurveyDao surveyDao;
+
+	@Autowired
+	private PlotSectionValueDao plotSectionValueDao;
+	
 //	@Autowired
 //	private PlotNumericVariableDao plotNumericVariableDao;
 //	@Autowired
 //	private PlotCategoricalValueDao plotCategoricalValueDao;
+	
 	
 	public PlotSectionDao() {
 		super(PLOT_SECTION, PlotSection.class, 
@@ -170,6 +172,7 @@ public class PlotSectionDao extends JooqDaoSupport<PlotSectionRecord, PlotSectio
 //		}
 //	}
 	
+	@Transactional
 	public void deleteByObsUnit(int id) {
 		Factory create = getJooqFactory();
 		org.openforis.calc.persistence.jooq.tables.PlotSection ps = PLOT_SECTION.as("PS");
@@ -182,6 +185,7 @@ public class PlotSectionDao extends JooqDaoSupport<PlotSectionRecord, PlotSectio
 	  		  .execute();
 	}
 
+	@Transactional
 	public void updateArea(FlatDataStream dataStream) throws IOException {
 		startBatch();
 		Factory create = getBatchFactory();
@@ -202,5 +206,13 @@ public class PlotSectionDao extends JooqDaoSupport<PlotSectionRecord, PlotSectio
 		
 		executeBatch();
 	}
+
+	@Transactional
+	public void updateCurrentValues(Integer obsUnitId, FlatDataStream dataStream, List<VariableMetadata> variables) throws IOException {
+		
+		plotSectionValueDao.updateCurrentValues(obsUnitId, dataStream, variables);
+		
+	}
+	
 	
 }

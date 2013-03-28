@@ -26,23 +26,23 @@ public class TaxonomicChecklistDao extends JooqDaoSupport<TaxonomicChecklistReco
 	}
 
 	public List<TaxonomicChecklist> findBySurveyId(int surveyId) {
-		ObservationUnit o = OBSERVATION_UNIT.as("o");
-		org.openforis.calc.persistence.jooq.tables.TaxonomicChecklist t = TAXONOMIC_CHECKLIST.as("t");
+		ObservationUnit obsUnit = OBSERVATION_UNIT.as("o");
+		org.openforis.calc.persistence.jooq.tables.TaxonomicChecklist taxonomicChecklist = TAXONOMIC_CHECKLIST.as("t");
 		
 		Factory create = getJooqFactory();
 		
 		Select<?> selectCheckListIds = 
 				create
-					.selectDistinct( o.TAXONOMIC_CHECKLIST_ID )
-					.from( o )
-					.where( o.SURVEY_ID.eq(surveyId) );
+					.selectDistinct( obsUnit.TAXONOMIC_CHECKLIST_ID )
+					.from( obsUnit )
+					.where( obsUnit.SURVEY_ID.eq(surveyId) );
 		
 		Select<?> selectTaxonomicChecklist = 
 				create
 					.select()		
-					.from( t )
+					.from( taxonomicChecklist )
 					.where( 
-							t.CHECKLIST_ID.in( selectCheckListIds )
+							taxonomicChecklist.CHECKLIST_ID.in( selectCheckListIds )
 						);
 		
 		List<TaxonomicChecklist> result = selectTaxonomicChecklist.fetch().into(getType());

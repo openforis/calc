@@ -3,6 +3,7 @@ package org.openforis.calc.server.rest;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -35,11 +36,20 @@ public class PlotSectionsListResource extends SubResource<Void> {
 
 	@GET
 	public FlatDataStream getList() {
-
 		return observationService.getPlotSectionDataStream(surveyResource.getKey(), observationUnitResource.getKey(), getFields());
-
 	}
 
+	@PATCH
+	@Path("/updateValues")
+	public Response update(FlatDataStream stream) throws IOException, URISyntaxException{
+		List<String> varNames = stream.getFieldNames();
+
+		observationService.updatePlotSectionValues( surveyResource.getKey(), observationUnitResource.getKey(), stream, varNames );
+
+		// Use OK response instead of created; HTTP PATCH may create or update
+		return Response.ok(new URI("updateValues")).entity("OK").build();
+	}
+	
 	@PATCH
 	@Path("/area")
 	public Response updatePlotSectionArea(FlatDataStream dataStream) throws URISyntaxException, IOException {

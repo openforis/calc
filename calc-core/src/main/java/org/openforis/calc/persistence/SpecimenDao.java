@@ -4,7 +4,9 @@ import static org.openforis.calc.persistence.jooq.Tables.SPECIMEN;
 import static org.openforis.calc.persistence.jooq.Tables.SPECIMEN_CATEGORICAL_VALUE_VIEW;
 import static org.openforis.calc.persistence.jooq.Tables.SPECIMEN_NUMERIC_VALUE;
 
+import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 
 import org.jooq.JoinType;
 import org.jooq.Query;
@@ -23,6 +25,7 @@ import org.openforis.calc.persistence.jooq.tables.Taxon;
 import org.openforis.calc.persistence.jooq.tables.records.SpecimenRecord;
 import org.openforis.commons.io.flat.FlatDataStream;
 import org.openforis.commons.io.flat.FlatRecord;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +38,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class SpecimenDao extends JooqDaoSupport<SpecimenRecord, Specimen> {
 
 	private org.openforis.calc.persistence.jooq.tables.Specimen S = org.openforis.calc.persistence.jooq.tables.Specimen.SPECIMEN;
+	
+	@Autowired
+	private SpecimenValueDao specimenValueDao;
 
 	public SpecimenDao() {
 		super(SPECIMEN, Specimen.class, SPECIMEN.PLOT_SECTION_ID, SPECIMEN.SPECIMEN_NO);
@@ -74,7 +80,7 @@ public class SpecimenDao extends JooqDaoSupport<SpecimenRecord, Specimen> {
 		return create.nextval(Sequences.SPECIMEN_ID_SEQ).intValue();
 	}
 
-public FlatDataStream streamAll(Collection<VariableMetadata> variables,Collection<VariableMetadata> parentVariables, String[] fields, int observationUnitId) {
+	public FlatDataStream streamAll(Collection<VariableMetadata> variables,Collection<VariableMetadata> parentVariables, String[] fields, int observationUnitId) {
 		
 		if ( fields != null ) {
 			
@@ -180,7 +186,15 @@ public FlatDataStream streamAll(Collection<VariableMetadata> variables,Collectio
 		}
 		return variable;
 	}
+
+	@Transactional
+	synchronized
+	public void updateCurrentValues(int obsUnitId, FlatDataStream dataStream, List<VariableMetadata> variables) throws IOException {
+		
+		specimenValueDao.updateCurrentValues(obsUnitId, dataStream, variables);
+	}
 	
+	@Transactional
 	public void deleteByObsUnit(int id) {
 		Factory create = getJooqFactory();
 		org.openforis.calc.persistence.jooq.tables.Specimen s = SPECIMEN;
