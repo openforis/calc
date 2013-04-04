@@ -25,14 +25,14 @@ public class PlotCategoricalValueDao extends JooqDaoSupport<PlotCategoricalValue
 
 	public void deleteByObsUnit(int id) {
 		Factory create = getJooqFactory();
-		org.openforis.calc.persistence.jooq.tables.PlotCategoricalValue v = PLOT_CATEGORICAL_VALUE.as("v");
-		PlotSection ps = PLOT_SECTION.as("o");
-		SamplePlot sp = SAMPLE_PLOT.as("sp");
+		org.openforis.calc.persistence.jooq.tables.PlotCategoricalValue v = PLOT_CATEGORICAL_VALUE;
+		PlotSection ps = PLOT_SECTION;
+		SamplePlot sp = SAMPLE_PLOT;
 		create.delete(v)
 			  .where(v.PLOT_SECTION_ID.in(
 					  	create.select(ps.PLOT_SECTION_ID)
 					  		  .from(ps)
-					  		  .join(ps).on(ps.SAMPLE_PLOT_ID.eq(sp.SAMPLE_PLOT_ID))
+					  		  .join(sp).on(ps.SAMPLE_PLOT_ID.eq(sp.SAMPLE_PLOT_ID))
 					  		  .where(sp.OBS_UNIT_ID.eq(id)))).execute();
 	}
 }

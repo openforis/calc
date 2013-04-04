@@ -25,7 +25,7 @@ public class PlotNumericVariableDao extends JooqDaoSupport<PlotNumericValueRecor
 
 	public void deleteByObsUnit(int id) {
 		Factory create = getJooqFactory();
-		org.openforis.calc.persistence.jooq.tables.PlotNumericValue v = PLOT_NUMERIC_VALUE.as("v");
+		org.openforis.calc.persistence.jooq.tables.PlotNumericValue v = PLOT_NUMERIC_VALUE;
 		PlotSection ps = PLOT_SECTION.as("o");
 		SamplePlot sp = SAMPLE_PLOT.as("sp");
 		

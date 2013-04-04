@@ -1,0 +1,19 @@
+Compile with:
+
+	mvn compile
+   
+Run unit tests with:
+
+	mvn package
+
+Run integration tests with:
+
+	mvn verify
+   
+Regenerate jOOQ stub classes*: 
+
+	cd calc-core
+	mvn properties:read-project-properties jooq-codegen:generate
+	 
+* Must be run from calc-core directory.  Requires dev database settings in src/main/resources/dev.properties.   
+  

@@ -115,11 +115,10 @@ public abstract class AbstractObservationImporter
 	@Override
 	protected boolean processRecord(FlatRecord record) {
 		O obs = processObservation(record);
-		if ( obs == null ) {
-			observationService.removeData(surveyName, observationUnitName);
+		if ( obs != null ) {
+			observations.add(obs);
+			processValues(record, obs);
 		}
-		observations.add(obs);
-		processValues(record, obs);
 		return true;
 	}
 

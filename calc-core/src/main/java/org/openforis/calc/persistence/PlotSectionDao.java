@@ -11,6 +11,7 @@ import org.jooq.impl.Factory;
 import org.openforis.calc.model.PlotSection;
 import org.openforis.calc.model.VariableMetadata;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
+import org.openforis.calc.persistence.jooq.Sequences;
 import org.openforis.calc.persistence.jooq.tables.SamplePlot;
 import org.openforis.calc.persistence.jooq.tables.records.PlotSectionRecord;
 import org.openforis.commons.io.flat.FlatDataStream;
@@ -27,8 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class PlotSectionDao extends JooqDaoSupport<PlotSectionRecord, PlotSection> {
 
-//	private static final Log log = LogFactory.getLog( PlotSectionDao.class );
-	
 	private final static org.openforis.calc.persistence.jooq.tables.PlotSection P = PLOT_SECTION;
 	
 	
@@ -37,12 +36,6 @@ public class PlotSectionDao extends JooqDaoSupport<PlotSectionRecord, PlotSectio
 
 	@Autowired
 	private PlotSectionValueDao plotSectionValueDao;
-	
-//	@Autowired
-//	private PlotNumericVariableDao plotNumericVariableDao;
-//	@Autowired
-//	private PlotCategoricalValueDao plotCategoricalValueDao;
-	
 	
 	public PlotSectionDao() {
 		super(PLOT_SECTION, PlotSection.class, 
@@ -175,7 +168,7 @@ public class PlotSectionDao extends JooqDaoSupport<PlotSectionRecord, PlotSectio
 	@Transactional
 	public void deleteByObsUnit(int id) {
 		Factory create = getJooqFactory();
-		org.openforis.calc.persistence.jooq.tables.PlotSection ps = PLOT_SECTION.as("PS");
+		org.openforis.calc.persistence.jooq.tables.PlotSection ps = PLOT_SECTION;
 		SamplePlot sp = SAMPLE_PLOT.as("sp");
 		create.delete(ps)
 			  .where(ps.SAMPLE_PLOT_ID.in(
@@ -209,10 +202,12 @@ public class PlotSectionDao extends JooqDaoSupport<PlotSectionRecord, PlotSectio
 
 	@Transactional
 	public void updateCurrentValues(Integer obsUnitId, FlatDataStream dataStream, List<VariableMetadata> variables) throws IOException {
-		
 		plotSectionValueDao.updateCurrentValues(obsUnitId, dataStream, variables);
-		
 	}
 	
+	public Integer nextId() {
+		Factory create = getJooqFactory();
+		return create.nextval(Sequences.PLOT_SECTION_ID_SEQ).intValue();
+	}
 	
 }

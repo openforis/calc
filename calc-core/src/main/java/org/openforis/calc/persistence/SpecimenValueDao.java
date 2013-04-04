@@ -31,9 +31,10 @@ public class SpecimenValueDao extends ObservationValueDao {
 						.and(
 							Factory.row( SNV.SPECIMEN_ID, SNV.VARIABLE_ID )
 									.in( 
-										create.select(TNV.OBJECT_ID,TNV.VARIABLE_ID)
-										.from(TNV)
-										.where( TNV.TRANSACTION_ID.eq( transactionId )) )
+										create.select( TNV.OBJECT_ID,TNV.VARIABLE_ID )
+										.from( TNV )
+										.where( TNV.TRANSACTION_ID.eq(transactionId) ) 
+										)
 						)
 				);
 	}

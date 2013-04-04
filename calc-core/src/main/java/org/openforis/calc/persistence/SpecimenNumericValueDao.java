@@ -1,26 +1,14 @@
 package org.openforis.calc.persistence;
 
-import static org.openforis.calc.persistence.jooq.Tables.*;
+import static org.openforis.calc.persistence.jooq.Tables.SPECIMEN;
+import static org.openforis.calc.persistence.jooq.Tables.SPECIMEN_NUMERIC_VALUE;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import org.jooq.Query;
 import org.jooq.impl.Factory;
 import org.openforis.calc.model.SpecimenNumericValue;
-import org.openforis.calc.model.VariableMetadata;
 import org.openforis.calc.persistence.jooq.JooqDaoSupport;
-import org.openforis.calc.persistence.jooq.Sequences;
 import org.openforis.calc.persistence.jooq.Tables;
-import org.openforis.calc.persistence.jooq.tables.CategoryView;
 import org.openforis.calc.persistence.jooq.tables.Specimen;
 import org.openforis.calc.persistence.jooq.tables.records.SpecimenNumericValueRecord;
-import org.openforis.commons.io.flat.FlatDataStream;
-import org.openforis.commons.io.flat.FlatRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +26,21 @@ public class SpecimenNumericValueDao extends JooqDaoSupport<SpecimenNumericValue
 	
 	public SpecimenNumericValueDao() {
 		super(Tables.SPECIMEN_NUMERIC_VALUE, SpecimenNumericValue.class);
+	}
+	
+	@Transactional
+	public void deleteByObsUnit(int id) {
+		Factory create = getJooqFactory();
+		org.openforis.calc.persistence.jooq.tables.SpecimenNumericValue v = SPECIMEN_NUMERIC_VALUE;
+		Specimen o = SPECIMEN.as("o");
+		create.delete(v)
+			  .where(v.SPECIMEN_ID.in(
+					  	create.select(o.SPECIMEN_ID)
+					  		  .from(o)
+					  		  .where(o.OBS_UNIT_ID.eq(id))
+			  		  	)
+	  		  )
+	  		  .execute();
 	}
 	
 //	@Transactional
@@ -196,20 +199,6 @@ public class SpecimenNumericValueDao extends JooqDaoSupport<SpecimenNumericValue
 //		return create.delete( TNV ).where( TNV.TRANSACTION_ID.eq(transactionId) );
 //	}
 	
-	@Transactional
-	public void deleteByObsUnit(int id) {
-		Factory create = getJooqFactory();
-		org.openforis.calc.persistence.jooq.tables.SpecimenNumericValue v = SPECIMEN_NUMERIC_VALUE;
-		Specimen o = SPECIMEN.as("o");
-		create.delete(v)
-			  .where(v.SPECIMEN_ID.in(
-					  	create.select(o.SPECIMEN_ID)
-					  		  .from(o)
-					  		  .where(o.OBS_UNIT_ID.eq(id))
-			  		  	)
-	  		  )
-	  		  .execute();
-	}
 	
 //	@Transactional
 //	private Integer getCategoryId(Integer varId, String varName, String categoryCode) {

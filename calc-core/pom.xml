@@ -13,7 +13,8 @@
 	<name>Open Foris Calc Core</name>
 
 	<properties>
-		<jooq-codegen.target.directory>${project.build.directory}/generated-sources/jooq</jooq-codegen.target.directory>
+<!-- 		<jooq-codegen.target.directory>${project.build.directory}/generated-sources/jooq</jooq-codegen.target.directory> -->
+		<jooq-codegen.target.directory>${basedir}/src/generated/java</jooq-codegen.target.directory>		
 		<jooq-codegen.target.packageName>org.openforis.calc.persistence.jooq</jooq-codegen.target.packageName>
 	</properties>
 		
@@ -39,18 +40,19 @@
 					<quiet>true</quiet>
 				</configuration>
 			</plugin>
+			
 			<!-- Generate jOOQ stub classes -->
 			<plugin>
 				<groupId>org.jooq</groupId>
 				<artifactId>jooq-codegen-maven</artifactId>
 				<version>${jooq.version}</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-					</execution>
-				</executions>
+<!-- 				<executions> -->
+<!-- 					<execution> -->
+<!-- 						<goals> -->
+<!-- 							<goal>generate</goal> -->
+<!-- 						</goals> -->
+<!-- 					</execution> -->
+<!-- 				</executions> -->
 				<dependencies>
 					<dependency>
 						<groupId>postgresql</groupId>
