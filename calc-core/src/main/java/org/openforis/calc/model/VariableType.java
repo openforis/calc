@@ -30,7 +30,7 @@ public enum VariableType {
 
 	@Override
 	public String toString() {
-		return toString().toLowerCase();
+		return super.toString().toLowerCase();
 	}
 	
 	public static VariableType get(String name) {

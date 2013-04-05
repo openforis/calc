@@ -141,3 +141,22 @@ dw <- subset( dw , diameter1 >= 10 | diameter2 >= 10 );
 dw$specimen_no = 1:nrow(dw);
 
 write.csv(dw, '~/tzdata/dead_wood.csv', row.names = F);
+
+# ==================================================================
+# Human Impact
+hi <- read.csv('~/tzdata/src/human_impact.csv')
+hi[is.na(hi$cluster_plot_subplot) | hi$cluster_plot_subplot == '' , ]$cluster_plot_subplot <- 'A'
+
+hi <- 
+  with(hi,
+       data.frame( 
+         cluster_code  = cluster_id, 
+         visit_type    = cluster_measurement, 
+         plot_no       = cluster_plot_no, 
+         plot_section  = cluster_plot_subplot, 
+         human_impact    = type
+         
+       )
+  );
+
+write.csv(hi, '~/tzdata/human_impact.csv', row.names = F);

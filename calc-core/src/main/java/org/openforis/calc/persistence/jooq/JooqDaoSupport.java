@@ -50,6 +50,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author G. Miceli
  * @author M. Togna
  */
+@Transactional
 public abstract class JooqDaoSupport<R extends TableRecord<R>, P>
 	extends JdbcDaoSupport implements DAO<R, P, Integer> {
 	

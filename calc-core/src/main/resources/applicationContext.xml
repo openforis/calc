@@ -48,7 +48,7 @@
 	<bean id="collectSurveyContext" class="org.openforis.collect.model.CollectSurveyContext">
         <constructor-arg><ref bean="expressionFactory"/></constructor-arg>
         <constructor-arg><ref bean="validator"/></constructor-arg>
-        <constructor-arg><null/></constructor-arg>
+<!--         <constructor-arg><null/></constructor-arg> -->
     </bean>
     
     <bean id="idmlBinder" class="org.openforis.collect.persistence.xml.CollectSurveyIdmlBinder">

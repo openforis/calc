@@ -60,9 +60,9 @@ public abstract class AbstractObservationImporter
 	protected final void onStart(FlatDataStream stream) {
 		List<String> fieldNames = stream.getFieldNames();
 		loadMetadata(fieldNames);
-		if ( !incremental ) {
-			observationService.removeData(surveyName, observationUnitName);
-		}
+//		if ( !incremental ) {
+//			observationService.removeData(surveyName, observationUnitName);
+//		}
 		observations = new ArrayList<O>();
 		numVals = new ArrayList<N>();
 		catVals = new ArrayList<C>();

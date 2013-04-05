@@ -24,7 +24,7 @@
 		<kettle.version>4.4.0-stable</kettle.version>
 		<postgres-driver.version>9.1-901-1.jdbc4</postgres-driver.version>
 		<jooq.version>2.6.0</jooq.version>
-		<collect.version>3.0-Alpha5-SNAPSHOT</collect.version>
+		<collect.version>3.0-CR1-SNAPSHOT</collect.version>
 <!-- 		<commons-vfs.version>2.0-20090205</commons-vfs.version> -->
 		<mondrian.version>3.5.0</mondrian.version>	
 		<of-commons-version>0.0.3</of-commons-version>
