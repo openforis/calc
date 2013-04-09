@@ -1,0 +1,13 @@
+rm(list=ls())
+
+source('src/main/resources/properties.R')
+source('src/main/resources/1.tree-height-est.R')
+source('src/main/resources/2.tree-inclusion-area_plot-area.R')
+source('src/main/resources/3.tree-volume-est.R')
+source('src/main/resources/4.tree-biomass-est.R')
+source('src/main/resources/5.tree-carbon.R')
+source('src/main/resources/6.deadwood-volume.R')
+source('src/main/resources/7.deadwood-biomass.R')
+source('src/main/resources/8.deadwood-carbon.R')
+source('src/main/resources/9.tree-bole-volume.R')
+source('src/main/resources/10-banding-vars.R')
