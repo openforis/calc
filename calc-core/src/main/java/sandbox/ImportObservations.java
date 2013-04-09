@@ -17,10 +17,11 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  */
 public class ImportObservations {
 
-	private static final String DATA_FOLDER = "/home/minotogna/tzdata";
-	private static final String TREES_CSV_FILENAME = DATA_FOLDER + "/trees.csv";
-	private static final String DEAD_WOOD_CSV_FILENAME = DATA_FOLDER + "/dead_wood.csv";
-	private static final String PLOT_CSV_FILENAME = DATA_FOLDER + "/plots.csv";
+//	private static final String DATA_FOLDER = "/home/minotogna/tzdata";
+//	private static final String DATA_FOLDER = "/Users/cosimotogna/dev/projects/naforma/tzdata";
+	private static final String TREES_CSV_FILENAME =  "/trees.csv";
+	private static final String DEAD_WOOD_CSV_FILENAME =  "/dead_wood.csv";
+	private static final String PLOT_CSV_FILENAME = "/plots.csv";
 	private static ClassPathXmlApplicationContext appContext;
 
 	static {
@@ -30,16 +31,16 @@ public class ImportObservations {
 	public static void main(String[] args) {
 		try {
 			String survey = "naforma1";
-
+			String testDataPath = appContext.getBeanFactory().resolveEmbeddedValue("${testDataPath}");
 			
 //			removeData( survey, "tree" );
 //			removeData( survey, "dead_wood" );
 //			removeData( survey, "plot" );
 
 			// import
-//			importPlots(survey, "plot", PLOT_CSV_FILENAME);
-			 importSpecimens( survey, "tree" , TREES_CSV_FILENAME);
-//			 importSpecimens( survey, "dead_wood" , DEAD_WOOD_CSV_FILENAME);
+			importPlots(survey, "plot", testDataPath + PLOT_CSV_FILENAME);
+//			 importSpecimens( survey, "tree" , testDataPath + TREES_CSV_FILENAME);
+//			 importSpecimens( survey, "dead_wood" , testDataPath +DEAD_WOOD_CSV_FILENAME);
 
 		} catch ( Throwable ex ) {
 			ex.printStackTrace();
