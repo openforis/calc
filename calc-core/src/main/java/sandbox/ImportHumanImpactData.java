@@ -12,8 +12,8 @@ public class ImportHumanImpactData {
 	public static void main(String[] args)  {
 		try {
 			ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
-			
-			String filename = "/home/minotogna/tzdata/human_impact.csv";
+			String testDataPath = ctx.getBeanFactory().resolveEmbeddedValue("${testDataPath}");
+			String filename = testDataPath+"/human_impact.csv";
 			CsvReader csv = new CsvReader(filename);
 			csv.readHeaders();
 

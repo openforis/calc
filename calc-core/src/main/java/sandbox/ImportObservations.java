@@ -38,8 +38,8 @@ public class ImportObservations {
 //			removeData( survey, "plot" );
 
 			// import
-			importPlots(survey, "plot", testDataPath + PLOT_CSV_FILENAME);
-//			 importSpecimens( survey, "tree" , testDataPath + TREES_CSV_FILENAME);
+//			importPlots(survey, "plot", testDataPath + PLOT_CSV_FILENAME);
+			 importSpecimens( survey, "tree" , testDataPath + TREES_CSV_FILENAME);
 //			 importSpecimens( survey, "dead_wood" , testDataPath +DEAD_WOOD_CSV_FILENAME);
 
 		} catch ( Throwable ex ) {
