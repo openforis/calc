@@ -24,19 +24,24 @@ public abstract class RolapFactDao<T extends FactTable> extends JooqDaoSupport {
 
 	@SuppressWarnings("unchecked")
 	@Transactional
-	synchronized
+	synchronized 
 	public void populate(T table) {
+		
 		SelectQuery select = createFactSelect(table);
 		Insert<Record> insert = createInsertFromSelect(table, select);
-		
+
 		getLog().debug("Inserting fact data:");
 		getLog().debug(insert);
-		
+
 		insert.execute();
-		
+
 		getLog().debug("Complete");
+		
+		updateVariableValues( table );
 	}
 
 	protected abstract SelectQuery createFactSelect(T table);
+
 	
+	protected void updateVariableValues(T table){}
 }

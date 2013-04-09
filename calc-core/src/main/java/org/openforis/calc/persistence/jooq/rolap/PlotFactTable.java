@@ -25,6 +25,7 @@ public class PlotFactTable extends FactTable {
 	// Fixed dimensions
 	public final Field<Integer> CLUSTER_ID = createFixedDimensionField(G.CLUSTER_ID);
 	public final Field<Integer> PLOT_ID = createFixedDimensionField("plot_id");
+	public final Field<Integer> PLOT_SECTION_ID = createFixedDimensionField(G.PLOT_SECTION_ID);
 	public final Field<Integer> STRATUM_ID = createFixedDimensionField(G.STRATUM_ID);
 
 	// Fixed measures

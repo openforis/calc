@@ -11,9 +11,13 @@ import static org.openforis.calc.persistence.jooq.Tables.SPECIMEN_CATEGORICAL_VA
 import static org.openforis.calc.persistence.jooq.Tables.SPECIMEN_NUMERIC_VALUE;
 import static org.openforis.calc.persistence.jooq.Tables.STRATUM;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 
+import mondrian.spi.Dialect.Datatype;
+
+import org.jooq.Field;
 import org.jooq.JoinType;
 import org.jooq.SelectQuery;
 import org.jooq.impl.Factory;
@@ -42,6 +46,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class SpecimenFactDao extends RolapFactDao<SpecimenFactTable> {
 
+	private Specimen S = Specimen.SPECIMEN;
+	private SpecimenNumericValue SNV = SpecimenNumericValue.SPECIMEN_NUMERIC_VALUE;
+	private SpecimenCategoricalValueView SCVV = SpecimenCategoricalValueView.SPECIMEN_CATEGORICAL_VALUE_VIEW;
+	private PlotCategoricalValueView PCVV = PlotCategoricalValueView.PLOT_CATEGORICAL_VALUE_VIEW;
+	
 	@Override
 	protected SelectQuery createFactSelect(SpecimenFactTable fact){
 		ObservationUnitMetadata unit = fact.getObservationUnitMetadata();
@@ -77,14 +86,131 @@ public class SpecimenFactDao extends RolapFactDao<SpecimenFactTable> {
 		
 		addAoisToSelect(unit, pa, select);
 		
-		addUnitVariablesToSelect(unit, s, select, fact);
-		
+//		addUnitVariablesToSelect(unit, s, select, fact);
+		addVariablesToSelect(unit.getVariableMetadata(), select);
 		ObservationUnitMetadata parentUnit = unit.getObsUnitParent();
 		if( parentUnit != null ) {
-			addParentVariablesToSelect(parentUnit, s, select);
+			addVariablesToSelect(parentUnit.getVariableMetadata(), select);
+//			addParentVariablesToSelect(parentUnit, s, select);
 		}
 				
 		return select;
+	}
+	
+	@Override
+	protected void updateVariableValues(SpecimenFactTable table) {
+		ObservationUnitMetadata unit = table.getObservationUnitMetadata();
+		Factory create = getJooqFactory();
+		
+		for ( VariableMetadata var : unit.getVariableMetadata() ) {
+			if( var.isForAnalysis() ) {
+				String varName = var.getVariableName();
+				int varId = var.getVariableId();
+				
+				StringBuilder sql = new StringBuilder();  
+				sql.append("update ");
+				sql.append( table.getSchema() );
+				sql.append(".");
+				sql.append( table.getName() );
+				sql.append(" set ");
+				sql.append( varName );
+				sql.append(" = c.");
+				if( var.isCategorical() ) {
+					sql.append(SCVV.CATEGORY_ID.getName());
+				}
+				if( var.isNumeric() ) {
+					sql.append(SNV.VALUE.getName());
+				}
+				sql.append( " from ");
+				sql.append(SCVV.getSchema().getName());
+				sql.append(".");
+				if ( var.isCategorical() ) {
+					sql.append(SCVV.getName());
+				}
+				if ( var.isNumeric() ) {
+					sql.append(SNV.getName());
+				}
+				sql.append(" as c ");
+				sql.append(" where ");
+				sql.append("c.");
+				sql.append(SCVV.VARIABLE_ID.getName());
+				sql.append(" = ");
+				sql.append( varId );
+				sql.append(" and c.");
+				sql.append(SCVV.CURRENT.getName());
+				sql.append(" and c.");
+				sql.append(SCVV.SPECIMEN_ID.getName());
+				sql.append(" = ");
+				sql.append( table.getName());
+				sql.append(".");
+				sql.append( SCVV.SPECIMEN_ID.getName() );
+
+				String sqlString = sql.toString();
+				getLog().debug("Inserting " + varName + " into " + table);
+				getLog().debug(sqlString);
+				
+				create.execute(sqlString);
+				
+				getLog().debug("Done inserting " + varName);
+			}
+		}
+		
+		ObservationUnitMetadata unitParent = unit.getObsUnitParent();
+		for ( VariableMetadata var : unitParent.getVariableMetadata() ) {
+			if ( var.isCategorical() && var.isForAnalysis() ) {
+				
+				String varName = var.getVariableName();
+				int varId = var.getVariableId();
+				
+				StringBuilder sql = new StringBuilder();  
+				sql.append("update ");
+				sql.append( table.getSchema() );
+				sql.append(".");
+				sql.append( table.getName() );
+				sql.append(" set ");
+				sql.append( varName );
+				sql.append(" = c.");
+				sql.append(PCVV.CATEGORY_ID.getName());
+				sql.append( " from ");
+//				sql.append(" specimen s join plot_cat_value_view c on s.plot_section_id = c.plot_section_id ") ;
+				sql.append(S.getSchema().getName());
+				sql.append(".");
+				sql.append(S.getName());
+				sql.append(" s ");
+				sql.append(" join ");
+				sql.append(PCVV.getSchema().getName());
+				sql.append(".");
+				sql.append(PCVV.getName());
+				sql.append(" c ");
+				sql.append(" on ");
+				sql.append("s.");
+				sql.append(S.PLOT_SECTION_ID.getName());
+				sql.append(" = c.");
+				sql.append(PCVV.PLOT_SECTION_ID.getName());
+//				sql.append(PCVV.getName());
+				sql.append(" where ");
+				sql.append("c.");
+				sql.append(PCVV.VARIABLE_ID.getName());
+				sql.append(" = ");
+				sql.append( varId );
+				sql.append(" and c.");
+				sql.append(PCVV.CURRENT.getName());
+				sql.append(" and s.");
+				sql.append(S.SPECIMEN_ID.getName());
+				sql.append(" = ");
+				sql.append( table.getName());
+				sql.append(".");
+				sql.append(S.SPECIMEN_ID.getName());
+
+				String sqlString = sql.toString();
+				getLog().debug("Inserting " + varName + " into " + table);
+				getLog().debug(sqlString);
+				
+				create.execute(sqlString);
+				
+				getLog().debug("Done inserting " + varName);
+			}
+		}
 	}
 
 	private void addAoisToSelect(ObservationUnitMetadata unit, PlotSectionAoi pa, SelectQuery select) {
@@ -119,47 +245,49 @@ public class SpecimenFactDao extends RolapFactDao<SpecimenFactTable> {
 		}
 	}
 	
-	@SuppressWarnings("unchecked")	
-	private void addUnitVariablesToSelect(ObservationUnitMetadata unit, Specimen s, SelectQuery select, SpecimenFactTable fact) {
-		Collection<VariableMetadata> variables = unit.getVariableMetadata();
-		int idx = 0;
+//	@SuppressWarnings("unchecked")	
+	private void addVariablesToSelect(  Collection<VariableMetadata> variables , SelectQuery select ) {
+		//		int idx = 0;
 		for ( VariableMetadata var : variables ) {			
 			if ( var.isForAnalysis() ) {
 				
-				Integer varId = var.getVariableId();
+//				Integer varId = var.getVariableId();
 				String varName = var.getVariableName();
-				idx += 1;
 				
-				if( var.isCategorical() ) {
-					SpecimenCategoricalValueView v = SPECIMEN_CATEGORICAL_VALUE_VIEW.as("v"+idx);
-					
-					select.addSelect( 
-							coalesce( v.CATEGORY_ID , -1 ).as(varName)
-							);
-					
-					select.addJoin(
-							v,
-							JoinType.LEFT_OUTER_JOIN,
-							s.SPECIMEN_ID.eq(v.SPECIMEN_ID)
-							.and(v.CURRENT.isTrue())
-							.and(v.VARIABLE_ID.eq(varId))
-							);
-					
-				} else if ( var.isNumeric() ){
-					// join with specimen_numeric_value
-					//
-					SpecimenNumericValue v = SPECIMEN_NUMERIC_VALUE.as("v"+idx);
-					
-					select.addSelect( v.VALUE.as(varName) );
-					
-					select.addJoin(
-							v,
-							JoinType.LEFT_OUTER_JOIN,
-							s.SPECIMEN_ID.eq( v.SPECIMEN_ID )
-							.and( v.VARIABLE_ID.eq(varId) )
-							.and( v.CURRENT.isTrue() )
-							);
-				}
+				Field<?> field = ( var.isCategorical() ? Factory.val( -1 ) : Factory.castNull(BigDecimal.class) ).as(varName); 
+				select.addSelect( field );
+//				idx += 1;
+//				
+//				if( var.isCategorical() ) {
+//					SpecimenCategoricalValueView v = SPECIMEN_CATEGORICAL_VALUE_VIEW.as("v"+idx);
+//					
+//					select.addSelect( 
+//							coalesce( v.CATEGORY_ID , -1 ).as(varName)
+//							);
+//					
+//					select.addJoin(
+//							v,
+//							JoinType.LEFT_OUTER_JOIN,
+//							s.SPECIMEN_ID.eq(v.SPECIMEN_ID)
+//							.and(v.CURRENT.isTrue())
+//							.and(v.VARIABLE_ID.eq(varId))
+//							);
+//					
+//				} else if ( var.isNumeric() ) {
+//					// join with specimen_numeric_value
+//					//
+//					SpecimenNumericValue v = SPECIMEN_NUMERIC_VALUE.as("v"+idx);
+//					
+//					select.addSelect( v.VALUE.as(varName) );
+//					
+//					select.addJoin(
+//							v,
+//							JoinType.LEFT_OUTER_JOIN,
+//							s.SPECIMEN_ID.eq( v.SPECIMEN_ID )
+//							.and( v.VARIABLE_ID.eq(varId) )
+//							.and( v.CURRENT.isTrue() )
+//							);
+//				}
 			}
 		}
 	}

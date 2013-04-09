@@ -1,13 +1,10 @@
 package org.openforis.calc.persistence;
 import static org.openforis.calc.persistence.jooq.Tables.AOI;
 import static org.openforis.calc.persistence.jooq.Tables.GROUND_PLOT_VIEW;
-import static org.openforis.calc.persistence.jooq.Tables.PLOT_CATEGORICAL_VALUE_VIEW;
 import static org.openforis.calc.persistence.jooq.Tables.PLOT_SECTION_AOI;
 
-import java.util.Collection;
 import java.util.List;
 
-import org.jooq.JoinType;
 import org.jooq.SelectQuery;
 import org.jooq.impl.Factory;
 import org.openforis.calc.model.AoiHierarchyLevelMetadata;
@@ -29,7 +26,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @Transactional
 public class PlotFactDao extends RolapFactDao<PlotFactTable> {
-
+	
+	private PlotCategoricalValueView PCVV = PlotCategoricalValueView.PLOT_CATEGORICAL_VALUE_VIEW;
+	
 	@Override
 	protected SelectQuery createFactSelect(PlotFactTable fact){
 		ObservationUnitMetadata unit = fact.getObservationUnitMetadata();
@@ -42,6 +41,7 @@ public class PlotFactDao extends RolapFactDao<PlotFactTable> {
 		select.addSelect(p.STRATUM_ID);
 		select.addSelect(p.CLUSTER_ID);
 		select.addSelect(p.SAMPLE_PLOT_ID.as("plot_id"));
+		select.addSelect(p.PLOT_SECTION_ID);
 		select.addSelect(p.PLOT_LOCATION);
 		select.addSelect(p.PLOT_GPS_READING);
 		select.addSelect(p.PLOT_ACTUAL_LOCATION);
@@ -62,7 +62,7 @@ public class PlotFactDao extends RolapFactDao<PlotFactTable> {
 		
 		addAoisToSelect(unit, pa, select);
 		
-		addVariablesToSelect(unit, p, select);
+		addVariablesToSelect(unit, select);
 		
 		return select;
 	}
@@ -95,29 +95,84 @@ public class PlotFactDao extends RolapFactDao<PlotFactTable> {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	private void addVariablesToSelect(ObservationUnitMetadata unit, GroundPlotView view, SelectQuery select) {
-		Collection<VariableMetadata> variables = unit.getVariableMetadata();	
-		int varIndex = 0;		
-		for ( VariableMetadata var : variables ) {
+	@Override
+	@Transactional
+	protected void updateVariableValues(PlotFactTable table) {
+		ObservationUnitMetadata unit = table.getObservationUnitMetadata();
+		Factory create = getJooqFactory();
+		
+		for ( VariableMetadata var : unit.getVariableMetadata() ) {
 			if ( var.isCategorical() && var.isForAnalysis() ) {
-				Integer varId = var.getVariableId();
+				
 				String varName = var.getVariableName();
-				varIndex += 1;
-				PlotCategoricalValueView catView = PLOT_CATEGORICAL_VALUE_VIEW.as("c" + varIndex);
+				int varId = var.getVariableId();
+				
+				StringBuilder sql = new StringBuilder();  
+				sql.append("update ");
+				sql.append( table.getSchema() );
+				sql.append(".");
+				sql.append( table.getName() );
+				sql.append(" set ");
+				sql.append( varName );
+				sql.append(" = c.");
+				sql.append(PCVV.CATEGORY_ID.getName());
+				sql.append( " from ");
+				sql.append(PCVV.getSchema().getName());
+				sql.append(".");
+				sql.append(PCVV.getName());
+				sql.append(" as c ");
+				sql.append(" where ");
+				sql.append("c.");
+				sql.append(PCVV.VARIABLE_ID.getName());
+				sql.append(" = ");
+				sql.append( varId );
+				sql.append(" and c.");
+				sql.append(PCVV.CURRENT.getName());
+				sql.append(" and c.");
+				sql.append(PCVV.PLOT_SECTION_ID.getName());
+				sql.append(" = ");
+				sql.append( table.getName());
+				sql.append(".");
+				sql.append(PCVV.PLOT_SECTION_ID.getName());
+
+				String sqlString = sql.toString();
+				getLog().debug("Inserting " + varName + " into " + table);
+				getLog().debug(sqlString);
+				
+				create.execute(sqlString);
+				
+				getLog().debug("Done inserting " + varName);
+			}
+		}
+	}
 	
-				select.addSelect( Factory.coalesce(catView.CATEGORY_ID, -1).as(varName) );
-	
-				select.addJoin(
-						catView, 
-						JoinType.LEFT_OUTER_JOIN, 
-						view.PLOT_SECTION_ID.eq(catView.PLOT_SECTION_ID)
-						.and( catView.VARIABLE_ID.eq(varId) )
-						.and( catView.CURRENT.isTrue() )
-				);
+//	@SuppressWarnings("unchecked")
+	private void addVariablesToSelect(ObservationUnitMetadata unit, SelectQuery select) {
+		//		int varIndex = 0;		
+		for ( VariableMetadata var : unit.getVariableMetadata() ) {
+			if ( var.isCategorical() && var.isForAnalysis() ) {
+				
+				String varName = var.getVariableName();
+				
+				select.addSelect( Factory.val( -1 ).as(varName) );
+				
+//				Integer varId = var.getVariableId();
+//				varIndex += 1;
+//				PlotCategoricalValueView catView = PLOT_CATEGORICAL_VALUE_VIEW.as("c" + varIndex);
+//	
+//				select.addSelect( Factory.coalesce(catView.CATEGORY_ID, -1).as(varName) );
+//	
+//				select.addJoin(
+//						catView, 
+//						JoinType.LEFT_OUTER_JOIN, 
+//						view.PLOT_SECTION_ID.eq(catView.PLOT_SECTION_ID)
+//						.and( catView.VARIABLE_ID.eq(varId) )
+//						.and( catView.CURRENT.isTrue() )
+//				);
 			}
 			// TODO select numeric variables (see InterviewFactDao)
 			// TODO remove unneeded joins from num and cat value views (see interview_*_value_view)
 		}
 	}
+	
 }
