@@ -30,7 +30,7 @@ obsp = read.csv('~/tzdata/src/plot.csv');
 # each plot row includes key (rowno or id) of each ancestor
 
 sp = with( obsp, 
-           data.frame(
+           data.frame (
              cluster_code  = cluster_id, 
              visit_type    = cluster_measurement, 
              plot_no       = no, 
@@ -54,9 +54,21 @@ sp = with( obsp,
              canopy_coverage_east, 
              canopy_coverage_south, 
              canopy_coverage_west,
-             slope       = slope_value
+             slope       = slope_value,
+             undergrowth_type = undergrowth_type,
+             soil_structure = soil_structure,
+             soil_depth = soil_depth_value,
+             soil_sample = soil_sample,
+             soil_texture = soil_texture,
+             erosion = erosion,
+             grazing = grazing,
+             catchment = catchment,
+             nwfp = nwfp,
+             mgmt_proposal = mgmt_proposal,
+             shrubs_coverage = shrubs_coverage,
+             shrubs_avg_height = shrubs_avg_height_value
            )
-)
+);
 
 # Fix known problems
 sp[sp$cluster_code=='152_63'  & sp$plot_no==3,]$plot_no[1] = 8
@@ -72,7 +84,7 @@ sp$slope  <- with( sp,
 #default plot section = A
 sp[is.na(sp$plot_section) | sp$plot_section=='',]$plot_section <- 'A'
 stopifnot( length(unique(sp$plot_section)) == 2)
-write.csv(sp, '~/tzdata/plots.csv')
+write.csv(sp, '~/tzdata/plots.csv', row.names = F)
 
 
 # ============================================================================================

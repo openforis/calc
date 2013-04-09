@@ -31,9 +31,10 @@ public class ImportObservations {
 		try {
 			String survey = "naforma1";
 
-			// removeData( survey, "tree" );
-			// removeData( survey, "dead_wood" );
-			// removeData( survey, "plot" );
+			
+//			removeData( survey, "tree" );
+//			removeData( survey, "dead_wood" );
+//			removeData( survey, "plot" );
 
 			// import
 //			importPlots(survey, "plot", PLOT_CSV_FILENAME);
