@@ -7,15 +7,11 @@ import static org.openforis.calc.persistence.jooq.Tables.PLOT_SECTION;
 import static org.openforis.calc.persistence.jooq.Tables.PLOT_SECTION_AOI;
 import static org.openforis.calc.persistence.jooq.Tables.SAMPLE_PLOT;
 import static org.openforis.calc.persistence.jooq.Tables.SPECIMEN;
-import static org.openforis.calc.persistence.jooq.Tables.SPECIMEN_CATEGORICAL_VALUE_VIEW;
-import static org.openforis.calc.persistence.jooq.Tables.SPECIMEN_NUMERIC_VALUE;
 import static org.openforis.calc.persistence.jooq.Tables.STRATUM;
 
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
-
-import mondrian.spi.Dialect.Datatype;
 
 import org.jooq.Field;
 import org.jooq.JoinType;
@@ -73,6 +69,7 @@ public class SpecimenFactDao extends RolapFactDao<SpecimenFactTable> {
 		select.addSelect( s.INCLUSION_AREA );
 		select.addSelect( ps.PLOT_SECTION_AREA );		
 		select.addSelect( val(1).as(fact.COUNT.getName()) );
+		select.addSelect( val(1).as(fact.COUNT_EST.getName()) );
 		
 		select.addFrom(s);
 		

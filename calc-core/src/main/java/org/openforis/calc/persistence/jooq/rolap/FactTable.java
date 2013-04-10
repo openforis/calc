@@ -82,12 +82,14 @@ public abstract class FactTable extends RolapTable {
 		userDefinedDimensionFields.add(field);
 	}
 
-	void createUserDefinedMeasureField(String name) {
+	Field<BigDecimal> createUserDefinedMeasureField(String name) {
 		if ( getField(name) != null ) {
 			throw new IllegalArgumentException("Field '"+name+"' already exists!");
 		}
 		Field<BigDecimal> field = createField(name, NUMERIC);
 		userDefinedMeasureFields.add(field);
+		
+		return field;
 	}
 
 	public List<Field<Integer>> getUserDefinedDimensionFields() {

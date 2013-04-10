@@ -146,14 +146,14 @@ public class RolapSchemaGenerator {
 			AoiHierarchyLevelMetadata level = levelMeta.get(i);
 			AoiDimensionTable table = new AoiDimensionTable(databaseSchema, level, lastTable);
 			String tableName = table.getName();
-			Level l = mdf.createLevel(tableName, table.getDenormalizedIdColumn(), table.getDenormalizedLabelColumn());
+			Level l = mdf.createLevel(tableName, null, table.getDenormalizedIdColumn(), table.getDenormalizedLabelColumn());
 			levels.add(l);
 			dbTables.add(table);
 			lastTable = table;
 		}
 		String name = hier.getAoiHierarchyName();
 		View joinView = mdf.createJoinView(lastTable, name);
-		return mdf.createHierarchy(name, false, joinView, levels);
+		return mdf.createHierarchy(name, null, false, joinView, levels);
 	}
 
 	// SAMPLING DESIGN DIMENSIONS
@@ -172,15 +172,15 @@ public class RolapSchemaGenerator {
 		dbTables.add(stratumTable);
 		
 		String tableName = stratumTable.getName();
-		Level level = mdf.createLevel(tableName, stratumTable, stratumTable.ID, stratumTable.LABEL);
-		Hierarchy hier = mdf.createHierarchy(tableName, true, tableName, level);
+		Level level = mdf.createLevel(tableName, null, stratumTable, stratumTable.ID, stratumTable.LABEL);
+		Hierarchy hier = mdf.createHierarchy(tableName, null, true, tableName, level);
 		Dimension dim = mdf.createDimension(tableName, stratumCaption, hier);
 		sharedDimensions.add(dim);
 	}
 	
 	private void initSesuDimension(DimensionTable table) {
-		Level level = mdf.createLevel(table.getName(), table, table.ID, table.LABEL);
-		Hierarchy hier = mdf.createHierarchy(table.getName(), true, table.getName(), level);
+		Level level = mdf.createLevel(table.getName(), null, table, table.ID, table.LABEL);
+		Hierarchy hier = mdf.createHierarchy(table.getName(), null, true, table.getName(), level);
 		Dimension dim = mdf.createDimension(sesuDimensionName, sesuCaption, hier);
 		sharedDimensions.add(dim);
 	}
@@ -197,14 +197,14 @@ public class RolapSchemaGenerator {
 
 	private Hierarchy createPlotDimensionHierarchy(ObservationUnitMetadata unit, ClusterDimensionTable clusterTable) {
 		String clusterLevelName = clusterTable.getName();
-		Level clusterLevel = mdf.createLevel(clusterLevelName, clusterTable.getDenormalizedIdColumn(), clusterTable.getDenormalizedLabelColumn());
+		Level clusterLevel = mdf.createLevel(clusterLevelName, null, clusterTable.getDenormalizedIdColumn(), clusterTable.getDenormalizedLabelColumn());
 		PlotDimensionTable plotTable = new PlotDimensionTable(databaseSchema, unit, clusterTable);
 		dbTables.add(plotTable);
 		String plotLevelName = plotTable.getName();
-		Level plotLevel = mdf.createLevel(plotLevelName, plotTable.getDenormalizedIdColumn(), plotTable.getDenormalizedLabelColumn());
+		Level plotLevel = mdf.createLevel(plotLevelName, null, plotTable.getDenormalizedIdColumn(), plotTable.getDenormalizedLabelColumn());
 		// TODO exclude cluster if not clustered design
 		View joinView = mdf.createJoinView(plotTable, unit.getObsUnitName());
-		Hierarchy hier = mdf.createHierarchy(unit.getObsUnitName(), true, joinView, clusterLevel, plotLevel);
+		Hierarchy hier = mdf.createHierarchy(unit.getObsUnitName(), null, true, joinView, clusterLevel, plotLevel);
 		
 		return hier;
 	}
@@ -221,21 +221,21 @@ public class RolapSchemaGenerator {
 	
 	private Hierarchy createSpecimenDimensionHierarchy(ObservationUnitMetadata unit, ClusterDimensionTable clusterTable) {
 		String clusterLevelName = clusterTable.getName();
-		Level clusterLevel = mdf.createLevel(clusterLevelName, clusterTable.getDenormalizedIdColumn(), clusterTable.getDenormalizedLabelColumn());
+		Level clusterLevel = mdf.createLevel(clusterLevelName, null, clusterTable.getDenormalizedIdColumn(), clusterTable.getDenormalizedLabelColumn());
 		PlotDimensionTable plotTable = new PlotDimensionTable(databaseSchema, unit.getObsUnitParent(), clusterTable);
 //		dbTables.add(plotTable);
 		String plotLevelName = plotTable.getName();
-		Level plotLevel = mdf.createLevel(plotLevelName, plotTable.getDenormalizedIdColumn(), plotTable.getDenormalizedLabelColumn());
+		Level plotLevel = mdf.createLevel(plotLevelName, null, plotTable.getDenormalizedIdColumn(), plotTable.getDenormalizedLabelColumn());
 		
 		SpecimenDimensionTable specimenTable = new SpecimenDimensionTable(databaseSchema, unit, plotTable);
 		dbTables.add(specimenTable);
 		
 		String specimenLevelName = specimenTable.getName();
-		Level specimenLevel = mdf.createLevel(specimenLevelName , specimenTable.getDenormalizedIdColumn(), specimenTable.getDenormalizedLabelColumn());
+		Level specimenLevel = mdf.createLevel(specimenLevelName, null, specimenTable.getDenormalizedIdColumn(), specimenTable.getDenormalizedLabelColumn());
 		
 		// TODO exclude cluster if not clustered design
 		View joinView = mdf.createJoinView(specimenTable, unit.getObsUnitName());
-		Hierarchy hier = mdf.createHierarchy(unit.getObsUnitName(), true, joinView, clusterLevel, plotLevel, specimenLevel);
+		Hierarchy hier = mdf.createHierarchy(unit.getObsUnitName(), null, true, joinView, clusterLevel, plotLevel, specimenLevel);
 		
 		return hier;
 	}
@@ -249,8 +249,8 @@ public class RolapSchemaGenerator {
 			dbTables.add(table);
 			
 			String tableName = table.getName();
-			Level level = mdf.createLevel(tableName, table.ID.getName(), table.LABEL.getName());
-			Hierarchy hier = mdf.createHierarchy(tableName, true, tableName, level);
+			Level level = mdf.createLevel(tableName, null, table.ID.getName(), table.LABEL.getName());
+			Hierarchy hier = mdf.createHierarchy(tableName, null, true, tableName, level);
 			Dimension dim = mdf.createDimension(tableName, MondrianDefFactory.toMdxName(tableName), hier);
 			sharedDimensions.add(dim);
 		}
@@ -276,9 +276,9 @@ public class RolapSchemaGenerator {
 	private Hierarchy createUserDefinedDimensionHierarchy(VariableMetadata var) {
 		DimensionTable table = new CategoryDimensionTable(databaseSchema, var);
 		String tableName = table.getName();
-		Level level = mdf.createLevel(tableName, table, table.ID, table.LABEL);
+		Level level = mdf.createLevel(tableName, var.getVariableLabel(), table, table.ID, table.LABEL);
 		dbTables.add(table);
-		return mdf.createHierarchy(var.getVariableName(), true, tableName, level);
+		return mdf.createHierarchy(var.getVariableName(), var.getVariableLabel(), true, tableName, level);
 	}
 
 	////////// CUBES

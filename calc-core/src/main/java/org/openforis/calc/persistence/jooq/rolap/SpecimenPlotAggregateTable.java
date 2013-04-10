@@ -36,6 +36,7 @@ public class SpecimenPlotAggregateTable extends AggregateTable<SpecimenFactTable
 		aoiFields = createAoiFields();
 
 		initUserDefinedFields();
+		createUserDefinedMeasureField(fact.COUNT_EST.getName());
 	}
 
 	public List<Field<Integer>> getAoiFields() {

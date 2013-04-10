@@ -32,7 +32,8 @@ public class SpecimenFactTable extends FactTable {
 
 	public final Field<BigDecimal> INCLUSION_AREA = createFixedMeasureField(MEASURE_INCLUSION_AREA);
 	public final Field<BigDecimal> PLOT_SECTION_AREA = createFixedMeasureField(MEASURE_PLOT_SECTION_AREA);
-
+	public Field<BigDecimal> COUNT_EST;
+	
 	private List<Field<Integer>> aoiFields;
 
 	SpecimenFactTable(String schema, ObservationUnitMetadata unit) {
@@ -43,6 +44,7 @@ public class SpecimenFactTable extends FactTable {
 	protected void initFields() {
 		aoiFields = createAoiFields();
 		initUserDefinedFields();
+		COUNT_EST = createUserDefinedMeasureField("count_est");
 	}
 
 	public List<Field<Integer>> getAoiFields() {

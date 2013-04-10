@@ -87,31 +87,35 @@ class MondrianDefFactory {
 		return dim;
 	}
 
-	public Hierarchy createHierarchy(String name, boolean hasAll, Relation relation, Level... levels) {
+	public Hierarchy createHierarchy(String name, String caption, boolean hasAll, Relation relation, Level... levels) {
 		Hierarchy hier = new Hierarchy();
 		hier.name = toMdxName(name);
 		hier.visible = true;
 		hier.hasAll = hasAll;
 		hier.levels = levels;
 		hier.relation = relation;
+		if( caption != null ){
+			hier.caption = caption;
+		}
+		
 		return hier;
 	}
 
-	public Hierarchy createHierarchy(String name, boolean hasAll, Relation relation, Collection<Level> levels) {
-		return createHierarchy(name, hasAll, relation, levels.toArray(new Level[0]));
+	public Hierarchy createHierarchy(String name, String caption, boolean hasAll, Relation relation, Collection<Level> levels) {
+		return createHierarchy(name, caption, hasAll, relation, levels.toArray(new Level[0]));
 	}
 
-	public Hierarchy createHierarchy(String name, boolean hasAll, String table, Collection<Level> levels) {
-		return createHierarchy(name, hasAll, table, levels.toArray(new Level[0]));
+	public Hierarchy createHierarchy(String name, String caption, boolean hasAll, String table, Collection<Level> levels) {
+		return createHierarchy(name, caption, hasAll, table, levels.toArray(new Level[0]));
 	}
 
-	public Hierarchy createHierarchy(String name, boolean hasAll, String table, Level... levels) {
+	public Hierarchy createHierarchy(String name, String caption, boolean hasAll, String table, Level... levels) {
 		MondrianDef.Table relation = new MondrianDef.Table(databaseSchema, table, null, null);
 
-		return createHierarchy(name, hasAll, relation, levels);
+		return createHierarchy(name, caption, hasAll, relation, levels);
 	}
 
-	public Level createLevel(String levelName, String table, String column, String nameColumn) {
+	public Level createLevel(String levelName, String caption, String table, String column, String nameColumn) {
 		Level level = new Level();
 		level.name = toMdxName(levelName);
 		level.visible = true;
@@ -122,16 +126,18 @@ class MondrianDefFactory {
 		level.uniqueMembers = false;
 		level.levelType = "Regular";
 		level.hideMemberIf = "Never";
-
+		if(caption != null){
+			level.caption = caption;
+		}
 		return level;
 	}
 
-	public Level createLevel(String levelName, RolapTable table, Field<Integer> idField, Field<String> labelField) {
-		return createLevel(levelName, table.getName(), idField.getName(), labelField.getName());
+	public Level createLevel(String levelName, String caption, RolapTable table, Field<Integer> idField, Field<String> labelField) {
+		return createLevel(levelName, caption, table.getName(), idField.getName(), labelField.getName());
 	}
 
-	public Level createLevel(String levelName, String column, String nameColumn) {
-		return createLevel(levelName, null, column, nameColumn);
+	public Level createLevel(String levelName, String caption, String column, String nameColumn) {
+		return createLevel(levelName, caption, null, column, nameColumn);
 	}
 
 	public View createJoinView(HierarchicalDimensionTable leafTable, String alias) {
@@ -363,7 +369,8 @@ class MondrianDefFactory {
 		String mdxName = toMdxName( name );
 		
 		CalculatedMember c = new CalculatedMember();
-		c.name = "Mean "+ mdxName;
+		c.name = mdxName + " Ha";
+		c.caption = mdxName + "/ha";
 		c.dimension = MEASURES;
 		c.visible = true;
 		c.formula = "["+MEASURES+"].["+mdxName+"]/["+MEASURES+"].["+RESULT_AREA+"]";

@@ -31,10 +31,11 @@ public class SpecimenAoiAggregateTable extends AoiAggregateTable<SpecimenAoiStra
 
 		// createFixedDimensionField(specimenFact.STRATUM_ID);
 		createFixedDimensionField(specimenFact.SPECIMEN_TAXON_ID);
-
+		
 		aoiFields = createAoiFields(getAoiHierarchyLevelMetadata().getAoiHierarchyLevelName());
 
-		initUserDefinedFields();
+		initUserDefinedFields();		
+		createUserDefinedMeasureField(specimenFact.COUNT_EST.getName());
 	}
 
 	@Override

@@ -76,6 +76,7 @@ public class SpecimenCubeGenerator extends RolapCubeGenerator {
 		addMeasure( mdf.createMeasure(fact.COUNT, "Count") );
 		addMeasure( mdf.createMeasure(fact.INCLUSION_AREA, "", false) );
 		addMeasure( mdf.createMeasure(fact.PLOT_SECTION_AREA, "", false) );
+		addMeasure( mdf.createMeasure(fact.COUNT_EST, "", true) );
 		initUserDefinedMeasures();
 	}
 

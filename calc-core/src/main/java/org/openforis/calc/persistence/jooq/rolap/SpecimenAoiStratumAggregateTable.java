@@ -27,11 +27,12 @@ public class SpecimenAoiStratumAggregateTable extends AoiStratumAggregateTable<S
 
 		createFixedDimensionField(specimenFact.STRATUM_ID);
 		createFixedDimensionField(specimenFact.SPECIMEN_TAXON_ID);
-
+		
 		List<Field<Integer>> aoiFields = createAoiFields(getAoiHierarchyLevelMetadata().getAoiHierarchyLevelName());
 		setAoiFields(aoiFields);
 
 		initUserDefinedFields();
+		createUserDefinedMeasureField(specimenFact.COUNT_EST.getName());
 	}
 
 //	public SpecimenAoiStratumAggregateTable getAoiLevel1StratumAgg() {

@@ -77,11 +77,11 @@ public class RolapService extends CalcService {
 		RolapSchemaDefinition defn = rsg.generateDefinition();
 
 		// Create database
-		List<RolapTable> tables = defn.getDatabaseTables();
-		rolapSchemaDao.createSchema(tables);
-		
-		// Insert data
-		populateTables(tables);
+//		List<RolapTable> tables = defn.getDatabaseTables();
+//		rolapSchemaDao.createSchema(tables);
+//		
+//		// Insert data
+//		populateTables(tables);
 		
 		// Save Mondrian schema
 		// TODO create dirs, dynamically set path, etc.
