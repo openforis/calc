@@ -14,6 +14,7 @@ import mondrian.olap.MondrianDef.AggName;
 import mondrian.olap.MondrianDef.CalculatedMember;
 import mondrian.olap.MondrianDef.Cube;
 import mondrian.olap.MondrianDef.CubeDimension;
+import mondrian.olap.MondrianDef.CubeUsage;
 import mondrian.olap.MondrianDef.Dimension;
 import mondrian.olap.MondrianDef.DimensionUsage;
 import mondrian.olap.MondrianDef.Formula;
@@ -359,7 +360,7 @@ class MondrianDefFactory {
 				"CASE [" + specimenLevel + "].CurrentMember.Level.Name\n" +
 				"WHEN \"" + plotLevel + "\" THEN [" + MEASURES + "].[" + toMdxName( SpecimenFactTable.MEASURE_PLOT_SECTION_AREA ) + "].Value\n" +
 				"WHEN \"" + specimenLevel + "\" THEN [" + MEASURES + "].[" + toMdxName( SpecimenFactTable.MEASURE_INCLUSION_AREA ) + "].Value\n" +         
-				"ELSE [" + MEASURES + "].[" + toMdxName( PlotFactTable.MEASURE_EST_AREA ) + "].Value END ";
+				"ELSE ValidMeasure([" + MEASURES + "].[" + toMdxName( PlotFactTable.MEASURE_EST_AREA ) + "]) END ";
 		
 		c.formulaElement = formula ;
 		return c;
@@ -376,6 +377,15 @@ class MondrianDefFactory {
 		c.formula = "["+MEASURES+"].["+mdxName+"]/["+MEASURES+"].["+RESULT_AREA+"]";
 		
 		return c;
+	}
+	
+	public CubeUsage createCubeUsage(String name, boolean ignoreUnrelatedDimensions) {
+		
+		CubeUsage cubeUsage = new CubeUsage();
+		cubeUsage.cubeName = toMdxName(name);
+		cubeUsage.ignoreUnrelatedDimensions = ignoreUnrelatedDimensions;
+		
+		return cubeUsage;
 	}
 	
 	public static String toMdxName(String name) {

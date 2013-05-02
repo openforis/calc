@@ -9,6 +9,8 @@ import java.util.List;
 import mondrian.olap.MondrianDef.CalculatedMember;
 import mondrian.olap.MondrianDef.Cube;
 import mondrian.olap.MondrianDef.CubeDimension;
+import mondrian.olap.MondrianDef.CubeUsage;
+import mondrian.olap.MondrianDef.CubeUsages;
 import mondrian.olap.MondrianDef.Measure;
 import mondrian.olap.MondrianDef.VirtualCube;
 import mondrian.olap.MondrianDef.VirtualCubeDimension;
@@ -45,11 +47,23 @@ public class SpecimenVirtualCubeGenerator {
 	public VirtualCube createCube() {
 		virtualCube = mdf.createVirtualCube(unit.getObsUnitName());
 
+		initCubeUsages();
+		
 		initDimensions();
 		initMeasures();
 		initCalculatedMembers();
 
 		return virtualCube;
+	}
+
+	private void initCubeUsages() {
+		CubeUsages cubeUsages = new CubeUsages();
+		CubeUsage plotCubeUsage = mdf.createCubeUsage(unit.getObsUnitParent().getObsUnitName(), true);
+		CubeUsage specimenCubeUsage = mdf.createCubeUsage(cube.name, true);
+		
+		cubeUsages.cubeUsages = new CubeUsage[]{plotCubeUsage, specimenCubeUsage};
+
+		virtualCube.cubeUsage = cubeUsages;
 	}
 
 	private boolean hasPerHaEstimate(Measure measure) {
@@ -96,3 +110,4 @@ public class SpecimenVirtualCubeGenerator {
 		virtualCube.calculatedMembers = calculatedMembers.toArray(new CalculatedMember[0]);
 	}
 }
+
