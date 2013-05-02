@@ -33,25 +33,32 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 public class PlotAoiAggregateDao extends AbstractObservationAggregateDao<PlotAoiAggregateTable> {
 
+	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional
 	synchronized
 	public void populate(PlotAoiAggregateTable aggTable) {
 		
-		
 		Select<Record> estimableAreaAoiAggSelect = createNonSyntheticEstimatorAggSelect( aggTable, getThreshold() );
+		
+//		Select<Record> select = estimableAreaAoiAggSelect.union( nonEstimableAreaAoiAggSelect );
+		
+		Insert<?> insertEst = createInsertFromSelect(aggTable, estimableAreaAoiAggSelect);
+		
+		getLog().debug("Inserting plot aoi 'estimable aggregate' data at " + aggTable.getAoiHierarchyLevelMetadata().getAoiHierarchyLevelName() + " level ");
+		getLog().debug(insertEst);
+
+		insertEst.execute();
+
 		Select<Record> nonEstimableAreaAoiAggSelect = createSyntheticEstimatorAggSelect( aggTable, getThreshold() );
+		Insert<?> insertNonEst = createInsertFromSelect(aggTable, nonEstimableAreaAoiAggSelect);
 		
-		Select<Record> select = estimableAreaAoiAggSelect.union( nonEstimableAreaAoiAggSelect );
-		
-		@SuppressWarnings("unchecked")
-		Insert<?> insert = createInsertFromSelect(aggTable, select);
-		
-		getLog().debug("Inserting plot aoi aggregate data at " + aggTable.getAoiHierarchyLevelMetadata().getAoiHierarchyLevelName() + " level ");
-		getLog().debug(insert);
+		getLog().debug("Inserting plot aoi 'non estimable aggregate' data at " + aggTable.getAoiHierarchyLevelMetadata().getAoiHierarchyLevelName() + " level ");
+		getLog().debug(insertNonEst);
 
-		insert.execute();
+		insertNonEst.execute();
 
+		
 		getLog().debug("Complete");
 	}
 	
@@ -100,8 +107,8 @@ public class PlotAoiAggregateDao extends AbstractObservationAggregateDao<PlotAoi
 		Factory create = getJooqFactory();
 		SelectQuery select = create.selectQuery();
 		
-		select.addSelect( value(100).as( aggTable.AGG_COUNT.getName()) );
-		select.addSelect( value(100).mul(10).as( aggTable.COUNT.getName()) );
+		select.addSelect( value(100).mul(10).as( aggTable.AGG_COUNT.getName()) );
+		select.addSelect( value(0).as( aggTable.COUNT.getName()) );
 		
 		select.addFrom( s );
 		

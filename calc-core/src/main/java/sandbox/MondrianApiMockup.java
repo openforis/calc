@@ -17,7 +17,7 @@ public class MondrianApiMockup {
 
 			String mdxFileName = ctx.getBeanFactory().resolveEmbeddedValue("${mdxOutputPath}");
 			
-			rolapService.publishRolapSchema("naforma1", "naforma1", mdxFileName);
+			rolapService.publishRolapSchema("naforma1", "mino", mdxFileName);
 //			rolapService.publishRolapSchema("naforma1", "testschema_mino1", mdxFileName);
 //			printSchema();
 //			testQuery();
