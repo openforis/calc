@@ -9,14 +9,14 @@ DROP TABLE IF EXISTS _sampling_design;
 
 CREATE TABLE _sampling_design AS 
 SELECT * 
-FROM sampling_design;
+FROM calc.naforma_sampling_design;
 
 -- Convert theoretical plot locations to PostGIS points in WGS84 
 ALTER TABLE _sampling_design
 ADD COLUMN location Geometry(Point,4326);
 
 UPDATE _sampling_design
-SET location = ST_Transform(ST_SetSRID(ST_Point(x, y), (21000+utm_zone)::integer), 4326);
+SET location = ST_Transform(ST_SetSRID(ST_Point(x, y), srid), 4326);
 
 -- Assign district to sampling design
 ALTER TABLE _sampling_design
