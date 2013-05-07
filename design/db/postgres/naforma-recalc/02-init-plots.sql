@@ -189,21 +189,21 @@ update _plot
 set slope = 0
 where slope is null;
 
--- Reduce slope to steps of 5
-update _plot
-set slope = round(slope/5)*5;
+---- Reduce slope to steps of 5
+--update _plot
+--set slope = round(slope/5)*5;
 
--- Create correction for incorrect slope tables
-ALTER TABLE _plot
-ADD COLUMN slope_cf double precision;
-
-update _plot
-set slope_cf = cos(atan(slope / 100.0)) / cos(radians(0.9 * slope));
-
--- Calculate plot section areas
-ALTER TABLE _plot
-ADD COLUMN section_area double precision;
-
-update _plot
-set section_area = 15.0 * 15.0 * pi() * slope_cf * (share / 100.0);
+---- Create correction for incorrect slope tables
+--ALTER TABLE _plot
+--ADD COLUMN slope_cf double precision;
+--
+--update _plot
+--set slope_cf = cos(atan(slope / 100.0)) / cos(radians(0.9 * slope));
+--
+---- Calculate plot section areas
+--ALTER TABLE _plot
+--ADD COLUMN section_area double precision;
+--
+--update _plot
+--set section_area = 15.0 * 15.0 * pi() * slope_cf * (share / 100.0);
 
