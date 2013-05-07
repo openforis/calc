@@ -1,0 +1,1 @@
+select 'ALTER TABLE naforma1.' || table_name || ' OWNER TO calc;' from information_schema.tables where table_schema = 'naforma1';

@@ -28,7 +28,6 @@ import org.jooq.Query;
 import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.Select;
-import org.jooq.SelectQuery;
 import org.jooq.SelectSelectStep;
 import org.jooq.Table;
 import org.jooq.TableRecord;

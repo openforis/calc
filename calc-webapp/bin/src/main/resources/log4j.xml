@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration
+	xmlns:log4j="http://jakarta.apache.org/log4j/"
+	threshold="null"
+	debug="null"
+>
+    
+    <!-- Section: APPENDERS -->
+    <!--
+	writes log messages to the console. It outputs file name,
+	method name and line number of the caller. This is slow,
+	so just use it for debugging.
+-->
+	<appender
+		name="console"
+		class="org.apache.log4j.ConsoleAppender"
+	>
+		<layout class="org.apache.log4j.PatternLayout">
+			<param
+				name="ConversionPattern"
+				value="%d{DATE} [%t] %-5p (%F [%M]:%L) - %m %n" />
+		</layout>
+	</appender>
+    
+    <!--
+	the following appenders write to files
+	-->
+	<appender
+		name="of-calc"
+		class="org.apache.log4j.DailyRollingFileAppender"
+	>
+		<param
+			value="${catalina.base}/logs/calc.log"
+			name="File" />
+		<param
+			name="Encoding"
+			value="UTF-8" />
+		<param
+			name="DatePattern"
+			value="'.'yyyy-MM-dd" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param
+				name="ConversionPattern"
+				value="%d [%t] %-5p (%F [%M]:%L) - %m %n" />
+		</layout>
+	</appender>
+
+	<category
+		name="org.springframework"
+		additivity="false"
+	>
+		<priority value="error" />
+		<appender-ref ref="of-calc" />
+	</category>
+	
+	<category
+		name="org.zkoss"
+		additivity="false"
+	>
+		<priority value="info" />
+		<appender-ref ref="of-calc" />
+	</category>
+	
+	<category
+		name="org.openforis"
+		additivity="false"
+	>
+		<priority value="info" />
+		<appender-ref ref="of-calc" />
+	</category>
+	
+	<category
+		name="org.saiku"
+		additivity="false"
+	>
+		<priority value="error" />
+		<appender-ref ref="of-calc" />
+	</category>
+	
+	<category
+		name="org.apache"
+		additivity="false"
+	>
+		<priority value="error" />
+		<appender-ref ref="of-calc" />
+	</category>
+
+    <!-- Section: ROOT logger -->
+	<root>
+		<priority value="info" />
+		<appender-ref ref="of-calc" />
+	</root>
+
+</log4j:configuration>

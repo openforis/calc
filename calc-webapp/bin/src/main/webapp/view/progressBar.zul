@@ -1,0 +1,4 @@
+<window id="progressBar" title="Loading" border="normal" width="380px"
+	 action="show: slideDown;hide: slideUp" position="center,center" height="50px">
+	<image src="/images/loadingBar.gif" />
+</window>

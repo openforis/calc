@@ -142,7 +142,7 @@ public class RolapDimensionDao extends JooqDaoSupport {
  		select.addSelect(s.SAMPLE_PLOT_ID, s.CLUSTER_ID, s.PLOT_NO);
  		select.addFrom(s);
  		select.addConditions(s.PLOT_OBS_UNIT_ID.eq(unitId));
- 		select.addConditions(s.GROUND_PLOT.isTrue());
+ 		select.addConditions(s.GROUND_PLOT.isTrue()); 		
 		Insert<Record> insert = create
 				.insertInto(table, table.ID, table.PARENT_ID, table.LABEL)
 				.select(select);
