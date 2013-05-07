@@ -1,3 +1,4 @@
+drop view if exists calc.sample_plot_aoi_code_view;
 drop view if exists calc.plot_section_aoi_view;
 drop view if exists calc.sample_plot_aoi_view;
 drop view if exists calc.aoi_stratum_view;
@@ -63,6 +64,7 @@ AS
          c.cluster_y,
          p.sample_plot_id,
          p.plot_no,
+         p.unadjusted_location,
          p.plot_location,
          p.plot_shape,
          p.sampling_phase,
@@ -88,6 +90,7 @@ AS
          p.cluster_y,
          p.sample_plot_id,
          p.plot_no,         
+         p.unadjusted_location,
          p.plot_location,
          p.plot_shape,
          p.sampling_phase,
@@ -107,7 +110,7 @@ AS
          ps.plot_section_area,
          ps.plot_share,
          ps.primary_section,
-         st_distance( Geography(ps.plot_actual_location), Geography(p.plot_location) ) as plot_location_deviation         
+         ST_Distance_Sphere(ps.plot_actual_location, p.plot_location) as plot_location_deviation         
   FROM 
         calc.sample_plot_view p  
 left outer join 
@@ -136,6 +139,7 @@ AS
          ps.cluster_y,
          ps.sample_plot_id,
          ps.plot_no,
+         ps.unadjusted_location,
          ps.plot_location,
          ps.plot_shape,
          ps.sampling_phase,
@@ -441,3 +445,38 @@ join
 where 
         l.aoi_hierarchy_level_rank = (select max(aoi_hierarchy_level_rank) from calc.aoi_hierarchy_level)        
 ;
+create view sample_plot_aoi_code_view as
+SELECT
+    calc.cluster.cluster_code,
+    calc.cluster.cluster_x,
+    calc.cluster.cluster_y,
+    calc.sample_plot.plot_no,
+    calc.sample_plot.permanent_plot,
+    calc.sample_plot.ground_plot,
+    calc.aoi.aoi_code,
+    calc.aoi.aoi_label,
+    calc.aoi.aoi_parent_id,
+    calc.aoi.aoi_id,
+    calc.aoi_hierarchy_level.aoi_hierarchy_level_name
+FROM
+    calc.aoi
+INNER JOIN
+    calc.sample_plot_aoi
+ON
+    (
+        calc.aoi.aoi_id = calc.sample_plot_aoi.aoi_id)
+INNER JOIN
+    calc.sample_plot
+ON
+    (
+        calc.sample_plot_aoi.sample_plot_id = calc.sample_plot.sample_plot_id)
+INNER JOIN
+    calc.cluster
+ON
+    (
+        calc.sample_plot.cluster_id = calc.cluster.cluster_id)
+INNER JOIN
+    calc.aoi_hierarchy_level
+ON
+    (
+        calc.aoi.aoi_hierarchy_level_id = calc.aoi_hierarchy_level.aoi_hierarchy_level_id) ;

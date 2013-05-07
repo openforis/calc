@@ -114,7 +114,7 @@ public class TransformationUtils {
 		try {
 			MathTransform transform = TO_LATLONG_TRANSFORMS.get(srsId);
 			if ( transform == null ) {
-				CRSAuthorityFactory factory = ReferencingFactoryFinder.getCRSAuthorityFactory("EPSG", null);
+				CRSAuthorityFactory factory = ReferencingFactoryFinder.getCRSAuthorityFactory("EPSG", ReferencingFactoryFinder.EMPTY_HINTS);
 //				ThreadedEpsgFactory factory = new ThreadedEpsgFactory();
 				CoordinateReferenceSystem crs = factory.createCoordinateReferenceSystem(srsId);
 				// SYSTEMS.put(srsId, crs);

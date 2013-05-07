@@ -1,0 +1,104 @@
+<Schema name="NAFORMA">
+  <Dimension type="StandardDimension" visible="true" highCardinality="false" name="AOI" caption="Area of Interest">
+    <Hierarchy name="Admin Unit" visible="true" hasAll="true" allMemberCaption="All Regions" primaryKey="id">
+      <Table name="admin_unit" schema="calc">
+      </Table>
+      <Level name="Region" visible="true" table="admin_unit" column="level1_name" nameColumn="level1_name" type="String" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+      </Level>
+      <Level name="District" visible="true" table="admin_unit" column="level2_name" nameColumn="level2_name" type="String" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+        <Property name="Total Area" column="area" type="Numeric">
+        </Property>
+      </Level>
+    </Hierarchy>
+  </Dimension>
+  <Dimension type="StandardDimension" visible="true" highCardinality="false" name="Land Use">
+    <Hierarchy name="Land Use" visible="true" hasAll="true" allMemberCaption="All Land Uses" primaryKey="id">
+      <Table name="plot_class1" schema="calc">
+      </Table>
+      <Level name="Land Use" visible="true" table="plot_class1" column="level1_code" nameColumn="level1_name" type="String" uniqueMembers="true" levelType="Regular" hideMemberIf="Never">
+      </Level>
+    </Hierarchy>
+  </Dimension>
+  <Dimension type="StandardDimension" visible="true" highCardinality="false" name="Vegetation Type">
+    <Hierarchy name="Vegetation Type" visible="true" hasAll="true" allMemberCaption="All Vegetation Types" primaryKey="id">
+      <Table name="plot_class2" schema="calc">
+      </Table>
+      <Level name="Primary Vegetation Type" visible="true" table="plot_class2" column="level1_name" type="String" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+      </Level>
+      <Level name="Secondary Vegetation Type" visible="true" table="plot_class2" column="full_code" nameColumn="level2_name" type="String" uniqueMembers="true" levelType="Regular" hideMemberIf="Never">
+      </Level>
+    </Hierarchy>
+  </Dimension>
+  <Dimension type="StandardDimension" visible="true" highCardinality="false" name="Stratum" caption="Sampling Unit">
+    <Hierarchy name="Stratum" visible="true" hasAll="true" primaryKey="id">
+      <Table name="stratum" schema="calc">
+      </Table>
+      <Level name="Stratum" visible="true" table="stratum" column="id" nameColumn="code" type="String" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+      </Level>
+    </Hierarchy>
+  </Dimension>
+  <Dimension type="StandardDimension" visible="true" highCardinality="false" name="SU" caption="Sampling Unit">
+    <Hierarchy name="Sampling Unit" visible="true" hasAll="true" primaryKey="id">
+      <Table name="plot_view" schema="calc">
+      </Table>
+      <Level name="Stratum" visible="true" table="plot_view" column="stratum_id" nameColumn="stratum_code" type="String" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+      </Level>
+      <Level name="Cluster" visible="true" table="plot_view" column="cluster_id" nameColumn="cluster_code" type="String" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+      </Level>
+      <Level name="Plot" visible="true" table="plot_view" column="id" nameColumn="id" type="String" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+      </Level>
+    </Hierarchy>
+  </Dimension>
+  <Cube name="Area District" visible="true" cache="true" enabled="true">
+    <Table name="stratum_adm_level2_area_dist" schema="calc">
+    </Table>
+    <DimensionUsage source="Land Use" name="Land Use" visible="true" foreignKey="class1_id" highCardinality="false">
+    </DimensionUsage>
+    <DimensionUsage source="Vegetation Type" name="Vegetation Type" visible="true" foreignKey="class2_id" highCardinality="false">
+    </DimensionUsage>
+    <DimensionUsage source="AOI" name="AOI" visible="true" foreignKey="admin_unit_id" highCardinality="false">
+    </DimensionUsage>
+    <Measure name="Area" column="est_area" datatype="Numeric" formatString="#,##0.00000" aggregator="sum" description="Area (ha)" visible="true">
+    </Measure>
+  </Cube>
+  <Cube name="Area Stratum" caption="Area (Stratum)" visible="true" cache="true" enabled="true">
+    <Table name="stratum_area_dist" schema="calc">
+    </Table>
+    <DimensionUsage source="Land Use" name="Land Use" visible="true" foreignKey="class1_id" highCardinality="false">
+    </DimensionUsage>
+    <DimensionUsage source="Vegetation Type" name="Vegetation Type" visible="true" foreignKey="class2_id" highCardinality="false">
+    </DimensionUsage>
+    <DimensionUsage source="Stratum" name="Stratum" visible="true" foreignKey="stratum_id" highCardinality="false">
+    </DimensionUsage>
+    <Measure name="Area" column="est_area" datatype="Numeric" formatString="#,##0.00000" aggregator="sum" description="Area (ha)" visible="true">
+    </Measure>
+  </Cube>
+  <Cube name="Volume Stratum" caption="Volume (Stratum)" visible="true" cache="true" enabled="true">
+    <Table name="stratum_est" schema="calc">
+    </Table>
+    <DimensionUsage source="Land Use" name="Land Use" visible="true" foreignKey="class1_id" highCardinality="false">
+    </DimensionUsage>
+    <DimensionUsage source="Vegetation Type" name="Vegetation Type" visible="true" foreignKey="class2_id" highCardinality="false">
+    </DimensionUsage>
+    <DimensionUsage source="Stratum" name="Stratum" visible="true" foreignKey="stratum_id" highCardinality="false">
+    </DimensionUsage>
+    <Measure name="Total Volume" column="est_tot_volume" datatype="Numeric" formatString="#,##0.00000" aggregator="sum" caption="Total Volume (m3)" visible="true">
+    </Measure>
+    <Measure name="Area" column="est_area" datatype="Numeric" formatString="#,##0.00000" aggregator="sum" caption="Area (ha)" visible="true">
+    </Measure>
+    <CalculatedMember name="Mean Volume" formatString="" caption="Mean Volume (m3/ha)" formula="[Measures].[Total Volume] / [Measures].[Area]" dimension="Measures" visible="true">
+    </CalculatedMember>
+  </Cube>
+  <Role name="ROLE_ADMIN">
+    <SchemaGrant access="all">
+    </SchemaGrant>
+  </Role>
+  <Role name="ROLE_USER">
+    <SchemaGrant access="all">
+      <CubeGrant cube="Area District" access="all">
+      </CubeGrant>
+      <CubeGrant cube="Area Stratum" access="all">
+      </CubeGrant>
+    </SchemaGrant>
+  </Role>
+</Schema>

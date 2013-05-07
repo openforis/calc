@@ -8,7 +8,7 @@ import org.postgresql.geometric.PGpoint;
 /**
  * 
  * @author G. Miceli
- * NOT YET SUPPORTED BY jOOQ DUE TO BUT IN CODE GENERATOR
+ * NOT YET SUPPORTED BY jOOQ DUE TO BUILT IN CODE GENERATOR
  */
 public class PGPointConverter implements Converter<Object, Point2D.Double> {
 

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zk>
+
+	<log>
+		<log-base>org.zkoss</log-base>
+	</log>
+
+	<!-- Optional -->
+	<!--
+		<desktop-config> <theme-provider-class>zkthemer.ThemeProvider
+		</theme-provider-class> </desktop-config>
+	-->
+	<!-- Optional for testing -->
+	<!--
+		<listener> <description> Serialization Listener for
+		debugging</description>
+		<listener-class>de.forsthaus.util.MySerializationListener
+		</listener-class> </listener>
+	-->
+
+	<!-- ========================================================== -->
+	<!--            Enable event thread for modal windows           -->
+	<!-- ========================================================== -->
+	<system-config>
+		<disable-event-thread>false</disable-event-thread>
+	</system-config>
+
+
+	<!-- ====================================================== -->
+	<!--          running a zk application in a CLUSTER         -->
+	<!-- ====================================================== -->
+	<system-config>
+		<ui-factory-class>org.zkoss.zk.ui.http.SerializableUiFactory</ui-factory-class>
+		<label-location>/WEB-INF/classes/labels/label.properties</label-location>
+	</system-config>
+
+	<!-- ====================================================== -->
+	<!--                       Optional                         -->
+	<!--      collect statistical data of the running app.      -->
+	<!-- ====================================================== -->
+	<!-- 
+	<listener>
+		<description> Monitor the statistic</description>
+		<listener-class>de.forsthaus.statistic.FDStatisticMonitor</listener-class>
+	</listener>
+	 -->
+
+	<!-- ====================================================== -->
+	<!--                 Device configurations                  -->
+	<!--          1. Type of server push                        -->
+	<!--          2. Page for showing the Session timeout       -->
+	<!--			 An empty URL can cause the browser to      -->
+	<!--             reload the same URL                        -->
+	<!-- ====================================================== -->
+<!-- 	<device-config> -->
+<!-- 		<device-type>ajax</device-type> -->
+<!-- 		<server-push-class>org.zkoss.zkex.ui.comet.CometServerPush</server-push-class> -->
+<!-- 		<timeout-uri>/timeout.zul</timeout-uri> -->
+<!-- 	</device-config> -->
+
+	<!-- ====================================================== -->
+	<!--         Listener to make sure servlet thread           -->
+	<!--            and ZK event thread got the same            -->
+	<!--                  ThreadLocal values.                   -->
+	<!-- ====================================================== -->
+	<listener>
+		<description>ThreadLocal Synchronization Listener
+		</description>
+		<listener-class>org.zkoss.zkplus.util.ThreadLocalListener</listener-class>
+	</listener>
+
+	<!-- ====================================================== -->
+	<!--         Besides that, you have to specify what         -->
+	<!--         ThreadLocal variables you want to sync.        -->
+	<!--   1. Spring  RequestContextHolder                      -->
+	<!--   2. Spring  ThreadLocalSecurityContextHolderStrategy  -->
+	<!-- ====================================================== -->
+	<preference>
+		<name>ThreadLocal</name>
+		<value>
+			org.springframework.security.core.context.ThreadLocalSecurityContextHolderStrategy=contextHolder;
+			org.springframework.web.context.request.RequestContextHolder=requestAttributesHolder,inheritableRequestAttributesHolder;
+		</value>
+	</preference>
+
+	<!-- ====================================================== -->
+	<!--                Path to the own error page              -->
+	<!-- ====================================================== -->
+	<error-page>
+		<exception-type>java.lang.Throwable</exception-type>
+		<location>/error.zul</location>
+	</error-page>
+
+	<!-- ====================================================== -->
+	<!--          Path to the character set and sizes           -->
+	<!--                Zkoss configuration file                -->
+	<!--         Custom components are declared here            -->
+	<!-- ====================================================== -->
+	<language-config>
+		<addon-uri>/WEB-INF/lang-addon.xml</addon-uri>
+	</language-config>
+
+	<!-- ====================================================== -->
+	<!--   Maximal count of desktops which a session can hold   -->
+	<!-- ====================================================== -->
+	<session-config>
+		<max-desktops-per-session>10</max-desktops-per-session>
+		<timer-keep-alive>true</timer-keep-alive>
+	</session-config>
+
+	<!-- ====================================================== -->
+	<!--   Displays the wait indicator on every user action     -->
+	<!--                  and sets the position                 -->
+	<!-- ====================================================== -->
+	<library-property>
+		<name>org.zkoss.zul.progressbox.position</name>
+		<value>center</value>
+	</library-property>
+	<client-config>
+		<processing-prompt-delay>1</processing-prompt-delay>
+	</client-config>
+
+	<!--
+		Turn on if you want to ignore the consecutive click events, if it
+		happens too close to the previous one, or the server is still serving
+		the previous click.
+	-->
+	<client-config>
+		<click-filter-delay>390</click-filter-delay>
+	</client-config>
+
+	<!-- ========================================================== -->
+	<!--                       since 5.0.3                          -->
+	<!--  The default font size is changed to "arial, sans-serif"   -->
+	<!--             Here we set to the old settings                -->
+	<!-- ========================================================== -->
+	<library-property>
+		<name>org.zkoss.zul.theme.fontFamilyT</name>
+		<value>Verdana, Tahoma, Arial, Helvetica, sans-serif</value>
+	</library-property>
+	<library-property>
+		<name>org.zkoss.zul.theme.fontFamilyC</name>
+		<value>Verdana, Tahoma, Arial, Helvetica, sans-serif</value>
+	</library-property>
+</zk>
+

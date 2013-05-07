@@ -32,7 +32,7 @@ public class SamplePlotDao extends JooqDaoSupport<SamplePlotRecord, SamplePlot> 
 		Factory create = getJooqFactory();
 		return create.nextval(Sequences.SAMPLE_PLOT_ID_SEQ).intValue();
 	}
-
+	
 //	public List<SamplePlot> findGroundPlotsByObservationUnitId(int observationUnitId) {
 //		Factory create = getJooqFactory();
 //		return 
