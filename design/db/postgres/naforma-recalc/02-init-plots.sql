@@ -198,19 +198,12 @@ ALTER TABLE _plot
 ADD COLUMN slope_cf double precision;
 
 update _plot
-set slope_cf = cos(atan(slope/100)) / cos(radians(0.9 * slope));
+set slope_cf = cos(atan(slope / 100.0)) / cos(radians(0.9 * slope));
 
 -- Calculate plot section areas
 ALTER TABLE _plot
 ADD COLUMN section_area double precision;
 
 update _plot
-set section_area = 15 * 15 * pi() * slope_cf * (share/100);
-
-select max(section_area), min(section_area)
-from _plot;
-
-select max(f.plot_section_area), min(f.plot_section_area)
-from mino.tree_fact f;
---- 0.1786   .00141 
+set section_area = 15.0 * 15.0 * pi() * slope_cf * (share / 100.0);
 
