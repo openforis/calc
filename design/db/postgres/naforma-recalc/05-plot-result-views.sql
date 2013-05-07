@@ -1,8 +1,8 @@
 SET search_path TO naforma1, public;
 
-drop view if exists _country_area_view cascade;
+drop view if exists _country_plot_view cascade;
 
-create view _country_area_view as
+create view _country_plot_view as
 SELECT
     p.country_id,
     p.vegetation_type,
