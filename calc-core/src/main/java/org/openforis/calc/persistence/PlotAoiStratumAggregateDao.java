@@ -87,7 +87,7 @@ public class PlotAoiStratumAggregateDao extends AbstractObservationAggregateDao<
 		
 		select.addFrom(fact);
 		
-		select.addConditions( s.OBS_PLOT_CNT.gt(threshold) );
+		select.addConditions( s.OBS_PLOT_CNT.greaterOrEqual(threshold) );
 		
 		select.addJoin(
 				e, 
@@ -129,7 +129,7 @@ public class PlotAoiStratumAggregateDao extends AbstractObservationAggregateDao<
 		
 		select.addFrom(s);
 		
-		select.addConditions(s.OBS_PLOT_CNT.lessOrEqual(threshold));
+		select.addConditions(s.OBS_PLOT_CNT.lessThan(threshold));
 		
 		addAoisToSelect(aoiHierarchy, aoiLevel.getAoiHierarchyLevelRank(), s, select, false);
 		

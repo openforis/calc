@@ -1,0 +1,278 @@
+SET search_path TO naforma1, public;
+
+------------------------------------------------------------
+--- SAMPLING DESIGN
+------------------------------------------------------------
+
+-- Copy sampling_design table
+DROP TABLE IF EXISTS _sampling_design;
+
+CREATE TABLE _sampling_design AS 
+SELECT * 
+FROM sampling_design;
+
+-- Convert theoretical plot locations to PostGIS points in WGS84 
+ALTER TABLE _sampling_design
+ADD COLUMN location Geometry(Point,4326);
+
+UPDATE _sampling_design
+SET location = ST_Transform(ST_SetSRID(ST_Point(x, y), (21000+utm_zone)::integer), 4326);
+
+-- Assign district to sampling design
+ALTER TABLE _sampling_design
+ADD COLUMN district_id INTEGER;
+
+UPDATE _sampling_design
+SET district_id = a.aoi_id
+FROM calc.aoi a 
+WHERE ST_Contains(a.aoi_shape, location)
+AND a.aoi_hierarchy_level_id = 3;
+
+-- Report unmatched plots
+SELECT phase, COUNT(*)
+FROM _sampling_design 
+WHERE district_id IS NULL 
+GROUP BY phase;
+
+-- Assign region to sampling design
+ALTER TABLE _sampling_design
+ADD COLUMN region_id INTEGER;
+
+UPDATE _sampling_design
+SET region_id = a.aoi_parent_id
+FROM calc.aoi a 
+WHERE a.aoi_id = district_id;
+
+-- Assign zone to sampling design
+ALTER TABLE _sampling_design
+ADD COLUMN zone_id INTEGER;
+
+UPDATE _sampling_design
+SET zone_id = a.aoi_parent_id
+FROM calc.aoi a 
+WHERE a.aoi_id = region_id;
+
+-- Assign country to sampling design
+ALTER TABLE _sampling_design
+ADD COLUMN country_id INTEGER;
+
+UPDATE _sampling_design
+SET country_id = a.aoi_parent_id
+FROM calc.aoi a 
+WHERE a.aoi_id = zone_id;
+
+-- Report unmatched plots
+SELECT phase, COUNT(*)
+FROM _sampling_design 
+WHERE country_id IS NULL 
+GROUP BY phase;
+
+---- TEMP FIX: Add stratum to sampling_design table; should be there when importing!
+--ALTER TABLE _sampling_design
+--ADD COLUMN stratum INTEGER;
+--
+--WITH str AS (
+--        SELECT
+--            c.cluster_code,
+--            p.plot_no,
+--            s.stratum_no
+--        FROM
+--            calc.cluster c
+--        INNER JOIN
+--            calc.sample_plot p
+--        ON
+--            c.cluster_id = p.cluster_id
+--        INNER JOIN
+--            calc.stratum s
+--        ON
+--            p.stratum_id = s.stratum_id
+--) 
+--UPDATE _sampling_design
+--SET stratum = str.stratum_no
+--FROM str
+--WHERE str.cluster_code = cluster AND str.plot_no = plot;
+
+------------------------------------------------------------
+--- FIELD PLOTS
+------------------------------------------------------------
+
+-- Copy plot table
+DROP TABLE IF EXISTS _plot;
+
+CREATE TABLE _plot AS 
+SELECT * 
+FROM plot;
+
+-- CLEAN: Set default direction and distance
+update _plot
+set centre_dir = 0, centre_dist = 0
+where (centre_dir=99 and centre_dist=99) 
+        or centre_dir is null or centre_dist is null
+        or centre_dist=0;
+
+-- CLEAN: Set plots with observations as accessible
+update _plot
+set accessibility = '0'
+where 
+        accessibility != '0'
+    and
+        exists (select tree_id from tree t where t.plot_id = _plot.plot_id);
+
+update _plot
+set accessibility = '0'
+where 
+        accessibility != '0'
+    and
+        exists (select stump_id from stump s where s.plot_id = _plot.plot_id);
+
+update _plot
+set accessibility = '0'
+where 
+        accessibility != '0'
+    and
+        exists (select dead_wood_id from dead_wood dw where dw.plot_id = _plot.plot_id);
+
+update _plot
+set accessibility = '0'
+where 
+        accessibility != '0'
+    and
+        exists (select bamboo_id from bamboo b where b.plot_id = _plot.plot_id);
+
+-- Assign cluster code to field plots 
+ALTER TABLE _plot
+ADD COLUMN cluster VARCHAR(255);
+
+UPDATE _plot
+SET cluster = c.id
+FROM cluster c
+WHERE c.cluster_id = _plot.cluster_id;
+
+-- CLEAN: Set default subplot code to 'A'
+update _plot
+set subplot = 'A'
+where subplot is null;
+
+-- CLEAN: Set default share to 100%
+update _plot
+set share = 100
+where share is null;
+
+-- CLEAN: Set vegtype of cluster in Kili incorrectly marked as Mangrove Forest to Forest: Humid montane
+UPDATE _plot
+SET vegetation_type = '101'
+WHERE cluster = '188_69';
+
+-- Convert theoretical plot locations to PostGIS points in WGS84 
+ALTER TABLE _plot
+ADD COLUMN location Geometry(Point,4326);
+
+UPDATE _plot
+SET location = ST_Transform(
+        ST_SetSRID(ST_Point(location_x, location_y), substring(location_srs from '[0-9]+$')::integer)
+        , 4326);
+
+-- Calculate actual plot center using GPS reading and reported dir and dist
+ALTER TABLE _plot
+ADD COLUMN centre_location Geometry(Point,4326);
+
+UPDATE _plot
+SET centre_location = ST_Project( Geography(location), centre_dist, radians(centre_dir) )::geometry;
+
+-- Assign stratum to field plots 
+ALTER TABLE _plot
+ADD COLUMN stratum INTEGER;
+
+UPDATE _plot
+SET stratum = s.stratum
+FROM _sampling_design s
+WHERE s.cluster = _plot.cluster AND s.plot::varchar = _plot.no;
+
+-- Report unknown plots
+SELECT cluster, no AS plot
+FROM _plot
+WHERE stratum is null;
+
+-- Assign district to field plots
+ALTER TABLE _plot
+ADD COLUMN district_id INTEGER;
+
+UPDATE _plot
+SET district_id = a.aoi_id
+FROM calc.aoi a 
+WHERE ST_Contains(a.aoi_shape, centre_location)
+AND a.aoi_hierarchy_level_id = 3;
+
+-- Report unmatched plots
+SELECT cluster, no AS plot
+FROM _plot 
+WHERE district_id IS NULL;
+
+-- Assign region to field plots
+ALTER TABLE _plot
+ADD COLUMN region_id INTEGER;
+
+UPDATE _plot
+SET region_id = a.aoi_parent_id
+FROM calc.aoi a 
+WHERE a.aoi_id = district_id;
+
+-- Assign zone to field plots
+ALTER TABLE _plot
+ADD COLUMN zone_id INTEGER;
+
+UPDATE _plot
+SET zone_id = a.aoi_parent_id
+FROM calc.aoi a 
+WHERE a.aoi_id = region_id;
+
+-- Assign country to field plots
+ALTER TABLE _plot
+ADD COLUMN country_id INTEGER;
+
+UPDATE _plot
+SET country_id = a.aoi_parent_id
+FROM calc.aoi a 
+WHERE a.aoi_id = zone_id;
+
+-- Report unmatched plots
+SELECT COUNT(*)
+FROM _plot 
+WHERE country_id IS NULL;
+
+
+
+--SELECT
+--    c.id AS cluster,
+--    p.no AS plot,
+--    p.location_x AS gps_x,
+--    p.location_y AS gps_y,
+--    centre.dir AS centre_dir,
+--    centre.dist AS centre_dist,
+--    p.location_srs,
+--    p.land_use,
+--    p.vegetation_type
+--FROM
+--    plot p
+--INNER JOIN
+--    cluster c
+--ON
+--    (p.cluster_id = c.cluster_id)
+--INNER JOIN
+--    centre
+--ON 
+--    (centre.plot_id = p.plot_id)
+--LEFT OUTER JOIN
+--    calc.sample_plot_aoi sd
+--ON
+--    (p.sample_plot_id = sd.sample_plot_id)
+--INNER JOIN
+--    calc.aoi
+--ON
+--    (sd.aoi_id = aoi.aoi_id AND aoi.aoi_hierarchy_level_id = 4)
+--WHERE
+--    c.measurement = 'P' AND (p.subplot = 'A' OR p.subplot IS NULL);
+--    
+
+
+
