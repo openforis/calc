@@ -23,3 +23,14 @@ set species_group =
         when species like 'ADA%' then 1
         else 99
     end;    
+    
+-- 1 commercial tree, 0 otherwise    
+alter table tree 
+add column commercial_tree integer;
+
+update tree
+set commercial_tree =
+    case
+        when species_group != 1 and dbh_class > 2 then 1
+        else 0
+    end;        
