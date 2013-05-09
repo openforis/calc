@@ -207,3 +207,33 @@ where slope is null;
 --update _plot
 --set section_area = 15.0 * 15.0 * pi() * slope_cf * (share / 100.0);
 
+
+alter table _plot
+add column canopy_cover_tmp double precision;
+
+alter table _plot
+add column canopy_cover_class varchar;
+
+update _plot
+set canopy_cover_tmp =
+    case
+        when canopy_cover is null then            
+            (canopy_coverage_centre + canopy_coverage_north + canopy_coverage_east + canopy_coverage_south + canopy_coverage_west) / 5 * 4.17
+        else     
+            canopy_cover
+    end
+;
+
+update _plot
+set canopy_cover_class =
+    case 
+        when canopy_cover_tmp < 5 then '1'
+        when canopy_cover_tmp < 10 then '2'
+        when canopy_cover_tmp < 40 then '3'
+        when canopy_cover_tmp < 70 then '4'
+        else '5'
+    end
+;
+
+alter table _plot
+drop column canopy_cover_tmp;

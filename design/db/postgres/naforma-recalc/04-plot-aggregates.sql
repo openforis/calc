@@ -31,7 +31,10 @@ SELECT
     coalesce(grazing, '-1') as grazing,
     coalesce(catchment, '-1') as catchment,
     coalesce(shrubs_coverage, '-1') as shrubs_coverage,      
-    s.expf * count(*) as est_area
+    coalesce(canopy_cover_class, '-1') as canopy_cover_class,
+    s.expf * count(*) as est_area,
+    count(*) as cnt,
+    count(*) as agg_cnt
 FROM
     naforma1._plot p
 INNER JOIN
@@ -55,6 +58,7 @@ GROUP BY
     grazing,
     catchment,
     shrubs_coverage,
+    canopy_cover_class,
     s.expf;
     
     
@@ -73,8 +77,11 @@ SELECT
     coalesce(erosion, '-1') as erosion,
     coalesce(grazing, '-1') as grazing,
     coalesce(catchment, '-1') as catchment,
-    coalesce(shrubs_coverage, '-1') as shrubs_coverage,      
-    s.expf * count(*) as est_area
+    coalesce(shrubs_coverage, '-1') as shrubs_coverage,     
+    coalesce(canopy_cover_class, '-1') as canopy_cover_class, 
+    s.expf * count(*) as est_area,
+    count(*) as cnt,
+    count(*) as agg_cnt
 FROM
     naforma1._plot p
 INNER JOIN
@@ -98,6 +105,7 @@ GROUP BY
     grazing,
     catchment,
     shrubs_coverage,
+    canopy_cover_class,
     s.expf;    
     
 --) as a
@@ -129,8 +137,11 @@ SELECT
     coalesce(erosion, '-1') as erosion,
     coalesce(grazing, '-1') as grazing,
     coalesce(catchment, '-1') as catchment,
-    coalesce(shrubs_coverage, '-1') as shrubs_coverage,      
-    s.expf * count(*) as est_area
+    coalesce(shrubs_coverage, '-1') as shrubs_coverage, 
+    coalesce(canopy_cover_class, '-1') as canopy_cover_class,     
+    s.expf * count(*) as est_area,
+    count(*) as cnt,
+    count(*) as agg_cnt
 FROM
     naforma1._plot p
 INNER JOIN
@@ -157,6 +168,7 @@ GROUP BY
     grazing,
     catchment,
     shrubs_coverage,
+    canopy_cover_class,
     s.expf
     
 UNION    
@@ -175,7 +187,10 @@ SELECT
     '-1' as grazing,
     '-1' as catchment,
     '-1' as shrubs_coverage,          
-    a.zone_land_area * (s.phase1_cnt / a.phase1_cnt::double precision) as est_area
+    '-1' as canopy_cover_class,
+    a.zone_land_area * (s.phase1_cnt / a.phase1_cnt::double precision) as est_area,
+    0 as cnt,
+    100 as agg_cnt
 FROM
     naforma1._zone_stratum s
 join
@@ -207,7 +222,10 @@ SELECT
     grazing,
     catchment,
     shrubs_coverage,      
-    sum(est_area) as est_area
+    canopy_cover_class,
+    sum(est_area) as est_area,
+    sum(cnt) as cnt,
+    sum(agg_cnt) as agg_cnt
 FROM
     naforma1._zone_stratum_plot_agg p
 INNER JOIN
@@ -230,7 +248,8 @@ GROUP BY
     erosion,
     grazing,
     catchment,
-    shrubs_coverage
+    shrubs_coverage,
+    canopy_cover_class
     
 union
 
@@ -247,7 +266,10 @@ select
     f.grazing,
     f.catchment,
     f.shrubs_coverage,
-    ( s.phase1_cnt / c.phase1_cnt::double precision ) * f.est_area as est_area
+    f.canopy_cover_class,
+    ( s.phase1_cnt / c.phase1_cnt::double precision ) * f.est_area as est_area,
+    0 as cnt,
+    100 as agg_cnt
 from
     naforma1._country_stratum_plot_agg f
 join
@@ -287,8 +309,11 @@ SELECT
     coalesce(erosion, '-1') as erosion,
     coalesce(grazing, '-1') as grazing,
     coalesce(catchment, '-1') as catchment,
-    coalesce(shrubs_coverage, '-1') as shrubs_coverage,      
-    s.expf * count(*) as est_area
+    coalesce(shrubs_coverage, '-1') as shrubs_coverage,
+    coalesce(canopy_cover_class, '-1') as canopy_cover_class,      
+    s.expf * count(*) as est_area,
+    count(*) as cnt,
+    count(*) as agg_cnt
 FROM
     naforma1._plot p
 INNER JOIN
@@ -316,6 +341,7 @@ GROUP BY
     grazing,
     catchment,
     shrubs_coverage,
+    canopy_cover_class,
     s.expf
     
 UNION    
@@ -335,7 +361,10 @@ SELECT
     '-1' as grazing,
     '-1' as catchment,
     '-1' as shrubs_coverage,          
-    a.region_land_area * (s.phase1_cnt / a.phase1_cnt::double precision) as est_area
+    '-1' as canopy_cover_class,
+    a.region_land_area * (s.phase1_cnt / a.phase1_cnt::double precision) as est_area,
+    0 as cnt,
+    100 as agg_cnt
 FROM
     naforma1._region_stratum s
 join
@@ -369,7 +398,10 @@ SELECT
     grazing,
     catchment,
     shrubs_coverage,      
-    sum(est_area) as est_area
+    canopy_cover_class,
+    sum(est_area) as est_area,
+    sum(cnt) as cnt,
+    sum(agg_cnt) as agg_cnt
 FROM
     naforma1._region_stratum_plot_agg p
 INNER JOIN
@@ -393,7 +425,8 @@ GROUP BY
     erosion,
     grazing,
     catchment,
-    shrubs_coverage
+    shrubs_coverage,
+    canopy_cover_class
     
 union
 
@@ -411,7 +444,10 @@ select
     f.grazing,
     f.catchment,
     f.shrubs_coverage,
-    ( s.phase1_cnt / c.phase1_cnt::double precision ) * f.est_area as est_area
+    f.canopy_cover_class,
+    ( s.phase1_cnt / c.phase1_cnt::double precision ) * f.est_area as est_area,
+    0 as cnt,
+    100 as agg_cnt
 from
     naforma1._country_stratum_plot_agg f
 join
@@ -455,7 +491,10 @@ SELECT
     coalesce(grazing, '-1') as grazing,
     coalesce(catchment, '-1') as catchment,
     coalesce(shrubs_coverage, '-1') as shrubs_coverage,      
-    s.expf * count(*) as est_area
+    coalesce(canopy_cover_class, '-1') as canopy_cover_class,
+    s.expf * count(*) as est_area,
+    count(*) as cnt,
+    count(*) as agg_cnt
 FROM
     naforma1._plot p
 INNER JOIN
@@ -484,6 +523,7 @@ GROUP BY
     grazing,
     catchment,
     shrubs_coverage,
+    canopy_cover_class,
     s.expf
     
 UNION    
@@ -504,7 +544,10 @@ SELECT
     '-1' as grazing,
     '-1' as catchment,
     '-1' as shrubs_coverage,          
-    a.district_land_area * (s.phase1_cnt / a.phase1_cnt::double precision) as est_area
+    '-1' as canopy_cover_class,
+    a.district_land_area * (s.phase1_cnt / a.phase1_cnt::double precision) as est_area,
+    0 as cnt,
+    100 as agg_cnt
 FROM
     naforma1._district_stratum s
 join
@@ -544,7 +587,10 @@ SELECT
     grazing,
     catchment,
     shrubs_coverage,      
-    sum(est_area) as est_area
+    canopy_cover_class,
+    sum(est_area) as est_area,
+    sum(cnt) as cnt,
+    sum(agg_cnt) as agg_cnt
 FROM
     naforma1._district_stratum_plot_agg p
 INNER JOIN
@@ -569,7 +615,8 @@ GROUP BY
     erosion,
     grazing,
     catchment,
-    shrubs_coverage
+    shrubs_coverage,
+    canopy_cover_class
     
 union
 
@@ -588,7 +635,10 @@ select
     f.grazing,
     f.catchment,
     f.shrubs_coverage,
-    ( s.phase1_cnt / c.phase1_cnt::double precision ) * f.est_area as est_area
+    f.canopy_cover_class,
+    ( s.phase1_cnt / c.phase1_cnt::double precision ) * f.est_area as est_area,
+    0 as cnt,
+    100 as agg_cnt
  
 from
     naforma1._country_stratum_plot_agg f
