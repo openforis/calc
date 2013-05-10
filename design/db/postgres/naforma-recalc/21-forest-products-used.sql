@@ -1,4 +1,6 @@
-SET search_path TO naforma1-- Forest product usage matrix by AOI
+SET search_path TO naforma1;
+
+-- Forest product usage matrix by AOI
 
 DROP TABLE IF EXISTS _product_used CASCADE;
 
@@ -141,8 +143,6 @@ COMMENT ON TABLE _product_used_by_zone IS 'No. and % of households within at lea
    
 
 
-
-
 DROP TABLE IF EXISTS _product_used_by_country CASCADE;
 
 CREATE TABLE _product_used_by_country AS
@@ -166,3 +166,22 @@ COMMENT ON TABLE _product_used_by_country IS 'Total no. and % of households with
    
 
 ;
+
+
+DROP TABLE IF EXISTS _product_used_by_dist_to_forest CASCADE;
+
+CREATE TABLE _product_used_by_dist_to_forest AS;
+
+SELECT 
+    p.category_code,
+    p.category,
+    sum(p.household_cnt) as household_cnt
+FROM
+    _product_used_by_aoi p
+ON
+    p.country_id = cnt.country_id
+GROUP BY
+    p.category_code,
+    p.category,
+    cnt.household_cnt 
+    ;
