@@ -419,6 +419,22 @@ dbSendQuery(
     "create table _tree as
       select
         t.*,
+        p.stratum,
+        p.country_id,
+        p.zone_id,
+        p.region_id,
+        p.district_id,
+        p.vegetation_type,
+        p.land_use,
+        p.ownership_type,
+        p.undergrowth_type,
+        p.soil_structure,
+        p.soil_texture,    
+        p.erosion,
+        p.grazing,
+        p.catchment,
+        p.shrubs_coverage,
+        p.canopy_cover_class,
         r.est_height,
         r.est_height_prediction_type,
         r.inclusion_area,
@@ -426,11 +442,18 @@ dbSendQuery(
         r.aboveground_biomass,
         r.belowground_biomass,
         r.carbon
-      from
-        tree t
-      join
-        _tree_results r 
-      on t.tree_id = r.tree_id" 
+        from
+          tree t
+        join
+          _plot p 
+        on 
+          p.plot_id = t.plot_id  
+        join
+          _tree_results r 
+        on 
+          t.tree_id = r.tree_id
+      
+    " 
 );
 dbRemoveTable(con, "_tree_results");
 
