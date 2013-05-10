@@ -70,3 +70,84 @@ WHERE a.aoi_id = zone_id;
 SELECT COUNT(*)
 FROM _household
 WHERE country_id IS NULL;
+
+-- Household counts per AOI
+
+DROP TABLE IF EXISTS _households_per_district CASCADE;
+
+CREATE TABLE _households_per_district AS 
+SELECT 
+    h.district_id,
+    aoi.aoi_label AS district_name,
+    count(*) as household_cnt
+FROM
+    _household h
+INNER JOIN
+    calc.aoi ON aoi.aoi_id = h.district_id
+WHERE
+    h.distance_to_forest >= 10
+GROUP BY
+    h.district_id,
+    aoi.aoi_label
+;
+COMMENT ON TABLE _households_per_district IS 'No. of households interviewed within at least 10km of forest, by district';
+
+DROP TABLE IF EXISTS _households_per_region CASCADE;
+
+CREATE TABLE _households_per_region AS 
+SELECT 
+    h.region_id,
+    aoi.aoi_label AS region_name,
+    count(*) as household_cnt
+FROM
+    _household h
+INNER JOIN
+    calc.aoi ON aoi.aoi_id = h.region_id
+WHERE
+    h.distance_to_forest >= 10
+GROUP BY
+    h.region_id,
+    aoi.aoi_label
+;
+COMMENT ON TABLE _households_per_region IS 'No. of households interviewed within at least 10km of forest, by region';
+
+
+DROP TABLE IF EXISTS _households_per_zone CASCADE;
+
+CREATE TABLE _households_per_zone AS 
+SELECT 
+    h.zone_id,
+    aoi.aoi_label AS zone_name,
+    count(*) as household_cnt
+FROM
+    _household h
+INNER JOIN
+    calc.aoi ON aoi.aoi_id = h.zone_id
+WHERE
+    h.distance_to_forest >= 10
+GROUP BY
+    h.zone_id,
+    aoi.aoi_label
+;
+COMMENT ON TABLE _households_per_zone IS 'No. of households interviewed within at least 10km of forest, by zone';
+
+
+DROP TABLE IF EXISTS _households_per_country CASCADE;
+
+CREATE TABLE _households_per_country AS 
+SELECT 
+    h.country_id,
+    aoi.aoi_label AS country_name,
+    count(*) as household_cnt
+FROM
+    _household h
+INNER JOIN
+    calc.aoi ON aoi.aoi_id = h.country_id
+WHERE
+    h.distance_to_forest >= 10
+GROUP BY
+    h.country_id,
+    aoi.aoi_label
+;
+COMMENT ON TABLE _households_per_country IS 'No. of households interviewed within at least 10km of forest, by region';
+
