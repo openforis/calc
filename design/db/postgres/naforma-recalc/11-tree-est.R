@@ -441,7 +441,8 @@ dbSendQuery(
         r.volume,
         r.aboveground_biomass,
         r.belowground_biomass,
-        r.carbon
+        r.carbon,
+        1 as est_cnt
         from
           tree t
         join

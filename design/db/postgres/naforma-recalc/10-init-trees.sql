@@ -14,17 +14,16 @@ INSERT INTO _growing_stock_tree_code (id, code, label) VALUES (2, 1, 'Growing St
 
 
 alter table tree 
-add column dbh_class integer;
+add column dbh_class varchar;
 
 update tree
 set dbh_class = case 
-                    when dbh < 5 then 1
-                    when dbh < 10 then 2
-                    when dbh < 20 then 3
-                    else 4
-                end;    
-
-
+                    when dbh < 5 then '1'
+                    when dbh < 10 then '2'
+                    when dbh < 20 then '3'
+                    else '4'
+                end;  
+                  
 -- 1 baobab
 -- 99 others
 alter table tree 
@@ -57,3 +56,5 @@ set growing_stock =
         when species_group != 1 and health != '7' then 1
         else 0
     end;            
+    
+    
