@@ -1,10 +1,10 @@
-SET search_path TO naforma1, public;
+SET search_path TO naforma1_se, public;
 
 ------------------------------------------------------------
---- FIELD PLOTS
+--- HOUSEHOLDS
 ------------------------------------------------------------
 
--- Copy plot table
+-- Copy table
 DROP TABLE IF EXISTS _household;
 
 CREATE TABLE _household AS 
@@ -14,8 +14,13 @@ FROM household;
 alter table _household
 drop column district;
 
+alter table _household
+add column cnt integer;
 
--- Convert theoretical plot locations to PostGIS points in WGS84 
+update _household
+set cnt = 1;
+
+-- Convert household locations to PostGIS points in WGS84 
 ALTER TABLE _household
 ADD COLUMN location Geometry(Point,4326);
 
@@ -24,7 +29,7 @@ SET location = ST_Transform(
         ST_SetSRID(ST_Point(location_x, location_y), substring(location_srs from '[0-9]+$')::integer)
         , 4326);
 
--- Assign district to field plots
+-- Assign district to households
 ALTER TABLE _household
 ADD COLUMN district_id INTEGER;
 
@@ -34,12 +39,12 @@ FROM calc.aoi a
 WHERE ST_Contains(a.aoi_shape, location)
 AND a.aoi_hierarchy_level_id = 3;
 
--- Report unmatched plots
+-- Report unmatched households
 SELECT count(*)
 FROM _household 
 WHERE district_id IS NULL;
 
--- Assign region to field plots
+-- Assign region to households
 ALTER TABLE _household
 ADD COLUMN region_id INTEGER;
 
@@ -48,7 +53,7 @@ SET region_id = a.aoi_parent_id
 FROM calc.aoi a 
 WHERE a.aoi_id = district_id;
 
--- Assign zone to field plots
+-- Assign zone to households
 ALTER TABLE _household
 ADD COLUMN zone_id INTEGER;
 
@@ -57,7 +62,7 @@ SET zone_id = a.aoi_parent_id
 FROM calc.aoi a 
 WHERE a.aoi_id = region_id;
 
--- Assign country to field plots
+-- Assign country to households
 ALTER TABLE _household
 ADD COLUMN country_id INTEGER;
 
