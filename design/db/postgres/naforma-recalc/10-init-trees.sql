@@ -43,12 +43,17 @@ add column commercial_tree integer;
 update tree
 set commercial_tree =
     case
-        when species_group != 1 and dbh_class > 2 and health != '7' then 1
+        --when
+            --species in ('DAL/MEL','DSP/MES','CMB/SCH','MLT/STU','MIL/EXC','BEI/KWE','BRC/HUI','SWA/MAD','KHA/ANT','ALK/STU','BRE/SAL','AFZ/QUA','CEP/USA','FAG/ANG','HAG/ABY','BRH/TAM','JUN/PRO','MRK','OCO/USA')
+            --or species like 'NEW%' or species like 'ENN%' or species like 'RHI%'or species like 'PTR%' or species like 'OLE%'
+            --then 1
+        when species_group != 1 and dbh_class = '4' and health != '7' then 1
         else 0
     end;        
     
 alter table tree 
 add column growing_stock integer;
+
 
 update tree
 set growing_stock =
