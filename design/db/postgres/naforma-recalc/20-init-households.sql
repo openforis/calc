@@ -156,3 +156,8 @@ GROUP BY
 ;
 COMMENT ON TABLE _households_per_country IS 'No. of households interviewed within at least 10km of forest, by region';
 
+alter table _household
+add column distance_to_forest_km numeric;
+
+update _household
+set distance_to_forest_km = distance_to_forest / 1000;
