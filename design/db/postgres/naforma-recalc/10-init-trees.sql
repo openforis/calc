@@ -11,20 +11,23 @@ CREATE TABLE _growing_stock_tree_code (id INTEGER, code INTEGER, label CHARACTER
 INSERT INTO _growing_stock_tree_code (id, code, label) VALUES (1, 0, 'Not Growing Stock');
 INSERT INTO _growing_stock_tree_code (id, code, label) VALUES (2, 1, 'Growing Stock');
 
+
 DROP TABLE if exists _dbh_class;
-CREATE TABLE _dbh_class ( code CHARACTER VARYING(254), label CHARACTER VARYING(254) );
+CREATE TABLE _dbh_class (code CHARACTER VARYING(254), label CHARACTER VARYING(254), parent_code CHARACTER VARYING(254), parent_label CHARACTER VARYING(254));
 
-INSERT INTO _dbh_class (code, label) VALUES ( '1', '0cm - 4.9cm');
-INSERT INTO _dbh_class ( code, label) VALUES ( '2', '5cm - 9.9cm');
-INSERT INTO _dbh_class ( code, label) VALUES ( '3', '10cm - 14.9cm');
-INSERT INTO _dbh_class ( code, label) VALUES ( '4', '15cm - 19.9cm');
-INSERT INTO _dbh_class ( code, label) VALUES ( '5', '20cm - 24.9cm');
-INSERT INTO _dbh_class ( code, label) VALUES ( '6', '25cm - 29.9cm');
-INSERT INTO _dbh_class ( code, label) VALUES ( '7', '30cm - 34.9cm');
-INSERT INTO _dbh_class ( code, label) VALUES ( '8', '35cm - 39.9cm');
-INSERT INTO _dbh_class ( code, label) VALUES ( '9', '>= 40cm');
+INSERT INTO _dbh_class (code, label, parent_code, parent_label) VALUES ('1', '0cm - 4.9cm', '1', '0cm - 9.9cm');
+INSERT INTO _dbh_class (code, label, parent_code, parent_label) VALUES ('2', '5cm - 9.9cm', '1', '0cm - 9.9cm');
+INSERT INTO _dbh_class (code, label, parent_code, parent_label) VALUES ('3', '10cm - 14.9cm', '2', '10cm - 19.9cm');
+INSERT INTO _dbh_class (code, label, parent_code, parent_label) VALUES ('4', '15cm - 19.9cm', '2', '10cm - 19.9cm');
+INSERT INTO _dbh_class (code, label, parent_code, parent_label) VALUES ('5', '20cm - 24.9cm', '3', '20cm - 29.9cm');
+INSERT INTO _dbh_class (code, label, parent_code, parent_label) VALUES ('6', '25cm - 29.9cm', '3', '20cm - 29.9cm');
+INSERT INTO _dbh_class (code, label, parent_code, parent_label) VALUES ('7', '30cm - 34.9cm', '4', '30cm - 39.9cm');
+INSERT INTO _dbh_class (code, label, parent_code, parent_label) VALUES ('8', '35cm - 39.9cm', '4', '30cm - 39.9cm');
+INSERT INTO _dbh_class (code, label, parent_code, parent_label) VALUES ('9', '>= 40cm', '5', '>= 40cm');
+INSERT INTO _dbh_class (code, label, parent_code, parent_label) VALUES ('-1', 'No Data', '-1', 'No Data');
 
-INSERT INTO _dbh_class ( code, label) VALUES ( '-1', 'No Data');
+
+
 
 --
 DROP TABLE if exists _commercial_tree_class;
