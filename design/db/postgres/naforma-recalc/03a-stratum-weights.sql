@@ -88,11 +88,37 @@ group by
 ;
 
 
+drop table if exists _zone_stratum;
+
+create table _zone_stratum
+as
+select
+        a.aoi_id as zone_id,
+        s.stratum,        
+        count(s.*) as phase1_cnt
+from
+        calc.aoi a
+join
+        _sampling_design s
+        on a.aoi_id = s.zone_id
+group by
+        a.aoi_id,
+        s.stratum
+;
+
+
 alter table _zone_stratum
 add column stratum_weight double precision;
 
+with cnt as (
+    select zone_id, sum(phase1_cnt) as total_cnt
+    from _zone_stratum
+    group by zone_id
+)
 update _zone_stratum
-set stratum_weight = phase1_cnt / (select sum(phase1_cnt) from _zone_stratum);
+set stratum_weight = phase1_cnt / cnt.total_cnt
+from cnt
+where _zone_stratum.zone_id = cnt.zone_id;
 
 alter table _zone_stratum
 add column stratum_area double precision;
@@ -149,8 +175,15 @@ group by
 alter table _region_stratum
 add column stratum_weight double precision;
 
+with cnt as (
+    select region_id, sum(phase1_cnt) as total_cnt
+    from _region_stratum
+    group by region_id
+)
 update _region_stratum
-set stratum_weight = phase1_cnt / (select sum(phase1_cnt) from _region_stratum);
+set stratum_weight = phase1_cnt / cnt.total_cnt
+from cnt
+where _region_stratum.region_id = cnt.region_id;
 
 alter table _region_stratum
 add column stratum_area double precision;
@@ -208,8 +241,16 @@ group by
 alter table _district_stratum
 add column stratum_weight double precision;
 
+with cnt as (
+    select district_id, sum(phase1_cnt) as total_cnt
+    from _district_stratum
+    group by district_id
+)
 update _district_stratum
-set stratum_weight = phase1_cnt / (select sum(phase1_cnt) from _district_stratum);
+set stratum_weight = phase1_cnt / cnt.total_cnt
+from cnt
+where _district_stratum.district_id = cnt.district_id;
+
 
 alter table _district_stratum
 add column stratum_area double precision;
