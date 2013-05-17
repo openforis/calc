@@ -13,6 +13,9 @@ import org.openforis.commons.collection.CollectionUtils;
  * @author G. Miceli
  * @author M. Togna
  */
+// TODO rename to Workspace
+// TODO rename generated POJOs to *Base
+// TODO extend SurveyBase
 public class SurveyMetadata {
 
 	private Survey survey;
@@ -20,7 +23,8 @@ public class SurveyMetadata {
 	private Map<String, ObservationUnitMetadata> obsUnitMetadataByUnitName;
 	private List<AoiHierarchyMetadata> aoiHierarchyMetadata;
 	private List<TaxonomicChecklistMetadata> taxonomicChecklists;
-
+	private List<Cube> cubes;
+	
 	public SurveyMetadata(Survey survey, Collection<ObservationUnitMetadata> ous, List<AoiHierarchyMetadata> aoiHierarchyMetadata, List<TaxonomicChecklistMetadata> taxonomicChecklists) {
 		this.survey = survey;
 		this.aoiHierarchyMetadata = aoiHierarchyMetadata;

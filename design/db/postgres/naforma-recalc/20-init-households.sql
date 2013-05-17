@@ -161,3 +161,12 @@ add column distance_to_forest_km numeric;
 
 update _household
 set distance_to_forest_km = distance_to_forest / 1000;
+
+alter table _household
+add column distance_to_forest_km numeric;
+
+alter table _household
+add column distance_to_forest_class integer;
+
+update _household
+set distance_to_forest_class = distance_to_forest_km::integer;
