@@ -237,3 +237,54 @@ set canopy_cover_class =
 
 alter table _plot
 drop column canopy_cover_tmp;
+
+-- Add protected areas
+drop table if exists protection_status_code;
+
+create table protection_status_code as
+select
+    row_number() over (order by protection_status_label_en) as protection_status_id, 
+    protection_status_label_en
+from (    
+    select 'Unprotected Area' as protection_status_label_en
+    union
+    select distinct    
+        desig_eng as protection_status_label_en
+    from     
+        calc.naforma_protarea) ps;
+
+insert into protection_status_code values ('-1', 'N/A');
+    
+alter table _plot
+add column protection_status varchar(255);
+
+with pa as (
+select
+    p.plot_id, pa.desig_eng
+from 
+    naforma1._plot p
+inner join
+    calc.naforma_protarea pa
+on 
+    ST_Contains(pa.geom, p.location)
+)
+update _plot
+set protection_status = pa.desig_eng
+from pa
+where _plot.plot_id = pa.plot_id;
+
+update _plot
+set protection_status = 'Unprotected Area'
+where protection_status is null;
+
+alter table _plot
+add column protection_status_id integer;
+
+update _plot
+set protection_status_id = ps.protection_status_id
+from protection_status_code ps
+where _plot.protection_status = ps.protection_status_label_en;
+
+update _plot
+set protection_status_id = -1
+where _plot.protection_status_id is null;

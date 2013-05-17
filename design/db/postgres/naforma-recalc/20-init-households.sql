@@ -170,3 +170,64 @@ add column distance_to_forest_class integer;
 
 update _household
 set distance_to_forest_class = distance_to_forest_km::integer;
+
+
+-- Clean household heads
+DROP TABLE IF EXISTS _head;
+
+create table _head 
+as 
+select * from head;
+
+-- Set default genders if age specified or interviewed by missing
+update _head
+    set gender='0',
+        gender_code_id = (select gender_code_id from gender_code where gender='0')
+where 
+    gender='NA' and position='head' and
+    (interviewed='TRUE' or education_code_id != -1 or age is not null);
+
+update _head
+    set gender='1',
+        gender_code_id = (select gender_code_id from gender_code where gender='1')
+where 
+    gender='NA' and position='spouse' and
+    (interviewed='TRUE' or education_code_id != -1 or age is not null);
+
+
+--alter table _household
+--drop column head_gender;
+--
+--alter table _household
+--drop column head_gender_code_id;
+
+-- Add household head
+alter table _household
+add column head_gender varchar(255);
+
+alter table _household
+add column head_gender_code_id integer;
+
+update _household
+set 
+    head_gender = head.gender,
+    head_gender_code_id = head.gender_code_id
+from 
+    _head head
+where
+    _household.household_id = head.household_id AND head.position='head';
+
+
+-- Default to spouse's gender when head is not specified
+update _household
+set 
+    head_gender = head.gender, 
+    head_gender_code_id = head.gender_code_id
+FROM
+    _head head
+where
+    head.household_id = _household.household_id 
+and 
+    head.position='spouse'
+and 
+    _household.head_gender='NA';    

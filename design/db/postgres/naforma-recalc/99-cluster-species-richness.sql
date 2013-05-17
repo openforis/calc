@@ -96,7 +96,6 @@ GROUP BY
 drop table if exists _cluster_max_plot_distinct_species_code_cnt;
 
 create table _cluster_max_plot_distinct_species_code_cnt as
-
 SELECT 
 --    t.species,
     cluster,
@@ -109,3 +108,73 @@ inner join calc.cluster_location cl
 GROUP BY
     cluster, 
     cl.center_location;
+
+
+drop table if exists _cluster_tree_cnt;
+
+create table _cluster_tree_cnt as
+SELECT
+    cluster_id,
+    count(*) as tree_cnt
+FROM
+    naforma1._plot p
+INNER JOIN
+    naforma1._tree t
+ON
+     p.plot_id = t.plot_id
+group by
+    p.cluster_id;
+
+drop table if exists _cluster_distinct_species_code;
+
+create table _cluster_distinct_species_code as
+SELECT DISTINCT
+    c.id as cluster,
+    c.cluster_id as cluster_id,
+    t.species
+FROM
+    naforma1._tree t
+INNER JOIN
+    naforma1._plot p
+ON
+    t.plot_id = p.plot_id
+INNER JOIN
+    naforma1.cluster c
+ON
+    p.cluster_id = c.cluster_id
+WHERE
+    c.measurement = 'P';
+
+drop table if exists _cluster_distinct_species_code_cnt;
+
+create table _cluster_distinct_species_code_cnt as
+SELECT 
+--    t.species,
+    cluster,
+    cluster_id,
+    count(*) as cnt
+FROM
+    _cluster_distinct_species_code
+GROUP BY
+    cluster,
+    cluster_id;    
+    
+drop table if exists _cluster_species_richness;
+
+create table _cluster_species_richness as
+SELECT 
+    c.cluster_id,
+    c.cluster,
+    cl.center_location,
+    c.cnt as distinct_species,
+    tc.tree_cnt as tree_cnt,
+    c.cnt::float / tc.tree_cnt::float as species_per_tree
+FROM
+    _cluster_distinct_species_code_cnt c
+inner join 
+    _cluster_tree_cnt tc
+on
+    c.cluster_id = tc.cluster_id        
+inner join calc.cluster_location cl
+    on c.cluster = cl.code;
+    

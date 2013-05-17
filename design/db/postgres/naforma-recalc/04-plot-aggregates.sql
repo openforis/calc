@@ -32,6 +32,7 @@ SELECT
     coalesce(catchment, '-1') as catchment,
     coalesce(shrubs_coverage, '-1') as shrubs_coverage,      
     coalesce(canopy_cover_class, '-1') as canopy_cover_class,
+    protection_status_id,
     s.expf * count(*) as est_area,
     count(*) as cnt,
     count(*) as agg_cnt
@@ -59,6 +60,7 @@ GROUP BY
     catchment,
     shrubs_coverage,
     canopy_cover_class,
+    protection_status_id,
     s.expf;
     
     
@@ -79,6 +81,7 @@ SELECT
     coalesce(catchment, '-1') as catchment,
     coalesce(shrubs_coverage, '-1') as shrubs_coverage,     
     coalesce(canopy_cover_class, '-1') as canopy_cover_class, 
+    protection_status_id,
     s.expf * count(*) as est_area,
     count(*) as cnt,
     count(*) as agg_cnt
@@ -106,6 +109,7 @@ GROUP BY
     catchment,
     shrubs_coverage,
     canopy_cover_class,
+    protection_status_id,
     s.expf;    
     
 --) as a
@@ -139,6 +143,7 @@ SELECT
     coalesce(catchment, '-1') as catchment,
     coalesce(shrubs_coverage, '-1') as shrubs_coverage, 
     coalesce(canopy_cover_class, '-1') as canopy_cover_class,     
+    protection_status_id,
     s.expf * count(*) as est_area,
     count(*) as cnt,
     count(*) as agg_cnt
@@ -169,6 +174,7 @@ GROUP BY
     catchment,
     shrubs_coverage,
     canopy_cover_class,
+    protection_status_id,
     s.expf
     
 UNION    
@@ -188,6 +194,7 @@ SELECT
     '-1' as catchment,
     '-1' as shrubs_coverage,          
     '-1' as canopy_cover_class,
+    -1 as protection_status_id,
     a.zone_land_area * (s.phase1_cnt / a.phase1_cnt::double precision) as est_area,
     0 as cnt,
     100 as agg_cnt
@@ -223,6 +230,7 @@ SELECT
     catchment,
     shrubs_coverage,      
     canopy_cover_class,
+    protection_status_id,
     sum(est_area) as est_area,
     sum(cnt) as cnt,
     sum(agg_cnt) as agg_cnt
@@ -249,7 +257,8 @@ GROUP BY
     grazing,
     catchment,
     shrubs_coverage,
-    canopy_cover_class
+    canopy_cover_class,
+    protection_status_id
     
 union
 
@@ -267,6 +276,7 @@ select
     f.catchment,
     f.shrubs_coverage,
     f.canopy_cover_class,
+    f.protection_status_id,
     ( s.phase1_cnt / c.phase1_cnt::double precision ) * f.est_area as est_area,
     0 as cnt,
     100 as agg_cnt
@@ -311,6 +321,7 @@ SELECT
     coalesce(catchment, '-1') as catchment,
     coalesce(shrubs_coverage, '-1') as shrubs_coverage,
     coalesce(canopy_cover_class, '-1') as canopy_cover_class,      
+    protection_status_id,
     s.expf * count(*) as est_area,
     count(*) as cnt,
     count(*) as agg_cnt
@@ -342,6 +353,7 @@ GROUP BY
     catchment,
     shrubs_coverage,
     canopy_cover_class,
+    protection_status_id,
     s.expf
     
 UNION    
@@ -362,6 +374,7 @@ SELECT
     '-1' as catchment,
     '-1' as shrubs_coverage,          
     '-1' as canopy_cover_class,
+    -1 as protection_status_id,
     a.region_land_area * (s.phase1_cnt / a.phase1_cnt::double precision) as est_area,
     0 as cnt,
     100 as agg_cnt
@@ -399,7 +412,8 @@ SELECT
     catchment,
     shrubs_coverage,      
     canopy_cover_class,
-    sum(est_area) as est_area,
+     protection_status_id,
+   sum(est_area) as est_area,
     sum(cnt) as cnt,
     sum(agg_cnt) as agg_cnt
 FROM
@@ -426,7 +440,8 @@ GROUP BY
     grazing,
     catchment,
     shrubs_coverage,
-    canopy_cover_class
+    canopy_cover_class,
+    protection_status_id
     
 union
 
@@ -445,6 +460,7 @@ select
     f.catchment,
     f.shrubs_coverage,
     f.canopy_cover_class,
+    f.protection_status_id,
     ( s.phase1_cnt / c.phase1_cnt::double precision ) * f.est_area as est_area,
     0 as cnt,
     100 as agg_cnt
@@ -492,6 +508,7 @@ SELECT
     coalesce(catchment, '-1') as catchment,
     coalesce(shrubs_coverage, '-1') as shrubs_coverage,      
     coalesce(canopy_cover_class, '-1') as canopy_cover_class,
+    protection_status_id,
     s.expf * count(*) as est_area,
     count(*) as cnt,
     count(*) as agg_cnt
@@ -524,6 +541,7 @@ GROUP BY
     catchment,
     shrubs_coverage,
     canopy_cover_class,
+    protection_status_id,
     s.expf
     
 UNION    
@@ -545,6 +563,7 @@ SELECT
     '-1' as catchment,
     '-1' as shrubs_coverage,          
     '-1' as canopy_cover_class,
+    -1 as protection_status_id,
     a.district_land_area * (s.phase1_cnt / a.phase1_cnt::double precision) as est_area,
     0 as cnt,
     100 as agg_cnt
@@ -588,6 +607,7 @@ SELECT
     catchment,
     shrubs_coverage,      
     canopy_cover_class,
+    protection_status_id,
     sum(est_area) as est_area,
     sum(cnt) as cnt,
     sum(agg_cnt) as agg_cnt
@@ -616,7 +636,8 @@ GROUP BY
     grazing,
     catchment,
     shrubs_coverage,
-    canopy_cover_class
+    canopy_cover_class,
+    protection_status_id
     
 union
 
@@ -636,6 +657,7 @@ select
     f.catchment,
     f.shrubs_coverage,
     f.canopy_cover_class,
+    f.protection_status_id,
     ( s.phase1_cnt / c.phase1_cnt::double precision ) * f.est_area as est_area,
     0 as cnt,
     100 as agg_cnt
