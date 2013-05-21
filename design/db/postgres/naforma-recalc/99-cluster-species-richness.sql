@@ -178,3 +178,4 @@ on
 inner join calc.cluster_location cl
     on c.cluster = cl.code;
     
+    select * from _cluster_species_richness where species_per_tree =1 and tree_cnt>7;
