@@ -36,27 +36,42 @@ where
 and 
         cnt.stratum = _country_stratum.stratum;
 
+drop table if exists _tmp_cluster_x_class;
+
+create table _tmp_cluster_x_class
+as
+select distinct
+    p.cluster_id,
+    p.stratum,
+    v.land_use as land_use
+from
+    _plot p, 
+    land_use_code v
+;
 
 // No. plots per class per cluster (nplots_k > 0)
 drop table if exists _tmp_plots_per_class_per_cluster;
 
 create table _tmp_plots_per_class_per_cluster as
 select
-    p.cluster_id,
-    p.stratum,
-    p.land_use,
-    count(*)
+    c.cluster_id,
+    c.stratum,
+    c.land_use,
+    count(p.plot_id)    
 from
+    _tmp_cluster_x_class c
+left outer join    
     _plot p
-where
-    p.accessibility = '0' and 
-    p.measurement = 'P' and 
-    p.subplot = 'A' and
-    p.land_use is not null
+    on c.cluster_id = p.cluster_id
+    and p.accessibility = '0' 
+    and p.measurement = 'P' 
+    and p.subplot = 'A' 
+    and p.land_use = c.land_use
+    -- is not null    
 group by
-    p.cluster_id,
-    p.stratum,
-    p.land_use;
+    c.cluster_id,
+    c.stratum,
+    c.land_use;
     
 // No. plots per class per stratum (plots_k > 0)
 drop table if exists _tmp_plots_per_class_per_stratum;
@@ -156,10 +171,9 @@ drop table if exists _tmp_stratum_x_class;
 
 create table _tmp_stratum_x_class as
 select distinct
-    s.stratum,
-    v.land_use as land_use
-    from _country_stratum s,
-        land_use_code v;
+    stratum,
+    land_use as land_use
+    from naforma1._tmp_cluster_x_class s;
 
 drop table if exists _tmp_area_var_per_class_per_stratum;
 
@@ -249,7 +263,7 @@ drop table if exists _tmp_area_rel_err_per_class;
 create table _tmp_area_rel_err_per_class as 
 select
     e.land_use,
-    e.aerr / sum(area) as rerr
+    e.aerr / sum(area) * 100 as rerr
 from    
     _tmp_area_abs_err_per_class e
 inner join
