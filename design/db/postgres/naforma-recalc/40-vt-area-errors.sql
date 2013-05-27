@@ -48,6 +48,7 @@ select distinct
 from
     _plot p, 
     vegetation_type_code v
+where p.stratum is not null    
 ;
 
 // No. plots per class per cluster (nplots_k > 0)
@@ -196,7 +197,8 @@ group by
        
 // Coefficient of variation per stratum per class
 // strata$erprc <- (strata$ncluster2 * strata$residual_variance_k) / (strata$nplot2oc ^ 2)
-// cv is null when variance is null (i.e. only one cluster)
+// cv is 0 when variance is 0
+// cv is null when variance is null (i.e. only one cluster) or area is null (i.e. too few plots to calculate)
 drop table if exists _tmp_area_cv_per_class_per_stratum;
 
 create table _tmp_area_cv_per_class_per_stratum as 
