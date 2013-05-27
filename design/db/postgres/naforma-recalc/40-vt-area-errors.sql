@@ -38,6 +38,7 @@ and
 
 drop table if exists _tmp_cluster_x_class;
 
+-- Every class code (even unobserved) x every observed cluster
 create table _tmp_cluster_x_class
 as
 select distinct
