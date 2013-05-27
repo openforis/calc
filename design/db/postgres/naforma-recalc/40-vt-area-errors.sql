@@ -220,6 +220,8 @@ select
     avg(cv.cv) as mean_cv
 from    
     _tmp_area_cv_per_class_per_stratum cv 
+where
+    cv.stratum is not null       
 group by
     cv.vegetation_type
 ;
