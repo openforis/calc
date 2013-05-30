@@ -2,7 +2,7 @@ SET search_path TO naforma1;
 
 // NOTE: In the below, "plots" always implies planned, accessible plot centers
 
-// No. clusters per stratum with >=1 plot (ncluster2) (count>=0)
+// No. clusters per stratum with >=1 obs. plot (ncluster2) (count>=0)
 alter table _country_stratum
 add column cluster_cnt integer;
  
