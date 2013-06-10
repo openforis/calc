@@ -23,7 +23,19 @@ INSERT INTO _dbh_class (code, label, parent_code, parent_label) VALUES ('5', '20
 INSERT INTO _dbh_class (code, label, parent_code, parent_label) VALUES ('6', '25cm - 29.9cm', '3', '20cm - 29.9cm');
 INSERT INTO _dbh_class (code, label, parent_code, parent_label) VALUES ('7', '30cm - 34.9cm', '4', '30cm - 39.9cm');
 INSERT INTO _dbh_class (code, label, parent_code, parent_label) VALUES ('8', '35cm - 39.9cm', '4', '30cm - 39.9cm');
-INSERT INTO _dbh_class (code, label, parent_code, parent_label) VALUES ('9', '>= 40cm', '5', '>= 40cm');
+INSERT INTO _dbh_class (code, label, parent_code, parent_label) VALUES ('9', '40cm - 45.9cm', '5', '40cm - 49.9cm');
+INSERT INTO _dbh_class (code, label, parent_code, parent_label) VALUES ('10', '45cm - 49.9cm', '5', '40cm - 49.9cm');
+INSERT INTO _dbh_class (code, label, parent_code, parent_label) VALUES ('11', '50cm - 55.9cm', '6', '50cm - 59.9cm');
+INSERT INTO _dbh_class (code, label, parent_code, parent_label) VALUES ('12', '55cm - 59.9cm', '6', '50cm - 59.9cm');
+INSERT INTO _dbh_class (code, label, parent_code, parent_label) VALUES ('13', '60cm - 65.9cm', '7', '60cm - 69.9cm');
+INSERT INTO _dbh_class (code, label, parent_code, parent_label) VALUES ('14', '65cm - 69.9cm', '7', '60cm - 69.9cm');
+INSERT INTO _dbh_class (code, label, parent_code, parent_label) VALUES ('15', '70cm - 75.9cm', '8', '70cm - 79.9cm');
+INSERT INTO _dbh_class (code, label, parent_code, parent_label) VALUES ('16', '75cm - 79.9cm', '8', '70cm - 79.9cm');
+INSERT INTO _dbh_class (code, label, parent_code, parent_label) VALUES ('17', '80cm - 85.9cm', '9', '80cm - 89.9cm');
+INSERT INTO _dbh_class (code, label, parent_code, parent_label) VALUES ('18', '85cm - 89.9cm', '9', '80cm - 89.9cm');
+INSERT INTO _dbh_class (code, label, parent_code, parent_label) VALUES ('19', '90cm - 95.9cm', '10', '90cm - 99.9cm');
+INSERT INTO _dbh_class (code, label, parent_code, parent_label) VALUES ('20', '95cm - 99.9cm', '10', '90cm - 99.9cm');
+INSERT INTO _dbh_class (code, label, parent_code, parent_label) VALUES ('21', '>= 100cm', '11', '>= 100cm');
 INSERT INTO _dbh_class (code, label, parent_code, parent_label) VALUES ('-1', 'No Data', '-1', 'No Data');
 
 
@@ -53,7 +65,19 @@ set dbh_class = case
                     when dbh < 30 then '6'
                     when dbh < 35 then '7'
                     when dbh < 40 then '8'
-                    else '9'
+                    when dbh < 45 then '9'
+                    when dbh < 50 then '10'
+                    when dbh < 55 then '11'
+                    when dbh < 60 then '12'
+                    when dbh < 65 then '13'
+                    when dbh < 70 then '14'
+                    when dbh < 75 then '15'
+                    when dbh < 80 then '16'
+                    when dbh < 85 then '17'
+                    when dbh < 90 then '18'
+                    when dbh < 95 then '19'
+                    when dbh < 100 then '20'
+                    else '21'
                 end;  
                   
 -- 1 baobab
@@ -107,7 +131,7 @@ set commercial_tree =
             --species in ('DAL/MEL','DSP/MES','CMB/SCH','MLT/STU','MIL/EXC','BEI/KWE','BRC/HUI','SWA/MAD','KHA/ANT','ALK/STU','BRE/SAL','AFZ/QUA','CEP/USA','FAG/ANG','HAG/ABY','BRH/TAM','JUN/PRO','MRK','OCO/USA')
             --or species like 'NEW%' or species like 'ENN%' or species like 'RHI%'or species like 'PTR%' or species like 'OLE%'
             --then 1
-        when commercial_class in ('1','2','3','4') and dbh_class in ('5','6','7','8','9') and health != '7' then 1
+        when commercial_class in ('1','2','3','4') and dbh >= 20 and health != '7' then 1
         else 0
     end;        
     
