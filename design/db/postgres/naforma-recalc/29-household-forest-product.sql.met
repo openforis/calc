@@ -1,7 +1,0 @@
-#Extended file properties defined by DbVisualizer
-#Wed May 22 16:24:35 CEST 2013
-file.comment=
-exec.schema=naforma1_se
-file.encoding=UTF-8
-exec.connection=1
-exec.catalog=calc

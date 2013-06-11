@@ -23,10 +23,10 @@ public class RootResource extends Resource {
 	@QueryParam("f")
 	private String fields;
 	
-	@Path("surveys")
-	public SurveyListResource getSurveyListResource() {
-		return getResource(SurveyListResource.class);
-	}
+//	@Path("surveys")
+//	public SurveyListResource getSurveyListResource() {
+//		return getResource(SurveyListResource.class);
+//	}
 	
 	String[] getFields() {
 		if ( fields == null ) {

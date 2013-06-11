@@ -1,7 +1,0 @@
-#Extended file properties defined by DbVisualizer
-#Mon Apr 29 14:48:28 CEST 2013
-file.comment=
-exec.schema=calc
-file.encoding=UTF-8
-exec.connection=4
-exec.catalog=calc
