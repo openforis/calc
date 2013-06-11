@@ -11,14 +11,13 @@
 	<artifactId>calc-core</artifactId>
 	<packaging>jar</packaging>
 	<name>Open Foris Calc Core</name>
-
 	<properties>
 <!-- 		<jooq-codegen.target.directory>${project.build.directory}/generated-sources/jooq</jooq-codegen.target.directory> -->
 		<jooq-codegen.target.directory>${basedir}/src/generated/java</jooq-codegen.target.directory>		
 		<jooq-codegen.target.packageName>org.openforis.calc.persistence.jooq</jooq-codegen.target.packageName>
 	</properties>
 		
-	<build>
+	<build>		
 		<plugins>
 			<!-- Read dev properties -->
 			<plugin>
@@ -59,6 +58,11 @@
 						<artifactId>postgresql</artifactId>
 						<version>${postgres-driver.version}</version>
 					</dependency>
+					<dependency>
+						<groupId>org.openforis.build-tools</groupId>
+						<artifactId>jooq-codegen</artifactId>
+						<version>1.0-SNAPSHOT</version>
+					</dependency>
 				</dependencies>
 				<configuration>
 					<jdbc>
@@ -68,6 +72,15 @@
 						<password>${calc.jdbc.password}</password>
 					</jdbc>
 					<generator>
+					  	<!-- The default code generator. 
+					         Defaults to org.jooq.util.DefaultGenerator -->
+					  	<name>org.jooq.util.DefaultGenerator</name>
+					
+					  	<!-- The naming strategy used for class and field names.
+					       	 Defaults to org.jooq.util.DefaultGeneratorStrategy -->
+					  	<strategy>
+					    	<name>org.openforis.jooq.codegen.CustomGeneratorStrategy</name>
+					  	</strategy>
 						<database>
 							<name>org.jooq.util.postgres.PostgresDatabase</name>
 							<includes>.*</includes>
@@ -88,9 +101,13 @@
 						</database>
 						<generate>
 							<relations>true</relations>
+							<navigationMethods>true</navigationMethods>
+							<instanceFields>true</instanceFields>
 							<deprecated>false</deprecated>
-							<pojos>true</pojos>
-							<daos>false</daos>
+							<pojos>false</pojos>
+<!-- 							<daos>true</daos> -->
+<!-- 							<jpaAnnotations>true</jpaAnnotations> -->
+<!-- 							<validationAnnotations>false</validationAnnotations> -->
 						</generate>
 						<target>
 							<packageName>${jooq-codegen.target.packageName}</packageName>
@@ -137,18 +154,18 @@
 				<artifactId>build-helper-maven-plugin</artifactId>
 				<version>1.7</version>
 				<executions>
-					<execution>
-						<id>add-generated-source</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>add-source</goal>
-						</goals>
-						<configuration>
-							<sources>
-								<source>${jooq-codegen.target.directory}</source>
-							</sources>
-						</configuration>
-					</execution>
+<!-- 					<execution> -->
+<!-- 						<id>add-generated-source</id> -->
+<!-- 						<phase>generate-sources</phase> -->
+<!-- 						<goals> -->
+<!-- 							<goal>add-source</goal> -->
+<!-- 						</goals> -->
+<!-- 						<configuration> -->
+<!-- 							<sources> -->
+<!-- 								<source>${jooq-codegen.target.directory}</source> -->
+<!-- 							</sources> -->
+<!-- 						</configuration> -->
+<!-- 					</execution> -->
 					<execution>
 						<id>add-integration-test-sources</id>
 						<phase>compile</phase>
