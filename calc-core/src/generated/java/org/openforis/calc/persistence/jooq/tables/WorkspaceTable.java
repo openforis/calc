@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables;
 @java.lang.SuppressWarnings("all")
 public class WorkspaceTable extends org.jooq.impl.UpdatableTableImpl<org.openforis.calc.persistence.jooq.tables.records.WorkspaceRecord> {
 
-	private static final long serialVersionUID = -633209397;
+	private static final long serialVersionUID = -159477100;
 
 	/**
 	 * The singleton instance of calc.workspace
@@ -34,9 +34,9 @@ public class WorkspaceTable extends org.jooq.impl.UpdatableTableImpl<org.openfor
 	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.WorkspaceRecord, java.lang.Integer> ID = createField("id", org.jooq.impl.SQLDataType.INTEGER, this);
 
 	/**
-	 * The table column <code>calc.workspace.caption</code>
+	 * The table column <code>calc.workspace.name</code>
 	 */
-	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.WorkspaceRecord, java.lang.String> CAPTION = createField("caption", org.jooq.impl.SQLDataType.VARCHAR, this);
+	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.WorkspaceRecord, java.lang.String> NAME = createField("name", org.jooq.impl.SQLDataType.VARCHAR, this);
 
 	/**
 	 * The table column <code>calc.workspace.description</code>
@@ -54,11 +54,11 @@ public class WorkspaceTable extends org.jooq.impl.UpdatableTableImpl<org.openfor
 	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.WorkspaceRecord, java.lang.String> OUTPUT_SCHEMA = createField("output_schema", org.jooq.impl.SQLDataType.VARCHAR, this);
 
 	public WorkspaceTable() {
-		super("workspace", org.openforis.calc.persistence.jooq.CalcTable.CALC);
+		super("workspace", org.openforis.calc.persistence.jooq.CalcSchema.CALC);
 	}
 
 	public WorkspaceTable(java.lang.String alias) {
-		super(alias, org.openforis.calc.persistence.jooq.CalcTable.CALC, org.openforis.calc.persistence.jooq.tables.WorkspaceTable.WORKSPACE);
+		super(alias, org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.openforis.calc.persistence.jooq.tables.WorkspaceTable.WORKSPACE);
 	}
 
 	@Override

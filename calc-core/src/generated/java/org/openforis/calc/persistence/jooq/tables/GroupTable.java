@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables;
 @java.lang.SuppressWarnings("all")
 public class GroupTable extends org.jooq.impl.UpdatableTableImpl<org.openforis.calc.persistence.jooq.tables.records.GroupRecord> {
 
-	private static final long serialVersionUID = 1033158958;
+	private static final long serialVersionUID = -1808842661;
 
 	/**
 	 * The singleton instance of calc.group
@@ -61,9 +61,9 @@ public class GroupTable extends org.jooq.impl.UpdatableTableImpl<org.openforis.c
 	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.GroupRecord, java.lang.String> CODE = createField("code", org.jooq.impl.SQLDataType.VARCHAR, this);
 
 	/**
-	 * The table column <code>calc.group.caption</code>
+	 * The table column <code>calc.group.name</code>
 	 */
-	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.GroupRecord, java.lang.String> CAPTION = createField("caption", org.jooq.impl.SQLDataType.VARCHAR, this);
+	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.GroupRecord, java.lang.String> NAME = createField("name", org.jooq.impl.SQLDataType.VARCHAR, this);
 
 	/**
 	 * The table column <code>calc.group.description</code>
@@ -76,11 +76,11 @@ public class GroupTable extends org.jooq.impl.UpdatableTableImpl<org.openforis.c
 	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.GroupRecord, java.lang.Integer> SORT_ORDER = createField("sort_order", org.jooq.impl.SQLDataType.INTEGER, this);
 
 	public GroupTable() {
-		super("group", org.openforis.calc.persistence.jooq.CalcTable.CALC);
+		super("group", org.openforis.calc.persistence.jooq.CalcSchema.CALC);
 	}
 
 	public GroupTable(java.lang.String alias) {
-		super(alias, org.openforis.calc.persistence.jooq.CalcTable.CALC, org.openforis.calc.persistence.jooq.tables.GroupTable.GROUP);
+		super(alias, org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.openforis.calc.persistence.jooq.tables.GroupTable.GROUP);
 	}
 
 	@Override

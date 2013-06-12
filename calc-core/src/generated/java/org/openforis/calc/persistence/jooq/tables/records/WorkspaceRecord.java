@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables.records;
 @java.lang.SuppressWarnings("all")
 public class WorkspaceRecord extends org.jooq.impl.UpdatableRecordImpl<org.openforis.calc.persistence.jooq.tables.records.WorkspaceRecord> {
 
-	private static final long serialVersionUID = -1662167142;
+	private static final long serialVersionUID = -1265671838;
 
 	/**
 	 * The table column <code>calc.workspace.id</code>
@@ -48,6 +48,18 @@ public class WorkspaceRecord extends org.jooq.impl.UpdatableRecordImpl<org.openf
 	 * <p>
 	 * This column is part of the table's PRIMARY KEY
 	 */
+	public java.util.List<org.openforis.calc.persistence.jooq.tables.records.DbtableRecord> fetchDbtableTableList() {
+		return create()
+			.selectFrom(org.openforis.calc.persistence.jooq.tables.DbtableTable.DBTABLE)
+			.where(org.openforis.calc.persistence.jooq.tables.DbtableTable.DBTABLE.WORKSPACE_ID.equal(getValue(org.openforis.calc.persistence.jooq.tables.WorkspaceTable.WORKSPACE.ID)))
+			.fetch();
+	}
+
+	/**
+	 * The table column <code>calc.workspace.id</code>
+	 * <p>
+	 * This column is part of the table's PRIMARY KEY
+	 */
 	public java.util.List<org.openforis.calc.persistence.jooq.tables.records.EntityRecord> fetchEntityTableList() {
 		return create()
 			.selectFrom(org.openforis.calc.persistence.jooq.tables.EntityTable.ENTITY)
@@ -68,29 +80,17 @@ public class WorkspaceRecord extends org.jooq.impl.UpdatableRecordImpl<org.openf
 	}
 
 	/**
-	 * The table column <code>calc.workspace.id</code>
-	 * <p>
-	 * This column is part of the table's PRIMARY KEY
+	 * The table column <code>calc.workspace.name</code>
 	 */
-	public java.util.List<org.openforis.calc.persistence.jooq.tables.records.TableMetadataRecord> fetchTableMetadataTableList() {
-		return create()
-			.selectFrom(org.openforis.calc.persistence.jooq.tables.TableMetadataTable.TABLE_METADATA)
-			.where(org.openforis.calc.persistence.jooq.tables.TableMetadataTable.TABLE_METADATA.WORKSPACE_ID.equal(getValue(org.openforis.calc.persistence.jooq.tables.WorkspaceTable.WORKSPACE.ID)))
-			.fetch();
+	public void setName(java.lang.String value) {
+		setValue(org.openforis.calc.persistence.jooq.tables.WorkspaceTable.WORKSPACE.NAME, value);
 	}
 
 	/**
-	 * The table column <code>calc.workspace.caption</code>
+	 * The table column <code>calc.workspace.name</code>
 	 */
-	public void setCaption(java.lang.String value) {
-		setValue(org.openforis.calc.persistence.jooq.tables.WorkspaceTable.WORKSPACE.CAPTION, value);
-	}
-
-	/**
-	 * The table column <code>calc.workspace.caption</code>
-	 */
-	public java.lang.String getCaption() {
-		return getValue(org.openforis.calc.persistence.jooq.tables.WorkspaceTable.WORKSPACE.CAPTION);
+	public java.lang.String getName() {
+		return getValue(org.openforis.calc.persistence.jooq.tables.WorkspaceTable.WORKSPACE.NAME);
 	}
 
 	/**

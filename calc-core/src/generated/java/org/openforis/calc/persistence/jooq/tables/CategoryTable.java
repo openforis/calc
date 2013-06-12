@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables;
 @java.lang.SuppressWarnings("all")
 public class CategoryTable extends org.jooq.impl.UpdatableTableImpl<org.openforis.calc.persistence.jooq.tables.records.CategoryRecord> {
 
-	private static final long serialVersionUID = -2080907602;
+	private static final long serialVersionUID = 196305449;
 
 	/**
 	 * The singleton instance of calc.category
@@ -50,9 +50,9 @@ public class CategoryTable extends org.jooq.impl.UpdatableTableImpl<org.openfori
 	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.CategoryRecord, java.lang.String> CODE = createField("code", org.jooq.impl.SQLDataType.VARCHAR, this);
 
 	/**
-	 * The table column <code>calc.category.caption</code>
+	 * The table column <code>calc.category.name</code>
 	 */
-	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.CategoryRecord, java.lang.String> CAPTION = createField("caption", org.jooq.impl.SQLDataType.VARCHAR, this);
+	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.CategoryRecord, java.lang.String> NAME = createField("name", org.jooq.impl.SQLDataType.VARCHAR, this);
 
 	/**
 	 * The table column <code>calc.category.description</code>
@@ -70,11 +70,11 @@ public class CategoryTable extends org.jooq.impl.UpdatableTableImpl<org.openfori
 	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.CategoryRecord, java.lang.Integer> SORT_ORDER = createField("sort_order", org.jooq.impl.SQLDataType.INTEGER, this);
 
 	public CategoryTable() {
-		super("category", org.openforis.calc.persistence.jooq.CalcTable.CALC);
+		super("category", org.openforis.calc.persistence.jooq.CalcSchema.CALC);
 	}
 
 	public CategoryTable(java.lang.String alias) {
-		super(alias, org.openforis.calc.persistence.jooq.CalcTable.CALC, org.openforis.calc.persistence.jooq.tables.CategoryTable.CATEGORY);
+		super(alias, org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.openforis.calc.persistence.jooq.tables.CategoryTable.CATEGORY);
 	}
 
 	@Override

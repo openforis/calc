@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables;
 @java.lang.SuppressWarnings("all")
 public class AoiHierarchyTable extends org.jooq.impl.UpdatableTableImpl<org.openforis.calc.persistence.jooq.tables.records.AoiHierarchyRecord> {
 
-	private static final long serialVersionUID = 1644671024;
+	private static final long serialVersionUID = 840544761;
 
 	/**
 	 * The singleton instance of calc.aoi_hierarchy
@@ -45,9 +45,9 @@ public class AoiHierarchyTable extends org.jooq.impl.UpdatableTableImpl<org.open
 	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.AoiHierarchyRecord, java.lang.Integer> WORKSPACE_ID = createField("workspace_id", org.jooq.impl.SQLDataType.INTEGER, this);
 
 	/**
-	 * The table column <code>calc.aoi_hierarchy.caption</code>
+	 * The table column <code>calc.aoi_hierarchy.name</code>
 	 */
-	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.AoiHierarchyRecord, java.lang.String> CAPTION = createField("caption", org.jooq.impl.SQLDataType.VARCHAR, this);
+	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.AoiHierarchyRecord, java.lang.String> NAME = createField("name", org.jooq.impl.SQLDataType.VARCHAR, this);
 
 	/**
 	 * The table column <code>calc.aoi_hierarchy.description</code>
@@ -55,11 +55,11 @@ public class AoiHierarchyTable extends org.jooq.impl.UpdatableTableImpl<org.open
 	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.AoiHierarchyRecord, java.lang.String> DESCRIPTION = createField("description", org.jooq.impl.SQLDataType.VARCHAR, this);
 
 	public AoiHierarchyTable() {
-		super("aoi_hierarchy", org.openforis.calc.persistence.jooq.CalcTable.CALC);
+		super("aoi_hierarchy", org.openforis.calc.persistence.jooq.CalcSchema.CALC);
 	}
 
 	public AoiHierarchyTable(java.lang.String alias) {
-		super(alias, org.openforis.calc.persistence.jooq.CalcTable.CALC, org.openforis.calc.persistence.jooq.tables.AoiHierarchyTable.AOI_HIERARCHY);
+		super(alias, org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.openforis.calc.persistence.jooq.tables.AoiHierarchyTable.AOI_HIERARCHY);
 	}
 
 	@Override

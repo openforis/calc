@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables.records;
 @java.lang.SuppressWarnings("all")
 public class HierarchyRecord extends org.jooq.impl.UpdatableRecordImpl<org.openforis.calc.persistence.jooq.tables.records.HierarchyRecord> {
 
-	private static final long serialVersionUID = 1429006639;
+	private static final long serialVersionUID = 348195487;
 
 	/**
 	 * The table column <code>calc.hierarchy.id</code>
@@ -99,17 +99,17 @@ public class HierarchyRecord extends org.jooq.impl.UpdatableRecordImpl<org.openf
 	}
 
 	/**
-	 * The table column <code>calc.hierarchy.caption</code>
+	 * The table column <code>calc.hierarchy.name</code>
 	 */
-	public void setCaption(java.lang.String value) {
-		setValue(org.openforis.calc.persistence.jooq.tables.HierarchyTable.HIERARCHY.CAPTION, value);
+	public void setName(java.lang.String value) {
+		setValue(org.openforis.calc.persistence.jooq.tables.HierarchyTable.HIERARCHY.NAME, value);
 	}
 
 	/**
-	 * The table column <code>calc.hierarchy.caption</code>
+	 * The table column <code>calc.hierarchy.name</code>
 	 */
-	public java.lang.String getCaption() {
-		return getValue(org.openforis.calc.persistence.jooq.tables.HierarchyTable.HIERARCHY.CAPTION);
+	public java.lang.String getName() {
+		return getValue(org.openforis.calc.persistence.jooq.tables.HierarchyTable.HIERARCHY.NAME);
 	}
 
 	/**

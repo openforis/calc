@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables;
 @java.lang.SuppressWarnings("all")
 public class HierarchyTable extends org.jooq.impl.UpdatableTableImpl<org.openforis.calc.persistence.jooq.tables.records.HierarchyRecord> {
 
-	private static final long serialVersionUID = -1808045300;
+	private static final long serialVersionUID = -565331463;
 
 	/**
 	 * The singleton instance of calc.hierarchy
@@ -45,9 +45,9 @@ public class HierarchyTable extends org.jooq.impl.UpdatableTableImpl<org.openfor
 	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.HierarchyRecord, java.lang.Integer> VARIABLE_ID = createField("variable_id", org.jooq.impl.SQLDataType.INTEGER, this);
 
 	/**
-	 * The table column <code>calc.hierarchy.caption</code>
+	 * The table column <code>calc.hierarchy.name</code>
 	 */
-	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.HierarchyRecord, java.lang.String> CAPTION = createField("caption", org.jooq.impl.SQLDataType.VARCHAR, this);
+	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.HierarchyRecord, java.lang.String> NAME = createField("name", org.jooq.impl.SQLDataType.VARCHAR, this);
 
 	/**
 	 * The table column <code>calc.hierarchy.description</code>
@@ -55,11 +55,11 @@ public class HierarchyTable extends org.jooq.impl.UpdatableTableImpl<org.openfor
 	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.HierarchyRecord, java.lang.String> DESCRIPTION = createField("description", org.jooq.impl.SQLDataType.VARCHAR, this);
 
 	public HierarchyTable() {
-		super("hierarchy", org.openforis.calc.persistence.jooq.CalcTable.CALC);
+		super("hierarchy", org.openforis.calc.persistence.jooq.CalcSchema.CALC);
 	}
 
 	public HierarchyTable(java.lang.String alias) {
-		super(alias, org.openforis.calc.persistence.jooq.CalcTable.CALC, org.openforis.calc.persistence.jooq.tables.HierarchyTable.HIERARCHY);
+		super(alias, org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.openforis.calc.persistence.jooq.tables.HierarchyTable.HIERARCHY);
 	}
 
 	@Override

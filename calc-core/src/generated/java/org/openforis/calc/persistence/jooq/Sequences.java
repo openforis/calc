@@ -16,72 +16,72 @@ public final class Sequences {
 	/**
 	 * The sequence calc.aoi_hierarchy_id_seq
 	 */
-	public static final org.jooq.Sequence<java.lang.Long> AOI_HIERARCHY_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("aoi_hierarchy_id_seq", org.openforis.calc.persistence.jooq.CalcTable.CALC, org.jooq.impl.SQLDataType.BIGINT);
+	public static final org.jooq.Sequence<java.lang.Long> AOI_HIERARCHY_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("aoi_hierarchy_id_seq", org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.jooq.impl.SQLDataType.BIGINT);
 
 	/**
 	 * The sequence calc.aoi_id_seq
 	 */
-	public static final org.jooq.Sequence<java.lang.Long> AOI_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("aoi_id_seq", org.openforis.calc.persistence.jooq.CalcTable.CALC, org.jooq.impl.SQLDataType.BIGINT);
+	public static final org.jooq.Sequence<java.lang.Long> AOI_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("aoi_id_seq", org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.jooq.impl.SQLDataType.BIGINT);
 
 	/**
 	 * The sequence calc.aoi_level_id_seq
 	 */
-	public static final org.jooq.Sequence<java.lang.Long> AOI_LEVEL_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("aoi_level_id_seq", org.openforis.calc.persistence.jooq.CalcTable.CALC, org.jooq.impl.SQLDataType.BIGINT);
+	public static final org.jooq.Sequence<java.lang.Long> AOI_LEVEL_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("aoi_level_id_seq", org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.jooq.impl.SQLDataType.BIGINT);
 
 	/**
 	 * The sequence calc.calculation_step_id_seq
 	 */
-	public static final org.jooq.Sequence<java.lang.Long> CALCULATION_STEP_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("calculation_step_id_seq", org.openforis.calc.persistence.jooq.CalcTable.CALC, org.jooq.impl.SQLDataType.BIGINT);
+	public static final org.jooq.Sequence<java.lang.Long> CALCULATION_STEP_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("calculation_step_id_seq", org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.jooq.impl.SQLDataType.BIGINT);
 
 	/**
 	 * The sequence calc.category_id_seq
 	 */
-	public static final org.jooq.Sequence<java.lang.Long> CATEGORY_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("category_id_seq", org.openforis.calc.persistence.jooq.CalcTable.CALC, org.jooq.impl.SQLDataType.BIGINT);
+	public static final org.jooq.Sequence<java.lang.Long> CATEGORY_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("category_id_seq", org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.jooq.impl.SQLDataType.BIGINT);
 
 	/**
-	 * The sequence calc.column_metadata_id_seq
+	 * The sequence calc.dbcolumn_id_seq
 	 */
-	public static final org.jooq.Sequence<java.lang.Long> COLUMN_METADATA_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("column_metadata_id_seq", org.openforis.calc.persistence.jooq.CalcTable.CALC, org.jooq.impl.SQLDataType.BIGINT);
+	public static final org.jooq.Sequence<java.lang.Long> DBCOLUMN_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("dbcolumn_id_seq", org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.jooq.impl.SQLDataType.BIGINT);
+
+	/**
+	 * The sequence calc.dbtable_id_seq
+	 */
+	public static final org.jooq.Sequence<java.lang.Long> DBTABLE_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("dbtable_id_seq", org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.jooq.impl.SQLDataType.BIGINT);
 
 	/**
 	 * The sequence calc.entity_id_seq
 	 */
-	public static final org.jooq.Sequence<java.lang.Long> ENTITY_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("entity_id_seq", org.openforis.calc.persistence.jooq.CalcTable.CALC, org.jooq.impl.SQLDataType.BIGINT);
+	public static final org.jooq.Sequence<java.lang.Long> ENTITY_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("entity_id_seq", org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.jooq.impl.SQLDataType.BIGINT);
 
 	/**
 	 * The sequence calc.group_id_seq
 	 */
-	public static final org.jooq.Sequence<java.lang.Long> GROUP_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("group_id_seq", org.openforis.calc.persistence.jooq.CalcTable.CALC, org.jooq.impl.SQLDataType.BIGINT);
+	public static final org.jooq.Sequence<java.lang.Long> GROUP_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("group_id_seq", org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.jooq.impl.SQLDataType.BIGINT);
 
 	/**
 	 * The sequence calc.hierarchy_id_seq
 	 */
-	public static final org.jooq.Sequence<java.lang.Long> HIERARCHY_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("hierarchy_id_seq", org.openforis.calc.persistence.jooq.CalcTable.CALC, org.jooq.impl.SQLDataType.BIGINT);
+	public static final org.jooq.Sequence<java.lang.Long> HIERARCHY_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("hierarchy_id_seq", org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.jooq.impl.SQLDataType.BIGINT);
 
 	/**
 	 * The sequence calc.hierarchy_level_id_seq
 	 */
-	public static final org.jooq.Sequence<java.lang.Long> HIERARCHY_LEVEL_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("hierarchy_level_id_seq", org.openforis.calc.persistence.jooq.CalcTable.CALC, org.jooq.impl.SQLDataType.BIGINT);
+	public static final org.jooq.Sequence<java.lang.Long> HIERARCHY_LEVEL_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("hierarchy_level_id_seq", org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.jooq.impl.SQLDataType.BIGINT);
 
 	/**
 	 * The sequence calc.processing_chain_id_seq
 	 */
-	public static final org.jooq.Sequence<java.lang.Long> PROCESSING_CHAIN_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("processing_chain_id_seq", org.openforis.calc.persistence.jooq.CalcTable.CALC, org.jooq.impl.SQLDataType.BIGINT);
-
-	/**
-	 * The sequence calc.table_metadata_id_seq
-	 */
-	public static final org.jooq.Sequence<java.lang.Long> TABLE_METADATA_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("table_metadata_id_seq", org.openforis.calc.persistence.jooq.CalcTable.CALC, org.jooq.impl.SQLDataType.BIGINT);
+	public static final org.jooq.Sequence<java.lang.Long> PROCESSING_CHAIN_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("processing_chain_id_seq", org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.jooq.impl.SQLDataType.BIGINT);
 
 	/**
 	 * The sequence calc.variable_id_seq
 	 */
-	public static final org.jooq.Sequence<java.lang.Long> VARIABLE_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("variable_id_seq", org.openforis.calc.persistence.jooq.CalcTable.CALC, org.jooq.impl.SQLDataType.BIGINT);
+	public static final org.jooq.Sequence<java.lang.Long> VARIABLE_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("variable_id_seq", org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.jooq.impl.SQLDataType.BIGINT);
 
 	/**
 	 * The sequence calc.workspace_id_seq
 	 */
-	public static final org.jooq.Sequence<java.lang.Long> WORKSPACE_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("workspace_id_seq", org.openforis.calc.persistence.jooq.CalcTable.CALC, org.jooq.impl.SQLDataType.BIGINT);
+	public static final org.jooq.Sequence<java.lang.Long> WORKSPACE_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("workspace_id_seq", org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.jooq.impl.SQLDataType.BIGINT);
 
 	/**
 	 * No instances

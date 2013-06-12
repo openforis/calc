@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables.records;
 @java.lang.SuppressWarnings("all")
 public class ProcessingChainRecord extends org.jooq.impl.UpdatableRecordImpl<org.openforis.calc.persistence.jooq.tables.records.ProcessingChainRecord> {
 
-	private static final long serialVersionUID = 1380787047;
+	private static final long serialVersionUID = -950881239;
 
 	/**
 	 * The table column <code>calc.processing_chain.id</code>
@@ -99,17 +99,17 @@ public class ProcessingChainRecord extends org.jooq.impl.UpdatableRecordImpl<org
 	}
 
 	/**
-	 * The table column <code>calc.processing_chain.caption</code>
+	 * The table column <code>calc.processing_chain.name</code>
 	 */
-	public void setCaption(java.lang.String value) {
-		setValue(org.openforis.calc.persistence.jooq.tables.ProcessingChainTable.PROCESSING_CHAIN.CAPTION, value);
+	public void setName(java.lang.String value) {
+		setValue(org.openforis.calc.persistence.jooq.tables.ProcessingChainTable.PROCESSING_CHAIN.NAME, value);
 	}
 
 	/**
-	 * The table column <code>calc.processing_chain.caption</code>
+	 * The table column <code>calc.processing_chain.name</code>
 	 */
-	public java.lang.String getCaption() {
-		return getValue(org.openforis.calc.persistence.jooq.tables.ProcessingChainTable.PROCESSING_CHAIN.CAPTION);
+	public java.lang.String getName() {
+		return getValue(org.openforis.calc.persistence.jooq.tables.ProcessingChainTable.PROCESSING_CHAIN.NAME);
 	}
 
 	/**

@@ -15,7 +15,9 @@ public final class WorkspaceManager {
 	@Autowired
 	private JooqDaoFactory daoFactory;
 	
-	private Workspace loadWorkspace(int workspaceId) {
-		return daoFactory.createJooqDao(Workspace.class).findById(workspaceId);
+	public Workspace getWorkspace(int workspaceId) {
+		Workspace w = daoFactory.createJooqDao(Workspace.class).findById(workspaceId);
+		
+		return w;
 	}
 }

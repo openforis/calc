@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables;
 @java.lang.SuppressWarnings("all")
 public class ProcessingChainTable extends org.jooq.impl.UpdatableTableImpl<org.openforis.calc.persistence.jooq.tables.records.ProcessingChainRecord> {
 
-	private static final long serialVersionUID = -260066357;
+	private static final long serialVersionUID = -2068773484;
 
 	/**
 	 * The singleton instance of calc.processing_chain
@@ -45,9 +45,9 @@ public class ProcessingChainTable extends org.jooq.impl.UpdatableTableImpl<org.o
 	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.ProcessingChainRecord, java.lang.Integer> WORKSPACE_ID = createField("workspace_id", org.jooq.impl.SQLDataType.INTEGER, this);
 
 	/**
-	 * The table column <code>calc.processing_chain.caption</code>
+	 * The table column <code>calc.processing_chain.name</code>
 	 */
-	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.ProcessingChainRecord, java.lang.String> CAPTION = createField("caption", org.jooq.impl.SQLDataType.VARCHAR, this);
+	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.ProcessingChainRecord, java.lang.String> NAME = createField("name", org.jooq.impl.SQLDataType.VARCHAR, this);
 
 	/**
 	 * The table column <code>calc.processing_chain.description</code>
@@ -60,11 +60,11 @@ public class ProcessingChainTable extends org.jooq.impl.UpdatableTableImpl<org.o
 	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.ProcessingChainRecord, java.lang.String> PARAMETERS = createField("parameters", org.jooq.impl.SQLDataType.CLOB, this);
 
 	public ProcessingChainTable() {
-		super("processing_chain", org.openforis.calc.persistence.jooq.CalcTable.CALC);
+		super("processing_chain", org.openforis.calc.persistence.jooq.CalcSchema.CALC);
 	}
 
 	public ProcessingChainTable(java.lang.String alias) {
-		super(alias, org.openforis.calc.persistence.jooq.CalcTable.CALC, org.openforis.calc.persistence.jooq.tables.ProcessingChainTable.PROCESSING_CHAIN);
+		super(alias, org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.openforis.calc.persistence.jooq.tables.ProcessingChainTable.PROCESSING_CHAIN);
 	}
 
 	@Override

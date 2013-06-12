@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables;
 @java.lang.SuppressWarnings("all")
 public class CategoryGroupTable extends org.jooq.impl.TableImpl<org.openforis.calc.persistence.jooq.tables.records.CategoryGroupRecord> {
 
-	private static final long serialVersionUID = 692172585;
+	private static final long serialVersionUID = -1231070783;
 
 	/**
 	 * The singleton instance of calc.category_group
@@ -49,11 +49,11 @@ public class CategoryGroupTable extends org.jooq.impl.TableImpl<org.openforis.ca
 	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.CategoryGroupRecord, java.lang.Integer> CATEGORY_ID = createField("category_id", org.jooq.impl.SQLDataType.INTEGER, this);
 
 	public CategoryGroupTable() {
-		super("category_group", org.openforis.calc.persistence.jooq.CalcTable.CALC);
+		super("category_group", org.openforis.calc.persistence.jooq.CalcSchema.CALC);
 	}
 
 	public CategoryGroupTable(java.lang.String alias) {
-		super(alias, org.openforis.calc.persistence.jooq.CalcTable.CALC, org.openforis.calc.persistence.jooq.tables.CategoryGroupTable.CATEGORY_GROUP);
+		super(alias, org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.openforis.calc.persistence.jooq.tables.CategoryGroupTable.CATEGORY_GROUP);
 	}
 
 	@Override

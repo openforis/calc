@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables;
 @java.lang.SuppressWarnings("all")
 public class VariableTable extends org.jooq.impl.UpdatableTableImpl<org.openforis.calc.persistence.jooq.tables.records.VariableRecord> {
 
-	private static final long serialVersionUID = -1959667473;
+	private static final long serialVersionUID = -1865261909;
 
 	/**
 	 * The singleton instance of calc.variable
@@ -48,9 +48,9 @@ public class VariableTable extends org.jooq.impl.UpdatableTableImpl<org.openfori
 	 * The table column <code>calc.variable.value_column_id</code>
 	 * <p>
 	 * This column is part of a FOREIGN KEY: <code><pre>
-	 * CONSTRAINT variable__FKvariable152814
+	 * CONSTRAINT variable__FKvariable342421
 	 * FOREIGN KEY (value_column_id)
-	 * REFERENCES calc.column_metadata (id)
+	 * REFERENCES calc.dbcolumn (id)
 	 * </pre></code>
 	 */
 	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.VariableRecord, java.lang.Integer> VALUE_COLUMN_ID = createField("value_column_id", org.jooq.impl.SQLDataType.INTEGER, this);
@@ -61,7 +61,7 @@ public class VariableTable extends org.jooq.impl.UpdatableTableImpl<org.openfori
 	 * This column is part of a FOREIGN KEY: <code><pre>
 	 * CONSTRAINT variable__variable_code_list_table_fkey
 	 * FOREIGN KEY (code_list_table_id)
-	 * REFERENCES calc.table_metadata (id)
+	 * REFERENCES calc.dbtable (id)
 	 * </pre></code>
 	 */
 	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.VariableRecord, java.lang.Integer> CODE_LIST_TABLE_ID = createField("code_list_table_id", org.jooq.impl.SQLDataType.INTEGER, this);
@@ -113,11 +113,11 @@ public class VariableTable extends org.jooq.impl.UpdatableTableImpl<org.openfori
 	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.VariableRecord, java.lang.Integer> SORT_ORDER = createField("sort_order", org.jooq.impl.SQLDataType.INTEGER, this);
 
 	public VariableTable() {
-		super("variable", org.openforis.calc.persistence.jooq.CalcTable.CALC);
+		super("variable", org.openforis.calc.persistence.jooq.CalcSchema.CALC);
 	}
 
 	public VariableTable(java.lang.String alias) {
-		super(alias, org.openforis.calc.persistence.jooq.CalcTable.CALC, org.openforis.calc.persistence.jooq.tables.VariableTable.VARIABLE);
+		super(alias, org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.openforis.calc.persistence.jooq.tables.VariableTable.VARIABLE);
 	}
 
 	@Override
@@ -139,7 +139,7 @@ public class VariableTable extends org.jooq.impl.UpdatableTableImpl<org.openfori
 	@Override
 	@SuppressWarnings("unchecked")
 	public java.util.List<org.jooq.ForeignKey<org.openforis.calc.persistence.jooq.tables.records.VariableRecord, ?>> getReferences() {
-		return java.util.Arrays.<org.jooq.ForeignKey<org.openforis.calc.persistence.jooq.tables.records.VariableRecord, ?>>asList(org.openforis.calc.persistence.jooq.Keys.VARIABLE__VARIABLE_ENTITY_FKEY, org.openforis.calc.persistence.jooq.Keys.VARIABLE__FKVARIABLE152814, org.openforis.calc.persistence.jooq.Keys.VARIABLE__VARIABLE_CODE_LIST_TABLE_FKEY, org.openforis.calc.persistence.jooq.Keys.VARIABLE__VARIABLE_DEFAULT_CATEGORY_FKEY);
+		return java.util.Arrays.<org.jooq.ForeignKey<org.openforis.calc.persistence.jooq.tables.records.VariableRecord, ?>>asList(org.openforis.calc.persistence.jooq.Keys.VARIABLE__VARIABLE_ENTITY_FKEY, org.openforis.calc.persistence.jooq.Keys.VARIABLE__FKVARIABLE342421, org.openforis.calc.persistence.jooq.Keys.VARIABLE__VARIABLE_CODE_LIST_TABLE_FKEY, org.openforis.calc.persistence.jooq.Keys.VARIABLE__VARIABLE_DEFAULT_CATEGORY_FKEY);
 	}
 
 	@Override

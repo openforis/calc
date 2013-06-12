@@ -44,9 +44,14 @@ public final class Tables {
 	public static final org.openforis.calc.persistence.jooq.tables.CategoryGroupTable CATEGORY_GROUP = org.openforis.calc.persistence.jooq.tables.CategoryGroupTable.CATEGORY_GROUP;
 
 	/**
-	 * The table calc.column_metadata
+	 * The table calc.dbcolumn
 	 */
-	public static final org.openforis.calc.persistence.jooq.tables.ColumnMetadataTable COLUMN_METADATA = org.openforis.calc.persistence.jooq.tables.ColumnMetadataTable.COLUMN_METADATA;
+	public static final org.openforis.calc.persistence.jooq.tables.DbcolumnTable DBCOLUMN = org.openforis.calc.persistence.jooq.tables.DbcolumnTable.DBCOLUMN;
+
+	/**
+	 * The table calc.dbtable
+	 */
+	public static final org.openforis.calc.persistence.jooq.tables.DbtableTable DBTABLE = org.openforis.calc.persistence.jooq.tables.DbtableTable.DBTABLE;
 
 	/**
 	 * The table calc.entity
@@ -82,11 +87,6 @@ public final class Tables {
 	 * The table calc.sampling_unit_aoi
 	 */
 	public static final org.openforis.calc.persistence.jooq.tables.SamplingUnitAoiTable SAMPLING_UNIT_AOI = org.openforis.calc.persistence.jooq.tables.SamplingUnitAoiTable.SAMPLING_UNIT_AOI;
-
-	/**
-	 * The table calc.table_metadata
-	 */
-	public static final org.openforis.calc.persistence.jooq.tables.TableMetadataTable TABLE_METADATA = org.openforis.calc.persistence.jooq.tables.TableMetadataTable.TABLE_METADATA;
 
 	/**
 	 * The table calc.variable

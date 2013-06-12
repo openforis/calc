@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables.records;
 @java.lang.SuppressWarnings("all")
 public class CategoryRecord extends org.jooq.impl.UpdatableRecordImpl<org.openforis.calc.persistence.jooq.tables.records.CategoryRecord> {
 
-	private static final long serialVersionUID = 655908829;
+	private static final long serialVersionUID = 960602865;
 
 	/**
 	 * The table column <code>calc.category.id</code>
@@ -125,17 +125,17 @@ public class CategoryRecord extends org.jooq.impl.UpdatableRecordImpl<org.openfo
 	}
 
 	/**
-	 * The table column <code>calc.category.caption</code>
+	 * The table column <code>calc.category.name</code>
 	 */
-	public void setCaption(java.lang.String value) {
-		setValue(org.openforis.calc.persistence.jooq.tables.CategoryTable.CATEGORY.CAPTION, value);
+	public void setName(java.lang.String value) {
+		setValue(org.openforis.calc.persistence.jooq.tables.CategoryTable.CATEGORY.NAME, value);
 	}
 
 	/**
-	 * The table column <code>calc.category.caption</code>
+	 * The table column <code>calc.category.name</code>
 	 */
-	public java.lang.String getCaption() {
-		return getValue(org.openforis.calc.persistence.jooq.tables.CategoryTable.CATEGORY.CAPTION);
+	public java.lang.String getName() {
+		return getValue(org.openforis.calc.persistence.jooq.tables.CategoryTable.CATEGORY.NAME);
 	}
 
 	/**

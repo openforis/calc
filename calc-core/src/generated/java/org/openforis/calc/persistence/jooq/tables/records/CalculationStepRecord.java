@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables.records;
 @java.lang.SuppressWarnings("all")
 public class CalculationStepRecord extends org.jooq.impl.UpdatableRecordImpl<org.openforis.calc.persistence.jooq.tables.records.CalculationStepRecord> {
 
-	private static final long serialVersionUID = 1637613762;
+	private static final long serialVersionUID = 109622770;
 
 	/**
 	 * The table column <code>calc.calculation_step.id</code>
@@ -143,17 +143,17 @@ public class CalculationStepRecord extends org.jooq.impl.UpdatableRecordImpl<org
 	}
 
 	/**
-	 * The table column <code>calc.calculation_step.caption</code>
+	 * The table column <code>calc.calculation_step.name</code>
 	 */
-	public void setCaption(java.lang.String value) {
-		setValue(org.openforis.calc.persistence.jooq.tables.CalculationStepTable.CALCULATION_STEP.CAPTION, value);
+	public void setName(java.lang.String value) {
+		setValue(org.openforis.calc.persistence.jooq.tables.CalculationStepTable.CALCULATION_STEP.NAME, value);
 	}
 
 	/**
-	 * The table column <code>calc.calculation_step.caption</code>
+	 * The table column <code>calc.calculation_step.name</code>
 	 */
-	public java.lang.String getCaption() {
-		return getValue(org.openforis.calc.persistence.jooq.tables.CalculationStepTable.CALCULATION_STEP.CAPTION);
+	public java.lang.String getName() {
+		return getValue(org.openforis.calc.persistence.jooq.tables.CalculationStepTable.CALCULATION_STEP.NAME);
 	}
 
 	/**

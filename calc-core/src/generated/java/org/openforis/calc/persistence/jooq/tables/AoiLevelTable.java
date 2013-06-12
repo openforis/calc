@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables;
 @java.lang.SuppressWarnings("all")
 public class AoiLevelTable extends org.jooq.impl.UpdatableTableImpl<org.openforis.calc.persistence.jooq.tables.records.AoiLevelRecord> {
 
-	private static final long serialVersionUID = -1029783213;
+	private static final long serialVersionUID = -1693846720;
 
 	/**
 	 * The singleton instance of calc.aoi_level
@@ -45,9 +45,9 @@ public class AoiLevelTable extends org.jooq.impl.UpdatableTableImpl<org.openfori
 	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.AoiLevelRecord, java.lang.Integer> AOI_HIERARCHY_ID = createField("aoi_hierarchy_id", org.jooq.impl.SQLDataType.INTEGER, this);
 
 	/**
-	 * The table column <code>calc.aoi_level.caption</code>
+	 * The table column <code>calc.aoi_level.name</code>
 	 */
-	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.AoiLevelRecord, java.lang.String> CAPTION = createField("caption", org.jooq.impl.SQLDataType.VARCHAR, this);
+	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.AoiLevelRecord, java.lang.String> NAME = createField("name", org.jooq.impl.SQLDataType.VARCHAR, this);
 
 	/**
 	 * The table column <code>calc.aoi_level.rank</code>
@@ -55,11 +55,11 @@ public class AoiLevelTable extends org.jooq.impl.UpdatableTableImpl<org.openfori
 	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.AoiLevelRecord, java.lang.Integer> RANK = createField("rank", org.jooq.impl.SQLDataType.INTEGER, this);
 
 	public AoiLevelTable() {
-		super("aoi_level", org.openforis.calc.persistence.jooq.CalcTable.CALC);
+		super("aoi_level", org.openforis.calc.persistence.jooq.CalcSchema.CALC);
 	}
 
 	public AoiLevelTable(java.lang.String alias) {
-		super(alias, org.openforis.calc.persistence.jooq.CalcTable.CALC, org.openforis.calc.persistence.jooq.tables.AoiLevelTable.AOI_LEVEL);
+		super(alias, org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.openforis.calc.persistence.jooq.tables.AoiLevelTable.AOI_LEVEL);
 	}
 
 	@Override

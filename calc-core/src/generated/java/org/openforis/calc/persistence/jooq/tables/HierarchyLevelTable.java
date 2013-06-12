@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables;
 @java.lang.SuppressWarnings("all")
 public class HierarchyLevelTable extends org.jooq.impl.UpdatableTableImpl<org.openforis.calc.persistence.jooq.tables.records.HierarchyLevelRecord> {
 
-	private static final long serialVersionUID = -417635430;
+	private static final long serialVersionUID = 214866451;
 
 	/**
 	 * The singleton instance of calc.hierarchy_level
@@ -45,9 +45,9 @@ public class HierarchyLevelTable extends org.jooq.impl.UpdatableTableImpl<org.op
 	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.HierarchyLevelRecord, java.lang.Integer> HIERARCHY_ID = createField("hierarchy_id", org.jooq.impl.SQLDataType.INTEGER, this);
 
 	/**
-	 * The table column <code>calc.hierarchy_level.caption</code>
+	 * The table column <code>calc.hierarchy_level.name</code>
 	 */
-	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.HierarchyLevelRecord, java.lang.String> CAPTION = createField("caption", org.jooq.impl.SQLDataType.VARCHAR, this);
+	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.HierarchyLevelRecord, java.lang.String> NAME = createField("name", org.jooq.impl.SQLDataType.VARCHAR, this);
 
 	/**
 	 * The table column <code>calc.hierarchy_level.description</code>
@@ -65,11 +65,11 @@ public class HierarchyLevelTable extends org.jooq.impl.UpdatableTableImpl<org.op
 	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.HierarchyLevelRecord, java.lang.Integer> RANK = createField("rank", org.jooq.impl.SQLDataType.INTEGER, this);
 
 	public HierarchyLevelTable() {
-		super("hierarchy_level", org.openforis.calc.persistence.jooq.CalcTable.CALC);
+		super("hierarchy_level", org.openforis.calc.persistence.jooq.CalcSchema.CALC);
 	}
 
 	public HierarchyLevelTable(java.lang.String alias) {
-		super(alias, org.openforis.calc.persistence.jooq.CalcTable.CALC, org.openforis.calc.persistence.jooq.tables.HierarchyLevelTable.HIERARCHY_LEVEL);
+		super(alias, org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.openforis.calc.persistence.jooq.tables.HierarchyLevelTable.HIERARCHY_LEVEL);
 	}
 
 	@Override

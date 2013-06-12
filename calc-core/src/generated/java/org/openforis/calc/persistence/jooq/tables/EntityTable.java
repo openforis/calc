@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables;
 @java.lang.SuppressWarnings("all")
 public class EntityTable extends org.jooq.impl.UpdatableTableImpl<org.openforis.calc.persistence.jooq.tables.records.EntityRecord> {
 
-	private static final long serialVersionUID = 1491018934;
+	private static final long serialVersionUID = -1537822714;
 
 	/**
 	 * The singleton instance of calc.entity
@@ -50,7 +50,7 @@ public class EntityTable extends org.jooq.impl.UpdatableTableImpl<org.openforis.
 	 * This column is part of a FOREIGN KEY: <code><pre>
 	 * CONSTRAINT entity__entity_data_table_fkey
 	 * FOREIGN KEY (data_table_id)
-	 * REFERENCES calc.table_metadata (id)
+	 * REFERENCES calc.dbtable (id)
 	 * </pre></code>
 	 */
 	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.EntityRecord, java.lang.Integer> DATA_TABLE_ID = createField("data_table_id", org.jooq.impl.SQLDataType.INTEGER, this);
@@ -87,11 +87,11 @@ public class EntityTable extends org.jooq.impl.UpdatableTableImpl<org.openforis.
 	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.EntityRecord, java.lang.Integer> SORT_ORDER = createField("sort_order", org.jooq.impl.SQLDataType.INTEGER, this);
 
 	public EntityTable() {
-		super("entity", org.openforis.calc.persistence.jooq.CalcTable.CALC);
+		super("entity", org.openforis.calc.persistence.jooq.CalcSchema.CALC);
 	}
 
 	public EntityTable(java.lang.String alias) {
-		super(alias, org.openforis.calc.persistence.jooq.CalcTable.CALC, org.openforis.calc.persistence.jooq.tables.EntityTable.ENTITY);
+		super(alias, org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.openforis.calc.persistence.jooq.tables.EntityTable.ENTITY);
 	}
 
 	@Override

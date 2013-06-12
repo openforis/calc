@@ -11,16 +11,12 @@ import javax.persistence.Column;
  * @author M. Togna
  */
 public abstract class UserObject implements Identifiable {
-	@Column(name = "id")
 	private Integer id;
-	
-	@Column(name = "name")
 	private String name;
-	
-	@Column(name = "description")
 	private String description;
 
 	@Override
+	@Column(name = "id")
 	public void setId(Integer id) {
 		this.id = id;
 	}
@@ -30,6 +26,7 @@ public abstract class UserObject implements Identifiable {
 		return this.id;
 	}
 
+	@Column(name = "name")
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -38,6 +35,7 @@ public abstract class UserObject implements Identifiable {
 		return this.name;
 	}
 
+	@Column(name = "description")
 	public void setDescription(String description) {
 		this.description = description;
 	}

@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables.records;
 @java.lang.SuppressWarnings("all")
 public class EntityRecord extends org.jooq.impl.UpdatableRecordImpl<org.openforis.calc.persistence.jooq.tables.records.EntityRecord> {
 
-	private static final long serialVersionUID = 1677304934;
+	private static final long serialVersionUID = -1330493978;
 
 	/**
 	 * The table column <code>calc.entity.id</code>
@@ -128,7 +128,7 @@ public class EntityRecord extends org.jooq.impl.UpdatableRecordImpl<org.openfori
 	 * This column is part of a FOREIGN KEY: <code><pre>
 	 * CONSTRAINT entity__entity_data_table_fkey
 	 * FOREIGN KEY (data_table_id)
-	 * REFERENCES calc.table_metadata (id)
+	 * REFERENCES calc.dbtable (id)
 	 * </pre></code>
 	 */
 	public void setDataTableId(java.lang.Integer value) {
@@ -141,7 +141,7 @@ public class EntityRecord extends org.jooq.impl.UpdatableRecordImpl<org.openfori
 	 * This column is part of a FOREIGN KEY: <code><pre>
 	 * CONSTRAINT entity__entity_data_table_fkey
 	 * FOREIGN KEY (data_table_id)
-	 * REFERENCES calc.table_metadata (id)
+	 * REFERENCES calc.dbtable (id)
 	 * </pre></code>
 	 */
 	public java.lang.Integer getDataTableId() {
@@ -149,15 +149,15 @@ public class EntityRecord extends org.jooq.impl.UpdatableRecordImpl<org.openfori
 	}
 
 	/**
-	 * Link this record to a given {@link org.openforis.calc.persistence.jooq.tables.records.TableMetadataRecord 
-	 * TableMetadataRecord}
+	 * Link this record to a given {@link org.openforis.calc.persistence.jooq.tables.records.DbtableRecord 
+	 * DbtableRecord}
 	 */
-	public void setDataTableId(org.openforis.calc.persistence.jooq.tables.records.TableMetadataRecord value) {
+	public void setDataTableId(org.openforis.calc.persistence.jooq.tables.records.DbtableRecord value) {
 		if (value == null) {
 			setValue(org.openforis.calc.persistence.jooq.tables.EntityTable.ENTITY.DATA_TABLE_ID, null);
 		}
 		else {
-			setValue(org.openforis.calc.persistence.jooq.tables.EntityTable.ENTITY.DATA_TABLE_ID, value.getValue(org.openforis.calc.persistence.jooq.tables.TableMetadataTable.TABLE_METADATA.ID));
+			setValue(org.openforis.calc.persistence.jooq.tables.EntityTable.ENTITY.DATA_TABLE_ID, value.getValue(org.openforis.calc.persistence.jooq.tables.DbtableTable.DBTABLE.ID));
 		}
 	}
 
@@ -167,13 +167,13 @@ public class EntityRecord extends org.jooq.impl.UpdatableRecordImpl<org.openfori
 	 * This column is part of a FOREIGN KEY: <code><pre>
 	 * CONSTRAINT entity__entity_data_table_fkey
 	 * FOREIGN KEY (data_table_id)
-	 * REFERENCES calc.table_metadata (id)
+	 * REFERENCES calc.dbtable (id)
 	 * </pre></code>
 	 */
-	public org.openforis.calc.persistence.jooq.tables.records.TableMetadataRecord fetchTableMetadataTable() {
+	public org.openforis.calc.persistence.jooq.tables.records.DbtableRecord fetchDbtableTable() {
 		return create()
-			.selectFrom(org.openforis.calc.persistence.jooq.tables.TableMetadataTable.TABLE_METADATA)
-			.where(org.openforis.calc.persistence.jooq.tables.TableMetadataTable.TABLE_METADATA.ID.equal(getValue(org.openforis.calc.persistence.jooq.tables.EntityTable.ENTITY.DATA_TABLE_ID)))
+			.selectFrom(org.openforis.calc.persistence.jooq.tables.DbtableTable.DBTABLE)
+			.where(org.openforis.calc.persistence.jooq.tables.DbtableTable.DBTABLE.ID.equal(getValue(org.openforis.calc.persistence.jooq.tables.EntityTable.ENTITY.DATA_TABLE_ID)))
 			.fetchOne();
 	}
 

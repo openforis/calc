@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables;
 @java.lang.SuppressWarnings("all")
 public class AoiTable extends org.jooq.impl.UpdatableTableImpl<org.openforis.calc.persistence.jooq.tables.records.AoiRecord> {
 
-	private static final long serialVersionUID = -936097084;
+	private static final long serialVersionUID = -700435309;
 
 	/**
 	 * The singleton instance of calc.aoi
@@ -61,9 +61,9 @@ public class AoiTable extends org.jooq.impl.UpdatableTableImpl<org.openforis.cal
 	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.AoiRecord, java.lang.String> CODE = createField("code", org.jooq.impl.SQLDataType.VARCHAR, this);
 
 	/**
-	 * The table column <code>calc.aoi.caption</code>
+	 * The table column <code>calc.aoi.name</code>
 	 */
-	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.AoiRecord, java.lang.String> CAPTION = createField("caption", org.jooq.impl.SQLDataType.VARCHAR, this);
+	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.AoiRecord, java.lang.String> NAME = createField("name", org.jooq.impl.SQLDataType.VARCHAR, this);
 
 	/**
 	 * The table column <code>calc.aoi.shape</code>
@@ -84,11 +84,11 @@ public class AoiTable extends org.jooq.impl.UpdatableTableImpl<org.openforis.cal
 	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.AoiRecord, java.math.BigDecimal> LAND_AREA = createField("land_area", org.jooq.impl.SQLDataType.NUMERIC, this);
 
 	public AoiTable() {
-		super("aoi", org.openforis.calc.persistence.jooq.CalcTable.CALC);
+		super("aoi", org.openforis.calc.persistence.jooq.CalcSchema.CALC);
 	}
 
 	public AoiTable(java.lang.String alias) {
-		super(alias, org.openforis.calc.persistence.jooq.CalcTable.CALC, org.openforis.calc.persistence.jooq.tables.AoiTable.AOI);
+		super(alias, org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.openforis.calc.persistence.jooq.tables.AoiTable.AOI);
 	}
 
 	@Override

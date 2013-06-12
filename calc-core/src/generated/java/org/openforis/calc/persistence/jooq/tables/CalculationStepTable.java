@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables;
 @java.lang.SuppressWarnings("all")
 public class CalculationStepTable extends org.jooq.impl.UpdatableTableImpl<org.openforis.calc.persistence.jooq.tables.records.CalculationStepRecord> {
 
-	private static final long serialVersionUID = 1659985954;
+	private static final long serialVersionUID = -110831401;
 
 	/**
 	 * The singleton instance of calc.calculation_step
@@ -65,9 +65,9 @@ public class CalculationStepTable extends org.jooq.impl.UpdatableTableImpl<org.o
 	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.CalculationStepRecord, java.lang.String> OPERATION_NAME = createField("operation_name", org.jooq.impl.SQLDataType.VARCHAR, this);
 
 	/**
-	 * The table column <code>calc.calculation_step.caption</code>
+	 * The table column <code>calc.calculation_step.name</code>
 	 */
-	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.CalculationStepRecord, java.lang.String> CAPTION = createField("caption", org.jooq.impl.SQLDataType.VARCHAR, this);
+	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.CalculationStepRecord, java.lang.String> NAME = createField("name", org.jooq.impl.SQLDataType.VARCHAR, this);
 
 	/**
 	 * The table column <code>calc.calculation_step.description</code>
@@ -80,11 +80,11 @@ public class CalculationStepTable extends org.jooq.impl.UpdatableTableImpl<org.o
 	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.CalculationStepRecord, java.lang.String> PARAMETERS = createField("parameters", org.jooq.impl.SQLDataType.CLOB, this);
 
 	public CalculationStepTable() {
-		super("calculation_step", org.openforis.calc.persistence.jooq.CalcTable.CALC);
+		super("calculation_step", org.openforis.calc.persistence.jooq.CalcSchema.CALC);
 	}
 
 	public CalculationStepTable(java.lang.String alias) {
-		super(alias, org.openforis.calc.persistence.jooq.CalcTable.CALC, org.openforis.calc.persistence.jooq.tables.CalculationStepTable.CALCULATION_STEP);
+		super(alias, org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.openforis.calc.persistence.jooq.tables.CalculationStepTable.CALCULATION_STEP);
 	}
 
 	@Override

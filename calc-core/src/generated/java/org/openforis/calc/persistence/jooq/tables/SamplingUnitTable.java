@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables;
 @java.lang.SuppressWarnings("all")
 public class SamplingUnitTable extends org.jooq.impl.UpdatableTableImpl<org.openforis.calc.persistence.jooq.tables.records.SamplingUnitRecord> {
 
-	private static final long serialVersionUID = 1274662972;
+	private static final long serialVersionUID = -2042595034;
 
 	/**
 	 * The singleton instance of calc.sampling_unit
@@ -91,11 +91,11 @@ public class SamplingUnitTable extends org.jooq.impl.UpdatableTableImpl<org.open
 	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.SamplingUnitRecord, java.lang.Boolean> PERMANENT = createField("permanent", org.jooq.impl.SQLDataType.BOOLEAN, this);
 
 	public SamplingUnitTable() {
-		super("sampling_unit", org.openforis.calc.persistence.jooq.CalcTable.CALC);
+		super("sampling_unit", org.openforis.calc.persistence.jooq.CalcSchema.CALC);
 	}
 
 	public SamplingUnitTable(java.lang.String alias) {
-		super(alias, org.openforis.calc.persistence.jooq.CalcTable.CALC, org.openforis.calc.persistence.jooq.tables.SamplingUnitTable.SAMPLING_UNIT);
+		super(alias, org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.openforis.calc.persistence.jooq.tables.SamplingUnitTable.SAMPLING_UNIT);
 	}
 
 	@Override

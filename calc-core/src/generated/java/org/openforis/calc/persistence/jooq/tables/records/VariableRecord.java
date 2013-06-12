@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables.records;
 @java.lang.SuppressWarnings("all")
 public class VariableRecord extends org.jooq.impl.UpdatableRecordImpl<org.openforis.calc.persistence.jooq.tables.records.VariableRecord> {
 
-	private static final long serialVersionUID = -1254889711;
+	private static final long serialVersionUID = 1544675508;
 
 	/**
 	 * The table column <code>calc.variable.id</code>
@@ -114,9 +114,9 @@ public class VariableRecord extends org.jooq.impl.UpdatableRecordImpl<org.openfo
 	 * The table column <code>calc.variable.value_column_id</code>
 	 * <p>
 	 * This column is part of a FOREIGN KEY: <code><pre>
-	 * CONSTRAINT variable__FKvariable152814
+	 * CONSTRAINT variable__FKvariable342421
 	 * FOREIGN KEY (value_column_id)
-	 * REFERENCES calc.column_metadata (id)
+	 * REFERENCES calc.dbcolumn (id)
 	 * </pre></code>
 	 */
 	public void setValueColumnId(java.lang.Integer value) {
@@ -127,9 +127,9 @@ public class VariableRecord extends org.jooq.impl.UpdatableRecordImpl<org.openfo
 	 * The table column <code>calc.variable.value_column_id</code>
 	 * <p>
 	 * This column is part of a FOREIGN KEY: <code><pre>
-	 * CONSTRAINT variable__FKvariable152814
+	 * CONSTRAINT variable__FKvariable342421
 	 * FOREIGN KEY (value_column_id)
-	 * REFERENCES calc.column_metadata (id)
+	 * REFERENCES calc.dbcolumn (id)
 	 * </pre></code>
 	 */
 	public java.lang.Integer getValueColumnId() {
@@ -137,15 +137,15 @@ public class VariableRecord extends org.jooq.impl.UpdatableRecordImpl<org.openfo
 	}
 
 	/**
-	 * Link this record to a given {@link org.openforis.calc.persistence.jooq.tables.records.ColumnMetadataRecord 
-	 * ColumnMetadataRecord}
+	 * Link this record to a given {@link org.openforis.calc.persistence.jooq.tables.records.DbcolumnRecord 
+	 * DbcolumnRecord}
 	 */
-	public void setValueColumnId(org.openforis.calc.persistence.jooq.tables.records.ColumnMetadataRecord value) {
+	public void setValueColumnId(org.openforis.calc.persistence.jooq.tables.records.DbcolumnRecord value) {
 		if (value == null) {
 			setValue(org.openforis.calc.persistence.jooq.tables.VariableTable.VARIABLE.VALUE_COLUMN_ID, null);
 		}
 		else {
-			setValue(org.openforis.calc.persistence.jooq.tables.VariableTable.VARIABLE.VALUE_COLUMN_ID, value.getValue(org.openforis.calc.persistence.jooq.tables.ColumnMetadataTable.COLUMN_METADATA.ID));
+			setValue(org.openforis.calc.persistence.jooq.tables.VariableTable.VARIABLE.VALUE_COLUMN_ID, value.getValue(org.openforis.calc.persistence.jooq.tables.DbcolumnTable.DBCOLUMN.ID));
 		}
 	}
 
@@ -153,15 +153,15 @@ public class VariableRecord extends org.jooq.impl.UpdatableRecordImpl<org.openfo
 	 * The table column <code>calc.variable.value_column_id</code>
 	 * <p>
 	 * This column is part of a FOREIGN KEY: <code><pre>
-	 * CONSTRAINT variable__FKvariable152814
+	 * CONSTRAINT variable__FKvariable342421
 	 * FOREIGN KEY (value_column_id)
-	 * REFERENCES calc.column_metadata (id)
+	 * REFERENCES calc.dbcolumn (id)
 	 * </pre></code>
 	 */
-	public org.openforis.calc.persistence.jooq.tables.records.ColumnMetadataRecord fetchColumnMetadataTable() {
+	public org.openforis.calc.persistence.jooq.tables.records.DbcolumnRecord fetchDbcolumnTable() {
 		return create()
-			.selectFrom(org.openforis.calc.persistence.jooq.tables.ColumnMetadataTable.COLUMN_METADATA)
-			.where(org.openforis.calc.persistence.jooq.tables.ColumnMetadataTable.COLUMN_METADATA.ID.equal(getValue(org.openforis.calc.persistence.jooq.tables.VariableTable.VARIABLE.VALUE_COLUMN_ID)))
+			.selectFrom(org.openforis.calc.persistence.jooq.tables.DbcolumnTable.DBCOLUMN)
+			.where(org.openforis.calc.persistence.jooq.tables.DbcolumnTable.DBCOLUMN.ID.equal(getValue(org.openforis.calc.persistence.jooq.tables.VariableTable.VARIABLE.VALUE_COLUMN_ID)))
 			.fetchOne();
 	}
 
@@ -171,7 +171,7 @@ public class VariableRecord extends org.jooq.impl.UpdatableRecordImpl<org.openfo
 	 * This column is part of a FOREIGN KEY: <code><pre>
 	 * CONSTRAINT variable__variable_code_list_table_fkey
 	 * FOREIGN KEY (code_list_table_id)
-	 * REFERENCES calc.table_metadata (id)
+	 * REFERENCES calc.dbtable (id)
 	 * </pre></code>
 	 */
 	public void setCodeListTableId(java.lang.Integer value) {
@@ -184,7 +184,7 @@ public class VariableRecord extends org.jooq.impl.UpdatableRecordImpl<org.openfo
 	 * This column is part of a FOREIGN KEY: <code><pre>
 	 * CONSTRAINT variable__variable_code_list_table_fkey
 	 * FOREIGN KEY (code_list_table_id)
-	 * REFERENCES calc.table_metadata (id)
+	 * REFERENCES calc.dbtable (id)
 	 * </pre></code>
 	 */
 	public java.lang.Integer getCodeListTableId() {
@@ -192,15 +192,15 @@ public class VariableRecord extends org.jooq.impl.UpdatableRecordImpl<org.openfo
 	}
 
 	/**
-	 * Link this record to a given {@link org.openforis.calc.persistence.jooq.tables.records.TableMetadataRecord 
-	 * TableMetadataRecord}
+	 * Link this record to a given {@link org.openforis.calc.persistence.jooq.tables.records.DbtableRecord 
+	 * DbtableRecord}
 	 */
-	public void setCodeListTableId(org.openforis.calc.persistence.jooq.tables.records.TableMetadataRecord value) {
+	public void setCodeListTableId(org.openforis.calc.persistence.jooq.tables.records.DbtableRecord value) {
 		if (value == null) {
 			setValue(org.openforis.calc.persistence.jooq.tables.VariableTable.VARIABLE.CODE_LIST_TABLE_ID, null);
 		}
 		else {
-			setValue(org.openforis.calc.persistence.jooq.tables.VariableTable.VARIABLE.CODE_LIST_TABLE_ID, value.getValue(org.openforis.calc.persistence.jooq.tables.TableMetadataTable.TABLE_METADATA.ID));
+			setValue(org.openforis.calc.persistence.jooq.tables.VariableTable.VARIABLE.CODE_LIST_TABLE_ID, value.getValue(org.openforis.calc.persistence.jooq.tables.DbtableTable.DBTABLE.ID));
 		}
 	}
 
@@ -210,13 +210,13 @@ public class VariableRecord extends org.jooq.impl.UpdatableRecordImpl<org.openfo
 	 * This column is part of a FOREIGN KEY: <code><pre>
 	 * CONSTRAINT variable__variable_code_list_table_fkey
 	 * FOREIGN KEY (code_list_table_id)
-	 * REFERENCES calc.table_metadata (id)
+	 * REFERENCES calc.dbtable (id)
 	 * </pre></code>
 	 */
-	public org.openforis.calc.persistence.jooq.tables.records.TableMetadataRecord fetchTableMetadataTable() {
+	public org.openforis.calc.persistence.jooq.tables.records.DbtableRecord fetchDbtableTable() {
 		return create()
-			.selectFrom(org.openforis.calc.persistence.jooq.tables.TableMetadataTable.TABLE_METADATA)
-			.where(org.openforis.calc.persistence.jooq.tables.TableMetadataTable.TABLE_METADATA.ID.equal(getValue(org.openforis.calc.persistence.jooq.tables.VariableTable.VARIABLE.CODE_LIST_TABLE_ID)))
+			.selectFrom(org.openforis.calc.persistence.jooq.tables.DbtableTable.DBTABLE)
+			.where(org.openforis.calc.persistence.jooq.tables.DbtableTable.DBTABLE.ID.equal(getValue(org.openforis.calc.persistence.jooq.tables.VariableTable.VARIABLE.CODE_LIST_TABLE_ID)))
 			.fetchOne();
 	}
 

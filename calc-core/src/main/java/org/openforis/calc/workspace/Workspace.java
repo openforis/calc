@@ -15,17 +15,16 @@ import org.openforis.calc.metadata.Entity;
  * @author G. Miceli
  * @author M. Togna
  */
-@Table(schema="calc", name="workspace")
+@Table(name = "workspace")
 public final class Workspace extends UserObject {
-	@Column(name = "input_schema")
 	private String inputSchema;
 	
-	@Column(name = "output_schema")
 	private String outputSchema;
 	
 	private ArrayList<Entity> entities = new ArrayList<Entity>();
 	private ArrayList<ProcessingChain> processingChains = new ArrayList<ProcessingChain>();
 
+	@Column(name = "input_schema")
 	public void setInputSchema(String inputSchema) {
 		this.inputSchema = inputSchema;
 	}
@@ -34,6 +33,7 @@ public final class Workspace extends UserObject {
 		return this.inputSchema;
 	}
 
+	@Column(name = "output_schema")
 	public void setOutputSchema(String outputSchema) {
 		this.outputSchema = outputSchema;
 	}

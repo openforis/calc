@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables.records;
 @java.lang.SuppressWarnings("all")
 public class AoiLevelRecord extends org.jooq.impl.UpdatableRecordImpl<org.openforis.calc.persistence.jooq.tables.records.AoiLevelRecord> {
 
-	private static final long serialVersionUID = 1113961337;
+	private static final long serialVersionUID = 1505627679;
 
 	/**
 	 * The table column <code>calc.aoi_level.id</code>
@@ -99,17 +99,17 @@ public class AoiLevelRecord extends org.jooq.impl.UpdatableRecordImpl<org.openfo
 	}
 
 	/**
-	 * The table column <code>calc.aoi_level.caption</code>
+	 * The table column <code>calc.aoi_level.name</code>
 	 */
-	public void setCaption(java.lang.String value) {
-		setValue(org.openforis.calc.persistence.jooq.tables.AoiLevelTable.AOI_LEVEL.CAPTION, value);
+	public void setName(java.lang.String value) {
+		setValue(org.openforis.calc.persistence.jooq.tables.AoiLevelTable.AOI_LEVEL.NAME, value);
 	}
 
 	/**
-	 * The table column <code>calc.aoi_level.caption</code>
+	 * The table column <code>calc.aoi_level.name</code>
 	 */
-	public java.lang.String getCaption() {
-		return getValue(org.openforis.calc.persistence.jooq.tables.AoiLevelTable.AOI_LEVEL.CAPTION);
+	public java.lang.String getName() {
+		return getValue(org.openforis.calc.persistence.jooq.tables.AoiLevelTable.AOI_LEVEL.NAME);
 	}
 
 	/**
