@@ -45,4 +45,9 @@ public abstract class UserObject implements Identifiable {
 	public String getDescription() {
 		return this.description;
 	}
+	
+	@Override
+	public String toString() {
+		return name + " [" + id + "]";
+	}
 }
