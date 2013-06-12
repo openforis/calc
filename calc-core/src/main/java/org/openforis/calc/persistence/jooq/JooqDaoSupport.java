@@ -4,6 +4,7 @@ import java.sql.Connection;
 
 import org.jooq.DAO;
 import org.jooq.Table;
+import org.jooq.TableRecord;
 import org.jooq.UpdatableRecord;
 import org.jooq.impl.DAOImpl;
 import org.jooq.impl.Factory;
@@ -22,7 +23,7 @@ public class JooqDaoSupport extends JdbcDaoSupport {
 		return new DialectAwareJooqFactory(connection);
 	}
 
-	protected <R extends UpdatableRecord<R>,P,T> DAO<R, P, T> createJooqDao(Table<R> table, Class<P> type) {
+	protected <R extends TableRecord<R>,P,T> DAO<R, P, T> createJooqDao(Table<R> table, Class<P> type) {
 		Factory factory = createJooqFactory();
 		return new DAOImpl<R, P, T>(table, type, factory) {
 			@Override
