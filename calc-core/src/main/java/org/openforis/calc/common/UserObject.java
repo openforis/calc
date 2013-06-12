@@ -1,5 +1,7 @@
 package org.openforis.calc.common;
 
+import javax.persistence.Column;
+
 /**
  * Base class for user-controlled objects.  Since this base class also defines
  * mutator methods, is for use only by persistable objects whose name and
@@ -9,8 +11,13 @@ package org.openforis.calc.common;
  * @author M. Togna
  */
 public abstract class UserObject implements Identifiable {
+	@Column(name = "id")
 	private Integer id;
+	
+	@Column(name = "name")
 	private String name;
+	
+	@Column(name = "description")
 	private String description;
 
 	@Override

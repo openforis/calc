@@ -1,4 +1,4 @@
-package org.openforis.calc.geospatial;
+package org.openforis.calc.persistence.postgis;
 
 import org.postgis.PGgeometry;
 import org.postgis.Point;

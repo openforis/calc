@@ -12,8 +12,8 @@ import org.openforis.calc.common.UserObject;
  * @author M. Togna
  */
 public final class Entity extends UserObject {
-	private String name;
 	private Workspace workspace;
+	private String caption;
 	private Entity parent;
 	private ArrayList<Variable> variables = new ArrayList<Variable>();
 	private DataTable dataTable;
@@ -25,12 +25,12 @@ public final class Entity extends UserObject {
 	public DataTable getDataTable() {
 		return this.dataTable;
 	}
-
-	public void setName(String name) {
-		this.name = name;
+	
+	public String getCaption() {
+		return caption;
 	}
-
-	public String getName() {
-		return this.name;
+	
+	public void setCaption(String caption) {
+		this.caption = caption;
 	}
 }

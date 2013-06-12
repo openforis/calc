@@ -3,13 +3,15 @@ package org.openforis.calc.metadata;
 import org.openforis.calc.common.UserObject;
 
 /**
- * Base class for Calc variables.  Variables may be either categorical or quantitative.  Note that binary classes are special cases of categorical variables which accept TRUE, FALSE and NA values.
+ * Base class for Calc variables.  Variables may be either categorical or
+ * quantitative.  Note that binary classes are special cases of categorical
+ * variables which accept TRUE, FALSE and NA values.
  * 
  * @author G. Miceli
  * @author M. Togna
  */
 public abstract class Variable extends UserObject {
-	private String name;
+	private String caption;
 	private boolean cubeMember;
 	private int index;
 	private Entity entity;
@@ -32,12 +34,12 @@ public abstract class Variable extends UserObject {
 		return this.scale;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public String getCaption() {
+		return caption;
 	}
 
-	public String getName() {
-		return this.name;
+	public void setCaption(String caption) {
+		this.caption = caption;
 	}
 
 	public void setCubeMember(boolean cubeMember) {
@@ -55,9 +57,11 @@ public abstract class Variable extends UserObject {
 	public int getIndex() {
 		return this.index;
 	}
+
 	public enum Type {
 		QUANTITATIVE, CATEGORICAL;
 	}
+
 	public enum Scale {
 		NOMINAL, ORDINAL, BINARY, RATIO, INTERVAL, OTHER;
 

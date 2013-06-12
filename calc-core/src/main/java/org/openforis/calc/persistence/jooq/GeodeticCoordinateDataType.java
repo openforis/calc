@@ -6,7 +6,7 @@ package org.openforis.calc.persistence.jooq;
 import org.jooq.SQLDialect;
 import org.jooq.impl.AbstractDataType;
 import org.jooq.impl.SQLDataType;
-import org.openforis.calc.geospatial.GeodeticCoordinate;
+import org.openforis.calc.persistence.postgis.GeodeticCoordinate;
 
 /**
  * @author M. Togna

@@ -1,6 +1,9 @@
 package org.openforis.calc.workspace;
 
 import java.util.ArrayList;
+
+import javax.persistence.Column;
+
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.engine.ProcessingChain;
 import org.openforis.calc.common.UserObject;
@@ -12,7 +15,9 @@ import org.openforis.calc.common.UserObject;
  * @author M. Togna
  */
 public final class Workspace extends UserObject {
+	@Column(name = "input_schema")
 	private String inputSchema;
+	@Column(name = "output_schema")
 	private String outputSchema;
 	private ArrayList<Entity> entities = new ArrayList<Entity>();
 	private ArrayList<ProcessingChain> processingChains = new ArrayList<ProcessingChain>();
