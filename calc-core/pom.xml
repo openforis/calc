@@ -272,6 +272,11 @@
 			<artifactId>spring-tx</artifactId>
 		</dependency>
 		<dependency>
+		   <groupId>org.springframework</groupId>
+		   <artifactId>spring-orm</artifactId>
+		   <version>${spring.version}</version>
+		</dependency>		
+		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-jdbc</artifactId>
 		</dependency>
@@ -303,34 +308,39 @@
 	      <groupId>javax.annotation</groupId>
 	      <artifactId>jsr250-api</artifactId>
 	    </dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>javax.persistence</groupId> -->
+<!-- 			<artifactId>persistence-api</artifactId> -->
+<!-- 			<version>1.0.2</version> -->
+<!-- 		</dependency> -->
 		<dependency>
-			<groupId>javax.persistence</groupId>
-			<artifactId>persistence-api</artifactId>
-			<version>1.0.2</version>
-		</dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<version>4.2.1.Final</version>
+		</dependency>		
 		<dependency>
 			<groupId>org.apache.ddlutils</groupId>
 			<artifactId>ddlutils</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>pentaho</groupId>
-			<artifactId>mondrian</artifactId>
-			<exclusions>
-				<exclusion>
-					<artifactId>servlet-api</artifactId>
-					<groupId>javax.servlet</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.olap4j</groupId>
-			<artifactId>olap4j</artifactId>
-			<version>1.0.1.550</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jscience</groupId>
-			<artifactId>jscience</artifactId>
-			<version>4.3.1</version>
-		</dependency>		
+<!-- 		<dependency> -->
+<!-- 			<groupId>pentaho</groupId> -->
+<!-- 			<artifactId>mondrian</artifactId> -->
+<!-- 			<exclusions> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>servlet-api</artifactId> -->
+<!-- 					<groupId>javax.servlet</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 			</exclusions> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.olap4j</groupId> -->
+<!-- 			<artifactId>olap4j</artifactId> -->
+<!-- 			<version>1.0.1.550</version> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.jscience</groupId> -->
+<!-- 			<artifactId>jscience</artifactId> -->
+<!-- 			<version>4.3.1</version> -->
+<!-- 		</dependency>		 -->
 	</dependencies>
 </project>

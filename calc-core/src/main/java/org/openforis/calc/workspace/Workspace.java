@@ -1,12 +1,14 @@
 package org.openforis.calc.workspace;
 
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import javax.persistence.Column;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.openforis.calc.common.UserObject;
-import org.openforis.calc.engine.ProcessingChain;
 import org.openforis.calc.metadata.Entity;
 
 /**
@@ -15,16 +17,24 @@ import org.openforis.calc.metadata.Entity;
  * @author G. Miceli
  * @author M. Togna
  */
-@Table(name = "workspace")
+@javax.persistence.Entity
+@Table(schema = "calc", name = "workspace")
 public final class Workspace extends UserObject {
+	@Column(name = "input_schema")
 	private String inputSchema;
-	
+
+	@Column(name = "output_schema")
 	private String outputSchema;
 	
-	private ArrayList<Entity> entities = new ArrayList<Entity>();
-	private ArrayList<ProcessingChain> processingChains = new ArrayList<ProcessingChain>();
+	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER)
+	private List<Entity> entities;
+//	private List<ProcessingChain> processingChains;
 
-	@Column(name = "input_schema")
+	public Workspace() {
+//		this.entities = new ArrayList<Entity>();
+//		this.processingChains = new ArrayList<ProcessingChain>();
+	}
+	
 	public void setInputSchema(String inputSchema) {
 		this.inputSchema = inputSchema;
 	}
@@ -33,7 +43,6 @@ public final class Workspace extends UserObject {
 		return this.inputSchema;
 	}
 
-	@Column(name = "output_schema")
 	public void setOutputSchema(String outputSchema) {
 		this.outputSchema = outputSchema;
 	}
@@ -41,4 +50,16 @@ public final class Workspace extends UserObject {
 	public String getOutputSchema() {
 		return this.outputSchema;
 	}
+
+	public List<Entity> getEntities() {
+		return Collections.unmodifiableList(entities);
+	}
+//	
+//	void setEntities(List<Entity> entities) {
+//		this.entities = entities;
+//	}
+//
+//	void setProcessingChains(List<ProcessingChain> processingChains) {
+//		this.processingChains = processingChains;
+//	}
 }

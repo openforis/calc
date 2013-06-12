@@ -6,7 +6,7 @@ package org.openforis.calc.metadata;
  * @author G. Miceli
  * @author M. Togna
  */
-public final class DataTable extends Table {
+public final class DataTable extends AbstractDatabaseTable {
 	private Entity entity;
 
 	public Entity getEntity() {

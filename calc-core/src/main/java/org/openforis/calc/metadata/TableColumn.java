@@ -8,13 +8,13 @@ import org.openforis.calc.common.Identifiable;
  * @author G. Miceli
  * @author M. Togna
  */
-public class Column implements Identifiable {
+public final class TableColumn implements Identifiable {
 	private Integer id;
 	private String name;
 	private String type;
-	private Table table;
+	private AbstractDatabaseTable table;
 
-	public Table getTable() {
+	public AbstractDatabaseTable getTable() {
 		return this.table;
 	}
 

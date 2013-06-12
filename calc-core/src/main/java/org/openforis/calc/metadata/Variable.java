@@ -16,7 +16,7 @@ public abstract class Variable extends UserObject {
 	private int index;
 	private Entity entity;
 	private org.openforis.calc.metadata.Variable.Scale scale;
-	private Column valueColumn;
+	private TableColumn valueColumn;
 
 	public org.openforis.calc.metadata.Variable.Type getType() {
 		throw new UnsupportedOperationException();

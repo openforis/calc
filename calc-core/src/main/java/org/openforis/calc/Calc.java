@@ -1,7 +1,12 @@
 package org.openforis.calc;
 
+import java.util.List;
+
+import javax.persistence.EntityManagerFactory;
+
+import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.workspace.Workspace;
-import org.openforis.calc.workspace.WorkspaceManager;
+import org.openforis.calc.workspace.WorkspaceService;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
@@ -9,19 +14,20 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  */
 public abstract class Calc {
 	private Calc() {
-		// Do not allow subclassing or instantiation
+		// Restrict sub-classing or instantiation
 	}
 	
 	public static void main(String[] args) {
 		try {
 			ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
-			WorkspaceManager wmgr = ctx.getBean(WorkspaceManager.class);
-
-//			String mdxFileName = ctx.getBeanFactory().resolveEmbeddedValue("${mdxOutputPath}");
-			
+			EntityManagerFactory emf = ctx.getBean(EntityManagerFactory.class);
+			WorkspaceService wmgr = ctx.getBean(WorkspaceService.class);
 			Workspace w = wmgr.getWorkspace(1);
-			
 			System.out.println(w);
+			List<Entity> es = w.getEntities();
+			for (Entity entity : es) {
+				System.out.println(entity + " <- " + entity.getWorkspace());
+			}
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}

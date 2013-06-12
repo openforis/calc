@@ -20,12 +20,30 @@
     http://www.springframework.org/schema/tx/spring-tx-3.0.xsd"
 	default-lazy-init="true">
 
-	<!-- Spring -->
-	<context:component-scan base-package="org.openforis.calc" />
-
+	<!-- Tell Spring to scan our packages for annotations -->
 	<context:annotation-config />
+	<context:component-scan base-package="org.openforis.calc" />
 	
 	<context:property-placeholder location="classpath:dev.properties" />
+	
+    <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
+
+	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"> 
+	    <property name="persistenceUnitName" value="calcPersistenceUnit" />
+	    <property name="dataSource" ref="dataSource" />
+	    <property name="jpaVendorAdapter"> 
+	        <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"> 
+	            <property name="databasePlatform" value="org.hibernate.dialect.PostgreSQLDialect" /> 
+	            <property name="showSql" value="true" /> 
+	            <property name="generateDdl" value="false" />
+	        </bean> 
+	    </property>
+		<property name="jpaProperties">
+			<props>
+				<prop key="hibernate.default_schema">calc</prop>
+			</props>
+		</property>	    
+	</bean>
 	
 	  <bean id="log4jInitializer" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
 		<property name="staticMethod">
@@ -45,15 +63,14 @@
 
 	<bean id="validator" class="org.openforis.idm.metamodel.validation.Validator" />
 	
-	<bean id="collectSurveyContext" class="org.openforis.collect.model.CollectSurveyContext">
-        <constructor-arg><ref bean="expressionFactory"/></constructor-arg>
-        <constructor-arg><ref bean="validator"/></constructor-arg>
-<!--         <constructor-arg><null/></constructor-arg> -->
-    </bean>
+<!-- 	<bean id="collectSurveyContext" class="org.openforis.collect.model.CollectSurveyContext"> -->
+<!--         <constructor-arg><ref bean="expressionFactory"/></constructor-arg> -->
+<!--         <constructor-arg><ref bean="validator"/></constructor-arg> -->
+<!--     </bean> -->
     
-    <bean id="idmlBinder" class="org.openforis.collect.persistence.xml.CollectSurveyIdmlBinder">
-    	<constructor-arg><ref bean="collectSurveyContext"/></constructor-arg>
-    </bean>
+<!--     <bean id="idmlBinder" class="org.openforis.collect.persistence.xml.CollectSurveyIdmlBinder"> -->
+<!--     	<constructor-arg><ref bean="collectSurveyContext"/></constructor-arg> -->
+<!--     </bean> -->
     
 	<!-- Database -->
 	<bean id="dataSource" destroy-method="close" class="org.apache.commons.dbcp.BasicDataSource">
@@ -65,10 +82,9 @@
     	<property name="minIdle" value="5"/>     	
 	</bean>
 		
-    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-    	<property name="dataSource" ref="dataSource"/>
-    </bean>
+<!--     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager"> -->
+<!--     	<property name="dataSource" ref="dataSource"/> -->
+<!--     </bean> -->
     
-    <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
     
 </beans>

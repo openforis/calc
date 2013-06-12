@@ -1,6 +1,10 @@
 package org.openforis.calc.common;
 
 import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 
 /**
  * Base class for user-controlled objects.  Since this base class also defines
@@ -10,13 +14,18 @@ import javax.persistence.Column;
  * @author G. Miceli
  * @author M. Togna
  */
+@MappedSuperclass
 public abstract class UserObject implements Identifiable {
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	@Column(name = "id")
 	private Integer id;
+	@Column(name = "name")
 	private String name;
+	@Column(name = "description")
 	private String description;
 
 	@Override
-	@Column(name = "id")
 	public void setId(Integer id) {
 		this.id = id;
 	}
@@ -26,7 +35,6 @@ public abstract class UserObject implements Identifiable {
 		return this.id;
 	}
 
-	@Column(name = "name")
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -35,7 +43,6 @@ public abstract class UserObject implements Identifiable {
 		return this.name;
 	}
 
-	@Column(name = "description")
 	public void setDescription(String description) {
 		this.description = description;
 	}
