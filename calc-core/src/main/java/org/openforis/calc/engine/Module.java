@@ -13,29 +13,29 @@ import org.openforis.calc.nls.Captionable;
  * @author M. Togna
  */
 public abstract class Module implements Captionable {
-	private String name;
-	private String version;
-	private List<Operation> operations;
+	private final String name;
+	private final String version;
+	private final List<Operation<?>> operations;
 
 	protected Module(String name, String version) {
 		this.name = name;
 		this.version = version;
-		this.operations = new ArrayList<Operation>();
+		this.operations = new ArrayList<Operation<?>>();
 	}
 
-	protected void registerOperation(Operation operation) {
+	protected final void registerOperation(Operation<?> operation) {
 		operations.add(operation);
 	}
 	
-	public final List<Operation> getOperations() {
+	public final List<Operation<?>> getOperations() {
 		return Collections.unmodifiableList(operations);
 	}
 	
-	public String getName() {
+	public final String getName() {
 		return name;
 	}
 	
-	public String getVersion() {
+	public final String getVersion() {
 		return version;
 	}
 }

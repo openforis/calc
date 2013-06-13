@@ -41,6 +41,8 @@
 		<property name="jpaProperties">
 			<props>
 				<prop key="hibernate.default_schema">calc</prop>
+<!-- 				<prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop> -->
+<!-- 				<prop key="hibernate.sql.syntax_pgs">true</prop> -->
 			</props>
 		</property>	    
 	</bean>

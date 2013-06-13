@@ -32,7 +32,7 @@ public abstract class Job extends Task implements Iterable<Task> {
 	/**
 	 * Runs each contained task in order.
 	 */
-	public final void run() {
+	public final boolean execute() {
 		throw new UnsupportedOperationException();
 	}
 

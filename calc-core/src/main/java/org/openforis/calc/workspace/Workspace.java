@@ -7,9 +7,10 @@ import javax.persistence.Column;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
-import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.openforis.calc.common.UserObject;
 import org.openforis.calc.engine.ProcessingChain;
 import org.openforis.calc.metadata.Entity;
@@ -31,10 +32,12 @@ public final class Workspace extends UserObject {
 	
 	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER)
 	@OrderBy("sortOrder")
+	@Fetch(FetchMode.SUBSELECT) 
 	private List<Entity> entities;
 	
 	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER)
-	@OrderColumn(name = "id")
+	@OrderBy("id")
+	@Fetch(FetchMode.SUBSELECT) 
 	private List<ProcessingChain> processingChains;
 
 	public void setInputSchema(String inputSchema) {

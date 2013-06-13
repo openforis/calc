@@ -1,6 +1,5 @@
 package org.openforis.calc.engine;
 
-import org.openforis.calc.engine.Task.Context;
 
 /**
  * Defines an operation which runs a user-defined R statement or script.
@@ -8,15 +7,9 @@ import org.openforis.calc.engine.Task.Context;
  * @author G. Miceli
  * @author M. Togna
  */
-public final class CustomROperation extends Operation {
+public final class CustomROperation extends Operation<CustomRTask> {
 
 	CustomROperation(Module module) {
 		super(module, "exec-r");
-	}
-
-	@Override
-	public Task createTask(Context context, Parameters params) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 }

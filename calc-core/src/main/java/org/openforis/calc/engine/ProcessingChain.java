@@ -3,13 +3,14 @@ package org.openforis.calc.engine;
 import java.util.Collections;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
+import org.hibernate.annotations.Type;
 import org.openforis.calc.common.UserObject;
 import org.openforis.calc.workspace.Workspace;
 
@@ -28,10 +29,13 @@ public final class ProcessingChain extends UserObject {
 	@OneToMany(mappedBy = "chain")
 	private List<CalculationStep> steps;
 	
-	@Transient
-	private Parameters chainParameters;
+	@Type(type="org.openforis.calc.persistence.JsonParameterMapType")
+//	@Lob
+//	@Type(type="org.hibernate.type.MaterializedClobType")
+	@Column(name = "parameters")
+	private ParameterMap chainParameters;
 
-	public ProcessingChainJob createJob(Task.Context context) {
+	public ProcessingChainJob createJob(Context context) {
 		throw new UnsupportedOperationException();
 	}
 	

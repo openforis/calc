@@ -7,6 +7,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.openforis.calc.common.Identifiable;
+import org.openforis.calc.common.ReflectionUtils;
 import org.openforis.calc.persistence.Dao;
 
 /**
@@ -22,7 +23,7 @@ public abstract class AbstractJpaDao<T extends Identifiable> implements Dao<T> {
     private Class<T> type;
     
     protected AbstractJpaDao() {
-       this.type = extractGenericType(); 
+       this.type = ReflectionUtils.extractGenericType(getClass());
 	}
     
 	@Override
@@ -45,12 +46,5 @@ public abstract class AbstractJpaDao<T extends Identifiable> implements Dao<T> {
 	public void delete(int id) {
 		T ref = entityManager.getReference(type, id);
 		entityManager.remove(ref);
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private Class<T> extractGenericType() {
-	   Type t = getClass().getGenericSuperclass();
-       ParameterizedType pt = (ParameterizedType) t;
-       return (Class) pt.getActualTypeArguments()[0];
 	}
 }

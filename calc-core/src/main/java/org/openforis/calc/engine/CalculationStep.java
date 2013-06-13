@@ -34,13 +34,13 @@ public final class CalculationStep extends UserObject {
 	private ProcessingChain chain;
 	
 	@Transient
-	private Parameters operationParameters;
+	private ParameterMap operationParameters;
 
 	public ProcessingChain getChain() {
 		return this.chain;
 	}
 
-	public Parameters getOperationParameters() {
+	public ParameterMap getOperationParameters() {
 		return this.operationParameters;
 	}
 

@@ -1,27 +1,53 @@
 package org.openforis.calc.engine;
 
 import org.openforis.calc.nls.Captionable;
-import org.openforis.calc.workspace.Workspace;
-import javax.sql.DataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A unit of work in the system.
  * 
  * Tasks are not reusable.
+ * 
+ * @author G. Miceli
+ * @author M. Togna
  */
-public abstract class Task implements Captionable {
-	private org.openforis.calc.engine.Task.Context context;
-	private org.openforis.calc.engine.Task.Status status;
+public abstract class Task implements Captionable, Runnable {
+	private Context context;
+	private Status status;
 	private long startTime;
 	private long endTime;
 	private long itemsProcessed;
 	private long itemsSkipped;
 	private long totalItems;
-	private TaskFailureException exception;
-	private Parameters parameters;
+	private Throwable exception;
+	private ParameterMap parameters;
+	private Logger logger;
+	
+	public enum Status {
+		NOT_STARTED, RUNNING, COMPLETE, FAILED, ABORTED;
+	}
 
-	public static <T extends Task> T createTask(Class<T> type, org.openforis.calc.engine.Task.Context context) {
-		throw new UnsupportedOperationException();
+	protected Task() {
+		this.logger = LoggerFactory.getLogger(getClass());
+	}
+	
+	public static <T extends Task> T createTask(Class<T> type, Context context, ParameterMap parameters) {
+		try {
+			T task = type.newInstance();
+			task.context = context;
+			task.parameters = parameters;
+			return task;
+		} catch (InstantiationException e) {
+			throw new IllegalArgumentException("Invalid task "+type.getClass(), e);
+		} catch (IllegalAccessException e) {
+			throw new IllegalArgumentException("Invalid task "+type.getClass(), e);
+		}
+	}
+
+	protected Task(Context context, ParameterMap parameters) {
+		this.context = context;
+		this.parameters = parameters;
 	}
 
 	/**
@@ -35,12 +61,21 @@ public abstract class Task implements Captionable {
 		
 	}
 
+	@Override
+	public final void run() {
+		try {
+			boolean success = execute();
+			this.status = success ? Status.COMPLETE : Status.FAILED;
+		} catch (Throwable t) {
+			this.status = Status.FAILED;
+			this.exception = t; 
+		}
+		this.endTime = System.currentTimeMillis();
+	}
 
-//	public abstract void run();
-	// TODO Temporary: replace with abstract
-	public void run() {
-		// TODO Auto-generated method stub
-		
+	protected boolean execute() throws Exception {
+		// TODO make abstract
+		throw new UnsupportedOperationException();
 	}
 
 	public long getDuration() {
@@ -63,15 +98,15 @@ public abstract class Task implements Captionable {
 		throw new UnsupportedOperationException();
 	}
 
-	public Parameters getParameters() {
+	public ParameterMap getParameters() {
 		return this.parameters;
 	}
 
-	public org.openforis.calc.engine.Task.Context getContext() {
+	public Context getContext() {
 		return this.context;
 	}
 
-	public org.openforis.calc.engine.Task.Status getStatus() {
+	public Task.Status getStatus() {
 		return this.status;
 	}
 
@@ -95,22 +130,11 @@ public abstract class Task implements Captionable {
 		return this.totalItems;
 	}
 
-	public TaskFailureException getException() {
+	public Throwable getException() {
 		return this.exception;
 	}
-	public static final class Context {
-		private Workspace workspace;
-		private DataSource dataSource;
-
-		public Workspace getWorkspace() {
-			return this.workspace;
-		}
-
-		public DataSource getDataSource() {
-			return this.dataSource;
-		}
-	}
-	public enum Status {
-		NOT_STARTED, RUNNING, COMPLETE, FAILED, ABORTED;
+	
+	protected Logger log() {
+		return this.logger;
 	}
 }

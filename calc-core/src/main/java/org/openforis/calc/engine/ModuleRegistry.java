@@ -1,5 +1,6 @@
 package org.openforis.calc.engine;
 
+import java.util.ServiceLoader;
 import java.util.Set;
 
 /**
@@ -27,7 +28,8 @@ public final class ModuleRegistry {
 	}
 
 	/**
-	 * Reload all Modules in classpath using ServiceLoader. All other modules will be unregistered.
+	 * Reload all Modules in classpath using {@link ServiceLoader}. All other
+	 * modules will be unregistered.
 	 */
 	public void reloadModules() {
 		throw new UnsupportedOperationException();

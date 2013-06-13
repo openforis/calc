@@ -1,5 +1,6 @@
 package org.openforis.calc;
 
+import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.EntityManagerFactory;
@@ -24,7 +25,7 @@ public abstract class Calc {
 			WorkspaceService wmgr = ctx.getBean(WorkspaceService.class);
 			Workspace w = wmgr.getWorkspace(1);
 			System.out.println(w);
-			List<Entity> es = w.getEntities();
+			Collection<Entity> es = w.getEntities();
 			for (Entity entity : es) {
 				System.out.println(entity + " <- " + entity.getWorkspace());
 			}
