@@ -31,6 +31,8 @@ public final class Entity extends UserObject {
 	@JoinColumn(name = "parent_entity_id")
 	private Entity parent;
 	
+	@Column(name = "sort_order")
+	private int sortOrder;
 //	private ArrayList<Variable> variables = new ArrayList<Variable>();
 //	private DataTable dataTable;
 

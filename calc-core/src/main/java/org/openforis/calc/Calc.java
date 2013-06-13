@@ -20,14 +20,13 @@ public abstract class Calc {
 	public static void main(String[] args) {
 		try {
 			ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
-			EntityManagerFactory emf = ctx.getBean(EntityManagerFactory.class);
+//			EntityManagerFactory emf = ctx.getBean(EntityManagerFactory.class);
 			WorkspaceService wmgr = ctx.getBean(WorkspaceService.class);
 			Workspace w = wmgr.getWorkspace(1);
 			System.out.println(w);
 			List<Entity> es = w.getEntities();
 			for (Entity entity : es) {
-				System.out.println(entity);
-//				System.out.println(entity + " <- " + entity.getWorkspace());
+				System.out.println(entity + " <- " + entity.getWorkspace());
 			}
 		} catch (Throwable e) {
 			e.printStackTrace();

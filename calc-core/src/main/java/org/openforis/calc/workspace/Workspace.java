@@ -2,11 +2,11 @@ package org.openforis.calc.workspace;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 
@@ -30,7 +30,7 @@ public final class Workspace extends UserObject {
 	private String outputSchema;
 	
 	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER)
-	@OrderColumn(name = "sort_order")
+	@OrderBy("sortOrder")
 	private List<Entity> entities;
 	
 	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER)
