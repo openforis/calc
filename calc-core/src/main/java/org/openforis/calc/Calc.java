@@ -26,7 +26,8 @@ public abstract class Calc {
 			System.out.println(w);
 			List<Entity> es = w.getEntities();
 			for (Entity entity : es) {
-				System.out.println(entity + " <- " + entity.getWorkspace());
+				System.out.println(entity);
+//				System.out.println(entity + " <- " + entity.getWorkspace());
 			}
 		} catch (Throwable e) {
 			e.printStackTrace();

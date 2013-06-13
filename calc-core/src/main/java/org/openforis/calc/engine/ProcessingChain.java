@@ -25,8 +25,7 @@ public final class ProcessingChain extends UserObject {
 	@JoinColumn(name = "workspace_id")
 	private Workspace workspace;
 	
-	// TODO is EAGER necessary, or is it default?
-	@OneToMany(mappedBy = "chain", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "chain")
 	private List<CalculationStep> steps;
 	
 	@Transient

@@ -2,10 +2,12 @@ package org.openforis.calc.workspace;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 
 import org.openforis.calc.common.UserObject;
@@ -28,9 +30,11 @@ public final class Workspace extends UserObject {
 	private String outputSchema;
 	
 	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER)
+	@OrderColumn(name = "sort_order")
 	private List<Entity> entities;
 	
 	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER)
+	@OrderColumn(name = "id")
 	private List<ProcessingChain> processingChains;
 
 	public void setInputSchema(String inputSchema) {
@@ -52,12 +56,8 @@ public final class Workspace extends UserObject {
 	public List<Entity> getEntities() {
 		return Collections.unmodifiableList(entities);
 	}
-//	
-//	void setEntities(List<Entity> entities) {
-//		this.entities = entities;
-//	}
-//
-//	void setProcessingChains(List<ProcessingChain> processingChains) {
-//		this.processingChains = processingChains;
-//	}
+	
+	public List<ProcessingChain> getProcessingChains() {
+		return Collections.unmodifiableList(processingChains);
+	}
 }
