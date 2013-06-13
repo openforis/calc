@@ -29,7 +29,7 @@ public class ParameterHashMap implements ParameterMap {
 	public ParameterHashMap(Map<String, Object> map) {
 		this.map = map;
 	}
-	
+
 	@Override
 	public Set<String> names() {
 		return Collections.unmodifiableSet( map.keySet() );
@@ -94,5 +94,10 @@ public class ParameterHashMap implements ParameterMap {
 	@Override
 	public void setBoolean(String name, Boolean value) {
 		map.put(name, value);
+	}
+	
+	@Override
+	public String toString() {
+		return map.toString();
 	}
 }

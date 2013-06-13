@@ -1,5 +1,6 @@
 package org.openforis.calc.workspace;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -40,6 +41,10 @@ public final class Workspace extends UserObject {
 	@Fetch(FetchMode.SUBSELECT) 
 	private List<ProcessingChain> processingChains;
 
+	public Workspace() {
+		this.processingChains = new ArrayList<ProcessingChain>();
+	}
+	
 	public void setInputSchema(String inputSchema) {
 		this.inputSchema = inputSchema;
 	}
@@ -62,5 +67,9 @@ public final class Workspace extends UserObject {
 	
 	public List<ProcessingChain> getProcessingChains() {
 		return Collections.unmodifiableList(processingChains);
+	}
+
+	public void addProcessingChain(ProcessingChain chain) {
+		processingChains.add(chain);
 	}
 }

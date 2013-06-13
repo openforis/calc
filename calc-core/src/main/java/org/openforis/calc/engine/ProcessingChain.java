@@ -12,6 +12,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
 import org.openforis.calc.common.UserObject;
+import org.openforis.calc.persistence.ParameterHashMap;
 import org.openforis.calc.workspace.Workspace;
 
 /**
@@ -30,16 +31,22 @@ public final class ProcessingChain extends UserObject {
 	private List<CalculationStep> steps;
 	
 	@Type(type="org.openforis.calc.persistence.JsonParameterMapType")
-//	@Lob
-//	@Type(type="org.hibernate.type.MaterializedClobType")
 	@Column(name = "parameters")
-	private ParameterMap chainParameters;
+	private ParameterMap parameters;
 
+	public ProcessingChain() {
+		this.parameters = new ParameterHashMap();
+	}
+	
 	public ProcessingChainJob createJob(Context context) {
 		throw new UnsupportedOperationException();
 	}
 	
 	public List<CalculationStep> getSteps() {
 		return Collections.unmodifiableList(steps);
+	}
+	
+	public ParameterMap parameters() {
+		return parameters;
 	}
 }

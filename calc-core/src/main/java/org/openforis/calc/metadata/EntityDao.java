@@ -1,12 +1,14 @@
 package org.openforis.calc.metadata;
 
-import org.openforis.calc.persistence.Dao;
+import org.openforis.calc.persistence.jpa.AbstractDao;
+import org.springframework.stereotype.Repository;
 
 /**
  * 
  * @author G. Miceli
  *
  */
-public interface EntityDao extends Dao<Entity>{
+@Repository
+public class EntityDao extends AbstractDao<Entity> {
 
 }

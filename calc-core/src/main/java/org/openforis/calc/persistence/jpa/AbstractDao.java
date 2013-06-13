@@ -1,14 +1,10 @@
 package org.openforis.calc.persistence.jpa;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.openforis.calc.common.Identifiable;
 import org.openforis.calc.common.ReflectionUtils;
-import org.openforis.calc.persistence.Dao;
 
 /**
  * 
@@ -16,33 +12,37 @@ import org.openforis.calc.persistence.Dao;
  *
  * @param <T>
  */
-public abstract class AbstractJpaDao<T extends Identifiable> implements Dao<T> {
+public abstract class AbstractDao<T extends Identifiable> {
     @PersistenceContext
     private EntityManager entityManager;
 
     private Class<T> type;
     
-    protected AbstractJpaDao() {
+    protected AbstractDao() {
        this.type = ReflectionUtils.extractGenericType(getClass());
 	}
     
-	@Override
 	public T create(T object) {
 		entityManager.persist(object);
 		return object;
 	}
 
-	@Override
 	public T find(int id) {
 		return (T) entityManager.find(type, id);
 	}
 
-	@Override
 	public T update(T object) {
 		return entityManager.merge(object);
 	}
 
-	@Override
+	public T save(T object) {
+		if ( object.getId() == null ) {
+			return create(object);
+		} else {
+			return update(object);
+		}
+	}
+	
 	public void delete(int id) {
 		T ref = entityManager.getReference(type, id);
 		entityManager.remove(ref);

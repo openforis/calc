@@ -1,4 +1,4 @@
-package org.openforis.calc.workspace;
+package org.openforis.calc.engine;
 
 import org.openforis.calc.persistence.jpa.AbstractDao;
 import org.springframework.stereotype.Repository;
@@ -6,9 +6,9 @@ import org.springframework.stereotype.Repository;
 /**
  * 
  * @author G. Miceli
- *
+ * @author M. Togna
  */
 @Repository
-public class WorkspaceDao extends AbstractDao<Workspace> {
+public class ProcessingChainDao extends AbstractDao<ProcessingChain> {
 
 }
