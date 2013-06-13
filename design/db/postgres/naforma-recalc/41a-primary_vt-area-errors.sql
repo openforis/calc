@@ -47,7 +47,14 @@ select distinct
 from 
     --_country_stratum s,
     mino.vegetation_type v,
-    _plot p;
+    _plot p
+where     
+    p.accessibility = '0' and 
+    p.measurement = 'P' and 
+    p.subplot = 'A' and
+    p.country_id is not null
+    and p.stratum is not null
+    ;
     --vegetation_type_code v
 ;
 
@@ -68,6 +75,8 @@ left outer join
     and p.accessibility = '0' 
     and p.measurement = 'P' 
     and p.subplot = 'A' 
+    and p.country_id is not null
+    and p.stratum is not null
     and p.primary_vegetation_type = c.primary_vegetation_type
     -- is not null    
 group by

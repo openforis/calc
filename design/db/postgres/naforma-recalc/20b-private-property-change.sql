@@ -3,16 +3,16 @@ SET search_path TO naforma1_se;
 --alter table _household 
 --drop column private_property_change;
 --
---alter table _household 
---add column private_property_change_amount_ha numeric;
+alter table _household 
+add column private_property_change_amount_ha numeric;
 --
---update _household
---set private_property_change_amount_ha = private_property_change_amount
---where private_property_change_amount_unit_name='ha';
+update _household
+set private_property_change_amount_ha = private_property_change_amount
+where private_property_change_amount_unit_name='ha';
 --
---update _household
---set private_property_change_amount_ha = private_property_change_amount * 0.404686 -- convert to ha
---where private_property_change_amount_unit_name='ac';
+update _household
+set private_property_change_amount_ha = private_property_change_amount * 0.404686 -- convert to ha
+where private_property_change_amount_unit_name='ac';
 --
 --alter table _household 
 --add column private_property_increase_ha numeric;

@@ -7,7 +7,8 @@ as
 select 
     h.*,
     s.type_code_id,        
-    s.payment_source_code_id
+    s.payment_source_code_id,
+    s.rank
 from
 
     _household h 
@@ -34,7 +35,12 @@ from
 where
    h.payment_source_code_id = -1
 ;
-                  
+
+update _household_service_used                  
+set rank = 1
+where 
+rank is null;
+
 select distinct 
     payment_source_code_id
 from
@@ -42,3 +48,9 @@ from
 where
     payment_source_code_id = -1
 ;   
+
+
+select
+distinct rank
+from
+_household_service_used;

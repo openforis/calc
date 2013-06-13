@@ -231,3 +231,4 @@ and
     head.position='spouse'
 and 
     _household.head_gender='NA';    
+    

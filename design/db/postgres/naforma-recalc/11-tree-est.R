@@ -318,13 +318,17 @@ estimateDeadWoodInclusionArea <- function( data ) {
   return (data);
 }
 
-
 estimateTreeBoleVolume <- function( data ) {
   
   data$bole_volume <- data$volume *  0.68;
   
   return (data);
   
+}
+
+estimateTreeBasalArea <- function( data ){
+  #10000 *
+  data$basal_area <- with(data,  pi * (0.01*dbh/2)^2 / inclusion_area)
 }
 
 openConnection <- function() {  
@@ -375,6 +379,11 @@ trees <- estimateTreeBiomass( trees=trees );
 trees <- setCarbonRootShootRatio( trees );
 trees$carbon <- with(trees, carbonCf * (aboveground_biomass + belowground_biomass) );
 
+#==================================
+# 5.1 basal_area
+trees <- estimateTreeBasalArea( trees );
+
+
 # Get deadwoods
 deadWoods <- getDeadwoods( );
 deadWoods[is.na(deadWoods$vegetation_type),]$vegetation_type <- 0;
@@ -402,7 +411,7 @@ deadWoods <- estimateDeadWoodInclusionArea( deadWoods );
 
 #==================================
 # save results
-treeRes <-  trees[ , c('tree_id', 'est_height','est_height_prediction_type', 'inclusion_area', 'volume','aboveground_biomass', 'belowground_biomass', 'carbon')];
+treeRes <-  trees[ , c('tree_id', 'est_height','est_height_prediction_type', 'inclusion_area', 'volume','aboveground_biomass', 'belowground_biomass', 'carbon','basal_area') ];
 deadwoodRes <- deadWoods[, c('dead_wood_id','volume','aboveground_biomass','belowground_biomass', 'carbon','inclusion_area')];
 
 dbRemoveTable(con, "_tree_results");

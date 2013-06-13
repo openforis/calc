@@ -36,6 +36,7 @@ select
     sum(t.carbon / t.inclusion_area) as carbon,
     sum(t.volume / t.inclusion_area) as volume,
     sum(t.est_cnt / t.inclusion_area) as est_cnt,
+    sum(t.basal_area ) as basal_area,
     count(*) as cnt,
     count(*) as agg_cnt
 from
@@ -110,6 +111,7 @@ select
 	s.expf * sum(p.belowground_biomass) as belowground_biomass,
 	s.expf * sum(p.carbon) as carbon,
 	s.expf * sum(p.est_cnt) as est_cnt,
+	s.expf * sum(p.basal_area) as basal_area,
 	count(*) as cnt,
     count(*) as agg_cnt
 
@@ -175,6 +177,7 @@ select
 	sum(p.belowground_biomass) as belowground_biomass,
 	sum(p.carbon) as carbon,
 	sum(p.est_cnt) as est_cnt,
+	sum(p.basal_area) as basal_area,
 	sum(cnt) as cnt,
     sum(agg_cnt) as agg_cnt
 from
@@ -239,6 +242,7 @@ select
 	s.expf * sum(p.belowground_biomass) as belowground_biomass,
 	s.expf * sum(p.carbon) as carbon,
 	s.expf * sum(p.est_cnt) as est_cnt,
+	s.expf * sum(p.basal_area) as basal_area,
 	count(*) as cnt,
     count(*) as agg_cnt
 from
@@ -310,6 +314,7 @@ select
 	sum(p.belowground_biomass) as belowground_biomass,
 	sum(p.carbon) as carbon,
 	sum(p.est_cnt) as est_cnt,
+	sum(p.basal_area) as basal_area,
 	sum(cnt) as cnt,
     sum(agg_cnt) as agg_cnt
 from
@@ -366,6 +371,7 @@ select
 	( s.phase1_cnt / c.phase1_cnt::double precision ) * p.belowground_biomass as belowground_biomass,
 	( s.phase1_cnt / c.phase1_cnt::double precision ) * p.carbon as carbon,
 	( s.phase1_cnt / c.phase1_cnt::double precision ) * p.est_cnt as est_cnt,	
+	( s.phase1_cnt / c.phase1_cnt::double precision ) * p.basal_area as basal_area,		
 	0 as cnt,
     100 as agg_cnt
 from
@@ -422,6 +428,7 @@ select
 	s.expf * sum(p.belowground_biomass) as belowground_biomass,
 	s.expf * sum(p.carbon) as carbon,
 	s.expf * sum(p.est_cnt) as est_cnt,
+	s.expf * sum(p.basal_area) as basal_area,
 	count(*) as cnt,
     count(*) as agg_cnt
 from
@@ -491,9 +498,10 @@ select
 	sum(p.volume) as volume,
 	sum(p.aboveground_biomass) as aboveground_biomass,
 	sum(p.belowground_biomass) as belowground_biomass,
-	sum(p.carbon) as carbon,
-	sum(cnt) as cnt,
+	sum(p.carbon) as carbon,		
 	sum(p.est_cnt) as est_cnt,
+	sum(p.basal_area) as basal_area,
+	sum(cnt) as cnt,
     sum(agg_cnt) as agg_cnt
 from
 	_region_stratum_tree_agg p    
@@ -551,6 +559,7 @@ select
 	( s.phase1_cnt / c.phase1_cnt::double precision ) * p.belowground_biomass as belowground_biomass,
 	( s.phase1_cnt / c.phase1_cnt::double precision ) * p.carbon as carbon,
 	( s.phase1_cnt / c.phase1_cnt::double precision ) * p.est_cnt as est_cnt,
+	( s.phase1_cnt / c.phase1_cnt::double precision ) * p.basal_area as basal_area,	
 	0 as cnt,
     100 as agg_cnt
 from
@@ -611,6 +620,7 @@ select
 	s.expf * sum(p.belowground_biomass) as belowground_biomass,
 	s.expf * sum(p.carbon) as carbon,
 	s.expf * sum(p.est_cnt) as est_cnt,
+	s.expf * sum(p.basal_area) as basal_area,
 	count(*) as cnt,
     count(*) as agg_cnt
 from
@@ -684,6 +694,7 @@ select
 	sum(p.belowground_biomass) as belowground_biomass,
 	sum(p.carbon) as carbon,
 	sum(p.est_cnt) as est_cnt,
+	sum(p.basal_area) as basal_area,
 	sum(cnt) as cnt,
     sum(agg_cnt) as agg_cnt
 from
@@ -744,6 +755,7 @@ select
 	( s.phase1_cnt / c.phase1_cnt::double precision ) * p.belowground_biomass as belowground_biomass,
 	( s.phase1_cnt / c.phase1_cnt::double precision ) * p.carbon as carbon,
 	( s.phase1_cnt / c.phase1_cnt::double precision ) * p.est_cnt as est_cnt,
+	( s.phase1_cnt / c.phase1_cnt::double precision ) * p.basal_area as basal_area,	
 	0 as cnt,
     100 as agg_cnt
 from
