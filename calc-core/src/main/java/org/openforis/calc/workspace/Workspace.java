@@ -9,6 +9,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.openforis.calc.common.UserObject;
+import org.openforis.calc.engine.ProcessingChain;
 import org.openforis.calc.metadata.Entity;
 
 /**
@@ -18,7 +19,7 @@ import org.openforis.calc.metadata.Entity;
  * @author M. Togna
  */
 @javax.persistence.Entity
-@Table(schema = "calc", name = "workspace")
+@Table(name = "workspace")
 public final class Workspace extends UserObject {
 	@Column(name = "input_schema")
 	private String inputSchema;
@@ -28,13 +29,10 @@ public final class Workspace extends UserObject {
 	
 	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER)
 	private List<Entity> entities;
-//	private List<ProcessingChain> processingChains;
-
-	public Workspace() {
-//		this.entities = new ArrayList<Entity>();
-//		this.processingChains = new ArrayList<ProcessingChain>();
-	}
 	
+	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER)
+	private List<ProcessingChain> processingChains;
+
 	public void setInputSchema(String inputSchema) {
 		this.inputSchema = inputSchema;
 	}

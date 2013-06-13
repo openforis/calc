@@ -16,7 +16,7 @@ public final class Parameters implements Iterable<NameValuePair> {
 		throw new UnsupportedOperationException();
 	}
 
-	public Set<String> values() {
+	public Set<Object> values() {
 		throw new UnsupportedOperationException();
 	}
 
