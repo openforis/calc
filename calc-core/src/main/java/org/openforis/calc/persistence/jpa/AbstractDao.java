@@ -23,7 +23,6 @@ public abstract class AbstractDao<T extends Identifiable> {
     private Class<T> type;
     
     protected AbstractDao() {
-//       this.type = ReflectionUtils.extractGenericType(getClass());
 	}
     
 	public T create(T object) {
@@ -41,12 +40,10 @@ public abstract class AbstractDao<T extends Identifiable> {
 
 	public T save(T object) {
 		if ( object.getId() == null ) {
-//			return create(object);
 			object = create(object);
 		} else {
 			object = update(object);
 		}
-//		entityManager.refresh(object);
 		return object;
 	}
 	

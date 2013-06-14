@@ -5,9 +5,10 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
+import org.hibernate.annotations.Type;
 import org.openforis.calc.common.UserObject;
+import org.openforis.calc.persistence.ParameterHashMap;
 
 /**
  * A single user-defined step in the {@link ProcessingChain}
@@ -33,15 +34,20 @@ public final class CalculationStep extends UserObject {
 	@JoinColumn(name = "chain_id")
 	private ProcessingChain chain;
 	
-	@Transient
-	private ParameterMap operationParameters;
+	@Type(type="org.openforis.calc.persistence.JsonParameterMapType")
+	@Column(name = "parameters")
+	private ParameterMap parameters;
 
-	public ProcessingChain getChain() {
+	public CalculationStep() {
+		this.parameters = new ParameterHashMap();
+	}
+	
+	public ProcessingChain getProcessingChain() {
 		return this.chain;
 	}
 
-	public ParameterMap getOperationParameters() {
-		return this.operationParameters;
+	public ParameterMap parameters() {
+		return this.parameters;
 	}
 
 	public void setModuleName(String moduleName) {
@@ -74,5 +80,9 @@ public final class CalculationStep extends UserObject {
 
 	public int getStepNo() {
 		return this.stepNo;
+	}
+	
+	void setProcessingChain(ProcessingChain chain) {
+		this.chain = chain;
 	}
 }

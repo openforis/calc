@@ -1,8 +1,10 @@
 package org.openforis.calc.engine;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import org.openforis.calc.nls.Captionable;
 
@@ -15,20 +17,24 @@ import org.openforis.calc.nls.Captionable;
 public abstract class Module implements Captionable {
 	private final String name;
 	private final String version;
-	private final List<Operation<?>> operations;
+	private final Map<String, Operation<?>> operations;
 
 	protected Module(String name, String version) {
 		this.name = name;
 		this.version = version;
-		this.operations = new ArrayList<Operation<?>>();
+		this.operations = new HashMap<String, Operation<?>>();
 	}
 
 	protected final void registerOperation(Operation<?> operation) {
-		operations.add(operation);
+		if ( operations.containsKey(operation.getName()) ) {
+			throw new IllegalArgumentException(String.format("Opertion with '%s' already registered in module '%s'", operation, this));
+		}
+		operations.put(operation.getName(), operation);
 	}
 	
-	public final List<Operation<?>> getOperations() {
-		return Collections.unmodifiableList(operations);
+	public final Set<Operation<?>> getOperations() {
+		Set<Operation<?>> set = new HashSet<Operation<?>>(operations.values());
+		return Collections.unmodifiableSet(set);
 	}
 	
 	public final String getName() {
@@ -37,5 +43,14 @@ public abstract class Module implements Captionable {
 	
 	public final String getVersion() {
 		return version;
+	}
+	
+	@Override
+	public String toString() {
+		return String.format("%s-%s", name, version);
+	}
+
+	public Operation<?> getOperation(String operationName) {
+		return operations.get(operationName);
 	}
 }

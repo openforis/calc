@@ -1,8 +1,10 @@
 package org.openforis.calc.engine;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -35,13 +37,14 @@ public class ProcessingChain extends UserObject {
 
 	public ProcessingChain() {
 		this.parameters = new ParameterHashMap();
+		this.steps = new ArrayList<CalculationStep>();
 	}
 	
 	public ProcessingChainJob createJob(Context context) {
 		throw new UnsupportedOperationException();
 	}
 	
-	public List<CalculationStep> getSteps() {
+	public List<CalculationStep> getCalculationSteps() {
 		return Collections.unmodifiableList(steps);
 	}
 	
@@ -55,5 +58,10 @@ public class ProcessingChain extends UserObject {
 	
 	void setWorkspace(Workspace workspace) {
 		this.workspace = workspace;
+	}
+	
+	public void addCalculationStep(CalculationStep step) {
+		step.setProcessingChain(this);
+		steps.add(step);
 	}
 }

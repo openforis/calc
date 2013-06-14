@@ -9,6 +9,6 @@ package org.openforis.calc.engine;
 public final class CustomRTask extends Task {
 
 	public CustomRTask() {
-		throw new UnsupportedOperationException();
+//		throw new UnsupportedOperationException();
 	}
 }
