@@ -4,8 +4,8 @@ import static org.openforis.calc.persistence.jooq.tables.EntityTable.ENTITY;
 
 import java.util.List;
 
+import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.persistence.ObjectManager;
-import org.openforis.calc.workspace.Workspace;
 import org.springframework.stereotype.Component;
 
 /**

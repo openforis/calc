@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.openforis.calc.engine.Task;
-
 /**
  * Synchronously executes a series of Tasks in order.  Jobs are also Tasks and may be nested accordingly.
  * 

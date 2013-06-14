@@ -1,4 +1,4 @@
-package org.openforis.calc.workspace;
+package org.openforis.calc.engine;
 
 /**
  * Occurs when a workspace lock could not be obtained because another process is already active.

@@ -13,7 +13,6 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Type;
 import org.openforis.calc.common.UserObject;
 import org.openforis.calc.persistence.ParameterHashMap;
-import org.openforis.calc.workspace.Workspace;
 
 /**
  * User-defined set of steps to be run after pre-processing and before post-processing tasks.
@@ -48,5 +47,13 @@ public final class ProcessingChain extends UserObject {
 	
 	public ParameterMap parameters() {
 		return parameters;
+	}
+	
+	public Workspace getWorkspace() {
+		return workspace;
+	}
+	
+	void setWorkspace(Workspace workspace) {
+		this.workspace = workspace;
 	}
 }

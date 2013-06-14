@@ -1,4 +1,4 @@
-package org.openforis.calc.workspace;
+package org.openforis.calc.engine;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,7 +13,6 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.openforis.calc.common.UserObject;
-import org.openforis.calc.engine.ProcessingChain;
 import org.openforis.calc.metadata.Entity;
 
 /**
@@ -70,6 +69,8 @@ public final class Workspace extends UserObject {
 	}
 
 	public void addProcessingChain(ProcessingChain chain) {
+		chain.setWorkspace(this);
+		
 		processingChains.add(chain);
 	}
 }
