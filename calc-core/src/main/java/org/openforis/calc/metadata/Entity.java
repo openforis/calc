@@ -7,7 +7,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.openforis.calc.common.UserObject;
-import org.openforis.calc.workspace.Workspace;
+import org.openforis.calc.engine.Workspace;
 
 /**
  * Provides metadata about a particular unit of observation, calculation or

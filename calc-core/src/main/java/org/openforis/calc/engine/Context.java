@@ -2,7 +2,6 @@ package org.openforis.calc.engine;
 
 import javax.sql.DataSource;
 
-import org.openforis.calc.workspace.Workspace;
 
 /**
  * @author G. Miceli
