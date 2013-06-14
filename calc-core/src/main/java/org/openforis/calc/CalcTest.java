@@ -1,7 +1,6 @@
 package org.openforis.calc;
 
 import java.util.Collection;
-import java.util.List;
 
 import org.openforis.calc.engine.ProcessingChain;
 import org.openforis.calc.engine.ProcessingChainService;
