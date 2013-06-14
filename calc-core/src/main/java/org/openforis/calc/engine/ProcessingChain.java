@@ -21,7 +21,7 @@ import org.openforis.calc.persistence.ParameterHashMap;
  */
 @javax.persistence.Entity
 @Table(name = "processing_chain")
-public final class ProcessingChain extends UserObject {
+public class ProcessingChain extends UserObject {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "workspace_id")
 	private Workspace workspace;

@@ -25,4 +25,6 @@ public interface ParameterMap {
 	void setMap(String name, ParameterMap value);
 
 	void removeValue(String name);
+	
+	String toJsonString();
 }

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.json.simple.JSONObject;
 import org.openforis.calc.engine.ParameterMap;
 
 /**
@@ -48,8 +49,8 @@ public class ParameterHashMap implements ParameterMap {
 			return null;
 		} else if ( value instanceof Map ) {
 			return new ParameterHashMap((Map<String, Object>) value);
-		} else if ( value instanceof ParameterMap ){
-			return (ParameterMap) value;
+//		} else if ( value instanceof ParameterMap ){
+//			return (ParameterMap) value;
 		} else {
 			throw new IllegalStateException("Unknown value "+value.getClass());
 		}
@@ -63,7 +64,7 @@ public class ParameterHashMap implements ParameterMap {
 	 */
 	@Override
 	public void setMap(String name, ParameterMap value) {
-		map.put(name, value);
+		map.put(name, ((ParameterHashMap) value).map);
 	}
 
 	@Override
@@ -99,5 +100,10 @@ public class ParameterHashMap implements ParameterMap {
 	@Override
 	public String toString() {
 		return map.toString();
+	}
+
+	@Override
+	public String toJsonString() {
+		return JSONObject.toJSONString(map);
 	}
 }

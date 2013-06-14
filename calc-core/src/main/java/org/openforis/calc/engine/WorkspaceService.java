@@ -4,6 +4,7 @@ package org.openforis.calc.engine;
 import org.openforis.calc.persistence.ObjectManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Manages persistence and creation of {@link Workspace} instances.
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Service;
  * @author M. Togna
  */
 @Service
-public final class WorkspaceService extends ObjectManager<Workspace>{
+public class WorkspaceService extends ObjectManager<Workspace>{
 //	@Autowired
 //	private EntityManager entityManager;
 	@Autowired
@@ -29,5 +30,10 @@ public final class WorkspaceService extends ObjectManager<Workspace>{
 //		w.setEntities(entities);
 		// TODO processing chains
 		return w;
+	}
+	
+	@Transactional
+	public Workspace saveWorkspace(Workspace workspace) {
+		return workspaceDao.save(workspace);
 	}
 }

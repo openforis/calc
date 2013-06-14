@@ -7,7 +7,6 @@ import javax.persistence.PersistenceContext;
 import org.openforis.calc.common.Identifiable;
 import org.openforis.calc.common.ReflectionUtils;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 
@@ -27,7 +26,6 @@ public abstract class AbstractDao<T extends Identifiable> {
 //       this.type = ReflectionUtils.extractGenericType(getClass());
 	}
     
-    @Transactional
 	public T create(T object) {
 		entityManager.persist(object);
 		return object;
@@ -41,7 +39,6 @@ public abstract class AbstractDao<T extends Identifiable> {
 		return entityManager.merge(object);
 	}
 
-	@Transactional
 	public T save(T object) {
 		if ( object.getId() == null ) {
 //			return create(object);

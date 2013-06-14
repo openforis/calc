@@ -23,7 +23,7 @@ import org.openforis.calc.metadata.Entity;
  */
 @javax.persistence.Entity
 @Table(name = "workspace")
-public final class Workspace extends UserObject {
+public class Workspace extends UserObject {
 	@Column(name = "input_schema")
 	private String inputSchema;
 

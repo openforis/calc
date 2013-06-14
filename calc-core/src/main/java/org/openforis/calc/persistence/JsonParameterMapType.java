@@ -38,20 +38,22 @@ public class JsonParameterMapType extends AbstractSingleColumnStandardBasicType<
 
 		@Override
 		public String toString(ParameterMap value) {
-			// TODO Auto-generated method stub
-			return null;
+			return value.toJsonString();
 		}
 
 		@Override
 		public ParameterMap fromString(String string) {
-			// TODO Auto-generated method stub
-			return null;
+			return parseJson(string);
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public <X> X unwrap(ParameterMap value, Class<X> type, WrapperOptions options) {
-			// TODO Auto-generated method stub
-			return null;
+			if ( type.isAssignableFrom(String.class) ) {
+				return (X) value.toJsonString();
+			} else {
+				throw new IllegalArgumentException(type.getClass().getName());
+			}
 		}
 
 		@Override
