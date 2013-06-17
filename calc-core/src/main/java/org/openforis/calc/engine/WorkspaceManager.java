@@ -1,48 +1,30 @@
 package org.openforis.calc.engine;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Manages workspaces and related locking 
+ * Manages {@link Workspace} instances.
  * 
  * @author G. Miceli
  * @author M. Togna
- *
  */
 @Component
 public class WorkspaceManager {
-	
-	private Map<Integer, Lock> locks; 
+	@Autowired
+	private WorkspaceDao workspaceDao;
 
 	public WorkspaceManager() {
-		this.locks = new HashMap<Integer, Lock>();
 	}
 	
-	private Lock getLock(int workspaceId) {
-		Lock lock = locks.get(workspaceId);
-		if ( lock == null ) {
-			lock = new ReentrantLock();
-			locks.put(workspaceId, lock);
-		}
-		return lock;
+	@Transactional
+	public Workspace getWorkspace(int workspaceId) {
+		return workspaceDao.find(workspaceId);
 	}
 	
-	synchronized
-	public void lock(int workspaceId) throws WorkspaceLockedException {
-		Lock lock = getLock(workspaceId);
-		if ( !lock.tryLock() ) {
-			throw new WorkspaceLockedException();
-		}
-	}
-
-	synchronized
-	public void unlock(int workspaceId) throws WorkspaceLockedException {
-		Lock lock = getLock(workspaceId);
-		lock.unlock();
+	@Transactional
+	public Workspace saveWorkspace(Workspace workspace) {
+		return workspaceDao.save(workspace);
 	}
 }

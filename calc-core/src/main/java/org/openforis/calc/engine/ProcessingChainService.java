@@ -14,9 +14,16 @@ public class ProcessingChainService {
 	@Autowired
 	private ProcessingChainDao processingChainDao;
 
+	@Autowired
+	private ProcessingChainJobManager processingChainJobManager;
+	
 	@Transactional
 	public void saveProcessingChain(ProcessingChain chain) {
 		processingChainDao.save(chain);
 		// TODO update Workspace?
+	}
+	
+	public ProcessingChainJob getProcessingChainJob(int workspaceId) {
+		return processingChainJobManager.getProcessingChainJob(workspaceId);
 	}
 }

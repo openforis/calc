@@ -73,4 +73,14 @@ public class Workspace extends UserObject {
 		
 		processingChains.add(chain);
 	}
+	
+	public ProcessingChain getProcessingChainById(int processingChainId) {
+		for (ProcessingChain chain : processingChains) {
+			if ( chain.getId() == processingChainId ) {
+				return chain;
+			}
+		}
+		return null;
+	}
+
 }

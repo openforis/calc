@@ -14,12 +14,12 @@ import org.springframework.stereotype.Component;
  * @author M. Togna
  */
 @Component
-public abstract class ObjectManager<P extends Identifiable> {
+public abstract class AbstractManager<P extends Identifiable> {
 	@Autowired
 	private JooqDaoFactory daoFactory;
 	private Class<P> objectType;
 
-	protected ObjectManager(Class<P> objectType) {
+	protected AbstractManager(Class<P> objectType) {
 		this.objectType = objectType;
 	}
 	

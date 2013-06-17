@@ -18,21 +18,27 @@ public class TaskManager {
 	private Executor taskExecutor;
 	
 	@Autowired
-	private WorkspaceManager workspaceManager;
+	private WorkspaceLockManager workspaceLockManager;
+	
 	/**
 	 * Executes a task in the background
 	 * 
 	 * @param task
 	 */
 	synchronized
-	public void start(Task task) throws WorkspaceLockedException {
-		Context ctx = task.getContext();
-		Workspace ws = ctx.getWorkspace();
-		try {
-			workspaceManager.lock(ws.getId());
-			task.run();
-		} finally {
-			workspaceManager.unlock(ws.getId());
-		}
+	public void start(final Task task) throws WorkspaceLockedException {
+		final Context ctx = task.getContext();
+		final Workspace ws = ctx.getWorkspace();
+		workspaceLockManager.lock(ws.getId());
+		taskExecutor.execute(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					task.run();
+				} finally {
+					workspaceLockManager.unlock(ws.getId());
+				}
+			}
+		});
 	}
 }

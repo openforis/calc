@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
  * @author G. Miceli
  * @author M. Togna
  */
-public abstract class Task implements Captionable, Runnable {
+public abstract class Task implements Captionable {
 	private Context context;
 	private Status status;
 	private UUID id;
@@ -29,10 +29,11 @@ public abstract class Task implements Captionable, Runnable {
 	private boolean scheduled;
 	
 	public enum Status {
-		NOT_STARTED, RUNNING, FINISHED, FAILED, ABORTED;
+		PENDING, RUNNING, FINISHED, FAILED, ABORTED;
 	}
 
 	protected Task() {
+		reset();
 		this.logger = LoggerFactory.getLogger(getClass());
 	}
 	
@@ -54,8 +55,9 @@ public abstract class Task implements Captionable, Runnable {
 	 * Executed before run() to count the totalItems and perform other quick checks.
 	 */
 
-	private void reset() {
-		this.status = Status.NOT_STARTED;
+	synchronized
+	public void reset() {
+		this.status = Status.PENDING;
 		this.startTime = -1;
 		this.endTime = -1;
 		this.itemsProcessed = 0;
@@ -66,7 +68,6 @@ public abstract class Task implements Captionable, Runnable {
 
 	synchronized
 	public void init() {
-		reset();
 		this.totalItems = countTotalItems();
 	}
 
@@ -75,7 +76,6 @@ public abstract class Task implements Captionable, Runnable {
 		return 1;
 	}
 
-	@Override
 	synchronized
 	public final void run() {
 		try {
@@ -102,7 +102,11 @@ public abstract class Task implements Captionable, Runnable {
 	}
 
 	public final long getDuration() {
-		return status == Status.NOT_STARTED ? -1 : endTime - startTime;
+		return status == Status.PENDING ? -1 : endTime - startTime;
+	}
+
+	public final boolean isPending() {
+		return status == Status.PENDING;
 	}
 
 	public final boolean isRunning() {
@@ -121,6 +125,14 @@ public abstract class Task implements Captionable, Runnable {
 		return status == Status.FINISHED;
 	}
 
+	/**
+	 * If task was run and finished, aborted or failed
+	 * @return
+	 */
+	public final boolean isEnded() {
+		return status != Status.PENDING && status != Status.RUNNING;
+	}
+	
 	public final Context getContext() {
 		return this.context;
 	}
@@ -161,7 +173,7 @@ public abstract class Task implements Captionable, Runnable {
 		return this.logger;
 	}
 
-	protected final ParameterMap getParameters() {
+	protected final ParameterMap parameters() {
 		return parameters;
 	}
 

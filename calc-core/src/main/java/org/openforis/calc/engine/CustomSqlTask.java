@@ -18,7 +18,7 @@ public final class CustomSqlTask extends Task {
 	
 	@Override
 	protected void execute() throws SQLException {
-		ParameterMap params = getParameters();
+		ParameterMap params = parameters();
 		String sql = params.getString("sql");
 		log().info("Executing custom SQL: "+sql);
 		Context context = getContext();
@@ -26,6 +26,12 @@ public final class CustomSqlTask extends Task {
 		Connection conn = ds.getConnection();
 		Statement stmt = conn.createStatement();
 		ResultSet res = stmt.executeQuery(sql);
+		try {
+			Thread.sleep(30000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		if ( res.next() ) {
 			System.out.println(res.getInt(1));
 		}

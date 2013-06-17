@@ -16,7 +16,7 @@ import org.openforis.calc.engine.ProcessingChainService;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
-import org.openforis.calc.engine.WorkspaceService;
+import org.openforis.calc.engine.WorkspaceManager;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.persistence.ParameterHashMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class CalcTest {
 	@Autowired
-	private WorkspaceService workspaceService;
+	private WorkspaceManager workspaceService;
 	
 	@Autowired
 	private ProcessingChainService pcs;
@@ -39,8 +39,6 @@ public class CalcTest {
 	@Autowired
 	private ModuleRegistry moduleRegistry;
 	
-	@Autowired
-	private DataSource dataSource;
 //	public void test() {
 //		Set<Module> modules = moduleRegistry.getModules();
 //		for (Module module : modules) {
@@ -73,18 +71,24 @@ public class CalcTest {
 			step.setModuleName("calc-sql");
 			step.setModuleVersion("1.0");
 			step.setOperationName("exec-sql");
-			step.parameters().setString("sql", "select 1000");
+			step.parameters().setString("sql", "select * from calc.aoi");
 
 			newChain.addCalculationStep(step);
 			w.addProcessingChain(newChain);		
 			
 			
 			// Where should this code be?
-			Context context = new Context(w, dataSource);
-			Module module = moduleRegistry.getModule(step.getModuleName(), step.getModuleVersion());
-			Operation<?> operation = module.getOperation(step.getOperationName());
-			Task task = operation.createTask(context, step.parameters());
-			taskManager.start(task);
+//			Context context = new Context(w, userDataSource);
+//			Module module = moduleRegistry.getModule(step.getModuleName(), step.getModuleVersion());
+//			Operation<?> operation = module.getOperation(step.getOperationName());
+//			Task task = operation.createTask(context, step.parameters());
+//			task.init();
+//			taskManager.start(task);
+//			while ( !task.isEnded() ) {
+//				Thread.sleep(1000);
+//			}
+//			System.out.println(task.getStatus());
+//			System.out.println(task.getLastException());
 			//
 			
 //			workspaceService.saveWorkspace(w);
