@@ -2,7 +2,6 @@ package org.openforis.calc.engine;
 
 import javax.sql.DataSource;
 
-
 /**
  * @author G. Miceli
  * @author M. Togna
@@ -10,7 +9,7 @@ import javax.sql.DataSource;
 public final class Context {
 	private Workspace workspace;
 	private DataSource dataSource;
-
+	
 	public Context(Workspace workspace, DataSource dataSource) {
 		this.workspace = workspace;
 		this.dataSource = dataSource;

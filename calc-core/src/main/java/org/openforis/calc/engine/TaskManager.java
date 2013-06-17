@@ -24,14 +24,15 @@ public class TaskManager {
 	 * 
 	 * @param task
 	 */
+	synchronized
 	public void start(Task task) throws WorkspaceLockedException {
 		Context ctx = task.getContext();
 		Workspace ws = ctx.getWorkspace();
-		if ( workspaceManager.isLocked(ws.getId()) ) {
-			throw new WorkspaceLockedException();
+		try {
+			workspaceManager.lock(ws.getId());
+			task.run();
+		} finally {
+			workspaceManager.unlock(ws.getId());
 		}
-//		taskExecutor.
-		// TODO threading and locking
-//		task.run();
 	}
 }

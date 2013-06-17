@@ -51,6 +51,9 @@ public abstract class Job extends Task implements Iterable<Task> {
 		for (Task task : tasks) {
 			this.currentTaskIndex += 1;
 			if ( task.isScheduled() ) {
+				if ( task.getContext() != getContext() ) {
+					throw new IllegalStateException("Cannot nest tasks in different contexts");
+				}
 				task.run();
 				if ( task.isFailed() ) {
 					throw task.getLastException();
