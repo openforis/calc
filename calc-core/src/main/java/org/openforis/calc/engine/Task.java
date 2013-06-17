@@ -1,5 +1,7 @@
 package org.openforis.calc.engine;
 
+import java.util.UUID;
+
 import org.openforis.calc.nls.Captionable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,14 +17,16 @@ import org.slf4j.LoggerFactory;
 public abstract class Task implements Captionable, Runnable {
 	private Context context;
 	private Status status;
+	private UUID id;
 	private long startTime;
 	private long endTime;
 	private long itemsProcessed;
 	private long itemsSkipped;
 	private long totalItems;
-	private Throwable exception;
+	private Throwable lastException;
 	private ParameterMap parameters;
 	private Logger logger;
+	private boolean scheduled;
 	
 	public enum Status {
 		NOT_STARTED, RUNNING, FINISHED, FAILED, ABORTED;
@@ -35,6 +39,7 @@ public abstract class Task implements Captionable, Runnable {
 	public static <T extends Task> T createTask(Class<T> type, Context context, ParameterMap parameters) {
 		try {
 			T task = type.newInstance();
+			task.id = UUID.randomUUID();
 			task.context = context;
 			task.parameters = parameters;
 			return task;
@@ -49,12 +54,19 @@ public abstract class Task implements Captionable, Runnable {
 	 * Executed before run() to count the totalItems and perform other quick checks.
 	 */
 
-	public void init() {
+	private void reset() {
+		this.status = Status.NOT_STARTED;
 		this.startTime = -1;
 		this.endTime = -1;
 		this.itemsProcessed = 0;
 		this.itemsSkipped = 0;
-		this.exception = null;
+		this.lastException = null;
+		this.scheduled = true;
+	}
+
+	synchronized
+	public void init() {
+		reset();
 		this.totalItems = countTotalItems();
 	}
 
@@ -64,14 +76,17 @@ public abstract class Task implements Captionable, Runnable {
 	}
 
 	@Override
+	synchronized
 	public final void run() {
 		try {
+			reset();
 			this.startTime = System.currentTimeMillis();
 			execute();
+			this.scheduled = false;
 			this.status = Status.FINISHED;
 		} catch (Throwable t) {
 			this.status = Status.FAILED;
-			this.exception = t; 
+			this.lastException = t; 
 		} finally {
 			this.endTime = System.currentTimeMillis();
 		}
@@ -134,8 +149,12 @@ public abstract class Task implements Captionable, Runnable {
 		return this.totalItems;
 	}
 
-	public final Throwable getException() {
-		return this.exception;
+	public final Throwable getLastException() {
+		return this.lastException;
+	}
+
+	public UUID getId() {
+		return id;
 	}
 	
 	protected final Logger log() {
@@ -144,5 +163,13 @@ public abstract class Task implements Captionable, Runnable {
 
 	protected final ParameterMap getParameters() {
 		return parameters;
+	}
+
+	public boolean isScheduled() {
+		return scheduled;
+	}
+
+	public void setScheduled(boolean scheduled) {
+		this.scheduled = scheduled;
 	}
 }
