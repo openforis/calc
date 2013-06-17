@@ -84,7 +84,7 @@ public class CalcTest {
 			Module module = moduleRegistry.getModule(step.getModuleName(), step.getModuleVersion());
 			Operation<?> operation = module.getOperation(step.getOperationName());
 			Task task = operation.createTask(context, step.parameters());
-			taskManager.execute(task);
+			taskManager.start(task);
 			//
 			
 //			workspaceService.saveWorkspace(w);

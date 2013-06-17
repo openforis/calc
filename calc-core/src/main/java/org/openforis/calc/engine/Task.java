@@ -25,7 +25,7 @@ public abstract class Task implements Captionable, Runnable {
 	private Logger logger;
 	
 	public enum Status {
-		NOT_STARTED, RUNNING, COMPLETE, FAILED, ABORTED;
+		NOT_STARTED, RUNNING, FINISHED, FAILED, ABORTED;
 	}
 
 	protected Task() {
@@ -45,76 +45,80 @@ public abstract class Task implements Captionable, Runnable {
 		}
 	}
 
-	protected Task(Context context, ParameterMap parameters) {
-		this.context = context;
-		this.parameters = parameters;
-	}
-
 	/**
 	 * Executed before run() to count the totalItems and perform other quick checks.
 	 */
-//	public abstract void init();
 
-	// TODO Temporary: replace with abstract
 	public void init() {
-		// TODO Auto-generated method stub
-		
+		this.startTime = -1;
+		this.endTime = -1;
+		this.itemsProcessed = 0;
+		this.itemsSkipped = 0;
+		this.exception = null;
+		this.totalItems = countTotalItems();
+	}
+
+	protected long countTotalItems() {
+		// TODO replace with abstract 
+		return 1;
 	}
 
 	@Override
 	public final void run() {
 		try {
-			boolean success = execute();
-			this.status = success ? Status.COMPLETE : Status.FAILED;
+			this.startTime = System.currentTimeMillis();
+			execute();
+			this.status = Status.FINISHED;
 		} catch (Throwable t) {
 			this.status = Status.FAILED;
 			this.exception = t; 
+		} finally {
+			this.endTime = System.currentTimeMillis();
 		}
-		this.endTime = System.currentTimeMillis();
 	}
 
-	protected boolean execute() throws Exception {
+	/**
+	 * 
+	 * @throws Exception
+	 */
+	protected void execute() throws Throwable {
 		// TODO make abstract
 		throw new UnsupportedOperationException();
 	}
 
-	public long getDuration() {
-		throw new UnsupportedOperationException();
+	public final long getDuration() {
+		return status == Status.NOT_STARTED ? -1 : endTime - startTime;
 	}
 
-	public boolean isRunning() {
-		throw new UnsupportedOperationException();
+	public final boolean isRunning() {
+		return status == Status.RUNNING;
 	}
 
-	public boolean isFailed() {
-		throw new UnsupportedOperationException();
+	public final boolean isFailed() {
+		return status == Status.FAILED;
 	}
 
-	public boolean isAborted() {
-		throw new UnsupportedOperationException();
+	public final boolean isAborted() {
+		return status == Status.ABORTED;
 	}
 
-	public boolean isFinished() {
-		throw new UnsupportedOperationException();
+	public final boolean isFinished() {
+		return status == Status.FINISHED;
 	}
 
-	public ParameterMap getParameters() {
-		return this.parameters;
-	}
-
-	public Context getContext() {
+	public final Context getContext() {
 		return this.context;
 	}
 
-	public Task.Status getStatus() {
+	public final Task.Status getStatus() {
 		return this.status;
 	}
 
-	public long getStartTime() {
+	public final long getStartTime() {
 		return this.startTime;
 	}
 
-	public long getEndTime() {
+	public final long getEndTime() {
 		return this.endTime;
 	}
 
@@ -126,15 +130,19 @@ public abstract class Task implements Captionable, Runnable {
 		return this.itemsSkipped;
 	}
 
-	public long getTotalItems() {
+	public final long getTotalItems() {
 		return this.totalItems;
 	}
 
-	public Throwable getException() {
+	public final Throwable getException() {
 		return this.exception;
 	}
 	
-	protected Logger log() {
+	protected final Logger log() {
 		return this.logger;
+	}
+
+	protected final ParameterMap getParameters() {
+		return parameters;
 	}
 }

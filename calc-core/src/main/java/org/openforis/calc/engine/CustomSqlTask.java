@@ -17,7 +17,7 @@ import javax.sql.DataSource;
 public final class CustomSqlTask extends Task {
 	
 	@Override
-	protected boolean execute() throws SQLException {
+	protected void execute() throws SQLException {
 		ParameterMap params = getParameters();
 		String sql = params.getString("sql");
 		log().info("Executing custom SQL: "+sql);
@@ -29,6 +29,5 @@ public final class CustomSqlTask extends Task {
 		if ( res.next() ) {
 			System.out.println(res.getInt(1));
 		}
-		return true;
 	}
 }

@@ -6,5 +6,7 @@ package org.openforis.calc.engine;
  * @author G. Miceli
  * @author M. Togna
  */
-public class WorkspaceLockException extends Exception {
+public class WorkspaceLockedException extends Exception {
+
+	private static final long serialVersionUID = 1L;
 }

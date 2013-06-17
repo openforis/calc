@@ -1,5 +1,8 @@
 package org.openforis.calc.engine;
 
+import java.util.concurrent.Executor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -11,13 +14,24 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class TaskManager {
+	@Autowired
+	private Executor taskExecutor;
+	
+	@Autowired
+	private WorkspaceManager workspaceManager;
 	/**
 	 * Executes a task in the background
 	 * 
 	 * @param task
 	 */
-	public void execute(Task task) {
+	public void start(Task task) throws WorkspaceLockedException {
+		Context ctx = task.getContext();
+		Workspace ws = ctx.getWorkspace();
+		if ( workspaceManager.isLocked(ws.getId()) ) {
+			throw new WorkspaceLockedException();
+		}
+//		taskExecutor.
 		// TODO threading and locking
-		task.run();
+//		task.run();
 	}
 }
