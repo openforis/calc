@@ -17,6 +17,7 @@ import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceManager;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.persistence.ParameterHashMap;
+import org.openforis.calc.r.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -24,29 +25,32 @@ import org.springframework.stereotype.Component;
 public class CalcTest {
 	@Autowired
 	private WorkspaceManager workspaceService;
-	
+
 	@Autowired
 	private ProcessingChainService pcs;
 
 	@Autowired
 	private CalculationStepService calcStepService;
-	
+
 	@Autowired
 	private TaskManager taskManager;
-	
+
 	@Autowired
 	private ModuleRegistry moduleRegistry;
-	
+
 	@Autowired
 	private ProcessingChainService processingChainService;
-	
+
+	@Autowired
+	private R r;
+
 	public void testModules() {
 		Set<Module> modules = moduleRegistry.getModules();
 		for (Module module : modules) {
 			System.out.println(module);
 		}
 	}
-	
+
 	public void createAndSave() {
 		Workspace w = workspaceService.getWorkspace(1);
 		System.out.println(w);
@@ -56,15 +60,15 @@ public class CalcTest {
 			System.out.println(entity + " <- " + entity.getWorkspace());
 		}
 		System.out.println("Chains:");
-		
+
 		ProcessingChain newChain = new ProcessingChain();
 		newChain.setName("Test Chain");
 		newChain.parameters().setNumber("p", 1);
-		
+
 		ParameterMap innerMap = new ParameterHashMap();
 		innerMap.setString("name", "Gino");
 		newChain.parameters().setMap("inner", innerMap);
-		
+
 		CalculationStep step = new CalculationStep();
 		step.setName("Step 1");
 		step.setStepNo(1);
@@ -74,57 +78,24 @@ public class CalcTest {
 		step.parameters().setString("sql", "select * from calc.aoi");
 
 		newChain.addCalculationStep(step);
-		w.addProcessingChain(newChain);		
+		w.addProcessingChain(newChain);
 	}
-	
-	public void test() throws Throwable {
-		ProcessingChainJob job = processingChainService.getProcessingChainJob(27);
-		Set<UUID> taskIds = job.getTaskIds();	
+
+	public void testRunProcessingChain() throws Throwable {
+		ProcessingChainJob job = processingChainService
+				.getProcessingChainJob(27);
+		Set<UUID> taskIds = job.getTaskIds();
 		processingChainService.startProcessingChainJob(27, taskIds);
-		while ( !job.isEnded() ) {
+		while (!job.isEnded()) {
 			System.out.println(job.getStatus());
 			Thread.sleep(1000);
-		}	
+		}
 		System.out.println("DONE!");
-		// Where should this code be?
-//			Context context = new Context(w, userDataSource);
-//			Module module = moduleRegistry.getModule(step.getModuleName(), step.getModuleVersion());
-//			Operation<?> operation = module.getOperation(step.getOperationName());
-//			Task task = operation.createTask(context, step.parameters());
-//			task.init();
-//			taskManager.start(task);
-//			while ( !task.isEnded() ) {
-//				Thread.sleep(1000);
-//			}
-//			System.out.println(task.getStatus());
-//			System.out.println(task.getLastException());
-		//
-		
-//			workspaceService.saveWorkspace(w);
-//			pcs.saveProcessingChain(newChain);
-//			calcStepService.saveCalculationStep(step);
-		
-		
-		
-//			System.out.println("New: "+newChain);
-//			System.out.println("---------------");
-//			step.setOperationName("exec-r");
-		
-//			calcStepService.saveCalculationStep(step);
-//			workspaceService.saveWorkspace(w);
-//			System.out.println("Saved: "+newChain);
-		
-		
-//			List<ProcessingChain> chains = w.getProcessingChains();
-//			System.out.println("found "+chains.size()+" chains" );
-//			for ( ProcessingChain chain : chains ) {
-//				System.out.println(chain.getId());
-//			}
-		
-//			List<ProcessingChain> chains = w.getProcessingChains();
-//			for (ProcessingChain chain : chains) {
-//				System.out.println(chain + " Params: "+chain.parameters());
-//				chain.parameters().setString("sql", "DAJE!");
-//			}
+	}
+
+	public void test() throws Throwable {
+        
+        // print a random number from uniform distribution
+        System.out.println(r.evalDouble("runif(1)"));
 	}
 }
