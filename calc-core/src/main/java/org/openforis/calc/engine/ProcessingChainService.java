@@ -35,8 +35,8 @@ public class ProcessingChainService {
 		return processingChainJobManager.getProcessingChainJob(chain);
 	}
 	
-	public void startProcessingChainJob(int chainId, Set<UUID> taskIds) {
+	public void startProcessingChainJob(int chainId, Set<UUID> taskIds) throws WorkspaceLockedException {
 		ProcessingChainJob job = getProcessingChainJob(chainId);
-//		processingChainJobManager.startProcessingChainJob
+		processingChainJobManager.startProcessingChainJob(job, taskIds);
 	}
 }

@@ -2,6 +2,7 @@ package org.openforis.calc;
 
 import java.util.Collection;
 import java.util.Set;
+import java.util.UUID;
 
 import org.openforis.calc.engine.CalculationStep;
 import org.openforis.calc.engine.CalculationStepService;
@@ -78,7 +79,8 @@ public class CalcTest {
 	
 	public void test() throws Throwable {
 		ProcessingChainJob job = processingChainService.getProcessingChainJob(27);
-		taskManager.start(job);
+		Set<UUID> taskIds = job.getTaskIds();	
+		processingChainService.startProcessingChainJob(27, taskIds);
 		while ( !job.isEnded() ) {
 			System.out.println(job.getStatus());
 			Thread.sleep(1000);

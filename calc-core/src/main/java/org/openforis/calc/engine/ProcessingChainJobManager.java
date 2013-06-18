@@ -2,6 +2,8 @@ package org.openforis.calc.engine;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -20,6 +22,9 @@ public class ProcessingChainJobManager {
 	@Autowired
 	private ProcessingChainDao processingChainDao;
 	
+	@Autowired 
+	private TaskManager taskManager;
+	
 	private Map<Integer, ProcessingChainJob> jobs;
 	
 	public ProcessingChainJobManager() {
@@ -37,5 +42,12 @@ public class ProcessingChainJobManager {
 			jobs.put(processingChainId, job);
 		}
 		return job;
+	}
+
+	synchronized
+	public void startProcessingChainJob(ProcessingChainJob job, Set<UUID> taskIds) throws WorkspaceLockedException {
+		Context ctx = job.getContext();
+		ctx.setScheduledTasks(taskIds);
+		taskManager.start(job);
 	}
 }

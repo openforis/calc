@@ -2,8 +2,11 @@ package org.openforis.calc.engine;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Synchronously executes a series of Tasks in order.  Jobs are also Tasks and
@@ -96,6 +99,26 @@ public class Job extends Task implements Iterable<Task> {
 	public Iterator<Task> iterator() {
 		return tasks().iterator();
 	}	
+
+	/**
+	 * Recursive
+	 * @return
+	 */
+	public Set<UUID> getTaskIds() {
+		Set<UUID> ids = new HashSet<UUID>();
+		gatherTaskIds(ids);
+		return ids;
+	}
+
+	private void gatherTaskIds(Set<UUID> ids) {
+		for (Task task : tasks) {
+			ids.add(task.getId());
+			if ( task instanceof Job ) {
+				Job subjob = (Job) task;
+				subjob.gatherTaskIds(ids);
+			}
+		}		
+	}
 
 //	public Task getTask(UUID taskId) {
 //		for (Task task : tasks) {
