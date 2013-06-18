@@ -11,9 +11,13 @@ public abstract class Calc {
 	}
 	
 	public static void main(String[] args) {
-		ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
-		CalcTest test = ctx.getBean(CalcTest.class);
-		test.test();
+		try {
+			ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
+			CalcTest test = ctx.getBean(CalcTest.class);
+			test.test();
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
 	}
 
 }

@@ -8,7 +8,8 @@ package org.openforis.calc.engine;
  */
 public final class ValidateInputSchemaTask extends Task {
 
-	public ValidateInputSchemaTask() {
-		throw new UnsupportedOperationException();
+	protected ValidateInputSchemaTask(Context context) {
+		super(context);
 	}
+
 }

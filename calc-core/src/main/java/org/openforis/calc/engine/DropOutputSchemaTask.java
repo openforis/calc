@@ -8,7 +8,7 @@ package org.openforis.calc.engine;
  */
 public final class DropOutputSchemaTask extends Task {
 
-	public DropOutputSchemaTask() {
-		throw new UnsupportedOperationException();
+	protected DropOutputSchemaTask(Context context) {
+		super(context);
 	}
 }

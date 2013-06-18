@@ -24,33 +24,23 @@ public abstract class Task implements Captionable {
 	private long itemsSkipped;
 	private long totalItems;
 	private Throwable lastException;
-	private ParameterMap parameters;
 	private Logger logger;
-	private boolean scheduled;
 	
 	public enum Status {
 		PENDING, RUNNING, FINISHED, FAILED, ABORTED;
 	}
 
-	protected Task() {
+	/**
+	 *  
+	 * @param context
+	 * @param parameters Creates a deep copy of parameters (defensive)
+	 */
+	protected Task(Context context) {
 		reset();
 		this.logger = LoggerFactory.getLogger(getClass());
+		this.id = UUID.randomUUID();
+		this.context = context;
 	}
-	
-	public static <T extends Task> T createTask(Class<T> type, Context context, ParameterMap parameters) {
-		try {
-			T task = type.newInstance();
-			task.id = UUID.randomUUID();
-			task.context = context;
-			task.parameters = parameters;
-			return task;
-		} catch (InstantiationException e) {
-			throw new IllegalArgumentException("Invalid task "+type.getClass(), e);
-		} catch (IllegalAccessException e) {
-			throw new IllegalArgumentException("Invalid task "+type.getClass(), e);
-		}
-	}
-
 	/**
 	 * Executed before run() to count the totalItems and perform other quick checks.
 	 */
@@ -63,7 +53,6 @@ public abstract class Task implements Captionable {
 		this.itemsProcessed = 0;
 		this.itemsSkipped = 0;
 		this.lastException = null;
-		this.scheduled = true;
 	}
 
 	synchronized
@@ -82,7 +71,6 @@ public abstract class Task implements Captionable {
 			reset();
 			this.startTime = System.currentTimeMillis();
 			execute();
-			this.scheduled = false;
 			this.status = Status.FINISHED;
 		} catch (Throwable t) {
 			this.status = Status.FAILED;
@@ -171,17 +159,5 @@ public abstract class Task implements Captionable {
 	
 	protected final Logger log() {
 		return this.logger;
-	}
-
-	protected final ParameterMap parameters() {
-		return parameters;
-	}
-
-	public boolean isScheduled() {
-		return scheduled;
-	}
-
-	public void setScheduled(boolean scheduled) {
-		this.scheduled = scheduled;
 	}
 }

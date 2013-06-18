@@ -8,7 +8,8 @@ package org.openforis.calc.engine;
  */
 public final class UpdateCodeListTablesTask extends Task {
 
-	public UpdateCodeListTablesTask() {
-		throw new UnsupportedOperationException();
+	protected UpdateCodeListTablesTask(Context context) {
+		super(context);
 	}
+
 }

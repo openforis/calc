@@ -10,7 +10,7 @@ import org.openforis.calc.nls.Captionable;
  * @author G. Miceli
  * @author M. Togna
  */
-public abstract class Operation<T extends Task> implements Captionable {
+public abstract class Operation<T extends ProcessingChainTask> implements Captionable {
 	private Module module;
 	private String name;
 	
@@ -21,7 +21,7 @@ public abstract class Operation<T extends Task> implements Captionable {
 
 	public final T createTask(Context context, ParameterMap params) {
 		Class<T> type = ReflectionUtils.extractGenericType(getClass());
-		return Task.createTask(type, context, params);
+		return ProcessingChainTask.createTask(type, context, params);
 	}
 
 	public String getName() {

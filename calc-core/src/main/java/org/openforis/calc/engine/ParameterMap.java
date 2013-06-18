@@ -27,4 +27,6 @@ public interface ParameterMap {
 	void removeValue(String name);
 	
 	String toJsonString();
+	
+	ParameterMap deepCopy();
 }

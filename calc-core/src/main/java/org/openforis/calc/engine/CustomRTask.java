@@ -6,9 +6,10 @@ package org.openforis.calc.engine;
  * @author G. Miceli
  * @author M. Togna
  */
-public final class CustomRTask extends Task {
+public final class CustomRTask extends ProcessingChainTask {
 
-	public CustomRTask() {
-//		throw new UnsupportedOperationException();
+	protected CustomRTask(Context context) {
+		super(context);
 	}
+
 }

@@ -8,7 +8,8 @@ package org.openforis.calc.engine;
  */
 public final class EstimateErrorsTask extends Task {
 
-	public EstimateErrorsTask() {
-		throw new UnsupportedOperationException();
+	protected EstimateErrorsTask(Context context) {
+		super(context);
 	}
+
 }

@@ -4,12 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * 
  * @author G. Miceli
  *
  */
+@Component
 public class ProcessingChainJobManager {
 	
 	@Autowired
@@ -30,7 +32,8 @@ public class ProcessingChainJobManager {
 		if ( job == null ) {
 			Workspace workspace = chain.getWorkspace();
 			Context context = contextManager.getContext(workspace);
-			job = Task.createTask(ProcessingChainJob.class, context, chain.parameters());
+			// add chain-level parameters?
+			job = new ProcessingChainJob(context);
 			jobs.put(processingChainId, job);
 		}
 		return job;

@@ -8,4 +8,8 @@ package org.openforis.calc.engine;
  * @author M. Togna
  */
 public final class AggregateFactTableTask extends Task {
+
+	protected AggregateFactTableTask(Context context) {
+		super(context);
+	}
 }

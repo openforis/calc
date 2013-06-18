@@ -1,5 +1,8 @@
 package org.openforis.calc.engine;
 
+import java.util.Set;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class ProcessingChainService {
+	
 	@Autowired
 	private ProcessingChainDao processingChainDao;
 
@@ -23,7 +27,16 @@ public class ProcessingChainService {
 		// TODO update Workspace?
 	}
 	
-	public ProcessingChainJob getProcessingChainJob(int workspaceId) {
-		return processingChainJobManager.getProcessingChainJob(workspaceId);
+	public ProcessingChainJob getProcessingChainJob(int chainId) {
+		ProcessingChain chain = processingChainDao.find(chainId);
+		if ( chain == null ) {
+			throw new IllegalArgumentException("No processing chain with id "+chainId);
+		}
+		return processingChainJobManager.getProcessingChainJob(chain);
+	}
+	
+	public void startProcessingChainJob(int chainId, Set<UUID> taskIds) {
+		ProcessingChainJob job = getProcessingChainJob(chainId);
+//		processingChainJobManager.startProcessingChainJob
 	}
 }

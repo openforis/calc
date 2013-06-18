@@ -1,8 +1,14 @@
 package org.openforis.calc.engine;
 
+/**
+ * 
+ * @author G. Miceli
+ *
+ */
 public final class ProcessingChainJob extends Job {
 
-	public ProcessingChainJob() {
-		throw new UnsupportedOperationException();
+	protected ProcessingChainJob(Context context) {
+		super(context);
 	}
+
 }

@@ -8,7 +8,8 @@ package org.openforis.calc.engine;
  */
 public final class AoiImportJob extends ImportJob {
 
-	public AoiImportJob() {
-		throw new UnsupportedOperationException();
+	protected AoiImportJob(Context context) {
+		super(context);
 	}
+
 }

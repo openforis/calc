@@ -29,7 +29,11 @@
 	
 	<context:property-placeholder location="classpath:dev.properties" />
 	
-	<task:executor id="taskExecutor" pool-size="10"/>
+<!-- 	<task:executor id="taskExecutor" pool-size="10"/> -->
+	
+	<bean id="taskExecutor" class="org.springframework.core.task.SimpleAsyncTaskExecutor">
+		<property name="concurrencyLimit" value="10"/>
+	</bean>
 	
 	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"> 
 	    <property name="persistenceUnitName" value="calcPersistenceUnit" />

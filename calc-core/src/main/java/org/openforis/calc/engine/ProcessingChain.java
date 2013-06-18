@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -24,7 +23,7 @@ import org.openforis.calc.persistence.ParameterHashMap;
 @javax.persistence.Entity
 @Table(name = "processing_chain")
 public class ProcessingChain extends UserObject {
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "workspace_id")
 	private Workspace workspace;
 	

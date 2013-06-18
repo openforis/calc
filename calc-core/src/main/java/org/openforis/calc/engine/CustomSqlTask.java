@@ -14,8 +14,12 @@ import javax.sql.DataSource;
  * @author G. Miceli
  * @author M. Togna
  */
-public final class CustomSqlTask extends Task {
+public final class CustomSqlTask extends ProcessingChainTask {
 	
+	protected CustomSqlTask(Context context) {
+		super(context);
+	}
+
 	@Override
 	protected void execute() throws SQLException {
 		ParameterMap params = parameters();

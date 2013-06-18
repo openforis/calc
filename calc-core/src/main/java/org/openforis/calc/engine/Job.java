@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Synchronously executes a series of Tasks in order.  Jobs are also Tasks and
@@ -13,11 +12,12 @@ import java.util.UUID;
  * @author G. Miceli
  * @author M. Togna
  */
-public abstract class Job extends Task implements Iterable<Task> {
+public class Job extends Task implements Iterable<Task> {
 	private int currentTaskIndex;
 	private List<Task> tasks;
 	
-	protected Job() {
+	protected Job(Context context) {
+		super(context);
 		this.currentTaskIndex = -1;
 		this.tasks = new ArrayList<Task>();
 	}
@@ -50,7 +50,8 @@ public abstract class Job extends Task implements Iterable<Task> {
 		this.currentTaskIndex = -1;
 		for (Task task : tasks) {
 			this.currentTaskIndex += 1;
-			if ( task.isScheduled() ) {
+			Context ctx = getContext();
+			if ( ctx.isScheduled(task) ) {
 				if ( task.getContext() != getContext() ) {
 					throw new IllegalStateException("Cannot nest tasks in different contexts");
 				}
@@ -72,11 +73,14 @@ public abstract class Job extends Task implements Iterable<Task> {
 	}
 
 	/**
-	 * Throws IllegalStateException if involked after run() is called
+	 * Throws IllegalStateException if invoked after run() is called
 	 * 
 	 * @param task
 	 */
-	protected void addTask(Task task) {
+	public void addTask(Task task) {
+		if ( !isPending() ) {
+			throw new IllegalStateException("Cannot add tasks to a job once started");
+		}
 		tasks.add(task);
 	}
 
@@ -91,36 +95,20 @@ public abstract class Job extends Task implements Iterable<Task> {
 	@Override
 	public Iterator<Task> iterator() {
 		return tasks().iterator();
-	}
-	
-	public void scheduleTask(UUID taskId) {
-		setScheduled(taskId, true);
-	}
+	}	
 
-	public void unscheduleTask(UUID taskId) {
-		setScheduled(taskId, false);		
-	}
-
-	private void setScheduled(UUID taskId, boolean scheduled) {
-		Task task = getTask(taskId);
-		if ( task == null ) {
-			throw new IllegalArgumentException("Unknown task");
-		}
-		task.setScheduled(scheduled);
-	}
-	
-	public Task getTask(UUID taskId) {
-		for (Task task : tasks) {
-			if ( task.getId().equals(taskId) ) {
-				return task;
-			} else if ( task instanceof Job ) {
-				Job subjob = (Job) task;
-				Task t = subjob.getTask(taskId);
-				if ( t != null ) {
-					return t;
-				}
-			}
-		}
-		return null;
-	}
+//	public Task getTask(UUID taskId) {
+//		for (Task task : tasks) {
+//			if ( task.getId().equals(taskId) ) {
+//				return task;
+//			} else if ( task instanceof Job ) {
+//				Job subjob = (Job) task;
+//				Task t = subjob.getTask(taskId);
+//				if ( t != null ) {
+//					return t;
+//				}
+//			}
+//		}
+//		return null;
+//	}
 }

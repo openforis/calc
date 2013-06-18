@@ -7,7 +7,9 @@ package org.openforis.calc.engine;
  * @author M. Togna
  */
 public abstract class ImportJob extends Job {
-	
-	ImportJob() {
+
+	protected ImportJob(Context context) {
+		super(context);
 	}
+	
 }

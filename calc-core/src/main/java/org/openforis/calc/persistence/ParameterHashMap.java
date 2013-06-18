@@ -21,6 +21,8 @@ public class ParameterHashMap implements ParameterMap {
 	}
 
 	/**
+	 * Wraps the given Map
+	 * 
 	 * WARNING: Does not defensively copy the map; 
 	 * Changes to ParameterHashMap pass through to the 
 	 * original map and vice-versa
@@ -30,6 +32,7 @@ public class ParameterHashMap implements ParameterMap {
 	public ParameterHashMap(Map<String, Object> map) {
 		this.map = map;
 	}
+
 
 	@Override
 	public Set<String> names() {
@@ -106,4 +109,21 @@ public class ParameterHashMap implements ParameterMap {
 	public String toJsonString() {
 		return JSONObject.toJSONString(map);
 	}
+	
+	/**
+	 * Creates a deep copy of the map and all contained maps
+	 */
+	@Override
+	public ParameterMap deepCopy() {
+		Map<String, Object> newMap = new HashMap<String, Object>(map.size());
+		for (Map.Entry<String, Object> e : map.entrySet()) {
+			String name = e.getKey();
+			Object value = e.getValue();
+			if ( value instanceof ParameterHashMap ) {
+				value = ((ParameterHashMap) value).deepCopy();
+			}
+			newMap.put(name, value);
+		}
+		return new ParameterHashMap(newMap);
+	} 
 }

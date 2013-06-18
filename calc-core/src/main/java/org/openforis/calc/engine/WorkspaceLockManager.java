@@ -1,7 +1,9 @@
 package org.openforis.calc.engine;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.springframework.stereotype.Component;
 
@@ -15,23 +17,22 @@ import org.springframework.stereotype.Component;
 @Component
 public class WorkspaceLockManager {
 	
-	private Set<Integer> lockedWorkspaces; 
+	private Map<Integer, Lock> locks; 
 
 	public WorkspaceLockManager() {
-		this.lockedWorkspaces = new HashSet<Integer>();
+		this.locks = new HashMap<Integer, Lock>();
 	}
 	
 	synchronized
-	public void lock(int workspaceId) throws WorkspaceLockedException {
-		if ( lockedWorkspaces.contains(workspaceId) ) {
-			throw new WorkspaceLockedException();
-		} else {
-			lockedWorkspaces.add(workspaceId);
+	public Lock lock(int workspaceId) throws WorkspaceLockedException {
+		Lock lock = locks.get(workspaceId);
+		if ( lock == null ) {
+			lock = new ReentrantLock();
+			locks.put(workspaceId, lock);
 		}
-	}
-
-	synchronized
-	public void unlock(int workspaceId) {
-		lockedWorkspaces.remove(workspaceId);
+		if ( !lock.tryLock() ) {
+			throw new WorkspaceLockedException();
+		}
+		return lock;
 	}
 }

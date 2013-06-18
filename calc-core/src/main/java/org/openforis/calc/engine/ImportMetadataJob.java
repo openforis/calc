@@ -8,7 +8,8 @@ package org.openforis.calc.engine;
  */
 public final class ImportMetadataJob extends ImportJob {
 
-	public ImportMetadataJob() {
-		throw new UnsupportedOperationException();
+	protected ImportMetadataJob(Context context) {
+		super(context);
 	}
+
 }
