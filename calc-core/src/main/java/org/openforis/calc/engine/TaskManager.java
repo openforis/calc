@@ -1,7 +1,6 @@
 package org.openforis.calc.engine;
 
 import java.util.concurrent.Executor;
-import java.util.concurrent.locks.Lock;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -30,7 +29,7 @@ public class TaskManager {
 	public void start(final Task task) throws WorkspaceLockedException {
 		final Context ctx = task.getContext();
 		final Workspace ws = ctx.getWorkspace();
-		final Lock lock = workspaceLockManager.lock(ws.getId());
+		final SimpleLock lock = workspaceLockManager.lock(ws.getId());
 		taskExecutor.execute(new Runnable() {
 			@Override
 			public void run() {
