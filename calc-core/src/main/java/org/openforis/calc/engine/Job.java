@@ -15,12 +15,11 @@ import java.util.UUID;
  * @author G. Miceli
  * @author M. Togna
  */
-public class Job extends Task implements Iterable<Task> {
+public abstract class Job extends Task implements Iterable<Task> {
 	private int currentTaskIndex;
 	private List<Task> tasks;
 	
-	protected Job(Context context) {
-		super(context);
+	protected Job() {
 		this.currentTaskIndex = -1;
 		this.tasks = new ArrayList<Task>();
 	}
@@ -80,7 +79,7 @@ public class Job extends Task implements Iterable<Task> {
 	 * 
 	 * @param task
 	 */
-	public void addTask(Task task) {
+	protected void addTask(Task task) {
 		if ( !isPending() ) {
 			throw new IllegalStateException("Cannot add tasks to a job once started");
 		}

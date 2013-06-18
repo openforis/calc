@@ -1,7 +1,6 @@
 package org.openforis.calc.engine;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -14,12 +13,8 @@ import javax.sql.DataSource;
  * @author G. Miceli
  * @author M. Togna
  */
-public final class CustomSqlTask extends ProcessingChainTask {
+public final class CustomSqlTask extends CalculationStepTask {
 	
-	protected CustomSqlTask(Context context) {
-		super(context);
-	}
-
 	@Override
 	protected void execute() throws SQLException {
 		ParameterMap params = parameters();
@@ -29,15 +24,6 @@ public final class CustomSqlTask extends ProcessingChainTask {
 		DataSource ds = context.getDataSource();
 		Connection conn = ds.getConnection();
 		Statement stmt = conn.createStatement();
-		ResultSet res = stmt.executeQuery(sql);
-		try {
-			Thread.sleep(30000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		if ( res.next() ) {
-			System.out.println(res.getInt(1));
-		}
+		stmt.execute(sql);
 	}
 }

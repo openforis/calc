@@ -8,8 +8,4 @@ package org.openforis.calc.engine;
  */
 public final class PreProcessingJob extends Job {
 
-	protected PreProcessingJob(Context context) {
-		super(context);
-	}
-
 }

@@ -82,10 +82,12 @@ public class CalcTest {
 	}
 
 	public void testRunProcessingChain() throws Throwable {
-		ProcessingChainJob job = processingChainService
-				.getProcessingChainJob(27);
+		Workspace ws = workspaceService.getWorkspace(1);
+		ProcessingChain chain = ws.getProcessingChains().get(0);
+		int chainId = chain.getId();
+		ProcessingChainJob job = processingChainService.getProcessingChainJob(chainId);
 		Set<UUID> taskIds = job.getTaskIds();
-		processingChainService.startProcessingChainJob(27, taskIds);
+		processingChainService.startProcessingChainJob(chainId, taskIds);
 		while (!job.isEnded()) {
 			System.out.println(job.getStatus());
 			Thread.sleep(1000);
@@ -93,9 +95,9 @@ public class CalcTest {
 		System.out.println("DONE!");
 	}
 
-	public void test() throws Throwable {
-        
+	public void testREval() throws Throwable {
         // print a random number from uniform distribution
         System.out.println(r.evalDouble("runif(1)"));
+        r.eval("print('TEST')");
 	}
 }

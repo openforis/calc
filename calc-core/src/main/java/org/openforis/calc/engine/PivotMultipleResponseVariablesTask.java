@@ -7,8 +7,4 @@ package org.openforis.calc.engine;
  */
 public final class PivotMultipleResponseVariablesTask extends Task {
 
-	protected PivotMultipleResponseVariablesTask(Context context) {
-		super(context);
-	}
-
 }

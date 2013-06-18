@@ -1,6 +1,7 @@
 package org.openforis.calc.engine;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -25,21 +26,39 @@ public class ProcessingChainJobManager {
 	@Autowired 
 	private TaskManager taskManager;
 	
+	@Autowired
+	private ModuleRegistry moduleRegistry;
+	
 	private Map<Integer, ProcessingChainJob> jobs;
 	
 	public ProcessingChainJobManager() {
 		this.jobs = new HashMap<Integer, ProcessingChainJob>();
 	}
 	
-	public ProcessingChainJob getProcessingChainJob(ProcessingChain chain) {
-		Integer processingChainId = chain.getId();
-		ProcessingChainJob job = jobs.get(processingChainId);
+	public ProcessingChainJob getProcessingChainJob(ProcessingChain chain) throws InvalidProcessingChainException {
+		Integer chainId = chain.getId();
+		ProcessingChainJob job = jobs.get(chainId);
 		if ( job == null ) {
 			Workspace workspace = chain.getWorkspace();
 			Context context = contextManager.getContext(workspace);
-			// add chain-level parameters?
-			job = new ProcessingChainJob(context);
-			jobs.put(processingChainId, job);
+			job = createProcessingChainJob(context, chain);
+			jobs.put(chainId, job);
+		}
+		return job;
+	}
+
+	private ProcessingChainJob createProcessingChainJob(Context context, ProcessingChain chain) throws InvalidProcessingChainException {
+		// add chain-level parameters?
+		ProcessingChainJob job;
+		job = Task.createTask(ProcessingChainJob.class, context);
+		List<CalculationStep> steps = chain.getCalculationSteps();
+		for (CalculationStep step : steps) {
+			Operation<?> operation = moduleRegistry.getOperation(step);
+			if ( operation == null ) {
+				throw new InvalidProcessingChainException();
+			}
+			CalculationStepTask task = operation.createTask(context, step.parameters());
+			job.addTask(task);
 		}
 		return job;
 	}

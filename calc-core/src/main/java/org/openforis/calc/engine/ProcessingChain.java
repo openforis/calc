@@ -9,8 +9,10 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.Type;
 import org.openforis.calc.common.UserObject;
 import org.openforis.calc.persistence.ParameterHashMap;
@@ -27,7 +29,8 @@ public class ProcessingChain extends UserObject {
 	@JoinColumn(name = "workspace_id")
 	private Workspace workspace;
 	
-	@OneToMany(mappedBy = "chain")
+	@OneToMany(mappedBy = "chain", fetch = FetchType.EAGER)
+	@OrderBy("stepNo")
 	private List<CalculationStep> steps;
 	
 	@Type(type="org.openforis.calc.persistence.JsonParameterMapType")
@@ -37,10 +40,6 @@ public class ProcessingChain extends UserObject {
 	public ProcessingChain() {
 		this.parameters = new ParameterHashMap();
 		this.steps = new ArrayList<CalculationStep>();
-	}
-	
-	public ProcessingChainJob createJob(Context context) {
-		throw new UnsupportedOperationException();
 	}
 	
 	public List<CalculationStep> getCalculationSteps() {

@@ -65,4 +65,30 @@ public class ModuleRegistry {
 	private String moduleKey(Module module) {
 		return moduleKey(module.getName(), module.getVersion());
 	}
+
+	/**
+	 * Convenient method to get Operation directly 
+	 * 
+	 * @param step
+	 * @return
+	 */
+	public Operation<?> getOperation(String moduleName, String moduleVersion, String operationName) {
+		Module module = getModule(moduleName, moduleVersion);
+		if ( module == null ) {
+			return null;
+		}
+		Operation<?> operation = module.getOperation(operationName);
+		return operation;
+	}
+
+	/**
+	 * Convenient method to get Operation directly 
+	 * 
+	 * @param step
+	 * @return
+	 */
+	public Operation<?> getOperation(CalculationStep step) {
+		return getOperation(step.getModuleName(), step.getModuleVersion(), step.getOperationName());
+	}
+
 }

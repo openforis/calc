@@ -30,7 +30,7 @@ public final class CalculationStep extends UserObject {
 	@Column(name = "step_no")
 	private int stepNo;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "chain_id")
 	private ProcessingChain chain;
 	

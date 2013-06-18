@@ -14,11 +14,12 @@ public abstract class Calc {
 		try {
 			ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
 			CalcTest test = ctx.getBean(CalcTest.class);
-			test.test();
+			test.testRunProcessingChain();
 			ctx.registerShutdownHook();
-			System.exit(0);
 		} catch (Throwable e) {
 			e.printStackTrace();
+		} finally {
+			System.exit(0);
 		}
 	}
 

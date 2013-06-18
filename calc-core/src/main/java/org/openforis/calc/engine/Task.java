@@ -35,16 +35,27 @@ public abstract class Task implements Captionable {
 	 * @param context
 	 * @param parameters Creates a deep copy of parameters (defensive)
 	 */
-	protected Task(Context context) {
+	Task() {
 		reset();
 		this.logger = LoggerFactory.getLogger(getClass());
 		this.id = UUID.randomUUID();
-		this.context = context;
 	}
+	
+	public static <T extends Task> T createTask(Class<T> type, Context context) {
+		try {
+			T task = type.newInstance();
+			task.context = context;
+			return task;
+		} catch (InstantiationException e) {
+			throw new IllegalArgumentException("Invalid task "+type.getClass(), e);
+		} catch (IllegalAccessException e) {
+			throw new IllegalArgumentException("Invalid task "+type.getClass(), e);
+		}
+	}
+
 	/**
 	 * Executed before run() to count the totalItems and perform other quick checks.
 	 */
-
 	synchronized
 	public void reset() {
 		this.status = Status.PENDING;
@@ -67,6 +78,9 @@ public abstract class Task implements Captionable {
 
 	synchronized
 	public final void run() {
+		if ( context == null ) {
+			throw new IllegalStateException("Context not set");
+		}
 		try {
 			reset();
 			this.startTime = System.currentTimeMillis();
@@ -75,6 +89,7 @@ public abstract class Task implements Captionable {
 		} catch (Throwable t) {
 			this.status = Status.FAILED;
 			this.lastException = t; 
+			logger.warn(t.toString());
 		} finally {
 			this.endTime = System.currentTimeMillis();
 		}

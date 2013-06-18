@@ -27,7 +27,7 @@ public class ProcessingChainService {
 		// TODO update Workspace?
 	}
 	
-	public ProcessingChainJob getProcessingChainJob(int chainId) {
+	public ProcessingChainJob getProcessingChainJob(int chainId) throws InvalidProcessingChainException {
 		ProcessingChain chain = processingChainDao.find(chainId);
 		if ( chain == null ) {
 			throw new IllegalArgumentException("No processing chain with id "+chainId);
@@ -35,7 +35,7 @@ public class ProcessingChainService {
 		return processingChainJobManager.getProcessingChainJob(chain);
 	}
 	
-	public void startProcessingChainJob(int chainId, Set<UUID> taskIds) throws WorkspaceLockedException {
+	public void startProcessingChainJob(int chainId, Set<UUID> taskIds) throws WorkspaceLockedException, InvalidProcessingChainException {
 		ProcessingChainJob job = getProcessingChainJob(chainId);
 		processingChainJobManager.startProcessingChainJob(job, taskIds);
 	}

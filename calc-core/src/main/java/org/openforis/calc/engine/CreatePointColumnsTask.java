@@ -7,8 +7,4 @@ package org.openforis.calc.engine;
  * @author M. Togna
  */
 public final class CreatePointColumnsTask extends Task {
-
-	protected CreatePointColumnsTask(Context context) {
-		super(context);
-	}
 }

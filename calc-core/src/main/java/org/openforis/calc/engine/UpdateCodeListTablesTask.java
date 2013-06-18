@@ -8,8 +8,4 @@ package org.openforis.calc.engine;
  */
 public final class UpdateCodeListTablesTask extends Task {
 
-	protected UpdateCodeListTablesTask(Context context) {
-		super(context);
-	}
-
 }
