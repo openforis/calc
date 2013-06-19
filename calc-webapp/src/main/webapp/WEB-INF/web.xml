@@ -13,24 +13,25 @@
 
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
-		<param-value>classpath:/applicationContext*.xml</param-value>
+		<param-value>classpath*:**/applicationContext*.xml</param-value>
 	</context-param>
 	
 	<!-- Spring/Jersey JAX-RS Integration Servlet -->
-	<servlet>
-		<servlet-name>jersey-servlet</servlet-name>
-		<servlet-class>com.sun.jersey.spi.spring.container.servlet.SpringServlet</servlet-class>
-		<init-param>
-			<param-name>com.sun.jersey.config.property.packages</param-name>
-			<param-value>org.openforis.calc.server.rest</param-value>
-		</init-param>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
+<!-- 	<servlet> -->
+<!-- 		<servlet-name>jersey-servlet</servlet-name> -->
+<!-- 		<servlet-class>com.sun.jersey.spi.spring.container.servlet.SpringServlet</servlet-class> -->
+<!-- 		<init-param> -->
+<!-- 			<param-name>com.sun.jersey.config.property.packages</param-name> -->
+<!-- 			<param-value>org.openforis.calc.server.rest</param-value> -->
+<!-- 		</init-param> -->
+<!-- 		<load-on-startup>1</load-on-startup> -->
+<!-- 	</servlet> -->
  
-	<servlet-mapping>
-		<servlet-name>jersey-servlet</servlet-name>
-		<url-pattern>/rest/*</url-pattern>
-	</servlet-mapping>   	
+<!-- 	<servlet-mapping> -->
+<!-- 		<servlet-name>jersey-servlet</servlet-name> -->
+<!-- 		<url-pattern>/rest/*</url-pattern> -->
+<!-- 	</servlet-mapping>   -->
+	 	
 	<!-- 
 		CoreContextListener enables pre-processing of spring beans to enable ZK component autowiring
 	 -->
@@ -51,8 +52,7 @@
 	<!-- ====================================================== -->
 	<listener>
 		<display-name>Spring Request Context Listener</display-name>
-		<listener-class>
-			org.springframework.web.context.request.RequestContextListener</listener-class>
+		<listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>		
 	</listener>
 	
 	<!-- ====================================================== -->
@@ -74,13 +74,28 @@
 	 -->
 	<!-- END Spring-Security -->
 
+
+	<servlet>
+		<servlet-name>spring</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath*:**/applicationContext*.xml</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>spring</servlet-name>
+		<url-pattern>*.json</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>spring</servlet-name>
+		<url-pattern>*.xml</url-pattern>
+	</servlet-mapping>
 	<!-- ====================================================== -->
 	<!-- MISCELLANEOUS -->
 	<!-- ====================================================== -->
-<!-- 	<welcome-file-list> -->
-<!-- 		<welcome-file>index.zul</welcome-file> -->
-<!-- 		<welcome-file>index.zhtml</welcome-file> -->
-<!-- 	</welcome-file-list> -->
 
 <!-- 	<distributable /> -->
 

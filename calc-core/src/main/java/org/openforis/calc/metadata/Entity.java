@@ -9,6 +9,8 @@ import javax.persistence.Table;
 import org.openforis.calc.common.UserObject;
 import org.openforis.calc.engine.Workspace;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * Provides metadata about a particular unit of observation, calculation or
  * analysis. Entities are anything which may have attributes for variables
@@ -22,6 +24,7 @@ import org.openforis.calc.engine.Workspace;
 public final class Entity extends UserObject {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "workspace_id")
+	@JsonIgnore
 	private Workspace workspace;
 	
 	@Column(name = "caption")
@@ -35,7 +38,7 @@ public final class Entity extends UserObject {
 	private int sortOrder;
 //	private ArrayList<Variable> variables = new ArrayList<Variable>();
 //	private DataTable dataTable;
-
+	
 	public Workspace getWorkspace() {
 		return this.workspace;
 	}

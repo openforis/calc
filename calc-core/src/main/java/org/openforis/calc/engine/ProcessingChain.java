@@ -16,19 +16,24 @@ import org.hibernate.annotations.Type;
 import org.openforis.calc.common.UserObject;
 import org.openforis.calc.persistence.ParameterHashMap;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * User-defined set of steps to be run after pre-processing and before post-processing tasks.
  * 
  * @author G. Miceli
+ * @author M. Togna
  */
 @javax.persistence.Entity
 @Table(name = "processing_chain")
 public class ProcessingChain extends UserObject {
+	
+	@JsonIgnore	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "workspace_id")
 	private Workspace workspace;
 	
-	@OneToMany(mappedBy = "chain", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "processingChain", fetch = FetchType.EAGER)
 	@OrderBy("stepNo")
 	private List<CalculationStep> steps;
 	

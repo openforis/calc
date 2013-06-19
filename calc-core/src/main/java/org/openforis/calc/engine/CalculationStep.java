@@ -10,6 +10,8 @@ import org.hibernate.annotations.Type;
 import org.openforis.calc.common.UserObject;
 import org.openforis.calc.persistence.ParameterHashMap;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * A single user-defined step in the {@link ProcessingChain}
  * @author G. Miceli
@@ -18,6 +20,7 @@ import org.openforis.calc.persistence.ParameterHashMap;
 @javax.persistence.Entity
 @Table(name = "calculation_step")
 public final class CalculationStep extends UserObject {
+	
 	@Column(name = "module_name")
 	private String moduleName;
 	
@@ -30,10 +33,12 @@ public final class CalculationStep extends UserObject {
 	@Column(name = "step_no")
 	private int stepNo;
 	
+	@JsonIgnore
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "chain_id")
-	private ProcessingChain chain;
+	private ProcessingChain processingChain;
 	
+	@JsonIgnore
 	@Type(type="org.openforis.calc.persistence.JsonParameterMapType")
 	@Column(name = "parameters")
 	private ParameterMap parameters;
@@ -43,7 +48,7 @@ public final class CalculationStep extends UserObject {
 	}
 	
 	public ProcessingChain getProcessingChain() {
-		return this.chain;
+		return this.processingChain;
 	}
 
 	public ParameterMap parameters() {
@@ -83,6 +88,6 @@ public final class CalculationStep extends UserObject {
 	}
 	
 	void setProcessingChain(ProcessingChain chain) {
-		this.chain = chain;
+		this.processingChain = chain;
 	}
 }
