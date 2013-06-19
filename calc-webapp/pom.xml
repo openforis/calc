@@ -24,13 +24,15 @@
 		<dependency>
 			<groupId>org.openforis.calc</groupId>
 			<artifactId>calc-server</artifactId>
-<!-- 			<exclusions> -->
-<!-- 				<exclusion> -->
-<!-- 					<artifactId>servlet-api</artifactId> -->
-<!-- 					<groupId>javax.servlet</groupId> -->
-<!-- 				</exclusion> -->
-<!-- 			</exclusions> -->
+			<exclusions>
+				<exclusion>
+					<artifactId>servlet-api</artifactId>
+					<groupId>javax.servlet</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
+		
+		<!-- Tomcat provided dependencies -->
 		<dependency>
 			<groupId>org.apache.tomcat</groupId>
 			<artifactId>catalina</artifactId>

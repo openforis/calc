@@ -48,10 +48,16 @@
 		<property name="jpaProperties">
 			<props>
 				<prop key="hibernate.default_schema">calc</prop>
+				
+				<prop key="hibernate.cache.use_second_level_cache">true</prop>
+				<prop key="hibernate.cache.use_query_cache">true</prop>
+				<prop key="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory</prop>
+
 <!-- 				<prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop> -->
 <!-- 				<prop key="hibernate.sql.syntax_pgs">true</prop> -->
 			</props>
-		</property>	    
+		</property>	   
+		
 	</bean>
 	
 	  <bean id="log4jInitializer" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">

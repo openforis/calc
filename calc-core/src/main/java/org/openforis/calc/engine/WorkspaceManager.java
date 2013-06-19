@@ -1,5 +1,7 @@
 package org.openforis.calc.engine;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,5 +28,9 @@ public class WorkspaceManager {
 	@Transactional
 	public Workspace saveWorkspace(Workspace workspace) {
 		return workspaceDao.save(workspace);
+	}
+	
+	public List<Workspace> loadAll(){
+		return workspaceDao.loadAll();
 	}
 }

@@ -23,7 +23,9 @@ import org.openforis.calc.metadata.Entity;
  */
 @javax.persistence.Entity
 @Table(name = "workspace")
+@org.hibernate.annotations.Cache(usage = org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE)
 public class Workspace extends UserObject {
+	
 	@Column(name = "input_schema")
 	private String inputSchema;
 
@@ -34,6 +36,7 @@ public class Workspace extends UserObject {
 	@OrderBy("sortOrder")
 	@Fetch(FetchMode.SUBSELECT) 
 	private List<Entity> entities;
+	
 	
 	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER)
 	@OrderBy("id")
