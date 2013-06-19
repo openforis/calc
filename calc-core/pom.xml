@@ -526,9 +526,7 @@
 			<version>4.11</version>
 			<scope>test</scope>
 		</dependency>
-<<<<<<< HEAD
 		
-=======
 		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
 			<artifactId>json-simple</artifactId>
@@ -549,7 +547,6 @@
 <!-- 			<artifactId>jri</artifactId> -->
 <!-- 			<version>0.5-5</version> -->
 <!-- 		</dependency> -->
->>>>>>> e186a264e0d1f1cb4b44794a0be0e11a1766cc7b
 		<dependency>
 		  <groupId>net.rforge.rjava</groupId>
 		  <artifactId>jriengine</artifactId>
