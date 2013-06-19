@@ -25,13 +25,17 @@ public class ProcessingChainController {
 	@Autowired
 	private WorkspaceManager workspaceManager;
 	
-	
+	@Autowired
 	private ProcessingChainService processingChainService;
 	
 	@RequestMapping(value="/workspaces.json", method=RequestMethod.GET, produces="application/json")
 	public @ResponseBody List<Workspace> getWorkspaces() {
 		List<Workspace> workspaces = workspaceManager.loadAll();
 		return workspaces;
+	}
+	
+	public void getProcessingChainJob(int chainId) {
+		
 	}
 	
 	public void executeTasks() {
