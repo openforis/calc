@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
 	1. Install R and rJava using sudo calc/lib/install.sh
 	2. Set env R_HOME=/usr/lib/R or equivalent
 	3. Add to Java param -Djava.library.path=.:/usr/local/lib/R/site-library/rJava/jri or equivalent
+	4. Add /usr/local/lib/R/site-library/rJava/jri/JRI.jar to classpath
  * 
  * @author G. Miceli
  *
@@ -61,10 +62,11 @@ public class R {
 	}
 	
 	private class RCallbacks extends REngineStdOutput {
-		@Override
-		public void RWriteConsole(REngine engine, String text, int oType) {
-			logger.debug(text);
-		}
+		// TODO write lines of text to debug log 
+//		@Override
+//		public void RWriteConsole(REngine engine, String text, int oType) {
+//			logger.debug(text);
+//		}
 	}
 //
 //	public REXP assign(String var, Object o) {
