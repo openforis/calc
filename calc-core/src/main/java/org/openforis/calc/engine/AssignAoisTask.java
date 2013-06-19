@@ -7,8 +7,4 @@ package org.openforis.calc.engine;
  * @author M. Togna
  */
 public final class AssignAoisTask extends Task {
-
-	protected AssignAoisTask(Context context) {
-		super(context);
-	}
 }

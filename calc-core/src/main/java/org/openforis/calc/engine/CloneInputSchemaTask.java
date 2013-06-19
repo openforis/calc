@@ -7,8 +7,4 @@ package org.openforis.calc.engine;
  * @author M. Togna
  */
 public final class CloneInputSchemaTask extends Task {
-
-	public CloneInputSchemaTask(Context context) {
-		super(context);
-	}
 }

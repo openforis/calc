@@ -8,8 +8,4 @@ package org.openforis.calc.engine;
  */
 public final class ValidateInputSchemaTask extends Task {
 
-	protected ValidateInputSchemaTask(Context context) {
-		super(context);
-	}
-
 }

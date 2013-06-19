@@ -6,6 +6,8 @@ import java.util.UUID;
 
 import javax.sql.DataSource;
 
+import org.openforis.calc.r.R;
+
 /**
  * @author G. Miceli
  * @author M. Togna
@@ -13,12 +15,14 @@ import javax.sql.DataSource;
 public final class Context {
 	private Workspace workspace;
 	private DataSource dataSource;
+	private R r;
 	private Set<UUID> scheduledTasks;
 	
-	public Context(Workspace workspace, DataSource dataSource) {
+	Context(Workspace workspace, DataSource dataSource, R r) {
 		this.workspace = workspace;
 		this.dataSource = dataSource;
 		this.scheduledTasks = new HashSet<UUID>();
+		this.r = r;
 	}
 
 	public Workspace getWorkspace() {
@@ -28,7 +32,7 @@ public final class Context {
 	public DataSource getDataSource() {
 		return this.dataSource;
 	}
-
+	
 	public boolean isScheduled(Task task) {
 		return scheduledTasks.contains(task.getId());
 	}
@@ -39,5 +43,9 @@ public final class Context {
 	public void setScheduledTasks(Set<UUID> taskIds) {
 		scheduledTasks.clear();
 		scheduledTasks.addAll(taskIds);
+	}
+
+	public R getR() {
+		return r;
 	}
 }

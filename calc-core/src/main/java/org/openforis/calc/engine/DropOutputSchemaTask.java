@@ -7,8 +7,4 @@ package org.openforis.calc.engine;
  * @author M. Togna
  */
 public final class DropOutputSchemaTask extends Task {
-
-	protected DropOutputSchemaTask(Context context) {
-		super(context);
-	}
 }

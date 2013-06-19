@@ -8,8 +8,4 @@ package org.openforis.calc.engine;
  */
 public final class AoiImportJob extends ImportJob {
 
-	protected AoiImportJob(Context context) {
-		super(context);
-	}
-
 }

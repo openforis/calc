@@ -7,9 +7,4 @@ package org.openforis.calc.engine;
  * @author M. Togna
  */
 public final class EstimateErrorsTask extends Task {
-
-	protected EstimateErrorsTask(Context context) {
-		super(context);
-	}
-
 }

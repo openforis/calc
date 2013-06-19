@@ -7,17 +7,17 @@
 		<version>1.0-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
-	
+
 	<artifactId>calc-core</artifactId>
 	<packaging>jar</packaging>
 	<name>Open Foris Calc Core</name>
 	<properties>
-<!-- 		<jooq-codegen.target.directory>${project.build.directory}/generated-sources/jooq</jooq-codegen.target.directory> -->
-		<jooq-codegen.target.directory>${basedir}/src/generated/java</jooq-codegen.target.directory>		
+		<!-- <jooq-codegen.target.directory>${project.build.directory}/generated-sources/jooq</jooq-codegen.target.directory> -->
+		<jooq-codegen.target.directory>${basedir}/src/generated/java</jooq-codegen.target.directory>
 		<jooq-codegen.target.packageName>org.openforis.calc.persistence.jooq</jooq-codegen.target.packageName>
 	</properties>
 	
-	<repositories>
+<!-- 	<repositories> -->
 <!-- 	<repository> -->
 <!-- 		<id>terracotta-releases</id> -->
 <!-- 		<url>http://www.terracotta.org/download/reflector/releases</url> -->
@@ -28,9 +28,10 @@
 <!-- 			<enabled>false</enabled> -->
 <!-- 		</snapshots> -->
 <!-- 	</repository> -->
-	</repositories>
+<!-- 	</repositories> -->
 		
-	<build>		
+
+	<build>
 		<plugins>
 			<!-- Read dev properties -->
 			<plugin>
@@ -52,19 +53,19 @@
 					<quiet>true</quiet>
 				</configuration>
 			</plugin>
-			
+
 			<!-- Generate jOOQ stub classes -->
 			<plugin>
 				<groupId>org.jooq</groupId>
 				<artifactId>jooq-codegen-maven</artifactId>
 				<version>${jooq.version}</version>
-<!-- 				<executions> -->
-<!-- 					<execution> -->
-<!-- 						<goals> -->
-<!-- 							<goal>generate</goal> -->
-<!-- 						</goals> -->
-<!-- 					</execution> -->
-<!-- 				</executions> -->
+				<!-- <executions> -->
+				<!-- <execution> -->
+				<!-- <goals> -->
+				<!-- <goal>generate</goal> -->
+				<!-- </goals> -->
+				<!-- </execution> -->
+				<!-- </executions> -->
 				<dependencies>
 					<dependency>
 						<groupId>postgresql</groupId>
@@ -85,32 +86,31 @@
 						<password>${calc.jdbc.password}</password>
 					</jdbc>
 					<generator>
-					  	<!-- The default code generator. 
-					         Defaults to org.jooq.util.DefaultGenerator -->
-					  	<name>org.jooq.util.DefaultGenerator</name>
-					
-					  	<!-- The naming strategy used for class and field names.
-					       	 Defaults to org.jooq.util.DefaultGeneratorStrategy -->
-					  	<strategy>
-					    	<name>org.openforis.jooq.codegen.CustomGeneratorStrategy</name>
-					  	</strategy>
+						<!-- The default code generator. Defaults to org.jooq.util.DefaultGenerator -->
+						<name>org.jooq.util.DefaultGenerator</name>
+
+						<!-- The naming strategy used for class and field names. Defaults to 
+							org.jooq.util.DefaultGeneratorStrategy -->
+						<strategy>
+							<name>org.openforis.jooq.codegen.CustomGeneratorStrategy</name>
+						</strategy>
 						<database>
 							<name>org.jooq.util.postgres.PostgresDatabase</name>
 							<includes>.*</includes>
 							<excludes />
 							<inputSchema>calc</inputSchema>
-<!-- 							  <customTypes> -->
-<!-- 							    <customType> -->
-<!-- 							      <name>java.awt.geom.Point2D.Double</name> -->
-<!-- 							      <converter>org.openforis.calc.persistence.jooq.PGPointConverter</converter> -->
-<!-- 							    </customType> -->
-<!-- 							  </customTypes> -->
-<!-- 							  <forcedTypes> -->
-<!-- 							    <forcedType> -->
-<!-- 							      <name>java.awt.geom.Point2D.Double</name> -->
-<!-- 							      <expressions>.*\.location</expressions> -->
-<!-- 							    </forcedType> -->
-<!-- 							  </forcedTypes>							 -->
+							<!-- <customTypes> -->
+							<!-- <customType> -->
+							<!-- <name>java.awt.geom.Point2D.Double</name> -->
+							<!-- <converter>org.openforis.calc.persistence.jooq.PGPointConverter</converter> -->
+							<!-- </customType> -->
+							<!-- </customTypes> -->
+							<!-- <forcedTypes> -->
+							<!-- <forcedType> -->
+							<!-- <name>java.awt.geom.Point2D.Double</name> -->
+							<!-- <expressions>.*\.location</expressions> -->
+							<!-- </forcedType> -->
+							<!-- </forcedTypes> -->
 						</database>
 						<generate>
 							<relations>true</relations>
@@ -118,9 +118,9 @@
 							<instanceFields>true</instanceFields>
 							<deprecated>false</deprecated>
 							<pojos>false</pojos>
-<!-- 							<daos>true</daos> -->
-<!-- 							<jpaAnnotations>true</jpaAnnotations> -->
-<!-- 							<validationAnnotations>false</validationAnnotations> -->
+							<!-- <daos>true</daos> -->
+							<!-- <jpaAnnotations>true</jpaAnnotations> -->
+							<!-- <validationAnnotations>false</validationAnnotations> -->
 						</generate>
 						<target>
 							<packageName>${jooq-codegen.target.packageName}</packageName>
@@ -129,37 +129,37 @@
 					</generator>
 				</configuration>
 			</plugin>
-<!-- 			<plugin> -->
-<!-- 				<groupId>org.apache.maven.plugins</groupId> -->
-<!-- 				<artifactId>maven-surefire-plugin</artifactId> -->
-<!-- 				<version>2.11</version> -->
-<!-- 				<configuration> -->
-<!-- 					<testSourceDirectory>${basedir}/src/test/java</testSourceDirectory> -->
-<!-- 					<excludes> -->
-<!-- 						<exclude>**/*IntegrationTest.java</exclude> -->
-<!-- 					</excludes> -->
-<!-- 				</configuration> -->
-<!-- 			</plugin> -->
-<!-- 			<plugin> -->
-<!-- 				<groupId>org.apache.maven.plugins</groupId> -->
-<!-- 				<artifactId>maven-failsafe-plugin</artifactId> -->
-<!-- 				<version>2.11</version> -->
-<!-- 				<configuration> -->
-<!-- 					<failIfNoTests>true</failIfNoTests> -->
-<!-- 					<testSourceDirectory>${basedir}/src/it/java</testSourceDirectory> -->
-<!-- 					<includes> -->
-<!-- 						<include>**/*IntegrationTest.java</include> -->
-<!-- 					</includes> -->
-<!-- 				</configuration> -->
-<!-- 				<executions> -->
-<!-- 					<execution> -->
-<!-- 						<goals> -->
-<!-- 							<goal>integration-test</goal> -->
-<!-- 							<goal>verify</goal> -->
-<!-- 						</goals> -->
-<!-- 					</execution> -->
-<!-- 				</executions> -->
-<!-- 			</plugin> -->
+			<!-- <plugin> -->
+			<!-- <groupId>org.apache.maven.plugins</groupId> -->
+			<!-- <artifactId>maven-surefire-plugin</artifactId> -->
+			<!-- <version>2.11</version> -->
+			<!-- <configuration> -->
+			<!-- <testSourceDirectory>${basedir}/src/test/java</testSourceDirectory> -->
+			<!-- <excludes> -->
+			<!-- <exclude>**/*IntegrationTest.java</exclude> -->
+			<!-- </excludes> -->
+			<!-- </configuration> -->
+			<!-- </plugin> -->
+			<!-- <plugin> -->
+			<!-- <groupId>org.apache.maven.plugins</groupId> -->
+			<!-- <artifactId>maven-failsafe-plugin</artifactId> -->
+			<!-- <version>2.11</version> -->
+			<!-- <configuration> -->
+			<!-- <failIfNoTests>true</failIfNoTests> -->
+			<!-- <testSourceDirectory>${basedir}/src/it/java</testSourceDirectory> -->
+			<!-- <includes> -->
+			<!-- <include>**/*IntegrationTest.java</include> -->
+			<!-- </includes> -->
+			<!-- </configuration> -->
+			<!-- <executions> -->
+			<!-- <execution> -->
+			<!-- <goals> -->
+			<!-- <goal>integration-test</goal> -->
+			<!-- <goal>verify</goal> -->
+			<!-- </goals> -->
+			<!-- </execution> -->
+			<!-- </executions> -->
+			<!-- </plugin> -->
 
 			<!-- Add generated sources to build path -->
 			<plugin>
@@ -167,18 +167,18 @@
 				<artifactId>build-helper-maven-plugin</artifactId>
 				<version>1.7</version>
 				<executions>
-<!-- 					<execution> -->
-<!-- 						<id>add-generated-source</id> -->
-<!-- 						<phase>generate-sources</phase> -->
-<!-- 						<goals> -->
-<!-- 							<goal>add-source</goal> -->
-<!-- 						</goals> -->
-<!-- 						<configuration> -->
-<!-- 							<sources> -->
-<!-- 								<source>${jooq-codegen.target.directory}</source> -->
-<!-- 							</sources> -->
-<!-- 						</configuration> -->
-<!-- 					</execution> -->
+					<!-- <execution> -->
+					<!-- <id>add-generated-source</id> -->
+					<!-- <phase>generate-sources</phase> -->
+					<!-- <goals> -->
+					<!-- <goal>add-source</goal> -->
+					<!-- </goals> -->
+					<!-- <configuration> -->
+					<!-- <sources> -->
+					<!-- <source>${jooq-codegen.target.directory}</source> -->
+					<!-- </sources> -->
+					<!-- </configuration> -->
+					<!-- </execution> -->
 					<execution>
 						<id>add-integration-test-sources</id>
 						<phase>compile</phase>
@@ -220,7 +220,8 @@
 						<encoding>${project.build.sourceEncoding}</encoding>
 					</configuration>
 				</plugin>
-				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
@@ -238,7 +239,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore/>
+										<ignore />
 									</action>
 								</pluginExecution>
 								<pluginExecution>
@@ -251,7 +252,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore/>
+										<ignore />
 									</action>
 								</pluginExecution>
 							</pluginExecutions>
@@ -272,7 +273,7 @@
 			<groupId>org.openforis.commons</groupId>
 			<artifactId>commons-collections</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.openforis.commons</groupId>
 			<artifactId>commons-io</artifactId>
@@ -413,6 +414,23 @@
 		</dependency>
 
 		<dependency>
+			<groupId>net.sf.kxml</groupId>
+			<artifactId>kxml2</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.opencsv</groupId>
+			<artifactId>opencsv</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>javax.annotation</groupId>
+			<artifactId>jsr250-api</artifactId>
+		</dependency>
+		<!-- <dependency> -->
+		<!-- <groupId>javax.persistence</groupId> -->
+		<!-- <artifactId>persistence-api</artifactId> -->
+		<!-- <version>1.0.2</version> -->
+		<!-- </dependency> -->
+		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>
 			<version>4.2.1.Final</version>
@@ -428,6 +446,7 @@
 <!--    <artifactId>ehcache-core</artifactId> -->
 <!--    <version> 2.6.6</version> -->
 <!-- </dependency> -->
+
 		<!-- DDL utils -->
 		<dependency>
 			<groupId>org.apache.ddlutils</groupId>
@@ -457,16 +476,40 @@
 
 
 	<!-- Logging -->
+		<!-- <dependency> -->
+		<!-- <groupId>pentaho</groupId> -->
+		<!-- <artifactId>mondrian</artifactId> -->
+		<!-- <exclusions> -->
+		<!-- <exclusion> -->
+		<!-- <artifactId>servlet-api</artifactId> -->
+		<!-- <groupId>javax.servlet</groupId> -->
+		<!-- </exclusion> -->
+		<!-- </exclusions> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.olap4j</groupId> -->
+		<!-- <artifactId>olap4j</artifactId> -->
+		<!-- <version>1.0.1.550</version> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.jscience</groupId> -->
+		<!-- <artifactId>jscience</artifactId> -->
+		<!-- <version>4.3.1</version> -->
+		<!-- </dependency> -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>1.7.5</version>
 		</dependency>
 		<dependency>
-		  <groupId>org.slf4j</groupId>
-		  <artifactId>slf4j-log4j12</artifactId>
-		  <version>1.7.5</version>
-		  <scope>test</scope>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.7.5</version>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.14</version>
 		</dependency>
 		
 		<!--  Json -->		
@@ -482,6 +525,12 @@
 			<artifactId>junit</artifactId>
 			<version>4.11</version>
 			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>net.rforge</groupId>
+			<artifactId>jri</artifactId>
+			<version>0.5-5</version>
 		</dependency>
 	</dependencies>
 </project>

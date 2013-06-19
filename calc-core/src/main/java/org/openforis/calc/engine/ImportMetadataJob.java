@@ -8,8 +8,4 @@ package org.openforis.calc.engine;
  */
 public final class ImportMetadataJob extends ImportJob {
 
-	protected ImportMetadataJob(Context context) {
-		super(context);
-	}
-
 }
