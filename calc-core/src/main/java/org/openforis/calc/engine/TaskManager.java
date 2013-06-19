@@ -27,7 +27,7 @@ public class TaskManager {
 	 */
 	synchronized
 	public void start(final Task task) throws WorkspaceLockedException {
-		final Context ctx = task.getContext();
+		final TaskContext ctx = task.getContext();
 		final Workspace ws = ctx.getWorkspace();
 		final SimpleLock lock = workspaceLockManager.lock(ws.getId());
 		taskExecutor.execute(new Runnable() {

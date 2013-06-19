@@ -52,8 +52,7 @@ public abstract class Job extends Task implements Iterable<Task> {
 		this.currentTaskIndex = -1;
 		for (Task task : tasks) {
 			this.currentTaskIndex += 1;
-			Context ctx = getContext();
-			if ( ctx.isScheduled(task) ) {
+			if ( task.isScheduled() ) {
 				if ( task.getContext() != getContext() ) {
 					throw new IllegalStateException("Cannot nest tasks in different contexts");
 				}
@@ -119,18 +118,29 @@ public abstract class Job extends Task implements Iterable<Task> {
 		}		
 	}
 
-//	public Task getTask(UUID taskId) {
-//		for (Task task : tasks) {
-//			if ( task.getId().equals(taskId) ) {
-//				return task;
-//			} else if ( task instanceof Job ) {
-//				Job subjob = (Job) task;
-//				Task t = subjob.getTask(taskId);
-//				if ( t != null ) {
-//					return t;
-//				}
-//			}
-//		}
-//		return null;
-//	}
+	public Task getTask(UUID taskId) {
+		for (Task task : tasks) {
+			if ( task.getId().equals(taskId) ) {
+				return task;
+			} else if ( task instanceof Job ) {
+				Job subjob = (Job) task;
+				Task t = subjob.getTask(taskId);
+				if ( t != null ) {
+					return t;
+				}
+			}
+		}
+		return null;
+	}
+	
+	public void setScheduledTasks(Set<UUID> taskIds) {
+		for (Task task : tasks) {
+			boolean scheduled = taskIds.contains(task.getId());
+			task.setScheduled(scheduled);
+			if ( task instanceof Job ) {
+				Job subjob = (Job) task;
+				subjob.setScheduledTasks(taskIds);
+			}
+		}		
+	}
 }

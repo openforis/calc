@@ -14,7 +14,7 @@ public class CalculationStepTask extends Task {
 		return parameters;
 	}
 	
-	public static <T extends CalculationStepTask> T createTask(Class<T> type, Context context, ParameterMap parameters) {
+	public static <T extends CalculationStepTask> T createTask(Class<T> type, TaskContext context, ParameterMap parameters) {
 		T task = Task.createTask(type, context);
 		task.parameters = parameters.deepCopy();
 		return task;

@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
  * @author M. Togna
  */
 public abstract class Task implements Captionable {
-	private Context context;
+	private TaskContext context;
 	private Status status;
 	private UUID id;
 	private long startTime;
@@ -25,6 +25,7 @@ public abstract class Task implements Captionable {
 	private long totalItems;
 	private Throwable lastException;
 	private Logger logger;
+	private boolean scheduled;
 	
 	public enum Status {
 		PENDING, RUNNING, FINISHED, FAILED, ABORTED;
@@ -41,7 +42,7 @@ public abstract class Task implements Captionable {
 		this.id = UUID.randomUUID();
 	}
 	
-	public static <T extends Task> T createTask(Class<T> type, Context context) {
+	public static <T extends Task> T createTask(Class<T> type, TaskContext context) {
 		try {
 			T task = type.newInstance();
 			task.context = context;
@@ -59,6 +60,7 @@ public abstract class Task implements Captionable {
 	synchronized
 	public void reset() {
 		this.status = Status.PENDING;
+		this.scheduled = true;
 		this.startTime = -1;
 		this.endTime = -1;
 		this.itemsProcessed = 0;
@@ -137,7 +139,7 @@ public abstract class Task implements Captionable {
 		return status != Status.PENDING && status != Status.RUNNING;
 	}
 	
-	public final Context getContext() {
+	public final TaskContext getContext() {
 		return this.context;
 	}
 
@@ -175,5 +177,13 @@ public abstract class Task implements Captionable {
 	
 	protected final Logger log() {
 		return this.logger;
+	}
+	
+	public void setScheduled(boolean scheduled) {
+		this.scheduled = scheduled;
+	}
+	
+	public boolean isScheduled() {
+		return scheduled;
 	}
 }

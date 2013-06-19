@@ -27,7 +27,7 @@ public class ContextManager {
 	 * @param workspace
 	 * @return
 	 */
-	public Context getContext(Workspace workspace) {
-		return new Context(workspace, userDataSource, r);
+	public TaskContext getContext(Workspace workspace) {
+		return new TaskContext(workspace, userDataSource, r);
 	}
 }

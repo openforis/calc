@@ -20,7 +20,7 @@ public final class CustomSqlTask extends CalculationStepTask {
 		ParameterMap params = parameters();
 		String sql = params.getString("sql");
 		log().info("Executing custom SQL: "+sql);
-		Context context = getContext();
+		TaskContext context = getContext();
 		DataSource ds = context.getDataSource();
 		Connection conn = ds.getConnection();
 		Statement stmt = conn.createStatement();
