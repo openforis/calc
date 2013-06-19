@@ -11,8 +11,8 @@ public abstract class Calc {
 	}
 	
 	public static void main(String[] args) {
+		ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
 		try {
-			ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
 			CalcTest test = ctx.getBean(CalcTest.class);
 			test.testRunProcessingChain();
 //			test.testREval();
@@ -20,6 +20,7 @@ public abstract class Calc {
 		} catch (Throwable e) {
 			e.printStackTrace();
 		} finally {
+			ctx.close();
 			System.exit(0);
 		}
 	}

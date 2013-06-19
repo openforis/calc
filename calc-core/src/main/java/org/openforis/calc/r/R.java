@@ -3,16 +3,13 @@ package org.openforis.calc.r;
 //import org.rosuda.JRI.RMainLoopCallbacks;
 //import org.rosuda.JRI.Rengine;
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.Scanner;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import org.openforis.calc.system.SystemUtils;
 import org.rosuda.REngine.REXP;
 import org.rosuda.REngine.REXPMismatchException;
 import org.rosuda.REngine.REngine;
@@ -24,12 +21,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /*
- * Synchronized access to R native engine
+ * Synchronized access to R native R engine
  * 
  * To use:
-	1. Install R and rJava using sudo calc/lib/install.sh
-	2. Set env R_HOME=/usr/lib/R or equivalent
-	3. Add to Java param -Djava.library.path=.:/usr/local/lib/R/site-library/rJava/jri or equivalent
+	1. Install R and rJava using sudo calc/lib/install-R.sh
+	2. Set environment variable R_HOME=/usr/lib/R 
  * 
  * @author G. Miceli
  *
@@ -48,25 +44,21 @@ public class R {
 	synchronized
 	public void startup() {
 		try {
-//			 Map<String, String> env = pb.environment();
-//			 env.put("VAR1", "myValue");
-//			 env.remove("OTHERVAR");
-//			 env.put("VAR2", env.get("VAR1") + "suffix");
-//			 pb.directory(new File("myDir"));
-//			URLClassLoader loader = (URLClassLoader)ClassLoader.getSystemClassLoader();
-			addJriJarToClasspath();			
-			
+			String path = getJriPath();
+			SystemUtils.addToClassPath(new File(path + "/JRI.jar"));
+			SystemUtils.addLibraryPath(path);
 			this.engine = REngine.engineForClass(JRIEngine.class.getName(), R_PARAMS, new RCallbacks(), true);
 		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		} catch (ClassNotFoundException e) {
-			throw new RuntimeException("JRIEngine not found", e);
+			throw new RuntimeException(e);
 		} catch (NoSuchMethodException e) {
-			throw new RuntimeException("Invalid JRI version?", e);
+			throw new RuntimeException(e);
 		} catch (IllegalAccessException e) {
-			throw new RuntimeException("Invalid JRI version?", e);
+			throw new RuntimeException(e);
 		}
 	}
+//	/usr/lib/R
 
 	private String getJriPath() {
 		try {
@@ -84,21 +76,6 @@ public class R {
 		}
 	}
 	
-	private void addJriJarToClasspath() {
-		String path = getJriPath();
-		File jriJarFile = new File(path + "/JRI.jar");
-		if ( !jriJarFile.exists() ) {
-			throw new RuntimeException("JRI.jar not found in "+path);
-		}
-		try {
-		    Method method = URLClassLoader.class.getDeclaredMethod("addURL", new Class[]{URL.class});
-		    method.setAccessible(true);
-		    method.invoke(ClassLoader.getSystemClassLoader(), new Object[]{jriJarFile.toURI().toURL()});
-		} catch (Exception e) {
-			throw new RuntimeException("Error adding JRI.jar to classpath");
-		}
-	}
-	
 	@PreDestroy
 	synchronized
 	public void shutdown() {
@@ -106,14 +83,15 @@ public class R {
 	}
 	
 	private class RCallbacks extends REngineStdOutput {
-		// TODO write lines of text to debug log 
-//		@Override
-//		public void RWriteConsole(REngine engine, String text, int oType) {
-//			logger.debug(text);
-//		}
+		@Override
+		public void RWriteConsole(REngine engine, String text, int oType) {
+			if ( logger.isDebugEnabled() ) {
+				super.RWriteConsole(engine, text, oType);
+			}
+		}
 	}
 //
-//	public REXP assign(String var, Object o) {
+//	public REXP assign(String var, Object o)	 {
 //		REXP ref = engine.createRJavaRef(o);
 //		engine.assign("dataSource", ref);
 //		return ref;
