@@ -18,6 +18,7 @@ import org.openforis.calc.engine.WorkspaceManager;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.persistence.ParameterHashMap;
 import org.openforis.calc.r.R;
+import org.openforis.calc.r.REnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -43,7 +44,7 @@ public class CalcTest {
 
 	@Autowired
 	private R r;
-
+	
 	public void testModules() {
 		Set<Module> modules = moduleRegistry.getModules();
 		for (Module module : modules) {
@@ -96,8 +97,12 @@ public class CalcTest {
 	}
 
 	public void testREval() throws Throwable {
-        // print a random number from uniform distribution
-        System.out.println(r.evalDouble("runif(1)"));
-        r.eval("print('TEST')");
+		REnvironment renv1 = r.newEnvironment();
+		renv1.eval("a=runif(1)");
+//        System.out.println(renv1.evalDouble("runif(1)"));
+        renv1.eval("print(a)");
+        
+		REnvironment renv2 = r.newEnvironment();
+        renv2.eval("print(a)");
 	}
 }

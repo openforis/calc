@@ -18,7 +18,7 @@ public final class Context {
 	private R r;
 	private Set<UUID> scheduledTasks;
 	
-	public Context(Workspace workspace, DataSource dataSource, R r) {
+	Context(Workspace workspace, DataSource dataSource, R r) {
 		this.workspace = workspace;
 		this.dataSource = dataSource;
 		this.scheduledTasks = new HashSet<UUID>();
@@ -32,10 +32,6 @@ public final class Context {
 	public DataSource getDataSource() {
 		return this.dataSource;
 	}
-
-	public R getR() {
-		return r;
-	}
 	
 	public boolean isScheduled(Task task) {
 		return scheduledTasks.contains(task.getId());
@@ -47,5 +43,9 @@ public final class Context {
 	public void setScheduledTasks(Set<UUID> taskIds) {
 		scheduledTasks.clear();
 		scheduledTasks.addAll(taskIds);
+	}
+
+	public R getR() {
+		return r;
 	}
 }

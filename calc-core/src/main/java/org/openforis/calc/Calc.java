@@ -15,6 +15,7 @@ public abstract class Calc {
 			ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
 			CalcTest test = ctx.getBean(CalcTest.class);
 			test.testRunProcessingChain();
+//			test.testREval();
 			ctx.registerShutdownHook();
 		} catch (Throwable e) {
 			e.printStackTrace();

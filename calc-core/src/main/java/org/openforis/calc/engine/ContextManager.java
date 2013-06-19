@@ -10,15 +10,23 @@ import org.springframework.stereotype.Component;
  * 
  * @author G. Miceli
  * @author M. Togna
- *
+ * 
  */
 @Component
 public class ContextManager {
 	@Autowired
 	private DataSource userDataSource;
+	
 	@Autowired
 	private R r;
-	
+
+	/**
+	 * Creates a new context for running tasks. It includes a reference to the
+	 * workspace and the user data source.
+	 * 
+	 * @param workspace
+	 * @return
+	 */
 	public Context getContext(Workspace workspace) {
 		return new Context(workspace, userDataSource, r);
 	}

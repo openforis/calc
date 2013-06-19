@@ -88,8 +88,9 @@ public abstract class Task implements Captionable {
 			this.status = Status.FINISHED;
 		} catch (Throwable t) {
 			this.status = Status.FAILED;
-			this.lastException = t; 
-			logger.warn(t.toString());
+			this.lastException = t;
+			logger.warn("Task failed");
+			t.printStackTrace();
 		} finally {
 			this.endTime = System.currentTimeMillis();
 		}

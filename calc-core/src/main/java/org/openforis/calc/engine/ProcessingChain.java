@@ -12,7 +12,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.Type;
 import org.openforis.calc.common.UserObject;
 import org.openforis.calc.persistence.ParameterHashMap;
