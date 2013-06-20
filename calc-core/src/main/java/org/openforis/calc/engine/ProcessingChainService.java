@@ -21,12 +21,16 @@ public class ProcessingChainService {
 	@Autowired
 	private ProcessingChainJobManager processingChainJobManager;
 	
+	@Autowired 
+	private TaskManager taskManager;
+
 	@Transactional
 	public void saveProcessingChain(ProcessingChain chain) {
 		processingChainDao.save(chain);
 		// TODO update Workspace?
 	}
-	
+
+	synchronized	
 	public ProcessingChainJob getProcessingChainJob(int chainId) throws InvalidProcessingChainException {
 		ProcessingChain chain = processingChainDao.find(chainId);
 		if ( chain == null ) {
@@ -35,8 +39,10 @@ public class ProcessingChainService {
 		return processingChainJobManager.getProcessingChainJob(chain);
 	}
 	
+	synchronized
 	public void startProcessingChainJob(int chainId, Set<UUID> taskIds) throws WorkspaceLockedException, InvalidProcessingChainException {
 		ProcessingChainJob job = getProcessingChainJob(chainId);
-		processingChainJobManager.startProcessingChainJob(job, taskIds);
+		job.setScheduledTasks(taskIds);
+		taskManager.start(job);
 	}
 }

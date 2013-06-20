@@ -23,9 +23,6 @@ public class ProcessingChainJobManager {
 	@Autowired
 	private ProcessingChainDao processingChainDao;
 	
-	@Autowired 
-	private TaskManager taskManager;
-	
 	@Autowired
 	private ModuleRegistry moduleRegistry;
 	
@@ -40,14 +37,14 @@ public class ProcessingChainJobManager {
 		ProcessingChainJob job = jobs.get(chainId);
 		if ( job == null ) {
 			Workspace workspace = chain.getWorkspace();
-			Context context = contextManager.getContext(workspace);
+			TaskContext context = contextManager.getContext(workspace);
 			job = createProcessingChainJob(context, chain);
 			jobs.put(chainId, job);
 		}
 		return job;
 	}
 
-	private ProcessingChainJob createProcessingChainJob(Context context, ProcessingChain chain) throws InvalidProcessingChainException {
+	private ProcessingChainJob createProcessingChainJob(TaskContext context, ProcessingChain chain) throws InvalidProcessingChainException {
 		// add chain-level parameters?
 		ProcessingChainJob job;
 		job = Task.createTask(ProcessingChainJob.class, context);
@@ -61,12 +58,5 @@ public class ProcessingChainJobManager {
 			job.addTask(task);
 		}
 		return job;
-	}
-
-	synchronized
-	public void startProcessingChainJob(ProcessingChainJob job, Set<UUID> taskIds) throws WorkspaceLockedException {
-		Context ctx = job.getContext();
-		ctx.setScheduledTasks(taskIds);
-		taskManager.start(job);
 	}
 }

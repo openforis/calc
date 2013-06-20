@@ -15,7 +15,7 @@ public final class CustomRTask extends CalculationStepTask {
 	@Override
 	synchronized
 	protected void execute() throws RException {
-		Context ctx = getContext();
+		TaskContext ctx = getContext();
 		R r = ctx.getR();
 		REnvironment env = r.newEnvironment();
 		ParameterMap params = parameters();

@@ -18,52 +18,54 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 public abstract class Task implements Captionable {
 	@JsonIgnore
-	private Context context;
+	private TaskContext context;
 	private Status status;
 	private UUID id;
 	private long startTime;
 	private long endTime;
 	private long itemsProcessed;
 	private long itemsSkipped;
-	private long totalItems;	
-//	@JsonIgnore
+	private long totalItems;
+	// @JsonIgnore
 	private Throwable lastException;
 	@JsonIgnore
 	private Logger logger;
-	
+	private boolean scheduled;
+
 	public enum Status {
 		PENDING, RUNNING, FINISHED, FAILED, ABORTED;
 	}
 
 	/**
-	 *  
+	 * 
 	 * @param context
-	 * @param parameters Creates a deep copy of parameters (defensive)
+	 * @param parameters
+	 *            Creates a deep copy of parameters (defensive)
 	 */
 	Task() {
 		reset();
 		this.logger = LoggerFactory.getLogger(getClass());
 		this.id = UUID.randomUUID();
 	}
-	
-	public static <T extends Task> T createTask(Class<T> type, Context context) {
+
+	public static <T extends Task> T createTask(Class<T> type, TaskContext context) {
 		try {
 			T task = type.newInstance();
 			task.context = context;
 			return task;
-		} catch (InstantiationException e) {
-			throw new IllegalArgumentException("Invalid task "+type.getClass(), e);
-		} catch (IllegalAccessException e) {
-			throw new IllegalArgumentException("Invalid task "+type.getClass(), e);
+		} catch ( InstantiationException e ) {
+			throw new IllegalArgumentException("Invalid task " + type.getClass(), e);
+		} catch ( IllegalAccessException e ) {
+			throw new IllegalArgumentException("Invalid task " + type.getClass(), e);
 		}
 	}
 
 	/**
 	 * Executed before run() to count the totalItems and perform other quick checks.
 	 */
-	synchronized
-	public void reset() {
+	synchronized public void reset() {
 		this.status = Status.PENDING;
+		this.scheduled = true;
 		this.startTime = -1;
 		this.endTime = -1;
 		this.itemsProcessed = 0;
@@ -71,18 +73,16 @@ public abstract class Task implements Captionable {
 		this.lastException = null;
 	}
 
-	synchronized
-	public void init() {
+	synchronized public void init() {
 		this.totalItems = countTotalItems();
 	}
 
 	protected long countTotalItems() {
-		// TODO replace with abstract 
+		// TODO replace with abstract
 		return 1;
 	}
 
-	synchronized
-	public final void run() {
+	synchronized public final void run() {
 		if ( context == null ) {
 			throw new IllegalStateException("Context not set");
 		}
@@ -91,7 +91,7 @@ public abstract class Task implements Captionable {
 			this.startTime = System.currentTimeMillis();
 			execute();
 			this.status = Status.FINISHED;
-		} catch (Throwable t) {
+		} catch ( Throwable t ) {
 			this.status = Status.FAILED;
 			this.lastException = t;
 			logger.warn("Task failed");
@@ -136,13 +136,14 @@ public abstract class Task implements Captionable {
 
 	/**
 	 * If task was run and finished, aborted or failed
+	 * 
 	 * @return
 	 */
 	public final boolean isEnded() {
 		return status != Status.PENDING && status != Status.RUNNING;
 	}
-	
-	public final Context getContext() {
+
+	public final TaskContext getContext() {
 		return this.context;
 	}
 
@@ -177,8 +178,16 @@ public abstract class Task implements Captionable {
 	public UUID getId() {
 		return id;
 	}
-	
+
 	protected final Logger log() {
 		return this.logger;
+	}
+
+	public void setScheduled(boolean scheduled) {
+		this.scheduled = scheduled;
+	}
+
+	public boolean isScheduled() {
+		return scheduled;
 	}
 }
