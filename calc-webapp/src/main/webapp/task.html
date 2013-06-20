@@ -32,30 +32,26 @@
 
     <div class="container">
 
-      <div class="masthead">
-        <h3 class="muted">Open Foris Calc</h3>
-        <div class="navbar">
-          <div class="navbar-inner">
-            <div class="container">
-              <ul class="nav">
-                <li class="active"><a href="#">Home</a></li>
-                <li><a href="#">Workspaces</a></li>
-<!--                 <li><a href="#">Services</a></li> -->
-<!--                 <li><a href="#">Downloads</a></li> -->
-<!--                 <li><a href="#">About</a></li> -->
-<!--                 <li><a href="#">Contact</a></li> -->
-              </ul>
-            </div>
-          </div>
-        </div><!-- /.navbar -->
-      </div>
+<!--       <div class="masthead"> -->
+<!--         <h3 class="muted">Open Foris Calc</h3> -->
+<!--         <div class="navbar"> -->
+<!--           <div class="navbar-inner"> -->
+<!--             <div class="container"> -->
+<!--               <ul class="nav"> -->
+<!--                 <li class="active"><a href="#">Home</a></li> -->
+<!--                 <li><a href="#">Workspaces</a></li> -->
+<!--               </ul> -->
+<!--             </div> -->
+<!--           </div> -->
+<!--         </div>         -->
+<!--       </div> -->
 	
 		<div class="container">
 			<div class="row-fluid">
 				<div class="workspace-selector span4">
-					<div>
-						Workspace: 
-					</div>
+<!-- 					<div> -->
+<!-- 						Workspace:  -->
+<!-- 					</div> -->
 					<div class="btn-group">
 						<button class="btn btn-primary selector-button"> -- Select workspace --</button>
 						<button class="btn btn-primary dropdown-toggle"
@@ -63,8 +59,8 @@
 							<span class="caret"></span>
 						</button>
 						<ul class="dropdown-menu">
-							<li><a href="#">Action</a></li>
-		<!-- 					<li><a href="#">Another action</a></li> -->
+<!-- 							<li><a href="#">Action</a></li> -->
+<!-- 							<li><a href="#">Another action</a></li> -->
 		<!-- 					<li><a href="#">Something else here</a></li> -->
 		<!-- 					<li class="divider"></li> -->
 		<!-- 					<li><a href="#">Separated link</a></li> -->
@@ -72,9 +68,9 @@
 					</div>
 				</div>			
 				<div class="processing-chain-selector span4">
-					<div>
-						Chain: 
-					</div>
+<!-- 					<div> -->
+<!-- 						Chain:  -->
+<!-- 					</div> -->
 					<div class="btn-group">
 						<button class="btn btn-info selector-button"> -- Select processing chain --</button>
 						<button class="btn btn-info dropdown-toggle" data-toggle="dropdown">
@@ -153,7 +149,8 @@
       <hr>
 
       <div class="footer">
-        <p>&copy; Open Foris 2013</p>
+<!--         <p>&copy; Open Foris 2013</p> -->
+        <p>Open Foris Calc 1.0</p>
       </div>
 
     </div> <!-- /container -->
@@ -293,17 +290,21 @@
 		};
 		
 		showProcessingChainJob = function( ) {
-// 			console.log($job);			
-			
+			console.log($job);			
+			$form = $(".form-exec-tasks");
 			$tasks = $job.tasks;
+			
 			$.each(
-				$chain.calculationSteps,
-				function(i, s){
-					$tr = $("<tr></tr>");
-					//$tdId = $("<td>#"+i +"(id:"+s.id+")</td>");					
-					//$tr.append($tdId);
+				$tasks,
+				function($i, $task) {
+					$id = $task.id;
+					$step = $task.calculationStep;
 					
-					$tdStep = $('<td><label class="checkbox"><input type="checkbox" value="yes" name="'+s.id+'" checked="checked">'+s.name+'</label></td>');
+					$tr = $("<tr></tr>");
+					$tdId = $("<td>#"+$i +"(id:"+$id+")</td>");					
+					$tr.append($tdId);
+					
+					$tdStep = $('<td><label class="checkbox"><input type="checkbox" value="yes" name="'+$id+'" checked="checked">'+$step.name+'</label></td>');
 					$tr.append($tdStep);
 					
 					$form.find('tbody').append($tr);
@@ -312,9 +313,9 @@
 			
 			
 			// show the table with tasks
-			$form = $(".form-exec-tasks");
+// 			$form = $(".form-exec-tasks");
 			$form.fadeIn();
-		}
+		};
 		
 		loadSteps = function(id) {
 			$form = $(".form-exec-tasks");

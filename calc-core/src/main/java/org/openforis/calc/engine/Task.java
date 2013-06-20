@@ -31,7 +31,7 @@ public abstract class Task implements Captionable {
 	@JsonIgnore
 	private Logger logger;
 	private boolean scheduled;
-
+	
 	public enum Status {
 		PENDING, RUNNING, FINISHED, FAILED, ABORTED;
 	}
@@ -190,4 +190,5 @@ public abstract class Task implements Captionable {
 	public boolean isScheduled() {
 		return scheduled;
 	}
+	
 }
