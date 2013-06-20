@@ -191,6 +191,10 @@
 			The chains currently active in the drop down selector
 		*/
 		$chains = null;
+		/**
+		* The processing chain job currently selected
+		*/
+		$job = null;
 		
 		loadWorkspaces = function(){
 			//hide processing chain selection
@@ -267,15 +271,50 @@
 			e.preventDefault();
 			
 			$a = $(this).find("a");
-			$id = $a.attr("href");
 			$name = $a.html();
+			$id = $a.attr("href");
 			
-			$obj = $(".processing-chain-selector");
-			$btn = $($obj).find(".selector-button").html($name);
+			$url = "rest/workspaces/chains/"+$id+"/jobs.json";
+			$.getJSON(
+				$url		
+			).done(
+				function(response) {
+					//set button text with selected chain
+					$obj = $(".processing-chain-selector");
+					$btn = $($obj).find(".selector-button").html($name);
+					
+					// set the active processing chain job
+					$job = response;
+					
+					showProcessingChainJob();
+				}
+			); 
 			
-			loadSteps($id);
 		};
 		
+		showProcessingChainJob = function( ) {
+// 			console.log($job);			
+			
+			$tasks = $job.tasks;
+			$.each(
+				$chain.calculationSteps,
+				function(i, s){
+					$tr = $("<tr></tr>");
+					//$tdId = $("<td>#"+i +"(id:"+s.id+")</td>");					
+					//$tr.append($tdId);
+					
+					$tdStep = $('<td><label class="checkbox"><input type="checkbox" value="yes" name="'+s.id+'" checked="checked">'+s.name+'</label></td>');
+					$tr.append($tdStep);
+					
+					$form.find('tbody').append($tr);
+				}
+			);
+			
+			
+			// show the table with tasks
+			$form = $(".form-exec-tasks");
+			$form.fadeIn();
+		}
 		
 		loadSteps = function(id) {
 			$form = $(".form-exec-tasks");

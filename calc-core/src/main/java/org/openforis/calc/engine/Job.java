@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Synchronously executes a series of Tasks in order.  Jobs are also Tasks and
  * may be nested accordingly.
@@ -90,6 +93,8 @@ public abstract class Job extends Task implements Iterable<Task> {
 		return this.currentTaskIndex;
 	}
 
+	@JsonInclude
+	@JsonProperty
 	public List<Task> tasks() {
 		return Collections.unmodifiableList(tasks);
 	}

@@ -6,6 +6,8 @@ import org.openforis.calc.nls.Captionable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * A unit of work in the system.
  * 
@@ -15,6 +17,7 @@ import org.slf4j.LoggerFactory;
  * @author M. Togna
  */
 public abstract class Task implements Captionable {
+	@JsonIgnore
 	private Context context;
 	private Status status;
 	private UUID id;
@@ -22,8 +25,10 @@ public abstract class Task implements Captionable {
 	private long endTime;
 	private long itemsProcessed;
 	private long itemsSkipped;
-	private long totalItems;
+	private long totalItems;	
+//	@JsonIgnore
 	private Throwable lastException;
+	@JsonIgnore
 	private Logger logger;
 	
 	public enum Status {
