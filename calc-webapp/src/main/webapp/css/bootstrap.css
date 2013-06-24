@@ -1588,6 +1588,8 @@ input[type="checkbox"][readonly] {
   background-color: #fcf8e3;
   border-color: #c09853;
 }
+
+.error,
 .control-group.error .control-label,
 .control-group.error .help-block,
 .control-group.error .help-inline {

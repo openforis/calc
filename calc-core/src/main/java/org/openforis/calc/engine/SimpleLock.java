@@ -32,5 +32,6 @@ public final class SimpleLock {
 		if ( !locked ) {
 			throw new IllegalStateException("Already unlocked");
 		}
+		this.locked = false;
 	}
 }
