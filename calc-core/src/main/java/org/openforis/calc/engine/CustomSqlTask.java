@@ -27,11 +27,11 @@ public final class CustomSqlTask extends CalculationStepTask {
 		stmt.execute(sql);
 		
 		
-		//MINO
-		try {
-			Thread.sleep(5000);
-		} catch ( InterruptedException e ) {
-//			e.printStackTrace();
-		}
+//		//MINO
+//		try {
+//			Thread.sleep(5000);
+//		} catch ( InterruptedException e ) {
+////			e.printStackTrace();
+//		}
 	}
 }

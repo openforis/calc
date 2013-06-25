@@ -156,34 +156,23 @@
 	
 	$(document).ready(function(event){
 		/**
-			The workspaces currently active in the drop down
+			The list of all workspaces
 		*/
 		$workspaces = null;
 		/**
-			The workspaces currently selected
+			The selected workspace
 		*/
 		$workspace = null;
-		
-		
 		/**
-			The chains currently active in the drop down selector
+			all chains for the selected workspace
 		*/
 		$chains = null;
 		/**
 			The chain currently selected
 		*/
-		$chain = null;
-		
-		
-		/**
-		* The processing chain job currently selected
-		*/
-		//$job = null;
-		
-		
 		$processingChain = null;
 		
-		loadWorkspaces = function(){
+		loadWorkspaces = function() {
 			
 			//hide processing chain selection
 			$(".processing-chain-selector").hide();
@@ -211,7 +200,7 @@
 		
 		changeWorkspaceHandler = function(e) {
 			e.preventDefault();
-			//$( ".processing-chain-selector" ).hide();
+			
 			$a = $(this).find("a");
 			$wsId = $a.attr("href");
 			$.each(
@@ -229,10 +218,7 @@
 			$btn = $($ws).find(".selector-button").html($wsName);
 			
 			loadProcessingChains($wsId);
-			//console.log('click of ' +$(this).html()+" id: " + $wsId + "name"+ $wsName);
 		};
-		
-		
 		
 		loadProcessingChains = function($wsId) {
 			$(".form-exec-tasks").fadeOut();
@@ -263,12 +249,6 @@
 			$( ".processing-chain-selector" ).fadeIn();
 		};
 		
-// 		$('.workspace-selector li').on(
-// 			"click",
-// 			changeWorkspaceHandler
-// 		);
-		
-		
 		changeProcessingChainHandler = function(e) {
 			e.preventDefault();
 			
@@ -279,10 +259,7 @@
 					$chains,
 					function(i, c) {
 						if(c.id == $id) {
-							//$chain = c;
-							
 							$processingChain = new ProcessingChain( c, $('.processing-chain') );
-							
 							return( false );
 						}
 					}
@@ -291,130 +268,7 @@
 			$obj = $(".processing-chain-selector");
 			$btn = $($obj).find(".selector-button").html($name);
 			
-			
 			$processingChain.show();
-			
-		};
-		
-		showProcessingChainJobForm = function( ) {
-// 			console.log($job);		
-			$form = $(".form-exec-tasks");
-			$tbody = $form.find('tbody');
-			$tbody.empty();
-			
-			updateProcessingChainTasks();
-			
-			// show the table with tasks
-			$form.on("submit", execTasksSubmit);
-			$form.fadeIn();
-		};
-		
-		updateProcessingChainTasks = function() {
-			$tasks = $job.tasks;
-			
-			$.each(
-				$tasks,
-				function($i, $task) {
-					$id = $task.id;
-					$step = $task.calculationStep;
-					
-					$tr = $("<tr></tr>");
-// 					$tdId = $("<td>#"+$i +"(id:"+$id+")</td>");					
-// 					$tr.append($tdId);
-					
-					$tdStep = $('<td><label class="checkbox"><input type="checkbox" value="yes" name="'+$id+'" checked="checked">'+$step.name+'</label></td>');
-					$tr.append($tdStep);
-					
-					$tdStatus = $('<td>'+$task.status+'</td>');
-					$tr.append($tdStatus);
-					
-					$tbody.append($tr);
-				}
-			);
-		};
-		
-		// on submit execute form
-// 		$(".exec-tasks-form").submit(
-// 			"submit",
-		execTasksSubmit = function(e) {
-			e.preventDefault();
-			
-			console.log('executing tasks');
-			console.log('');
-			
-			
-			
-			
-			$params = $(this).serialize().split("&");
-			$taskIds = [];
-			
-			$.each(
-				$params,
-				function($i, $p){
-					$param = $p.split("=");
-					if($param[1]=="yes"){
-						$taskIds[$i] = $param[0];
-					}
-						 
-				}
-			);
-			$taskIds = $taskIds.join(",");
-			//console.log($p);
-			console.log($taskIds);
-			
-			$url = "rest/workspaces/chains/"+$chain.id+"/execute.json";
-			$.getJSON(
-				$url,
-				{"taskIds": $taskIds }
-			)
-			.done(
-					function($resp) {
-						console.log("vai job started");
-						//TODO status of resp PENDING
-						console.log($resp);
-						updateProcessingChainJobsStatus();
-					}
-			)
-			.fail(
-					function( jqxhr, textStatus, error) {
-						var err = textStatus + ', ' + error ;
-						console.log( "Request Failed: " + err);
-						$(".form-error-msg").html(err).fadeIn();
-					}
-			);
-			
-			return (false);
-		};
-// 		);
-		
-		updateProcessingChainJobsStatus = function() {
-			
-			$url = "rest/workspaces/chains/"+$chain.id+"/jobs.json";
-			$.getJSON(
-				$url
-			)
-			.done(
-					function($resp) {
-						$job = $resp;
-						$status = $job.status;
-						console.log($status == "FINISHED");
-						
-						if( ! ($status == "FINISHED") ) {
-// 							console.log( "set timeout ");
-							window.setTimeout(updateProcessingChainJobsStatus, 1000);
-// 							console.log( "after set timoout" );
-						}
-						
-						console.log($status);
-						updateProcessingChainTasks();
-						
-						
-						
-// 						console.log("vai job started");
-// 						//TODO status of resp PENDING
-// 						console.log($resp);
-					}
-			)
 		};
 		
 		loadWorkspaces();
