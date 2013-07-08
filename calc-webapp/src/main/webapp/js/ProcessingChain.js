@@ -58,7 +58,7 @@ function ProcessingChain( $chain, $container ) {
 	this.loadTasks = function (callback) {
 		var $this = this;
 		$.getJSON(
-			this.getJobsUrl		
+			$this.getJobsUrl		
 		).done(
 			function(response) {
 				

@@ -74,7 +74,16 @@
 	 -->
 	<!-- END Spring-Security -->
 
-
+	<!-- Filter that makes form encoded data available through the ServletRequest.getParameter*() family of methods during HTTP PUT or PATCH requests. -->	
+	<filter>
+		<filter-name>httpPutFormContentFilter</filter-name>
+		<filter-class>org.springframework.web.filter.HttpPutFormContentFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>httpPutFormContentFilter</filter-name>
+		<servlet-name>spring</servlet-name>
+	</filter-mapping>
+	
 	<servlet>
 		<servlet-name>spring</servlet-name>
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>

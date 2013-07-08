@@ -30,15 +30,18 @@ public class ProcessingChainJobManager {
 		this.jobs = new HashMap<Integer, ProcessingChainJob>();
 	}
 	
+	//TODO 
+	// WHY does it get cached? when updating the steps (like the step no)  they are not updated
+	// just commenting it for now
 	public ProcessingChainJob getProcessingChainJob(ProcessingChain chain) throws InvalidProcessingChainException {
 		Integer chainId = chain.getId();
 		ProcessingChainJob job = jobs.get(chainId);
-		if ( job == null ) {
+//		if ( job == null ) {
 			Workspace workspace = chain.getWorkspace();
 			TaskContext context = contextManager.getContext(workspace);
 			job = createProcessingChainJob(context, chain);
 			jobs.put(chainId, job);
-		}
+//		}
 		return job;
 	}
 

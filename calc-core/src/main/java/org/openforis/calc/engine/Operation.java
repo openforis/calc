@@ -3,6 +3,8 @@ package org.openforis.calc.engine;
 import org.openforis.calc.common.ReflectionUtils;
 import org.openforis.calc.nls.Captionable;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * Describes an operation which may be run as part of a user-defined processing chain. The actual work is done by the appropriate Task implementation.
  * 
@@ -10,6 +12,8 @@ import org.openforis.calc.nls.Captionable;
  * @author M. Togna
  */
 public abstract class Operation<T extends CalculationStepTask> implements Captionable {
+	
+	@JsonIgnore
 	private Module module;
 	private String name;
 

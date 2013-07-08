@@ -29,4 +29,6 @@ public interface ParameterMap {
 	String toJsonString();
 	
 	ParameterMap deepCopy();
+	
+	Object get(String name);
 }

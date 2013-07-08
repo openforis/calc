@@ -11,6 +11,7 @@ import org.openforis.calc.common.UserObject;
 import org.openforis.calc.persistence.ParameterHashMap;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * A single user-defined step in the {@link ProcessingChain}
@@ -38,7 +39,7 @@ public final class CalculationStep extends UserObject {
 	@JoinColumn(name = "chain_id")
 	private ProcessingChain processingChain;
 	
-	@JsonIgnore
+	@JsonSerialize(using = ParameterMapJsonSerializer.class)
 	@Type(type="org.openforis.calc.persistence.JsonParameterMapType")
 	@Column(name = "parameters")
 	private ParameterMap parameters;
@@ -87,7 +88,7 @@ public final class CalculationStep extends UserObject {
 		return this.stepNo;
 	}
 	
-	void setProcessingChain(ProcessingChain chain) {
+	public void setProcessingChain(ProcessingChain chain) {
 		this.processingChain = chain;
 	}
 }
