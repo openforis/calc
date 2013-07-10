@@ -1,6 +1,6 @@
 function ProcessingChain( $chain, $container ) {
 	this.chain = $chain,
-	this.getJobsUrl = "rest/workspaces/chains/"+this.chain.id+"/jobs.json",
+	this.getJobsUrl = "rest/workspaces/chains/"+this.chain.id+"/job.json",
 	this.container = $container,
 	this.form = null,
 	this.job = null,

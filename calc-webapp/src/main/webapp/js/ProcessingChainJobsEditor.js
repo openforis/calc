@@ -411,7 +411,7 @@ ProcessingChainJobsEditor = function ($container, $processingChainEditor) {
 	,
 	this.processingChainEditor = $processingChainEditor
 	,
-	this.__instance = $.proxy( this.init(), this)
+	this.__instance = this.init()
 	;
 };
 

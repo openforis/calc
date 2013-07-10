@@ -63,7 +63,7 @@ public class ProcessingChainRestController {
 		return workspaces;
 	}
 
-	@Deprecated
+//	@Deprecated
 	@RequestMapping(value = "/workspaces/chains/{chainId}/job.json", method = RequestMethod.GET, produces = "application/json")
 	public @ResponseBody
 	ProcessingChainJob getProcessingChainJob(@PathVariable int chainId) throws InvalidProcessingChainException {
