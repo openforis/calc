@@ -31,8 +31,7 @@ public class ProcessingChainJobManager {
 	}
 	
 	//TODO 
-	// WHY does it get cached? when updating the steps (like the step no)  they are not updated
-	// just commenting it for now
+	// when updating the steps (like the step no)  they are not updated
 	public ProcessingChainJob getProcessingChainJob(ProcessingChain chain) throws InvalidProcessingChainException {
 		Integer chainId = chain.getId();
 		ProcessingChainJob job = jobs.get(chainId);
