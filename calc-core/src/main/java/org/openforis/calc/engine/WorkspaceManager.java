@@ -15,22 +15,22 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 public class WorkspaceManager {
 	@Autowired
-	private WorkspaceDao workspaceDao;
+	private WorkspaceDao dao;
 
 	public WorkspaceManager() {
 	}
-	
+
 	@Transactional
-	public Workspace getWorkspace(int workspaceId) {
-		return workspaceDao.find(workspaceId);
+	public Workspace get(int workspaceId) {
+		return dao.find(workspaceId);
 	}
-	
+
 	@Transactional
-	public Workspace saveWorkspace(Workspace workspace) {
-		return workspaceDao.save(workspace);
+	public Workspace save(Workspace workspace) {
+		return dao.save(workspace);
 	}
-	
-	public List<Workspace> loadAll(){
-		return workspaceDao.loadAll();
+
+	public List<Workspace> loadAll() {
+		return dao.loadAll();
 	}
 }

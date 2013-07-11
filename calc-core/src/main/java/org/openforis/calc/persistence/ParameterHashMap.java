@@ -110,6 +110,11 @@ public class ParameterHashMap implements ParameterMap {
 		return JSONObject.toJSONString(map);
 	}
 	
+	@Override
+	public Object get(String name) {
+		return map.get(name);
+	}
+	
 	/**
 	 * Creates a deep copy of the map and all contained maps
 	 */

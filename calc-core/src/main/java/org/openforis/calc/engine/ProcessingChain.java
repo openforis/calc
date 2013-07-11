@@ -58,12 +58,25 @@ public class ProcessingChain extends UserObject {
 		return workspace;
 	}
 	
-	void setWorkspace(Workspace workspace) {
+	public void setWorkspace(Workspace workspace) {
 		this.workspace = workspace;
 	}
 	
 	public void addCalculationStep(CalculationStep step) {
 		step.setProcessingChain(this);
 		steps.add(step);
+	}
+	
+	public CalculationStep getCalculationStep( int stepId ){
+		CalculationStep step = null;
+		
+		for ( CalculationStep tmpStep : steps ) {
+			int id = Integer.valueOf(stepId);
+			if( tmpStep.getId().equals(id)){
+				step = tmpStep;
+				break;
+			}
+		}
+		return step;
 	}
 }

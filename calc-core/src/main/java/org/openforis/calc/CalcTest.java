@@ -5,7 +5,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.openforis.calc.engine.CalculationStep;
-import org.openforis.calc.engine.CalculationStepService;
+import org.openforis.calc.engine.CalculationStepManager;
 import org.openforis.calc.engine.Module;
 import org.openforis.calc.engine.ModuleRegistry;
 import org.openforis.calc.engine.ParameterMap;
@@ -31,7 +31,7 @@ public class CalcTest {
 	private ProcessingChainService pcs;
 
 	@Autowired
-	private CalculationStepService calcStepService;
+	private CalculationStepManager calcStepService;
 
 	@Autowired
 	private TaskManager taskManager;
@@ -53,7 +53,7 @@ public class CalcTest {
 	}
 
 	public void createAndSave() {
-		Workspace w = workspaceService.getWorkspace(1);
+		Workspace w = workspaceService.get(1);
 		System.out.println(w);
 		Collection<Entity> es = w.getEntities();
 		System.out.println("Entities:");
@@ -83,7 +83,7 @@ public class CalcTest {
 	}
 
 	public void testRunProcessingChain() throws Throwable {
-		Workspace ws = workspaceService.getWorkspace(1);
+		Workspace ws = workspaceService.get(1);
 		ProcessingChain chain = ws.getProcessingChains().get(0);
 		int chainId = chain.getId();
 		ProcessingChainJob job = processingChainService.getProcessingChainJob(chainId);

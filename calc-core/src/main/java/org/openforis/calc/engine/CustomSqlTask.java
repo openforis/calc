@@ -25,5 +25,13 @@ public final class CustomSqlTask extends CalculationStepTask {
 		Connection conn = ds.getConnection();
 		Statement stmt = conn.createStatement();
 		stmt.execute(sql);
+		
+		
+//		//MINO
+//		try {
+//			Thread.sleep(5000);
+//		} catch ( InterruptedException e ) {
+////			e.printStackTrace();
+//		}
 	}
 }

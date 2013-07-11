@@ -80,5 +80,13 @@ body {
 }
 
 .span4 div{
-	display: inline-block;
+/* 	display: inline-block; */
+}
+
+
+/* 
+max height for modal window
+*/
+.modal-body {
+    max-height: 1500px;
 }

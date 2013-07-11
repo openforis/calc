@@ -82,7 +82,7 @@ public class ModuleRegistry {
 	}
 
 	/**
-	 * Convenient method to get Operation directly 
+	 * Convenience method to get Operation directly 
 	 * 
 	 * @param step
 	 * @return

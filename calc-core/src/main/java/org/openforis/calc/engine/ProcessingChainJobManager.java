@@ -3,8 +3,6 @@ package org.openforis.calc.engine;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -32,6 +30,8 @@ public class ProcessingChainJobManager {
 		this.jobs = new HashMap<Integer, ProcessingChainJob>();
 	}
 	
+	//TODO 
+	// when updating the steps (like the step no)  they are not updated
 	public ProcessingChainJob getProcessingChainJob(ProcessingChain chain) throws InvalidProcessingChainException {
 		Integer chainId = chain.getId();
 		ProcessingChainJob job = jobs.get(chainId);
@@ -53,8 +53,8 @@ public class ProcessingChainJobManager {
 			Operation<?> operation = moduleRegistry.getOperation(step);
 			if ( operation == null ) {
 				throw new InvalidProcessingChainException();
-			}
-			CalculationStepTask task = operation.createTask(context, step.parameters());
+			}			
+			CalculationStepTask task = operation.createTask(context, step);
 			job.addTask(task);
 		}
 		return job;
