@@ -1,5 +1,6 @@
 package org.openforis.calc.engine;
 
+
 /**
  * Job responsible for importing areas of interest (AOIs) into the Calc database from a file.
  * 

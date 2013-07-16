@@ -37,7 +37,6 @@ public class Workspace extends UserObject {
 	@Fetch(FetchMode.SUBSELECT) 
 	private List<Entity> entities;
 	
-	
 	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER)
 	@OrderBy("id")
 	@Fetch(FetchMode.SUBSELECT) 
