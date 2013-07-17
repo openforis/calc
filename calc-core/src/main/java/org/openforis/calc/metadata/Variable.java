@@ -15,8 +15,8 @@ public abstract class Variable extends UserObject {
 	private boolean cubeMember;
 	private int index;
 	private Entity entity;
-	private org.openforis.calc.metadata.Variable.Scale scale;
-	private TableColumn valueColumn;
+	private Scale scale;
+	private String valueColumn;
 
 	public org.openforis.calc.metadata.Variable.Type getType() {
 		throw new UnsupportedOperationException();
@@ -56,6 +56,14 @@ public abstract class Variable extends UserObject {
 
 	public int getIndex() {
 		return this.index;
+	}
+
+	public String getValueColumn() {
+		return valueColumn;
+	}
+
+	public void setValueColumn(String valueColumn) {
+		this.valueColumn = valueColumn;
 	}
 
 	public enum Type {

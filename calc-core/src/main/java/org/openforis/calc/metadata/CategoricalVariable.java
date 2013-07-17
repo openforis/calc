@@ -1,7 +1,8 @@
 package org.openforis.calc.metadata;
 
 import java.util.ArrayList;
-import org.openforis.calc.metadata.Hierarchy;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * A variable which may take on one or more distinct values of type {@link Category}.
@@ -42,5 +43,9 @@ public final class CategoricalVariable extends Variable {
 
 	public boolean isPivotCategories() {
 		return this.pivotCategories;
+	}
+	
+	public List<Hierarchy> getHierarchies() {
+		return Collections.unmodifiableList(hierarchies);
 	}
 }

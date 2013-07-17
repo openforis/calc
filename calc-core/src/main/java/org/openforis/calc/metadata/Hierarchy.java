@@ -1,6 +1,8 @@
 package org.openforis.calc.metadata;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Describes a categorical variable hierarchy, made up of one or more hierarchy {@link Level}s.
@@ -13,7 +15,7 @@ public final class Hierarchy {
 	private String caption;
 	private String description;
 	private CategoricalVariable variable;
-	private ArrayList<org.openforis.calc.metadata.Hierarchy.Level> levels = new ArrayList<Level>();
+	private List<Level> levels = new ArrayList<Level>();
 
 	public void setId(Integer id) {
 		this.id = id;
@@ -37,6 +39,14 @@ public final class Hierarchy {
 
 	public String getDescription() {
 		return this.description;
+	}
+	
+	public CategoricalVariable getVariable() {
+		return variable;
+	}
+	
+	public List<Level> getLevels() {
+		return Collections.unmodifiableList(levels);
 	}
 	/**
 	 * Defines a single level of a hierarchy of (@link Category}s.
@@ -74,6 +84,10 @@ public final class Hierarchy {
 
 		public int getRank() {
 			return this.rank;
+		}
+		
+		public Hierarchy getHierarchy() {
+			return hierarchy;
 		}
 	}
 }

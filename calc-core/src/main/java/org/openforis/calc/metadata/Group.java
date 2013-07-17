@@ -14,7 +14,7 @@ public final class Group {
 	private String description;
 	private int index;
 	private Hierarchy hierarchy;
-	private org.openforis.calc.metadata.Hierarchy.Level level;
+	private Hierarchy.Level level;
 
 	public void setId(Integer id) {
 		this.id = id;
@@ -62,5 +62,13 @@ public final class Group {
 
 	public int getIndex() {
 		return this.index;
+	}
+	
+	public Hierarchy getHierarchy() {
+		return hierarchy;
+	}
+	
+	public Hierarchy.Level getLevel() {
+		return level;
 	}
 }

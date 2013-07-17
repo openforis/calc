@@ -8,13 +8,13 @@ package org.openforis.calc.metadata;
  */
 public final class QuantitativeVariable extends Variable {
 	private double defaultValue;
-	private Unit unit;
+	private Unit<?> unit;
 
-	public void setUnit(Unit unit) {
+	public void setUnit(Unit<?> unit) {
 		this.unit = unit;
 	}
 
-	public Unit getUnit() {
+	public Unit<?> getUnit() {
 		return this.unit;
 	}
 
