@@ -66,6 +66,10 @@ public class Workspace extends UserObject {
 		return Collections.unmodifiableList(entities);
 	}
 	
+	public void setEntities(List<Entity> entities) {
+		this.entities = entities;
+	}
+	
 	public List<ProcessingChain> getProcessingChains() {
 		return Collections.unmodifiableList(processingChains);
 	}

@@ -1,5 +1,7 @@
 package org.openforis.calc.metadata;
 
+import java.util.ArrayList;
+
 import javax.persistence.Column;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -21,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 @javax.persistence.Entity
 @Table(name = "entity")
-public final class Entity extends UserObject {
+public class Entity extends UserObject {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "workspace_id")
 	@JsonIgnore
@@ -36,16 +38,16 @@ public final class Entity extends UserObject {
 	
 	@Column(name = "sort_order")
 	private int sortOrder;
-//	private ArrayList<Variable> variables = new ArrayList<Variable>();
-//	private DataTable dataTable;
+	
+	private ArrayList<Variable> variables = new ArrayList<Variable>();
 	
 	public Workspace getWorkspace() {
 		return this.workspace;
 	}
-
-//	public DataTable getDataTable() {
-//		return this.dataTable;
-//	}
+	
+	public void setWorkspace(Workspace workspace) {
+		this.workspace = workspace;
+	}
 
 	public String getCaption() {
 		return caption;
@@ -54,5 +56,9 @@ public final class Entity extends UserObject {
 	@Column(name = "caption")
 	public void setCaption(String caption) {
 		this.caption = caption;
+	}
+	
+	public void addVariable(Variable variable) {
+		variables.add(variable);
 	}
 }
