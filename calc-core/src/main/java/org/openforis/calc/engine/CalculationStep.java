@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  */
 @javax.persistence.Entity
 @Table(name = "calculation_step")
-public final class CalculationStep extends UserObject {
+public class CalculationStep extends UserObject {
 	
 	@Column(name = "module_name")
 	private String moduleName;
