@@ -21,4 +21,7 @@ public abstract class Unit<T extends Dimension> {
 		return this.abbreviation;
 	}
 
+	public Dimension getDimension() {
+		return dimension;
+	}
 }
