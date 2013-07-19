@@ -9,6 +9,7 @@ import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.Variable;
+import org.openforis.collect.relational.model.CodeColumn;
 import org.openforis.collect.relational.model.CodeTable;
 import org.openforis.collect.relational.model.Column;
 import org.openforis.collect.relational.model.DataColumn;
@@ -18,6 +19,7 @@ import org.openforis.collect.relational.model.Table;
 import org.openforis.idm.metamodel.AttributeDefinition;
 import org.openforis.idm.metamodel.BooleanAttributeDefinition;
 import org.openforis.idm.metamodel.CodeAttributeDefinition;
+import org.openforis.idm.metamodel.DateAttributeDefinition;
 import org.openforis.idm.metamodel.EntityDefinition;
 import org.openforis.idm.metamodel.NodeDefinition;
 import org.openforis.idm.metamodel.NumberAttributeDefinition;
@@ -90,25 +92,21 @@ public class CollectMetadataConverter {
 	 * @return
 	 */
 	protected Variable convert(Column<?> column) {
-		NodeDefinition columnFieldDefn = ((DataColumn) column).getNodeDefinition();
-		AttributeDefinition attributeDefn;
-		if ( columnFieldDefn instanceof AttributeDefinition ) {
-			attributeDefn = (AttributeDefinition) columnFieldDefn;
-		} else {
-			attributeDefn = (AttributeDefinition) columnFieldDefn.getParentDefinition();
-		}
+		AttributeDefinition attributeDefn = getAttributeDefinition(column);
 		Variable variable = null;
-		if ( attributeDefn instanceof AttributeDefinition && ! attributeDefn.isMultiple() ) {
-			if ( attributeDefn instanceof BooleanAttributeDefinition ) {
+		if ( isValueColumn(column) ) {
+			if (attributeDefn.isMultiple() ) {
+				variable = new CategoricalVariable();
+				((CategoricalVariable) variable).setMultipleResponse(true);
+			} else if ( attributeDefn instanceof BooleanAttributeDefinition ) {
 				variable = new BinaryVariable();
-			} else if ( attributeDefn instanceof CodeAttributeDefinition && 
-					columnFieldDefn.getName().equals(CodeAttributeDefinition.CODE_FIELD) ) {
+			} else if ( attributeDefn instanceof CodeAttributeDefinition) {
 				variable = new CategoricalVariable();
 			} else if ( attributeDefn instanceof NumberAttributeDefinition ) {
-				if ( columnFieldDefn.getName().equals(NumberAttributeDefinition.VALUE_FIELD) ) {
-					variable = new QuantitativeVariable();
-					//TODO set unit...
-				}
+				variable = new QuantitativeVariable();
+				//TODO set unit...
+//				Unit defaultUnit = ((NumberAttributeDefinition) attributeDefn).getDefaultUnit();
+//				((QuantitativeVariable) variable).setUnit(convert(defaultUnit));
 			}
 			if ( variable != null ) {
 				variable.setName(column.getName()); //TODO check this
@@ -117,4 +115,60 @@ public class CollectMetadataConverter {
 		}
 		return variable;
 	}
+	
+	//TODO move it to RDB Column?
+	/**
+	 * Returns true if the column contains values that can be used as a {@link Variable}
+	 * 
+	 * @param column
+	 * @return
+	 */
+	protected boolean isValueColumn(Column<?> column) {
+		NodeDefinition columnFieldDefn = ((DataColumn) column).getNodeDefinition();
+		AttributeDefinition attributeDefn = getAttributeDefinition(column);
+		if ( attributeDefn instanceof AttributeDefinition ) {
+			String fieldDefnName = columnFieldDefn.getName();
+			if ( attributeDefn instanceof CodeAttributeDefinition &&
+					fieldDefnName.equals(CodeAttributeDefinition.CODE_FIELD) &&
+					column instanceof CodeColumn) {
+				return true;
+			} else if ( attributeDefn instanceof NumberAttributeDefinition &&
+					fieldDefnName.equals(NumberAttributeDefinition.VALUE_FIELD) ) {
+				return true;
+			} else if ( attributeDefn instanceof BooleanAttributeDefinition ) {
+				return true;
+			} else if ( attributeDefn instanceof DateAttributeDefinition ) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
+	}
+	
+	//TODO move it to RDB Column?
+	/**
+	 * Returns the {@link AttributeDefinition} associated to the column.
+	 * 
+	 * @param column
+	 * @return
+	 */
+	protected AttributeDefinition getAttributeDefinition(Column<?> column) {
+		NodeDefinition columnFieldDefn = ((DataColumn) column).getNodeDefinition();
+		AttributeDefinition attributeDefn;
+		if ( columnFieldDefn instanceof AttributeDefinition ) {
+			attributeDefn = (AttributeDefinition) columnFieldDefn;
+		} else {
+			attributeDefn = (AttributeDefinition) columnFieldDefn.getParentDefinition();
+		}
+		return attributeDefn;
+	}
+	
+	/*
+	protected Unit<?> convert(org.openforis.idm.metamodel.Unit unit) {
+		//TODO
+		return null;
+	}
+	*/
 }

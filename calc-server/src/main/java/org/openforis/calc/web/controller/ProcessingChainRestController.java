@@ -15,11 +15,11 @@ import org.json.simple.parser.ParseException;
 import org.openforis.calc.engine.CalculationStep;
 import org.openforis.calc.engine.CalculationStepManager;
 import org.openforis.calc.engine.InvalidProcessingChainException;
+import org.openforis.calc.engine.Job;
 import org.openforis.calc.engine.Module;
 import org.openforis.calc.engine.ModuleRegistry;
 import org.openforis.calc.engine.ParameterMap;
 import org.openforis.calc.engine.ProcessingChain;
-import org.openforis.calc.engine.ProcessingChainJob;
 import org.openforis.calc.engine.ProcessingChainManager;
 import org.openforis.calc.engine.ProcessingChainService;
 import org.openforis.calc.engine.Workspace;
@@ -66,14 +66,14 @@ public class ProcessingChainRestController {
 //	@Deprecated
 	@RequestMapping(value = "/workspaces/chains/{chainId}/job.json", method = RequestMethod.GET, produces = "application/json")
 	public @ResponseBody
-	ProcessingChainJob getProcessingChainJob(@PathVariable int chainId) throws InvalidProcessingChainException {
-		ProcessingChainJob processingChainJob = processingChainService.getProcessingChainJob(chainId);
+	Job getProcessingChainJob(@PathVariable int chainId) throws InvalidProcessingChainException {
+		Job processingChainJob = processingChainService.getProcessingChainJob(chainId);
 		return processingChainJob;
 	}
 
 	@RequestMapping(value = "/workspaces/chains/{chainId}/run.json", method = RequestMethod.GET, produces = "application/json")
 	public @ResponseBody
-	ProcessingChainJob runProcessingChain(@PathVariable int chainId, @RequestParam(value = "taskIds", required = false) String taskIds) throws InvalidProcessingChainException,
+	Job runProcessingChain(@PathVariable int chainId, @RequestParam(value = "taskIds", required = false) String taskIds) throws InvalidProcessingChainException,
 			WorkspaceLockedException {
 		System.out.println("executing chain " + chainId);
 
@@ -83,7 +83,7 @@ public class ProcessingChainRestController {
 			UUID uuid = UUID.fromString(taskId);
 			scheduledTasks.add(uuid);
 		}
-		ProcessingChainJob processingChainJob = processingChainService.getProcessingChainJob(chainId);
+		Job processingChainJob = processingChainService.getProcessingChainJob(chainId);
 
 		processingChainJob.setScheduledTasks(scheduledTasks);
 

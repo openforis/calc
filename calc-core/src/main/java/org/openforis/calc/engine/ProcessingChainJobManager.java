@@ -1,5 +1,6 @@
 package org.openforis.calc.engine;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,11 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class ProcessingChainJobManager {
+	@Autowired
+	private ModuleRegistry moduleRegistry;
+
+	@Autowired
+	private TaskManager taskManager;
 	
 	@Autowired
 	private ContextManager contextManager;
@@ -21,42 +27,45 @@ public class ProcessingChainJobManager {
 	@Autowired
 	private ProcessingChainDao processingChainDao;
 	
-	@Autowired
-	private ModuleRegistry moduleRegistry;
-	
-	private Map<Integer, ProcessingChainJob> jobs;
+	private Map<Integer, Job> jobs;
 	
 	public ProcessingChainJobManager() {
-		this.jobs = new HashMap<Integer, ProcessingChainJob>();
+		this.jobs = new HashMap<Integer, Job>();
 	}
 	
-	//TODO 
-	// when updating the steps (like the step no)  they are not updated
-	public ProcessingChainJob getProcessingChainJob(ProcessingChain chain) throws InvalidProcessingChainException {
+	public Job getProcessingChainJob(ProcessingChain chain) throws InvalidProcessingChainException {
 		Integer chainId = chain.getId();
-		ProcessingChainJob job = jobs.get(chainId);
+		Job job = jobs.get(chainId);
 		if ( job == null ) {
 			Workspace workspace = chain.getWorkspace();
-			TaskContext context = contextManager.getContext(workspace);
+			TaskContext context = contextManager.createContext(workspace);
 			job = createProcessingChainJob(context, chain);
 			jobs.put(chainId, job);
 		}
 		return job;
 	}
 
-	private ProcessingChainJob createProcessingChainJob(TaskContext context, ProcessingChain chain) throws InvalidProcessingChainException {
-		// add chain-level parameters?
-		ProcessingChainJob job;
-		job = Task.createTask(ProcessingChainJob.class, context);
+	private List<Task> createTasks(ProcessingChain chain, TaskContext context) throws InvalidProcessingChainException {
+		// Add steps to job
 		List<CalculationStep> steps = chain.getCalculationSteps();
+		List<Task> tasks = new ArrayList<Task>();
 		for (CalculationStep step : steps) {
 			Operation<?> operation = moduleRegistry.getOperation(step);
 			if ( operation == null ) {
 				throw new InvalidProcessingChainException();
 			}			
-			CalculationStepTask task = operation.createTask(context, step);
-			job.addTask(task);
+			Class<? extends CalculationStepTask> taskType = operation.getTaskType();
+			CalculationStepTask task = taskManager.createTask(taskType, context);
+			task.setCalculationStep(step);
+			tasks.add(task);
 		}
+		return tasks;
+	}
+
+	private Job createProcessingChainJob(TaskContext context, ProcessingChain chain) throws InvalidProcessingChainException {
+		List<Task> tasks = createTasks(chain, context);
+		// add chain-level parameters?
+		Job job = new Job(tasks);
 		return job;
 	}
 }

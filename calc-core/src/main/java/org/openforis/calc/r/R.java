@@ -45,9 +45,11 @@ public class R {
 	public void startup() {
 		try {
 			String path = getJriPath();
-			SystemUtils.addToClassPath(new File(path + "/JRI.jar"));
-			SystemUtils.addLibraryPath(path);
-			this.engine = REngine.engineForClass(JRIEngine.class.getName(), R_PARAMS, new RCallbacks(), true);
+			if ( path != null ) {
+				SystemUtils.addToClassPath(new File(path + "/JRI.jar"));
+				SystemUtils.addLibraryPath(path);
+				this.engine = REngine.engineForClass(JRIEngine.class.getName(), R_PARAMS, new RCallbacks(), true);
+			}
 		} catch (InvocationTargetException e) {
 			throw new RuntimeException(e);
 		} catch (ClassNotFoundException e) {
@@ -72,7 +74,9 @@ public class R {
 			path = path.substring(1, path.length() - 1);
 			return path;
 		} catch (Exception e) {
-			throw new RuntimeException("Error getting JRI library path from R");
+			logger.warn("Error getting JRI library path from R");
+			//throw new RuntimeException("Error getting JRI library path from R");
+			return null;
 		}
 	}
 	

@@ -31,7 +31,7 @@ public class ProcessingChainService {
 	}
 
 	synchronized	
-	public ProcessingChainJob getProcessingChainJob(int chainId) throws InvalidProcessingChainException {
+	public Job getProcessingChainJob(int chainId) throws InvalidProcessingChainException {
 		ProcessingChain chain = processingChainDao.find(chainId);
 		if ( chain == null ) {
 			throw new IllegalArgumentException("No processing chain with id "+chainId);
@@ -41,7 +41,7 @@ public class ProcessingChainService {
 	
 	synchronized
 	public void startProcessingChainJob(int chainId, Set<UUID> taskIds) throws WorkspaceLockedException, InvalidProcessingChainException {
-		ProcessingChainJob job = getProcessingChainJob(chainId);
+		Job job = getProcessingChainJob(chainId);
 		job.setScheduledTasks(taskIds);
 		taskManager.start(job);
 	}
