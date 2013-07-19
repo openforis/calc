@@ -22,9 +22,9 @@ public abstract class Operation<T extends CalculationStepTask> implements Captio
 		this.name = name;
 	}
 
-	public final T createTask(TaskContext context, CalculationStep step) {
+	public Class<T> getTaskType() {
 		Class<T> type = ReflectionUtils.extractGenericType(getClass());
-		return CalculationStepTask.createTask(type, context, step);
+		return type;
 	}
 
 	public String getName() {

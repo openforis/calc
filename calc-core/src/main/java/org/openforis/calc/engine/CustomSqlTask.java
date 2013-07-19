@@ -14,7 +14,7 @@ import javax.sql.DataSource;
  * @author M. Togna
  */
 public final class CustomSqlTask extends CalculationStepTask {
-	
+
 	@Override
 	protected void execute() throws SQLException {
 		ParameterMap params = parameters();

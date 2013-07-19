@@ -3,6 +3,7 @@ package org.openforis.calc.engine;
 import java.util.concurrent.Executor;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.stereotype.Component;
 
 /**
@@ -20,6 +21,23 @@ public class TaskManager {
 	@Autowired
 	private WorkspaceLockManager workspaceLockManager;
 	
+	@Autowired 
+	private AutowireCapableBeanFactory beanFactory;
+	
+	public <T extends Task> T createTask(Class<T> type, TaskContext context) {
+		try {
+			T task = type.newInstance();
+			task.setContext(context);
+			beanFactory.autowireBean(task);
+			return task;
+		} catch ( InstantiationException e ) {
+			throw new IllegalArgumentException("Invalid task " + type.getClass(), e);
+		} catch ( IllegalAccessException e ) {
+			throw new IllegalArgumentException("Invalid task " + type.getClass(), e);
+		}
+	}
+
+
 	/**
 	 * Executes a task in the background
 	 * 

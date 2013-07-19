@@ -1,5 +1,7 @@
 package org.openforis.calc.metadata;
 
+import javax.persistence.DiscriminatorValue;
+
 /**
  * A special type of categorical variable which may take one of three values; TRUE, FALSE or NA.
  * 
@@ -8,5 +10,7 @@ package org.openforis.calc.metadata;
  * @author G. Miceli
  * @author M. Togna
  */
+@javax.persistence.Entity
+@DiscriminatorValue("B")
 public class BinaryVariable extends Variable {
 }
