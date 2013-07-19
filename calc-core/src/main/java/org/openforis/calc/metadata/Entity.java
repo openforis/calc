@@ -1,13 +1,18 @@
 package org.openforis.calc.metadata;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.openforis.calc.common.UserObject;
 import org.openforis.calc.engine.Workspace;
 
@@ -39,7 +44,10 @@ public class Entity extends UserObject {
 	@Column(name = "sort_order")
 	private int sortOrder;
 	
-	private ArrayList<Variable> variables = new ArrayList<Variable>();
+	@OneToMany(mappedBy = "entity", fetch = FetchType.EAGER)
+	@OrderBy("sortOrder")
+	@Fetch(FetchMode.SUBSELECT) 
+	private List<Variable> variables = new ArrayList<Variable>();
 	
 	public Workspace getWorkspace() {
 		return this.workspace;
