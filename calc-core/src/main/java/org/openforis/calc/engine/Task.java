@@ -37,27 +37,12 @@ public abstract class Task implements Captionable {
 	}
 
 	/**
-	 * 
 	 * @param context
-	 * @param parameters
-	 *            Creates a deep copy of parameters (defensive)
 	 */
-	Task() {
+	protected Task() {
 		reset();
 		this.logger = LoggerFactory.getLogger(getClass());
 		this.id = UUID.randomUUID();
-	}
-
-	public static <T extends Task> T createTask(Class<T> type, TaskContext context) {
-		try {
-			T task = type.newInstance();
-			task.context = context;
-			return task;
-		} catch ( InstantiationException e ) {
-			throw new IllegalArgumentException("Invalid task " + type.getClass(), e);
-		} catch ( IllegalAccessException e ) {
-			throw new IllegalArgumentException("Invalid task " + type.getClass(), e);
-		}
 	}
 
 	/**
@@ -190,5 +175,8 @@ public abstract class Task implements Captionable {
 	public boolean isScheduled() {
 		return scheduled;
 	}
-	
+
+	void setContext(TaskContext context) {
+		this.context = context;
+	}
 }

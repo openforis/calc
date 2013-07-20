@@ -6,11 +6,11 @@ import java.util.UUID;
 
 import org.openforis.calc.engine.CalculationStep;
 import org.openforis.calc.engine.CalculationStepManager;
+import org.openforis.calc.engine.Job;
 import org.openforis.calc.engine.Module;
 import org.openforis.calc.engine.ModuleRegistry;
 import org.openforis.calc.engine.ParameterMap;
 import org.openforis.calc.engine.ProcessingChain;
-import org.openforis.calc.engine.ProcessingChainJob;
 import org.openforis.calc.engine.ProcessingChainService;
 import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
@@ -86,7 +86,7 @@ public class CalcTest {
 		Workspace ws = workspaceService.get(1);
 		ProcessingChain chain = ws.getProcessingChains().get(0);
 		int chainId = chain.getId();
-		ProcessingChainJob job = processingChainService.getProcessingChainJob(chainId);
+		Job job = processingChainService.getProcessingChainJob(chainId);
 		Set<UUID> taskIds = job.getTaskIds();
 		processingChainService.startProcessingChainJob(chainId, taskIds);
 		while (!job.isEnded()) {

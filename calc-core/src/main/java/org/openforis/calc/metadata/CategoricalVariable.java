@@ -4,17 +4,30 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * A variable which may take on one or more distinct values of type {@link Category}.
  * 
  * @author G. Miceli
  * @author M. Togna
  */
-public final class CategoricalVariable extends Variable {
+@javax.persistence.Entity
+@DiscriminatorValue("C")
+public class CategoricalVariable extends Variable {
 	private boolean ordered;
 	private boolean multipleResponse;
 	private boolean pivotCategories;
 	private ArrayList<Hierarchy> hierarchies = new ArrayList<Hierarchy>();
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "default_category_id")
+	@JsonIgnore
 	private Category defaultCategory;
 
 	public Category getDefaultCategory() {

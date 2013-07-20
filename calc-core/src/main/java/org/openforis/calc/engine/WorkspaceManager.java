@@ -26,6 +26,11 @@ public class WorkspaceManager {
 	}
 
 	@Transactional
+	public Workspace fetchByName(String name) {
+		return dao.findByName(name);
+	}
+	
+	@Transactional
 	public Workspace save(Workspace workspace) {
 		return dao.save(workspace);
 	}

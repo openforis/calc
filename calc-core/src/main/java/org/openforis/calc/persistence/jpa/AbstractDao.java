@@ -67,4 +67,8 @@ public abstract class AbstractDao<T extends Identifiable> {
 	void initType(){
 		this.type = ReflectionUtils.extractGenericType(getClass());
 	}
+	
+	protected EntityManager getEntityManager() {
+		return entityManager;
+	}
 }

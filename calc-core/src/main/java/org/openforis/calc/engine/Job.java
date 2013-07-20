@@ -18,17 +18,37 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author G. Miceli
  * @author M. Togna
  */
-public abstract class Job extends Task implements Iterable<Task> {
+public final class Job extends Task implements Iterable<Task> {
 	private int currentTaskIndex;
 	private List<Task> tasks;
 	
-	protected Job() {
+//	@Autowired
+//	private TaskManager taskManager;
+	
+	public Job() {
 		this.currentTaskIndex = -1;
 		this.tasks = new ArrayList<Task>();
 	}
 
 	/**
-	 * Initializes each contained task in order.
+	 * Copies tasks and respective context into Job; all tasks must have the same context 
+	 * @param tasks
+	 */
+	public Job(List<Task> tasks) {
+		this.tasks = new ArrayList<Task>(tasks.size());
+		for (Task task : tasks) {
+			if ( this.getContext() == null ) {
+				setContext(task.getContext());
+			} else if ( this.getContext() != task.getContext() ) {
+				throw new IllegalArgumentException("All tasks must be in same context");
+			}
+			this.tasks.add(task);
+		}
+	}
+
+	/**
+	 * Initializes each contained task in order. Called after all tasks have been added 
+	 * (i.e. not in constructor!)
 	 */
 	public final void init() {
 		for (Task task : tasks) {

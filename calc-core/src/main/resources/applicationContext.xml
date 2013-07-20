@@ -78,14 +78,14 @@
 
 	<bean id="validator" class="org.openforis.idm.metamodel.validation.Validator" />
 	
-<!-- 	<bean id="collectSurveyContext" class="org.openforis.collect.model.CollectSurveyContext"> -->
-<!--         <constructor-arg><ref bean="expressionFactory"/></constructor-arg> -->
-<!--         <constructor-arg><ref bean="validator"/></constructor-arg> -->
-<!--     </bean> -->
+	<bean id="collectSurveyContext" class="org.openforis.collect.model.CollectSurveyContext">
+        <constructor-arg><ref bean="expressionFactory"/></constructor-arg>
+        <constructor-arg><ref bean="validator"/></constructor-arg>
+    </bean>
     
-<!--     <bean id="idmlBinder" class="org.openforis.collect.persistence.xml.CollectSurveyIdmlBinder"> -->
-<!--     	<constructor-arg><ref bean="collectSurveyContext"/></constructor-arg> -->
-<!--     </bean> -->
+    <bean id="idmlBinder" class="org.openforis.collect.persistence.xml.CollectSurveyIdmlBinder">
+    	<constructor-arg><ref bean="collectSurveyContext"/></constructor-arg>
+    </bean>
     
 	<!-- Database -->
 	<bean id="dataSource" destroy-method="close" class="org.apache.commons.dbcp.BasicDataSource">

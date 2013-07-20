@@ -1,6 +1,16 @@
 package org.openforis.calc.metadata;
 
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.FetchType;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 import org.openforis.calc.common.UserObject;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * Base class for Calc variables.  Variables may be either categorical or
@@ -10,10 +20,18 @@ import org.openforis.calc.common.UserObject;
  * @author G. Miceli
  * @author M. Togna
  */
+@javax.persistence.Entity
+@Table(name = "variable")
+@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "type")
 public abstract class Variable extends UserObject {
 	private String caption;
 	private boolean cubeMember;
 	private int index;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "entity_id")
+	@JsonIgnore
 	private Entity entity;
 	private Scale scale;
 	private String valueColumn;
