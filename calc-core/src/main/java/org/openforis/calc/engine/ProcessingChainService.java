@@ -1,8 +1,5 @@
 package org.openforis.calc.engine;
 
-import java.util.Set;
-import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,9 +37,9 @@ public class ProcessingChainService {
 	}
 	
 	synchronized
-	public void startProcessingChainJob(int chainId, Set<UUID> taskIds) throws WorkspaceLockedException, InvalidProcessingChainException {
+	public void startProcessingChainJob(int chainId/*, Set<UUID> taskIds*/) throws WorkspaceLockedException, InvalidProcessingChainException {
 		Job job = getProcessingChainJob(chainId);
-		job.setScheduledTasks(taskIds);
+//		job.setScheduledTasks(taskIds);
 		taskManager.start(job);
 	}
 }

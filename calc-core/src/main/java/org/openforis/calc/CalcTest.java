@@ -2,7 +2,6 @@ package org.openforis.calc;
 
 import java.util.Collection;
 import java.util.Set;
-import java.util.UUID;
 
 import org.openforis.calc.engine.CalculationStep;
 import org.openforis.calc.engine.CalculationStepManager;
@@ -87,8 +86,8 @@ public class CalcTest {
 		ProcessingChain chain = ws.getProcessingChains().get(0);
 		int chainId = chain.getId();
 		Job job = processingChainService.getProcessingChainJob(chainId);
-		Set<UUID> taskIds = job.getTaskIds();
-		processingChainService.startProcessingChainJob(chainId, taskIds);
+//		Set<UUID> taskIds = job.getTaskIds();
+		processingChainService.startProcessingChainJob(chainId/*, taskIds*/);
 		while (!job.isEnded()) {
 			System.out.println(job.getStatus());
 			Thread.sleep(1000);

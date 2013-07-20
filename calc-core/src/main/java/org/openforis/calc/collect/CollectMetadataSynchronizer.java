@@ -1,7 +1,9 @@
 package org.openforis.calc.collect;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.BinaryVariable;
@@ -9,6 +11,7 @@ import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.Variable;
+import org.openforis.calc.metadata.Variable.Scale;
 import org.openforis.collect.relational.model.CodeColumn;
 import org.openforis.collect.relational.model.CodeTable;
 import org.openforis.collect.relational.model.Column;
@@ -31,28 +34,57 @@ import org.openforis.idm.metamodel.NumberAttributeDefinition;
  * @author S. Ricci
  *
  */
-public class CollectMetadataConverter {
+public final class CollectMetadataSynchronizer {
+	private Workspace workspace;
+	private RelationalSchema schema;
+	/** Database table names to Calc entities */
+	private Map<String, Entity> entities;
 	
+	public CollectMetadataSynchronizer(Workspace workspace, RelationalSchema schema) {
+		this.workspace = workspace;
+		this.schema = schema;
+		this.entities = new HashMap<String, Entity>();
+	}
+
 	/**
-	 * Converts a RDB {@link RelationalSchema} into a list of Calc {@link Entity} objects
+	 * Sync a RDB {@link RelationalSchema} into {@link Workspace} metadata
 	 * 
 	 * @param workspace
 	 * @param schema
+	 * @return 
 	 * @return
 	 */
-	public List<Entity> convert(Workspace workspace, RelationalSchema schema) {
-		List<Entity> entities = new ArrayList<Entity>();
+	synchronized
+	public List<Entity> sync() {
 		
+//		List<Entity> entities = new ArrayList<Entity>();
+		
+		// Convert IDM metadata and RDB schema to Calc metadata
 		List<Table<?>> tables = schema.getTables();
 		for (Table<?> table : tables) {
 			if ( table instanceof DataTable ) {
-				Entity entity = convert(workspace, (DataTable) table);
-				entities.add(entity);
+				Entity entity = convert((DataTable) table);
+				if ( entity != null ) {
+					entities.put(table.getName(), entity);
+				}
 			} else if ( table instanceof CodeTable ) {
 				
 			}
 		}
-		return entities;
+		List<Entity> entityList = new ArrayList<Entity>(entities.values());
+		
+		// Update metadata
+		workspace.setEntities(entityList);
+		
+		// Print resulting metadata to log
+		// TODO print to debug log instead
+		for (Entity entity : entityList) {
+			List<Variable> vars = entity.getVariables();
+			for (Variable var : vars) {
+				System.out.printf("%s.%s (%s)%n", entity.getName(), var.getName(), var.getScale());
+			}
+		}
+		return entityList;
 	}
 
 	/**
@@ -62,23 +94,38 @@ public class CollectMetadataConverter {
 	 * @param table
 	 * @return
 	 */
-	protected Entity convert(Workspace workspace, DataTable table) {
-		NodeDefinition nodeDefn = table.getNodeDefinition();
-		if ( nodeDefn instanceof EntityDefinition || 
-				nodeDefn instanceof AttributeDefinition && nodeDefn.isMultiple() ) {
-			Entity entity = new Entity();
-			entity.setName(table.getName());
-			entity.setWorkspace(workspace);
+	private Entity convert(DataTable table) {
+		NodeDefinition defn = table.getNodeDefinition();
+		if ( defn instanceof EntityDefinition || 
+				(defn instanceof AttributeDefinition && defn.isMultiple()) ) {
+			Entity e = new Entity();
+			e.setName(table.getName());
+			e.setWorkspace(workspace);
+			e.setDataTable(table.getName());
+			
+			// Assign parent entity. 
+			DataTable parentTable = table.getParent();
+			if ( parentTable != null ) {
+				Entity parentEntity = entities.get(parentTable.getName());
+				if ( parentEntity == null ) {
+					// This should never happen because RDB API generates schema with 
+					// proper ordering of relational hierarchy (preordered DFS) 
+					throw new IllegalStateException("Parent entity expected but not found");
+				}
+				e.setParent(parentEntity);
+			}
+			
+			// Convert columns to variables
 			List<Column<?>> columns = table.getColumns();
 			for (Column<?> column : columns) {
 				if ( column instanceof DataColumn ) {
 					Variable variable = convert(column);
 					if ( variable != null ) {
-						entity.addVariable(variable);
+						e.addVariable(variable);
 					}
 				}
 			}
-			return entity;
+			return e;
 		} else {
 			throw new IllegalArgumentException("Entity definition or multiple attribute definition associated to DataTable expected");
 		}
@@ -91,29 +138,30 @@ public class CollectMetadataConverter {
 	 * @param column
 	 * @return
 	 */
-	protected Variable convert(Column<?> column) {
-		AttributeDefinition attributeDefn = getAttributeDefinition(column);
-		Variable variable = null;
+	private Variable convert(Column<?> column) {
+		AttributeDefinition defn = getAttributeDefinition(column);
+		Variable v = null;
 		if ( isValueColumn(column) ) {
-			if (attributeDefn.isMultiple() ) {
-				variable = new CategoricalVariable();
-				((CategoricalVariable) variable).setMultipleResponse(true);
-			} else if ( attributeDefn instanceof BooleanAttributeDefinition ) {
-				variable = new BinaryVariable();
-			} else if ( attributeDefn instanceof CodeAttributeDefinition) {
-				variable = new CategoricalVariable();
-			} else if ( attributeDefn instanceof NumberAttributeDefinition ) {
-				variable = new QuantitativeVariable();
+			if ( defn instanceof BooleanAttributeDefinition ) {
+				v = new BinaryVariable();
+				v.setScale(Scale.BINARY);
+			} else if ( defn instanceof CodeAttributeDefinition) {
+				v = new CategoricalVariable();
+				v.setScale(Scale.NOMINAL);
+				((CategoricalVariable) v).setMultipleResponse(defn.isMultiple());
+			} else if ( defn instanceof NumberAttributeDefinition ) {
+				v = new QuantitativeVariable();
+				v.setScale(Scale.RATIO);
 				//TODO set unit...
 //				Unit defaultUnit = ((NumberAttributeDefinition) attributeDefn).getDefaultUnit();
 //				((QuantitativeVariable) variable).setUnit(convert(defaultUnit));
 			}
-			if ( variable != null ) {
-				variable.setName(column.getName()); //TODO check this
-				variable.setValueColumn(column.getName());
+			if ( v != null ) {
+				v.setName(column.getName());
+				v.setValueColumn(column.getName());
 			}
 		}
-		return variable;
+		return v;
 	}
 	
 	//TODO move it to RDB Column?
@@ -123,21 +171,21 @@ public class CollectMetadataConverter {
 	 * @param column
 	 * @return
 	 */
-	protected boolean isValueColumn(Column<?> column) {
+	private boolean isValueColumn(Column<?> column) {
 		NodeDefinition columnFieldDefn = ((DataColumn) column).getNodeDefinition();
-		AttributeDefinition attributeDefn = getAttributeDefinition(column);
-		if ( attributeDefn instanceof AttributeDefinition ) {
+		AttributeDefinition defn = getAttributeDefinition(column);
+		if ( defn instanceof AttributeDefinition ) {
 			String fieldDefnName = columnFieldDefn.getName();
-			if ( attributeDefn instanceof CodeAttributeDefinition &&
+			if ( defn instanceof CodeAttributeDefinition &&
 					fieldDefnName.equals(CodeAttributeDefinition.CODE_FIELD) &&
 					column instanceof CodeColumn) {
 				return true;
-			} else if ( attributeDefn instanceof NumberAttributeDefinition &&
+			} else if ( defn instanceof NumberAttributeDefinition &&
 					fieldDefnName.equals(NumberAttributeDefinition.VALUE_FIELD) ) {
 				return true;
-			} else if ( attributeDefn instanceof BooleanAttributeDefinition ) {
+			} else if ( defn instanceof BooleanAttributeDefinition ) {
 				return true;
-			} else if ( attributeDefn instanceof DateAttributeDefinition ) {
+			} else if ( defn instanceof DateAttributeDefinition ) {
 				return true;
 			} else {
 				return false;
@@ -154,7 +202,7 @@ public class CollectMetadataConverter {
 	 * @param column
 	 * @return
 	 */
-	protected AttributeDefinition getAttributeDefinition(Column<?> column) {
+	private AttributeDefinition getAttributeDefinition(Column<?> column) {
 		NodeDefinition columnFieldDefn = ((DataColumn) column).getNodeDefinition();
 		AttributeDefinition attributeDefn;
 		if ( columnFieldDefn instanceof AttributeDefinition ) {

@@ -2,10 +2,8 @@ package org.openforis.calc.engine;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -21,9 +19,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public final class Job extends Task implements Iterable<Task> {
 	private int currentTaskIndex;
 	private List<Task> tasks;
-	
-//	@Autowired
-//	private TaskManager taskManager;
 	
 	public Job() {
 		this.currentTaskIndex = -1;
@@ -75,14 +70,12 @@ public final class Job extends Task implements Iterable<Task> {
 		this.currentTaskIndex = -1;
 		for (Task task : tasks) {
 			this.currentTaskIndex += 1;
-			if ( task.isScheduled() ) {
-				if ( task.getContext() != getContext() ) {
-					throw new IllegalStateException("Cannot nest tasks in different contexts");
-				}
-				task.run();
-				if ( task.isFailed() ) {
-					throw task.getLastException();
-				}
+			if ( task.getContext() != getContext() ) {
+				throw new IllegalStateException("Cannot nest tasks in different contexts");
+			}
+			task.run();
+			if ( task.isFailed() ) {
+				throw task.getLastException();
 			}
 		}
 		this.currentTaskIndex = -1;
@@ -123,25 +116,25 @@ public final class Job extends Task implements Iterable<Task> {
 		return tasks().iterator();
 	}	
 
-	/**
-	 * Recursive
-	 * @return
-	 */
-	public Set<UUID> getTaskIds() {
-		Set<UUID> ids = new HashSet<UUID>();
-		gatherTaskIds(ids);
-		return ids;
-	}
-
-	private void gatherTaskIds(Set<UUID> ids) {
-		for (Task task : tasks) {
-			ids.add(task.getId());
-			if ( task instanceof Job ) {
-				Job subjob = (Job) task;
-				subjob.gatherTaskIds(ids);
-			}
-		}		
-	}
+//	/**
+//	 * Recursive
+//	 * @return
+//	 */
+//	public Set<UUID> getTaskIds() {
+//		Set<UUID> ids = new HashSet<UUID>();
+//		gatherTaskIds(ids);
+//		return ids;
+//	}
+//
+//	private void gatherTaskIds(Set<UUID> ids) {
+//		for (Task task : tasks) {
+//			ids.add(task.getId());
+//			if ( task instanceof Job ) {
+//				Job subjob = (Job) task;
+//				subjob.gatherTaskIds(ids);
+//			}
+//		}		
+//	}
 
 	public Task getTask(UUID taskId) {
 		for (Task task : tasks) {
@@ -156,16 +149,5 @@ public final class Job extends Task implements Iterable<Task> {
 			}
 		}
 		return null;
-	}
-	
-	public void setScheduledTasks(Set<UUID> taskIds) {
-		for (Task task : tasks) {
-			boolean scheduled = taskIds.contains(task.getId());
-			task.setScheduled(scheduled);
-			if ( task instanceof Job ) {
-				Job subjob = (Job) task;
-				subjob.setScheduledTasks(taskIds);
-			}
-		}		
 	}
 }

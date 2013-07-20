@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -21,10 +22,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @javax.persistence.Entity
 @DiscriminatorValue("C")
 public class CategoricalVariable extends Variable {
-	private boolean ordered;
-	private boolean multipleResponse;
+	@Column(name = "multiple_response")
+	private Boolean multipleResponse;
+	
+	@Transient // TODO persist
 	private boolean pivotCategories;
+	
+	@Transient // TODO persist
 	private ArrayList<Hierarchy> hierarchies = new ArrayList<Hierarchy>();
+	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "default_category_id")
 	@JsonIgnore
@@ -34,12 +40,15 @@ public class CategoricalVariable extends Variable {
 		return this.defaultCategory;
 	}
 
-	public void setOrdered(boolean ordered) {
-		this.ordered = ordered;
-	}
-
+	/**
+	 * Indicates if the order of the categories has meaning (ORDINAL, 
+	 * e.g. severity, size) or if they are unordered categorizations 
+	 * (NOMINAL, e.g. land use, ownership).
+	 * 
+	 * @return
+	 */
 	public boolean isOrdered() {
-		return this.ordered;
+		return getScale() == Scale.ORDINAL;
 	}
 
 	public void setMultipleResponse(boolean multipleResponse) {
@@ -47,7 +56,7 @@ public class CategoricalVariable extends Variable {
 	}
 
 	public boolean isMultipleResponse() {
-		return this.multipleResponse;
+		return multipleResponse == null || multipleResponse;
 	}
 
 	public void setPivotCategories(boolean pivotCategories) {
@@ -60,5 +69,10 @@ public class CategoricalVariable extends Variable {
 	
 	public List<Hierarchy> getHierarchies() {
 		return Collections.unmodifiableList(hierarchies);
+	}
+	
+	@Override
+	public Type getType() {
+		return Type.CATEGORICAL;
 	}
 }

@@ -1,5 +1,6 @@
 package org.openforis.calc.collect;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openforis.calc.engine.Workspace;
@@ -28,13 +29,15 @@ public class CollectMetadataServiceIntegrationTest {
 	private WorkspaceManager workspaceManager;
 	
 	@Test
-	public void testCollectMetadataImport() throws WorkspaceLockedException {
+	public void testCollectMetadataSync() throws WorkspaceLockedException {
 		Workspace ws = new Workspace();
 		ws.setName("test");
 		ws.setInputSchema("collect_schema");
 		ws.setOutputSchema("calc_schema");
-		workspaceManager.save(ws);
-		collectMetadataService.importMetadata();
+		workspaceManager.save(ws);		
+		Integer workspaceId = ws.getId();
+		CollectMetadataSyncTask task = collectMetadataService.startSync(workspaceId);
+		boolean ok = task.waitFor(30000);
+		Assert.assertTrue(ok);
 	}
-	
 }

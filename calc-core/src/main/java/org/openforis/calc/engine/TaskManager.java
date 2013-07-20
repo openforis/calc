@@ -19,7 +19,7 @@ public class TaskManager {
 	private Executor taskExecutor;
 	
 	@Autowired
-	private WorkspaceLockManager workspaceLockManager;
+	private WorkspaceManager workspaceManager;
 	
 	@Autowired 
 	private AutowireCapableBeanFactory beanFactory;
@@ -47,7 +47,7 @@ public class TaskManager {
 	public void start(final Task task) throws WorkspaceLockedException {
 		final TaskContext ctx = task.getContext();
 		final Workspace ws = ctx.getWorkspace();
-		final SimpleLock lock = workspaceLockManager.lock(ws.getId());
+		final SimpleLock lock = workspaceManager.lock(ws.getId());
 		taskExecutor.execute(new Runnable() {
 			@Override
 			public void run() {

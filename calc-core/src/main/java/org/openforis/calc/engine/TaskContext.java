@@ -2,9 +2,6 @@ package org.openforis.calc.engine;
 
 import javax.sql.DataSource;
 
-import org.openforis.calc.r.R;
-import org.springframework.context.ApplicationContext;
-
 /**
  * @author G. Miceli
  * @author M. Togna

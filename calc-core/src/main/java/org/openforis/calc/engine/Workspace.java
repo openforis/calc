@@ -10,6 +10,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.openforis.calc.common.UserObject;
@@ -35,11 +37,13 @@ public class Workspace extends UserObject {
 	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER)
 	@OrderBy("sortOrder")
 	@Fetch(FetchMode.SUBSELECT) 
+	@Cascade(CascadeType.ALL)
 	private List<Entity> entities;
 	
 	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER)
 	@OrderBy("id")
 	@Fetch(FetchMode.SUBSELECT) 
+	@Cascade(CascadeType.ALL)
 	private List<ProcessingChain> processingChains;
 
 	public Workspace() {

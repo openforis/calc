@@ -30,10 +30,9 @@ public abstract class Task implements Captionable {
 	private Throwable lastException;
 	@JsonIgnore
 	private Logger logger;
-	private boolean scheduled;
 	
 	public enum Status {
-		PENDING, RUNNING, FINISHED, FAILED, ABORTED;
+		PENDING, RUNNING, COMPLETED, FAILED, ABORTED;
 	}
 
 	/**
@@ -50,7 +49,6 @@ public abstract class Task implements Captionable {
 	 */
 	synchronized public void reset() {
 		this.status = Status.PENDING;
-		this.scheduled = true;
 		this.startTime = -1;
 		this.endTime = -1;
 		this.itemsProcessed = 0;
@@ -75,7 +73,7 @@ public abstract class Task implements Captionable {
 			reset();
 			this.startTime = System.currentTimeMillis();
 			execute();
-			this.status = Status.FINISHED;
+			this.status = Status.COMPLETED;
 		} catch ( Throwable t ) {
 			this.status = Status.FAILED;
 			this.lastException = t;
@@ -83,6 +81,7 @@ public abstract class Task implements Captionable {
 			t.printStackTrace();
 		} finally {
 			this.endTime = System.currentTimeMillis();
+			notifyAll();
 		}
 	}
 
@@ -115,8 +114,8 @@ public abstract class Task implements Captionable {
 		return status == Status.ABORTED;
 	}
 
-	public final boolean isFinished() {
-		return status == Status.FINISHED;
+	public final boolean isCompleted() {
+		return status == Status.COMPLETED;
 	}
 
 	/**
@@ -168,15 +167,18 @@ public abstract class Task implements Captionable {
 		return this.logger;
 	}
 
-	public void setScheduled(boolean scheduled) {
-		this.scheduled = scheduled;
-	}
-
-	public boolean isScheduled() {
-		return scheduled;
-	}
-
 	void setContext(TaskContext context) {
 		this.context = context;
+	}
+	
+	public synchronized boolean waitFor(int timeoutMillis) {
+		long start = System.currentTimeMillis();
+		while (!isEnded() && System.currentTimeMillis() - start < timeoutMillis) {
+			try {
+				wait(timeoutMillis);
+			} catch (InterruptedException e) {
+			}
+		}
+		return isCompleted();
 	}
 }

@@ -24,14 +24,12 @@ public class CollectMetadataService {
 	@Autowired 
 	private TaskManager taskManager;
 
-	public void importMetadata() throws WorkspaceLockedException {
-
-		//TODO get the workspace somewhere else...
-		Workspace ws = workspaceManager.fetchByName("test");
-		
+	public CollectMetadataSyncTask startSync(int workspaceId) throws WorkspaceLockedException {
+		Workspace ws = workspaceManager.get(workspaceId);
 		TaskContext context = contextManager.createContext(ws);
-		CollectMetadataImportTask task= taskManager.createTask(CollectMetadataImportTask.class, context);
+		CollectMetadataSyncTask task= taskManager.createTask(CollectMetadataSyncTask.class, context);
 		taskManager.start(task);
+		return task;
 	}
 
 }

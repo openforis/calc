@@ -43,8 +43,8 @@ public class CollectMetadataConverterTest {
 	public void test() throws CollectRdbException {
 		Workspace workspace = new Workspace();
 		workspace.setId(1);
-		CollectMetadataConverter converter = new CollectMetadataConverter();
-		List<Entity> entities = converter.convert(workspace, rdbSchema);
+		CollectMetadataSynchronizer converter = new CollectMetadataSynchronizer(workspace, rdbSchema);
+		List<Entity> entities = converter.sync();
 		assertFalse(entities.isEmpty());
 	}
 	
