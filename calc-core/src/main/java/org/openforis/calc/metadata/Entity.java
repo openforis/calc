@@ -96,4 +96,12 @@ public class Entity extends UserObject {
 	public void setParent(Entity parent) {
 		this.parent = parent;
 	}
+	
+	public int getSortOrder() {
+		return sortOrder;
+	}
+	
+	public void setSortOrder(int sortOrder) {
+		this.sortOrder = sortOrder;
+	}
 }

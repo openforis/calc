@@ -3,9 +3,10 @@ package org.openforis.calc.collect;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.openforis.calc.engine.Job;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceLockedException;
-import org.openforis.calc.engine.WorkspaceManager;
+import org.openforis.calc.engine.WorkspaceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -26,7 +27,7 @@ public class CollectMetadataServiceIntegrationTest {
 	@Autowired
 	private CollectMetadataService collectMetadataService;
 	@Autowired
-	private WorkspaceManager workspaceManager;
+	private WorkspaceService workspaceManager;
 	
 	@Test
 	public void testCollectMetadataSync() throws WorkspaceLockedException {
@@ -36,8 +37,8 @@ public class CollectMetadataServiceIntegrationTest {
 		ws.setOutputSchema("calc_schema");
 		workspaceManager.save(ws);		
 		Integer workspaceId = ws.getId();
-		CollectMetadataSyncTask task = collectMetadataService.startSync(workspaceId);
-		boolean ok = task.waitFor(30000);
+		Job job = collectMetadataService.startSync(workspaceId);
+		boolean ok = job.waitFor(30000);
 		Assert.assertTrue(ok);
 	}
 }

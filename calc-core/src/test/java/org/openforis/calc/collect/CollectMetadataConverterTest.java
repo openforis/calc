@@ -1,14 +1,8 @@
 package org.openforis.calc.collect;
 
-import static org.junit.Assert.assertFalse;
-
 import java.io.InputStream;
-import java.util.List;
 
 import org.junit.Before;
-import org.junit.Test;
-import org.openforis.calc.engine.Workspace;
-import org.openforis.calc.metadata.Entity;
 import org.openforis.collect.model.CollectSurveyContext;
 import org.openforis.collect.model.validation.CollectValidator;
 import org.openforis.collect.persistence.xml.CollectSurveyIdmlBinder;
@@ -39,13 +33,13 @@ public class CollectMetadataConverterTest {
 		rdbSchema = rdbGenerator.generateSchema(survey, "test");
 	}
 	
-	@Test
-	public void test() throws CollectRdbException {
-		Workspace workspace = new Workspace();
-		workspace.setId(1);
-		CollectMetadataSynchronizer converter = new CollectMetadataSynchronizer(workspace, rdbSchema);
-		List<Entity> entities = converter.sync();
-		assertFalse(entities.isEmpty());
-	}
+//	@Test
+//	public void test() throws CollectRdbException {
+//		Workspace workspace = new Workspace();
+//		workspace.setId(1);
+//		CollectMetadataSynchronizer converter = new CollectMetadataSynchronizer(workspace, rdbSchema);
+//		List<Entity> entities = converter.sync();
+//		assertFalse(entities.isEmpty());
+//	}
 	
 }
