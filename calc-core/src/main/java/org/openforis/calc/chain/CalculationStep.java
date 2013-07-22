@@ -42,7 +42,7 @@ public class CalculationStep extends UserObject {
 	private ProcessingChain processingChain;
 	
 	@JsonSerialize(using = ParameterMapJsonSerializer.class)
-	@Type(type="org.openforis.calc.persistence.JsonParameterMapType")
+	@Type(type="org.openforis.calc.persistence.hibernate.JsonParameterMapType")
 	@Column(name = "parameters")
 	private ParameterMap parameters;
 
