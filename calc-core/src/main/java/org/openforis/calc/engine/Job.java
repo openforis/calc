@@ -6,6 +6,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -16,13 +21,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author G. Miceli
  * @author M. Togna
  */
-public final class Job extends Worker implements Iterable<Task> {
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+public class Job extends Worker implements Iterable<Task> {
 	private JobContext context;
 	private int currentTaskIndex;
 	private List<Task> tasks;
 	
-	public Job(JobContext context) {
-		this.context = context;
+	public Job() {
 		this.currentTaskIndex = -1;
 		this.tasks = new ArrayList<Task>();
 	}
@@ -54,6 +60,12 @@ public final class Job extends Worker implements Iterable<Task> {
 //		}
 //		return totalItems;
 //	}
+
+	@Override
+	@Transactional
+	public synchronized void run() {
+		super.run();
+	}
 	
 	/**
 	 * Runs each contained task in order.
@@ -148,5 +160,9 @@ public final class Job extends Worker implements Iterable<Task> {
 	
 	public JobContext getContext() {
 		return context;
+	}
+	
+	void setContext(JobContext context) {
+		this.context = context;
 	}
 }

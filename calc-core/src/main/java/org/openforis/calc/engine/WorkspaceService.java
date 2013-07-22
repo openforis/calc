@@ -40,6 +40,7 @@ public class WorkspaceService {
 		return dao.save(workspace);
 	}
 
+	@Transactional
 	public List<Workspace> loadAll() {
 		return dao.loadAll();
 	}
