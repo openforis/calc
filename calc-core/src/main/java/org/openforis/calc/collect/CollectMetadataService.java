@@ -34,7 +34,6 @@ public class CollectMetadataService {
 		job.addTask(syncMetadata);
 		SyncCategoriesTask syncCategories = taskManager.createTask(SyncCategoriesTask.class);
 		job.addTask(syncCategories);
-		// TODO SyncCategoriesTask 
 		return job;
 	}
 
