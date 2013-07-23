@@ -1,6 +1,9 @@
 package org.openforis.calc.engine;
 
+import javax.sql.DataSource;
+
 import org.openforis.calc.nls.Captionable;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -15,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public abstract class Task extends Worker implements Captionable {
 	@JsonIgnore
 	private Job job;
+	private JdbcTemplate jdbcTemplate;
 	
 	public JobContext getContext() {
 		return getJob().getContext();
@@ -30,5 +34,26 @@ public abstract class Task extends Worker implements Captionable {
 	
 	void setJob(Job job) {
 		this.job = job;
+	}
+	
+	// Helper methods
+	
+	protected DataSource getDataSource() {
+		JobContext ds = getContext();
+		return ds.getDataSource();
+	}
+	
+	protected JdbcTemplate getJdbcTemplate() {
+		if ( jdbcTemplate == null ) {
+			DataSource ds = getDataSource();
+			this.jdbcTemplate = new JdbcTemplate(ds);
+		}
+		return jdbcTemplate;
+	}
+
+	protected void executeSql(String sqlTemplate, Object... args) {
+		JdbcTemplate jdbc = getJdbcTemplate();
+		String sql = String.format(sqlTemplate, args);
+		jdbc.execute(sql);
 	}
 }
