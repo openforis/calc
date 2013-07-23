@@ -46,6 +46,12 @@ public abstract class Variable extends UserObject {
 	@Column(name = "value_column")
 	private String valueColumn;
 
+	@Column(name = "input")
+	private boolean input;
+	
+	@Column(name = "override")
+	private boolean override;
+	
 	public enum Type {
 		QUANTITATIVE, CATEGORICAL, BINARY;
 	}
@@ -102,5 +108,21 @@ public abstract class Variable extends UserObject {
 	
 	void setEntity(Entity entity) {
 		this.entity = entity;
+	}
+	
+	public void setInput(boolean input) {
+		this.input = input;
+	}
+	
+	public boolean isInput() {
+		return input;
+	}
+	
+	public void setOverride(boolean override) {
+		this.override = override;
+	}
+	
+	public boolean isOverride() {
+		return override;
 	}
 }

@@ -34,6 +34,7 @@ import org.openforis.idm.metamodel.EntityDefinition;
 import org.openforis.idm.metamodel.NodeDefinition;
 import org.openforis.idm.metamodel.NumberAttributeDefinition;
 import org.openforis.idm.metamodel.Survey;
+import org.openforis.idm.metamodel.xml.IdmlParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -57,19 +58,27 @@ public class SyncMetadataTask extends Task {
 	@Override
 	protected void execute() throws Throwable {
 		this.entities = new HashMap<String, Entity>();
-		// TODO get survey from input schema
-		// Workspace ws = getContext().getWorkspace();
-		InputStream surveyIs = getClass().getClassLoader().getResourceAsStream("test.idm.xml");
-		Survey survey = collectSurveyIdmlBinder.unmarshal(surveyIs);
-		Workspace ws = getWorkspace();
-		// generate rdb schema
-		this.schema = generateSchema(ws, survey);
+		this.schema = generateSchema();
 		// convert into entities
 		sync();
+		Workspace ws = getWorkspace();
 		workspaceDao.save(ws);
 	}
 
-	private RelationalSchema generateSchema(Workspace ws, Survey survey) {
+	private RelationalSchema generateSchema() throws IdmlParseException {
+		Survey survey = loadSurvey();
+		return generateSchema(survey);
+	}
+
+	protected Survey loadSurvey() throws IdmlParseException {
+		// TODO get survey from input schema
+		InputStream surveyIs = getClass().getClassLoader().getResourceAsStream("test.idm.xml");
+		Survey survey = collectSurveyIdmlBinder.unmarshal(surveyIs);
+		return survey;
+	}
+
+	private RelationalSchema generateSchema(Survey survey) {
+		Workspace ws = getWorkspace();
 		RelationalSchemaGenerator rdbGenerator = new RelationalSchemaGenerator();
 		RelationalSchema schema;
 		try {
@@ -100,6 +109,7 @@ public class SyncMetadataTask extends Task {
 			// Sync entities and variables
 			if ( table instanceof DataTable ) {
 				Entity entity = convert((DataTable) table);
+				entity.setInput(true); //TODO handle user defined or modified entities
 				if ( entity != null ) {
 					entities.put(table.getName(), entity);
 				}
@@ -114,7 +124,12 @@ public class SyncMetadataTask extends Task {
 		// Update metadata
 		workspace.setEntities(entityList);
 		
-		// Print resulting metadata to log
+		printToLog(entityList);
+		
+		return entityList;
+	}
+
+	protected void printToLog(List<Entity> entityList) {
 		// TODO print to debug log instead
 		for (Entity entity : entityList) {
 			List<Variable> vars = entity.getVariables();
@@ -122,7 +137,6 @@ public class SyncMetadataTask extends Task {
 				System.out.printf("%s.%s (%s)%n", entity.getName(), var.getName(), var.getScale());
 			}
 		}
-		return entityList;
 	}
 
 	/**
@@ -161,6 +175,7 @@ public class SyncMetadataTask extends Task {
 				if ( column instanceof DataColumn ) {
 					Variable variable = convert(column);
 					if ( variable != null ) {
+						variable.setInput(true);
 						e.addVariable(variable);
 					}
 				}

@@ -50,6 +50,12 @@ public class Entity extends UserObject {
 	@Column(name = "sort_order")
 	private int sortOrder;
 	
+	@Column(name = "input")
+	private boolean input;
+	
+	@Column(name = "override")
+	private boolean override;
+	
 	@OneToMany(mappedBy = "entity", fetch = FetchType.EAGER)
 	@OrderBy("sortOrder")
 	@Fetch(FetchMode.SUBSELECT) 
@@ -103,5 +109,21 @@ public class Entity extends UserObject {
 	
 	public void setSortOrder(int sortOrder) {
 		this.sortOrder = sortOrder;
+	}
+	
+	public void setInput(boolean input) {
+		this.input = input;
+	}
+	
+	public boolean isInput() {
+		return input;
+	}
+	
+	public void setOverride(boolean override) {
+		this.override = override;
+	}
+	
+	public boolean isOverride() {
+		return override;
 	}
 }
