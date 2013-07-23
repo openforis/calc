@@ -7,11 +7,11 @@ import java.util.List;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceService;
+import org.openforis.calc.metadata.BinaryVariable;
 import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Category;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.Variable;
-import org.openforis.calc.metadata.Variable.Scale;
 import org.openforis.calc.persistence.CategoryDao;
 import org.openforis.collect.persistence.xml.CollectSurveyIdmlBinder;
 import org.openforis.collect.relational.CollectRdbException;
@@ -58,15 +58,10 @@ public class SyncCategoriesTask extends Task {
 		
 		Workspace ws = getWorkspace();
 		
-		Workspace reloaded = workspaceService.get(ws.getId());
-		ws.setEntities(reloaded.getEntities());
-		
-		List<CategoricalVariable> categoricalVars = getCategoricalVariables();
-		for (CategoricalVariable v : categoricalVars) {
-			if ( v.getScale() == Scale.BINARY ) {
-				insertBooleanCategories(v);
-			} else {
-				CodeTable rdbCodeTable = getRDBCodeTable(v);
+		List<Variable> vars = getVariables();
+		for (Variable v : vars) {
+			if ( v instanceof CategoricalVariable ) {
+				CodeTable rdbCodeTable = getRDBCodeTable((CategoricalVariable) v);
 				if ( rdbCodeTable != null ) { //TODO it should never be != null, ofc_sampling_design code list?
 					List<Column<?>> columns = rdbCodeTable.getColumns();
 					String codeColumnName = getColumnName(columns, CodeListCodeColumn.class);
@@ -76,18 +71,19 @@ public class SyncCategoriesTask extends Task {
 							v.getId(),
 							rdbCodeTable.getName(), codeColumnName, descriptionColumnName);
 				}
+			} else if ( v instanceof BinaryVariable ) {
+				insertBooleanCategories((BinaryVariable) v);
 			}
 		}
-		
 	}
 
-	protected void insertBooleanCategories(CategoricalVariable v) {
+	protected void insertBooleanCategories(BinaryVariable v) {
 		insertBooleanCategory(v, Boolean.TRUE);
 		insertBooleanCategory(v, Boolean.FALSE);
 		insertBooleanCategory(v, null);
 	}
 
-	protected void insertBooleanCategory(CategoricalVariable v, Boolean value) {
+	protected void insertBooleanCategory(BinaryVariable v, Boolean value) {
 		Category c = new Category();
 		c.setVariable(v);
 		c.setCode(value == null ? "N": value.booleanValue() ? "T": "F");
@@ -141,16 +137,14 @@ public class SyncCategoriesTask extends Task {
 		throw new IllegalArgumentException("Table not found: " + name);
 	}
 	
-	protected List<CategoricalVariable> getCategoricalVariables() {
-		List<CategoricalVariable> result = new ArrayList<CategoricalVariable>();
+	protected List<Variable> getVariables() {
+		List<Variable> result = new ArrayList<Variable>();
 		Workspace ws = getWorkspace();
 		List<Entity> entities = ws.getEntities();
 		for (Entity entity : entities) {
 			List<Variable> variables = entity.getVariables();
 			for (Variable v : variables) {
-				if ( v instanceof CategoricalVariable ) {
-					result.add((CategoricalVariable) v);
-				}
+				result.add(v);
 			}
 		}
 		return result;
