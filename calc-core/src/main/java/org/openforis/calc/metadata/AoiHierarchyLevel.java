@@ -6,7 +6,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import org.openforis.calc.common.BaseEntity;
+import org.openforis.calc.common.AbstractNamedIdentifiable;
 
 /**
  * Provides metadata about a AOI Hierarchy Level. A hierarchy might be an "Administrative division" or "Ecological division" of an area.
@@ -17,26 +17,21 @@ import org.openforis.calc.common.BaseEntity;
  */
 @javax.persistence.Entity
 @Table(name = "aoi_level")
-public class AoiHierarchyLevel extends BaseEntity {
+public class AoiHierarchyLevel extends AbstractNamedIdentifiable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "aoi_hierarchy_id")
-	private AoiHierarchy aoiHierarchyId;
-
-	/*@OneToMany(mappedBy = "aoiLevelId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@OrderBy("name")
-	private List<AoiItem> items;
-	*/
+	private AoiHierarchy hierarchy;
 
 	@Column(name = "rank")
 	private Integer rank;
 
-	public AoiHierarchy getAoiHierarchyId() {
-		return aoiHierarchyId;
+	public AoiHierarchy getHierarchy() {
+		return hierarchy;
 	}
 
-	public void setAoiHierarchyId(AoiHierarchy aoiHierarchyId) {
-		this.aoiHierarchyId = aoiHierarchyId;
+	public void setHierarchy(AoiHierarchy aoiHierarchyId) {
+		this.hierarchy = aoiHierarchyId;
 	}
 
 	public Integer getRank() {
@@ -46,4 +41,9 @@ public class AoiHierarchyLevel extends BaseEntity {
 	public void setRank(Integer rank) {
 		this.rank = rank;
 	}
+
+	public String getDimensionTable() {
+		return hierarchy.getName() + "_" + getName() + "_aoi_dim";
+	}
+
 }

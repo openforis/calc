@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.RowMapper;
 
+import static org.openforis.calc.persistence.sql.Sql.*
 /**
  * Copies input tables into the output schema.  Fails if output schema already exists.
  * 
@@ -63,23 +64,18 @@ public final class PrepareOutputSchemaTask extends Task {
 	}
 
 	private void createAoiDimensionTables(Workspace workspace) {
-		List<AoiHierarchy> aoiHierarchies = workspace.getAoiHierarchies();
-		for (AoiHierarchy aoiHierarchy : aoiHierarchies) {
-			List<AoiHierarchyLevel> levels = aoiHierarchy.getLevels();
-			for (AoiHierarchyLevel aoiHierarchyLevel : levels) {
+		List<AoiHierarchy> hierarchies = workspace.getAoiHierarchies();
+		for (AoiHierarchy hierarchy : hierarchies) {
+			List<AoiHierarchyLevel> levels = hierarchy.getLevels();
+			for (AoiHierarchyLevel level : levels) {
+				String outputSchema = quoteIdentifier(workspace.getOutputSchema());
+				String table = quoteIdentifier(toIdentifier(level.getDimensionTable()));
+				Integer varId = level.getId();
 
-				String sql = "CREATE TABLE %s.%s AS SELECT * FROM calc.aoi WHERE aoi_level_id = %d";
-				String outputSchema = workspace.getOutputSchema();
-				String tableName = aoiHierarchy.getName() + "_" + aoiHierarchyLevel.getName() + "_aoi_dim";
-				tableName = fixTableName(tableName);
-				Integer varId = aoiHierarchyLevel.getId();
+				executeSql("CREATE TABLE %s.%s AS SELECT * FROM calc.aoi WHERE aoi_level_id = %d", 
+						   outputSchema, table, varId);
 
-				sql = String.format(sql, outputSchema, tableName, varId);
-				getJdbcTemplate().execute(sql);
-
-				sql = "ALTER TABLE %s.%s ADD PRIMARY KEY (id)";
-				sql = String.format(sql, outputSchema, tableName);
-				getJdbcTemplate().execute(sql);
+				executeSql("ALTER TABLE %s.%s ADD PRIMARY KEY (id)", outputSchema, table);
 			}
 		}
 	}
@@ -91,19 +87,16 @@ public final class PrepareOutputSchemaTask extends Task {
 			for (Variable variable : variables) {
 				if (variable instanceof CategoricalVariable || variable instanceof BinaryVariable) {
 					CategoricalVariable categoricalVariable = (CategoricalVariable) variable;
-					String sql = "CREATE TABLE %s.%s AS SELECT * FROM calc.category WHERE variable_id = %d";
 					String outputSchema = workspace.getOutputSchema();
 					String tableName = entity.getName() + "_" + categoricalVariable.getName() + "_dim";
-					tableName = fixTableName(tableName);
+					tableName = toIdentifier(tableName);
 					Integer varId = variable.getId();
 
-					sql = String.format(sql, outputSchema, tableName, varId);
+					executeSql("CREATE TABLE %s.%s AS SELECT * FROM calc.category WHERE variable_id = %d", 
+							outputSchema, tableName, varId);
 
-					getJdbcTemplate().execute(sql);
-
-					sql = "ALTER TABLE %s.%s ADD PRIMARY KEY (id)";
-					sql = String.format(sql, outputSchema, tableName);
-					getJdbcTemplate().execute(sql);
+					executeSql("ALTER TABLE %s.%s ADD PRIMARY KEY (id)", 
+							outputSchema, tableName);
 				}
 			}
 		}
@@ -154,10 +147,6 @@ public final class PrepareOutputSchemaTask extends Task {
 		});
 		
 		return strList.size() > 0;
-	}
-
-	private String fixTableName(String tableName) {
-		return tableName.replaceAll("[^a-zA-Z0-9]", "_").toLowerCase();
 	}
 
 	private void convertCoordinatesToPoint() {

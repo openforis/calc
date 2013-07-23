@@ -7,7 +7,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import org.openforis.calc.common.BaseEntity;
+import org.openforis.calc.common.AbstractNamedIdentifiable;
 
 /**
  * Provides metadata about an specific AOI.
@@ -19,7 +19,7 @@ import org.openforis.calc.common.BaseEntity;
  */
 //@javax.persistence.Entity
 //@Table(name = "aoi")
-public class AoiItem extends BaseEntity {
+public class AoiItem extends AbstractNamedIdentifiable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "aoi_level_id")
