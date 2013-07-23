@@ -24,14 +24,22 @@ public final class AssignAoisTask extends Task {
 				for (AoiHierarchy hierarchy : hierarchies) {
 					List<AoiHierarchyLevel> levels = hierarchy.getLevels();
 					for (AoiHierarchyLevel level : levels) {
-						String outputSchema = ws.getOutputSchema();
-						String dataTable = entity.getDataTable();
+						String outputSchema = quoteIdentifier(ws.getOutputSchema());
+						String dataTable = quoteIdentifier(entity.getDataTable());
+						String aoiIdColumn = quoteIdentifier("_"+hierarchy.getName()+"_"+level.getName()+"_id");
 						// add AOI id column to fact table output schema
-						executeSql("ALTER TABLE %s.%s ADD COLUMN _%s_%s_id INTEGER", 
-								quoteIdentifier(outputSchema), 
-								quoteIdentifier(dataTable),
-								quoteIdentifier(hierarchy.getName()), 
-								quoteIdentifier(level.getName()));
+						executeSql("ALTER TABLE %s.%s ADD COLUMN %s INTEGER", 
+								   outputSchema, dataTable, aoiIdColumn);
+						executeSql(
+								"WITH tmp AS ("+
+								"SELECT f.id as fid, a.id as aid "+
+										"FROM %s.%s f "+
+										"INNER JOIN %s.%s a ON ST_Contains(a.shape, f._location))"+
+								"UPDATE %s.%s SET %s = a.id FROM tmp WHERE id = tmp.fid",
+								outputSchema, dataTable, 
+								outputSchema, aoiDimTable 
+								);
+						
 						// TODO updates values, find using ST_Contains(aoi area, location)
 					}
 				}
