@@ -1,4 +1,6 @@
-package org.openforis.calc.metadata;
+package org.openforis.calc.persistence;
+
+import java.sql.Connection;
 
 import javax.sql.DataSource;
 
@@ -9,8 +11,11 @@ import org.jooq.TableField;
 import org.jooq.impl.Factory;
 import org.jooq.impl.SchemaImpl;
 import org.jooq.impl.UpdatableTableImpl;
-import org.openforis.collect.persistence.jooq.JooqDaoSupport;
+import org.openforis.calc.metadata.Category;
+import org.openforis.calc.persistence.jpa.AbstractDao;
+import org.openforis.collect.persistence.jooq.DialectAwareJooqFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,12 +25,15 @@ import org.springframework.transaction.annotation.Transactional;
  *
  */
 @Component
-public class CategoryDao extends JooqDaoSupport {
+public class CategoryDao extends AbstractDao<Category> {
 	
 	private static final String CATEGORY_TABLE_NAME = "category";
 	private static final String CATEGORY_VARIABLE_ID_COL_NAME = "variable_id";
 	private static final String CATEGORY_CODE_COL_NAME = "code";
 	private static final String CATEGORY_SORT_ORDER_COL_NAME = "sort_order";
+	
+	@Autowired
+	private DataSource dataSource;
 
 	@Transactional
 	public void copyCodesIntoCategories(String inputSchema, String outputSchema,
@@ -48,9 +56,9 @@ public class CategoryDao extends JooqDaoSupport {
 		insert.execute();
 	}
 	
-	@Autowired
-	public void setUserDataSource(DataSource dataSource) {
-		super.setDataSource(dataSource);
+	protected DialectAwareJooqFactory getJooqFactory() {
+		Connection conn = DataSourceUtils.getConnection(dataSource);
+		return new DialectAwareJooqFactory(conn);
 	}
 	
 	static class DynamicTable extends UpdatableTableImpl<Record> {

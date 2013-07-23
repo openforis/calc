@@ -8,9 +8,11 @@ import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.CategoricalVariable;
-import org.openforis.calc.metadata.CategoryDao;
+import org.openforis.calc.metadata.Category;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.Variable;
+import org.openforis.calc.metadata.Variable.Scale;
+import org.openforis.calc.persistence.CategoryDao;
 import org.openforis.collect.persistence.xml.CollectSurveyIdmlBinder;
 import org.openforis.collect.relational.CollectRdbException;
 import org.openforis.collect.relational.model.CodeColumn;
@@ -44,7 +46,7 @@ public class SyncCategoriesTask extends Task {
 	
 	@Autowired
 	private CategoryDao categoryDao;
-	
+
 	private RelationalSchema schema;
 
 	@Override
@@ -61,18 +63,36 @@ public class SyncCategoriesTask extends Task {
 		
 		List<CategoricalVariable> categoricalVars = getCategoricalVariables();
 		for (CategoricalVariable v : categoricalVars) {
-			CodeTable rdbCodeTable = getRDBCodeTable(v);
-			if ( rdbCodeTable != null ) { //TODO it should never be != null, ofc_sampling_design code list?
-				List<Column<?>> columns = rdbCodeTable.getColumns();
-				String codeColumnName = getColumnName(columns, CodeListCodeColumn.class);
-				String descriptionColumnName = getColumnName(columns, CodeListDescriptionColumn.class);
-				categoryDao.copyCodesIntoCategories(
-						ws.getInputSchema(), ws.getOutputSchema(), 
-						v.getId(),
-						rdbCodeTable.getName(), codeColumnName, descriptionColumnName);
+			if ( v.getScale() == Scale.BINARY ) {
+				insertBooleanCategories(v);
+			} else {
+				CodeTable rdbCodeTable = getRDBCodeTable(v);
+				if ( rdbCodeTable != null ) { //TODO it should never be != null, ofc_sampling_design code list?
+					List<Column<?>> columns = rdbCodeTable.getColumns();
+					String codeColumnName = getColumnName(columns, CodeListCodeColumn.class);
+					String descriptionColumnName = getColumnName(columns, CodeListDescriptionColumn.class);
+					categoryDao.copyCodesIntoCategories(
+							ws.getInputSchema(), ws.getOutputSchema(), 
+							v.getId(),
+							rdbCodeTable.getName(), codeColumnName, descriptionColumnName);
+				}
 			}
 		}
 		
+	}
+
+	protected void insertBooleanCategories(CategoricalVariable v) {
+		insertBooleanCategory(v, Boolean.TRUE);
+		insertBooleanCategory(v, Boolean.FALSE);
+		insertBooleanCategory(v, null);
+	}
+
+	protected void insertBooleanCategory(CategoricalVariable v, Boolean value) {
+		Category c = new Category();
+		c.setVariable(v);
+		c.setCode(value == null ? "N": value.booleanValue() ? "T": "F");
+		c.setName(value == null ? "NA": value.booleanValue() ? "TRUE": "FALSE");
+		categoryDao.save(c);
 	}
 
 	protected void initSchema() throws IdmlParseException {
