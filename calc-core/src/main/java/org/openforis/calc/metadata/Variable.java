@@ -24,9 +24,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @javax.persistence.Entity
 @Table(name = "variable")
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
-//@DiscriminatorColumn(name = "type")
-//@DiscriminatorFormula("case when scale in ('RATIO','INTERVAL','OTHER') then 'Q' when scale='BINARY' then 'B' else 'C' end")
-@DiscriminatorFormula("case when scale in ('RATIO','INTERVAL','OTHER') then 'Q' else 'C' end")
+@DiscriminatorFormula("case when scale in ('RATIO','INTERVAL','OTHER') then 'Q' when scale='BINARY' then 'B' else 'C' end")
 public abstract class Variable extends UserObject {
 	@Column(name = "caption")
 	private String caption;
@@ -62,11 +60,11 @@ public abstract class Variable extends UserObject {
 		return this.entity;
 	}
 
-	public void setScale(org.openforis.calc.metadata.Variable.Scale scale) {
+	public void setScale(Scale scale) {
 		this.scale = scale;
 	}
 
-	public org.openforis.calc.metadata.Variable.Scale getScale() {
+	public Scale getScale() {
 		return this.scale;
 	}
 

@@ -9,7 +9,10 @@ import javax.persistence.TypedQuery;
 
 import org.openforis.calc.common.Identifiable;
 import org.openforis.calc.common.ReflectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -24,6 +27,9 @@ public abstract class AbstractDao<T extends Identifiable> {
     @PersistenceContext
     private EntityManager entityManager;
 
+    @Autowired
+    private PlatformTransactionManager trxManager;
+    
     private Class<T> type;
     
     protected AbstractDao() {
@@ -47,6 +53,8 @@ public abstract class AbstractDao<T extends Identifiable> {
 
 	@Transactional
 	public T save(T object) {
+//		trxManager.
+		
 		if ( object.getId() == null ) {
 			object = create(object);
 		} else {

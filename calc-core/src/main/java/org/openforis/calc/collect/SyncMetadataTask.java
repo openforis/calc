@@ -10,6 +10,7 @@ import org.openforis.calc.engine.JobContext;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceDao;
+import org.openforis.calc.metadata.BinaryVariable;
 import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
@@ -182,9 +183,7 @@ public class SyncMetadataTask extends Task {
 		Variable v = null;
 		if ( isValueColumn(column) ) {
 			if ( defn instanceof BooleanAttributeDefinition ) {
-//				v = new BinaryVariable();
-				v = new CategoricalVariable();
-				v.setScale(Scale.BINARY);
+				v = new BinaryVariable();
 			} else if ( defn instanceof CodeAttributeDefinition) {
 				v = new CategoricalVariable();
 				v.setScale(Scale.NOMINAL);

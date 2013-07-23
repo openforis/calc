@@ -33,13 +33,13 @@ public class Category extends UserObject {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "variable_id")
 	@JsonIgnore
-	private CategoricalVariable variable;
+	private Variable variable;
 
-	public CategoricalVariable getVariable() {
+	public Variable getVariable() {
 		return this.variable;
 	}
 	
-	public void setVariable(CategoricalVariable variable) {
+	public void setVariable(Variable variable) {
 		this.variable = variable;
 	}
 
