@@ -39,7 +39,7 @@ public class ProcessingChain extends UserObject {
 	@OrderBy("stepNo")
 	private List<CalculationStep> steps;
 	
-	@Type(type="org.openforis.calc.persistence.JsonParameterMapType")
+	@Type(type="org.openforis.calc.persistence.hibernate.JsonParameterMapType")
 	@Column(name = "parameters")
 	private ParameterMap parameters;
 
