@@ -7,6 +7,7 @@ package org.openforis.calc.persistence.sql;
  */
 public final class Sql {
 	private static final String DOUBLE_QUOTE = "\"";
+	private static final String SET_SCHEMA_SQL = "SET SCHEMA search_path TO %s, public";
 
 	private Sql() {
 	}
@@ -22,5 +23,9 @@ public final class Sql {
 	 */
 	public static String quoteIdentifier(String token) {
 		return DOUBLE_QUOTE + token + DOUBLE_QUOTE;
+	}
+
+	public static String setSchema(String schema) {
+		return String.format(SET_SCHEMA_SQL, quoteIdentifier(schema));
 	}
 }

@@ -25,22 +25,22 @@ public final class AssignAoisTask extends Task {
 				for (AoiHierarchy hierarchy : hierarchies) {
 					List<AoiHierarchyLevel> levels = hierarchy.getLevels();
 					for (AoiHierarchyLevel level : levels) {
-						String outputSchema = quoteIdentifier(ws.getOutputSchema());
+						setSchema(ws.getOutputSchema());
 						String dataTable = quoteIdentifier(entity.getDataTable());
 						String aoiIdColumn = quoteIdentifier("_"+hierarchy.getName()+"_"+level.getName()+"_id");
-						String aoiDimTable = level.getDimensionTable();
+						String aoiDimTable = quoteIdentifier(level.getDimensionTable());
 						
 						// add AOI id column to fact table output schema
-						executeSql("ALTER TABLE %s.%s ADD COLUMN %s INTEGER", 
-								   outputSchema, dataTable, aoiIdColumn);
+						executeSql("ALTER TABLE %s ADD COLUMN %s INTEGER", 
+								   dataTable, aoiIdColumn);
 						executeSql(
 								"WITH tmp AS ("+
 								"SELECT f.id as fid, a.id as aid "+
-										"FROM %s.%s f "+
-										"INNER JOIN %s.%s a ON ST_Contains(a.shape, f._location))"+
-								"UPDATE %s.%s SET %s = a.id FROM tmp WHERE id = tmp.fid",
-								outputSchema, dataTable, 
-								outputSchema, aoiDimTable 
+										"FROM %s f "+
+										"INNER JOIN %s a ON ST_Contains(a.shape, f._location))"+
+								"UPDATE %s SET %s = a.id FROM tmp WHERE id = tmp.fid",
+								dataTable,aoiDimTable, dataTable
+								// TODO
 								);
 						
 						// TODO updates values, find using ST_Contains(aoi area, location)
