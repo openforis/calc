@@ -12,7 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.RowMapper;
 
-import static org.openforis.calc.persistence.sql.Sql.*
+import static org.openforis.calc.persistence.sql.Sql.*;
+
 /**
  * Copies input tables into the output schema.  Fails if output schema already exists.
  * 
