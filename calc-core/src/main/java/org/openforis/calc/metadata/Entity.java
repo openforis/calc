@@ -50,6 +50,21 @@ public class Entity extends UserObject {
 	@Column(name = "sort_order")
 	private int sortOrder;
 	
+	@Column(name = "input")
+	private boolean input;
+	
+	@Column(name = "override")
+	private boolean override;
+	
+	@Column(name = "x_column")
+	private String xColumn;
+	
+	@Column(name = "y_column")
+	private String yColumn;
+	
+	@Column(name = "srs_column")
+	private String srsColumn;
+	
 	@OneToMany(mappedBy = "entity", fetch = FetchType.EAGER)
 	@OrderBy("sortOrder")
 	@Fetch(FetchMode.SUBSELECT) 
@@ -104,4 +119,45 @@ public class Entity extends UserObject {
 	public void setSortOrder(int sortOrder) {
 		this.sortOrder = sortOrder;
 	}
+	
+	public void setInput(boolean input) {
+		this.input = input;
+	}
+	
+	public boolean isInput() {
+		return input;
+	}
+	
+	public void setOverride(boolean override) {
+		this.override = override;
+	}
+	
+	public boolean isOverride() {
+		return override;
+	}
+	
+	public void setXColumn(String xColumn) {
+		this.xColumn = xColumn;
+	}
+
+	public String getXColumn() {
+		return xColumn;
+	}
+
+	public void setYColumn(String yColumn) {
+		this.yColumn = yColumn;
+	}
+	
+	public String getYColumn() {
+		return yColumn;
+	}
+	
+	public void setSrsColumn(String srsColumn) {
+		this.srsColumn = srsColumn;
+	}
+
+	public String getSrsColumn() {
+		return srsColumn;
+	}
+
 }

@@ -8,14 +8,25 @@ import javax.persistence.DiscriminatorValue;
  * "Binary Variable" is the statistical data type analogous to "boolean" in computer science and
  * algebra. 
  * 
- * TODO: remove if not needed; create TRUE, FALSE and NA const Categorys if needed
- * 
  * @author G. Miceli
  * @author M. Togna
  */
 @javax.persistence.Entity
 @DiscriminatorValue("B")
 public class BinaryVariable extends Variable {
+	
+	public BinaryVariable() {
+		setScale(Scale.BINARY);
+	}
+	
+	@Override
+	public void setScale(Scale scale) {
+		//TODO implement for CategoricalVariable and QuantitativeVariable
+		if ( scale != Scale.BINARY ) {
+			throw new IllegalArgumentException("Illegal scale: " + scale);
+		}
+		super.setScale(scale);
+	}
 
 	@Override
 	public Type getType() {

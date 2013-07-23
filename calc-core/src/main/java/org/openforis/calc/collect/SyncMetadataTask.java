@@ -10,6 +10,7 @@ import org.openforis.calc.engine.JobContext;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceDao;
+import org.openforis.calc.metadata.BinaryVariable;
 import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
@@ -28,11 +29,13 @@ import org.openforis.collect.relational.model.Table;
 import org.openforis.idm.metamodel.AttributeDefinition;
 import org.openforis.idm.metamodel.BooleanAttributeDefinition;
 import org.openforis.idm.metamodel.CodeAttributeDefinition;
+import org.openforis.idm.metamodel.CoordinateAttributeDefinition;
 import org.openforis.idm.metamodel.DateAttributeDefinition;
 import org.openforis.idm.metamodel.EntityDefinition;
 import org.openforis.idm.metamodel.NodeDefinition;
 import org.openforis.idm.metamodel.NumberAttributeDefinition;
 import org.openforis.idm.metamodel.Survey;
+import org.openforis.idm.metamodel.xml.IdmlParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -56,19 +59,31 @@ public class SyncMetadataTask extends Task {
 	@Override
 	protected void execute() throws Throwable {
 		this.entities = new HashMap<String, Entity>();
-		// TODO get survey from input schema
-		// Workspace ws = getContext().getWorkspace();
-		InputStream surveyIs = getClass().getClassLoader().getResourceAsStream("test.idm.xml");
-		Survey survey = collectSurveyIdmlBinder.unmarshal(surveyIs);
-		Workspace ws = getWorkspace();
-		// generate rdb schema
-		this.schema = generateSchema(ws, survey);
+		this.schema = generateSchema();
 		// convert into entities
 		sync();
+		Workspace ws = getWorkspace();
 		workspaceDao.save(ws);
+		
+		//TODO children entity ids not updated after save...check this
+		Workspace reloaded = workspaceDao.find(ws.getId());
+		ws.setEntities(reloaded.getEntities());
 	}
 
-	private RelationalSchema generateSchema(Workspace ws, Survey survey) {
+	private RelationalSchema generateSchema() throws IdmlParseException {
+		Survey survey = loadSurvey();
+		return generateSchema(survey);
+	}
+
+	protected Survey loadSurvey() throws IdmlParseException {
+		// TODO get survey from input schema
+		InputStream surveyIs = getClass().getClassLoader().getResourceAsStream("test.idm.xml");
+		Survey survey = collectSurveyIdmlBinder.unmarshal(surveyIs);
+		return survey;
+	}
+
+	private RelationalSchema generateSchema(Survey survey) {
+		Workspace ws = getWorkspace();
 		RelationalSchemaGenerator rdbGenerator = new RelationalSchemaGenerator();
 		RelationalSchema schema;
 		try {
@@ -99,6 +114,7 @@ public class SyncMetadataTask extends Task {
 			// Sync entities and variables
 			if ( table instanceof DataTable ) {
 				Entity entity = convert((DataTable) table);
+				entity.setInput(true); //TODO handle user defined or modified entities
 				if ( entity != null ) {
 					entities.put(table.getName(), entity);
 				}
@@ -113,7 +129,12 @@ public class SyncMetadataTask extends Task {
 		// Update metadata
 		workspace.setEntities(entityList);
 		
-		// Print resulting metadata to log
+		printToLog(entityList);
+		
+		return entityList;
+	}
+
+	protected void printToLog(List<Entity> entityList) {
 		// TODO print to debug log instead
 		for (Entity entity : entityList) {
 			List<Variable> vars = entity.getVariables();
@@ -121,7 +142,6 @@ public class SyncMetadataTask extends Task {
 				System.out.printf("%s.%s (%s)%n", entity.getName(), var.getName(), var.getScale());
 			}
 		}
-		return entityList;
 	}
 
 	/**
@@ -142,6 +162,8 @@ public class SyncMetadataTask extends Task {
 			e.setWorkspace(workspace);
 			e.setDataTable(table.getName());
 			
+			setCoordinateColumns(e, table);
+			
 			// Assign parent entity. 
 			DataTable parentTable = table.getParent();
 			if ( parentTable != null ) {
@@ -160,6 +182,7 @@ public class SyncMetadataTask extends Task {
 				if ( column instanceof DataColumn ) {
 					Variable variable = convert(column);
 					if ( variable != null ) {
+						variable.setInput(true);
 						e.addVariable(variable);
 					}
 				}
@@ -167,6 +190,37 @@ public class SyncMetadataTask extends Task {
 			return e;
 		} else {
 			throw new IllegalArgumentException("Entity definition or multiple attribute definition associated to DataTable expected");
+		}
+	}
+
+	private void setCoordinateColumns(Entity e, DataTable table) {
+		NodeDefinition defn = table.getNodeDefinition();
+		if ( defn instanceof EntityDefinition ) {
+			List<Column<?>> cols = table.getColumns();
+			boolean xSet = false, ySet = false, srsSet = false;
+			for (Column<?> c : cols) {
+				if ( c instanceof DataColumn ) {
+					NodeDefinition fieldDefn = ((DataColumn) c).getNodeDefinition();
+					String fieldName = fieldDefn.getName();
+					AttributeDefinition attrDefn = getAttributeDefinition(c);
+					if ( attrDefn instanceof CoordinateAttributeDefinition ) {
+						if ( "x".equals(fieldName) ) {
+							e.setXColumn(c.getName());
+							xSet = true;
+						} else if ( "y".equals(fieldName) ) {
+							e.setYColumn(c.getName());
+							ySet = true;
+						} else if ( "srs".equals(fieldName) ) {
+							e.setSrsColumn(c.getName());
+							srsSet = true;
+						}
+					}
+					if ( xSet && ySet && srsSet ) {
+						//set x, y, srs column according to the values of the first found CoordinateAttributeDefinition
+						break;
+					}
+				}
+			}
 		}
 	}
 
@@ -182,9 +236,7 @@ public class SyncMetadataTask extends Task {
 		Variable v = null;
 		if ( isValueColumn(column) ) {
 			if ( defn instanceof BooleanAttributeDefinition ) {
-//				v = new BinaryVariable();
-				v = new CategoricalVariable();
-				v.setScale(Scale.BINARY);
+				v = new BinaryVariable();
 			} else if ( defn instanceof CodeAttributeDefinition) {
 				v = new CategoricalVariable();
 				v.setScale(Scale.NOMINAL);
