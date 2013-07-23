@@ -16,6 +16,7 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.common.UserObject;
+import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.Entity;
 
 /**
@@ -41,6 +42,12 @@ public class Workspace extends UserObject {
 	@Cascade(CascadeType.ALL)
 	private List<Entity> entities;
 	
+	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER)
+	@OrderBy("name")
+	@Fetch(FetchMode.SUBSELECT)
+	@Cascade(CascadeType.ALL)
+	private List<AoiHierarchy> aoiHierarchies;
+
 	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER)
 	@OrderBy("id")
 	@Fetch(FetchMode.SUBSELECT) 
@@ -68,15 +75,31 @@ public class Workspace extends UserObject {
 	}
 
 	public List<Entity> getEntities() {
-		return Collections.unmodifiableList(entities);
+		if (entities != null) {
+			return Collections.unmodifiableList(entities);
+		} else {
+			return null;
+		}
 	}
 	
 	public void setEntities(List<Entity> entities) {
 		this.entities = entities;
 	}
 	
+	public List<AoiHierarchy> getAoiHierarchies() {
+		return aoiHierarchies;
+	}
+
+	public void setAoiHierarchies(List<AoiHierarchy> aoiHierarchies) {
+		this.aoiHierarchies = aoiHierarchies;
+	}
+
 	public List<ProcessingChain> getProcessingChains() {
-		return Collections.unmodifiableList(processingChains);
+		if (processingChains != null) {
+			return Collections.unmodifiableList(processingChains);
+		} else {
+			return null;
+		}
 	}
 
 	public void addProcessingChain(ProcessingChain chain) {
