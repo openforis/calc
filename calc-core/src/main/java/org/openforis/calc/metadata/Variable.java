@@ -24,7 +24,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @javax.persistence.Entity
 @Table(name = "variable")
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
-//@DiscriminatorColumn(name = "type")
 @DiscriminatorFormula("case when scale in ('RATIO','INTERVAL','OTHER') then 'Q' when scale='BINARY' then 'B' else 'C' end")
 public abstract class Variable extends UserObject {
 	@Column(name = "caption")

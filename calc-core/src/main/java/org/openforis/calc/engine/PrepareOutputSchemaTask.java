@@ -10,7 +10,6 @@ import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.Variable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
 /**
@@ -28,13 +27,11 @@ import org.springframework.jdbc.core.RowMapper;
 public final class PrepareOutputSchemaTask extends Task {
 	
 	Logger logger = LoggerFactory.getLogger(PrepareOutputSchemaTask.class);
-	JdbcTemplate jdbcTemplate;
-
 
 	private void dropOutputSchema() {
 		String outputSchema = getContext().getWorkspace().getOutputSchema();
 		String sql = "DROP SCHEMA IF EXISTS " + outputSchema + " CASCADE";
-		jdbcTemplate.execute(sql);
+		getJdbcTemplate().execute(sql);
 
 	}
 
@@ -42,7 +39,7 @@ public final class PrepareOutputSchemaTask extends Task {
 		String outputSchema = getContext().getWorkspace().getOutputSchema();
 		String sql = "CREATE SCHEMA " + outputSchema;
 
-		jdbcTemplate.execute(sql);
+		getJdbcTemplate().execute(sql);
 
 	}
 
@@ -78,11 +75,11 @@ public final class PrepareOutputSchemaTask extends Task {
 				Integer varId = aoiHierarchyLevel.getId();
 
 				sql = String.format(sql, outputSchema, tableName, varId);
-				jdbcTemplate.execute(sql);
+				getJdbcTemplate().execute(sql);
 
 				sql = "ALTER TABLE %s.%s ADD PRIMARY KEY (id)";
 				sql = String.format(sql, outputSchema, tableName);
-				jdbcTemplate.execute(sql);
+				getJdbcTemplate().execute(sql);
 			}
 		}
 	}
@@ -102,11 +99,11 @@ public final class PrepareOutputSchemaTask extends Task {
 
 					sql = String.format(sql, outputSchema, tableName, varId);
 
-					jdbcTemplate.execute(sql);
+					getJdbcTemplate().execute(sql);
 
 					sql = "ALTER TABLE %s.%s ADD PRIMARY KEY (id)";
 					sql = String.format(sql, outputSchema, tableName);
-					jdbcTemplate.execute(sql);
+					getJdbcTemplate().execute(sql);
 				}
 			}
 		}
@@ -140,7 +137,7 @@ public final class PrepareOutputSchemaTask extends Task {
 			
 			String sql = String.format(factSql.toString(), outputSchema, outputTable, inputSchema, inputTable );
 
-			jdbcTemplate.execute(sql);
+			getJdbcTemplate().execute(sql);
 		}
 
 	}
@@ -150,7 +147,7 @@ public final class PrepareOutputSchemaTask extends Task {
 		String sql = "SELECT column_name FROM information_schema.columns WHERE table_name ='%s' AND column_name='%s' AND table_schema='%s'";
 		
 		sql = String.format(sql, inputTable, valueColumn, inputSchema );
-		List<String> strList = jdbcTemplate.query(sql, new RowMapper<String>() {
+		List<String> strList = getJdbcTemplate().query(sql, new RowMapper<String>() {
 			public String mapRow(java.sql.ResultSet rs, int rowNum) throws java.sql.SQLException {
 				return rs.getString(1);
 			}
@@ -169,7 +166,6 @@ public final class PrepareOutputSchemaTask extends Task {
 
 	@Override
 	protected void execute() throws Throwable {
-		jdbcTemplate = new JdbcTemplate(getContext().getDataSource());
 		dropOutputSchema();
 		createOutputSchema();
 		createTables();

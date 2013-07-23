@@ -56,7 +56,7 @@ public abstract class Worker {
 //	protected abstract void execute() throws Throwable;
 	protected void execute() throws Throwable {};
 
-	public final synchronized void run() {
+	public synchronized void run() {
 		if ( !isPending() ) { 
 			throw new IllegalStateException("Already run");
 		}

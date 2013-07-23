@@ -10,6 +10,7 @@ import javax.persistence.TypedQuery;
 import org.openforis.calc.common.Identifiable;
 import org.openforis.calc.common.ReflectionUtils;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 
@@ -28,19 +29,23 @@ public abstract class AbstractDao<T extends Identifiable> {
     protected AbstractDao() {
 	}
     
+    @Transactional
 	public T create(T object) {
 		entityManager.persist(object);
 		return object;
 	}
 
+    @Transactional
 	public T find(int id) {
 		return (T) entityManager.find(type, id);
 	}
 
+	@Transactional
 	public T update(T object) {
 		return entityManager.merge(object);
 	}
 
+	@Transactional
 	public T save(T object) {
 		if ( object.getId() == null ) {
 			object = create(object);
@@ -50,11 +55,17 @@ public abstract class AbstractDao<T extends Identifiable> {
 		return object;
 	}
 	
+	@Transactional
 	public void delete(int id) {
 		T ref = entityManager.getReference(type, id);
 		entityManager.remove(ref);
 	}
 	
+	public void flush() {
+		entityManager.flush();
+	}
+	
+	@Transactional
 	public List<T> loadAll() {
 		TypedQuery<T> q = entityManager.createQuery("select a from "+type.getSimpleName()+" a", type);
 		q.setHint("org.hibernate.cacheable", true);

@@ -8,7 +8,9 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.PlatformTransactionManager;
 
 /**
  * Manages execution of tasks and related locking and threads
@@ -21,6 +23,9 @@ import org.springframework.stereotype.Component;
 public class TaskManager {
 	
 	@Autowired
+	private PlatformTransactionManager txManager;
+	
+	@Autowired
 	private Executor taskExecutor;
 	
 	@Autowired
@@ -28,6 +33,9 @@ public class TaskManager {
 	
 	@Autowired 
 	private AutowireCapableBeanFactory beanFactory;
+	
+	@Autowired
+	private ApplicationContext applContext;
 
 	@Autowired
 	private DataSource userDataSource;
@@ -40,7 +48,9 @@ public class TaskManager {
 	
 	public Job createJob(Workspace workspace) {
 		JobContext context = new JobContext(workspace, userDataSource);
-		return new Job(context);
+		Job job = applContext.getBean(Job.class);
+		job.setContext(context);
+		return job;
 	}
 	
 	public <T extends Task> T createTask(Class<T> type) {
@@ -70,7 +80,7 @@ public class TaskManager {
 			@Override
 			public void run() {
 				try {
-					job.run();
+			    	job.run();
 				} finally {
 					lock.unlock();
 				}

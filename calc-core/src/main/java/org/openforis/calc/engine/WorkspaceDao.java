@@ -9,6 +9,7 @@ import javax.persistence.criteria.Root;
 
 import org.openforis.calc.persistence.jpa.AbstractDao;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class WorkspaceDao extends AbstractDao<Workspace> {
 
+	@Transactional
 	public Workspace findByName(String name) {
 		EntityManager em = getEntityManager();
 		CriteriaBuilder cb = em.getCriteriaBuilder();
