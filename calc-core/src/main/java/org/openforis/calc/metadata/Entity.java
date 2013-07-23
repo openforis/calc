@@ -65,6 +65,9 @@ public class Entity extends UserObject {
 	@Column(name = "srs_column")
 	private String srsColumn;
 	
+	@Column(name = "location_column")
+	private String locationColumn;
+
 	@OneToMany(mappedBy = "entity", fetch = FetchType.EAGER)
 	@OrderBy("sortOrder")
 	@Fetch(FetchMode.SUBSELECT) 
@@ -158,6 +161,18 @@ public class Entity extends UserObject {
 
 	public String getSrsColumn() {
 		return srsColumn;
+	}
+
+	public String getLocationColumn() {
+		return locationColumn;
+	}
+
+	public void setLocationColumn(String locationColumn) {
+		this.locationColumn = locationColumn;
+	}
+
+	public boolean isGeoreferenced() {
+		return ((xColumn != null && yColumn != null) || locationColumn != null);
 	}
 
 }
