@@ -7,6 +7,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.openforis.calc.common.AbstractNamedIdentifiable;
+<<<<<<< HEAD
+=======
+import org.openforis.calc.persistence.sql.Sql;
+>>>>>>> c83015d75dc1433978211acffebf85ea353ca58f
 
 /**
  * Provides metadata about a AOI Hierarchy Level. A hierarchy might be an "Administrative division" or "Ecological division" of an area.
@@ -17,6 +21,10 @@ import org.openforis.calc.common.AbstractNamedIdentifiable;
  */
 @javax.persistence.Entity
 @Table(name = "aoi_level")
+<<<<<<< HEAD
+=======
+// TODO this can be renamed to AoiLevel
+>>>>>>> c83015d75dc1433978211acffebf85ea353ca58f
 public class AoiHierarchyLevel extends AbstractNamedIdentifiable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -43,7 +51,7 @@ public class AoiHierarchyLevel extends AbstractNamedIdentifiable {
 	}
 
 	public String getDimensionTable() {
-		return hierarchy.getName() + "_" + getName() + "_aoi_dim";
+		return Sql.toIdentifier(hierarchy.getName() + "_" + getName() + "_aoi_dim");
 	}
 
 }

@@ -1,5 +1,8 @@
 package org.openforis.calc.engine;
 
+import static org.openforis.calc.persistence.sql.Sql.quoteIdentifier;
+import static org.openforis.calc.persistence.sql.Sql.toIdentifier;
+
 import java.util.List;
 
 import org.openforis.calc.metadata.AoiHierarchy;
@@ -70,7 +73,9 @@ public final class PrepareOutputSchemaTask extends Task {
 			List<AoiHierarchyLevel> levels = hierarchy.getLevels();
 			for (AoiHierarchyLevel level : levels) {
 				String outputSchema = quoteIdentifier(workspace.getOutputSchema());
-				String table = quoteIdentifier(toIdentifier(level.getDimensionTable()));
+
+				String table = quoteIdentifier(level.getDimensionTable());
+
 				Integer varId = level.getId();
 
 				executeSql("CREATE TABLE %s.%s AS SELECT * FROM calc.aoi WHERE aoi_level_id = %d", 
@@ -85,6 +90,7 @@ public final class PrepareOutputSchemaTask extends Task {
 		List<Entity> entities = workspace.getEntities();
 		for (Entity entity : entities) {
 			List<Variable> variables = entity.getVariables();
+<<<<<<< HEAD
 			for (Variable variable : variables) {
 				if (variable instanceof CategoricalVariable || variable instanceof BinaryVariable) {
 					CategoricalVariable categoricalVariable = (CategoricalVariable) variable;
@@ -93,6 +99,13 @@ public final class PrepareOutputSchemaTask extends Task {
 					String tableName = entity.getName() + "_" + categoricalVariable.getName() + "_dim";
 					tableName = toIdentifier(tableName);
 					Integer varId = variable.getId();
+=======
+			for (Variable var : variables) {
+				if (var instanceof CategoricalVariable || var instanceof BinaryVariable) {
+					String outputSchema = quoteIdentifier(workspace.getOutputSchema());
+					String tableName = quoteIdentifier(var.getDimensionTable());
+					Integer varId = var.getId();
+>>>>>>> c83015d75dc1433978211acffebf85ea353ca58f
 
 					executeSql("CREATE TABLE %s.%s AS SELECT * FROM calc.category WHERE variable_id = %d", 
 							outputSchema, tableName, varId);

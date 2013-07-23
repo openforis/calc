@@ -3,6 +3,7 @@ package org.openforis.calc.engine;
 import javax.sql.DataSource;
 
 import org.openforis.calc.nls.Captionable;
+import org.openforis.calc.persistence.sql.Sql;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -56,4 +57,10 @@ public abstract class Task extends Worker implements Captionable {
 		String sql = String.format(sqlTemplate, args);
 		jdbc.execute(sql);
 	}
+	
+	protected void setSchema(String schema) {
+		String sql = Sql.setSchema(schema);
+		executeSql(sql);
+	}
+
 }
