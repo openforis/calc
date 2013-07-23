@@ -58,9 +58,6 @@ public class SyncCategoriesTask extends Task {
 		
 		Workspace ws = getWorkspace();
 		
-		Workspace reloaded = workspaceService.get(ws.getId());
-		ws.setEntities(reloaded.getEntities());
-		
 		List<Variable> vars = getVariables();
 		for (Variable v : vars) {
 			if ( v instanceof CategoricalVariable ) {

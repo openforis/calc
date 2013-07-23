@@ -56,6 +56,15 @@ public class Entity extends UserObject {
 	@Column(name = "override")
 	private boolean override;
 	
+	@Column(name = "x_column")
+	private String xColumn;
+	
+	@Column(name = "y_column")
+	private String yColumn;
+	
+	@Column(name = "srs_column")
+	private String srsColumn;
+	
 	@OneToMany(mappedBy = "entity", fetch = FetchType.EAGER)
 	@OrderBy("sortOrder")
 	@Fetch(FetchMode.SUBSELECT) 
@@ -126,4 +135,29 @@ public class Entity extends UserObject {
 	public boolean isOverride() {
 		return override;
 	}
+	
+	public void setXColumn(String xColumn) {
+		this.xColumn = xColumn;
+	}
+
+	public String getXColumn() {
+		return xColumn;
+	}
+
+	public void setYColumn(String yColumn) {
+		this.yColumn = yColumn;
+	}
+	
+	public String getYColumn() {
+		return yColumn;
+	}
+	
+	public void setSrsColumn(String srsColumn) {
+		this.srsColumn = srsColumn;
+	}
+
+	public String getSrsColumn() {
+		return srsColumn;
+	}
+
 }

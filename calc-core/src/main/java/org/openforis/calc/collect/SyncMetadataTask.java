@@ -29,6 +29,7 @@ import org.openforis.collect.relational.model.Table;
 import org.openforis.idm.metamodel.AttributeDefinition;
 import org.openforis.idm.metamodel.BooleanAttributeDefinition;
 import org.openforis.idm.metamodel.CodeAttributeDefinition;
+import org.openforis.idm.metamodel.CoordinateAttributeDefinition;
 import org.openforis.idm.metamodel.DateAttributeDefinition;
 import org.openforis.idm.metamodel.EntityDefinition;
 import org.openforis.idm.metamodel.NodeDefinition;
@@ -63,6 +64,10 @@ public class SyncMetadataTask extends Task {
 		sync();
 		Workspace ws = getWorkspace();
 		workspaceDao.save(ws);
+		
+		//TODO children entity ids not updated after save...check this
+		Workspace reloaded = workspaceDao.find(ws.getId());
+		ws.setEntities(reloaded.getEntities());
 	}
 
 	private RelationalSchema generateSchema() throws IdmlParseException {
@@ -157,6 +162,8 @@ public class SyncMetadataTask extends Task {
 			e.setWorkspace(workspace);
 			e.setDataTable(table.getName());
 			
+			setCoordinateColumns(e, table);
+			
 			// Assign parent entity. 
 			DataTable parentTable = table.getParent();
 			if ( parentTable != null ) {
@@ -183,6 +190,37 @@ public class SyncMetadataTask extends Task {
 			return e;
 		} else {
 			throw new IllegalArgumentException("Entity definition or multiple attribute definition associated to DataTable expected");
+		}
+	}
+
+	private void setCoordinateColumns(Entity e, DataTable table) {
+		NodeDefinition defn = table.getNodeDefinition();
+		if ( defn instanceof EntityDefinition ) {
+			List<Column<?>> cols = table.getColumns();
+			boolean xSet = false, ySet = false, srsSet = false;
+			for (Column<?> c : cols) {
+				if ( c instanceof DataColumn ) {
+					NodeDefinition fieldDefn = ((DataColumn) c).getNodeDefinition();
+					String fieldName = fieldDefn.getName();
+					AttributeDefinition attrDefn = getAttributeDefinition(c);
+					if ( attrDefn instanceof CoordinateAttributeDefinition ) {
+						if ( "x".equals(fieldName) ) {
+							e.setXColumn(c.getName());
+							xSet = true;
+						} else if ( "y".equals(fieldName) ) {
+							e.setYColumn(c.getName());
+							ySet = true;
+						} else if ( "srs".equals(fieldName) ) {
+							e.setSrsColumn(c.getName());
+							srsSet = true;
+						}
+					}
+					if ( xSet && ySet && srsSet ) {
+						//set x, y, srs column according to the values of the first found CoordinateAttributeDefinition
+						break;
+					}
+				}
+			}
 		}
 	}
 
