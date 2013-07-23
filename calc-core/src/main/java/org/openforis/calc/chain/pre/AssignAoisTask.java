@@ -27,8 +27,11 @@ public final class AssignAoisTask extends Task {
 						String outputSchema = ws.getOutputSchema();
 						String dataTable = entity.getDataTable();
 						// add AOI id column to fact table output schema
-						executeSql("ALTER TABLE %s.%s ADD COLUMN _%s_%s_id INTEGER", outputSchema, dataTable,
-								hierarchy.getName(), level.getName());
+						executeSql("ALTER TABLE %s.%s ADD COLUMN _%s_%s_id INTEGER", 
+								quoteIdentifier(outputSchema), 
+								quoteIdentifier(dataTable),
+								quoteIdentifier(hierarchy.getName()), 
+								quoteIdentifier(level.getName()));
 						// TODO updates values, find using ST_Contains(aoi area, location)
 					}
 				}

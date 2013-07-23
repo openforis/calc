@@ -16,6 +16,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author M. Togna
  */
 public abstract class Task extends Worker implements Captionable {
+	private static final String DOUBLE_QUOTE = "\"";
+	
 	@JsonIgnore
 	private Job job;
 	private JdbcTemplate jdbcTemplate;
@@ -55,5 +57,14 @@ public abstract class Task extends Worker implements Captionable {
 		JdbcTemplate jdbc = getJdbcTemplate();
 		String sql = String.format(sqlTemplate, args);
 		jdbc.execute(sql);
+	}
+	
+	/**
+	 * Surround a table or column name with double quotes
+	 * @param token
+	 * @return
+	 */
+	protected static String quoteIdentifier(String token) {
+		return DOUBLE_QUOTE + token + DOUBLE_QUOTE;
 	}
 }
