@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @RunWith( SpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = {"classpath:applicationContext.xml"} )
-@TransactionConfiguration(defaultRollback=true)
+@TransactionConfiguration(defaultRollback=false)
 @Transactional
 public class CollectMetadataServiceIntegrationTest {
 
@@ -34,9 +34,22 @@ public class CollectMetadataServiceIntegrationTest {
 	
 	@Autowired
 	private TaskManager taskManager;
-	
+	/*
 	@Test
 	public void testCollectMetadataSync() throws WorkspaceLockedException {
+//		Workspace ws = new Workspace();
+//		ws.setName("test2");
+//		ws.setInputSchema("naforma1");
+//		ws.setOutputSchema("calc");
+//		workspaceService.save(ws);
+		
+		Job job = collectMetadataService.startSync(2);
+		boolean ok = job.waitFor(30000);
+		Assert.assertTrue(ok);
+	}
+	*/
+	@Test
+	public void testCollectMetadataSyncTasks() throws WorkspaceLockedException {
 		Workspace ws = new Workspace();
 		ws.setId(-1); //allows locking...
 		ws.setName("test");
