@@ -27,8 +27,11 @@ public class Category extends UserObject {
 	@Column(name = "override")
 	private boolean overrideInputMetadata;
 	
-	@Column(name = "sort_order") //TODO check column/variable name
-	private int index;
+	@Column(name = "sort_order")
+	private int sortOrder;
+	
+	@Column(name = "original_id")
+	private Integer originalId;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "variable_id")
@@ -59,11 +62,12 @@ public class Category extends UserObject {
 		return this.overrideInputMetadata;
 	}
 
-	public void setIndex(int index) {
-		this.index = index;
+	public void setSortOrder(int sortOrder) {
+		this.sortOrder = sortOrder;
 	}
 
-	public int getIndex() {
-		return this.index;
+	public int getSortOrder() {
+		return this.sortOrder;
 	}
+	
 }
