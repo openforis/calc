@@ -111,13 +111,14 @@ public class SyncMetadataTask extends Task {
 		// were new, modified or deleted  
 		
 		// Convert IDM metadata and RDB schema to Calc metadata
+		int sortOrder = 1;
 		List<Table<?>> tables = schema.getTables();
 		for (Table<?> table : tables) {
 			// Sync entities and variables
 			if ( table instanceof DataTable ) {
 				Entity entity = convert((DataTable) table);
-				entity.setInput(true); //TODO handle user defined or modified entities
 				if ( entity != null ) {
+					entity.setSortOrder(sortOrder++);
 					entities.put(table.getName(), entity);
 				}
 			} else if ( table instanceof CodeTable ) {
@@ -163,6 +164,7 @@ public class SyncMetadataTask extends Task {
 			e.setName(table.getName());
 			e.setWorkspace(workspace);
 			e.setDataTable(table.getName());
+			e.setInput(true); //TODO handle user defined or modified entities
 			
 			setCoordinateColumns(e, table);
 			
@@ -179,11 +181,13 @@ public class SyncMetadataTask extends Task {
 			}
 			
 			// Convert columns to variables
+			int sortOrder = 1;
 			List<Column<?>> columns = table.getColumns();
 			for (Column<?> column : columns) {
 				if ( column instanceof DataColumn ) {
-					Variable variable = convert(column);
+					Variable variable = convert(column, e);
 					if ( variable != null ) {
+						variable.setSortOrder(sortOrder++);
 						e.addVariable(variable);
 					}
 				}
@@ -230,9 +234,10 @@ public class SyncMetadataTask extends Task {
 	 * Columns are translated into a specific {@link Variable} type according to the associated {@link NodeDefinition} type.
 	 * 
 	 * @param column
+	 * @param e 
 	 * @return
 	 */
-	private Variable convert(Column<?> column) {
+	private Variable convert(Column<?> column, Entity e) {
 		AttributeDefinition defn = getAttributeDefinition(column);
 		Variable v = null;
 		if ( isValueColumn(column) ) {
@@ -252,8 +257,8 @@ public class SyncMetadataTask extends Task {
 			if ( v != null ) {
 				v.setName(column.getName());
 				v.setValueColumn(column.getName());
+				v.setDimensionTable(e.getName() + "_" + v.getName() + DIMENSION_TABLE_SUFFIX);
 				v.setInput(true);
-				v.setDimensionTable(v.getName() + DIMENSION_TABLE_SUFFIX);
 			}
 		}
 		return v;
