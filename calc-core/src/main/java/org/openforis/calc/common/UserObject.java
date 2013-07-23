@@ -13,7 +13,7 @@ import javax.persistence.MappedSuperclass;
  */
 // TODO better name?
 @MappedSuperclass
-public abstract class UserObject extends BaseEntity {
+public abstract class UserObject extends AbstractNamedIdentifiable {
 	@Column(name = "description")
 	private String description;
 
