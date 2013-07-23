@@ -34,6 +34,7 @@ public class CollectMetadataServiceIntegrationTest {
 	
 	@Autowired
 	private TaskManager taskManager;
+	
 	/*
 	@Test
 	public void testCollectMetadataSync() throws WorkspaceLockedException {
@@ -48,6 +49,7 @@ public class CollectMetadataServiceIntegrationTest {
 		Assert.assertTrue(ok);
 	}
 	*/
+	
 	@Test
 	public void testCollectMetadataSyncTasks() throws WorkspaceLockedException {
 		Workspace ws = new Workspace();
