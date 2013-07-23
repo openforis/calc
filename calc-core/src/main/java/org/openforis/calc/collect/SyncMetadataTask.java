@@ -46,6 +46,8 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class SyncMetadataTask extends Task {
 
+	private static final String DIMENSION_TABLE_SUFFIX = "_dim";
+
 	@Autowired
 	private WorkspaceDao workspaceDao;
 	
@@ -182,7 +184,6 @@ public class SyncMetadataTask extends Task {
 				if ( column instanceof DataColumn ) {
 					Variable variable = convert(column);
 					if ( variable != null ) {
-						variable.setInput(true);
 						e.addVariable(variable);
 					}
 				}
@@ -251,6 +252,8 @@ public class SyncMetadataTask extends Task {
 			if ( v != null ) {
 				v.setName(column.getName());
 				v.setValueColumn(column.getName());
+				v.setInput(true);
+				v.setDimensionTable(v.getName() + DIMENSION_TABLE_SUFFIX);
 			}
 		}
 		return v;

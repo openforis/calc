@@ -1,19 +1,13 @@
 package org.openforis.calc.persistence;
 
 import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 import javax.sql.DataSource;
 
-import org.jooq.Insert;
-import org.jooq.Record;
-import org.jooq.SelectJoinStep;
-import org.jooq.TableField;
-import org.jooq.impl.Factory;
-import org.jooq.impl.SchemaImpl;
-import org.jooq.impl.UpdatableTableImpl;
 import org.openforis.calc.metadata.Category;
 import org.openforis.calc.persistence.jpa.AbstractDao;
-import org.openforis.collect.persistence.jooq.DialectAwareJooqFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Component;
@@ -31,6 +25,7 @@ public class CategoryDao extends AbstractDao<Category> {
 	private static final String CATEGORY_VARIABLE_ID_COL_NAME = "variable_id";
 	private static final String CATEGORY_CODE_COL_NAME = "code";
 	private static final String CATEGORY_SORT_ORDER_COL_NAME = "sort_order";
+	private static final String CATEGORY_ORIGINAL_ID_COL_NAME = "original_id";
 	
 	@Autowired
 	private DataSource dataSource;
@@ -38,45 +33,44 @@ public class CategoryDao extends AbstractDao<Category> {
 	@Transactional
 	public void copyCodesIntoCategories(String inputSchema, String outputSchema,
 			int variableId, String codeTableName, String codeColumnName, String descriptionColumnName) {
-		Factory jf = getJooqFactory();
+		
+		String codeTableIdColumnName = codeTableName + "_id";
+		
+		String insertQueryTemplate = 
+				"INSERT INTO %s.%s (%s, %s, %s, %s)" +
+				" SELECT %s, %s, %s, %s" +
+				" FROM %s.%s";
+		
+		String sql = String.format(insertQueryTemplate, 
+				quote(outputSchema),
+				quote(CATEGORY_TABLE_NAME), 
+				quote(CATEGORY_VARIABLE_ID_COL_NAME),
+				quote(CATEGORY_ORIGINAL_ID_COL_NAME), 
+				quote(CATEGORY_CODE_COL_NAME),
+				quote(CATEGORY_SORT_ORDER_COL_NAME),
+				String.valueOf(variableId),
+				quote(codeTableIdColumnName),
+				quote(codeColumnName),
+				quote(codeTableIdColumnName),
+				quote(inputSchema),
+				quote(codeTableName)
+		);
 
-		DynamicTable codeTable = new DynamicTable(codeTableName, inputSchema);
-		TableField<Record, String> codeField = codeTable.createStringField(codeColumnName);
-		
-		SelectJoinStep codesSelect = jf.select(Factory.val(variableId), codeField, Factory.rowNumber().over()).from(codeTable);
-		
-		DynamicTable categoryTable = new DynamicTable(CATEGORY_TABLE_NAME, outputSchema);
-		TableField<Record, String> categoryCodeField = categoryTable.createStringField(CATEGORY_CODE_COL_NAME);
-		TableField<Record, Integer> categoryVariableIdField = categoryTable.createIntegerField(CATEGORY_VARIABLE_ID_COL_NAME);
-		TableField<Record, Integer> categorySortOrderField = categoryTable.createIntegerField(CATEGORY_SORT_ORDER_COL_NAME);
-		
-		Insert<Record> insert = 
-				jf.insertInto(categoryTable, categoryVariableIdField, categoryCodeField, categorySortOrderField)
-				.select(codesSelect);
-		insert.execute();
+		Connection c = getConnection();
+		try {
+			Statement stmt = c.createStatement();
+			stmt.execute(sql);
+		} catch(SQLException e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
-	protected DialectAwareJooqFactory getJooqFactory() {
-		Connection conn = DataSourceUtils.getConnection(dataSource);
-		return new DialectAwareJooqFactory(conn);
+	private String quote(String value) {
+		return value == null ? null : "\"" + value + "\"";
+	}
+
+	protected Connection getConnection() {
+		return DataSourceUtils.getConnection(dataSource);
 	}
 	
-	static class DynamicTable extends UpdatableTableImpl<Record> {
-
-		private static final long serialVersionUID = 1L;
-		
-		public DynamicTable(String name, String schema) {
-			super(name, new SchemaImpl(schema));
-		}
-		
-		public TableField<Record, String> createStringField(String name) {
-			return createField(name, org.jooq.impl.SQLDataType.VARCHAR, this);
-		}
-
-		public TableField<Record, Integer> createIntegerField(String name) {
-			return createField(name, org.jooq.impl.SQLDataType.INTEGER, this);
-		}
-		
-	}
-
 }
