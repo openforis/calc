@@ -2,21 +2,18 @@ package org.openforis.calc;
 
 import java.util.Collection;
 import java.util.Set;
-import java.util.UUID;
 
-import org.openforis.calc.engine.CalculationStep;
-import org.openforis.calc.engine.CalculationStepManager;
-import org.openforis.calc.engine.Module;
-import org.openforis.calc.engine.ModuleRegistry;
+import org.openforis.calc.chain.CalculationStep;
+import org.openforis.calc.chain.ProcessingChain;
+import org.openforis.calc.chain.ProcessingChainService;
+import org.openforis.calc.engine.Job;
+import org.openforis.calc.engine.ParameterHashMap;
 import org.openforis.calc.engine.ParameterMap;
-import org.openforis.calc.engine.ProcessingChain;
-import org.openforis.calc.engine.ProcessingChainJob;
-import org.openforis.calc.engine.ProcessingChainService;
-import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
-import org.openforis.calc.engine.WorkspaceManager;
+import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.Entity;
-import org.openforis.calc.persistence.ParameterHashMap;
+import org.openforis.calc.module.Module;
+import org.openforis.calc.module.ModuleRegistry;
 import org.openforis.calc.r.R;
 import org.openforis.calc.r.REnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,16 +22,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class CalcTest {
 	@Autowired
-	private WorkspaceManager workspaceService;
-
-	@Autowired
-	private ProcessingChainService pcs;
-
-	@Autowired
-	private CalculationStepManager calcStepService;
-
-	@Autowired
-	private TaskManager taskManager;
+	private WorkspaceService workspaceService;
 
 	@Autowired
 	private ModuleRegistry moduleRegistry;
@@ -86,13 +74,10 @@ public class CalcTest {
 		Workspace ws = workspaceService.get(1);
 		ProcessingChain chain = ws.getProcessingChains().get(0);
 		int chainId = chain.getId();
-		ProcessingChainJob job = processingChainService.getProcessingChainJob(chainId);
-		Set<UUID> taskIds = job.getTaskIds();
-		processingChainService.startProcessingChainJob(chainId, taskIds);
-		while (!job.isEnded()) {
-			System.out.println(job.getStatus());
-			Thread.sleep(1000);
-		}
+//		Job job = processingChainService.getProcessingChainJob(chainId);
+//		Set<UUID> taskIds = job.getTaskIds();
+		Job job = processingChainService.startProcessingChainJob(chainId/*, taskIds*/);
+		job.waitFor(30000);
 		System.out.println("DONE!");
 	}
 

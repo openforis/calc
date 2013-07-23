@@ -1,14 +1,23 @@
 package org.openforis.calc.metadata;
 
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Transient;
+
 /**
  * A variable which may take on a single numeric value.
  * 
  * @author G. Miceli
  * @author M. Togna
  */
-public final class QuantitativeVariable extends Variable {
+@javax.persistence.Entity
+@DiscriminatorValue("Q")
+public class QuantitativeVariable extends Variable {
+	@Column(name = "default_value")
 	private double defaultValue;
-	private Unit<?> unit;
+	
+	@Transient //TODO map to column
+	private transient Unit<?> unit; 
 
 	public void setUnit(Unit<?> unit) {
 		this.unit = unit;
@@ -24,5 +33,10 @@ public final class QuantitativeVariable extends Variable {
 
 	public double getDefaultValue() {
 		return this.defaultValue;
+	}
+	
+	@Override
+	public Type getType() {
+		return Type.QUANTITATIVE;
 	}
 }

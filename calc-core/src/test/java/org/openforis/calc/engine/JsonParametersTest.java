@@ -5,7 +5,6 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.junit.Assert;
 import org.junit.Test;
-import org.openforis.calc.persistence.ParameterHashMap;
 
 public class JsonParametersTest {
 

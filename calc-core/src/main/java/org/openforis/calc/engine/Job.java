@@ -2,10 +2,8 @@ package org.openforis.calc.engine;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -18,25 +16,36 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author G. Miceli
  * @author M. Togna
  */
-public abstract class Job extends Task implements Iterable<Task> {
+public final class Job extends Worker implements Iterable<Task> {
+	private JobContext context;
 	private int currentTaskIndex;
 	private List<Task> tasks;
 	
-	protected Job() {
+	public Job(JobContext context) {
+		this.context = context;
 		this.currentTaskIndex = -1;
 		this.tasks = new ArrayList<Task>();
 	}
 
 	/**
-	 * Initializes each contained task in order.
+	 * Initializes each contained task in order. Called after all tasks have been added 
+	 * (i.e. not in constructor!)
 	 */
 	public final void init() {
-		for (Task task : tasks) {
+		for (Worker task : tasks) {
 			task.init();
 		}
-		super.init();
 	}
 
+	@Override
+	protected long countTotalItems() {
+		long total = 0;
+		for (Task task : tasks) {
+			total += task.getTotalItems();
+		}
+		return total;
+	}
+	
 //	@Override
 //	protected final long countTotalItems() {
 //		long totalItems = 0;
@@ -55,24 +64,22 @@ public abstract class Job extends Task implements Iterable<Task> {
 		this.currentTaskIndex = -1;
 		for (Task task : tasks) {
 			this.currentTaskIndex += 1;
-			if ( task.isScheduled() ) {
-				if ( task.getContext() != getContext() ) {
-					throw new IllegalStateException("Cannot nest tasks in different contexts");
-				}
-				task.run();
-				if ( task.isFailed() ) {
-					throw task.getLastException();
-				}
+			if ( task.getContext() != getContext() ) {
+				throw new IllegalStateException("Cannot nest tasks in different contexts");
+			}
+			task.run();
+			if ( task.isFailed() ) {
+				throw task.getLastException();
 			}
 		}
 		this.currentTaskIndex = -1;
 	}
 
-	public Task getCurrentTask() {
+	public Worker getCurrentTask() {
 		return currentTaskIndex >= 0 ? tasks.get(currentTaskIndex) : null;
 	}
 
-	public Task getTask(int index) {
+	public Worker getTask(int index) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -81,10 +88,11 @@ public abstract class Job extends Task implements Iterable<Task> {
 	 * 
 	 * @param task
 	 */
-	protected void addTask(Task task) {
+	public void addTask(Task task) {
 		if ( !isPending() ) {
 			throw new IllegalStateException("Cannot add tasks to a job once started");
 		}
+		task.setJob(this);
 		tasks.add(task);
 	}
 
@@ -103,33 +111,33 @@ public abstract class Job extends Task implements Iterable<Task> {
 		return tasks().iterator();
 	}	
 
-	/**
-	 * Recursive
-	 * @return
-	 */
-	public Set<UUID> getTaskIds() {
-		Set<UUID> ids = new HashSet<UUID>();
-		gatherTaskIds(ids);
-		return ids;
-	}
+//	/**
+//	 * Recursive
+//	 * @return
+//	 */
+//	public Set<UUID> getTaskIds() {
+//		Set<UUID> ids = new HashSet<UUID>();
+//		gatherTaskIds(ids);
+//		return ids;
+//	}
+//
+//	private void gatherTaskIds(Set<UUID> ids) {
+//		for (Task task : tasks) {
+//			ids.add(task.getId());
+//			if ( task instanceof Job ) {
+//				Job subjob = (Job) task;
+//				subjob.gatherTaskIds(ids);
+//			}
+//		}		
+//	}
 
-	private void gatherTaskIds(Set<UUID> ids) {
-		for (Task task : tasks) {
-			ids.add(task.getId());
-			if ( task instanceof Job ) {
-				Job subjob = (Job) task;
-				subjob.gatherTaskIds(ids);
-			}
-		}		
-	}
-
-	public Task getTask(UUID taskId) {
-		for (Task task : tasks) {
+	public Worker getTask(UUID taskId) {
+		for (Worker task : tasks) {
 			if ( task.getId().equals(taskId) ) {
 				return task;
 			} else if ( task instanceof Job ) {
 				Job subjob = (Job) task;
-				Task t = subjob.getTask(taskId);
+				Worker t = subjob.getTask(taskId);
 				if ( t != null ) {
 					return t;
 				}
@@ -138,14 +146,7 @@ public abstract class Job extends Task implements Iterable<Task> {
 		return null;
 	}
 	
-	public void setScheduledTasks(Set<UUID> taskIds) {
-		for (Task task : tasks) {
-			boolean scheduled = taskIds.contains(task.getId());
-			task.setScheduled(scheduled);
-			if ( task instanceof Job ) {
-				Job subjob = (Job) task;
-				subjob.setScheduledTasks(taskIds);
-			}
-		}		
+	public JobContext getContext() {
+		return context;
 	}
 }
