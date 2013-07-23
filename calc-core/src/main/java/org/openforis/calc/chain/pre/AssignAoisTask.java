@@ -8,6 +8,7 @@ import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.AoiHierarchyLevel;
 import org.openforis.calc.metadata.Entity;
 
+import static org.openforis.calc.persistence.sql.Sql.*;
 /**
  * Task responsible for assigning AOI codes and/or ids to an output table based on a Point column.
  * 
@@ -27,6 +28,8 @@ public final class AssignAoisTask extends Task {
 						String outputSchema = quoteIdentifier(ws.getOutputSchema());
 						String dataTable = quoteIdentifier(entity.getDataTable());
 						String aoiIdColumn = quoteIdentifier("_"+hierarchy.getName()+"_"+level.getName()+"_id");
+						String aoiDimTable = level.getDimensionTable();
+						
 						// add AOI id column to fact table output schema
 						executeSql("ALTER TABLE %s.%s ADD COLUMN %s INTEGER", 
 								   outputSchema, dataTable, aoiIdColumn);
