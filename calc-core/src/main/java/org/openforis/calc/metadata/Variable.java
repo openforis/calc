@@ -46,6 +46,9 @@ public abstract class Variable extends UserObject {
 	@Column(name = "value_column")
 	private String valueColumn;
 
+	@Column(name = "dimension_table")
+	private String dimensionTable;
+
 	@Column(name = "input")
 	private boolean input;
 	
@@ -66,14 +69,18 @@ public abstract class Variable extends UserObject {
 		return this.entity;
 	}
 
-	public void setScale(Scale scale) {
-		this.scale = scale;
+	void setEntity(Entity entity) {
+		this.entity = entity;
 	}
-
+	
 	public Scale getScale() {
 		return this.scale;
 	}
 
+	public void setScale(Scale scale) {
+		this.scale = scale;
+	}
+	
 	public String getCaption() {
 		return caption;
 	}
@@ -82,12 +89,12 @@ public abstract class Variable extends UserObject {
 		this.caption = caption;
 	}
 
-	public void setCubeMember(boolean cubeMember) {
-		this.cubeMember = cubeMember;
-	}
-
 	public boolean isCubeMember() {
 		return this.cubeMember;
+	}
+	
+	public void setCubeMember(boolean cubeMember) {
+		this.cubeMember = cubeMember;
 	}
 
 	public int getSortOrder() {
@@ -106,23 +113,28 @@ public abstract class Variable extends UserObject {
 		this.valueColumn = valueColumn;
 	}
 	
-	void setEntity(Entity entity) {
-		this.entity = entity;
+	public String getDimensionTable() {
+		return dimensionTable;
 	}
 	
-	public void setInput(boolean input) {
-		this.input = input;
+	public void setDimensionTable(String dimensionTable) {
+		this.dimensionTable = dimensionTable;
 	}
 	
 	public boolean isInput() {
 		return input;
 	}
 	
-	public void setOverride(boolean override) {
-		this.override = override;
+	public void setInput(boolean input) {
+		this.input = input;
 	}
 	
 	public boolean isOverride() {
 		return override;
 	}
+
+	public void setOverride(boolean override) {
+		this.override = override;
+	}
+	
 }
