@@ -52,12 +52,23 @@ public abstract class Task extends Worker implements Captionable {
 		return jdbcTemplate;
 	}
 
+	/**
+	 * Uses String.format() to generate SQL using the sqlTemplate
+	 * and passed args
+	 * 
+	 * @param sqlTemplate
+	 * @param args
+	 */
 	protected void executeSql(String sqlTemplate, Object... args) {
 		JdbcTemplate jdbc = getJdbcTemplate();
 		String sql = String.format(sqlTemplate, args);
 		jdbc.execute(sql);
 	}
 	
+	/**
+	 * Sets the default schema for SQL operations
+	 * @param schema
+	 */
 	protected void setSchema(String schema) {
 		String sql = Sql.setSchema(schema);
 		executeSql(sql);
