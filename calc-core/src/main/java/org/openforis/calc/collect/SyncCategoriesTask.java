@@ -179,5 +179,5 @@ public class SyncCategoriesTask extends Task {
 		}
 		return schema;
 	}
-	
+
 }
