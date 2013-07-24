@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @RunWith( SpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = {"classpath:applicationContext.xml"} )
-@TransactionConfiguration(defaultRollback=false)
+@TransactionConfiguration(defaultRollback=true)
 @Transactional
 public class CollectMetadataServiceIntegrationTest {
 
