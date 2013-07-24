@@ -13,17 +13,23 @@ public final class Sql {
 	private Sql() {
 	}
 	
-	public static String toIdentifier(String identifier) {
-		return identifier.replaceAll("[^a-zA-Z0-9]", "_").toLowerCase();
+	/**
+	 * Converts a string to a valid PSQL identifier (i.e. table, column or schema name)
+	 * by replacing unallowed characters with underscore ("_") and converting to lowercase
+	 * @param str
+	 * @return
+	 */
+	public static String toIdentifier(String str) {
+		return str.replaceAll("[^a-zA-Z0-9]", "_").toLowerCase();
 	}
 	
 	/**
 	 * Surround a table or column name with double quotes
-	 * @param token
+	 * @param identifier
 	 * @return
 	 */
-	public static String quoteIdentifier(String token) {
-		return DOUBLE_QUOTE + token + DOUBLE_QUOTE;
+	public static String quoteIdentifier(String identifier) {
+		return DOUBLE_QUOTE + identifier + DOUBLE_QUOTE;
 	}
 
 	public static String setSchema(String schema) {
