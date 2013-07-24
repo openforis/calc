@@ -65,6 +65,10 @@ public abstract class AbstractDao<T extends Identifiable> {
 		entityManager.flush();
 	}
 	
+	public void commit() {
+		entityManager.getTransaction().commit();
+	}
+	
 	@Transactional
 	public List<T> loadAll() {
 		TypedQuery<T> q = entityManager.createQuery("select a from "+type.getSimpleName()+" a", type);

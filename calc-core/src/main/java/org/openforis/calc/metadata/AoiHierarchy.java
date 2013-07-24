@@ -31,7 +31,7 @@ public class AoiHierarchy extends UserObject {
 	@JsonIgnore
 	private Workspace workspace;
 
-	@OneToMany(mappedBy = "hierarchy", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "hierarchy", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@OrderBy("rank")
 	private List<AoiHierarchyLevel> levels;
 

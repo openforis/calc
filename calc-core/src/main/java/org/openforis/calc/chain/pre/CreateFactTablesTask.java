@@ -5,22 +5,19 @@ import java.util.List;
 
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
+import org.openforis.calc.metadata.Category;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.Variable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.RowMapper;
 
 /**
- * Creates fatc tables in output schema based on {@link Category}s
+ * Creates fact tables in output schema based on {@link Category}s
  * 
  * @author G. Miceli
  * @author M. Togna
  */
 public final class CreateFactTablesTask extends Task {
 	
-	Logger logger = LoggerFactory.getLogger(PrepareOutputSchemaTask.class);
-
 	private void createFactTables() {
 		Workspace workspace = getContext().getWorkspace();
 		List<Entity> entities = workspace.getEntities();
@@ -56,7 +53,7 @@ public final class CreateFactTablesTask extends Task {
 
 			addPrimaryKeys(inputSchema, inputTable, outputSchema, outputTable);
 
-			logger.info("Fact table %s created", outputTable);
+			log().debug("Fact table created:"+ outputTable);
 			for (String foreignKeyCommand : foreignKeys) {
 				executeSql(foreignKeyCommand);
 			}
@@ -65,6 +62,7 @@ public final class CreateFactTablesTask extends Task {
 	}
 	
 	private void addPrimaryKeys(String inputSchema, String inputTable, String outputSchema, String outputTable) {
+		// TODO replace using column in Entity metadata
 		String getPkSql = "SELECT pg_attribute.attname FROM pg_index, pg_class, pg_attribute WHERE" +
  " pg_class.oid = '%s.%s'::regclass AND indrelid = pg_class.oid AND pg_attribute.attrelid = pg_class.oid AND pg_attribute.attnum = any(pg_index.indkey)"
 				+
@@ -101,6 +99,4 @@ public final class CreateFactTablesTask extends Task {
 	protected void execute() throws Throwable {
 		createFactTables();
 	}
-
-
 }

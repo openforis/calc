@@ -1,6 +1,8 @@
 package org.openforis.calc.metadata;
 
 import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -40,6 +42,7 @@ public abstract class Variable extends UserObject {
 	@JsonIgnore
 	private Entity entity;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "scale")
 	private Scale scale;
 	

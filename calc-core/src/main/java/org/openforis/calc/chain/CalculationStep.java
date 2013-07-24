@@ -93,4 +93,9 @@ public class CalculationStep extends UserObject {
 	public void setProcessingChain(ProcessingChain chain) {
 		this.processingChain = chain;
 	}
+	
+	@Override
+	public String toString() {
+		return String.format("%s:%s:%s", moduleName, operationName, moduleVersion);
+	}
 }

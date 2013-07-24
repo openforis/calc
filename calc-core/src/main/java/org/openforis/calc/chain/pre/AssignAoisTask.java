@@ -1,6 +1,6 @@
 package org.openforis.calc.chain.pre;
 
-import static org.openforis.calc.persistence.sql.Sql.quoteIdentifier;
+import static org.openforis.calc.persistence.sql.Psql.quoteIdentifier;
 
 import java.util.List;
 

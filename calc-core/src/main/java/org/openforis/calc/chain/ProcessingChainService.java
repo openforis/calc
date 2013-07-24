@@ -2,7 +2,11 @@ package org.openforis.calc.chain;
 
 import java.util.List;
 
-import org.openforis.calc.chain.pre.PrepareOutputSchemaTask;
+import org.openforis.calc.chain.pre.CreateAoiDimensionTablesTask;
+import org.openforis.calc.chain.pre.CreateCategoryDimensionTablesTask;
+import org.openforis.calc.chain.pre.CreateFactTablesTask;
+import org.openforis.calc.chain.pre.CreateOutputSchemaTask;
+import org.openforis.calc.chain.pre.DropOutputSchemaTask;
 import org.openforis.calc.engine.Job;
 import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
@@ -53,25 +57,40 @@ public class ProcessingChainService {
 		Job job = taskManager.createJob(workspace);
 
 		// Add preprocess steps to the job
-		addPreprocessSteps(job);
+		addPreprocessingTasks(job);
 
 		// Add steps to job
 		List<CalculationStep> steps = chain.getCalculationSteps();
+		addCalculationStepTasks(job, steps);
+		
+		addPostprocessingTasks(job);
+		return job;
+	}
+
+	private void addPreprocessingTasks(Job job) {
+		job.addTask(DropOutputSchemaTask.class);
+		job.addTask(CreateOutputSchemaTask.class);
+		job.addTask(CreateCategoryDimensionTablesTask.class);
+		job.addTask(CreateAoiDimensionTablesTask.class);
+		job.addTask(CreateFactTablesTask.class);
+//		job.addTask(SetOutputSchemaGrantsTask.class);
+	}
+
+	private void addCalculationStepTasks(Job job, List<CalculationStep> steps)
+			throws InvalidProcessingChainException {
 		for (CalculationStep step : steps) {
 			Operation<?> operation = moduleRegistry.getOperation(step);
 			if ( operation == null ) {
-				throw new InvalidProcessingChainException();
+				throw new InvalidProcessingChainException("Unknown operation for "+step);
 			}
 			Class<? extends CalculationStepTask> taskType = operation.getTaskType();
 			CalculationStepTask task = job.addTask(taskType);
 			task.setCalculationStep(step);			
 		}
-		return job;
 	}
 
-	private void addPreprocessSteps(Job job) {
-
-		job.addTask(PrepareOutputSchemaTask.class);
-
+	private void addPostprocessingTasks(Job job) {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -1,6 +1,6 @@
 package org.openforis.calc.persistence;
 
-import static org.openforis.calc.persistence.sql.Sql.quoteIdentifier;
+import static org.openforis.calc.persistence.sql.Psql.quoteIdentifier;
 
 import java.sql.Connection;
 import java.sql.SQLException;
