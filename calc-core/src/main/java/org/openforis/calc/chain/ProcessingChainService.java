@@ -2,6 +2,7 @@ package org.openforis.calc.chain;
 
 import java.util.List;
 
+import org.openforis.calc.chain.pre.PrepareOutputSchemaTask;
 import org.openforis.calc.engine.Job;
 import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
@@ -50,6 +51,10 @@ public class ProcessingChainService {
 		}
 		Workspace workspace = chain.getWorkspace();
 		Job job = taskManager.createJob(workspace);
+
+		// Add preprocess steps to the job
+		addPreprocessSteps(job);
+
 		// Add steps to job
 		List<CalculationStep> steps = chain.getCalculationSteps();
 		for (CalculationStep step : steps) {
@@ -58,10 +63,15 @@ public class ProcessingChainService {
 				throw new InvalidProcessingChainException();
 			}
 			Class<? extends CalculationStepTask> taskType = operation.getTaskType();
-			CalculationStepTask task = taskManager.createTask(taskType);
+			CalculationStepTask task = job.addTask(taskType);
 			task.setCalculationStep(step);			
-			job.addTask(task);
 		}
 		return job;
+	}
+
+	private void addPreprocessSteps(Job job) {
+
+		job.addTask(PrepareOutputSchemaTask.class);
+
 	}
 }

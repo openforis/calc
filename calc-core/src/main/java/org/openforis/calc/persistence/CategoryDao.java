@@ -1,5 +1,7 @@
 package org.openforis.calc.persistence;
 
+import static org.openforis.calc.persistence.sql.Sql.quoteIdentifier;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -24,6 +26,8 @@ public class CategoryDao extends AbstractDao<Category> {
 	private static final String CATEGORY_TABLE_NAME = "category";
 	private static final String CATEGORY_VARIABLE_ID_COL_NAME = "variable_id";
 	private static final String CATEGORY_CODE_COL_NAME = "code";
+	private static final String CATEGORY_NAME_COL_NAME = "name";
+	private static final String CATEGORY_DESCR_COL_NAME = "description";
 	private static final String CATEGORY_SORT_ORDER_COL_NAME = "sort_order";
 	private static final String CATEGORY_ORIGINAL_ID_COL_NAME = "original_id";
 	
@@ -32,28 +36,34 @@ public class CategoryDao extends AbstractDao<Category> {
 
 	@Transactional
 	public void copyCodesIntoCategories(String inputSchema, String outputSchema,
-			int variableId, String codeTableName, String codeColumnName, String descriptionColumnName) {
+			int variableId, String codeTableName,
+			String codeColumnName, String codeTableLabelColumnName,
+			String codeTableDescriptionColumnName) {
 		
 		String codeTableIdColumnName = codeTableName + "_id";
 		
 		String insertQueryTemplate = 
-				"INSERT INTO %s.%s (%s, %s, %s, %s)" +
-				" SELECT %s, %s, %s, %s" +
+				"INSERT INTO %s.%s (%s, %s, %s, %s, %s, %s)" +
+				" SELECT %s, %s, %s, %s, %s, %s" +
 				" FROM %s.%s";
 		
 		String sql = String.format(insertQueryTemplate, 
-				quote(outputSchema),
-				quote(CATEGORY_TABLE_NAME), 
-				quote(CATEGORY_VARIABLE_ID_COL_NAME),
-				quote(CATEGORY_ORIGINAL_ID_COL_NAME), 
-				quote(CATEGORY_CODE_COL_NAME),
-				quote(CATEGORY_SORT_ORDER_COL_NAME),
+				quoteIdentifier(outputSchema),
+				quoteIdentifier(CATEGORY_TABLE_NAME), 
+				quoteIdentifier(CATEGORY_VARIABLE_ID_COL_NAME),
+				quoteIdentifier(CATEGORY_ORIGINAL_ID_COL_NAME), 
+				quoteIdentifier(CATEGORY_CODE_COL_NAME),
+				quoteIdentifier(CATEGORY_NAME_COL_NAME),
+				quoteIdentifier(CATEGORY_DESCR_COL_NAME),
+				quoteIdentifier(CATEGORY_SORT_ORDER_COL_NAME),
 				String.valueOf(variableId),
-				quote(codeTableIdColumnName),
-				quote(codeColumnName),
-				quote(codeTableIdColumnName),
-				quote(inputSchema),
-				quote(codeTableName)
+				quoteIdentifier(codeTableIdColumnName),
+				quoteIdentifier(codeColumnName),
+				quoteIdentifier(codeTableLabelColumnName),
+				quoteIdentifier(codeTableDescriptionColumnName),
+				quoteIdentifier(codeTableIdColumnName),
+				quoteIdentifier(inputSchema),
+				quoteIdentifier(codeTableName)
 		);
 
 		Connection c = getConnection();
@@ -65,10 +75,6 @@ public class CategoryDao extends AbstractDao<Category> {
 		}
 	}
 	
-	private String quote(String value) {
-		return value == null ? null : "\"" + value + "\"";
-	}
-
 	protected Connection getConnection() {
 		return DataSourceUtils.getConnection(dataSource);
 	}

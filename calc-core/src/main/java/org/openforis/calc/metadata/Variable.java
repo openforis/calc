@@ -50,10 +50,10 @@ public abstract class Variable extends UserObject {
 	private String dimensionTable;
 
 	@Column(name = "input")
-	private boolean input;
+	private Boolean input;
 	
 	@Column(name = "override")
-	private boolean override;
+	private Boolean override;
 	
 	public enum Type {
 		QUANTITATIVE, CATEGORICAL, BINARY;
@@ -125,7 +125,7 @@ public abstract class Variable extends UserObject {
 		return input;
 	}
 	
-	public void setInput(boolean input) {
+	public void setInput(Boolean input) {
 		this.input = input;
 	}
 	
@@ -133,7 +133,7 @@ public abstract class Variable extends UserObject {
 		return override;
 	}
 
-	public void setOverride(boolean override) {
+	public void setOverride(Boolean override) {
 		this.override = override;
 	}
 	

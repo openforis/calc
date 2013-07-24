@@ -51,10 +51,10 @@ public class Entity extends UserObject {
 	private int sortOrder;
 	
 	@Column(name = "input")
-	private boolean input;
+	private Boolean input;
 	
 	@Column(name = "override")
-	private boolean override;
+	private Boolean override;
 	
 	@Column(name = "x_column")
 	private String xColumn;
@@ -123,7 +123,7 @@ public class Entity extends UserObject {
 		this.sortOrder = sortOrder;
 	}
 	
-	public void setInput(boolean input) {
+	public void setInput(Boolean input) {
 		this.input = input;
 	}
 	
@@ -131,7 +131,7 @@ public class Entity extends UserObject {
 		return input;
 	}
 	
-	public void setOverride(boolean override) {
+	public void setOverride(Boolean override) {
 		this.override = override;
 	}
 	
