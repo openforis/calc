@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -28,6 +29,9 @@ public class Job extends Worker implements Iterable<Task> {
 	private int currentTaskIndex;
 	private List<Task> tasks;
 	
+	@Autowired
+	TaskManager taskManager;
+
 	public Job() {
 		this.currentTaskIndex = -1;
 		this.tasks = new ArrayList<Task>();
@@ -106,6 +110,17 @@ public class Job extends Worker implements Iterable<Task> {
 		}
 		task.setJob(this);
 		tasks.add(task);
+	}
+
+	/**
+	 * Adds a task to the Job
+	 * @param task The Class of the task we want to add to the Job
+	 * @return The added Task instance
+	 */
+	public <T extends Task> T addTask(Class<T> task) {
+		Task newTask = taskManager.createTask(task);
+		addTask(newTask);
+		return (T) newTask;
 	}
 
 	public int getCurrentTaskIndex() {

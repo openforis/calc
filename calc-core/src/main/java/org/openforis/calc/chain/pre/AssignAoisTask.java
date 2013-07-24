@@ -1,5 +1,7 @@
 package org.openforis.calc.chain.pre;
 
+import static org.openforis.calc.persistence.sql.Sql.quoteIdentifier;
+
 import java.util.List;
 
 import org.openforis.calc.engine.Task;
@@ -7,8 +9,6 @@ import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.AoiHierarchyLevel;
 import org.openforis.calc.metadata.Entity;
-
-import static org.openforis.calc.persistence.sql.Sql.*;
 /**
  * Task responsible for assigning AOI codes and/or ids to an output table based on a Point column.
  * Assigns AOI ids to each georeferenced entity
@@ -59,3 +59,5 @@ public final class AssignAoisTask extends Task {
 		);
 	}
 }
+
+
