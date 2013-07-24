@@ -38,7 +38,7 @@ public class Entity extends UserObject {
 	private Workspace workspace;
 
 	@Column(name = "data_table")
-	private String table;
+	private String dataTable;
 
 	@Column(name = "caption")
 	private String caption;
@@ -67,6 +67,12 @@ public class Entity extends UserObject {
 	
 	@Column(name = "location_column")
 	private String locationColumn;
+	
+	@Column(name = "cluster_column")
+	private String clusterColumn;
+	
+	@Column(name = "unit_no_column")
+	private String unitNoColumn;
 
 	@OneToMany(mappedBy = "entity", fetch = FetchType.EAGER)
 	@OrderBy("sortOrder")
@@ -83,11 +89,11 @@ public class Entity extends UserObject {
 	}
 	
 	public String getDataTable() {
-		return table;
+		return dataTable;
 	}
 
 	public void setDataTable(String table) {
-		this.table = table;
+		this.dataTable = table;
 	}
 
 	public String getCaption() {
@@ -175,4 +181,42 @@ public class Entity extends UserObject {
 		return ((xColumn != null && yColumn != null) || locationColumn != null);
 	}
 
+	public String getxColumn() {
+		return xColumn;
+	}
+
+	public void setxColumn(String xColumn) {
+		this.xColumn = xColumn;
+	}
+
+	public String getyColumn() {
+		return yColumn;
+	}
+
+	public void setyColumn(String yColumn) {
+		this.yColumn = yColumn;
+	}
+
+	public String getClusterColumn() {
+		return clusterColumn;
+	}
+
+	public void setClusterColumn(String clusterColumn) {
+		this.clusterColumn = clusterColumn;
+	}
+
+	public String getUnitNoColumn() {
+		return unitNoColumn;
+	}
+
+	public void setUnitNoColumn(String unitNoColumn) {
+		this.unitNoColumn = unitNoColumn;
+	}
+
+	public boolean isSamplingUnit() {
+		return unitNoColumn != null;
+	}
+	
+	
 }
+

@@ -11,6 +11,7 @@ import org.openforis.calc.metadata.Entity;
 import static org.openforis.calc.persistence.sql.Sql.*;
 /**
  * Task responsible for assigning AOI codes and/or ids to an output table based on a Point column.
+ * Assigns AOI ids to each georeferenced entity
  * 
  * @author G. Miceli
  */
@@ -18,6 +19,7 @@ public final class AssignAoisTask extends Task {
 	@Override
 	protected void execute() throws Throwable {
 		Workspace ws = getWorkspace();
+		setSchema(ws.getOutputSchema());
 		List<Entity> entities = ws.getEntities();
 		for (Entity entity : entities) {
 			if (entity.isGeoreferenced()) {
@@ -39,8 +41,6 @@ public final class AssignAoisTask extends Task {
 
 	private void assignAois(Entity entity, AoiHierarchyLevel level) {
 		AoiHierarchy hierarchy = level.getHierarchy();
-		Workspace workspace = entity.getWorkspace();
-		setSchema(workspace.getOutputSchema());
 		String dataTable = quoteIdentifier(entity.getDataTable());
 		String aoiIdColumn = quoteIdentifier("_"+hierarchy.getName()+"_"+level.getName()+"_id");
 		String aoiDimTable = quoteIdentifier(level.getDimensionTable());
