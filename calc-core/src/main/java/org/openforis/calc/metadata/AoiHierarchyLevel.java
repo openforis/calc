@@ -18,7 +18,6 @@ import org.openforis.calc.persistence.sql.Sql;
  */
 @javax.persistence.Entity
 @Table(name = "aoi_level")
-// TODO this can be renamed to AoiLevel
 public class AoiHierarchyLevel extends AbstractNamedIdentifiable {
 
 	@ManyToOne(fetch = FetchType.LAZY)

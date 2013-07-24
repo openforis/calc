@@ -1,10 +1,12 @@
-package org.openforis.calc.engine;
+package org.openforis.calc.chain.pre;
 
 import static org.openforis.calc.persistence.sql.Sql.quoteIdentifier;
-import static org.openforis.calc.persistence.sql.Sql.toIdentifier;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.openforis.calc.engine.Task;
+import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.AoiHierarchyLevel;
 import org.openforis.calc.metadata.BinaryVariable;
@@ -32,17 +34,18 @@ public final class PrepareOutputSchemaTask extends Task {
 	Logger logger = LoggerFactory.getLogger(PrepareOutputSchemaTask.class);
 
 	private void dropOutputSchema() {
-		String outputSchema = getContext().getWorkspace().getOutputSchema();
-		String sql = "DROP SCHEMA IF EXISTS " + outputSchema + " CASCADE";
-		getJdbcTemplate().execute(sql);
+		Workspace workspace = getContext().getWorkspace();
+		String outputSchema = workspace.getOutputSchema();
+		String sql = "DROP SCHEMA IF EXISTS %s CASCADE";
+		executeSql(sql, outputSchema);
 
 	}
 
 	private void createOutputSchema() {
-		String outputSchema = getContext().getWorkspace().getOutputSchema();
-		String sql = "CREATE SCHEMA " + outputSchema;
-
-		getJdbcTemplate().execute(sql);
+		Workspace workspace = getContext().getWorkspace();
+		String outputSchema = workspace.getOutputSchema();
+		String sql = "CREATE SCHEMA %s";
+		executeSql(sql, outputSchema);
 
 	}
 
@@ -71,7 +74,9 @@ public final class PrepareOutputSchemaTask extends Task {
 			List<AoiHierarchyLevel> levels = hierarchy.getLevels();
 			for (AoiHierarchyLevel level : levels) {
 				String outputSchema = quoteIdentifier(workspace.getOutputSchema());
+
 				String table = quoteIdentifier(level.getDimensionTable());
+
 				Integer varId = level.getId();
 
 				executeSql("CREATE TABLE %s.%s AS SELECT * FROM calc.aoi WHERE aoi_level_id = %d", 
@@ -86,6 +91,7 @@ public final class PrepareOutputSchemaTask extends Task {
 		List<Entity> entities = workspace.getEntities();
 		for (Entity entity : entities) {
 			List<Variable> variables = entity.getVariables();
+
 			for (Variable var : variables) {
 				if (var instanceof CategoricalVariable || var instanceof BinaryVariable) {
 					String outputSchema = quoteIdentifier(workspace.getOutputSchema());
@@ -115,22 +121,29 @@ public final class PrepareOutputSchemaTask extends Task {
 			
 			factSql.append( "CREATE TABLE %s.%s AS SELECT * ");
 			
+			//ALTER TABLE distributors ADD CONSTRAINT distfk FOREIGN KEY (address) REFERENCES addresses (address) MATCH FULL;
+
 			//StringBuilder appendConstraints = new StringBuilder();
 			List<Variable> variables = entity.getVariables();
+			List<String> foreignKeys = new ArrayList<String>();
+			
 			for (Variable variable : variables) {
 				if (!tableColumnExists(inputSchema, inputTable, variable.getValueColumn())) {
 					factSql.append(", CAST( NULL as integer) AS ").append(variable.getValueColumn());
+					
 				}
-
-				//				if( variable instanceof BinaryVariable || variable instanceof CategoricalVariable ){
-				//					appendConstraints.append( "CONSTRAINT ").append( inputTable).append( variable.getName() ).append("_fkey FOREIGN KEY (").append( variable.getValueColumn() ).append(") REFERENCES calc.workspace (id) " );
-				//				}
+				String sqlAlter = "ALTER TABLE %s.%s ADD CONSTRAINT %sfk FOREIGN KEY (%s) REFERENCES %s  ( %s ) MATCH FULL"; 
+				
+				foreignKeys.add(String.format(sqlAlter, outputSchema, outputTable, variable.getValueColumn(),
+						variable.getValueColumn(), variable.getDimensionTable(), variable.getValueColumn()));
 			}
 			factSql.append( "  FROM %s.%s " ); 
 			
-			String sql = String.format(factSql.toString(), outputSchema, outputTable, inputSchema, inputTable );
+			executeSql(factSql.toString(), outputSchema, outputTable, inputSchema, inputTable);
 
-			getJdbcTemplate().execute(sql);
+			for (String foreignKeyCommand : foreignKeys) {
+				executeSql(foreignKeyCommand);
+			}
 		}
 
 	}
@@ -161,16 +174,6 @@ public final class PrepareOutputSchemaTask extends Task {
 
 	}
 
-	@Override
-	protected long countTotalItems() {
-		// TODO Auto-generated method stub
-		return super.countTotalItems();
-	}
 
-	@Override
-	public long getItemsProcessed() {
-		// TODO Auto-generated method stub
-		return super.getItemsProcessed();
-	}
 	
 }
