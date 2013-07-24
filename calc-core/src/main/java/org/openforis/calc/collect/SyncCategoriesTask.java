@@ -16,6 +16,7 @@ import org.openforis.calc.persistence.CategoryDao;
 import org.openforis.collect.persistence.xml.CollectSurveyIdmlBinder;
 import org.openforis.collect.relational.CollectRdbException;
 import org.openforis.collect.relational.model.CodeColumn;
+import org.openforis.collect.relational.model.CodeLabelColumn;
 import org.openforis.collect.relational.model.CodeListCodeColumn;
 import org.openforis.collect.relational.model.CodeListDescriptionColumn;
 import org.openforis.collect.relational.model.CodeTable;
@@ -66,10 +67,11 @@ public class SyncCategoriesTask extends Task {
 					List<Column<?>> columns = rdbCodeTable.getColumns();
 					String codeColumnName = getColumnName(columns, CodeListCodeColumn.class);
 					String descriptionColumnName = getColumnName(columns, CodeListDescriptionColumn.class);
+					String labelColumnName = getColumnName(columns, CodeLabelColumn.class);
 					categoryDao.copyCodesIntoCategories(
 							ws.getInputSchema(), ws.getOutputSchema(), 
 							v.getId(),
-							rdbCodeTable.getName(), codeColumnName, descriptionColumnName);
+							rdbCodeTable.getName(), codeColumnName, labelColumnName, descriptionColumnName);
 				}
 			} else if ( v instanceof BinaryVariable ) {
 				insertBooleanCategories((BinaryVariable) v);
@@ -78,16 +80,17 @@ public class SyncCategoriesTask extends Task {
 	}
 
 	protected void insertBooleanCategories(BinaryVariable v) {
-		insertBooleanCategory(v, Boolean.TRUE);
-		insertBooleanCategory(v, Boolean.FALSE);
-		insertBooleanCategory(v, null);
+		insertBooleanCategory(v, Boolean.TRUE, 1);
+		insertBooleanCategory(v, Boolean.FALSE, 2);
+		insertBooleanCategory(v, null, 3);
 	}
 
-	protected void insertBooleanCategory(BinaryVariable v, Boolean value) {
+	protected void insertBooleanCategory(BinaryVariable v, Boolean value, int sortOrder) {
 		Category c = new Category();
 		c.setVariable(v);
 		c.setCode(value == null ? "N": value.booleanValue() ? "T": "F");
 		c.setName(value == null ? "NA": value.booleanValue() ? "TRUE": "FALSE");
+		c.setSortOrder(sortOrder);
 		categoryDao.save(c);
 	}
 
@@ -116,11 +119,11 @@ public class SyncCategoriesTask extends Task {
 	}
 
 	//TODO move to RDB Table
-	protected Column<?> getRDBColumn(Table<?> entityRDBTable, String name) {
-		List<Column<?>> columns = entityRDBTable.getColumns();
-		for (Column<?> column : columns) {
-			if ( column.getName().equals(name) ) {
-				return column;
+	protected Column<?> getRDBColumn(Table<?> table, String name) {
+		List<Column<?>> columns = table.getColumns();
+		for (Column<?> c : columns) {
+			if ( c.getName().equals(name) ) {
+				return c;
 			}
 		}
 		throw new IllegalArgumentException("Column not found: " + name);
