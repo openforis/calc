@@ -6,19 +6,21 @@ import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceLockedException;
 import org.openforis.calc.engine.WorkspaceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 
 /**
  * 
  * @author S. Ricci
- *
+ * 
  */
 @Component
 public class CollectMetadataService {
-	
+
 	@Autowired
 	private WorkspaceService workspaceManager;
-	@Autowired 
+	@Autowired
 	private TaskManager taskManager;
 
 	public Job startSync(int workspaceId) throws WorkspaceLockedException {
@@ -30,11 +32,21 @@ public class CollectMetadataService {
 
 	private Job createSyncJob(Workspace workspace) {
 		Job job = taskManager.createJob(workspace);
-		SyncMetadataTask syncMetadata = taskManager.createTask(SyncMetadataTask.class);
+		SyncMetadataTask syncMetadata = taskManager
+				.createTask(SyncMetadataTask.class);
 		job.addTask(syncMetadata);
-		SyncCategoriesTask syncCategories = taskManager.createTask(SyncCategoriesTask.class);
+		SyncCategoriesTask syncCategories = taskManager
+				.createTask(SyncCategoriesTask.class);
 		job.addTask(syncCategories);
 		return job;
+	}
+
+	public static void main(String[] args) throws WorkspaceLockedException {
+		@SuppressWarnings("resource")
+		ApplicationContext appContext = new ClassPathXmlApplicationContext(
+					"/applicationContext.xml");
+		CollectMetadataService service = appContext.getBean(CollectMetadataService.class);
+		service.startSync(1);
 	}
 
 }
