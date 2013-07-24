@@ -40,6 +40,12 @@ public class Entity extends UserObject {
 	@Column(name = "data_table")
 	private String table;
 
+	@Column(name = "id_column")
+	private String idColumn;
+
+	@Column(name = "parent_id_column")
+	private String parentIdColumn;
+
 	@Column(name = "caption")
 	private String caption;
 	
@@ -173,6 +179,22 @@ public class Entity extends UserObject {
 
 	public boolean isGeoreferenced() {
 		return ((xColumn != null && yColumn != null) || locationColumn != null);
+	}
+
+	public String getIdColumn() {
+		return idColumn;
+	}
+
+	public void setIdColumn(String idColumn) {
+		this.idColumn = idColumn;
+	}
+
+	public String getParentIdColumn() {
+		return parentIdColumn;
+	}
+
+	public void setParentIdColumn(String parentIdColumn) {
+		this.parentIdColumn = parentIdColumn;
 	}
 
 }
