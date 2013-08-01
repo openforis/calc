@@ -1,6 +1,6 @@
 package org.openforis.calc.chain;
 
-import org.openforis.calc.persistence.jpa.AbstractDao;
+import org.openforis.calc.persistence.jpa.AbstractJpaDao;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
  * @author M. Togna
  */
 @Repository
-public class ProcessingChainDao extends AbstractDao<ProcessingChain> {
+public class ProcessingChainDao extends AbstractJpaDao<ProcessingChain> {
 
 }

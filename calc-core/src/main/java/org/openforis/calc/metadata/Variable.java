@@ -139,5 +139,4 @@ public abstract class Variable extends UserObject {
 	public void setOverride(Boolean override) {
 		this.override = override;
 	}
-	
 }

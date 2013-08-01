@@ -3,7 +3,7 @@ package org.openforis.calc.chain.pre;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openforis.calc.engine.Task;
+import org.openforis.calc.engine.SqlTask;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.Category;
 import org.openforis.calc.metadata.Entity;
@@ -14,16 +14,16 @@ import org.springframework.jdbc.core.RowMapper;
  * Creates fact tables in output schema based on {@link Category}s
  * 
  * @author G. Miceli
- * @author M. Togna
+ * @author A. Sanchez-Paus Diaz
  */
-public final class CreateFactTablesTask extends Task {
+public final class CreateFactTablesTask extends SqlTask {
 	
 	private void createFactTables() {
-		Workspace workspace = getContext().getWorkspace();
+		Workspace workspace = getWorkspace();
 		List<Entity> entities = workspace.getEntities();
 		String outputSchema = workspace.getOutputSchema();
 		String inputSchema = workspace.getInputSchema();
-
+		
 		for (Entity entity : entities) {
 			StringBuilder factSql = new StringBuilder();
 			String outputTable = entity.getDataTable();

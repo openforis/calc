@@ -96,6 +96,6 @@ public class CalculationStep extends UserObject {
 	
 	@Override
 	public String toString() {
-		return String.format("%s:%s:%s", moduleName, operationName, moduleVersion);
+		return String.format("#%d: %s:%s:%s", stepNo, moduleName, operationName, moduleVersion);
 	}
 }

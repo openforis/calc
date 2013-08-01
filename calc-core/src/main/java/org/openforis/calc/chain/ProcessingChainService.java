@@ -2,9 +2,7 @@ package org.openforis.calc.chain;
 
 import java.util.List;
 
-import org.openforis.calc.chain.pre.CreateAoiDimensionTablesTask;
 import org.openforis.calc.chain.pre.CreateCategoryDimensionTablesTask;
-import org.openforis.calc.chain.pre.CreateFactTablesTask;
 import org.openforis.calc.chain.pre.CreateOutputSchemaTask;
 import org.openforis.calc.chain.pre.DropOutputSchemaTask;
 import org.openforis.calc.engine.Job;
@@ -71,8 +69,8 @@ public class ProcessingChainService {
 		job.addTask(DropOutputSchemaTask.class);
 		job.addTask(CreateOutputSchemaTask.class);
 		job.addTask(CreateCategoryDimensionTablesTask.class);
-		job.addTask(CreateAoiDimensionTablesTask.class);
-		job.addTask(CreateFactTablesTask.class);
+//		job.addTask(CreateAoiDimensionTablesTask.class);
+//		job.addTask(CreateFactTablesTask.class);
 //		job.addTask(SetOutputSchemaGrantsTask.class);
 	}
 
@@ -81,7 +79,7 @@ public class ProcessingChainService {
 		for (CalculationStep step : steps) {
 			Operation<?> operation = moduleRegistry.getOperation(step);
 			if ( operation == null ) {
-				throw new InvalidProcessingChainException("Unknown operation for "+step);
+				throw new InvalidProcessingChainException("Unknown operation in step "+step);
 			}
 			Class<? extends CalculationStepTask> taskType = operation.getTaskType();
 			CalculationStepTask task = job.addTask(taskType);

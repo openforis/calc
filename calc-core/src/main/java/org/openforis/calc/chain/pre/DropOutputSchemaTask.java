@@ -1,27 +1,21 @@
 package org.openforis.calc.chain.pre;
 
-import org.openforis.calc.engine.Task;
+import org.openforis.calc.engine.SqlTask;
 import org.openforis.calc.engine.Workspace;
 
 /**
  * Drops the output schema and all contained data.
  * 
  * @author G. Miceli
- * @author M. Togna
+ * @author A. Sanchez-Paus Diaz 
  */
-public final class DropOutputSchemaTask extends Task {
-
-	private void dropOutputSchema() {
-		Workspace workspace = getContext().getWorkspace();
-		String outputSchema = workspace.getOutputSchema();
-		String sql = "DROP SCHEMA IF EXISTS %s CASCADE";
-		executeSql(sql, outputSchema);
-		log().info("Dropped output schema: " + outputSchema);
-	}
+public final class DropOutputSchemaTask extends SqlTask {
 
 	@Override
 	protected void execute() throws Throwable {
-		dropOutputSchema();
+		Workspace workspace = getContext().getWorkspace();
+		String outputSchema = workspace.getOutputSchema();
+		psql().dropSchemaIfExistsCascade(outputSchema).execute();
 	}
 
 }

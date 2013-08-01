@@ -7,7 +7,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.openforis.calc.common.AbstractNamedIdentifiable;
-import org.openforis.calc.persistence.sql.Psql;
+import org.openforis.calc.persistence.postgis.Psql;
 
 /**
  * Provides metadata about a AOI Hierarchy Level. A hierarchy might be an "Administrative division" or "Ecological division" of an area.

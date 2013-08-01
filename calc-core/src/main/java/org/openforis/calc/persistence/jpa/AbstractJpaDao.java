@@ -19,14 +19,14 @@ import org.springframework.transaction.annotation.Transactional;
  * @param <T>
  */
 @Repository
-public abstract class AbstractDao<T extends Identifiable> {
+public abstract class AbstractJpaDao<T extends Identifiable> {
 	
     @PersistenceContext
     private EntityManager entityManager;
 
     private Class<T> type;
     
-    protected AbstractDao() {
+    protected AbstractJpaDao() {
 	}
     
     @Transactional

@@ -1,6 +1,6 @@
 package org.openforis.calc.chain.pre;
 
-import static org.openforis.calc.persistence.sql.Psql.quoteIdentifier;
+import static org.openforis.calc.persistence.sql.Psql.quoteIdentifiers;
 
 import java.util.List;
 
@@ -24,9 +24,9 @@ public final class CreateAoiDimensionTablesTask extends Task {
 		for (AoiHierarchy hierarchy : hierarchies) {
 			List<AoiHierarchyLevel> levels = hierarchy.getLevels();
 			for (AoiHierarchyLevel level : levels) {
-				String outputSchema = quoteIdentifier(workspace.getOutputSchema());
+				String outputSchema = quoteIdentifiers(workspace.getOutputSchema());
 
-				String tableName = quoteIdentifier(level.getDimensionTable());
+				String tableName = quoteIdentifiers(level.getDimensionTable());
 
 				Integer varId = level.getId();
 

@@ -1,6 +1,6 @@
 package org.openforis.calc.metadata;
 
-import org.openforis.calc.persistence.jpa.AbstractDao;
+import org.openforis.calc.persistence.jpa.AbstractJpaDao;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
  *
  */
 @Repository
-public class EntityDao extends AbstractDao<Entity> {
+public class EntityDao extends AbstractJpaDao<Entity> {
 
 }

@@ -15,6 +15,7 @@ import javax.persistence.DiscriminatorValue;
 @DiscriminatorValue("B")
 public class BinaryVariable extends Variable {
 	
+	// TODO implement as subclass of CategoricalVariable?
 	public BinaryVariable() {
 		setScale(Scale.BINARY);
 	}

@@ -7,7 +7,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import org.openforis.calc.persistence.jpa.AbstractDao;
+import org.openforis.calc.persistence.jpa.AbstractJpaDao;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
  *
  */
 @Repository
-public class WorkspaceDao extends AbstractDao<Workspace> {
+public class WorkspaceDao extends AbstractJpaDao<Workspace> {
 
 	@Transactional
 	public Workspace findByName(String name) {
