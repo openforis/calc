@@ -40,6 +40,12 @@ public class Entity extends UserObject {
 	@Column(name = "data_table")
 	private String dataTable;
 
+	@Column(name = "id_column")
+	private String idColumn;
+
+	@Column(name = "parent_id_column")
+	private String parentIdColumn;
+
 	@Column(name = "caption")
 	private String caption;
 	
@@ -181,42 +187,20 @@ public class Entity extends UserObject {
 		return ((xColumn != null && yColumn != null) || locationColumn != null);
 	}
 
-	public String getxColumn() {
-		return xColumn;
+	public String getIdColumn() {
+		return idColumn;
 	}
 
-	public void setxColumn(String xColumn) {
-		this.xColumn = xColumn;
+	public void setIdColumn(String idColumn) {
+		this.idColumn = idColumn;
 	}
 
-	public String getyColumn() {
-		return yColumn;
+	public String getParentIdColumn() {
+		return parentIdColumn;
 	}
 
-	public void setyColumn(String yColumn) {
-		this.yColumn = yColumn;
+	public void setParentIdColumn(String parentIdColumn) {
+		this.parentIdColumn = parentIdColumn;
 	}
-
-	public String getClusterColumn() {
-		return clusterColumn;
-	}
-
-	public void setClusterColumn(String clusterColumn) {
-		this.clusterColumn = clusterColumn;
-	}
-
-	public String getUnitNoColumn() {
-		return unitNoColumn;
-	}
-
-	public void setUnitNoColumn(String unitNoColumn) {
-		this.unitNoColumn = unitNoColumn;
-	}
-
-	public boolean isSamplingUnit() {
-		return unitNoColumn != null;
-	}
-	
-	
 }
 

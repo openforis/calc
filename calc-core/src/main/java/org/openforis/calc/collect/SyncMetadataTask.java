@@ -22,6 +22,8 @@ import org.openforis.collect.relational.model.CodeColumn;
 import org.openforis.collect.relational.model.CodeTable;
 import org.openforis.collect.relational.model.Column;
 import org.openforis.collect.relational.model.DataColumn;
+import org.openforis.collect.relational.model.DataParentKeyColumn;
+import org.openforis.collect.relational.model.DataPrimaryKeyColumn;
 import org.openforis.collect.relational.model.DataTable;
 import org.openforis.collect.relational.model.RelationalSchema;
 import org.openforis.collect.relational.model.RelationalSchemaGenerator;
@@ -165,6 +167,10 @@ public class SyncMetadataTask extends Task {
 			e.setWorkspace(workspace);
 			e.setDataTable(table.getName());
 			e.setInput(true); //TODO handle user defined or modified entities
+			DataPrimaryKeyColumn idColumn = getPrimaryKeyColumn(table);
+			e.setIdColumn(idColumn.getName());
+			DataParentKeyColumn parentIdColumn = getParentKeyColumn(table);
+			e.setParentIdColumn(parentIdColumn == null ? null : parentIdColumn.getName());
 			
 			setCoordinateColumns(e, table);
 			
@@ -312,6 +318,29 @@ public class SyncMetadataTask extends Task {
 		}
 		return attributeDefn;
 	}
+
+	//TODO move it to RDB DataTable
+	private DataPrimaryKeyColumn getPrimaryKeyColumn(DataTable table) {
+		List<Column<?>> columns = table.getColumns();
+		for (Column<?> c : columns) {
+			if ( c instanceof DataPrimaryKeyColumn ) {
+				return (DataPrimaryKeyColumn) c;
+			}
+		}
+		throw new IllegalArgumentException("Primary key column not found in table: " + table.getName());
+	}
+	
+	//TODO move it to RDB DataTable
+	private DataParentKeyColumn getParentKeyColumn(DataTable table) {
+		List<Column<?>> columns = table.getColumns();
+		for (Column<?> c : columns) {
+			if ( c instanceof DataParentKeyColumn ) {
+				return (DataParentKeyColumn) c;
+			}
+		}
+		return null;
+	}
+
 
 	public synchronized void init() {
 	}
