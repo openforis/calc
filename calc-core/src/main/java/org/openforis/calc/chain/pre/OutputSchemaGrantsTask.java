@@ -18,7 +18,6 @@ public final class OutputSchemaGrantsTask extends SqlTask {
 	protected void execute() throws Throwable {
 		Workspace workspace = getContext().getWorkspace();
 		String outputSchema = workspace.getOutputSchema();
-		// TODO The following as no effect!
 		psql().grantAllOnTables(outputSchema, systemUser).execute();
 		psql().grantAllOnSchema(outputSchema, systemUser).execute();
 	}
