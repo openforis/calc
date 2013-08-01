@@ -39,13 +39,10 @@ public final class CreateCategoryDimensionTablesTask extends SqlTask {
 						.createTable(tableName)
 						.as(select) 
 						.execute(varId);
-//					
-//					executeSql("CREATE TABLE %s.%s AS SELECT * FROM calc.category WHERE variable_id = %d", outputSchema,
-//							tableName, varId);
-//
-//					executeSql("ALTER TABLE %s.%s ADD PRIMARY KEY (id)", outputSchema, tableName);
-
-//					log().debug("Categorical dimension table created: " + tableName);
+					
+					psql()
+						.alterTable(tableName)
+						.addPrimaryKey("id");
 				}
 			}
 		}

@@ -1,13 +1,12 @@
 package org.openforis.calc.chain.pre;
 
-import static org.openforis.calc.persistence.sql.Psql.quoteIdentifiers;
-
 import java.util.List;
 
-import org.openforis.calc.engine.Task;
+import org.openforis.calc.engine.SqlTask;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.AoiHierarchyLevel;
+import org.openforis.calc.persistence.postgis.Psql;
 
 /**
  * Copies category tables into the output schema.  Fails if output schema already exists.
@@ -15,7 +14,7 @@ import org.openforis.calc.metadata.AoiHierarchyLevel;
  * @author A. Sanchez-Paus Diaz
  * @author G. Miceli
  */
-public final class CreateAoiDimensionTablesTask extends Task {
+public final class CreateAoiDimensionTablesTask extends SqlTask {
 
 	@Override
 	protected void execute() throws Throwable {
@@ -24,17 +23,23 @@ public final class CreateAoiDimensionTablesTask extends Task {
 		for (AoiHierarchy hierarchy : hierarchies) {
 			List<AoiHierarchyLevel> levels = hierarchy.getLevels();
 			for (AoiHierarchyLevel level : levels) {
-				String outputSchema = quoteIdentifiers(workspace.getOutputSchema());
-
-				String tableName = quoteIdentifiers(level.getDimensionTable());
+				String tableName = level.getDimensionTable();
 
 				Integer varId = level.getId();
 
-				executeSql("CREATE TABLE %s.%s AS SELECT * FROM calc.aoi WHERE aoi_level_id = %d", outputSchema, tableName, varId);
-
-				executeSql("ALTER TABLE %s.%s ADD PRIMARY KEY (id)", outputSchema, tableName);
-
-				log().info("AOI dimension table created:" + tableName);
+				Psql select = new Psql()
+					.select("*")
+					.from("calc.aoi")
+					.where("aoi_level_id = ?");
+				
+				psql()
+					.createTable(tableName)
+					.as(select) 
+					.execute(varId);
+				
+				psql()
+					.alterTable(tableName)
+					.addPrimaryKey("id");
 			}
 		}
 	}

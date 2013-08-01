@@ -1,11 +1,7 @@
 package org.openforis.calc.chain.pre;
 
-import static org.junit.Assert.fail;
-
 import org.junit.Before;
 import org.junit.Test;
-import org.openforis.calc.chain.pre.CreateOutputSchemaTask;
-import org.openforis.calc.chain.pre.DropOutputSchemaTask;
 import org.openforis.calc.engine.Job;
 import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
@@ -37,6 +33,7 @@ public class PrepareOutputSchemaTaskTest extends AbstractTransactionalJUnit4Spri
 		job.addTask(DropOutputSchemaTask.class);
 		job.addTask(CreateOutputSchemaTask.class);
 		job.addTask(CreateCategoryDimensionTablesTask.class);
+		job.addTask(CreateAoiDimensionTablesTask.class);
 		job.addTask(OutputSchemaGrantsTask.class);
 	}
 

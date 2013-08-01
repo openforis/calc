@@ -39,6 +39,7 @@ public final class Psql {
 	private static final String AS = "as %s";
 	private static final String GRANT_ALL_ON_SCHEMA = "grant all on schema %s to %s";
 	private static final String GRANT_ALL_ON_TABLES = "grant all privileges on all tables in schema %s to %s";
+	private static final String ADD_PRIMARY_KEY = "add primary key (%s)";
 
 	private StringBuilder sb;
 	private JdbcTemplate jdbc;
@@ -193,4 +194,7 @@ public final class Psql {
 		return append(GRANT_ALL_ON_SCHEMA, schema, user);
 	}
 
+	public Psql addPrimaryKey(String... columns) {
+		return append(ADD_PRIMARY_KEY, quoteIdentifiers(columns));
+	}
 }
