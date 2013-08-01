@@ -202,5 +202,25 @@ public class Entity extends UserObject {
 	public void setParentIdColumn(String parentIdColumn) {
 		this.parentIdColumn = parentIdColumn;
 	}
+
+	public String getClusterColumn() {
+		return clusterColumn;
+	}
+
+	public void setClusterColumn(String clusterColumn) {
+		this.clusterColumn = clusterColumn;
+	}
+
+	public String getUnitNoColumn() {
+		return unitNoColumn;
+	}
+
+	public void setUnitNoColumn(String unitNoColumn) {
+		this.unitNoColumn = unitNoColumn;
+	}
+
+	public boolean isSamplingUnit() {
+		return unitNoColumn != null;
+	}
 }
 
