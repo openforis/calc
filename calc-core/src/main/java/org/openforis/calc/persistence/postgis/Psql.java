@@ -35,6 +35,7 @@ public final class Psql {
 	private static final String UPDATE = "update %s";
 	private static final String SET = "set %s = %s";
 	private static final String WHERE = "where %s";
+	private static final String AND = "and %s";
 	private static final String CREATE_TABLE = "create table %s";
 	private static final String AS = "as %s";
 	private static final String GRANT_ALL_ON_SCHEMA = "grant all on schema %s to %s";
@@ -172,6 +173,10 @@ public final class Psql {
 		return append(WHERE, condition);
 	}
 
+	public Psql and(Object condition) {
+		return append(AND, condition);
+	}
+	
 	public Psql dropSchemaIfExistsCascade(String schema) {
 		return append(DROP_SCHEMA_IF_EXISTS_CASCADE, schema);
 	}

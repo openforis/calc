@@ -31,40 +31,69 @@ public final class CreateAoiColumnsTask extends SqlTask {
 	private void createAoiColumns(Entity entity) {
 		Workspace workspace = entity.getWorkspace();
 		List<AoiHierarchy> hierarchies = workspace.getAoiHierarchies();
-		for (AoiHierarchy hierarchy : hierarchies) {
+		for ( AoiHierarchy hierarchy : hierarchies ) {
 			List<AoiHierarchyLevel> levels = hierarchy.getLevels();
-			for (AoiHierarchyLevel level : levels) {
-				createAoiColumns(entity, level);
+			
+			AoiHierarchyLevel childLevel = null;
+			for ( int i = levels.size() - 1 ; i >= 0 ; i-- ) {
+				AoiHierarchyLevel level = levels.get(i);
+				
+				createAoiColumns(entity, level, childLevel);
+				
+				childLevel = level;
 			}
 		}
+		
 	}
 
-	private void createAoiColumns(Entity entity, AoiHierarchyLevel level) {
-		String dataTable = quote(entity.getDataTable());
-		String factIdColumn = quote(entity.getIdColumn());
-		String aoiFkColumn = quote(level.getFkColumn());
-		String aoiDimTable = quote(level.getDimensionTable());
-		
+	private void createAoiColumns(Entity entity, AoiHierarchyLevel level, AoiHierarchyLevel childLevel) {
 		// add AOI id column to fact table output schema
+		String dataTable = quote(entity.getDataTable());
+		String aoiFkColumn = quote(level.getFkColumn());
+		
 		psql()
 			.alterTable(dataTable)
 			.addColumn(aoiFkColumn, INTEGER)
 			.execute();
 		
-		// update values
-		Psql selectAois = new Psql()
+		//update aoi column value 
+		String factIdColumn = quote(entity.getIdColumn());
+		String aoiDimTable = quote(level.getDimensionTable());
+		
+		//spatial query only for leaf aoi hierarchy level 
+		if( childLevel == null ) {
+			Psql selectAois = new Psql()
 			.select("f."+factIdColumn+" as fid", "a.id as aid")
 			.from(dataTable+" f")
-			.innerJoin(aoiDimTable+" a").on("ST_Contains(a.shape, f."+CreateLocationColumnsTask.LOCATION_COLUMN+")");
+			.innerJoin(aoiDimTable+" a")
+			.on("ST_Contains(a.shape, f."+CreateLocationColumnsTask.LOCATION_COLUMN+")")
+			.and("a.aoi_level_id = " + level.getId());
 			
-		psql()
+			psql()
 			.with("tmp", selectAois)
 			.update(dataTable+" f")
 				.set(aoiFkColumn, "aid")
 				.from("tmp")
 				.where("f."+factIdColumn+" = tmp.fid")
 				.execute();
+		} else {
+			String childAoiFkColumn = quote(childLevel.getFkColumn());
+			String childAoiDimTable = quote(childLevel.getDimensionTable());
+			
+			Psql selectAois = new Psql()
+			.select("a.id, a.parent_aoi_id")
+			.from(childAoiDimTable +" a");
+			
+			psql()
+			.with("tmp", selectAois)
+			.update(dataTable+" f")
+				.set(aoiFkColumn, "tmp.parent_aoi_id")
+				.from("tmp")
+				.where("f."+childAoiFkColumn+"  = tmp.id")
+				.execute();
+		}
 	}
+
 }
 
 
