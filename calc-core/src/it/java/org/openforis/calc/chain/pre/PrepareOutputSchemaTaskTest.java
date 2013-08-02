@@ -35,6 +35,8 @@ public class PrepareOutputSchemaTaskTest extends AbstractTransactionalJUnit4Spri
 		job.addTask(CreateCategoryDimensionTablesTask.class);
 		job.addTask(CreateAoiDimensionTablesTask.class);
 		job.addTask(CreateFactTablesTask.class);
+		job.addTask(CreateLocationColumnsTask.class);
+		job.addTask(CreateAoiColumnsTask.class);
 		job.addTask(OutputSchemaGrantsTask.class);
 	}
 

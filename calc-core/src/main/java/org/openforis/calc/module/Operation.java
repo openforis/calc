@@ -1,7 +1,7 @@
 package org.openforis.calc.module;
 
 import org.openforis.calc.chain.CalculationStepTask;
-import org.openforis.calc.common.ReflectionUtils;
+import org.openforis.calc.common.Reflection;
 import org.openforis.calc.nls.Captionable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -24,7 +24,7 @@ public abstract class Operation<T extends CalculationStepTask> implements Captio
 	}
 
 	public Class<T> getTaskType() {
-		Class<T> type = ReflectionUtils.extractGenericType(getClass());
+		Class<T> type = Reflection.extractGenericType(getClass());
 		return type;
 	}
 

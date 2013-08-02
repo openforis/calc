@@ -18,10 +18,9 @@ import org.springframework.jdbc.core.PreparedStatementCallback;
  */
 public final class Psql {
 	private static final String SPACE = " ";
-	private static final String DOUBLE_QUOTE = "\"";
 	private static final String COMMA = ",";
-	private static final String OPEN_PAREN = "(";
-	private static final String CLOSE_PAREN = ")";
+	private static final String PAREN_FORMAT = "(%s)";
+	private static final String QUOTE_FORMAT = "\"%s\"";
 	
 	private static final String SET_SCHEMA_SEARCH_PATH = "set search_path to %s";
 	private static final String ALTER_TABLE = "alter table %s";
@@ -31,9 +30,10 @@ public final class Psql {
 	private static final String WITH = "with %s as (%s)";
 	private static final String SELECT = "select %s";
 	private static final String FROM = "from %s";
-	private static final String INNER_JOIN = "inner join %s on %s";
+	private static final String INNER_JOIN = "inner join %s";
+	private static final String ON = "on %s";
 	private static final String UPDATE = "update %s";
-	private static final String SET = "set %s";
+	private static final String SET = "set %s = %s";
 	private static final String WHERE = "where %s";
 	private static final String CREATE_TABLE = "create table %s";
 	private static final String AS = "as %s";
@@ -49,6 +49,7 @@ public final class Psql {
 	public static final String INTEGER = "integer";
 	public static final String VARCHAR = "varchar";
 	public static final String FLOAT8 = "float8";
+	public static final String POINT4326 = "Geometry(Point,4326)";
 
 	public Psql() {
 		sb = new StringBuilder();
@@ -60,46 +61,49 @@ public final class Psql {
 		this.jdbc = jdbc;
 	}
 	
+	private Psql append(String format, String... args) {
+		return append(format, (Object[]) args);
+	}
+	
+	private Psql append(String format, Object... args) {
+		if ( sb.length() > 0 ) {
+			sb.append(SPACE);
+		}
+		String sql = String.format(format, args);
+		sb.append(sql);
+		return this;
+	}
+	
 	public Psql createSchema(String schema) {
-		return append(CREATE_SCHEMA, quoteIdentifiers(schema));
+		return append(CREATE_SCHEMA, schema);
 	}
 	
 	public Psql setSchemaSearchPath(String... schemas) {
-		return append(SET_SCHEMA_SEARCH_PATH, quoteIdentifiers(schemas));
+		return append(SET_SCHEMA_SEARCH_PATH, join(schemas));
 	}
 
 	/**
-	 * Comma-separated list of f table or column names, each element surrounded by double quotes
+	 * Quotes a series of table or column name with double quotes,
+	 * separating multiple items with commas
 	 * @param identifier
 	 * @return
 	 */
-	private static String quoteIdentifiers(String... identifiers) {
-		StringBuffer sb2 = new StringBuffer();
-		for (int i = 0; i < identifiers.length; i++) {
-			if ( i > 0 ) {
-				sb2.append(COMMA);
-			}
-			sb2.append(DOUBLE_QUOTE);
-			sb2.append(identifiers[i]);
-			sb2.append(DOUBLE_QUOTE);
+	public static String quote(String... identifiers) {
+		Object[] quoted = new Object[identifiers.length];
+		for (int i = 0; i < quoted.length; i++) {
+			quoted[i] = String.format(QUOTE_FORMAT, identifiers[i]);
 		}
-		return sb2.toString();
+		return join(quoted);
+	}
+
+	private static String join(String... elements) {
+		return join((Object[]) elements);
 	}
 	
 	private static String join(Object... elements) {
 		return StringUtils.join(elements, COMMA);
 	}
 
-	/**
-	 * Converts a string to a valid PSQL identifier (i.e. table, column or schema name)
-	 * by replacing unallowed characters with underscore ("_") and converting to lowercase
-	 * @param str
-	 * @return
-	 */
-	public static String toIdentifier(String str) {
-		return str.replaceAll("[^a-zA-Z0-9]", "_").toLowerCase();
-	}
-	
 	@Override
 	public String toString() {
 		return sb.toString();
@@ -124,7 +128,7 @@ public final class Psql {
 	}
 
 	public Psql alterTable(String table) {
-		return append(ALTER_TABLE, quoteIdentifiers(table));
+		return append(ALTER_TABLE, table);
 	}
 
 	public Psql addColumn(String name, String type) {
@@ -132,28 +136,12 @@ public final class Psql {
 	}
 
 	public Psql addColumn(String name, String type, int n) {
-		return append(ADD_COLUMN, name, type+OPEN_PAREN+n+CLOSE_PAREN);
+		String typeN = type + String.format(PAREN_FORMAT, n);
+		return append(ADD_COLUMN, name, typeN);
 	}
 	
 	public Psql with(String alias, Object select) {
 		return append(WITH, alias, select);
-	}
-	
-	private Psql append(String format, Object... args) {
-		if ( sb.length() > 0 ) {
-			sb.append(SPACE);
-		}
-//		Object[] strs = new String[args.length];
-//		for (int i = 0; i < args.length; i++) {
-//			if ( args[i] instanceof Psql ) {
-//				strs[i] = OPEN_PAREN + args[i] + CLOSE_PAREN;
-//			} else {
-//				strs[i] = String.valueOf(args[i]);
-//			}
-//		}
-		String sql = String.format(format, args);
-		sb.append(sql);
-		return this;
 	}
 
 	public Psql select(Object... elements) {
@@ -164,16 +152,20 @@ public final class Psql {
 		return append(FROM, join(elements));
 	}
 
-	public Psql innerJoin(String table, Object condition) {
-		return append(INNER_JOIN, quoteIdentifiers(table), condition);
+	public Psql innerJoin(String table) {
+		return append(INNER_JOIN, table);
 	}
 
+	public Psql on(Object condition) {
+		return append(ON, condition);		
+	}
+	
 	public Psql update(String table) {
-		return append(UPDATE, quoteIdentifiers(table));
+		return append(UPDATE, table);
 	}
 
-	public Psql set(Object... elements) {
-		return append(SET, join(elements));
+	public Psql set(String column, Object expression) {
+		return append(SET, column, expression);
 	}
 
 	public Psql where(Object condition) {
@@ -181,11 +173,11 @@ public final class Psql {
 	}
 
 	public Psql dropSchemaIfExistsCascade(String schema) {
-		return append(DROP_SCHEMA_IF_EXISTS_CASCADE, quoteIdentifiers(schema));
+		return append(DROP_SCHEMA_IF_EXISTS_CASCADE, schema);
 	}
 	
 	public Psql createTable(String table) {
-		return append(CREATE_TABLE, quoteIdentifiers(table));
+		return append(CREATE_TABLE, table);
 	}
 
 	public Psql as(Object expression) {
@@ -201,6 +193,6 @@ public final class Psql {
 	}
 
 	public Psql addPrimaryKey(String... columns) {
-		return append(ADD_PRIMARY_KEY, quoteIdentifiers(columns));
+		return append(ADD_PRIMARY_KEY, columns);
 	}
 }

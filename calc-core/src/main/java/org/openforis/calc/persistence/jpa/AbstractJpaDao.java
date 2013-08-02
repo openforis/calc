@@ -8,7 +8,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
 import org.openforis.calc.common.Identifiable;
-import org.openforis.calc.common.ReflectionUtils;
+import org.openforis.calc.common.Reflection;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -80,7 +80,7 @@ public abstract class AbstractJpaDao<T extends Identifiable> {
 	
 	@PostConstruct
 	void initType(){
-		this.type = ReflectionUtils.extractGenericType(getClass());
+		this.type = Reflection.extractGenericType(getClass());
 	}
 	
 	protected EntityManager getEntityManager() {

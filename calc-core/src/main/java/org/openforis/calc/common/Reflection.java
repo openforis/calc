@@ -8,7 +8,7 @@ import java.lang.reflect.Type;
  * @author G. Miceli
  * @author M. Togna
  */
-public class ReflectionUtils {
+public abstract class Reflection {
 	
 	@SuppressWarnings("unchecked")
 	public static <T> T extractGenericType(Class<?> c) {

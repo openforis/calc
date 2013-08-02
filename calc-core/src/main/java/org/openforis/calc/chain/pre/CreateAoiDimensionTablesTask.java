@@ -16,6 +16,10 @@ import org.openforis.calc.persistence.postgis.Psql;
  */
 public final class CreateAoiDimensionTablesTask extends SqlTask {
 
+	private static final String CALC_AOI_TABLE = "calc.aoi";
+	private static final String DIMENSION_ID_COLUMN = "id";
+	private static final String AOI_LEVEL_ID_COLUMN = "aoi_level_id";
+
 	@Override
 	protected void execute() throws Throwable {
 		Workspace workspace = getWorkspace();
@@ -23,13 +27,13 @@ public final class CreateAoiDimensionTablesTask extends SqlTask {
 		for (AoiHierarchy hierarchy : hierarchies) {
 			List<AoiHierarchyLevel> levels = hierarchy.getLevels();
 			for (AoiHierarchyLevel level : levels) {
-				String tableName = level.getDimensionTable();
+				String tableName = Psql.quote(level.getDimensionTable());
 				Integer varId = level.getId();
 
 				Psql select = new Psql()
 					.select("*")
-					.from("calc.aoi")
-					.where("aoi_level_id = ?");
+					.from(CALC_AOI_TABLE)
+					.where(AOI_LEVEL_ID_COLUMN+"=?");
 				
 				psql()
 					.createTable(tableName)
@@ -38,7 +42,7 @@ public final class CreateAoiDimensionTablesTask extends SqlTask {
 				
 				psql()
 					.alterTable(tableName)
-					.addPrimaryKey("id");
+					.addPrimaryKey(DIMENSION_ID_COLUMN);
 			}
 		}
 	}

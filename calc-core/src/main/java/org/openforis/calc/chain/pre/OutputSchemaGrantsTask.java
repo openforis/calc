@@ -2,6 +2,7 @@ package org.openforis.calc.chain.pre;
 
 import org.openforis.calc.engine.SqlTask;
 import org.openforis.calc.engine.Workspace;
+import org.openforis.calc.persistence.postgis.Psql;
 import org.springframework.beans.factory.annotation.Value;
 
 /**
@@ -17,7 +18,7 @@ public final class OutputSchemaGrantsTask extends SqlTask {
 	@Override
 	protected void execute() throws Throwable {
 		Workspace workspace = getContext().getWorkspace();
-		String outputSchema = workspace.getOutputSchema();
+		String outputSchema = Psql.quote(workspace.getOutputSchema());
 		psql().grantAllOnTables(outputSchema, systemUser).execute();
 		psql().grantAllOnSchema(outputSchema, systemUser).execute();
 	}

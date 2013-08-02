@@ -27,20 +27,21 @@ public final class CreateFactTablesTask extends SqlTask {
 		String inputSchema = workspace.getInputSchema();
 
 		for (Entity entity : entities) {
-			// StringBuilder factSql = new StringBuilder();
-			String inputTable = entity.getDataTable();
-			String outputTable = entity.getDataTable();
-			String idColumn = entity.getIdColumn();
+			String inputTable = inputSchema + "." + Psql.quote(entity.getDataTable());
+			String outputTable = Psql.quote(entity.getDataTable());
+			String idColumn = Psql.quote(entity.getIdColumn());
 
-			createFactTable(inputSchema, inputTable, outputTable, idColumn);
+			createFactTable(inputTable, outputTable, idColumn);
 
 			List<Variable> variables = entity.getVariables();
 			for (Variable variable : variables) {
 				// Add columns for variables not found in input schema
 				if (!variable.isInput()) {
-					String valueColumn = variable.getValueColumn();
+					String valueColumn = Psql.quote(variable.getValueColumn());
 					if ( variable instanceof CategoricalVariable ) {
-						addCategoryColumns(outputTable, valueColumn);
+						String valueIdColumn = Psql.quote(variable.getValueColumn()+ID_COLUMN_SUFFIX);
+						addCategoryValueColumn(outputTable, valueColumn);
+						addCategoryIdColumn(outputTable, valueIdColumn);
 					} else {
 						addQuantityColumn(outputTable, valueColumn);						
 					}
@@ -49,10 +50,10 @@ public final class CreateFactTablesTask extends SqlTask {
 		}
 	}
 
-	private void createFactTable(String inputSchema, String inputTable,
-			String outputTable, String idColumn) {
-		Psql select = new Psql().select("*").from(
-				inputSchema + "." + inputTable);
+	private void createFactTable(String inputTable, String outputTable, String idColumn) {
+		Psql select = new Psql()
+			.select("*")
+			.from(inputTable);
 
 		psql().createTable(outputTable).as(select).execute();
 
@@ -63,20 +64,22 @@ public final class CreateFactTablesTask extends SqlTask {
 
 	private void addQuantityColumn(String outputTable, String valueColumn) {
 		psql()
-		.alterTable(outputTable)
-		.addColumn(valueColumn, Psql.FLOAT8)
-		.execute();
+			.alterTable(outputTable)
+			.addColumn(valueColumn, Psql.FLOAT8)
+			.execute();
 	}
 
-	private void addCategoryColumns(String outputTable, String valueColumn) {
+	private void addCategoryValueColumn(String outputTable, String valueColumn) {
 		psql()
 			.alterTable(outputTable)
 			.addColumn(valueColumn, Psql.VARCHAR, 255)
 			.execute();
-		
+	}
+
+	private void addCategoryIdColumn(String outputTable, String valueIdColumn) {
 		psql()
 			.alterTable(outputTable)
-			.addColumn(valueColumn + ID_COLUMN_SUFFIX, Psql.INTEGER)
+			.addColumn(valueIdColumn, Psql.INTEGER)
 			.execute();
 	}
 }

@@ -16,7 +16,7 @@ public final class CreateOutputSchemaTask extends SqlTask {
 	@Override
 	protected void execute() throws Throwable {
 		Workspace workspace = getContext().getWorkspace();
-		String outputSchema = workspace.getOutputSchema();
+		String outputSchema = Psql.quote(workspace.getOutputSchema());
 		psql().createSchema(outputSchema).execute();
 		psql().setSchemaSearchPath(outputSchema, Psql.PUBLIC).execute();
 	}

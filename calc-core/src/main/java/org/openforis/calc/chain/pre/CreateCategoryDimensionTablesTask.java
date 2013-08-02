@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.openforis.calc.engine.SqlTask;
 import org.openforis.calc.engine.Workspace;
-import org.openforis.calc.metadata.BinaryVariable;
 import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.Variable;
@@ -18,6 +17,10 @@ import org.openforis.calc.persistence.postgis.Psql;
  */
 public final class CreateCategoryDimensionTablesTask extends SqlTask {
 
+	private static final String CALC_CATEGORY_TABLE = "calc.category";
+	private static final String DIMENSION_TABLE_ID_COLUMN = "id";
+	private static final String VARIABLE_ID_COLUMN = "variable_id";
+
 	@Override
 	protected void execute() throws Throwable {
 		Workspace workspace = getWorkspace();
@@ -27,13 +30,13 @@ public final class CreateCategoryDimensionTablesTask extends SqlTask {
 
 			for (Variable var : variables) {
 				if (var instanceof CategoricalVariable ) {
-					String tableName = var.getDimensionTable();
+					String tableName = Psql.quote(var.getDimensionTable());
 					Integer varId = var.getId();
 					
 					Psql select = new Psql()
 						.select("*")
-						.from("calc.category")
-						.where("variable_id = ?");
+						.from(CALC_CATEGORY_TABLE)
+						.where(VARIABLE_ID_COLUMN+"=?");
 					
 					psql()
 						.createTable(tableName)
@@ -42,7 +45,7 @@ public final class CreateCategoryDimensionTablesTask extends SqlTask {
 					
 					psql()
 						.alterTable(tableName)
-						.addPrimaryKey("id");
+						.addPrimaryKey(DIMENSION_TABLE_ID_COLUMN);
 				}
 			}
 		}
