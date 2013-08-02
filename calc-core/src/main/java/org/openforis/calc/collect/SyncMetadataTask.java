@@ -167,9 +167,9 @@ public class SyncMetadataTask extends Task {
 			e.setWorkspace(workspace);
 			e.setDataTable(table.getName());
 			e.setInput(true); //TODO handle user defined or modified entities
-			DataPrimaryKeyColumn idColumn = getPrimaryKeyColumn(table);
+			DataPrimaryKeyColumn idColumn = table.getPrimaryKeyColumn();
 			e.setIdColumn(idColumn.getName());
-			DataParentKeyColumn parentIdColumn = getParentKeyColumn(table);
+			DataParentKeyColumn parentIdColumn = table.getParentKeyColumn();
 			e.setParentIdColumn(parentIdColumn == null ? null : parentIdColumn.getName());
 			
 			setCoordinateColumns(e, table);
@@ -191,7 +191,7 @@ public class SyncMetadataTask extends Task {
 			List<Column<?>> columns = table.getColumns();
 			for (Column<?> column : columns) {
 				if ( column instanceof DataColumn ) {
-					Variable variable = convert(column, e);
+					Variable variable = convert((DataColumn) column, e);
 					if ( variable != null ) {
 						variable.setSortOrder(sortOrder++);
 						e.addVariable(variable);
@@ -211,9 +211,10 @@ public class SyncMetadataTask extends Task {
 			boolean xSet = false, ySet = false, srsSet = false;
 			for (Column<?> c : cols) {
 				if ( c instanceof DataColumn ) {
-					NodeDefinition fieldDefn = ((DataColumn) c).getNodeDefinition();
+					DataColumn dataCol = (DataColumn) c;
+					NodeDefinition fieldDefn = dataCol.getNodeDefinition();
 					String fieldName = fieldDefn.getName();
-					AttributeDefinition attrDefn = getAttributeDefinition(c);
+					AttributeDefinition attrDefn = dataCol.getAttributeDefinition();
 					if ( attrDefn instanceof CoordinateAttributeDefinition ) {
 						if ( "x".equals(fieldName) ) {
 							e.setXColumn(c.getName());
@@ -243,8 +244,8 @@ public class SyncMetadataTask extends Task {
 	 * @param e 
 	 * @return
 	 */
-	private Variable convert(Column<?> column, Entity e) {
-		AttributeDefinition defn = getAttributeDefinition(column);
+	private Variable convert(DataColumn column, Entity e) {
+		AttributeDefinition defn = column.getAttributeDefinition();
 		Variable v = null;
 		if ( isValueColumn(column) ) {
 			if ( defn instanceof BooleanAttributeDefinition ) {
@@ -277,9 +278,9 @@ public class SyncMetadataTask extends Task {
 	 * @param column
 	 * @return
 	 */
-	private boolean isValueColumn(Column<?> column) {
-		NodeDefinition columnFieldDefn = ((DataColumn) column).getNodeDefinition();
-		AttributeDefinition defn = getAttributeDefinition(column);
+	private boolean isValueColumn(DataColumn column) {
+		NodeDefinition columnFieldDefn = column.getNodeDefinition();
+		AttributeDefinition defn = column.getAttributeDefinition();
 		if ( defn instanceof AttributeDefinition ) {
 			String fieldDefnName = columnFieldDefn.getName();
 			if ( defn instanceof CodeAttributeDefinition &&
@@ -301,47 +302,6 @@ public class SyncMetadataTask extends Task {
 		}
 	}
 	
-	//TODO move it to RDB Column?
-	/**
-	 * Returns the {@link AttributeDefinition} associated to the column.
-	 * 
-	 * @param column
-	 * @return
-	 */
-	private AttributeDefinition getAttributeDefinition(Column<?> column) {
-		NodeDefinition columnFieldDefn = ((DataColumn) column).getNodeDefinition();
-		AttributeDefinition attributeDefn;
-		if ( columnFieldDefn instanceof AttributeDefinition ) {
-			attributeDefn = (AttributeDefinition) columnFieldDefn;
-		} else {
-			attributeDefn = (AttributeDefinition) columnFieldDefn.getParentDefinition();
-		}
-		return attributeDefn;
-	}
-
-	//TODO move it to RDB DataTable
-	private DataPrimaryKeyColumn getPrimaryKeyColumn(DataTable table) {
-		List<Column<?>> columns = table.getColumns();
-		for (Column<?> c : columns) {
-			if ( c instanceof DataPrimaryKeyColumn ) {
-				return (DataPrimaryKeyColumn) c;
-			}
-		}
-		throw new IllegalArgumentException("Primary key column not found in table: " + table.getName());
-	}
-	
-	//TODO move it to RDB DataTable
-	private DataParentKeyColumn getParentKeyColumn(DataTable table) {
-		List<Column<?>> columns = table.getColumns();
-		for (Column<?> c : columns) {
-			if ( c instanceof DataParentKeyColumn ) {
-				return (DataParentKeyColumn) c;
-			}
-		}
-		return null;
-	}
-
-
 	public synchronized void init() {
 	}
 	
