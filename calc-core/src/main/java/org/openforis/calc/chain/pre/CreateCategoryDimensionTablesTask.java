@@ -26,7 +26,7 @@ public final class CreateCategoryDimensionTablesTask extends SqlTask {
 			List<Variable> variables = entity.getVariables();
 
 			for (Variable var : variables) {
-				if (var instanceof CategoricalVariable || var instanceof BinaryVariable) {
+				if (var instanceof CategoricalVariable ) {
 					String tableName = var.getDimensionTable();
 					Integer varId = var.getId();
 					

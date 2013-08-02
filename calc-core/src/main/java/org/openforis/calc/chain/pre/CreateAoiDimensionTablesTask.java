@@ -24,7 +24,6 @@ public final class CreateAoiDimensionTablesTask extends SqlTask {
 			List<AoiHierarchyLevel> levels = hierarchy.getLevels();
 			for (AoiHierarchyLevel level : levels) {
 				String tableName = level.getDimensionTable();
-
 				Integer varId = level.getId();
 
 				Psql select = new Psql()

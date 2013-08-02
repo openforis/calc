@@ -34,12 +34,23 @@ public class CategoricalVariable extends Variable {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "default_category_id")
 	@JsonIgnore
-	private Category defaultCategory;
+	private Category defaultValue;
 
-	public Category getDefaultCategory() {
-		return this.defaultCategory;
+	public CategoricalVariable() {
+	}
+	
+	protected CategoricalVariable(Scale scale) {
+		super.setScale(scale);
 	}
 
+	public Category getDefaultValue() {
+		return this.defaultValue;
+	}
+
+	public void setDefaultValue(Category defaultValue) {
+		this.defaultValue = defaultValue;
+	}
+	
 	/**
 	 * Indicates if the order of the categories has meaning (ORDINAL, 
 	 * e.g. severity, size) or if they are unordered categorizations 
@@ -50,11 +61,10 @@ public class CategoricalVariable extends Variable {
 	public boolean isOrdered() {
 		return getScale() == Scale.ORDINAL;
 	}
-
+	
 	public void setMultipleResponse(boolean multipleResponse) {
 		this.multipleResponse = multipleResponse;
 	}
-
 	public boolean isMultipleResponse() {
 		return multipleResponse == null || multipleResponse;
 	}
@@ -74,5 +84,13 @@ public class CategoricalVariable extends Variable {
 	@Override
 	public Type getType() {
 		return Type.CATEGORICAL;
+	}
+	
+	@Override
+	public void setScale(Scale scale) {
+		if ( scale != Scale.NOMINAL || scale != Scale.ORDINAL ) {
+			throw new IllegalArgumentException("Illegal scale: " + scale);
+		}
+		super.setScale(scale);
 	}
 }

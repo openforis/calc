@@ -47,6 +47,8 @@ public final class Psql {
 
 	public static final String PUBLIC = "public";
 	public static final String INTEGER = "integer";
+	public static final String VARCHAR = "varchar";
+	public static final String FLOAT8 = "float8";
 
 	public Psql() {
 		sb = new StringBuilder();
@@ -127,6 +129,10 @@ public final class Psql {
 
 	public Psql addColumn(String name, String type) {
 		return append(ADD_COLUMN, name, type);
+	}
+
+	public Psql addColumn(String name, String type, int n) {
+		return append(ADD_COLUMN, name, type+OPEN_PAREN+n+CLOSE_PAREN);
 	}
 	
 	public Psql with(String alias, Object select) {
