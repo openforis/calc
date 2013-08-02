@@ -4,8 +4,6 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Transient;
 
-import org.openforis.calc.metadata.Variable.Scale;
-
 /**
  * A variable which may take on a single numeric value.
  * 
@@ -44,7 +42,7 @@ public class QuantitativeVariable extends Variable {
 	
 	@Override
 	public void setScale(Scale scale) {
-		if ( scale != Scale.RATIO || scale != Scale.INTERVAL ) {
+		if ( scale != Scale.RATIO && scale != Scale.INTERVAL ) {
 			throw new IllegalArgumentException("Illegal scale: " + scale);
 		}
 		super.setScale(scale);
