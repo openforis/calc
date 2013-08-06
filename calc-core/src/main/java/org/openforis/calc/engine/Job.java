@@ -117,6 +117,7 @@ public class Job extends Worker implements Iterable<Task> {
 	 * @param task The Class of the task we want to add to the Job
 	 * @return The added Task instance
 	 */
+	@SuppressWarnings("unchecked")
 	public <T extends Task> T addTask(Class<T> task) {
 		Task newTask = taskManager.createTask(task);
 		addTask(newTask);
