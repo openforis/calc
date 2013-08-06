@@ -7,6 +7,7 @@ import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceDao;
 import org.openforis.calc.engine.WorkspaceLockedException;
+import org.openforis.calc.metadata.task.UpdateSamplingUnitAoisTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
@@ -24,7 +25,7 @@ public class PrepareOutputSchemaTaskTest extends AbstractTransactionalJUnit4Spri
 	@Autowired
 	WorkspaceDao workspaceDao;
 	Job job;
-
+	
 	@Before
 	public void setUpBeforeClass() throws Exception {
 		Workspace foundWorkspace = workspaceDao.find(1);
@@ -37,12 +38,23 @@ public class PrepareOutputSchemaTaskTest extends AbstractTransactionalJUnit4Spri
 //		job.addTask(CreateLocationColumnsTask.class);
 //		job.addTask(CreateAoiColumnsTask.class);
 //		job.addTask(OutputSchemaGrantsTask.class);
-		job.addTask(UpdateSamplingUnitAoisTask.class);
 	}
 
 	@Test
 	public void testRun() throws WorkspaceLockedException {
 		taskManager.startJob(job);
+		job.waitFor(5000);
+	}
+	
+	@Test
+	public void testSystemJobRun() throws WorkspaceLockedException {
+		Workspace ws = workspaceDao.find(1);
+		
+		Job job = taskManager.createSystemJob(ws);
+		job.addTask(UpdateSamplingUnitAoisTask.class);
+		
+		taskManager.startJob(job);
+		
 		job.waitFor(5000);
 	}
 }
