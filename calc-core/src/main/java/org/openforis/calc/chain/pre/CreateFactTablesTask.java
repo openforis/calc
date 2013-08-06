@@ -60,9 +60,9 @@ public final class CreateFactTablesTask extends SqlTask {
 					for (Map<String, Object> row : listOfCategoriesForVar) {
 						psql()
 						.update( outputTable )
-						.set(categoryFKColumn, row.get(DIMENSION_TABLE_ID_COLUMN) ).
-						where( categoryFKColumn + " = ? ") .
-						execute(row.get( DIMENSION_TABLE_ORIGINAL_ID_COLUMN) );
+						.set(categoryFKColumn, row.get(DIMENSION_TABLE_ID_COLUMN) )
+						.where( categoryFKColumn + " = ? ")
+						.execute(row.get( DIMENSION_TABLE_ORIGINAL_ID_COLUMN) );
 					}
 					
 					
