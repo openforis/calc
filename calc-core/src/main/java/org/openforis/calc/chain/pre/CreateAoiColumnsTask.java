@@ -15,8 +15,10 @@ import org.openforis.calc.persistence.postgis.Psql;
  * Assigns AOI ids to each georeferenced entity
  * 
  * @author G. Miceli
+ * @author M. Togna
  */
 public final class CreateAoiColumnsTask extends SqlTask {
+	
 	@Override
 	protected void execute() throws Throwable {
 		Workspace ws = getWorkspace();
@@ -72,7 +74,7 @@ public final class CreateAoiColumnsTask extends SqlTask {
 			psql()
 			.with("tmp", selectAois)
 			.update(dataTable+" f")
-				.set(aoiFkColumn, "aid")
+				.set(aoiFkColumn + " = aid")
 				.from("tmp")
 				.where("f."+factIdColumn+" = tmp.fid")
 				.execute();

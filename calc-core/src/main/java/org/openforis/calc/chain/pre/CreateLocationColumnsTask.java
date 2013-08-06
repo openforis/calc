@@ -44,7 +44,7 @@ public final class CreateLocationColumnsTask extends SqlTask {
 		String expr = String.format(TO_WGS84, xColumn, yColumn);
 		psql()
 			.update(dataTable+" f")
-			.set(LOCATION_COLUMN, expr)
+			.set(LOCATION_COLUMN + "=" + expr)
 			.from(SRS_TABLE)
 			.where(SRS_TABLE+"."+SRS_ID_COLUMN+" = f."+srsColumn)
 			.execute();

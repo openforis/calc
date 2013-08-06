@@ -1,6 +1,7 @@
 package org.openforis.calc.persistence.postgis;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -11,11 +12,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
+import org.springframework.jdbc.core.ResultSetExtractor;
 
 /**
  * Simple PostreSQL query builder
  * 
  * @author G. Miceli
+ * @author M. Togna
  *
  */
 public final class Psql {
@@ -35,7 +38,7 @@ public final class Psql {
 	private static final String INNER_JOIN = "inner join %s";
 	private static final String ON = "on %s";
 	private static final String UPDATE = "update %s";
-	private static final String SET = "set %s = %s";
+	private static final String SET = "set %s";
 	private static final String WHERE = "where %s";
 	private static final String AND = "and %s";
 	private static final String CREATE_TABLE = "create table %s";
@@ -44,6 +47,11 @@ public final class Psql {
 	private static final String GRANT_ALL_ON_TABLES = "grant all privileges on all tables in schema %s to %s";
 	private static final String ADD_PRIMARY_KEY = "add primary key (%s)";
 	private static final String ADD_FOREIGN_KEY = "ADD CONSTRAINT %sfk FOREIGN KEY (%s) REFERENCES %s (%s)";
+	private static final String DELETE_FROM = "delete from %s";
+	private static final String SELECT_EXISTS = "select exists (%s)";
+	private static final String INSERT_INTO_WITH_COLS = "insert into %s (%s)";
+	private static final String INSERT_INTO = "insert into %s";
+	private static final String GROUP_BY = "group by %s";
 
 	private StringBuilder sb;
 	private JdbcTemplate jdbc;
@@ -124,6 +132,32 @@ public final class Psql {
 		return jdbc.queryForList(sql, args);
 	}
 	
+	public Boolean queryForBoolean(final Object... args) {
+		Boolean result = queryForObject(new ResultSetExtractor<Boolean>() {
+			@Override
+			public Boolean extractData(ResultSet rs) throws SQLException, DataAccessException {
+				rs.next();
+				boolean result = rs.getBoolean(1);
+				return result;
+			}
+		}, args);
+		
+		return result;
+	}
+	
+	private <T> T queryForObject(ResultSetExtractor<T> resultSetExtractor, final Object... args) {
+		String sql = toString();
+		if ( args.length == 0 ) {
+			log.debug(sql+";");
+		} else {
+			log.debug(sql+"; -- Parameters: "+join(args)+"");			
+		}
+		
+		T result = jdbc.query(sql, resultSetExtractor, args);
+		
+		return result;
+	}
+	
 	public void execute(final Object... args) {
 		String sql = toString();
 		if ( args.length == 0 ) {
@@ -179,8 +213,8 @@ public final class Psql {
 		return append(UPDATE, table);
 	}
 
-	public Psql set(String column, Object expression) {
-		return append(SET, column, expression);
+	public Psql set(Object... elements) {
+		return append(SET, join(elements));
 	}
 
 	public Psql where(Object condition) {
@@ -217,5 +251,25 @@ public final class Psql {
 	
 	public Psql addForeignKey(String fkColumn, String referencedTable, String referencedColumn ) {
 		return append(ADD_FOREIGN_KEY, fkColumn, fkColumn, referencedTable, referencedColumn);
+	}
+
+	public Psql deleteFrom(String table) {
+		return append(DELETE_FROM, table);
+	}
+	
+	public Psql selectExists(Object select){
+		return append(SELECT_EXISTS, select);
+	}
+
+	public Psql insertInto(String table, String... columns) {
+		if ( columns != null ) {
+			return append(INSERT_INTO_WITH_COLS, table, join(columns));
+		} else {
+			return append(INSERT_INTO, table);
+		}
+	}
+
+	public Psql groupBy(Object... elements) {
+		return append(GROUP_BY, join(elements));
 	}
 }
