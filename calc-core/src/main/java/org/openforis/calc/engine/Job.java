@@ -98,9 +98,9 @@ public class Job extends Worker implements Iterable<Task> {
 		return currentTaskIndex >= 0 ? tasks.get(currentTaskIndex) : null;
 	}
 
-	public Worker getTask(int index) {
-		throw new UnsupportedOperationException();
-	}
+//	public Task getTask(int index) {
+//		throw new UnsupportedOperationException();
+//	}
 
 	/**
 	 * Throws IllegalStateException if invoked after run() is called
