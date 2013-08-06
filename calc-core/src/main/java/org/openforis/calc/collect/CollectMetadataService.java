@@ -29,7 +29,7 @@ public class CollectMetadataService {
 	}
 
 	private Job createSyncJob(Workspace workspace) {
-		Job job = taskManager.createJob(workspace);
+		Job job = taskManager.createUserJob(workspace);
 		SyncMetadataTask syncMetadata = taskManager
 				.createTask(SyncMetadataTask.class);
 		job.addTask(syncMetadata);

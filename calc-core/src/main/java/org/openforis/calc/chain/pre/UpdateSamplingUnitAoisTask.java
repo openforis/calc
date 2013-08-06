@@ -11,23 +11,60 @@ import static org.openforis.calc.persistence.postgis.Psql.*;
 import org.openforis.calc.persistence.postgis.Psql;
 
 /**
- * Task responsible for assigning AOI codes and/or ids to an output table based on a Point column.
- * Assigns AOI ids to each georeferenced entity
+ * Task responsible for assigning AOI codes and/or ids to the first phase plots.
  * 
- * @author G. Miceli
  * @author M. Togna
  */
-public final class CreateAoiColumnsTask extends SqlTask {
+public final class UpdateSamplingUnitAoisTask extends SqlTask {
 	
 	@Override
 	protected void execute() throws Throwable {
 		Workspace ws = getWorkspace();
-		List<Entity> entities = ws.getEntities();
-		for (Entity entity : entities) {
-			if (entity.isGeoreferenced()) {
-				createAoiColumns(entity);
+		
+		//select exists (select 1 from sampling_unit_aoi a where a.workspace_id = 1)
+//		select 1 from sampling_unit_aoi a where a.workspace_id = 18
+		Psql select = new Psql().select("1").from("calc.sampling_unit_aoi a").where("a.workspace_id = ?");		
+		Boolean exists = psql().selectExists(select).queryForBoolean( ws.getId() );
+		System.out.println(exists);
+		if( !exists ) {
+			List<AoiHierarchy> hierarchies = ws.getAoiHierarchies();
+			for ( AoiHierarchy hierarchy : hierarchies ) {
+				List<AoiHierarchyLevel> levels = hierarchy.getLevels();
+				
+				AoiHierarchyLevel childLevel = null;
+				for ( int i = levels.size() - 1 ; i >= 0 ; i-- ) {
+					AoiHierarchyLevel level = levels.get(i);
+					
+					if(childLevel == null) {
+						//leaf
+												
+						psql()
+						.insertInto("calc.sampling_unit_aoi","sampling_unit_id", "aoi_id","workspace_id")
+						.select("u.id", "a.id", ws.getId())
+						.from("calc.sampling_unit u")
+						.innerJoin("calc.entity e")
+						.on("u.entity_id = e.id")
+						.and("e.workspace_id  = ?")
+						.innerJoin("calc.aoi a")
+						.on("ST_Contains(a.shape, u.location)")
+						.and("a.aoi_level_id = ?")
+						.execute(ws.getId(), level.getId());
+						
+						
+					} else {
+						
+					}
+					
+					childLevel = level;
+				}
 			}
 		}
+//		List<Entity> entities = ws.getEntities();
+//		for (Entity entity : entities) {
+//			if (entity.isGeoreferenced()) {
+//				createAoiColumns(entity);
+//			}
+//		}
 	}
 
 	private void createAoiColumns(Entity entity) {

@@ -52,7 +52,7 @@ public class ProcessingChainService {
 			throw new IllegalArgumentException("No processing chain with id "+chainId);
 		}
 		Workspace workspace = chain.getWorkspace();
-		Job job = taskManager.createJob(workspace);
+		Job job = taskManager.createUserJob(workspace);
 
 		// Add preprocess steps to the job
 		addPreprocessingTasks(job);

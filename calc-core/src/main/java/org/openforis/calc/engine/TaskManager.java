@@ -40,14 +40,26 @@ public class TaskManager {
 	@Autowired
 	private DataSource userDataSource;
 	
+	@Autowired
+	private DataSource dataSource;
+	
 	private Map<Integer, Job> jobs;
 	
 	public TaskManager() {
 		this.jobs = new HashMap<Integer, Job>();
 	}
 	
-	public Job createJob(Workspace workspace) {
+	public Job createUserJob(Workspace workspace) {
 		JobContext context = new JobContext(workspace, userDataSource);
+		return createJob(context);
+	}
+	
+	public Job createSystemJob(Workspace workspace){
+		JobContext context = new JobContext(workspace, dataSource);
+		return createJob(context);
+	}
+
+	private Job createJob(JobContext context) {
 		Job job = applContext.getBean(Job.class);
 		job.setContext(context);
 		return job;
