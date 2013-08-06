@@ -27,7 +27,6 @@ public class PrepareOutputSchemaTaskTest extends AbstractTransactionalJUnit4Spri
 
 	@Before
 	public void setUpBeforeClass() throws Exception {
-
 		Workspace foundWorkspace = workspaceDao.find(1);
 		job = taskManager.createJob(foundWorkspace);
 		job.addTask(DropOutputSchemaTask.class);
