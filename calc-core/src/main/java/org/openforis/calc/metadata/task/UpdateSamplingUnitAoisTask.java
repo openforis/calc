@@ -6,7 +6,6 @@ import org.openforis.calc.engine.SqlTask;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.AoiHierarchyLevel;
-import org.openforis.calc.persistence.postgis.Psql;
 
 /**
  * Task responsible for assigning AOI codes and/or ids to the first phase plots.
@@ -18,16 +17,18 @@ public final class UpdateSamplingUnitAoisTask extends SqlTask {
 	@Override
 	protected void execute() throws Throwable {
 		Workspace ws = getWorkspace();
-		
-		Psql select = new Psql().select("1").from("calc.sampling_unit_aoi a").where("a.workspace_id = ?");		
-		Boolean exists = psql().selectExists(select).queryForBoolean( ws.getId() );
-
-		if( !exists ) {
-			populateSamplingUnitAoiTable(ws);
-		}
+		deleteSamplingUnitAois(ws.getId());
+		populateSamplingUnitAois(ws);
 	}
 
-	private void populateSamplingUnitAoiTable(Workspace ws) {
+	private void deleteSamplingUnitAois(int wsId) {
+		psql()
+			.deleteFrom("calc.sampling_unit_aoi")
+			.where("workspace_id = ?")
+			.execute(wsId);
+	}
+
+	private void populateSamplingUnitAois(Workspace ws) {
 		List<AoiHierarchy> hierarchies = ws.getAoiHierarchies();
 		for ( AoiHierarchy hierarchy : hierarchies ) {
 			List<AoiHierarchyLevel> levels = hierarchy.getLevels();
@@ -36,7 +37,7 @@ public final class UpdateSamplingUnitAoisTask extends SqlTask {
 			for ( int i = levels.size() - 1 ; i >= 0 ; i-- ) {
 				AoiHierarchyLevel level = levels.get(i);
 				
-				if(childLevel == null) {
+				if (childLevel == null) {
 					insertLeafStratumAois(ws, level);
 				} else {
 					insertAncestorStratumAois(ws, childLevel);

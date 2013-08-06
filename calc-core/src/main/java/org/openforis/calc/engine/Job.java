@@ -91,7 +91,7 @@ public class Job extends Worker implements Iterable<Task> {
 			}
 		}
 		this.currentTaskIndex = -1;
-		log().debug("Finished");
+		log().debug("Finished in %0.1fs", getDuration() / 1000f);
 	}
 
 	public Worker getCurrentTask() {
