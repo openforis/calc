@@ -1,3 +1,9 @@
+alter table calc.sampling_unit_aoi
+add column workspace_id integer null;
+
+update calc.sampling_unit_aoi
+set workspace_id = 1;
+ 
 create table
     calc.stratum
     (
