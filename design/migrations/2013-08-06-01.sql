@@ -67,3 +67,6 @@ where u.stratum = s.stratum_no;
             
 alter table calc.sampling_unit
 drop column stratum;
+
+alter table calc.stratum
+add column weight double precision;
