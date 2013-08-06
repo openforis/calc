@@ -91,16 +91,16 @@ public class Job extends Worker implements Iterable<Task> {
 			}
 		}
 		this.currentTaskIndex = -1;
-		log().debug("Finished in %0.1fs", getDuration() / 1000f);
+		log().debug(String.format("Finished in %0.1fs", getDuration() / 1000f));
 	}
 
 	public Worker getCurrentTask() {
 		return currentTaskIndex >= 0 ? tasks.get(currentTaskIndex) : null;
 	}
 
-	public Worker getTask(int index) {
-		throw new UnsupportedOperationException();
-	}
+//	public Task getTask(int index) {
+//		throw new UnsupportedOperationException();
+//	}
 
 	/**
 	 * Throws IllegalStateException if invoked after run() is called
