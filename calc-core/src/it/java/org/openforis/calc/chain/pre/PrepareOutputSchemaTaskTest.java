@@ -29,15 +29,16 @@ public class PrepareOutputSchemaTaskTest extends AbstractTransactionalJUnit4Spri
 	public void setUpBeforeClass() throws Exception {
 
 		Workspace foundWorkspace = workspaceDao.find(1);
-		job = taskManager.createJob(foundWorkspace);
-		job.addTask(DropOutputSchemaTask.class);
-		job.addTask(CreateOutputSchemaTask.class);
-		job.addTask(CreateCategoryDimensionTablesTask.class);
-		job.addTask(CreateAoiDimensionTablesTask.class);
-		job.addTask(CreateFactTablesTask.class);
-		job.addTask(CreateLocationColumnsTask.class);
-		job.addTask(CreateAoiColumnsTask.class);
-		job.addTask(OutputSchemaGrantsTask.class);
+		job = taskManager.createUserJob(foundWorkspace);
+//		job.addTask(DropOutputSchemaTask.class);
+//		job.addTask(CreateOutputSchemaTask.class);
+//		job.addTask(CreateCategoryDimensionTablesTask.class);
+//		job.addTask(CreateAoiDimensionTablesTask.class);
+//		job.addTask(CreateFactTablesTask.class);
+//		job.addTask(CreateLocationColumnsTask.class);
+//		job.addTask(CreateAoiColumnsTask.class);
+//		job.addTask(OutputSchemaGrantsTask.class);
+		job.addTask(UpdateSamplingUnitAoisTask.class);
 	}
 
 	@Test
