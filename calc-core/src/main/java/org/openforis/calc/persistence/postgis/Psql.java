@@ -41,6 +41,7 @@ public final class Psql {
 	private static final String GRANT_ALL_ON_SCHEMA = "grant all on schema %s to %s";
 	private static final String GRANT_ALL_ON_TABLES = "grant all privileges on all tables in schema %s to %s";
 	private static final String ADD_PRIMARY_KEY = "add primary key (%s)";
+	private static final String DELETE_FROM = "delete from %s";
 
 	private StringBuilder sb;
 	private JdbcTemplate jdbc;
@@ -199,5 +200,9 @@ public final class Psql {
 
 	public Psql addPrimaryKey(String... columns) {
 		return append(ADD_PRIMARY_KEY, columns);
+	}
+
+	public Psql deleteFrom(String table) {
+		return append(DELETE_FROM, table);
 	}
 }
