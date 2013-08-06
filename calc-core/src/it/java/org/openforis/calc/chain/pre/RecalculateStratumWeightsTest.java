@@ -7,6 +7,7 @@ import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceDao;
 import org.openforis.calc.engine.WorkspaceLockedException;
+import org.openforis.calc.metadata.task.UpdateSamplingUnitAoisTask;
 import org.openforis.calc.metadata.task.UpdateStratumAoisTask;
 import org.openforis.calc.metadata.task.UpdateStratumWeightsTask;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ public class RecalculateStratumWeightsTest extends AbstractTransactionalJUnit4Sp
 	public void setUpBeforeClass() throws Exception {
 		Workspace foundWorkspace = workspaceDao.find(1);
 		job = taskManager.createSystemJob(foundWorkspace);
-//		job.addTask(UpdateSamplingUnitAoisTask.class);
+		job.addTask(UpdateSamplingUnitAoisTask.class);
 		job.addTask(UpdateStratumAoisTask.class);
 		job.addTask(UpdateStratumWeightsTask.class);
 	}

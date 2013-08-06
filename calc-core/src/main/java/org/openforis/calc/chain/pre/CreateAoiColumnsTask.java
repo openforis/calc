@@ -74,7 +74,7 @@ public final class CreateAoiColumnsTask extends SqlTask {
 			psql()
 			.with("tmp", selectAois)
 			.update(dataTable+" f")
-				.set(aoiFkColumn, "aid")
+				.set(aoiFkColumn + " = aid")
 				.from("tmp")
 				.where("f."+factIdColumn+" = tmp.fid")
 				.execute();

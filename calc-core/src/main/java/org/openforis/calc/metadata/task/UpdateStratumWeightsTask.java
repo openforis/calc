@@ -22,7 +22,7 @@ public class UpdateStratumWeightsTask extends SqlTask {
 	private void removeOldWeights(int wsId) {
 		psql()
 			.update("calc.stratum s")
-			.set("weight", "null")
+			.set("weight = null")
 			.where("workspace_id = ?")
 			.execute(wsId);
 	}
@@ -36,7 +36,7 @@ public class UpdateStratumWeightsTask extends SqlTask {
 		psql()
 			.with("tot", select)
 			.update("calc.stratum s")
-			.set("weight", "tot.sum")
+			.set("weight = tot.sum")
 			.from("tot")
 			.where("s.id = tot.stratum_id")
 			.and("workspace_id = ?")

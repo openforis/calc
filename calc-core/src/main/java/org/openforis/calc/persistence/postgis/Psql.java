@@ -36,7 +36,7 @@ public final class Psql {
 	private static final String INNER_JOIN = "inner join %s";
 	private static final String ON = "on %s";
 	private static final String UPDATE = "update %s";
-	private static final String SET = "set %s = %s";
+	private static final String SET = "set %s";
 	private static final String WHERE = "where %s";
 	private static final String AND = "and %s";
 	private static final String CREATE_TABLE = "create table %s";
@@ -199,9 +199,8 @@ public final class Psql {
 		return append(UPDATE, table);
 	}
 
-	// Replace with varargs Object.. elements
-	public Psql set(String column, Object expression) {
-		return append(SET, column, expression);
+	public Psql set(Object... elements) {
+		return append(SET, join(elements));
 	}
 
 	public Psql where(Object condition) {
