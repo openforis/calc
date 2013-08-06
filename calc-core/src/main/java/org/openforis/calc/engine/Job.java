@@ -42,6 +42,7 @@ public class Job extends Worker implements Iterable<Task> {
 	 * (i.e. not in constructor!)
 	 */
 	public final void init() {
+		log().debug("Initializing");
 		for (Worker task : tasks) {
 			task.init();
 		}
@@ -77,6 +78,7 @@ public class Job extends Worker implements Iterable<Task> {
 	 * @throws Exception
 	 */
 	protected final void execute() throws Throwable {
+		log().debug("Starting");
 		this.currentTaskIndex = -1;
 		for (Task task : tasks) {
 			this.currentTaskIndex += 1;
@@ -89,6 +91,7 @@ public class Job extends Worker implements Iterable<Task> {
 			}
 		}
 		this.currentTaskIndex = -1;
+		log().debug("Finished");
 	}
 
 	public Worker getCurrentTask() {

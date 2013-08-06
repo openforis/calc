@@ -42,7 +42,7 @@ public class TaskManager {
 	
 	@Autowired
 	private DataSource dataSource;
-	
+
 	private Map<Integer, Job> jobs;
 	
 	public TaskManager() {

@@ -199,6 +199,7 @@ public final class Psql {
 		return append(UPDATE, table);
 	}
 
+	// Replace with varargs Object.. elements
 	public Psql set(String column, Object expression) {
 		return append(SET, column, expression);
 	}
