@@ -252,6 +252,6 @@ public final class Psql {
 	}
 
 	public Psql groupBy(Object... elements) {
-		return append(GROUP_BY, elements);
+		return append(GROUP_BY, join(elements));
 	}
 }
