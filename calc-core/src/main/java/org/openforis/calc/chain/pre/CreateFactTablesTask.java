@@ -1,9 +1,11 @@
 package org.openforis.calc.chain.pre;
 
 import java.util.List;
+import java.util.Map;
 
 import org.openforis.calc.engine.SqlTask;
 import org.openforis.calc.engine.Workspace;
+import org.openforis.calc.metadata.BinaryVariable;
 import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Category;
 import org.openforis.calc.metadata.Entity;
@@ -18,7 +20,9 @@ import org.openforis.calc.persistence.postgis.Psql;
  */
 public final class CreateFactTablesTask extends SqlTask {
 
-	private static final String ID_COLUMN_SUFFIX = "_id";
+	private static final String ID_COLUMN_SUFFIX = "_code_id";
+	private static final String DIMENSION_TABLE_ID_COLUMN = "id";
+	private static final String DIMENSION_TABLE_ORIGINAL_ID_COLUMN = "original_id";
 
 	@Override
 	protected void execute() throws Throwable {
@@ -45,6 +49,30 @@ public final class CreateFactTablesTask extends SqlTask {
 					} else {
 						addQuantityColumn(outputTable, valueColumn);						
 					}
+
+				}else if( variable instanceof CategoricalVariable  && !(variable instanceof BinaryVariable) && !variable.isDegenerateDimension() ){
+
+					// CHANGE THE VALUES FROM THE ORIGINAL_ID TO THE INTERNAL ID OF THE CATEGORICAL DIMENSION TABLE
+					String dimensionTable = variable.getDimensionTable();
+					String categoryFKColumn = variable.getCategoryColumn();
+					
+					List<Map<String, Object>> listOfCategoriesForVar  = psql().select( DIMENSION_TABLE_ID_COLUMN, DIMENSION_TABLE_ORIGINAL_ID_COLUMN).from( dimensionTable).where( "variable_id = ?"  ).query( variable.getId() );
+					for (Map<String, Object> row : listOfCategoriesForVar) {
+						psql()
+						.update( outputTable )
+						.set(categoryFKColumn, row.get(DIMENSION_TABLE_ID_COLUMN) ).
+						where( categoryFKColumn + " = ? ") .
+						execute(row.get( DIMENSION_TABLE_ORIGINAL_ID_COLUMN) );
+					}
+					
+					
+					// ADD FK relationship
+					psql()
+					.alterTable(outputTable)
+					.addForeignKey( categoryFKColumn, dimensionTable, DIMENSION_TABLE_ID_COLUMN)
+					.execute();
+
+
 				}
 			}
 		}
@@ -52,8 +80,8 @@ public final class CreateFactTablesTask extends SqlTask {
 
 	private void createFactTable(String inputTable, String outputTable, String idColumn) {
 		Psql select = new Psql()
-			.select("*")
-			.from(inputTable);
+		.select("*")
+		.from(inputTable);
 
 		psql().createTable(outputTable).as(select).execute();
 
@@ -64,22 +92,22 @@ public final class CreateFactTablesTask extends SqlTask {
 
 	private void addQuantityColumn(String outputTable, String valueColumn) {
 		psql()
-			.alterTable(outputTable)
-			.addColumn(valueColumn, Psql.FLOAT8)
-			.execute();
+		.alterTable(outputTable)
+		.addColumn(valueColumn, Psql.FLOAT8)
+		.execute();
 	}
 
 	private void addCategoryValueColumn(String outputTable, String valueColumn) {
 		psql()
-			.alterTable(outputTable)
-			.addColumn(valueColumn, Psql.VARCHAR, 255)
-			.execute();
+		.alterTable(outputTable)
+		.addColumn(valueColumn, Psql.VARCHAR, 255)
+		.execute();
 	}
 
 	private void addCategoryIdColumn(String outputTable, String valueIdColumn) {
 		psql()
-			.alterTable(outputTable)
-			.addColumn(valueIdColumn, Psql.INTEGER)
-			.execute();
+		.alterTable(outputTable)
+		.addColumn(valueIdColumn, Psql.INTEGER)
+		.execute();
 	}
 }

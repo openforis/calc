@@ -2,6 +2,8 @@ package org.openforis.calc.persistence.postgis;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -41,6 +43,7 @@ public final class Psql {
 	private static final String GRANT_ALL_ON_SCHEMA = "grant all on schema %s to %s";
 	private static final String GRANT_ALL_ON_TABLES = "grant all privileges on all tables in schema %s to %s";
 	private static final String ADD_PRIMARY_KEY = "add primary key (%s)";
+	private static final String ADD_FOREIGN_KEY = "ADD CONSTRAINT %sfk FOREIGN KEY (%s) REFERENCES %s (%s)";
 
 	private StringBuilder sb;
 	private JdbcTemplate jdbc;
@@ -108,6 +111,17 @@ public final class Psql {
 	@Override
 	public String toString() {
 		return sb.toString();
+	}
+	
+	
+	public List<Map<String, Object>> query(final Object... args) {
+		String sql = toString();
+		if ( args.length == 0 ) {
+			log.debug(sql+";");
+		} else {
+			log.debug(sql+"; -- Parameters: "+join(args)+"");			
+		}
+		return jdbc.queryForList(sql, args);
 	}
 	
 	public void execute(final Object... args) {
@@ -199,5 +213,9 @@ public final class Psql {
 
 	public Psql addPrimaryKey(String... columns) {
 		return append(ADD_PRIMARY_KEY, columns);
+	}
+	
+	public Psql addForeignKey(String fkColumn, String referencedTable, String referencedColumn ) {
+		return append(ADD_FOREIGN_KEY, fkColumn, fkColumn, referencedTable, referencedColumn);
 	}
 }
