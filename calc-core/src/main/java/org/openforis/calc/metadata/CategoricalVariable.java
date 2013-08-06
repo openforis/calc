@@ -88,7 +88,7 @@ public class CategoricalVariable extends Variable {
 	
 	@Override
 	public void setScale(Scale scale) {
-		if ( scale != Scale.NOMINAL || scale != Scale.ORDINAL ) {
+		if ( scale != Scale.NOMINAL && scale != Scale.ORDINAL ) {
 			throw new IllegalArgumentException("Illegal scale: " + scale);
 		}
 		super.setScale(scale);
