@@ -148,7 +148,7 @@ public final class Psql {
 			log.debug(sql+";");
 		} else {
 			log.debug(sql+"; -- Parameters: "+join(args)+"");			
-		}
+		}		
 		jdbc.execute(sql, new PreparedStatementCallback<Boolean>() {
 			@Override
 			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
