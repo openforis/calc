@@ -56,14 +56,12 @@ public final class CreateFactTablesTask extends SqlTask {
 					String dimensionTable = variable.getDimensionTable();
 					String categoryFKColumn = variable.getCategoryColumn();
 					
-					List<Map<String, Object>> listOfCategoriesForVar  = psql().select( DIMENSION_TABLE_ID_COLUMN, DIMENSION_TABLE_ORIGINAL_ID_COLUMN).from( dimensionTable).where( "variable_id = ?"  ).query( variable.getId() );
-					for (Map<String, Object> row : listOfCategoriesForVar) {
-						psql()
-						.update( outputTable )
-						.set(categoryFKColumn  + "=" + row.get(DIMENSION_TABLE_ID_COLUMN) )
-						.where( categoryFKColumn + " = ? ")
-						.execute(row.get( DIMENSION_TABLE_ORIGINAL_ID_COLUMN) );
-					}
+					psql()
+					.update( outputTable )
+					.set(categoryFKColumn  + "= " + dimensionTable+ "."+ DIMENSION_TABLE_ID_COLUMN )
+					.from( dimensionTable  )
+					.where( outputTable+"."+categoryFKColumn + " = " + dimensionTable + "." + DIMENSION_TABLE_ORIGINAL_ID_COLUMN )
+					.execute();
 					
 					
 					// ADD FK relationship
