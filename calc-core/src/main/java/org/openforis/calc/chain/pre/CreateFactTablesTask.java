@@ -40,7 +40,7 @@ public final class CreateFactTablesTask extends SqlTask {
 			List<Variable> variables = entity.getVariables();
 			for (Variable variable : variables) {
 				// Add columns for variables not found in input schema
-				if (!variable.isInput()) {
+				if ( !variable.isInput() ) {
 					String valueColumn = Psql.quote(variable.getValueColumn());
 					if ( variable instanceof CategoricalVariable ) {
 						String valueIdColumn = Psql.quote(variable.getValueColumn()+ID_COLUMN_SUFFIX);
@@ -50,27 +50,25 @@ public final class CreateFactTablesTask extends SqlTask {
 						addQuantityColumn(outputTable, valueColumn);						
 					}
 
-				}else if( variable instanceof CategoricalVariable  && !(variable instanceof BinaryVariable) && !variable.isDegenerateDimension() ){
+				} else if( variable instanceof CategoricalVariable  && !(variable instanceof BinaryVariable) && !variable.isDegenerateDimension() ) {
 
 					// CHANGE THE VALUES FROM THE ORIGINAL_ID TO THE INTERNAL ID OF THE CATEGORICAL DIMENSION TABLE
 					String dimensionTable = variable.getDimensionTable();
 					String categoryFKColumn = variable.getCategoryColumn();
 					
 					psql()
-					.update( outputTable )
-					.set(categoryFKColumn  + "= " + dimensionTable+ "."+ DIMENSION_TABLE_ID_COLUMN )
-					.from( dimensionTable  )
-					.where( outputTable+"."+categoryFKColumn + " = " + dimensionTable + "." + DIMENSION_TABLE_ORIGINAL_ID_COLUMN )
-					.execute();
+						.update( outputTable )
+						.set(categoryFKColumn  + "= " + dimensionTable+ "."+ DIMENSION_TABLE_ID_COLUMN )
+						.from( dimensionTable  )
+						.where( outputTable+"."+categoryFKColumn + " = " + dimensionTable + "." + DIMENSION_TABLE_ORIGINAL_ID_COLUMN )
+						.execute();
 					
 					
 					// ADD FK relationship
 					psql()
-					.alterTable(outputTable)
-					.addForeignKey( categoryFKColumn, dimensionTable, DIMENSION_TABLE_ID_COLUMN)
-					.execute();
-
-
+						.alterTable(outputTable)
+						.addForeignKey( categoryFKColumn, dimensionTable, DIMENSION_TABLE_ID_COLUMN)
+						.execute();
 				}
 			}
 		}
