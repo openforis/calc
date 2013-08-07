@@ -19,22 +19,21 @@ import org.springframework.test.context.junit4.AbstractTransactionalJUnit4Spring
 @ContextConfiguration(locations = { "classpath:applicationContext.xml" })
 public class PrepareOutputSchemaTest extends AbstractTransactionalJUnit4SpringContextTests {
 	@Autowired
-	TaskManager taskManager;
+	private TaskManager taskManager;
 	@Autowired
-	WorkspaceDao workspaceDao;
-	Job job;
+	private WorkspaceDao workspaceDao;
 	
 	@Test
 	public void testRun() throws WorkspaceLockedException {
 		Workspace foundWorkspace = workspaceDao.find(1);
-		job = taskManager.createUserJob(foundWorkspace);
+		Job job = taskManager.createUserJob(foundWorkspace);
 		job.addTask(DropOutputSchemaTask.class);
 		job.addTask(CreateOutputSchemaTask.class);
 		job.addTask(CreateCategoryDimensionTablesTask.class);
 		job.addTask(CreateAoiDimensionTablesTask.class);
 		job.addTask(CreateFactTablesTask.class);
-//		job.addTask(CreateLocationColumnsTask.class);
-//		job.addTask(CreateAoiColumnsTask.class);
+		job.addTask(CreateLocationColumnsTask.class);
+		job.addTask(CreateAoiColumnsTask.class);
 		job.addTask(OutputSchemaGrantsTask.class);
 		taskManager.startJob(job);
 		job.waitFor(5000);
