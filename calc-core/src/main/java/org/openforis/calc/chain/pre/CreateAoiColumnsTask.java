@@ -64,36 +64,49 @@ public final class CreateAoiColumnsTask extends SqlTask {
 		
 		//spatial query only for leaf aoi hierarchy level 
 		if( childLevel == null ) {
-			Psql selectAois = new Psql()
-			.select("f."+factIdColumn+" as fid", "a.id as aid")
-			.from(dataTable+" f")
-			.innerJoin(aoiDimTable+" a")
-			.on("ST_Contains(a.shape, f."+CreateLocationColumnsTask.LOCATION_COLUMN+")")
-			.and("a.aoi_level_id = " + level.getId());
-			
-			psql()
-			.with("tmp", selectAois)
-			.update(dataTable+" f")
-				.set(aoiFkColumn + " = aid")
-				.from("tmp")
-				.where("f."+factIdColumn+" = tmp.fid")
-				.execute();
+			Integer levelId = level.getId();
+			updateLeafAoi(dataTable, aoiFkColumn, factIdColumn,
+					aoiDimTable, levelId);
 		} else {
 			String childAoiFkColumn = quote(childLevel.getFkColumn());
 			String childAoiDimTable = quote(childLevel.getDimensionTable());
 			
-			Psql selectAois = new Psql()
+			updateAncesctorAoi(dataTable, aoiFkColumn, childAoiFkColumn,
+					childAoiDimTable);
+		}
+	}
+
+	private void updateAncesctorAoi(String dataTable, String aoiFkColumn,
+			String childAoiFkColumn, String childAoiDimTable) {
+		Psql selectAois = new Psql()
 			.select("a.id, a.parent_aoi_id")
 			.from(childAoiDimTable +" a");
-			
-			psql()
+		
+		psql()
 			.with("tmp", selectAois)
 			.update(dataTable+" f")
 				.set(aoiFkColumn + " = tmp.parent_aoi_id")
 				.from("tmp")
 				.where("f."+childAoiFkColumn+"  = tmp.id")
 				.execute();
-		}
+	}
+
+	private void updateLeafAoi(String dataTable, String aoiFkColumn,
+			String factIdColumn, String aoiDimTable, Integer levelId) {
+		Psql selectAois = new Psql()
+			.select("f."+factIdColumn+" as fid", "a.id as aid")
+			.from(dataTable+" f")
+			.innerJoin(aoiDimTable+" a")
+			.on("ST_Contains(a.shape, f."+CreateLocationColumnsTask.LOCATION_COLUMN+")")
+			.and("a.aoi_level_id = " + levelId);
+		
+		psql()
+			.with("tmp", selectAois)
+			.update(dataTable+" f")
+				.set(aoiFkColumn + " = aid")
+				.from("tmp")
+				.where("f."+factIdColumn+" = tmp.fid")
+				.execute();
 	}
 
 }
