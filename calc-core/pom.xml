@@ -11,11 +11,6 @@
 	<artifactId>calc-core</artifactId>
 	<packaging>jar</packaging>
 	<name>Open Foris Calc Core</name>
-	<properties>
-		<!-- <jooq-codegen.target.directory>${project.build.directory}/generated-sources/jooq</jooq-codegen.target.directory> -->
-		<jooq-codegen.target.directory>${basedir}/src/generated/java</jooq-codegen.target.directory>
-		<jooq-codegen.target.packageName>org.openforis.calc.persistence.jooq</jooq-codegen.target.packageName>
-	</properties>
 	
 <!-- 	<repositories> -->
 <!-- 	<repository> -->
@@ -54,131 +49,12 @@
 				</configuration>
 			</plugin>
 
-			<!-- Generate jOOQ stub classes -->
-			<plugin>
-				<groupId>org.jooq</groupId>
-				<artifactId>jooq-codegen-maven</artifactId>
-				<version>${jooq.version}</version>
-				<!-- <executions> -->
-				<!-- <execution> -->
-				<!-- <goals> -->
-				<!-- <goal>generate</goal> -->
-				<!-- </goals> -->
-				<!-- </execution> -->
-				<!-- </executions> -->
-				<dependencies>
-					<dependency>
-						<groupId>postgresql</groupId>
-						<artifactId>postgresql</artifactId>
-						<version>${postgres-driver.version}</version>
-					</dependency>
-					<dependency>
-						<groupId>org.openforis.build-tools</groupId>
-						<artifactId>jooq-codegen</artifactId>
-						<version>1.0-SNAPSHOT</version>
-					</dependency>
-				</dependencies>
-				<configuration>
-					<jdbc>
-						<driver>${calc.jdbc.driver}</driver>
-						<url>${calc.jdbc.url}</url>
-						<user>${calc.jdbc.username}</user>
-						<password>${calc.jdbc.password}</password>
-					</jdbc>
-					<generator>
-						<!-- The default code generator. Defaults to org.jooq.util.DefaultGenerator -->
-						<name>org.jooq.util.DefaultGenerator</name>
-
-						<!-- The naming strategy used for class and field names. Defaults to 
-							org.jooq.util.DefaultGeneratorStrategy -->
-						<strategy>
-							<name>org.openforis.jooq.codegen.CustomGeneratorStrategy</name>
-						</strategy>
-						<database>
-							<name>org.jooq.util.postgres.PostgresDatabase</name>
-							<includes>.*</includes>
-							<excludes />
-							<inputSchema>calc</inputSchema>
-							<!-- <customTypes> -->
-							<!-- <customType> -->
-							<!-- <name>java.awt.geom.Point2D.Double</name> -->
-							<!-- <converter>org.openforis.calc.persistence.jooq.PGPointConverter</converter> -->
-							<!-- </customType> -->
-							<!-- </customTypes> -->
-							<!-- <forcedTypes> -->
-							<!-- <forcedType> -->
-							<!-- <name>java.awt.geom.Point2D.Double</name> -->
-							<!-- <expressions>.*\.location</expressions> -->
-							<!-- </forcedType> -->
-							<!-- </forcedTypes> -->
-						</database>
-						<generate>
-							<relations>true</relations>
-							<navigationMethods>true</navigationMethods>
-							<instanceFields>true</instanceFields>
-							<deprecated>false</deprecated>
-							<pojos>false</pojos>
-							<!-- <daos>true</daos> -->
-							<!-- <jpaAnnotations>true</jpaAnnotations> -->
-							<!-- <validationAnnotations>false</validationAnnotations> -->
-						</generate>
-						<target>
-							<packageName>${jooq-codegen.target.packageName}</packageName>
-							<directory>${jooq-codegen.target.directory}</directory>
-						</target>
-					</generator>
-				</configuration>
-			</plugin>
-			<!-- <plugin> -->
-			<!-- <groupId>org.apache.maven.plugins</groupId> -->
-			<!-- <artifactId>maven-surefire-plugin</artifactId> -->
-			<!-- <version>2.11</version> -->
-			<!-- <configuration> -->
-			<!-- <testSourceDirectory>${basedir}/src/test/java</testSourceDirectory> -->
-			<!-- <excludes> -->
-			<!-- <exclude>**/*IntegrationTest.java</exclude> -->
-			<!-- </excludes> -->
-			<!-- </configuration> -->
-			<!-- </plugin> -->
-			<!-- <plugin> -->
-			<!-- <groupId>org.apache.maven.plugins</groupId> -->
-			<!-- <artifactId>maven-failsafe-plugin</artifactId> -->
-			<!-- <version>2.11</version> -->
-			<!-- <configuration> -->
-			<!-- <failIfNoTests>true</failIfNoTests> -->
-			<!-- <testSourceDirectory>${basedir}/src/it/java</testSourceDirectory> -->
-			<!-- <includes> -->
-			<!-- <include>**/*IntegrationTest.java</include> -->
-			<!-- </includes> -->
-			<!-- </configuration> -->
-			<!-- <executions> -->
-			<!-- <execution> -->
-			<!-- <goals> -->
-			<!-- <goal>integration-test</goal> -->
-			<!-- <goal>verify</goal> -->
-			<!-- </goals> -->
-			<!-- </execution> -->
-			<!-- </executions> -->
-			<!-- </plugin> -->
-
 			<!-- Add generated sources to build path -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
 				<version>1.7</version>
 				<executions>
-					<!-- <execution> -->
-					<!-- <id>add-generated-source</id> -->
-					<!-- <phase>generate-sources</phase> -->
-					<!-- <goals> -->
-					<!-- <goal>add-source</goal> -->
-					<!-- </goals> -->
-					<!-- <configuration> -->
-					<!-- <sources> -->
-					<!-- <source>${jooq-codegen.target.directory}</source> -->
-					<!-- </sources> -->
-					<!-- </configuration> -->
-					<!-- </execution> -->
 					<execution>
 						<id>add-integration-test-sources</id>
 						<phase>compile</phase>
@@ -207,6 +83,36 @@
 					</execution>
 				</executions>
 			</plugin>
+			<!--  Liquibase plugin -->
+			<plugin>
+				<groupId>org.liquibase</groupId>
+				<artifactId>liquibase-maven-plugin</artifactId>
+				<version>2.0.1</version>
+				<dependencies>
+					<dependency>
+						<groupId>postgresql</groupId>
+						<artifactId>postgresql</artifactId>
+						<version>${postgres-driver.version}</version>
+					</dependency>
+				</dependencies>
+				<executions>
+					<execution>
+						<phase>process-resources</phase>
+						<configuration>
+							<changeLogFile>design/db/changelog/dev-changelog.xml</changeLogFile>
+							<driver>${calc.jdbc.driver}</driver>
+							<defaultSchemaName>calc</defaultSchemaName>
+							<url>${calc.jdbc.url}</url>
+							<username>${calc.jdbc.username}</username>
+							<password>${calc.jdbc.password}</password>
+						</configuration>
+						<goals>
+							<goal>update</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>			
+
 		</plugins>
 		<pluginManagement>
 			<plugins>
@@ -244,15 +150,19 @@
 								</pluginExecution>
 								<pluginExecution>
 									<pluginExecutionFilter>
-										<groupId>org.jooq</groupId>
-										<artifactId>jooq-codegen-maven</artifactId>
-										<versionRange>[${jooq.version},)</versionRange>
+										<groupId>org.liquibase</groupId>
+										<artifactId>
+											liquibase-maven-plugin
+										</artifactId>
+										<versionRange>
+											[2.0.1,)
+										</versionRange>
 										<goals>
-											<goal>generate</goal>
+											<goal>update</goal>
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore />
+										<ignore></ignore>
 									</action>
 								</pluginExecution>
 							</pluginExecutions>
@@ -302,30 +212,10 @@
 			<artifactId>spring-web</artifactId>
 <!-- 			<version>${spring.version}</version> -->
 		</dependency>
-		
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.springframework</groupId> -->
-<!-- 			<artifactId>spring-oxm</artifactId> -->
-<!-- 			<version>${spring.version}</version> -->
-<!-- 		</dependency> -->
-
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.springframework</groupId> -->
-<!-- 			<artifactId>spring-aop</artifactId> -->
-<!-- 			<version>${spring.version}</version> -->
-<!-- 		</dependency> -->
-
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.aspectj</groupId> -->
-<!-- 			<artifactId>aspectjweaver</artifactId> -->
-<!-- 			<version>1.7.2</version> -->
-<!-- 			<scope>runtime</scope> -->
-<!-- 		</dependency> -->
 
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-orm</artifactId>
-			<version>${spring.version}</version>
 		</dependency>
 
 		<dependency>
@@ -336,29 +226,9 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
-			<version>${spring.version}</version>
 			<scope>test</scope>
 		</dependency>
-		
-		
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.springframework</groupId> -->
-<!-- 			<artifactId>spring-context</artifactId> -->
-<!-- 		</dependency> -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.springframework</groupId> -->
-<!-- 			<artifactId>spring-tx</artifactId> -->
-<!-- 		</dependency> -->
-<!-- 		<dependency> -->
-<!-- 		   <groupId>org.springframework</groupId> -->
-<!-- 		   <artifactId>spring-orm</artifactId> -->
-<!-- 		   <version>${spring.version}</version> -->
-<!-- 		</dependency>		 -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.springframework</groupId> -->
-<!-- 			<artifactId>spring-jdbc</artifactId> -->
-<!-- 		</dependency> -->
-		
+	
 		<!-- Jackson JSON Mapper -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
@@ -374,10 +244,6 @@
 		</dependency>
 		
 <!-- 		Database  -->
-		<dependency>
-			<groupId>org.jooq</groupId>
-			<artifactId>jooq</artifactId>
-		</dependency>
 		<dependency>
 			<groupId>postgresql</groupId>
 			<artifactId>postgresql</artifactId>
@@ -414,7 +280,6 @@
 		<dependency>
 			<groupId>org.hibernate.javax.persistence</groupId>
 			<artifactId>hibernate-jpa-2.0-api</artifactId>
-			<version>1.0.1.Final</version>
 		</dependency>
 
 		<dependency>
@@ -437,12 +302,10 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>
-			<version>4.2.1.Final</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-ehcache</artifactId>
-			<version>4.2.1.Final</version>
 		</dependency>
 		
 <!-- <dependency> -->
@@ -503,38 +366,32 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.7.5</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.7.5</version>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
-			<version>1.2.14</version>
 		</dependency>
 		
 		<!--  Json -->		
 		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
 			<artifactId>json-simple</artifactId>
-			<version>1.1</version>
 		</dependency>
 		
 <!-- 		Testing -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.11</version>
 			<scope>test</scope>
 		</dependency>
 		
 		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
 			<artifactId>json-simple</artifactId>
-			<version>1.1</version>
 		</dependency>
 <!-- 		<dependency>		 -->
 <!-- 			<groupId>net.rforge.rjava</groupId> -->
@@ -554,13 +411,11 @@
 		<dependency>
 		  <groupId>net.rforge.rjava</groupId>
 		  <artifactId>jriengine</artifactId>
-		  <version>0.9-5</version>
 		</dependency>
 		
 		<dependency>
 		  <groupId>net.rforge.rjava</groupId>
 		  <artifactId>rengine</artifactId>
-		  <version>0.9-5</version>
 		</dependency>
 		
 		<dependency>

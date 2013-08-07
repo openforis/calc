@@ -1,0 +1,19 @@
+Compile with:
+
+	mvn compile
+   
+Run unit tests with:
+
+	mvn package
+
+Run integration tests with:
+
+	mvn verify
+    
+Add dev database settings to calc-core/src/main/resources/dev.properties.
+
+IMPORTANT: When making updates to the database schema, ALWAYS ADD A Liquibase 
+           MIGRATION TO calc-core/design/db/changelog.  These will be automatically run
+           when building during Maven's "process-resources" phase.           
+           See http://www.liquibase.org/quickstart.html for more details.   
+  
