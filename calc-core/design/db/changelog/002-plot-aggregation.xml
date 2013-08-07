@@ -9,7 +9,6 @@
     <changeSet id="2" author="G. Miceli">
     	<comment></comment>
     	<sql>
-    	
     		INSERT INTO calc.variable (id, entity_id, value_column, default_category_id, scale, name, caption, description, default_value, cube_member, sort_order, multiple_response, input, override, dimension_table, degenerate_dimension, category_id_column) 
 				VALUES (100, 5264, 'weight', null, 'RATIO', 'weight', 'Plot weight', null, 0.0, false, -1, false, false, false, null, false, null);
 			
@@ -19,7 +18,11 @@
 				VALUES (16, 21, 1, 'calc-sql', '1.0', 'exec-sql', 'Set default subplot', null, '{"sql":"update plot set subplot = ''A'' where subplot is null"}');
 				
 			INSERT INTO calc.calculation_step (id, chain_id, step_no, module_name, module_version, operation_name, name, description, parameters) 
-				VALUES (26, 21, 2, 'calc-sql', '1.0', 'exec-sql', 'Set plot weights', null, '{"sql":"update plot set weight = (case when plot.accessibility = ''0'' and subplot=''A'' then 1.0 else 0.0 end)"}');			
+				VALUES (26, 21, 2, 'calc-sql', '1.0', 'exec-sql', 'Set plot weights', null, '{"sql":"update plot set weight = (case when plot.accessibility = ''0'' and subplot=''A'' then 1.0 else 0.0 end)"}');
+		    
+			update calc.variable
+				set category_id_column = null    
+				where scale not in ('NOMINAL', 'ORDINAL', 'BINARY');
     	</sql>
     </changeSet>
 </databaseChangeLog>
