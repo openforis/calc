@@ -58,6 +58,13 @@ public abstract class Variable extends UserObject {
 	@Column(name = "override")
 	private Boolean override;
 	
+	@Column( name="category_id_column")
+	private String categoryColumn;
+	
+	@Column( name="degenerate_dimension")
+	private boolean degenerateDimension;
+	
+
 	public enum Type {
 		QUANTITATIVE, CATEGORICAL, BINARY;
 	}
@@ -138,5 +145,21 @@ public abstract class Variable extends UserObject {
 
 	public void setOverride(Boolean override) {
 		this.override = override;
+	}
+	
+	public String getCategoryColumn() {
+		return categoryColumn;
+	}
+
+	public void setCategoryColumn(String categoryColumn) {
+		this.categoryColumn = categoryColumn;
+	}
+
+	public boolean isDegenerateDimension() {
+		return degenerateDimension;
+	}
+
+	public void setDegenerateDimension(boolean degenerateDimension) {
+		this.degenerateDimension = degenerateDimension;
 	}
 }

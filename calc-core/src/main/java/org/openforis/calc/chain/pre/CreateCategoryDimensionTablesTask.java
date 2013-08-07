@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.openforis.calc.engine.SqlTask;
 import org.openforis.calc.engine.Workspace;
+import org.openforis.calc.metadata.BinaryVariable;
 import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.Variable;
@@ -29,7 +30,7 @@ public final class CreateCategoryDimensionTablesTask extends SqlTask {
 			List<Variable> variables = entity.getVariables();
 
 			for (Variable var : variables) {
-				if (var instanceof CategoricalVariable ) {
+				if (var instanceof CategoricalVariable && !var.isDegenerateDimension() ) {
 					String tableName = Psql.quote(var.getDimensionTable());
 					Integer varId = var.getId();
 					
@@ -44,8 +45,10 @@ public final class CreateCategoryDimensionTablesTask extends SqlTask {
 						.execute(varId);
 					
 					psql()
-						.alterTable(tableName)
-						.addPrimaryKey(DIMENSION_TABLE_ID_COLUMN);
+					.alterTable(tableName)
+					.addPrimaryKey(DIMENSION_TABLE_ID_COLUMN)
+					.execute();
+					
 				}
 			}
 		}

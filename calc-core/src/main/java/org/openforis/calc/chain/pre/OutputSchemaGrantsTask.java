@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
  */
 public final class OutputSchemaGrantsTask extends SqlTask {
 
-	@Value("${calc.jdbc.db}")
+	@Value("${calc.jdbc.username}")
 	private String systemUser;
 	
 	@Override
