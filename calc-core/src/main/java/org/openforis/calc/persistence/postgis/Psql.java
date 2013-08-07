@@ -1,12 +1,17 @@
 package org.openforis.calc.persistence.postgis;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import org.apache.commons.lang3.StringUtils;
+import org.openforis.calc.engine.Worker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
@@ -68,9 +73,9 @@ public final class Psql {
 		log = LoggerFactory.getLogger(getClass());
 	}
 	
-	public Psql(JdbcTemplate jdbc) {
+	public Psql(DataSource dataSource) {
 		this();
-		this.jdbc = jdbc;
+		this.jdbc = new JdbcTemplate(dataSource);
 	}
 	
 	private Psql append(String format, String... args) {
@@ -271,5 +276,10 @@ public final class Psql {
 
 	public Psql groupBy(Object... elements) {
 		return append(GROUP_BY, join(elements));
+	}
+
+	public Psql appendSql(String sql) {
+		sb.append(sql);
+		return this;
 	}
 }

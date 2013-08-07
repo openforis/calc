@@ -3,7 +3,6 @@ package org.openforis.calc.engine;
 import javax.sql.DataSource;
 
 import org.openforis.calc.persistence.postgis.Psql;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
  * A task which uses the calcuser to perform database operations
@@ -12,21 +11,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
  *
  */
 public class SqlTask extends Task {
-	private JdbcTemplate jdbcTemplate;
-	
+
 	// Helper methods
 	
 	private DataSource getDataSource() {
 		JobContext ds = getContext();
 		return ds.getDataSource();
-	}
-
-	private JdbcTemplate getJdbcTemplate() {
-		if ( jdbcTemplate == null ) {
-			DataSource ds = getDataSource();
-			this.jdbcTemplate = new JdbcTemplate(ds);
-		}
-		return jdbcTemplate;
 	}
 
 //	/**
@@ -44,7 +34,7 @@ public class SqlTask extends Task {
 //	}
 	
 	protected Psql psql() {
-		JdbcTemplate jdbc = getJdbcTemplate();
-		return new Psql(jdbc);
+		DataSource dataSource = getDataSource();
+		return new Psql(dataSource);
 	}
 }

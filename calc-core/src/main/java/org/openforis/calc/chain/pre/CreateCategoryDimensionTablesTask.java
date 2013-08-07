@@ -4,11 +4,11 @@ import java.util.List;
 
 import org.openforis.calc.engine.SqlTask;
 import org.openforis.calc.engine.Workspace;
-import org.openforis.calc.metadata.BinaryVariable;
 import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.persistence.postgis.Psql;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Copies category tables into the output schema.  Fails if output schema already exists.
@@ -23,6 +23,7 @@ public final class CreateCategoryDimensionTablesTask extends SqlTask {
 	private static final String VARIABLE_ID_COLUMN = "variable_id";
 
 	@Override
+	@Transactional
 	protected void execute() throws Throwable {
 		Workspace workspace = getWorkspace();
 		List<Entity> entities = workspace.getEntities();

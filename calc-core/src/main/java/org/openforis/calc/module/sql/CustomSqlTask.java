@@ -1,14 +1,15 @@
 package org.openforis.calc.module.sql;
 
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import javax.sql.DataSource;
 
 import org.openforis.calc.engine.CalculationStepTask;
 import org.openforis.calc.engine.JobContext;
 import org.openforis.calc.engine.ParameterMap;
+import org.openforis.calc.engine.Workspace;
+import org.openforis.calc.persistence.postgis.Psql;
+import org.springframework.transaction.annotation.Transactional;
 
 
 /**
@@ -23,19 +24,12 @@ public final class CustomSqlTask extends CalculationStepTask {
 	protected void execute() throws SQLException {
 		ParameterMap params = parameters();
 		String sql = params.getString("sql");
-		log().info("Executing custom SQL: "+sql);
 		JobContext context = getContext();
 		DataSource ds = context.getDataSource();
-		Connection conn = ds.getConnection();
-		Statement stmt = conn.createStatement();
-		stmt.execute(sql);
-		
-		
-//		//MINO
-//		try {
-//			Thread.sleep(5000);
-//		} catch ( InterruptedException e ) {
-////			e.printStackTrace();
-//		}
+		Workspace workspace = context.getWorkspace();
+		String outputSchema = workspace.getOutputSchema();
+		log().debug("Executing custom SQL");
+		new Psql(ds).setSchemaSearchPath(outputSchema, Psql.PUBLIC).execute();
+		new Psql(ds).appendSql(sql).execute();
 	}
 }
