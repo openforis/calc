@@ -89,7 +89,7 @@ public final class CreateAoiColumnsTask extends SqlTask {
 			psql()
 			.with("tmp", selectAois)
 			.update(dataTable+" f")
-				.set(aoiFkColumn, "tmp.parent_aoi_id")
+				.set(aoiFkColumn + " = tmp.parent_aoi_id")
 				.from("tmp")
 				.where("f."+childAoiFkColumn+"  = tmp.id")
 				.execute();
