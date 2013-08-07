@@ -76,7 +76,14 @@ public abstract class Worker {
 	}
 
 	public final long getDuration() {
-		return status == Status.PENDING ? -1 : endTime - startTime;
+		switch ( status ) {
+		case PENDING:
+			return -1;
+		case RUNNING:
+			return System.currentTimeMillis() - startTime;
+		default:
+			return endTime - startTime;
+		}
 	}
 
 	public final boolean isPending() {

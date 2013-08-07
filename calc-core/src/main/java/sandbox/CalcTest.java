@@ -5,10 +5,11 @@ import java.util.Set;
 
 import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.ProcessingChain;
-import org.openforis.calc.chain.ProcessingChainService;
+import org.openforis.calc.engine.CalculationEngine;
 import org.openforis.calc.engine.Job;
 import org.openforis.calc.engine.ParameterHashMap;
 import org.openforis.calc.engine.ParameterMap;
+import org.openforis.calc.engine.ProcessingChainService;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.Entity;
@@ -29,6 +30,9 @@ public class CalcTest {
 
 	@Autowired
 	private ProcessingChainService processingChainService;
+
+	@Autowired
+	private CalculationEngine calculationEngine;
 
 	@Autowired
 	private R r;
@@ -76,7 +80,7 @@ public class CalcTest {
 		int chainId = chain.getId();
 //		Job job = processingChainService.getProcessingChainJob(chainId);
 //		Set<UUID> taskIds = job.getTaskIds();
-		Job job = processingChainService.startProcessingChainJob(chainId/*, taskIds*/);
+		Job job = calculationEngine.runProcessingChain(chainId/*, taskIds*/);
 		job.waitFor(30000);
 		System.out.println("DONE!");
 	}

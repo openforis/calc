@@ -69,7 +69,9 @@ public class Job extends Worker implements Iterable<Task> {
 	@Override
 	@Transactional
 	public synchronized void run() {
+		log().debug("Starting job");
 		super.run();
+		log().debug(String.format("Finished in %.1f sec", getDuration() / 1000f));
 	}
 	
 	/**
@@ -78,7 +80,6 @@ public class Job extends Worker implements Iterable<Task> {
 	 * @throws Exception
 	 */
 	protected final void execute() throws Throwable {
-		log().debug("Starting");
 		this.currentTaskIndex = -1;
 		for (Task task : tasks) {
 			this.currentTaskIndex += 1;
@@ -91,7 +92,6 @@ public class Job extends Worker implements Iterable<Task> {
 			}
 		}
 		this.currentTaskIndex = -1;
-		log().debug(String.format("Finished in %0.1fs", getDuration() / 1000f));
 	}
 
 	public Worker getCurrentTask() {

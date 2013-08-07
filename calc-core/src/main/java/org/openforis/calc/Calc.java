@@ -1,6 +1,6 @@
 package org.openforis.calc;
 
-import org.openforis.calc.chain.ProcessingChainService;
+import org.openforis.calc.engine.CalculationEngine;
 import org.openforis.calc.engine.Job;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -15,8 +15,8 @@ public abstract class Calc {
 	public static void main(String[] args) {
 		ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
 		try {
-			ProcessingChainService svc = ctx.getBean(ProcessingChainService.class);
-			Job job = svc.startProcessingChainJob(21);
+			CalculationEngine svc = ctx.getBean(CalculationEngine.class);
+			Job job = svc.runProcessingChain(21);
 			job.waitFor(15000);
 //			CalcTest test = ctx.getBean(CalcTest.class);
 //			test.testRunProcessingChain();

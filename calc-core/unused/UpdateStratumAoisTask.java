@@ -14,7 +14,7 @@ public class UpdateStratumAoisTask extends SqlTask {
 	@Override
 	protected void execute() throws Throwable {
 		Workspace ws = getWorkspace();
-		int wsId = ws.getId();
+		int wsId = ws.getId();	
 		deleteExistingStratumAois(wsId);
 		insertStratumAois(wsId);
 	}
@@ -33,12 +33,12 @@ public class UpdateStratumAoisTask extends SqlTask {
 	
 	private void insertStratumAois(int wsId) {
 		psql()
-			.insertInto("calc.stratum_aoi", "aoi_id", "stratum_id", "weight")
-			.select("ua.aoi_id", "u.stratum_id", "count(*)")
+			.insertInto("calc.stratum_aoi", "entity_id", "aoi_id", "stratum_id", "weight")
+			.select("u.entity_id", "ua.aoi_id", "u.stratum_id", "count(*)::double precision / tot.count")
 			.from("calc.sampling_unit_aoi ua")
 			.innerJoin("calc.sampling_unit u").on("u.id = ua.sampling_unit_id")
-			.innerJoin("calc.stratum s").on("s.id = u.stratum_id and s.workspace_id = ?")			
-			.groupBy("ua.aoi_id", "u.stratum_id")
+			.innerJoin("calc.sampling_unit_count_view tot").on("tot.entity_id = u.entity_id and tot.workspace_id = ?")			
+			.groupBy("u.entity_id", "ua.aoi_id", "u.stratum_id", "tot.count")
 			.execute(wsId);
 	}
 }

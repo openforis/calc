@@ -6,7 +6,7 @@ import java.sql.Statement;
 
 import javax.sql.DataSource;
 
-import org.openforis.calc.chain.CalculationStepTask;
+import org.openforis.calc.engine.CalculationStepTask;
 import org.openforis.calc.engine.JobContext;
 import org.openforis.calc.engine.ParameterMap;
 

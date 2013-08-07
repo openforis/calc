@@ -1,7 +1,6 @@
-package org.openforis.calc.chain;
+package org.openforis.calc.engine;
 
-import org.openforis.calc.engine.ParameterMap;
-import org.openforis.calc.engine.Task;
+import org.openforis.calc.chain.CalculationStep;
 
 
 /**

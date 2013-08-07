@@ -36,6 +36,7 @@ public final class UpdateSamplingUnitAoisTask extends SqlTask {
 			AoiHierarchyLevel childLevel = null;
 			for ( int i = levels.size() - 1 ; i >= 0 ; i-- ) {
 				AoiHierarchyLevel level = levels.get(i);
+				log().debug("AOI Level: "+level);
 				
 				if (childLevel == null) {
 					insertLeafStratumAois(ws, level);

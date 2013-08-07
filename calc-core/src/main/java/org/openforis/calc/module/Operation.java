@@ -1,7 +1,7 @@
 package org.openforis.calc.module;
 
-import org.openforis.calc.chain.CalculationStepTask;
 import org.openforis.calc.common.Reflection;
+import org.openforis.calc.engine.CalculationStepTask;
 import org.openforis.calc.nls.Captionable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;

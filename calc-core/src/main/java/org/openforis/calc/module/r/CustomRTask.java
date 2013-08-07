@@ -1,6 +1,6 @@
 package org.openforis.calc.module.r;
 
-import org.openforis.calc.chain.CalculationStepTask;
+import org.openforis.calc.engine.CalculationStepTask;
 import org.openforis.calc.engine.ParameterMap;
 import org.openforis.calc.r.R;
 import org.openforis.calc.r.REnvironment;
