@@ -1,7 +1,6 @@
 package org.openforis.calc.chain.pre;
 
 import java.util.List;
-import java.util.Map;
 
 import org.openforis.calc.engine.SqlTask;
 import org.openforis.calc.engine.Workspace;
@@ -20,6 +19,7 @@ import org.openforis.calc.persistence.postgis.Psql;
  */
 public final class CreateFactTablesTask extends SqlTask {
 
+	private static final String STRATUM_ID = "_stratum_id";
 	private static final String ID_COLUMN_SUFFIX = "_code_id";
 	private static final String DIMENSION_TABLE_ID_COLUMN = "id";
 	private static final String DIMENSION_TABLE_ORIGINAL_ID_COLUMN = "original_id";
@@ -32,10 +32,10 @@ public final class CreateFactTablesTask extends SqlTask {
 
 		for (Entity entity : entities) {
 			String inputTable = inputSchema + "." + Psql.quote(entity.getDataTable());
-			String outputTable = Psql.quote(entity.getDataTable());
-			String idColumn = Psql.quote(entity.getIdColumn());
+			String outputFactTable = Psql.quote(entity.getDataTable());
+			String idColumnFactTable = Psql.quote(entity.getIdColumn());
 
-			createFactTable(inputTable, outputTable, idColumn);
+			createFactTable(inputTable, outputFactTable, idColumnFactTable);
 
 			List<Variable> variables = entity.getVariables();
 			for (Variable variable : variables) {
@@ -44,34 +44,43 @@ public final class CreateFactTablesTask extends SqlTask {
 					String valueColumn = Psql.quote(variable.getValueColumn());
 					if ( variable instanceof CategoricalVariable ) {
 						String valueIdColumn = Psql.quote(variable.getValueColumn()+ID_COLUMN_SUFFIX);
-						addCategoryValueColumn(outputTable, valueColumn);
-						addCategoryIdColumn(outputTable, valueIdColumn);
+						addCategoryValueColumn(outputFactTable, valueColumn);
+						addCategoryIdColumn(outputFactTable, valueIdColumn);
 					} else {
-						addQuantityColumn(outputTable, valueColumn);						
+						addQuantityColumn(outputFactTable, valueColumn);						
 					}
 
 				} else if( variable instanceof CategoricalVariable  && !(variable instanceof BinaryVariable) && !variable.isDegenerateDimension() ) {
 
 					// CHANGE THE VALUES FROM THE ORIGINAL_ID TO THE INTERNAL ID OF THE CATEGORICAL DIMENSION TABLE
 					String dimensionTable = variable.getDimensionTable();
-					String categoryFKColumn = variable.getCategoryColumn();
+					String categoryColumn = variable.getCategoryColumn();
 					
-					psql()
-						.update( outputTable )
-						.set(categoryFKColumn  + "= " + dimensionTable+ "."+ DIMENSION_TABLE_ID_COLUMN )
-						.from( dimensionTable  )
-						.where( outputTable+"."+categoryFKColumn + " = " + dimensionTable + "." + DIMENSION_TABLE_ORIGINAL_ID_COLUMN )
-						.execute();
-					
+					updateDimensionIdColumn(outputFactTable, dimensionTable, categoryColumn);
 					
 					// ADD FK relationship
-					psql()
-						.alterTable(outputTable)
-						.addForeignKey( categoryFKColumn, dimensionTable, DIMENSION_TABLE_ID_COLUMN)
-						.execute();
+					addDimensionTableFK(outputFactTable, dimensionTable, categoryColumn);
 				}
 			}
 		}
+	}
+
+	private void addDimensionTableFK(String outputFactTable,
+			String dimensionTable, String categoryColumn) {
+		psql()
+			.alterTable(outputFactTable)
+			.addForeignKey( categoryColumn, dimensionTable, DIMENSION_TABLE_ID_COLUMN)
+			.execute();
+	}
+
+	private void updateDimensionIdColumn(String outputFactTable,
+			String dimensionTable, String categoryColumn) {
+		psql()
+			.update( outputFactTable )
+			.set(categoryColumn  + "= " + dimensionTable+ "."+ DIMENSION_TABLE_ID_COLUMN )
+			.from( dimensionTable  )
+			.where( outputFactTable+"."+categoryColumn + " = " + dimensionTable + "." + DIMENSION_TABLE_ORIGINAL_ID_COLUMN )
+			.execute();
 	}
 
 	private void createFactTable(String inputTable, String outputTable, String idColumn) {
@@ -84,6 +93,9 @@ public final class CreateFactTablesTask extends SqlTask {
 		if ( idColumn != null ) {
 			psql().alterTable(outputTable).addPrimaryKey(idColumn).execute();
 		}
+		
+		// Add _stratum_id column
+		psql().alterTable( outputTable).addColumn(STRATUM_ID, Psql.INTEGER).execute();
 	}
 
 	private void addQuantityColumn(String outputTable, String valueColumn) {
