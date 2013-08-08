@@ -8,7 +8,7 @@ import org.openforis.calc.persistence.postgis.Psql;
  * @author Alfonso Sanchez-Paus Diaz
  *
  */
-public class CreateStratumDimensionTask extends SqlTask {
+public class CreateStratumDimensionTableTask extends SqlTask {
 
 	private static final Object CALC_STRATUM_TABLE = "calc.stratum";
 	private static final String WORKSPACE_ID = "workspace_id";

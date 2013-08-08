@@ -12,6 +12,7 @@ import org.openforis.calc.chain.pre.CreateCategoryDimensionTablesTask;
 import org.openforis.calc.chain.pre.CreateFactTablesTask;
 import org.openforis.calc.chain.pre.CreateLocationColumnsTask;
 import org.openforis.calc.chain.pre.CreateOutputSchemaTask;
+import org.openforis.calc.chain.pre.CreateStratumDimensionTableTask;
 import org.openforis.calc.chain.pre.DropOutputSchemaTask;
 import org.openforis.calc.chain.pre.OutputSchemaGrantsTask;
 import org.openforis.calc.metadata.task.UpdateSamplingUnitAoisTask;
@@ -73,6 +74,7 @@ public class CalculationEngine {
 		job.addTask(CreateOutputSchemaTask.class);
 		job.addTask(CreateCategoryDimensionTablesTask.class);
 		job.addTask(CreateAoiDimensionTablesTask.class);
+		job.addTask(CreateStratumDimensionTableTask.class);
 		job.addTask(CreateFactTablesTask.class);
 		job.addTask(CreateLocationColumnsTask.class);
 		job.addTask(CreateAoiColumnsTask.class);
