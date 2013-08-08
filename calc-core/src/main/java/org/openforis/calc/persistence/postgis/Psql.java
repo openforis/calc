@@ -1,17 +1,14 @@
 package org.openforis.calc.persistence.postgis;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
 
 import org.apache.commons.lang3.StringUtils;
-import org.openforis.calc.engine.Worker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
@@ -46,7 +43,8 @@ public final class Psql {
 	private static final String SET = "set %s";
 	private static final String WHERE = "where %s";
 	private static final String AND = "and %s";
-	private static final String CREATE_TABLE = "create table %s";
+	private static final String CREATE_TABLE_AS = "create table %s";
+	private static final String CREATE_TABLE = "create table %s (%s)";
 	private static final String AS = "as %s";
 	private static final String GRANT_ALL_ON_SCHEMA = "grant all on schema %s to %s";
 	private static final String GRANT_ALL_ON_TABLES = "grant all privileges on all tables in schema %s to %s";
@@ -235,9 +233,13 @@ public final class Psql {
 	}
 	
 	public Psql createTable(String table) {
-		return append(CREATE_TABLE, table);
+		return append(CREATE_TABLE_AS, table);
 	}
 
+	public Psql createTable(String table, String...columns) {
+		return append(CREATE_TABLE, table, join(columns));
+	}
+	
 	public Psql as(Object expression) {
 		return append(AS, expression);
 	}
