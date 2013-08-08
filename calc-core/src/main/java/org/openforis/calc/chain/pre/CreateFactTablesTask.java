@@ -19,6 +19,7 @@ import org.openforis.calc.persistence.postgis.Psql;
  */
 public final class CreateFactTablesTask extends SqlTask {
 
+	private static final String STRATUM_ID = "_stratum_id";
 	private static final String ID_COLUMN_SUFFIX = "_code_id";
 	private static final String DIMENSION_TABLE_ID_COLUMN = "id";
 	private static final String DIMENSION_TABLE_ORIGINAL_ID_COLUMN = "original_id";
@@ -92,6 +93,9 @@ public final class CreateFactTablesTask extends SqlTask {
 		if ( idColumn != null ) {
 			psql().alterTable(outputTable).addPrimaryKey(idColumn).execute();
 		}
+		
+		// Add _stratum_id column
+		psql().alterTable( outputTable).addColumn(STRATUM_ID, Psql.INTEGER).execute();
 	}
 
 	private void addQuantityColumn(String outputTable, String valueColumn) {

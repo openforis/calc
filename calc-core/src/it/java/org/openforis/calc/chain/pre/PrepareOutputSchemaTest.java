@@ -34,6 +34,8 @@ public class PrepareOutputSchemaTest extends AbstractTransactionalJUnit4SpringCo
 		job.addTask(CreateFactTablesTask.class);
 		job.addTask(CreateLocationColumnsTask.class);
 		job.addTask(CreateAoiColumnsTask.class);
+		job.addTask(CreateStratumDimensionTask.class);
+		
 		job.addTask(OutputSchemaGrantsTask.class);
 		taskManager.startJob(job);
 		job.waitFor(5000);
