@@ -9,4 +9,5 @@
 	<!--  Development db changes -->
     <include file="design/db/changelog/001-test-liquibase.xml"/> 
     <include file="design/db/changelog/002-plot-aggregation.xml"/> 
+    <include file="design/db/changelog/003-plot-aggregation.xml"/> 
 </databaseChangeLog> 

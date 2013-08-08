@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    
+    <changeSet id="3" author="G. Miceli">
+    	<comment>Further updates for aggregation engine</comment>
+    	<sql>
+    		set search_path to calc;
+	    	alter table
+	    		sampling_unit alter COLUMN unit_no TYPE varchar(255);
+
+			INSERT INTO calculation_step (id, chain_id, step_no, module_name, module_version, operation_name, name, description, parameters) VALUES (40, 21, 3, 'calc-sql', '1.0', 'exec-sql', 'Assign strata to plots', null, '{"sql":"update plot p
+set _stratum_id = su.stratum_id
+from cluster c,  sampling_unit su
+where p.cluster_id = c.cluster_id and
+      su.cluster = c.id and su.unit_no = p.no"}');
+      
+			grant select on stratum_aoi_view to calcuser;
+			
+			grant select on sampling_unit_count_view to calcuser;
+
+    	</sql>
+    </changeSet>
+</databaseChangeLog>
