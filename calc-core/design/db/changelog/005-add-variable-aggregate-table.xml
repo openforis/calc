@@ -6,7 +6,7 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
     
-    <changeSet id="4" author="G. Miceli">
+    <changeSet id="5" author="G. Miceli">
     	<comment>Add plot area variable for aggregation engine</comment>
     	<sql>
     		set search_path to calc;
