@@ -16,7 +16,7 @@ import org.openforis.calc.common.UserObject;
 @Table(name = "variable_aggregate")
 public class VariableAggregate extends UserObject {
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "variable_id")
 	private Variable variable;
 
