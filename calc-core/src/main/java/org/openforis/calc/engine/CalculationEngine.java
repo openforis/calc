@@ -6,7 +6,7 @@ import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.InvalidProcessingChainException;
 import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.chain.ProcessingChainDao;
-import org.openforis.calc.chain.post.AggregateFactTablesTask;
+import org.openforis.calc.chain.post.AggregateSamplingUnitsTask;
 import org.openforis.calc.chain.post.CalculateExpansionFactorsTask;
 import org.openforis.calc.chain.post.AddMissingAggregateColumnsTask;
 import org.openforis.calc.chain.pre.CreateAoiColumnsTask;
@@ -100,7 +100,7 @@ public class CalculationEngine {
 	private void addPostprocessingTasks(Job job) {
 		job.addTask(CalculateExpansionFactorsTask.class);
 		job.addTask(AddMissingAggregateColumnsTask.class);
-		job.addTask(AggregateFactTablesTask.class);
+		job.addTask(AggregateSamplingUnitsTask.class);
 	}
 
 	synchronized

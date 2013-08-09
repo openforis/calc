@@ -34,8 +34,7 @@ public final class CalculateExpansionFactorsTask extends SqlTask {
 		List<AoiHierarchy> hierarchies = ws.getAoiHierarchies();
 		
 		for ( Entity entity : entities ) {
-			// TODO now the expf is calculated only on entities called plot.
-			if ( entity.getName().equals("plot") ) {
+			if ( entity.isSamplingUnit() ) {
 				String factTable = table(outputSchema, entity.getDataTable());
 				
 				for ( AoiHierarchy hierarchy : hierarchies ) {

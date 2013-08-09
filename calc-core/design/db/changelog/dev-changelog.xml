@@ -16,4 +16,7 @@
     <include file="design/db/changelog/007-variable-aggregate-fix2.xml"/> 
     <include file="design/db/changelog/008-update-aggs.xml"/>
     <include file="design/db/changelog/009-update-varagg-table.xml"/>  
+    <include file="design/db/changelog/010-add-missing-grants.xml"/>
+    <include file="design/db/changelog/011-add-sampling-unit-flag.xml"/>
+    <include file="design/db/changelog/012-remove-cluster-col.xml"/>
 </databaseChangeLog> 

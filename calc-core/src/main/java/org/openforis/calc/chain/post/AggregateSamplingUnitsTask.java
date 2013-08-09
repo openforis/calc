@@ -23,7 +23,7 @@ import org.openforis.calc.persistence.postgis.Psql;
  * @author G. Miceli
  * @author M. Togna
  */
-public final class AggregateFactTablesTask extends SqlTask {
+public final class AggregateSamplingUnitsTask extends SqlTask {
 	@Override
 	protected void execute() throws Throwable {
 		setDefaultSchemaSearchPath();
@@ -32,8 +32,7 @@ public final class AggregateFactTablesTask extends SqlTask {
 		List<Entity> entities = workspace.getEntities();
 		List<AoiHierarchy> aoiHierarchies = workspace.getAoiHierarchies();
 		for (Entity entity : entities) {
-			// TODO MAKE DYNAMIC!
-			if ( entity.getName().equals("plot") ) {
+			if ( entity.isSamplingUnit() ) {
 				for (AoiHierarchy hierarchy : aoiHierarchies) {
 					List<AoiHierarchyLevel> levels = hierarchy.getLevels();
 					for (AoiHierarchyLevel level : levels) {

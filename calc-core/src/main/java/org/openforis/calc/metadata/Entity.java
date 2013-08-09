@@ -29,6 +29,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author G. Miceli
  * @author M. Togna
  */
+/**
+ * @author G. Miceli
+ * @author M. Togna
+ *
+ */
 @javax.persistence.Entity
 @Table(name = "entity")
 public class Entity extends UserObject {
@@ -74,11 +79,8 @@ public class Entity extends UserObject {
 	@Column(name = "location_column")
 	private String locationColumn;
 	
-	@Column(name = "cluster_column")
-	private String clusterColumn;
-	
-	@Column(name = "unit_no_column")
-	private String unitNoColumn;
+	@Column(name = "sampling_unit")
+	private boolean samplingUnit;
 
 	@OneToMany(mappedBy = "entity", fetch = FetchType.EAGER)
 	@OrderBy("sortOrder")
@@ -203,24 +205,12 @@ public class Entity extends UserObject {
 		this.parentIdColumn = parentIdColumn;
 	}
 
-	public String getClusterColumn() {
-		return clusterColumn;
-	}
-
-	public void setClusterColumn(String clusterColumn) {
-		this.clusterColumn = clusterColumn;
-	}
-
-	public String getUnitNoColumn() {
-		return unitNoColumn;
-	}
-
-	public void setUnitNoColumn(String unitNoColumn) {
-		this.unitNoColumn = unitNoColumn;
-	}
-
 	public boolean isSamplingUnit() {
-		return unitNoColumn != null;
+		return samplingUnit;
+	}
+
+	public void setSamplingUnit(boolean samplingUnit) {
+		this.samplingUnit = samplingUnit;
 	}
 }
 

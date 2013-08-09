@@ -3,7 +3,7 @@ package org.openforis.calc.chain.pre;
 import javax.sql.DataSource;
 
 import org.junit.Test;
-import org.openforis.calc.chain.post.AggregateFactTablesTask;
+import org.openforis.calc.chain.post.AggregateSamplingUnitsTask;
 import org.openforis.calc.engine.Job;
 import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
@@ -32,7 +32,7 @@ public class PostProcessingTest extends AbstractTransactionalJUnit4SpringContext
 		Workspace ws = workspaceDao.find(1);
 		Job job = taskManager.createUserJob(ws);
 //		job.addTask(AddMissingAggregateColumnsTask.class);
-		job.addTask(AggregateFactTablesTask.class);
+		job.addTask(AggregateSamplingUnitsTask.class);
 		taskManager.startJob(job);
 		job.waitFor(5000);
 	}
