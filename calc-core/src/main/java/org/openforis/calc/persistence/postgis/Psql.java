@@ -55,6 +55,7 @@ public final class Psql {
 	private static final String INSERT_INTO_WITH_COLS = "insert into %s (%s)";
 	private static final String INSERT_INTO = "insert into %s";
 	private static final String GROUP_BY = "group by %s";
+	private static final String RENAME_COLUMN_TO = "rename %s to %s";
 
 	private StringBuilder sb;
 	private JdbcTemplate jdbc;
@@ -287,5 +288,9 @@ public final class Psql {
 
 	public static String table(String schema, String table) {
 		return quote(schema)+"."+quote(table);
+	}
+	
+	public Psql renameColumnTo(String... elements) {
+		return append(RENAME_COLUMN_TO, elements);
 	}
 }

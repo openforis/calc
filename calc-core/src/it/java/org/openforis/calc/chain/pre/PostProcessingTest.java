@@ -9,7 +9,6 @@ import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceDao;
 import org.openforis.calc.engine.WorkspaceLockedException;
-import org.openforis.calc.persistence.postgis.Psql;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
@@ -32,7 +31,6 @@ public class PostProcessingTest extends AbstractTransactionalJUnit4SpringContext
 	public void testRun() throws WorkspaceLockedException {
 		Workspace ws = workspaceDao.find(1);
 		Job job = taskManager.createUserJob(ws);
-		new Psql(userDataSource).setSchemaSearchPath(ws.getOutputSchema(), Psql.PUBLIC).execute();
 //		job.addTask(AddMissingAggregateColumnsTask.class);
 		job.addTask(AggregateFactTablesTask.class);
 		taskManager.startJob(job);

@@ -21,6 +21,8 @@ public final class CreateCategoryDimensionTablesTask extends SqlTask {
 	private static final String CALC_CATEGORY_TABLE = "calc.category";
 	private static final String DIMENSION_TABLE_ID_COLUMN = "id";
 	private static final String VARIABLE_ID_COLUMN = "variable_id";
+	private static final String NAME_COLUMN = "name";
+	private static final String CAPTION_COLUMN = "caption";
 
 	@Override
 	@Transactional
@@ -32,27 +34,47 @@ public final class CreateCategoryDimensionTablesTask extends SqlTask {
 
 			for (Variable var : variables) {
 				if (var instanceof CategoricalVariable && !var.isDegenerateDimension() ) {
-					String tableName = Psql.quote(var.getDimensionTable());
+					String dimensionTableName = Psql.quote(var.getDimensionTable());
 					Integer varId = var.getId();
 					
-					Psql select = new Psql()
-						.select("*")
-						.from(CALC_CATEGORY_TABLE)
-						.where(VARIABLE_ID_COLUMN+"=?");
+					createDimensionTable(dimensionTableName, varId);
 					
-					psql()
-						.createTable(tableName)
-						.as(select) 
-						.execute(varId);
+					addPrimaryKeyToTable(dimensionTableName);
 					
-					psql()
-					.alterTable(tableName)
-					.addPrimaryKey(DIMENSION_TABLE_ID_COLUMN)
-					.execute();
+					renameColumnFromNameToCaption(dimensionTableName);
 					
 				}
 			}
 		}
+	}
+
+	private void addPrimaryKeyToTable(String dimensionTableName) {
+		psql()
+		.alterTable(dimensionTableName)
+		.addPrimaryKey(DIMENSION_TABLE_ID_COLUMN)
+		.execute();
+	}
+
+	private void createDimensionTable(String dimensionName, Integer varId) {
+		Psql select = new Psql()
+			.select("*")
+			.from(CALC_CATEGORY_TABLE)
+			.where(VARIABLE_ID_COLUMN+"=?");
+		
+		psql()
+			.createTable(dimensionName)
+			.as(select) 
+			.execute(varId);
+	}
+	
+	private void renameColumnFromNameToCaption(String dimensionTable ){
+		
+		psql()
+			.alterTable(dimensionTable)
+			.renameColumnTo(NAME_COLUMN, CAPTION_COLUMN)
+			.execute();
+
+		
 	}
 
 }

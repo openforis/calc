@@ -26,8 +26,8 @@ import org.openforis.calc.persistence.postgis.Psql;
 public final class AggregateFactTablesTask extends SqlTask {
 	@Override
 	protected void execute() throws Throwable {
+		setDefaultSchemaSearchPath();
 		Workspace workspace = getWorkspace();
-		setDefaultSchemaSearchPath(workspace);
 
 		List<Entity> entities = workspace.getEntities();
 		List<AoiHierarchy> aoiHierarchies = workspace.getAoiHierarchies();
@@ -42,10 +42,6 @@ public final class AggregateFactTablesTask extends SqlTask {
 				}
 			}
 		}
-	}
-
-	protected void setDefaultSchemaSearchPath(Workspace workspace) {
-		psql().setSchemaSearchPath(workspace.getOutputSchema(), Psql.PUBLIC).execute();
 	}
 
 	private void aggregateFactTable(Entity entity, AoiHierarchyLevel level) {

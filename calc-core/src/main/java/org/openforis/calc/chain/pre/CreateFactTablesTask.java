@@ -21,7 +21,6 @@ public final class CreateFactTablesTask extends SqlTask {
 
 	// TODO group system table and columns names into single class
 	public static final String STRATUM_ID = "_stratum_id";
-	private static final String ID_COLUMN_SUFFIX = "_code_id";
 	private static final String DIMENSION_TABLE_ID_COLUMN = "id";
 	private static final String DIMENSION_TABLE_ORIGINAL_ID_COLUMN = "original_id";
 
@@ -44,7 +43,7 @@ public final class CreateFactTablesTask extends SqlTask {
 				if ( !variable.isInput() ) {
 					String valueColumn = Psql.quote(variable.getValueColumn());
 					if ( variable instanceof CategoricalVariable ) {
-						String valueIdColumn = Psql.quote(variable.getValueColumn()+ID_COLUMN_SUFFIX);
+						String valueIdColumn = Psql.quote(((CategoricalVariable) variable).getCategoryIdColumn());
 						addCategoryValueColumn(outputFactTable, valueColumn);
 						addCategoryIdColumn(outputFactTable, valueIdColumn);
 					} else {
@@ -85,7 +84,7 @@ public final class CreateFactTablesTask extends SqlTask {
 			.where( outputFactTable+"."+categoryColumn + " = " + dimensionTable + "." + DIMENSION_TABLE_ORIGINAL_ID_COLUMN )
 			.execute();
 	}
-
+	
 	private void createFactTable(String inputTable, String outputTable, String idColumn) {
 		Psql select = new Psql()
 		.select("*")
