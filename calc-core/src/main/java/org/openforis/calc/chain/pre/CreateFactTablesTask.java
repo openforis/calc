@@ -20,9 +20,10 @@ import org.openforis.calc.persistence.postgis.Psql;
 public final class CreateFactTablesTask extends SqlTask {
 
 	private static final String STRATUM_ID = "_stratum_id";
-	private static final String ID_COLUMN_SUFFIX = "_code_id";
 	private static final String DIMENSION_TABLE_ID_COLUMN = "id";
 	private static final String DIMENSION_TABLE_ORIGINAL_ID_COLUMN = "original_id";
+	private static final String ID_COLUMN_SUFFIX_TO_REPLACE = "_code_id";
+	private static final String ID_COLUMN_SUFFIX = "_dim_id";
 
 	@Override
 	protected void execute() throws Throwable {
@@ -56,10 +57,13 @@ public final class CreateFactTablesTask extends SqlTask {
 					String dimensionTable = variable.getDimensionTable();
 					String categoryColumn = variable.getCategoryColumn();
 					
+				
 					updateDimensionIdColumn(outputFactTable, dimensionTable, categoryColumn);
 					
+					String newColumnName = renameDimensionIdColumn(outputFactTable, categoryColumn);
+					
 					// ADD FK relationship
-					addDimensionTableFK(outputFactTable, dimensionTable, categoryColumn);
+					addDimensionTableFK(outputFactTable, dimensionTable, newColumnName);
 				}
 			}
 		}
@@ -82,6 +86,20 @@ public final class CreateFactTablesTask extends SqlTask {
 			.where( outputFactTable+"."+categoryColumn + " = " + dimensionTable + "." + DIMENSION_TABLE_ORIGINAL_ID_COLUMN )
 			.execute();
 	}
+	
+	private String renameDimensionIdColumn(String outputFactTable, String categoryColumn ){
+		String newColumnName = categoryColumn;
+		if( categoryColumn.endsWith(ID_COLUMN_SUFFIX_TO_REPLACE)){
+			newColumnName = categoryColumn.substring(0, categoryColumn.indexOf( ID_COLUMN_SUFFIX_TO_REPLACE) )  + ID_COLUMN_SUFFIX;		
+			psql()
+				.alterTable(outputFactTable)
+				.renameColumnTo(categoryColumn, newColumnName)
+				.execute();
+		}
+		return newColumnName;
+		
+	}
+	
 
 	private void createFactTable(String inputTable, String outputTable, String idColumn) {
 		Psql select = new Psql()
