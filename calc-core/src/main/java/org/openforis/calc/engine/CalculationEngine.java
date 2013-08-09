@@ -6,7 +6,7 @@ import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.InvalidProcessingChainException;
 import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.chain.ProcessingChainDao;
-import org.openforis.calc.chain.post.UpdateExpFactorTask;
+import org.openforis.calc.chain.post.CalculateExpansionFactorsTask;
 import org.openforis.calc.chain.pre.CreateAoiColumnsTask;
 import org.openforis.calc.chain.pre.CreateAoiDimensionTablesTask;
 import org.openforis.calc.chain.pre.CreateCategoryDimensionTablesTask;
@@ -97,7 +97,7 @@ public class CalculationEngine {
 
 	private void addPostprocessingTasks(Job job) {
 		// TODO Auto-generated method stub
-		job.addTask(UpdateExpFactorTask.class);
+		job.addTask(CalculateExpansionFactorsTask.class);
 	}
 
 	synchronized

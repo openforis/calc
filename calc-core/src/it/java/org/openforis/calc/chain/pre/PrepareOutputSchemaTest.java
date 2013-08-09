@@ -1,7 +1,7 @@
 package org.openforis.calc.chain.pre;
 
 import org.junit.Test;
-import org.openforis.calc.chain.post.UpdateExpFactorTask;
+import org.openforis.calc.chain.post.CalculateExpansionFactorsTask;
 import org.openforis.calc.engine.Job;
 import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
@@ -36,7 +36,7 @@ public class PrepareOutputSchemaTest extends AbstractTransactionalJUnit4SpringCo
 		job.addTask(CreateLocationColumnsTask.class);
 		job.addTask(CreateAoiColumnsTask.class);
 		job.addTask(CreateStratumDimensionTableTask.class);
-		job.addTask(UpdateExpFactorTask.class);
+		job.addTask(CalculateExpansionFactorsTask.class);
 		job.addTask(OutputSchemaGrantsTask.class);
 		taskManager.startJob(job);
 		job.waitFor(5000);
