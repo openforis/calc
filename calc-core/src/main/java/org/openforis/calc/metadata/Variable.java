@@ -1,5 +1,7 @@
 package org.openforis.calc.metadata;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -8,6 +10,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.DiscriminatorFormula;
@@ -16,8 +19,7 @@ import org.openforis.calc.common.UserObject;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
- * Base class for Calc variables.  Variables may be either categorical or
- * quantitative.  Note that binary classes are special cases of categorical
+ * Base class for Calc variables.  Variables may be either categorical or quantitative.  Note that binary classes are special cases of categorical
  * variables which accept TRUE, FALSE and NA values.
  * 
  * @author G. Miceli
@@ -25,18 +27,18 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 @javax.persistence.Entity
 @Table(name = "variable")
-@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorFormula("case when scale in ('RATIO','INTERVAL','OTHER') then 'Q' when scale='BINARY' then 'B' else 'C' end")
 public abstract class Variable extends UserObject {
 	@Column(name = "caption")
 	private String caption;
-	
+
 	@Column(name = "cube_member")
 	private boolean cubeMember;
-	
+
 	@Column(name = "sort_order")
 	private int sortOrder;
-	
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "entity_id")
 	@JsonIgnore
@@ -45,7 +47,7 @@ public abstract class Variable extends UserObject {
 	@Enumerated(EnumType.STRING)
 	@Column(name = "scale")
 	private Scale scale;
-	
+
 	@Column(name = "value_column")
 	private String valueColumn;
 
@@ -54,16 +56,18 @@ public abstract class Variable extends UserObject {
 
 	@Column(name = "input")
 	private Boolean input;
-	
+
 	@Column(name = "override")
 	private Boolean override;
-	
-	@Column( name="category_id_column")
+
+	@Column(name = "category_id_column")
 	private String categoryColumn;
-	
-	@Column( name="degenerate_dimension")
+
+	@Column(name = "degenerate_dimension")
 	private boolean degenerateDimension;
-	
+
+	@OneToMany(mappedBy = "variable", fetch = FetchType.EAGER)
+	private List<VariableAggregate> aggregates;
 
 	public enum Type {
 		QUANTITATIVE, CATEGORICAL, BINARY;
@@ -82,7 +86,7 @@ public abstract class Variable extends UserObject {
 	void setEntity(Entity entity) {
 		this.entity = entity;
 	}
-	
+
 	public Scale getScale() {
 		return this.scale;
 	}
@@ -90,7 +94,7 @@ public abstract class Variable extends UserObject {
 	public void setScale(Scale scale) {
 		this.scale = scale;
 	}
-	
+
 	public String getCaption() {
 		return caption;
 	}
@@ -102,7 +106,7 @@ public abstract class Variable extends UserObject {
 	public boolean isCubeMember() {
 		return this.cubeMember;
 	}
-	
+
 	public void setCubeMember(boolean cubeMember) {
 		this.cubeMember = cubeMember;
 	}
@@ -122,23 +126,23 @@ public abstract class Variable extends UserObject {
 	public void setValueColumn(String valueColumn) {
 		this.valueColumn = valueColumn;
 	}
-	
+
 	public String getDimensionTable() {
 		return dimensionTable;
 	}
-	
+
 	public void setDimensionTable(String dimensionTable) {
 		this.dimensionTable = dimensionTable;
 	}
-	
+
 	public boolean isInput() {
 		return input;
 	}
-	
+
 	public void setInput(Boolean input) {
 		this.input = input;
 	}
-	
+
 	public boolean isOverride() {
 		return override;
 	}
@@ -146,7 +150,7 @@ public abstract class Variable extends UserObject {
 	public void setOverride(Boolean override) {
 		this.override = override;
 	}
-	
+
 	public String getCategoryColumn() {
 		return categoryColumn;
 	}
@@ -162,4 +166,13 @@ public abstract class Variable extends UserObject {
 	public void setDegenerateDimension(boolean degenerateDimension) {
 		this.degenerateDimension = degenerateDimension;
 	}
+
+	public List<VariableAggregate> getAggregates() {
+		return aggregates;
+	}
+
+	public void setAggregates(List<VariableAggregate> aggregates) {
+		this.aggregates = aggregates;
+	}
+
 }
