@@ -6,16 +6,13 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
     
-    <changeSet id="6" author="G. Miceli">
-    	<comment>Allow nulls in variable aggregates</comment>
+    <changeSet id="7" author="G. Miceli">
+    	<comment>Rename column</comment>
     	<sql>
     		set search_path to calc;
-
+    		
 			alter table
-			    calc.variable_aggregate alter COLUMN name drop not null;
-			alter table
-			    calc.variable_aggregate alter COLUMN column_name drop not null;
-			    
+    			calc.variable_aggregate rename COLUMN column_name to aggregate_column;
         	</sql>
     </changeSet>
 </databaseChangeLog>

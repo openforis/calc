@@ -7,7 +7,7 @@
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
     
     <changeSet id="5" author="G. Miceli">
-    	<comment>Add plot area variable for aggregation engine</comment>
+    	<comment>Add table for variable aggregates</comment>
     	<sql>
     		set search_path to calc;
 
