@@ -19,7 +19,8 @@ import org.openforis.calc.persistence.postgis.Psql;
  */
 public final class CreateFactTablesTask extends SqlTask {
 
-	private static final String STRATUM_ID = "_stratum_id";
+	// TODO group system table and columns names into single class
+	public static final String STRATUM_ID = "_stratum_id";
 	private static final String ID_COLUMN_SUFFIX = "_code_id";
 	private static final String DIMENSION_TABLE_ID_COLUMN = "id";
 	private static final String DIMENSION_TABLE_ORIGINAL_ID_COLUMN = "original_id";
@@ -49,17 +50,19 @@ public final class CreateFactTablesTask extends SqlTask {
 					} else {
 						addQuantityColumn(outputFactTable, valueColumn);						
 					}
+				} else if ( variable instanceof BinaryVariable ) {
+					// TODO implement 
+				} else if( variable instanceof CategoricalVariable && !variable.isDegenerateDimension() ) {
 
-				} else if( variable instanceof CategoricalVariable  && !(variable instanceof BinaryVariable) && !variable.isDegenerateDimension() ) {
-
+					CategoricalVariable catvar = (CategoricalVariable) variable;
 					// CHANGE THE VALUES FROM THE ORIGINAL_ID TO THE INTERNAL ID OF THE CATEGORICAL DIMENSION TABLE
-					String dimensionTable = variable.getDimensionTable();
-					String categoryColumn = variable.getCategoryColumn();
+					String dimensionTable = catvar.getDimensionTable();
+					String categoryIdColumn = catvar.getCategoryIdColumn();
 					
-					updateDimensionIdColumn(outputFactTable, dimensionTable, categoryColumn);
+					updateDimensionIdColumn(outputFactTable, dimensionTable, categoryIdColumn);
 					
 					// ADD FK relationship
-					addDimensionTableFK(outputFactTable, dimensionTable, categoryColumn);
+					addDimensionTableFK(outputFactTable, dimensionTable, categoryIdColumn);
 				}
 			}
 		}

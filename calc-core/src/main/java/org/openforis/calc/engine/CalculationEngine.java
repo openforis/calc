@@ -6,6 +6,7 @@ import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.InvalidProcessingChainException;
 import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.chain.ProcessingChainDao;
+import org.openforis.calc.chain.post.AggregateFactTablesTask;
 import org.openforis.calc.chain.post.CalculateExpansionFactorsTask;
 import org.openforis.calc.chain.post.AddMissingAggregateColumnsTask;
 import org.openforis.calc.chain.pre.CreateAoiColumnsTask;
@@ -61,7 +62,7 @@ public class CalculationEngine {
 		Job job = taskManager.createUserJob(workspace);
 
 		// Add preprocess steps to the job
-//		addPreprocessingTasks(job);
+		addPreprocessingTasks(job);
 
 		// Add steps to job
 		List<CalculationStep> steps = chain.getCalculationSteps();
@@ -97,9 +98,9 @@ public class CalculationEngine {
 	}
 
 	private void addPostprocessingTasks(Job job) {
-		// TODO Auto-generated method stub
 		job.addTask(CalculateExpansionFactorsTask.class);
 		job.addTask(AddMissingAggregateColumnsTask.class);
+		job.addTask(AggregateFactTablesTask.class);
 	}
 
 	synchronized

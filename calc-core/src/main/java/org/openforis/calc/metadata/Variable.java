@@ -1,7 +1,5 @@
 package org.openforis.calc.metadata;
 
-import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -10,7 +8,6 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.DiscriminatorFormula;
@@ -60,14 +57,8 @@ public abstract class Variable extends UserObject {
 	@Column(name = "override")
 	private Boolean override;
 
-	@Column(name = "category_id_column")
-	private String categoryColumn;
-
 	@Column(name = "degenerate_dimension")
 	private boolean degenerateDimension;
-
-	@OneToMany(mappedBy = "variable", fetch = FetchType.EAGER)
-	private List<VariableAggregate> aggregates;
 
 	public enum Type {
 		QUANTITATIVE, CATEGORICAL, BINARY;
@@ -151,14 +142,6 @@ public abstract class Variable extends UserObject {
 		this.override = override;
 	}
 
-	public String getCategoryColumn() {
-		return categoryColumn;
-	}
-
-	public void setCategoryColumn(String categoryColumn) {
-		this.categoryColumn = categoryColumn;
-	}
-
 	public boolean isDegenerateDimension() {
 		return degenerateDimension;
 	}
@@ -166,13 +149,4 @@ public abstract class Variable extends UserObject {
 	public void setDegenerateDimension(boolean degenerateDimension) {
 		this.degenerateDimension = degenerateDimension;
 	}
-
-	public List<VariableAggregate> getAggregates() {
-		return aggregates;
-	}
-
-	public void setAggregates(List<VariableAggregate> aggregates) {
-		this.aggregates = aggregates;
-	}
-
 }

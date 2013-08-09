@@ -36,6 +36,9 @@ public class CategoricalVariable extends Variable {
 	@JsonIgnore
 	private Category defaultValue;
 
+	@Column(name = "category_id_column")
+	private String categoryIdColumn;
+
 	public CategoricalVariable() {
 	}
 	
@@ -81,6 +84,14 @@ public class CategoricalVariable extends Variable {
 		return Collections.unmodifiableList(hierarchies);
 	}
 	
+	public String getCategoryIdColumn() {
+		return categoryIdColumn;
+	}
+
+	public void setCategoryIdColumn(String categoryIdColumn) {
+		this.categoryIdColumn = categoryIdColumn;
+	}
+
 	@Override
 	public Type getType() {
 		return Type.CATEGORICAL;

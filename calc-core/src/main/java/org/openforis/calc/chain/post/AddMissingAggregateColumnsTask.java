@@ -8,6 +8,7 @@ import java.util.List;
 import org.openforis.calc.engine.SqlTask;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.VariableAggregate;
 
@@ -26,13 +27,16 @@ public final class AddMissingAggregateColumnsTask extends SqlTask {
 			String factTable = table(outputSchema, entity.getDataTable());
 			List<Variable> variables = entity.getVariables();
 			for (Variable variable : variables) {
-				List<VariableAggregate> aggregates = variable.getAggregates();
-				String valueColumn = variable.getValueColumn();
-				for (VariableAggregate agg : aggregates) {
-					String aggColumn = agg.getAggregateColumn();
-					if ( aggColumn != null && !valueColumn.equals(aggColumn) ) {
-						addAggregateColumn(factTable, aggColumn);
-						updateAggregateColumn(factTable, valueColumn, aggColumn);
+				if ( variable instanceof QuantitativeVariable ) {
+					QuantitativeVariable qvar = (QuantitativeVariable) variable;
+					List<VariableAggregate> aggregates = qvar.getAggregates();
+					String valueColumn = qvar.getValueColumn();
+					for (VariableAggregate agg : aggregates) {
+						String aggColumn = agg.getAggregateColumn();
+						if ( aggColumn != null && !valueColumn.equals(aggColumn) ) {
+							addAggregateColumn(factTable, aggColumn);
+							updateAggregateColumn(factTable, valueColumn, aggColumn);
+						}
 					}
 				}
 			}

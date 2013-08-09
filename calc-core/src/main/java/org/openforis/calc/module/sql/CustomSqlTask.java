@@ -9,7 +9,6 @@ import org.openforis.calc.engine.JobContext;
 import org.openforis.calc.engine.ParameterMap;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.persistence.postgis.Psql;
-import org.springframework.transaction.annotation.Transactional;
 
 
 /**

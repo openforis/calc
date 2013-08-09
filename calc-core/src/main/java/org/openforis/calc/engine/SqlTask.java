@@ -37,4 +37,13 @@ public class SqlTask extends Task {
 		DataSource dataSource = getDataSource();
 		return new Psql(dataSource);
 	}
+	
+
+	protected void setDefaultSchemaSearchPath() {
+		Workspace workspace = getWorkspace();
+		psql()
+			.setSchemaSearchPath(workspace.getOutputSchema(), Psql.PUBLIC)
+			.execute();
+	}
+
 }

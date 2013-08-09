@@ -1,12 +1,15 @@
 package org.openforis.calc.chain.pre;
 
+import javax.sql.DataSource;
+
 import org.junit.Test;
-import org.openforis.calc.chain.post.AddMissingAggregateColumnsTask;
+import org.openforis.calc.chain.post.AggregateFactTablesTask;
 import org.openforis.calc.engine.Job;
 import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceDao;
 import org.openforis.calc.engine.WorkspaceLockedException;
+import org.openforis.calc.persistence.postgis.Psql;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
@@ -17,17 +20,21 @@ import org.springframework.test.context.junit4.AbstractTransactionalJUnit4Spring
  * 
  */
 @ContextConfiguration(locations = { "classpath:applicationContext.xml" })
-public class PostProcessTest extends AbstractTransactionalJUnit4SpringContextTests {
+public class PostProcessingTest extends AbstractTransactionalJUnit4SpringContextTests {
 	@Autowired
 	private TaskManager taskManager;
 	@Autowired
 	private WorkspaceDao workspaceDao;
-
+	@Autowired
+	private DataSource userDataSource;
+	
 	@Test
 	public void testRun() throws WorkspaceLockedException {
-		Workspace foundWorkspace = workspaceDao.find(1);
-		Job job = taskManager.createUserJob(foundWorkspace);
-		job.addTask(AddMissingAggregateColumnsTask.class);
+		Workspace ws = workspaceDao.find(1);
+		Job job = taskManager.createUserJob(ws);
+		new Psql(userDataSource).setSchemaSearchPath(ws.getOutputSchema(), Psql.PUBLIC).execute();
+//		job.addTask(AddMissingAggregateColumnsTask.class);
+		job.addTask(AggregateFactTablesTask.class);
 		taskManager.startJob(job);
 		job.waitFor(5000);
 	}

@@ -1,7 +1,11 @@
 package org.openforis.calc.metadata;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
 /**
@@ -18,6 +22,9 @@ public class QuantitativeVariable extends Variable {
 	
 	@Transient //TODO map to column
 	private transient Unit<?> unit; 
+
+	@OneToMany(mappedBy = "variable", fetch = FetchType.EAGER)
+	private List<VariableAggregate> aggregates;
 
 	public void setUnit(Unit<?> unit) {
 		this.unit = unit;
@@ -48,4 +55,11 @@ public class QuantitativeVariable extends Variable {
 		super.setScale(scale);
 	}
 
+	public List<VariableAggregate> getAggregates() {
+		return aggregates;
+	}
+
+	public void setAggregates(List<VariableAggregate> aggregates) {
+		this.aggregates = aggregates;
+	}
 }

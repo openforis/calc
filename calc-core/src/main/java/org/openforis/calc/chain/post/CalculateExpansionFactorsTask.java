@@ -1,6 +1,6 @@
 package org.openforis.calc.chain.post;
 
-import static org.openforis.calc.persistence.postgis.Psql.quote;
+import static org.openforis.calc.persistence.postgis.Psql.*;
 
 import java.util.List;
 
@@ -19,14 +19,14 @@ import org.openforis.calc.metadata.Entity;
  */
 public final class CalculateExpansionFactorsTask extends SqlTask {
 	
-	private static final String EXPF_TABLE_NAME = "_expf";
+	public static final String EXPF_TABLE = "_expf";
 
 	@Override
 	protected void execute() throws Throwable {
 		Workspace ws = getWorkspace();
 		Integer wsId = ws.getId();
 		String outputSchema = ws.getOutputSchema();
-		String expfTable = quote(outputSchema)+"."+quote(EXPF_TABLE_NAME);
+		String expfTable = table(outputSchema, EXPF_TABLE);
 
 		createExpansionFactorTable(expfTable);
 		
@@ -36,7 +36,7 @@ public final class CalculateExpansionFactorsTask extends SqlTask {
 		for ( Entity entity : entities ) {
 			// TODO now the expf is calculated only on entities called plot.
 			if ( entity.getName().equals("plot") ) {
-				String factTable = quote(ws.getOutputSchema()) + "." + quote(entity.getDataTable());
+				String factTable = table(outputSchema, entity.getDataTable());
 				
 				for ( AoiHierarchy hierarchy : hierarchies ) {
 					List<AoiHierarchyLevel> levels = hierarchy.getLevels();
@@ -58,14 +58,14 @@ public final class CalculateExpansionFactorsTask extends SqlTask {
 					"stratum_id integer not null", 
 					"aoi_id integer not null", 
 					"entity_id integer not null", 
-					"expf double precision not null")
+					"_expf double precision not null")
 			.execute();
 	}
 
 
 	private void insertExpansionFactors(Integer wsId, String expfTable, String factTable, String aoiFkColumn) {
 		psql()
-			.insertInto(expfTable, "stratum_id", "aoi_id", "entity_id", "expf")
+			.insertInto(expfTable, "stratum_id", "aoi_id", "entity_id", "_expf")
 			.select("s.stratum_id" , "s.aoi_id" , "s.entity_id" , "s.area / sum(f.weight)")
 			.from("calc.stratum_aoi_view s")
 			.innerJoin(factTable + " f")

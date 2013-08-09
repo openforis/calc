@@ -18,6 +18,6 @@ public final class CreateOutputSchemaTask extends SqlTask {
 		Workspace workspace = getContext().getWorkspace();
 		String outputSchema = Psql.quote(workspace.getOutputSchema());
 		psql().createSchema(outputSchema).execute();
-		psql().setSchemaSearchPath(outputSchema, Psql.PUBLIC).execute();
+		setDefaultSchemaSearchPath(); 
 	}
 }
