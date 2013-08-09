@@ -12,11 +12,13 @@
     		set search_path to calc;
 
 			INSERT INTO variable (id, entity_id, value_column, default_category_id, scale, name, caption, description, default_value, cube_member, sort_order, multiple_response, input, override, dimension_table, degenerate_dimension, category_id_column) 
-			VALUES (101, 5264, 'area', null, 'RATIO', 'area', 'Area', null, null, false, 1, false, false, false, null, false, null);
+				VALUES (101, 5264, 'area', null, 'RATIO', 'area', 'Area', null, null, false, 1, false, false, false, null, false, null);
 			
-			INSERT INTO calculation_step (id, chain_id, step_no, module_name, module_version, operation_name, name, description, parameters) VALUES (41, 21, 4, 'calc-sql', '1.0', 'exec-sql', 'Set default slope', null, '{"sql":"update plot set share = 100 where share is null"}');
+			INSERT INTO calculation_step (id, chain_id, step_no, module_name, module_version, operation_name, name, description, parameters) 
+				VALUES (41, 21, 4, 'calc-sql', '1.0', 'exec-sql', 'Set default share', null, '{"sql":"update plot set share = 100 where share is null"}');
 			
-			INSERT INTO calculation_step (id, chain_id, step_no, module_name, module_version, operation_name, name, description, parameters) VALUES (15, 21, 5, 'calc-sql', '1.0', 'exec-sql', 'Calculate plot areas', 'Includes adjustment for mis-calculated slope corrections', '{"sql":"update plot set slope = 0 where slope is null;  update plot set slope = 80 where slope > 80; update plot set slope = round(slope / 5) * 5; update plot set area = pi()*15^2* (share/100) * 0.0001 * cos(atan(slope/100)) / cos(0.9 * slope * pi() / 180); "}');
+			INSERT INTO calculation_step (id, chain_id, step_no, module_name, module_version, operation_name, name, description, parameters) 
+				VALUES (15, 21, 5, 'calc-sql', '1.0', 'exec-sql', 'Calculate plot areas', 'Includes adjustment for mis-calculated slope corrections', '{"sql":"update plot set slope = 0 where slope is null;  update plot set slope = 80 where slope > 80; update plot set slope = round(slope / 5) * 5; update plot set area = pi()*15^2* (share/100) * 0.0001 * cos(atan(slope/100)) / cos(0.9 * slope * pi() / 180); "}');
     	</sql>
     </changeSet>
 </databaseChangeLog>
