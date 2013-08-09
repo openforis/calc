@@ -12,4 +12,6 @@
     <include file="design/db/changelog/003-plot-aggregation.xml"/> 
     <include file="design/db/changelog/004-add-area-variable.xml"/> 
     <include file="design/db/changelog/005-add-variable-aggregate-table.xml"/> 
+    <include file="design/db/changelog/006-variable-aggregate-fix.xml"/> 
+    <include file="design/db/changelog/007-variable-aggregate-fix2.xml"/> 
 </databaseChangeLog> 
