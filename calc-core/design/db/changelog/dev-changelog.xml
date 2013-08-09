@@ -14,4 +14,6 @@
     <include file="design/db/changelog/005-add-variable-aggregate-table.xml"/> 
     <include file="design/db/changelog/006-variable-aggregate-fix.xml"/> 
     <include file="design/db/changelog/007-variable-aggregate-fix2.xml"/> 
+    <include file="design/db/changelog/008-update-aggs.xml"/>
+    <include file="design/db/changelog/009-update-varagg-table.xml"/>  
 </databaseChangeLog> 

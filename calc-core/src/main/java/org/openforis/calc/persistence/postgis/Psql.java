@@ -284,4 +284,8 @@ public final class Psql {
 		sb.append(sql);
 		return this;
 	}
+
+	public static String table(String schema, String table) {
+		return quote(schema)+"."+quote(table);
+	}
 }

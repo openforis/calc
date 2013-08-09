@@ -29,6 +29,9 @@ public class VariableAggregate extends UserObject {
 	@Column(name = "aggregate_function")
 	private String aggregateFunction;
 
+	@Column(name = "aggregate_formula")
+	private String aggregateFormula;
+
 	public Variable getVariable() {
 		return variable;
 	}
@@ -61,4 +64,15 @@ public class VariableAggregate extends UserObject {
 		this.aggregateFunction = aggregateFunction;
 	}
 
+	public String getAggregateFormula() {
+		return aggregateFormula;
+	}
+
+	public void setAggregateFormula(String aggregateFormula) {
+		this.aggregateFormula = aggregateFormula;
+	}
+
+	public void setAggregateColumn(String aggregateColumn) {
+		this.aggregateColumn = aggregateColumn;
+	}
 }
