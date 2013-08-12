@@ -19,6 +19,7 @@ import org.openforis.calc.persistence.postgis.Psql;
  */
 public final class CreateFactTablesTask extends SqlTask {
 
+	private static final String DIMENSION_CODE_ID_SUFFIX = "_code_id";
 	// TODO group system table and columns names into single class
 	public static final String STRATUM_ID = "_stratum_id";
 	private static final String DIMENSION_TABLE_ID_COLUMN = "id";
@@ -49,16 +50,18 @@ public final class CreateFactTablesTask extends SqlTask {
 					} else {
 						addQuantityColumn(outputFactTable, valueColumn);						
 					}
-				} else if ( variable instanceof BinaryVariable ) {
-					// TODO implement 
 				} else if( variable instanceof CategoricalVariable && !variable.isDegenerateDimension() ) {
-
 					CategoricalVariable catvar = (CategoricalVariable) variable;
 					// CHANGE THE VALUES FROM THE ORIGINAL_ID TO THE INTERNAL ID OF THE CATEGORICAL DIMENSION TABLE
 					String dimensionTable = catvar.getDimensionTable();
 					String categoryIdColumn = catvar.getCategoryIdColumn();
 					
-					updateDimensionIdColumn(outputFactTable, dimensionTable, categoryIdColumn);
+					if( variable instanceof BinaryVariable ){
+						addReferenceToDimensionTable(outputFactTable, categoryIdColumn);
+						updateReferenceToDimensionTable(outputFactTable, dimensionTable, categoryIdColumn);
+					}else{
+						updateDimensionIdColumn(outputFactTable, dimensionTable, categoryIdColumn);
+					}
 					
 					// ADD FK relationship
 					addDimensionTableFK(outputFactTable, dimensionTable, categoryIdColumn);
@@ -66,6 +69,41 @@ public final class CreateFactTablesTask extends SqlTask {
 			}
 		}
 	}
+
+	private void addReferenceToDimensionTable(String outputFactTable,
+			String categoryIdColumn) {
+		psql().alterTable(outputFactTable).addColumn( categoryIdColumn, Psql.INTEGER).execute();
+	}
+
+	private void updateReferenceToDimensionTable(String outputFactTable, String dimensionTable, String categoryIdColumn ) {
+		String nameBinaryValueColumn = categoryIdColumn.substring(0, categoryIdColumn.indexOf(DIMENSION_CODE_ID_SUFFIX));
+		
+		setBinaryValue(outputFactTable, dimensionTable, categoryIdColumn, nameBinaryValueColumn, "TRUE", "TRUE");
+		setBinaryValue(outputFactTable, dimensionTable, categoryIdColumn,nameBinaryValueColumn, "FALSE", "FALSE");
+		setBinaryValueOnNull(outputFactTable, dimensionTable, categoryIdColumn,nameBinaryValueColumn, "NA" );
+	}
+
+	private void setBinaryValueOnNull(String outputFactTable, String dimensionTable,
+			String categoryIdColumn, String nameBinaryValueColumn, String captionValue) {
+		psql()
+			.update( outputFactTable)
+			.set( categoryIdColumn + " = (")
+			.select( DIMENSION_TABLE_ID_COLUMN ).from(  dimensionTable ).where( "caption = '" + captionValue+ "' )" )
+			.where( nameBinaryValueColumn )
+			.isNull()
+			.execute();
+	}
+	
+	private void setBinaryValue(String outputFactTable, String dimensionTable,
+			String categoryIdColumn, String nameBinaryValueColumn, String captionValue, String booleanValue) {
+		psql()
+			.update( outputFactTable)
+			.set( categoryIdColumn + " = (")
+			.select( DIMENSION_TABLE_ID_COLUMN ).from(  dimensionTable ).where( "caption = '" + captionValue+ "' )" )
+			.where( nameBinaryValueColumn + " = " + booleanValue)
+			.execute();
+	}
+
 
 	private void addDimensionTableFK(String outputFactTable,
 			String dimensionTable, String categoryColumn) {
