@@ -30,8 +30,8 @@ public abstract class Variable extends UserObject {
 	@Column(name = "caption")
 	private String caption;
 
-	@Column(name = "cube_member")
-	private boolean cubeMember;
+	@Column(name = "disaggregate")
+	private boolean disaggregate;
 
 	@Column(name = "sort_order")
 	private int sortOrder;
@@ -94,14 +94,6 @@ public abstract class Variable extends UserObject {
 		this.caption = caption;
 	}
 
-	public boolean isCubeMember() {
-		return this.cubeMember;
-	}
-
-	public void setCubeMember(boolean cubeMember) {
-		this.cubeMember = cubeMember;
-	}
-
 	public int getSortOrder() {
 		return sortOrder;
 	}
@@ -134,7 +126,7 @@ public abstract class Variable extends UserObject {
 		this.input = input;
 	}
 
-	public boolean isOverride() {
+	public Boolean isOverride() {
 		return override;
 	}
 
@@ -142,11 +134,19 @@ public abstract class Variable extends UserObject {
 		this.override = override;
 	}
 
-	public boolean isDegenerateDimension() {
+	public Boolean isDegenerateDimension() {
 		return degenerateDimension;
 	}
 
 	public void setDegenerateDimension(boolean degenerateDimension) {
 		this.degenerateDimension = degenerateDimension;
+	}
+
+	public boolean isDisaggregate() {
+		return disaggregate;
+	}
+
+	public void setDisaggregate(boolean disaggregate) {
+		this.disaggregate = disaggregate;
 	}
 }
