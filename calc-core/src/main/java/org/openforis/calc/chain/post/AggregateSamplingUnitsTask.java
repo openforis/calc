@@ -36,14 +36,14 @@ public final class AggregateSamplingUnitsTask extends SqlTask {
 				for (AoiHierarchy hierarchy : aoiHierarchies) {
 					List<AoiHierarchyLevel> levels = hierarchy.getLevels();
 					for (AoiHierarchyLevel level : levels) {
-						aggregateFactTable(entity, level);
+						createAggregateTable(entity, level);
 					}
 				}
 			}
 		}
 	}
 
-	private void aggregateFactTable(Entity entity, AoiHierarchyLevel level) {
+	private void createAggregateTable(Entity entity, AoiHierarchyLevel level) {
 		String factTable = entity.getDataTable();
 		String aoiFkColumn = level.getFkColumn();
 		String levelName = level.getName();
@@ -58,22 +58,9 @@ public final class AggregateSamplingUnitsTask extends SqlTask {
 				// TODO remove workaround once Binary Variables are properly supported (CALC-106)
 			} else
 			if ( variable instanceof CategoricalVariable ) {
- 
-				CategoricalVariable catvar = (CategoricalVariable) variable;				
-				String idCol = catvar.getCategoryIdColumn();
-				if ( idCol != null ) {
-					groupBy.add(idCol);
-				}
+				addDimensionColumn((CategoricalVariable) variable, groupBy);
 			} else if ( variable instanceof QuantitativeVariable ){
-				QuantitativeVariable qvar = (QuantitativeVariable) variable;
-				String valueCol = qvar.getValueColumn();
-				List<VariableAggregate> aggregates = qvar.getAggregates();
-				for (VariableAggregate aggregate : aggregates) {
-					String formula = aggregate.getAggregateFormula();
-					String aggCol = aggregate.getAggregateColumn();
-					aggCol = aggCol == null ? valueCol : aggCol;
-					select.add(formula+" as "+aggCol);
-				}
+				addMeasureColumn((QuantitativeVariable) variable, select);
 			} else {
 				throw new UnsupportedOperationException("Unknown variable class");
 			}
@@ -82,6 +69,30 @@ public final class AggregateSamplingUnitsTask extends SqlTask {
 		groupBy.add(aoiFkColumn);
 		select.addAll(0, groupBy);
 
+		createAggregateTable(factTable, aoiFkColumn, aggTable, entityId, select, groupBy);
+			 
+	}
+
+	private void addDimensionColumn(CategoricalVariable var, List<String> groupBy) {
+		String idCol = var.getCategoryIdColumn();
+		if ( idCol != null && var.isDisaggregate() ) {
+			groupBy.add(idCol);
+		}
+	}
+
+	private void addMeasureColumn(QuantitativeVariable var, List<String> select) {
+		String valueCol = var.getValueColumn();
+		List<VariableAggregate> aggregates = var.getAggregates();
+		for (VariableAggregate aggregate : aggregates) {
+			String formula = aggregate.getAggregateFormula();
+			String aggCol = aggregate.getAggregateColumn();
+			aggCol = aggCol == null ? valueCol : aggCol;
+			select.add(formula+" as "+aggCol);
+		}
+	}
+
+	private void createAggregateTable(String factTable, String aoiFkColumn, String aggTable, int entityId, 
+			List<String> select, List<String> groupBy) {
 		Psql aggSelect = new Psql()
 			.select(select.toArray())
 			.from(factTable+" f")
@@ -95,6 +106,5 @@ public final class AggregateSamplingUnitsTask extends SqlTask {
 			.createTable(aggTable)
 			.as(aggSelect)
 			.execute(entityId);
-			 
 	}
 }
