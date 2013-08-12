@@ -23,7 +23,7 @@
 			        aggregate_function varchar(1024) not null,
 			        constraint variable_aggregate_pkey primary key (id),
 			        constraint variable_aggregate_variable_fkey foreign key (variable_id) references
-			        calc.variable (id) on delete cascade on update cascade
+			         calcdev.calc.variable (id) on delete cascade on update cascade
 			    );
 			    
 			 INSERT INTO calc.variable_aggregate (variable_id, name, column_name, caption, description, aggregate_function) 

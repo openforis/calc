@@ -7,16 +7,6 @@
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
 	<!--  Development db changes -->
-    <include file="design/db/changelog/001-test-liquibase.xml"/> 
-    <include file="design/db/changelog/002-plot-aggregation.xml"/> 
-    <include file="design/db/changelog/003-plot-aggregation.xml"/> 
-    <include file="design/db/changelog/004-add-area-variable.xml"/> 
-    <include file="design/db/changelog/005-add-variable-aggregate-table.xml"/> 
-    <include file="design/db/changelog/006-variable-aggregate-fix.xml"/> 
-    <include file="design/db/changelog/007-variable-aggregate-fix2.xml"/> 
-    <include file="design/db/changelog/008-update-aggs.xml"/>
-    <include file="design/db/changelog/009-update-varagg-table.xml"/>  
-    <include file="design/db/changelog/010-add-missing-grants.xml"/>
-    <include file="design/db/changelog/011-add-sampling-unit-flag.xml"/>
-    <include file="design/db/changelog/012-remove-cluster-col.xml"/>
+    <include file="design/db/changelog/logs"/> 
+    
 </databaseChangeLog> 
