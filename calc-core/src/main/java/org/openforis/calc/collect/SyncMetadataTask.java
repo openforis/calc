@@ -265,9 +265,6 @@ public class SyncMetadataTask extends Task {
 				v.setName(column.getName());
 				v.setValueColumn(column.getName());
 				v.setDimensionTable(e.getName() + "_" + v.getName() + DIMENSION_TABLE_SUFFIX);
-				if( v instanceof CategoricalVariable ){
-					((CategoricalVariable)v).setCategoryIdColumn( v.getName() + "_id" ); 
-				}
 				v.setInput(true);
 			}
 		}
