@@ -66,6 +66,7 @@ public final class Psql {
 	public static final String VARCHAR = "varchar";
 	public static final String FLOAT8 = "float8";
 	public static final String POINT4326 = "Geometry(Point,4326)";
+	private static final String IS_NULL = " IS NULL";
 
 	public Psql() {
 		sb = new StringBuilder();
@@ -283,6 +284,11 @@ public final class Psql {
 
 	public Psql appendSql(String sql) {
 		sb.append(sql);
+		return this;
+	}
+	
+	public Psql isNull(){
+		sb.append( IS_NULL );
 		return this;
 	}
 
