@@ -1760,14 +1760,14 @@
                 </xsd:documentation>
             </xsd:annotation>
         </xsd:attribute>
-<!--        <xsd:attribute name="formula" type="xsd:string" use="optional">
+        <!--<xsd:attribute name="formula" type="xsd:string" use="optional">
             <xsd:annotation>
                 <xsd:documentation>
                     MDX expression which gives the value of this member. Equivalent to the Formula sub-element.
                 </xsd:documentation>
             </xsd:annotation>
-        </xsd:attribute>
--->        <xsd:attribute name="dimension" type="xsd:string" use="required">
+        </xsd:attribute>-->
+        <xsd:attribute name="dimension" type="xsd:string" use="required">
             <xsd:annotation>
                 <xsd:documentation>
                     Name of the dimension which this member belongs to.
@@ -1842,14 +1842,14 @@
         </xsd:annotation>
         <xsd:sequence>
             <xsd:element name="Annotations" type="Annotations" minOccurs="0" maxOccurs="1"/>
-<!--            <xsd:element name="Formula" minOccurs="0">
+            <xsd:element name="Formula" minOccurs="0">
                 <xsd:annotation>
                     <xsd:documentation>
                         MDX expression which gives the value of this set.
                     </xsd:documentation>
                 </xsd:annotation>
             </xsd:element>
--->        </xsd:sequence>
+        </xsd:sequence>
         <xsd:attribute name="name" type="xsd:string" use="required">
             <xsd:annotation>
                 <xsd:documentation>
@@ -1871,12 +1871,12 @@
                 </xsd:documentation>
             </xsd:annotation>
         </xsd:attribute>
-        <xsd:attribute name="formula" type="xsd:string" use="optional">
+        <!--<xsd:attribute name="formula" type="xsd:string" use="optional">
             <xsd:annotation>
                 <xsd:documentation>
                     MDX expression which gives the value of this set. Equivalent to the Formula sub-element.
                 </xsd:documentation>
             </xsd:annotation>
-        </xsd:attribute>
+        </xsd:attribute>-->
     </xsd:complexType>
 </xsd:schema>
