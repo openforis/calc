@@ -39,6 +39,9 @@ public class CategoricalVariable extends Variable {
 	@Column(name = "category_id_column")
 	private String categoryIdColumn;
 
+	@Column(name = "disaggregate")
+	private boolean disaggregate;
+
 	public CategoricalVariable() {
 	}
 	
@@ -95,6 +98,14 @@ public class CategoricalVariable extends Variable {
 	@Override
 	public Type getType() {
 		return Type.CATEGORICAL;
+	}
+
+	public boolean isDisaggregate() {
+		return disaggregate;
+	}
+
+	public void setDisaggregate(boolean disaggregate) {
+		this.disaggregate = disaggregate;
 	}
 	
 	@Override

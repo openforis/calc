@@ -30,9 +30,6 @@ public abstract class Variable extends UserObject {
 	@Column(name = "caption")
 	private String caption;
 
-	@Column(name = "disaggregate")
-	private boolean disaggregate;
-
 	@Column(name = "sort_order")
 	private int sortOrder;
 
@@ -140,13 +137,5 @@ public abstract class Variable extends UserObject {
 
 	public void setDegenerateDimension(boolean degenerateDimension) {
 		this.degenerateDimension = degenerateDimension;
-	}
-
-	public boolean isDisaggregate() {
-		return disaggregate;
-	}
-
-	public void setDisaggregate(boolean disaggregate) {
-		this.disaggregate = disaggregate;
 	}
 }
