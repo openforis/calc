@@ -68,7 +68,9 @@ public final class AggregateSamplingUnitsTask extends SqlTask {
 		groupBy.add(CreateFactTablesTask.STRATUM_ID);
 		groupBy.add(aoiFkColumn);
 		select.addAll(0, groupBy);
-
+		//add aggregate fact count column
+		select.add("count(*) as " + "_agg_cnt");
+		
 		createAggregateTable(factTable, aoiFkColumn, aggTable, entityId, select, groupBy);
 			 
 	}
