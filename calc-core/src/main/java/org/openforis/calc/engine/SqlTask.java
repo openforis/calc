@@ -19,31 +19,15 @@ public class SqlTask extends Task {
 		return ds.getDataSource();
 	}
 
-//	/**
-//	 * Uses String.format() to generate SQL using the sqlTemplate
-//	 * and passed args
-//	 * 
-//	 * @param sqlTemplate
-//	 * @param args
-//	 */
-//	protected void executeSql(String sqlTemplate, Object... args) {
-//		JdbcTemplate jdbc = getJdbcTemplate();
-//		String sql = String.format(sqlTemplate, args);
-//		log().debug("Sql: "+sql);
-//		jdbc.execute(sql);
-//	}
-	
 	protected Psql psql() {
 		DataSource dataSource = getDataSource();
 		return new Psql(dataSource);
 	}
 	
-
 	protected void setDefaultSchemaSearchPath() {
 		Workspace workspace = getWorkspace();
 		psql()
 			.setSchemaSearchPath(workspace.getOutputSchema(), Psql.PUBLIC)
 			.execute();
 	}
-
 }
