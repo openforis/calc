@@ -30,7 +30,7 @@ public final class CalculateExpansionFactorsTask extends SqlTask {
 
 		createExpansionFactorTable(expfTable);
 		
-		insertExpansionFactors(ws, wsId, outputSchema, expfTable);
+		insertExpansionFactors(ws, wsId, outputSchema, expfTable);		
 	}
 
 	private void createExpansionFactorTable(String expfTable) {
@@ -39,7 +39,8 @@ public final class CalculateExpansionFactorsTask extends SqlTask {
 					"stratum_id integer not null", 
 					"aoi_id integer not null", 
 					"entity_id integer not null", 
-					"_expf double precision not null")
+					"_expf double precision not null",
+					"primary key (stratum_id, aoi_id, entity_id)")
 			.execute();
 	}
 
