@@ -58,7 +58,7 @@ public class TaskManager {
 
 	// TODO move to.. where?
 	private boolean isDebugMode() {
-		String mode = ((ConfigurableBeanFactory)beanFactory).resolveEmbeddedValue("calc.debugMode");
+		String mode = ((ConfigurableBeanFactory)beanFactory).resolveEmbeddedValue("${calc.debugMode}");
 		return "true".equals(mode);
 	}
 	
