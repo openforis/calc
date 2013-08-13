@@ -30,6 +30,21 @@ public final class CalculateExpansionFactorsTask extends SqlTask {
 
 		createExpansionFactorTable(expfTable);
 		
+		insertExpansionFactors(ws, wsId, outputSchema, expfTable);
+	}
+
+	private void createExpansionFactorTable(String expfTable) {
+		psql()
+			.createTable(expfTable, 
+					"stratum_id integer not null", 
+					"aoi_id integer not null", 
+					"entity_id integer not null", 
+					"_expf double precision not null")
+			.execute();
+	}
+
+
+	private void insertExpansionFactors(Workspace ws, Integer wsId, String outputSchema, String expfTable) {
 		List<Entity> entities = ws.getEntities();
 		List<AoiHierarchy> hierarchies = ws.getAoiHierarchies();
 		
@@ -43,24 +58,12 @@ public final class CalculateExpansionFactorsTask extends SqlTask {
 					for ( AoiHierarchyLevel level : levels ) {
 						String aoiFkColumn = quote(level.getFkColumn());
 						
-						insertExpansionFactors(wsId, expfTable, factTable,
-								aoiFkColumn);
+						insertExpansionFactors(wsId, expfTable, factTable, aoiFkColumn);
 					}
 				}
 			}
 		}
 	}
-
-	private void createExpansionFactorTable(String expfTable) {
-		psql()
-			.createTable(expfTable, 
-					"stratum_id integer not null", 
-					"aoi_id integer not null", 
-					"entity_id integer not null", 
-					"_expf double precision not null")
-			.execute();
-	}
-
 
 	private void insertExpansionFactors(Integer wsId, String expfTable, String factTable, String aoiFkColumn) {
 		psql()
