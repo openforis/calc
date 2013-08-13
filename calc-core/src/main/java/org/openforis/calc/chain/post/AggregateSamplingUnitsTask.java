@@ -8,7 +8,6 @@ import org.openforis.calc.engine.SqlTask;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.AoiHierarchyLevel;
-import org.openforis.calc.metadata.BinaryVariable;
 import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
@@ -17,8 +16,8 @@ import org.openforis.calc.metadata.VariableAggregate;
 import org.openforis.calc.persistence.postgis.Psql;
 
 /**
- * Creates and populates aggregate tables for all relevant fact tables, creating
- * two tables for each AOI level (at AOI/stratum level and one at AOI level).
+ * Creates and populates aggregate tables for sampling unit entities and descendants.
+ * One for each AOI level (at AOI/stratum level) is created.
  * 
  * @author G. Miceli
  * @author M. Togna
@@ -54,9 +53,6 @@ public final class AggregateSamplingUnitsTask extends SqlTask {
 		List<String> groupBy = new ArrayList<String>();
 		List<Variable> variables = entity.getVariables();
 		for (Variable variable : variables) {
-			if (variable instanceof BinaryVariable) {
-				// TODO remove workaround once Binary Variables are properly supported (CALC-106)
-			} else
 			if ( variable instanceof CategoricalVariable ) {
 				addDimensionColumn((CategoricalVariable) variable, groupBy);
 			} else if ( variable instanceof QuantitativeVariable ){
@@ -69,8 +65,11 @@ public final class AggregateSamplingUnitsTask extends SqlTask {
 		groupBy.add(aoiFkColumn);
 		select.addAll(0, groupBy);
 
+		if ( isDebugMode() ) {
+			psql().dropTableIfExistsCascade(aggTable).execute();
+		}
+
 		createAggregateTable(factTable, aoiFkColumn, aggTable, entityId, select, groupBy);
-			 
 	}
 
 	private void addDimensionColumn(CategoricalVariable var, List<String> groupBy) {
@@ -93,15 +92,16 @@ public final class AggregateSamplingUnitsTask extends SqlTask {
 
 	private void createAggregateTable(String factTable, String aoiFkColumn, String aggTable, int entityId, 
 			List<String> select, List<String> groupBy) {
+		
 		Psql aggSelect = new Psql()
-			.select(select.toArray())
-			.from(factTable+" f")
-			.innerJoin(CalculateExpansionFactorsTask.EXPF_TABLE+" x")
-			 .on("f._stratum_id = x.stratum_id")
-			 .and("f."+aoiFkColumn+" = x.aoi_id")
-			 .and("x.entity_id = ?")
-			 .groupBy(groupBy.toArray());
-
+				.select(select.toArray())
+				.from(factTable+" f")
+				.innerJoin(CalculateExpansionFactorsTask.EXPF_TABLE+" x")
+				.on("f._stratum_id = x.stratum_id")
+				.and("f."+aoiFkColumn+" = x.aoi_id")
+				.and("x.entity_id = ?")
+				.groupBy(groupBy.toArray());
+		
 		psql()
 			.createTable(aggTable)
 			.as(aggSelect)

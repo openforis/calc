@@ -1,6 +1,7 @@
 package org.openforis.calc.chain.post;
 
-import static org.openforis.calc.persistence.postgis.Psql.*;
+import static org.openforis.calc.persistence.postgis.Psql.quote;
+import static org.openforis.calc.persistence.postgis.Psql.table;
 
 import java.util.List;
 
@@ -20,7 +21,7 @@ import org.openforis.calc.metadata.Entity;
 public final class CalculateExpansionFactorsTask extends SqlTask {
 	
 	public static final String EXPF_TABLE = "_expf";
-
+	
 	@Override
 	protected void execute() throws Throwable {
 		Workspace ws = getWorkspace();
@@ -28,6 +29,10 @@ public final class CalculateExpansionFactorsTask extends SqlTask {
 		String outputSchema = ws.getOutputSchema();
 		String expfTable = table(outputSchema, EXPF_TABLE);
 
+		if ( isDebugMode() ) {
+			psql().dropTableIfExistsCascade(expfTable).execute();
+		}
+		
 		createExpansionFactorTable(expfTable);
 		
 		insertExpansionFactors(ws, wsId, outputSchema, expfTable);		

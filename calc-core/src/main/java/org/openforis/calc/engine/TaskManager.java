@@ -6,8 +6,11 @@ import java.util.concurrent.Executor;
 
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -32,7 +35,7 @@ public class TaskManager {
 	private WorkspaceService workspaceManager;
 	
 	@Autowired 
-	private AutowireCapableBeanFactory beanFactory;
+	private BeanFactory beanFactory;
 	
 	@Autowired
 	private ApplicationContext applContext;
@@ -42,20 +45,30 @@ public class TaskManager {
 	
 	@Autowired
 	private DataSource dataSource;
-
+	
+	@Autowired
+	private PropertyPlaceholderConfigurer placeholderConfigurer;
+	
+	
 	private Map<Integer, Job> jobs;
 	
 	public TaskManager() {
 		this.jobs = new HashMap<Integer, Job>();
 	}
+
+	// TODO move to.. where?
+	private boolean isDebugMode() {
+		String mode = ((ConfigurableBeanFactory)beanFactory).resolveEmbeddedValue("calc.debugMode");
+		return "true".equals(mode);
+	}
 	
 	public Job createUserJob(Workspace workspace) {
-		JobContext context = new JobContext(workspace, userDataSource);
+		JobContext context = new JobContext(workspace, userDataSource, isDebugMode());
 		return createJob(context);
 	}
 	
 	public Job createSystemJob(Workspace workspace){
-		JobContext context = new JobContext(workspace, dataSource);
+		JobContext context = new JobContext(workspace, dataSource, isDebugMode());
 		return createJob(context);
 	}
 
@@ -68,7 +81,7 @@ public class TaskManager {
 	public <T extends Task> T createTask(Class<T> type) {
 		try {
 			T task = type.newInstance();
-			beanFactory.autowireBean(task);
+			((AutowireCapableBeanFactory)beanFactory).autowireBean(task);
 			return task;
 		} catch ( InstantiationException e ) {
 			throw new IllegalArgumentException("Invalid task " + type.getClass(), e);

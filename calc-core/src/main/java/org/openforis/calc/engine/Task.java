@@ -24,6 +24,10 @@ public abstract class Task extends Worker implements Captionable {
 		return getContext().getWorkspace();
 	}
 	
+	public boolean isDebugMode() {
+		return getContext().isDebugMode();
+	}
+	
 	public Job getJob() {
 		return job;
 	}

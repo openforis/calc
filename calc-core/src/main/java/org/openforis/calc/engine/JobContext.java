@@ -9,10 +9,12 @@ import javax.sql.DataSource;
 public final class JobContext {
 	private Workspace workspace;
 	private DataSource dataSource;
+	private boolean debugMode;
 	
-	JobContext(Workspace workspace, DataSource dataSource) {
+	JobContext(Workspace workspace, DataSource dataSource, boolean debugMode) {
 		this.workspace = workspace;
 		this.dataSource = dataSource;
+		this.debugMode = debugMode;
 	}
 
 	public Workspace getWorkspace() {
@@ -21,5 +23,9 @@ public final class JobContext {
 
 	public DataSource getDataSource() {
 		return this.dataSource;
+	}
+	
+	public boolean isDebugMode() {
+		return debugMode;
 	}
 }
