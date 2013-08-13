@@ -4,7 +4,11 @@ import javax.sql.DataSource;
 
 import org.junit.Test;
 import org.openforis.calc.chain.post.AggregateSamplingUnitsTask;
+<<<<<<< HEAD
 import org.openforis.calc.chain.post.GenerateRolapSchemaTask;
+=======
+import org.openforis.calc.chain.post.CalculateExpansionFactorsTask;
+>>>>>>> dcc588388377ee935aff90a48f21524325f77378
 import org.openforis.calc.engine.Job;
 import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
@@ -34,7 +38,10 @@ public class PostProcessingTest extends AbstractTransactionalJUnit4SpringContext
 		Job job = taskManager.createUserJob(ws);
 //		job.addTask(AddMissingAggregateColumnsTask.class);
 //		job.addTask(AggregateSamplingUnitsTask.class);
-		job.addTask(GenerateRolapSchemaTask.class);
+//		job.addTask(CalculateExpansionFactorsTask.class);
+//		job.addTask(AggregateSamplingUnitsTask.class);
+
+	job.addTask(GenerateRolapSchemaTask.class);
 		taskManager.startJob(job);
 		job.waitFor(5000);
 	}

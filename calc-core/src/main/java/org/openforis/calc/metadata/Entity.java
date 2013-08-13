@@ -81,12 +81,21 @@ public class Entity extends UserObject {
 	
 	@Column(name = "sampling_unit")
 	private boolean samplingUnit;
+	
+	@Column(name = "unit_of_analysis")
+	private boolean unitOfAnalysis;
 
 	@OneToMany(mappedBy = "entity", fetch = FetchType.EAGER)
 	@OrderBy("sortOrder")
 	@Fetch(FetchMode.SUBSELECT) 
 	@Cascade(CascadeType.ALL)
 	private List<Variable> variables = new ArrayList<Variable>();
+
+	@OneToMany(mappedBy = "parent", fetch = FetchType.EAGER)
+	@OrderBy("sortOrder")
+	@Fetch(FetchMode.SUBSELECT) 
+	@Cascade(CascadeType.ALL)
+	private List<Entity> children = new ArrayList<Entity>();
 	
 	public Workspace getWorkspace() {
 		return this.workspace;
@@ -211,6 +220,18 @@ public class Entity extends UserObject {
 
 	public void setSamplingUnit(boolean samplingUnit) {
 		this.samplingUnit = samplingUnit;
+	}
+	
+	public List<Entity> getChildren() {
+		return Collections.unmodifiableList(children);
+	}
+
+	public boolean isUnitOfAnalysis() {
+		return unitOfAnalysis;
+	}
+
+	public void setUnitOfAnalysis(boolean unitOfAnalysis) {
+		this.unitOfAnalysis = unitOfAnalysis;
 	}
 }
 
