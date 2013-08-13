@@ -26,6 +26,7 @@ import org.openforis.calc.mondrian.Schema.Cube;
 import org.openforis.calc.mondrian.Schema.Cube.Measure;
 import org.openforis.calc.mondrian.SharedDimension;
 import org.openforis.calc.mondrian.Table;
+import org.openforis.calc.mondrian.Table.AggName;
 import org.openforis.calc.mondrian.View;
 
 /**
@@ -138,6 +139,24 @@ public class GenerateRolapSchemaTask extends Task {
 			}
 		}
 
+		//add aggregate names to table
+		for ( AoiHierarchy hierarchy : hierarchies ) {
+			String hierarchyName = hierarchy.getName();
+			List<AoiHierarchyLevel> levels = hierarchy.getLevels();
+			int approxRowCnt = 100;
+			for ( AoiHierarchyLevel level : levels ) {
+				String levelName = level.getName();
+				String aggName = "_agg_"+levelName +"_stratum_"+ entityDataTable;
+				
+				AggName aggTable = new AggName();
+				aggTable.setName(aggName);
+//				aggTable.set
+				table.getAggTable().add(aggTable);
+				
+				approxRowCnt+=100;
+			}
+		}
+		
 		cube.setTable(table);
 
 		schema.getCube().add(cube);
