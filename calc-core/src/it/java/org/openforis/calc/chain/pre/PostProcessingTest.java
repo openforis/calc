@@ -34,6 +34,7 @@ public class PostProcessingTest extends AbstractTransactionalJUnit4SpringContext
 //		job.addTask(AddMissingAggregateColumnsTask.class);
 //		job.addTask(CalculateExpansionFactorsTask.class);
 		job.addTask(AggregateSamplingUnitsTask.class);
+//		job.addTask(GenerateRolapSchemaTask.class);
 		taskManager.startJob(job);
 		job.waitFor(5000);
 	}
