@@ -24,6 +24,11 @@ public final class CreateFactTablesTask extends SqlTask {
 	public static final String STRATUM_ID = "_stratum_id";
 	private static final String DIMENSION_TABLE_ID_COLUMN = "id";
 	private static final String DIMENSION_TABLE_ORIGINAL_ID_COLUMN = "original_id";
+	private static final String CALC_CATEGORY_TABLE = "calc.category";
+	private static final String CALC_CATEGORY_ID = CALC_CATEGORY_TABLE + ".id";
+	private static final String CALC_CATEGORY_VALUE = CALC_CATEGORY_TABLE + ".value";
+	private static final String CALC_CATEGORY_VARIABLE_ID = CALC_CATEGORY_TABLE + ".variable_id";
+	
 
 	@Override
 	protected void execute() throws Throwable {
@@ -58,7 +63,7 @@ public final class CreateFactTablesTask extends SqlTask {
 					
 					if( variable instanceof BinaryVariable ){
 						addReferenceToDimensionTable(outputFactTable, categoryIdColumn);
-						updateReferenceToDimensionTable(outputFactTable, dimensionTable, categoryIdColumn);
+						updateReferenceToDimensionTable(outputFactTable, dimensionTable, categoryIdColumn, catvar.getId() );
 					}else{
 						updateDimensionIdColumn(outputFactTable, dimensionTable, categoryIdColumn);
 					}
@@ -75,33 +80,16 @@ public final class CreateFactTablesTask extends SqlTask {
 		psql().alterTable(outputFactTable).addColumn( categoryIdColumn, Psql.INTEGER).execute();
 	}
 
-	private void updateReferenceToDimensionTable(String outputFactTable, String dimensionTable, String categoryIdColumn ) {
+	private void updateReferenceToDimensionTable(String outputFactTable, String dimensionTable, String categoryIdColumn, Integer variableId ) {
 		String nameBinaryValueColumn = categoryIdColumn.substring(0, categoryIdColumn.indexOf(DIMENSION_CODE_ID_SUFFIX));
 		
-		setBinaryValue(outputFactTable, dimensionTable, categoryIdColumn, nameBinaryValueColumn, "TRUE", "TRUE");
-		setBinaryValue(outputFactTable, dimensionTable, categoryIdColumn,nameBinaryValueColumn, "FALSE", "FALSE");
-		setBinaryValueOnNull(outputFactTable, dimensionTable, categoryIdColumn,nameBinaryValueColumn, "NA" );
-	}
-
-	private void setBinaryValueOnNull(String outputFactTable, String dimensionTable,
-			String categoryIdColumn, String nameBinaryValueColumn, String captionValue) {
 		psql()
 			.update( outputFactTable)
-			.set( categoryIdColumn + " = (")
-			.select( DIMENSION_TABLE_ID_COLUMN ).from(  dimensionTable ).where( "caption = '" + captionValue+ "' )" )
-			.where( nameBinaryValueColumn )
-			.isNull()
-			.execute();
-	}
-	
-	private void setBinaryValue(String outputFactTable, String dimensionTable,
-			String categoryIdColumn, String nameBinaryValueColumn, String captionValue, String booleanValue) {
-		psql()
-			.update( outputFactTable)
-			.set( categoryIdColumn + " = (")
-			.select( DIMENSION_TABLE_ID_COLUMN ).from(  dimensionTable ).where( "caption = '" + captionValue+ "' )" )
-			.where( nameBinaryValueColumn + " = " + booleanValue)
-			.execute();
+			.set(categoryIdColumn + " = " + CALC_CATEGORY_ID )
+			.from(CALC_CATEGORY_TABLE)
+			.where(CALC_CATEGORY_VALUE + " = " + nameBinaryValueColumn + "::integer")
+			.and(CALC_CATEGORY_VARIABLE_ID + " = ? ")
+			.execute( variableId );
 	}
 
 
