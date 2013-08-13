@@ -81,6 +81,9 @@ public class Entity extends UserObject {
 	
 	@Column(name = "sampling_unit")
 	private boolean samplingUnit;
+	
+	@Column(name = "unit_of_analysis")
+	private boolean unitOfAnalysis;
 
 	@OneToMany(mappedBy = "entity", fetch = FetchType.EAGER)
 	@OrderBy("sortOrder")
@@ -221,6 +224,14 @@ public class Entity extends UserObject {
 	
 	public List<Entity> getChildren() {
 		return Collections.unmodifiableList(children);
+	}
+
+	public boolean isUnitOfAnalysis() {
+		return unitOfAnalysis;
+	}
+
+	public void setUnitOfAnalysis(boolean unitOfAnalysis) {
+		this.unitOfAnalysis = unitOfAnalysis;
 	}
 }
 
