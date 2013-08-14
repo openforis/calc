@@ -1,6 +1,7 @@
 package org.openforis.calc.chain.post;
 
 import java.io.File;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +18,7 @@ import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.VariableAggregate;
+import org.openforis.calc.mondrian.AggColumnName;
 import org.openforis.calc.mondrian.DimensionUsage;
 import org.openforis.calc.mondrian.Hierarchy;
 import org.openforis.calc.mondrian.Hierarchy.Level;
@@ -27,7 +29,11 @@ import org.openforis.calc.mondrian.Schema.Cube.Measure;
 import org.openforis.calc.mondrian.SharedDimension;
 import org.openforis.calc.mondrian.Table;
 import org.openforis.calc.mondrian.Table.AggName;
+import org.openforis.calc.mondrian.Table.AggName.AggForeignKey;
+import org.openforis.calc.mondrian.Table.AggName.AggLevel;
+import org.openforis.calc.mondrian.Table.AggName.AggMeasure;
 import org.openforis.calc.mondrian.View;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * 
@@ -43,6 +49,9 @@ public class GenerateRolapSchemaTask extends Task {
 	private static final String DATA_TYPE_NUMERIC = "Numeric";
 	private static final String DIMENSION_TYPE_STANDARD = "StandardDimension";
 
+	@Value("${calc.rolapSchemaOutputFile}")
+	private String rolapSchemaOutputFile;
+	
 	@Override
 	protected void execute() throws Throwable {
 
@@ -150,7 +159,75 @@ public class GenerateRolapSchemaTask extends Task {
 				
 				AggName aggTable = new AggName();
 				aggTable.setName(aggName);
-//				aggTable.set
+				aggTable.setApproxRowCount( BigInteger.valueOf(approxRowCnt) );
+
+				AggColumnName aggFactCount = new AggColumnName();
+				aggFactCount.setColumn("_agg_cnt");
+				aggTable.setAggFactCount(aggFactCount);
+				
+				// add aggregates members
+				for ( Variable variable : variables ) {
+					String variableName = variable.getName();
+					if ( variable instanceof CategoricalVariable ) {
+						CategoricalVariable catVariable = (CategoricalVariable) variable;
+						if ( catVariable.isDisaggregate() ) {
+							String fKey = catVariable.getCategoryIdColumn();
+							
+							AggForeignKey aggForeignKey = new AggForeignKey();
+							aggForeignKey.setFactColumn(fKey);
+							aggForeignKey.setAggColumn(fKey);
+							
+							aggTable.getAggForeignKey().add(aggForeignKey);
+						}
+					}
+					// add measures to sampling unit cube
+					else if ( variable instanceof QuantitativeVariable ) {
+						QuantitativeVariable qVariable = (QuantitativeVariable) variable;
+						List<VariableAggregate> aggregates = qVariable.getAggregates();
+						for ( VariableAggregate aggregate : aggregates ) {
+
+							String name = aggregate.getName();
+							name = (name == null) ? variableName : name;
+
+							String valueColumn = variable.getValueColumn();
+							String column = aggregate.getAggregateColumn();
+							column = (column == null) ? valueColumn : column;
+
+//							String caption = aggregate.getCaption();
+//							String aggFunction = aggregate.getAggregateFunction();
+//							String dataType = DATA_TYPE_NUMERIC;
+//							String formatString = NUMBER_FORMAT_STRING;
+
+							AggMeasure aggMeasure = new AggMeasure();
+							aggMeasure.setColumn(column);
+							String aggMeasureName = "[Measures]."+"["+name+"]";
+							aggMeasure.setName(aggMeasureName );
+							
+							aggTable.getAggMeasure().add(aggMeasure);
+//							Measure m = createMeasure(name, caption, column, aggFunction, dataType, formatString);
+
+						}
+
+					}
+				}
+				
+				
+				//add aoi levels aggregation
+				for ( AoiHierarchyLevel aoiHierarchyAggLevel : levels ) {
+					String aoiHierarchyName = aoiHierarchyAggLevel.getName();
+					String aggLevelName = "["+hierarchyName+ "]" + ".["+aoiHierarchyName+"]";
+					
+					AggLevel aggLevel = new AggLevel();
+					aggLevel.setColumn(aoiHierarchyAggLevel.getFkColumn());
+					aggLevel.setName(aggLevelName);
+					
+					aggTable.getAggLevel().add(aggLevel);
+					
+					if(aoiHierarchyAggLevel.equals(level)){
+						break;
+					}
+				}
+				
 				table.getAggTable().add(aggTable);
 				
 				approxRowCnt+=100;
@@ -164,7 +241,8 @@ public class GenerateRolapSchemaTask extends Task {
 		JAXBContext jaxbContext = JAXBContext.newInstance(Schema.class);
 		Marshaller marshaller = jaxbContext.createMarshaller();
 		marshaller.setProperty("jaxb.formatted.output", true);
-		File f = new File("/home/minotogna/Desktop/test_mdx.xml");
+		
+		File f = new File( rolapSchemaOutputFile );
 		if ( f.exists() ) {
 			f.delete();
 		}

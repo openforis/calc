@@ -1490,6 +1490,13 @@
                             </xsd:documentation>
                         </xsd:annotation>
                     </xsd:attribute>
+                    <xsd:attribute name="approxRowCount" type="xsd:integer" use="optional">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                The estimated number of rows in this aggregate table.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:attribute>
                 </xsd:complexType>
             </xsd:element>
             <xsd:element name="AggPattern">
