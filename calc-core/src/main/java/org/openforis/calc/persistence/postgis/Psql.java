@@ -33,6 +33,7 @@ public final class Psql {
 	private static final String ALTER_TABLE = "alter table %s";
 	private static final String ADD_COLUMN = "add column %s %s";
 	private static final String DROP_SCHEMA_IF_EXISTS_CASCADE = "drop schema if exists %s cascade";
+	private static final String DROP_TABLE_IF_EXISTS_CASCADE = "drop table if exists %s cascade";
 	private static final String CREATE_SCHEMA = "create schema %s";
 	private static final String WITH = "with %s as (%s)";
 	private static final String SELECT = "select %s";
@@ -298,5 +299,9 @@ public final class Psql {
 	
 	public Psql renameColumnTo(String... elements) {
 		return append(RENAME_COLUMN_TO, elements);
+	}
+
+	public Psql dropTableIfExistsCascade(String table) {
+		return append(DROP_TABLE_IF_EXISTS_CASCADE, table);
 	}
 }
