@@ -8,6 +8,7 @@ import org.openforis.calc.metadata.BinaryVariable;
 import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Category;
 import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.persistence.postgis.Psql;
 
@@ -29,6 +30,7 @@ public final class CreateFactTablesTask extends SqlTask {
 	private static final String CALC_CATEGORY_VALUE = CALC_CATEGORY_TABLE + ".value";
 	private static final String CALC_CATEGORY_VARIABLE_ID = CALC_CATEGORY_TABLE + ".variable_id";
 	
+ 
 
 	@Override
 	protected void execute() throws Throwable {
@@ -71,7 +73,35 @@ public final class CreateFactTablesTask extends SqlTask {
 					// ADD FK relationship
 					addDimensionTableFK(outputFactTable, dimensionTable, categoryIdColumn);
 				}
+				
+				applyDefaultVariableValue(outputFactTable, variable);
 			}
+		}
+	}
+
+	private void applyDefaultVariableValue(String outputFactTable, Variable variable) {
+		if(  variable instanceof QuantitativeVariable &&  ( (QuantitativeVariable)variable).getDefaultValue() != null ){
+			QuantitativeVariable quantitativeVariable = (QuantitativeVariable)variable;
+			String valueColumn = Psql.quote(variable.getValueColumn());
+			Double defaultValue = quantitativeVariable.getDefaultValue();
+			
+			psql().update( outputFactTable )
+				.set( valueColumn + " = ? ")
+				.where( valueColumn ).isNull()
+				.execute( defaultValue);
+			
+		}else if ( variable instanceof CategoricalVariable &&  ( (CategoricalVariable)variable).getDefaultValue() != null  ){
+			
+			CategoricalVariable categoricalVariable = (CategoricalVariable)variable;
+			String valueColumn = Psql.quote(variable.getValueColumn());
+			String idColumn =  Psql.quote( categoricalVariable.getCategoryIdColumn());
+			Category defaultValue = categoricalVariable.getDefaultValue();
+			
+			psql().update( outputFactTable )
+				.set( valueColumn + " = ?, " + idColumn + " = " + defaultValue.getId())
+				.where( valueColumn ).isNull()
+				.or( idColumn ).isNull()
+				.execute( defaultValue.getCode()  );
 		}
 	}
 

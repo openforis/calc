@@ -38,6 +38,10 @@ public class Category extends UserObject {
 	@JsonIgnore
 	private Variable variable;
 
+	@Column(name = "value")
+	private Double value;
+	
+
 	public Variable getVariable() {
 		return this.variable;
 	}
@@ -69,5 +73,14 @@ public class Category extends UserObject {
 	public int getSortOrder() {
 		return this.sortOrder;
 	}
+	
+	public Double getValue() {
+		return value;
+	}
+
+	public void setValue(Double value) {
+		this.value = value;
+	}
+
 	
 }
