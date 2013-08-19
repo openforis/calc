@@ -8,7 +8,7 @@ import java.util.UUID;
 
 import javax.sql.DataSource;
 
-import org.openforis.calc.persistence.jooq.OutputSchema;
+import org.openforis.calc.rolap.RolapSchema;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -27,14 +27,15 @@ public class Job extends Worker implements Iterable<Task> {
 	private Workspace workspace;
 	private boolean debugMode;
 	private DataSource dataSource;
-	private OutputSchema outputSchema;
+	private RolapSchema rolapSchema;
 	
-	Job(Workspace workspace, boolean debugMode, List<Task> tasks, DataSource dataSource) {
+	Job(Workspace workspace, boolean debugMode, DataSource dataSource, RolapSchema rolapSchema) {
 		this.currentTaskIndex = -1;
-		this.tasks = new ArrayList<Task>(tasks);
+		this.tasks = new ArrayList<Task>();
 		this.workspace = workspace;
 		this.debugMode = debugMode;
 		this.dataSource = dataSource;
+		this.rolapSchema = rolapSchema;
 	}
 
 	/**
@@ -108,6 +109,13 @@ public class Job extends Worker implements Iterable<Task> {
 		tasks.add(task);
 	}
 
+
+	public void addTasks(List<Task> tasks) {
+		for (Task task : tasks) {
+			addTask(task);
+		}
+	}
+
 //	/**
 //	 * Adds a task to the Job
 //	 * @param task The Class of the task we want to add to the Job
@@ -156,11 +164,7 @@ public class Job extends Worker implements Iterable<Task> {
 		return dataSource;
 	}
 	
-	public OutputSchema getOutputSchema() {
-		return outputSchema;
-	}
-	
-	void setOutputSchema(OutputSchema outputSchema) {
-		this.outputSchema = outputSchema;
+	public RolapSchema getRolapSchema() {
+		return rolapSchema;
 	}
 }

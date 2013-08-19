@@ -18,5 +18,4 @@ public final class DropOutputSchemaTask extends Task {
 		String outputSchema = Psql.quote(workspace.getOutputSchema());
 		psql().dropSchemaIfExistsCascade(outputSchema).execute();
 	}
-
 }

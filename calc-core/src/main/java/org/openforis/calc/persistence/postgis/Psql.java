@@ -9,6 +9,10 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jooq.DSLContext;
+import org.jooq.SQLDialect;
+import org.jooq.Table;
+import org.jooq.impl.DSL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
@@ -49,6 +53,7 @@ public final class Psql {
 	private static final String AS = "as %s";
 	private static final String GRANT_ALL_ON_SCHEMA = "grant all on schema %s to %s";
 	private static final String GRANT_ALL_ON_TABLES = "grant all privileges on all tables in schema %s to %s";
+	private static final String GRANT_ALL_ON_TABLE = "grant all on table %s to %s";
 	private static final String ADD_PRIMARY_KEY = "add primary key (%s)";
 	private static final String ADD_FOREIGN_KEY = "ADD CONSTRAINT %sfk FOREIGN KEY (%s) REFERENCES %s (%s)";
 	private static final String DELETE_FROM = "delete from %s";
@@ -182,7 +187,7 @@ public final class Psql {
 		});
 	}
 
-	public Psql alterTable(String table) {
+	public Psql alterTable(Object table) {
 		return append(ALTER_TABLE, table);
 	}
 
@@ -235,7 +240,7 @@ public final class Psql {
 		return append(DROP_SCHEMA_IF_EXISTS_CASCADE, schema);
 	}
 	
-	public Psql createTable(String table) {
+	public Psql createTable(Object table) {
 		return append(CREATE_TABLE_AS, table);
 	}
 
@@ -301,7 +306,17 @@ public final class Psql {
 		return append(RENAME_COLUMN_TO, elements);
 	}
 
-	public Psql dropTableIfExistsCascade(String table) {
+	public Psql dropTableIfExistsCascade(Object table) {
 		return append(DROP_TABLE_IF_EXISTS_CASCADE, table);
+	}
+	
+	// New DSL-based PSQL class
+	
+	public DSLContext dsl() {
+		return DSL.using(SQLDialect.POSTGRES);
+	}
+
+	public Psql grantAllOnTable(Table<?> table, String user) {
+		return append(GRANT_ALL_ON_TABLE, table, user);
 	}
 }

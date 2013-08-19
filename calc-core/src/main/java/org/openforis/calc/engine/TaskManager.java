@@ -8,6 +8,8 @@ import java.util.concurrent.Executor;
 
 import javax.sql.DataSource;
 
+import org.openforis.calc.rolap.RolapSchema;
+import org.openforis.calc.rolap.RolapSchemaFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
@@ -43,10 +45,12 @@ public class TaskManager {
 	
 	@Autowired
 	private DataSource dataSource;
-	
+
+	@Autowired
+	private RolapSchemaFactory rolapSchemaFactory;
+
 	@Autowired
 	private PropertyPlaceholderConfigurer placeholderConfigurer;
-	
 	
 	private Map<Integer, Job> jobs;
 	
@@ -64,16 +68,18 @@ public class TaskManager {
 	 * Create a job with write-access to the output schema and read-only access to the
 	 * calc and input schemas.  Used when running processing chains.
 	 */
-	public Job createUserJob(Workspace workspace, List<Task> tasks) {
-		return new Job(workspace, isDebugMode(), tasks, userDataSource);
+	public Job createUserJob(Workspace workspace) {
+		RolapSchema rolapSchema = rolapSchemaFactory.createRolapSchema(workspace);		
+
+		return new Job(workspace, isDebugMode(), userDataSource, rolapSchema);
 	}
 	
 	/**
 	 * Create a job with write-access to the calc schema. Used for updating
 	 * metadata (e.g. importing sampling design, variables)  
 	 */
-	public Job createSystemJob(Workspace workspace, List<Task> tasks){
-		return new Job(workspace, isDebugMode(), tasks, dataSource);
+	public Job createSystemJob(Workspace workspace){
+		return new Job(workspace, isDebugMode(), dataSource, null);
 	}
 
 	public <T extends Task> T createTask(Class<T> type) {

@@ -1,13 +1,16 @@
 package org.openforis.calc.chain.pre;
 
+import static org.openforis.calc.persistence.jooq.Tables.CATEGORY;
+
 import java.util.List;
 
+import org.jooq.Select;
 import org.openforis.calc.engine.Task;
-import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.CategoricalVariable;
-import org.openforis.calc.metadata.Entity;
-import org.openforis.calc.metadata.Variable;
-import org.openforis.calc.persistence.postgis.Psql;
+import org.openforis.calc.rolap.CategoryDimensionTable;
+import org.openforis.calc.rolap.RelationalSchema;
+import org.openforis.calc.rolap.RolapSchema;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -17,64 +20,49 @@ import org.springframework.transaction.annotation.Transactional;
  * @author G. Miceli
  */
 public final class CreateCategoryDimensionTablesTask extends Task {
-
-	private static final String CALC_CATEGORY_TABLE = "calc.category";
-	private static final String DIMENSION_TABLE_ID_COLUMN = "id";
-	private static final String VARIABLE_ID_COLUMN = "variable_id";
-	private static final String NAME_COLUMN = "name";
-	private static final String CAPTION_COLUMN = "caption";
+	@Value("${calc.jdbc.username}")
+	private String systemUser;
 
 	@Override
 	@Transactional
 	protected void execute() throws Throwable {
-		Workspace workspace = getWorkspace();
-		List<Entity> entities = workspace.getEntities();
-		for (Entity entity : entities) {
-			List<Variable> variables = entity.getVariables();
-
-			for (Variable var : variables) {
-				if (var instanceof CategoricalVariable && !var.isDegenerateDimension() ) {
-					String dimensionTableName = Psql.quote(var.getDimensionTable());
-					Integer varId = var.getId();
-					
-					createDimensionTable(dimensionTableName, varId);
-					
-					addPrimaryKeyToTable(dimensionTableName);
-					
-					renameColumnFromNameToCaption(dimensionTableName);
-					
+		RolapSchema rolapSchema = getJob().getRolapSchema();
+		RelationalSchema relationalSchema = rolapSchema.getRelationalSchema();
+		List<CategoryDimensionTable> tables = relationalSchema.getCategoryDimensionTables();
+		for (CategoryDimensionTable t : tables) {
+			CategoricalVariable var = t.getVariable();
+			if ( !var.isDegenerateDimension() ) {
+				Integer varId = var.getId();
+				
+				Select<?> select = psql().dsl()
+					.select(CATEGORY.ID.as(t.ID.getName()), 
+							CATEGORY.CODE.as(t.CODE.getName()),
+							CATEGORY.NAME.as(t.CAPTION.getName()),
+							CATEGORY.DESCRIPTION.as(t.DESCRIPTION.getName()), 
+							CATEGORY.SORT_ORDER.as(t.SORT_ORDER.getName()))
+					.from(CATEGORY)
+					.where(CATEGORY.VARIABLE_ID.eq(varId));
+				
+				if ( isDebugMode() ) {
+					psql()
+						.dropTableIfExistsCascade(t)
+						.execute();
 				}
+				
+				psql()
+					.createTable(t)
+					.as(select) 
+					.execute();
+			
+				psql()
+					.alterTable(t)
+					.addPrimaryKey(t.ID.getName())
+					.execute();
+				
+				psql()
+					.grantAllOnTable(t, systemUser)
+					.execute();
 			}
 		}
 	}
-
-	private void addPrimaryKeyToTable(String dimensionTableName) {
-		psql()
-		.alterTable(dimensionTableName)
-		.addPrimaryKey(DIMENSION_TABLE_ID_COLUMN)
-		.execute();
-	}
-
-	private void createDimensionTable(String dimensionName, Integer varId) {
-		Psql select = new Psql()
-			.select("*")
-			.from(CALC_CATEGORY_TABLE)
-			.where(VARIABLE_ID_COLUMN+"=?");
-		
-		psql()
-			.createTable(dimensionName)
-			.as(select) 
-			.execute(varId);
-	}
-	
-	private void renameColumnFromNameToCaption(String dimensionTable ){
-		
-		psql()
-			.alterTable(dimensionTable)
-			.renameColumnTo(NAME_COLUMN, CAPTION_COLUMN)
-			.execute();
-
-		
-	}
-
 }

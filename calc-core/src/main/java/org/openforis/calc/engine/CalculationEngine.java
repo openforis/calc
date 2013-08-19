@@ -1,6 +1,5 @@
 package org.openforis.calc.engine;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.openforis.calc.chain.CalculationStep;
@@ -75,11 +74,11 @@ public class CalculationEngine {
 			throw new IllegalArgumentException("No processing chain with id "+chainId);
 		}
 		Workspace workspace = chain.getWorkspace();
-		List<Task> tasks = new ArrayList<Task>();
+		Job job = taskManager.createUserJob(workspace);
 		
 		// Add preprocessing tasks
 		
-		tasks.addAll( taskManager.createTasks(PREPROCESSING_TASKS) );
+		job.addTasks( taskManager.createTasks(PREPROCESSING_TASKS) );
 		
 		// Add steps to job
 		List<CalculationStep> steps = chain.getCalculationSteps();
@@ -91,24 +90,21 @@ public class CalculationEngine {
 			Class<? extends CalculationStepTask> taskType = operation.getTaskType();
 			CalculationStepTask task = taskManager.createTask(taskType);
 			task.setCalculationStep(step);			
-			tasks.add(task);
+			job.addTask(task);
 		}
 		
 		// Add preprocessing tasks
-		tasks.addAll( taskManager.createTasks(POSTPROCESSING_TASKS) );
-		
-		Job job = taskManager.createUserJob(workspace, tasks);
+		job.addTasks( taskManager.createTasks(POSTPROCESSING_TASKS) );
 		
 		return job;
 	}
 
 
-
 	synchronized
 	public Job updateStratumWeights(int workspaceId) throws WorkspaceLockedException {
 		Workspace workspace = workspaceDao.find(workspaceId);
-		List<Task> tasks = taskManager.createTasks(UpdateSamplingUnitAoisTask.class);
-		Job job = taskManager.createSystemJob(workspace, tasks);
+		Job job = taskManager.createSystemJob(workspace);
+		job.addTask(taskManager.createTask(UpdateSamplingUnitAoisTask.class));
 		taskManager.startJob(job);
 		return job;
 	}

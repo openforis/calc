@@ -1,9 +1,6 @@
 package org.openforis.calc.collect;
 
-import java.util.List;
-
 import org.openforis.calc.engine.Job;
-import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceLockedException;
@@ -32,8 +29,8 @@ public class CollectMetadataService {
 	}
 
 	private Job createSyncJob(Workspace workspace) {
-		List<Task> tasks = taskManager.createTasks(SyncMetadataTask.class, SyncCategoriesTask.class);
-		Job job = taskManager.createUserJob(workspace, tasks);
+		Job job = taskManager.createUserJob(workspace);
+		job.addTasks(taskManager.createTasks(SyncMetadataTask.class, SyncCategoriesTask.class));
 		return job;
 	}
 

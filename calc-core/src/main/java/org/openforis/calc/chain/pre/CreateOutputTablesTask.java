@@ -29,7 +29,6 @@ public final class CreateOutputTablesTask extends Task {
 	private static final String CALC_CATEGORY_VALUE = CALC_CATEGORY_TABLE + ".value";
 	private static final String CALC_CATEGORY_VARIABLE_ID = CALC_CATEGORY_TABLE + ".variable_id";
 	
-
 	@Override
 	protected void execute() throws Throwable {
 		Workspace workspace = getWorkspace();
