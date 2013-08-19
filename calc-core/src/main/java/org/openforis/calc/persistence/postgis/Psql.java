@@ -113,6 +113,7 @@ public final class Psql {
 	 * @param identifier
 	 * @return
 	 */
+	@Deprecated
 	public static String quote(String... identifiers) {
 		Object[] quoted = new Object[identifiers.length];
 		for (int i = 0; i < quoted.length; i++) {
