@@ -18,12 +18,12 @@ import org.springframework.stereotype.Component;
 public class RolapSchemaFactory {
 	public RolapSchema createRolapSchema(Workspace workspace) {
 		RolapSchema rolapSchema = new RolapSchema(workspace);
-		createCategoricalVariableDimensionTables(rolapSchema);
+		createCategoryDimensionTables(rolapSchema);
 		// TODO
 		return rolapSchema;
 	}
 
-	private void createCategoricalVariableDimensionTables(RolapSchema rolapSchema) {
+	private void createCategoryDimensionTables(RolapSchema rolapSchema) {
 		Workspace workspace = rolapSchema.getWorkspace();
 		RelationalSchema relationalSchema = rolapSchema.getRelationalSchema();
 		List<Entity> entities = workspace.getEntities();
@@ -41,7 +41,7 @@ public class RolapSchemaFactory {
 							CategoryDimensionTable table = new CategoryDimensionTable(relationalSchema, variable);
 							relationalSchema.addTable(table);
 							// OLAP dimension
-							CategoricalVariableDimension dim = new CategoricalVariableDimension(variable, table);
+							CategoryDimension dim = new CategoryDimension(variable, table);
 							rolapSchema.addSharedDimension(dim);
 						}
 					}					

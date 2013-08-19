@@ -8,11 +8,11 @@ import org.openforis.calc.metadata.CategoricalVariable;
  * @author S. Ricci
  *
  */
-public class CategoricalVariableDimension extends Dimension {
+public class CategoryDimension extends Dimension {
 	private CategoricalVariable variable;
 	private CategoryDimensionTable table;
 	
-	public CategoricalVariableDimension(CategoricalVariable variable, CategoryDimensionTable table) {
+	public CategoryDimension(CategoricalVariable variable, CategoryDimensionTable table) {
 		this.variable = variable;
 		this.table = table;
 	}

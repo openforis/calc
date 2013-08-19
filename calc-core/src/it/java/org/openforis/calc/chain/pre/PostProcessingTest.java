@@ -31,7 +31,7 @@ public class PostProcessingTest extends AbstractTransactionalJUnit4SpringContext
 	public void testRun() throws WorkspaceLockedException {
 		Workspace ws = workspaceDao.find(1);
 		Job job = taskManager.createUserJob(ws);
-		job.addTasks(taskManager.createTasks(CreateFactTablesTask.class, CreateFactTablesTask.class));
+		job.addTasks(taskManager.createTasks(CreateFactTablesTask.class));
 //		job.addTask(AddMissingAggregateColumnsTask.class);
 //		job.addTask(CalculateExpansionFactorsTask.class);
 //		job.addTask(AggregateSamplingUnitsTask.class);
