@@ -1,7 +1,7 @@
 package org.openforis.calc.chain.pre;
 
-import static org.openforis.calc.persistence.postgis.Psql.INTEGER;
-import static org.openforis.calc.persistence.postgis.Psql.quote;
+import static org.openforis.calc.persistence.postgis.PsqlBuilder.INTEGER;
+import static org.openforis.calc.persistence.postgis.PsqlBuilder.quote;
 
 import java.util.List;
 
@@ -10,7 +10,7 @@ import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.AoiHierarchyLevel;
 import org.openforis.calc.metadata.Entity;
-import org.openforis.calc.persistence.postgis.Psql;
+import org.openforis.calc.persistence.postgis.PsqlBuilder;
 
 /**
  * Task responsible for assigning AOI codes and/or ids to an output table based on a Point column.
@@ -80,7 +80,7 @@ public final class CreateAoiColumnsTask extends Task {
 
 	private void updateAncesctorAoi(String dataTable, String aoiFkColumn,
 			String childAoiFkColumn, String childAoiDimTable) {
-		Psql selectAois = new Psql()
+		PsqlBuilder selectAois = new PsqlBuilder()
 			.select("a.id, a.parent_aoi_id")
 			.from(childAoiDimTable +" a");
 		
@@ -95,7 +95,7 @@ public final class CreateAoiColumnsTask extends Task {
 
 	private void updateLeafAoi(String dataTable, String aoiFkColumn,
 			String factIdColumn, String aoiDimTable, Integer levelId) {
-		Psql selectAois = new Psql()
+		PsqlBuilder selectAois = new PsqlBuilder()
 			.select("f."+factIdColumn+" as fid", "a.id as aid")
 			.from(dataTable+" f")
 			.innerJoin(aoiDimTable+" a")

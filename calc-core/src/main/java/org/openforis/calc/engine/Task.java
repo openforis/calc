@@ -3,7 +3,7 @@ package org.openforis.calc.engine;
 import javax.sql.DataSource;
 
 import org.openforis.calc.nls.Captionable;
-import org.openforis.calc.persistence.postgis.Psql;
+import org.openforis.calc.persistence.postgis.PsqlBuilder;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -41,16 +41,16 @@ public abstract class Task extends Worker implements Captionable {
 		return getJob().getDataSource();
 	}
 	
-	protected Psql psql() {
+	protected PsqlBuilder psql() {
 		DataSource dataSource = getDataSource();
-		return new Psql(dataSource);
+		return new PsqlBuilder(dataSource);
 	}
 
 	// TODO delete; always use schema name in table references 
 	protected void setDefaultSchemaSearchPath() {
 		Workspace workspace = getWorkspace();
 		psql()
-			.setSchemaSearchPath(workspace.getOutputSchema(), Psql.PUBLIC)
+			.setSchemaSearchPath(workspace.getOutputSchema(), PsqlBuilder.PUBLIC)
 			.execute();
 	}
 }

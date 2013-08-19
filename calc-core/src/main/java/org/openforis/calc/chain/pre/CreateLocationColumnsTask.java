@@ -1,13 +1,13 @@
 package org.openforis.calc.chain.pre;
 
-import static org.openforis.calc.persistence.postgis.Psql.quote;
+import static org.openforis.calc.persistence.postgis.PsqlBuilder.quote;
 
 import java.util.List;
 
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.Entity;
-import org.openforis.calc.persistence.postgis.Psql;
+import org.openforis.calc.persistence.postgis.PsqlBuilder;
 
 /**
  * Update Point columns, taking X, Y and SRSID from other columns and converting them to the default SRS.
@@ -53,7 +53,7 @@ public final class CreateLocationColumnsTask extends Task {
 	private void createLocationColumn(String dataTable) {
 		psql()
 			.alterTable(dataTable)
-			.addColumn(LOCATION_COLUMN, Psql.POINT4326)
+			.addColumn(LOCATION_COLUMN, PsqlBuilder.POINT4326)
 			.execute();
 	}
 

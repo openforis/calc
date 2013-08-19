@@ -13,7 +13,7 @@ import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.VariableAggregate;
-import org.openforis.calc.persistence.postgis.Psql;
+import org.openforis.calc.persistence.postgis.PsqlBuilder;
 
 /**
  * Creates and populates aggregate tables for sampling unit entities and descendants.
@@ -96,7 +96,7 @@ public final class CreateAggregateTablesTask extends Task {
 	private void createAggregateTable(String factTable, String aoiFkColumn, String aggTable, int entityId, 
 			List<String> select, List<String> groupBy) {
 		
-		Psql aggSelect = new Psql()
+		PsqlBuilder aggSelect = new PsqlBuilder()
 				.select(select.toArray())
 				.from(factTable+" f")
 				.innerJoin(CalculateExpansionFactorsTask.EXPF_TABLE+" x")

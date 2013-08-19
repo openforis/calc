@@ -1,7 +1,7 @@
 package org.openforis.calc.chain.post;
 
-import static org.openforis.calc.persistence.postgis.Psql.FLOAT8;
-import static org.openforis.calc.persistence.postgis.Psql.table;
+import static org.openforis.calc.persistence.postgis.PsqlBuilder.FLOAT8;
+import static org.openforis.calc.persistence.postgis.PsqlBuilder.table;
 
 import java.util.List;
 

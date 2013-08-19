@@ -1,7 +1,7 @@
 package org.openforis.calc.chain.pre;
 
 import org.openforis.calc.engine.Task;
-import org.openforis.calc.persistence.postgis.Psql;
+import org.openforis.calc.persistence.postgis.PsqlBuilder;
 
 /**
  * Copies the data from the stratum table in calc schema to the _stratum_dim table on the output schema
@@ -17,7 +17,7 @@ public class CreateStratumDimensionTableTask extends Task {
 	protected void execute() throws Throwable {
 
 		Integer workspaceId = getWorkspace().getId();
-		Psql select = new Psql()
+		PsqlBuilder select = new PsqlBuilder()
 			.select("*")
 			.from(CALC_STRATUM_TABLE)
 			.where(WORKSPACE_ID+"=?");

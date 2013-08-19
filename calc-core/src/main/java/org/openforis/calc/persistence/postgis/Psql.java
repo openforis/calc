@@ -13,12 +13,14 @@ import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.Table;
 import org.jooq.impl.DSL;
+import org.jooq.impl.DefaultDSLContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.datasource.DataSourceUtils;
 
 /**
  * Simple PostreSQL query builder
@@ -27,307 +29,21 @@ import org.springframework.jdbc.core.ResultSetExtractor;
  * @author M. Togna
  *
  */
-public final class Psql {
-	private static final String SPACE = " ";
-	private static final String COMMA = ",";
-	private static final String PAREN_FORMAT = "(%s)";
-	private static final String QUOTE_FORMAT = "\"%s\"";
+public final class Psql extends DefaultDSLContext {
+	private static final long serialVersionUID = 1L;
+	public enum Privilege {ALL, SELECT};
 	
-	private static final String SET_SCHEMA_SEARCH_PATH = "set search_path to %s";
-	private static final String ALTER_TABLE = "alter table %s";
-	private static final String ADD_COLUMN = "add column %s %s";
-	private static final String DROP_SCHEMA_IF_EXISTS_CASCADE = "drop schema if exists %s cascade";
-	private static final String DROP_TABLE_IF_EXISTS_CASCADE = "drop table if exists %s cascade";
-	private static final String CREATE_SCHEMA = "create schema %s";
-	private static final String WITH_AS = "with %s as (%s)";
-	private static final String SELECT = "select %s";
-	private static final String FROM = "from %s";
-	private static final String INNER_JOIN = "inner join %s";
-	private static final String ON = "on %s";
-	private static final String UPDATE = "update %s";
-	private static final String SET = "set %s";
-	private static final String WHERE = "where %s";
-	private static final String AND = "and %s";
-	private static final String OR = "and %s";
-	private static final String CREATE_TABLE_AS = "create table %s";
-	private static final String CREATE_TABLE = "create table %s (%s)";
-	private static final String AS = "as %s";
-	private static final String GRANT_ALL_ON_SCHEMA = "grant all on schema %s to %s";
-	private static final String GRANT_ALL_ON_TABLES = "grant all privileges on all tables in schema %s to %s";
-	private static final String GRANT_ALL_ON_TABLE = "grant all on table %s to %s";
-	private static final String ADD_PRIMARY_KEY = "add primary key (%s)";
-	private static final String ADD_FOREIGN_KEY = "ADD CONSTRAINT %sfk FOREIGN KEY (%s) REFERENCES %s (%s)";
-	private static final String DELETE_FROM = "delete from %s";
-	private static final String SELECT_EXISTS = "select exists (%s)";
-	private static final String INSERT_INTO_WITH_COLS = "insert into %s (%s)";
-	private static final String INSERT_INTO = "insert into %s";
-	private static final String GROUP_BY = "group by %s";
-	private static final String RENAME_COLUMN_TO = "rename %s to %s";
-
-	private StringBuilder sb;
-	private JdbcTemplate jdbc;
-	private Logger log;
-
-	public static final String PUBLIC = "public";
-	public static final String INTEGER = "integer";
-	public static final String VARCHAR = "varchar";
-	public static final String FLOAT8 = "float8";
-	public static final String POINT4326 = "Geometry(Point,4326)";
-	private static final String IS_NULL = " IS NULL";
-	private static final String IS_NOT_NULL = " IS NOT NULL";
-
 	public Psql() {
-		sb = new StringBuilder();
-		log = LoggerFactory.getLogger(getClass());
+		super(SQLDialect.POSTGRES);
 	}
 	
 	public Psql(DataSource dataSource) {
-		this();
-		this.jdbc = new JdbcTemplate(dataSource);
-	}
-	
-	private Psql append(String format, String... args) {
-		return append(format, (Object[]) args);
-	}
-	
-	private Psql append(String format, Object... args) {
-		if ( sb.length() > 0 ) {
-			sb.append(SPACE);
-		}
-		String sql = String.format(format, args);
-		sb.append(sql);
-		return this;
-	}
-	
-	public Psql createSchema(String schema) {
-		return append(CREATE_SCHEMA, schema);
-	}
-	
-	public Psql setSchemaSearchPath(String... schemas) {
-		return append(SET_SCHEMA_SEARCH_PATH, join(schemas));
-	}
-
-	/**
-	 * Quotes a series of table or column name with double quotes,
-	 * separating multiple items with commas
-	 * @param identifier
-	 * @return
-	 */
-	@Deprecated
-	public static String quote(String... identifiers) {
-		Object[] quoted = new Object[identifiers.length];
-		for (int i = 0; i < quoted.length; i++) {
-			quoted[i] = String.format(QUOTE_FORMAT, identifiers[i]);
-		}
-		return join(quoted);
-	}
-
-	private static String join(String... elements) {
-		return join((Object[]) elements);
-	}
-	
-	private static String join(Object... elements) {
-		return StringUtils.join(elements, COMMA);
-	}
-
-	@Override
-	public String toString() {
-		return sb.toString();
-	}
-	
-	
-	public List<Map<String, Object>> query(final Object... args) {
-		String sql = toString();
-		if ( args.length == 0 ) {
-			log.debug(sql+";");
-		} else {
-			log.debug(sql+"; -- Parameters: "+join(args)+"");			
-		}
-		return jdbc.queryForList(sql, args);
-	}
-	
-	public Boolean queryForBoolean(final Object... args) {
-		Boolean result = queryForObject(new ResultSetExtractor<Boolean>() {
-			@Override
-			public Boolean extractData(ResultSet rs) throws SQLException, DataAccessException {
-				rs.next();
-				boolean result = rs.getBoolean(1);
-				return result;
-			}
-		}, args);
-		
-		return result;
-	}
-	
-	private <T> T queryForObject(ResultSetExtractor<T> resultSetExtractor, final Object... args) {
-		String sql = toString();
-		if ( args.length == 0 ) {
-			log.debug(sql+";");
-		} else {
-			log.debug(sql+"; -- Parameters: "+join(args)+"");			
-		}
-		
-		T result = jdbc.query(sql, resultSetExtractor, args);
-		
-		return result;
-	}
-	
-	public void execute(final Object... args) {
-		String sql = toString();
-		if ( args.length == 0 ) {
-			log.debug(sql+";");
-		} else {
-			log.debug(sql+"; -- Parameters: "+join(args)+"");			
-		}
-		jdbc.execute(sql, new PreparedStatementCallback<Boolean>() {
-			@Override
-			public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
-				for (int i = 0; i < args.length; i++) {
-					ps.setObject(i+1, args[0]);
-				}
-				return ps.execute();
-			}
-		});
-	}
-
-	public Psql alterTable(Object table) {
-		return append(ALTER_TABLE, table);
-	}
-
-	public Psql addColumn(String name, String type) {
-		return append(ADD_COLUMN, name, type);
-	}
-
-	public Psql addColumn(String name, String type, int n) {
-		String typeN = type + String.format(PAREN_FORMAT, n);
-		return append(ADD_COLUMN, name, typeN);
-	}
-	
-	public Psql with(String alias, Object select) {
-		return append(WITH_AS, alias, select);
-	}
-
-	public Psql select(Object... elements) {
-		return append(SELECT, join(elements));
-	}
-
-	public Psql from(Object... elements) {
-		return append(FROM, join(elements));
-	}
-
-	public Psql innerJoin(String table) {
-		return append(INNER_JOIN, table);
-	}
-
-	public Psql on(Object condition) {
-		return append(ON, condition);		
-	}
-	
-	public Psql update(String table) {
-		return append(UPDATE, table);
-	}
-
-	public Psql set(Object... elements) {
-		return append(SET, join(elements));
-	}
-
-	public Psql where(Object condition) {
-		return append(WHERE, condition);
-	}
-
-	public Psql and(Object condition) {
-		return append(AND, condition);
-	}
-	
-	public Psql or(Object condition) {
-		return append(OR, condition);
-	}
-	
-	public Psql dropSchemaIfExistsCascade(String schema) {
-		return append(DROP_SCHEMA_IF_EXISTS_CASCADE, schema);
-	}
-	
-	public Psql createTable(Object table) {
-		return append(CREATE_TABLE_AS, table);
-	}
-
-	public Psql createTable(String table, String...columns) {
-		return append(CREATE_TABLE, table, join(columns));
-	}
-	
-	public Psql as(Object expression) {
-		return append(AS, expression);
-	}
-
-	public Psql grantAllOnTables(String schema, String user) {
-		return append(GRANT_ALL_ON_TABLES, schema, user);
-	}
-
-	public Psql grantAllOnSchema(String schema, String user) {
-		return append(GRANT_ALL_ON_SCHEMA, schema, user);
-	}
-
-	public Psql addPrimaryKey(String... columns) {
-		return append(ADD_PRIMARY_KEY, columns);
-	}
-	
-	public Psql addForeignKey(String fkColumn, String referencedTable, String referencedColumn ) {
-		return append(ADD_FOREIGN_KEY, fkColumn, fkColumn, referencedTable, referencedColumn);
-	}
-
-	public Psql deleteFrom(String table) {
-		return append(DELETE_FROM, table);
-	}
-	
-	public Psql selectExists(Object select){
-		return append(SELECT_EXISTS, select);
-	}
-
-	public Psql insertInto(String table, String... columns) {
-		if ( columns != null ) {
-			return append(INSERT_INTO_WITH_COLS, table, join(columns));
-		} else {
-			return append(INSERT_INTO, table);
-		}
-	}
-
-	public Psql groupBy(Object... elements) {
-		return append(GROUP_BY, join(elements));
-	}
-
-	public Psql appendSql(String sql) {
-		sb.append(sql);
-		return this;
-	}
-	
-	public Psql isNull(){
-		sb.append( IS_NULL );
-		return this;
-	}
-
-	public Psql isNotNull(){
-		sb.append( IS_NOT_NULL );
-		return this;
-	}
-	public static String table(String schema, String table) {
-		return quote(schema)+"."+quote(table);
-	}
-	
-	public Psql renameColumnTo(String... elements) {
-		return append(RENAME_COLUMN_TO, elements);
-	}
-
-	public Psql dropTableIfExistsCascade(Object table) {
-		return append(DROP_TABLE_IF_EXISTS_CASCADE, table);
+		super(DataSourceUtils.getConnection(dataSource), SQLDialect.POSTGRES);
 	}
 	
 	// New DSL-based PSQL class
-	
-	public DSLContext dsl() {
-		return DSL.using(SQLDialect.POSTGRES);
-	}
 
-	public Psql grantAllOnTable(Table<?> table, String user) {
-		return append(GRANT_ALL_ON_TABLE, table, user);
+	public GrantStep grant(Privilege... privileges) {
+		return new GrantStep(this, privileges);
 	}
 }

@@ -7,7 +7,7 @@ import javax.sql.DataSource;
 import org.openforis.calc.engine.CalculationStepTask;
 import org.openforis.calc.engine.ParameterMap;
 import org.openforis.calc.engine.Workspace;
-import org.openforis.calc.persistence.postgis.Psql;
+import org.openforis.calc.persistence.postgis.PsqlBuilder;
 
 
 /**
@@ -26,7 +26,7 @@ public final class CustomSqlTask extends CalculationStepTask {
 		Workspace workspace = getWorkspace();
 		String outputSchema = workspace.getOutputSchema();
 		log().debug("Executing custom SQL");
-		new Psql(ds).setSchemaSearchPath(outputSchema, Psql.PUBLIC).execute();
-		new Psql(ds).appendSql(sql).execute();
+		new PsqlBuilder(ds).setSchemaSearchPath(outputSchema, PsqlBuilder.PUBLIC).execute();
+		new PsqlBuilder(ds).appendSql(sql).execute();
 	}
 }

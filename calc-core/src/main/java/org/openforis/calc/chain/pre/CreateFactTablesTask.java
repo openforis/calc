@@ -10,7 +10,7 @@ import org.openforis.calc.metadata.Category;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.Variable;
-import org.openforis.calc.persistence.postgis.Psql;
+import org.openforis.calc.persistence.postgis.PsqlBuilder;
 
 /**
  * Copy tables into output schema based on {@link Category}s
@@ -37,9 +37,9 @@ public final class CreateFactTablesTask extends Task {
 		String inputSchema = workspace.getInputSchema();
 
 		for (Entity entity : entities) {
-			String inputTable = inputSchema + "." + Psql.quote(entity.getDataTable());
-			String outputFactTable = Psql.quote(entity.getDataTable());
-			String idColumnFactTable = Psql.quote(entity.getIdColumn());
+			String inputTable = inputSchema + "." + PsqlBuilder.quote(entity.getDataTable());
+			String outputFactTable = PsqlBuilder.quote(entity.getDataTable());
+			String idColumnFactTable = PsqlBuilder.quote(entity.getIdColumn());
 
 			createFactTable(inputTable, outputFactTable, idColumnFactTable);
 
@@ -47,9 +47,9 @@ public final class CreateFactTablesTask extends Task {
 			for (Variable variable : variables) {
 				// Add columns for variables not found in input schema
 				if ( !variable.isInput() ) {
-					String valueColumn = Psql.quote(variable.getValueColumn());
+					String valueColumn = PsqlBuilder.quote(variable.getValueColumn());
 					if ( variable instanceof CategoricalVariable ) {
-						String valueIdColumn = Psql.quote(((CategoricalVariable) variable).getCategoryIdColumn());
+						String valueIdColumn = PsqlBuilder.quote(((CategoricalVariable) variable).getCategoryIdColumn());
 						addCategoryValueColumn(outputFactTable, valueColumn);
 						addCategoryIdColumn(outputFactTable, valueIdColumn);
 					} else {
@@ -80,7 +80,7 @@ public final class CreateFactTablesTask extends Task {
 	private void applyDefaultVariableValue(String outputFactTable, Variable variable) {
 		if(  variable instanceof QuantitativeVariable &&  ( (QuantitativeVariable)variable).getDefaultValue() != null ){
 			QuantitativeVariable quantitativeVariable = (QuantitativeVariable)variable;
-			String valueColumn = Psql.quote(variable.getValueColumn());
+			String valueColumn = PsqlBuilder.quote(variable.getValueColumn());
 			Double defaultValue = quantitativeVariable.getDefaultValue();
 			
 			psql().update( outputFactTable )
@@ -91,8 +91,8 @@ public final class CreateFactTablesTask extends Task {
 		}else if ( variable instanceof CategoricalVariable &&  ( (CategoricalVariable)variable).getDefaultValue() != null  ){
 			
 			CategoricalVariable categoricalVariable = (CategoricalVariable)variable;
-			String valueColumn = Psql.quote(variable.getValueColumn());
-			String idColumn =  Psql.quote( categoricalVariable.getCategoryIdColumn());
+			String valueColumn = PsqlBuilder.quote(variable.getValueColumn());
+			String idColumn =  PsqlBuilder.quote( categoricalVariable.getCategoryIdColumn());
 			Category defaultValue = categoricalVariable.getDefaultValue();
 			
 			psql().update( outputFactTable )
@@ -105,7 +105,7 @@ public final class CreateFactTablesTask extends Task {
 
 	private void addReferenceToDimensionTable(String outputFactTable,
 			String categoryIdColumn) {
-		psql().alterTable(outputFactTable).addColumn( categoryIdColumn, Psql.INTEGER).execute();
+		psql().alterTable(outputFactTable).addColumn( categoryIdColumn, PsqlBuilder.INTEGER).execute();
 	}
 
 	private void updateReferenceToDimensionTable(String outputFactTable, String dimensionTable, String categoryIdColumn, Integer variableId ) {
@@ -140,7 +140,7 @@ public final class CreateFactTablesTask extends Task {
 	}
 	
 	private void createFactTable(String inputTable, String outputTable, String idColumn) {
-		Psql select = new Psql()
+		PsqlBuilder select = new PsqlBuilder()
 		.select("*")
 		.from(inputTable);
 
@@ -151,27 +151,27 @@ public final class CreateFactTablesTask extends Task {
 		}
 		
 		// Add _stratum_id column
-		psql().alterTable( outputTable).addColumn(STRATUM_ID, Psql.INTEGER).execute();
+		psql().alterTable( outputTable).addColumn(STRATUM_ID, PsqlBuilder.INTEGER).execute();
 	}
 
 	private void addQuantityColumn(String outputTable, String valueColumn) {
 		psql()
 		.alterTable(outputTable)
-		.addColumn(valueColumn, Psql.FLOAT8)
+		.addColumn(valueColumn, PsqlBuilder.FLOAT8)
 		.execute();
 	}
 
 	private void addCategoryValueColumn(String outputTable, String valueColumn) {
 		psql()
 		.alterTable(outputTable)
-		.addColumn(valueColumn, Psql.VARCHAR, 255)
+		.addColumn(valueColumn, PsqlBuilder.VARCHAR, 255)
 		.execute();
 	}
 
 	private void addCategoryIdColumn(String outputTable, String valueIdColumn) {
 		psql()
 		.alterTable(outputTable)
-		.addColumn(valueIdColumn, Psql.INTEGER)
+		.addColumn(valueIdColumn, PsqlBuilder.INTEGER)
 		.execute();
 	}
 }

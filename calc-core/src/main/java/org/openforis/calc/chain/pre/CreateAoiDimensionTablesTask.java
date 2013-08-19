@@ -6,7 +6,7 @@ import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.AoiHierarchyLevel;
-import org.openforis.calc.persistence.postgis.Psql;
+import org.openforis.calc.persistence.postgis.PsqlBuilder;
 
 /**
  * Copies category tables into the output schema.  Fails if output schema already exists.
@@ -27,10 +27,10 @@ public final class CreateAoiDimensionTablesTask extends Task {
 		for (AoiHierarchy hierarchy : hierarchies) {
 			List<AoiHierarchyLevel> levels = hierarchy.getLevels();
 			for (AoiHierarchyLevel level : levels) {
-				String tableName = Psql.quote(level.getDimensionTable());
+				String tableName = PsqlBuilder.quote(level.getDimensionTable());
 				Integer varId = level.getId();
 
-				Psql select = new Psql()
+				PsqlBuilder select = new PsqlBuilder()
 					.select("*")
 					.from(CALC_AOI_TABLE)
 					.where(AOI_LEVEL_ID_COLUMN+"=?");
