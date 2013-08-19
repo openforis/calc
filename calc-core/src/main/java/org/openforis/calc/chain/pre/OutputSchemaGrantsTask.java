@@ -1,6 +1,6 @@
 package org.openforis.calc.chain.pre;
 
-import org.openforis.calc.engine.SqlTask;
+import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.persistence.postgis.Psql;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,14 +10,14 @@ import org.springframework.beans.factory.annotation.Value;
  * 
  * @author G. Miceli
  */
-public final class OutputSchemaGrantsTask extends SqlTask {
+public final class OutputSchemaGrantsTask extends Task {
 
 	@Value("${calc.jdbc.username}")
 	private String systemUser;
 	
 	@Override
 	protected void execute() throws Throwable {
-		Workspace workspace = getContext().getWorkspace();
+		Workspace workspace = getWorkspace();
 		String outputSchema = Psql.quote(workspace.getOutputSchema());
 		psql().grantAllOnTables(outputSchema, systemUser).execute();
 		psql().grantAllOnSchema(outputSchema, systemUser).execute();

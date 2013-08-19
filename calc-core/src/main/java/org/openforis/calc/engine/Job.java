@@ -6,10 +6,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
+import javax.sql.DataSource;
+
+import org.openforis.calc.persistence.jooq.OutputSchema;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -22,19 +21,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author G. Miceli
  * @author M. Togna
  */
-@Component
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class Job extends Worker implements Iterable<Task> {
-	private JobContext context;
 	private int currentTaskIndex;
 	private List<Task> tasks;
+	private Workspace workspace;
+	private boolean debugMode;
+	private DataSource dataSource;
+	private OutputSchema outputSchema;
 	
-	@Autowired
-	TaskManager taskManager;
-
-	public Job() {
+	Job(Workspace workspace, boolean debugMode, List<Task> tasks, DataSource dataSource) {
 		this.currentTaskIndex = -1;
-		this.tasks = new ArrayList<Task>();
+		this.tasks = new ArrayList<Task>(tasks);
+		this.workspace = workspace;
+		this.debugMode = debugMode;
+		this.dataSource = dataSource;
 	}
 
 	/**
@@ -83,9 +83,6 @@ public class Job extends Worker implements Iterable<Task> {
 		this.currentTaskIndex = -1;
 		for (Task task : tasks) {
 			this.currentTaskIndex += 1;
-			if ( task.getContext() != getContext() ) {
-				throw new IllegalStateException("Cannot nest tasks in different contexts");
-			}
 			task.run();
 			if ( task.isFailed() ) {
 				throw task.getLastException();
@@ -97,10 +94,6 @@ public class Job extends Worker implements Iterable<Task> {
 	public Worker getCurrentTask() {
 		return currentTaskIndex >= 0 ? tasks.get(currentTaskIndex) : null;
 	}
-
-//	public Task getTask(int index) {
-//		throw new UnsupportedOperationException();
-//	}
 
 	/**
 	 * Throws IllegalStateException if invoked after run() is called
@@ -115,17 +108,17 @@ public class Job extends Worker implements Iterable<Task> {
 		tasks.add(task);
 	}
 
-	/**
-	 * Adds a task to the Job
-	 * @param task The Class of the task we want to add to the Job
-	 * @return The added Task instance
-	 */
-	@SuppressWarnings("unchecked")
-	public <T extends Task> T addTask(Class<T> task) {
-		Task newTask = taskManager.createTask(task);
-		addTask(newTask);
-		return (T) newTask;
-	}
+//	/**
+//	 * Adds a task to the Job
+//	 * @param task The Class of the task we want to add to the Job
+//	 * @return The added Task instance
+//	 */
+//	@SuppressWarnings("unchecked")
+//	public <T extends Task> T addTask(Class<T> task) {
+//		Task newTask = taskManager.createTask(task);
+//		addTask(newTask);
+//		return (T) newTask;
+//	}
 
 	public int getCurrentTaskIndex() {
 		return this.currentTaskIndex;
@@ -142,46 +135,32 @@ public class Job extends Worker implements Iterable<Task> {
 		return tasks().iterator();
 	}	
 
-//	/**
-//	 * Recursive
-//	 * @return
-//	 */
-//	public Set<UUID> getTaskIds() {
-//		Set<UUID> ids = new HashSet<UUID>();
-//		gatherTaskIds(ids);
-//		return ids;
-//	}
-//
-//	private void gatherTaskIds(Set<UUID> ids) {
-//		for (Task task : tasks) {
-//			ids.add(task.getId());
-//			if ( task instanceof Job ) {
-//				Job subjob = (Job) task;
-//				subjob.gatherTaskIds(ids);
-//			}
-//		}		
-//	}
-
 	public Worker getTask(UUID taskId) {
 		for (Worker task : tasks) {
 			if ( task.getId().equals(taskId) ) {
 				return task;
-			} else if ( task instanceof Job ) {
-				Job subjob = (Job) task;
-				Worker t = subjob.getTask(taskId);
-				if ( t != null ) {
-					return t;
-				}
 			}
 		}
 		return null;
 	}
-	
-	public JobContext getContext() {
-		return context;
+
+	public Workspace getWorkspace() {
+		return this.workspace;
 	}
 	
-	void setContext(JobContext context) {
-		this.context = context;
+	public boolean isDebugMode() {
+		return debugMode;
+	}
+	
+	public DataSource getDataSource() {
+		return dataSource;
+	}
+	
+	public OutputSchema getOutputSchema() {
+		return outputSchema;
+	}
+	
+	void setOutputSchema(OutputSchema outputSchema) {
+		this.outputSchema = outputSchema;
 	}
 }

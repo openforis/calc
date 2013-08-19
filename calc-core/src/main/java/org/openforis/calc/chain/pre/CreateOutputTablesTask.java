@@ -2,7 +2,7 @@ package org.openforis.calc.chain.pre;
 
 import java.util.List;
 
-import org.openforis.calc.engine.SqlTask;
+import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.BinaryVariable;
 import org.openforis.calc.metadata.CategoricalVariable;
@@ -12,12 +12,12 @@ import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.persistence.postgis.Psql;
 
 /**
- * Creates fact tables in output schema based on {@link Category}s
+ * Copy tables into output schema based on {@link Category}s
  * 
  * @author G. Miceli
  * @author A. Sanchez-Paus Diaz
  */
-public final class CreateFactTablesTask extends SqlTask {
+public final class CreateOutputTablesTask extends Task {
 
 	private static final String DIMENSION_CODE_ID_SUFFIX = "_code_id";
 	// TODO group system table and columns names into single class

@@ -1,6 +1,6 @@
 package org.openforis.calc.metadata.task;
 
-import org.openforis.calc.engine.SqlTask;
+import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.persistence.postgis.Psql;
 
@@ -9,7 +9,7 @@ import org.openforis.calc.persistence.postgis.Psql;
  * @author G. Miceli
  *
  */
-public class UpdateStratumWeightsTask extends SqlTask {
+public class UpdateStratumWeightsTask extends Task {
 
 	@Override
 	protected void execute() throws Throwable {

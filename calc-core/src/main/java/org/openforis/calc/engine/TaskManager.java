@@ -1,6 +1,8 @@
 package org.openforis.calc.engine;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
 
@@ -11,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -38,9 +39,6 @@ public class TaskManager {
 	private BeanFactory beanFactory;
 	
 	@Autowired
-	private ApplicationContext applContext;
-
-	@Autowired
 	private DataSource userDataSource;
 	
 	@Autowired
@@ -62,22 +60,22 @@ public class TaskManager {
 		return "true".equals(mode);
 	}
 	
-	public Job createUserJob(Workspace workspace) {
-		JobContext context = new JobContext(workspace, userDataSource, isDebugMode());
-		return createJob(context);
+	/**
+	 * Create a job with write-access to the output schema and read-only access to the
+	 * calc and input schemas.  Used when running processing chains.
+	 */
+	public Job createUserJob(Workspace workspace, List<Task> tasks) {
+		return new Job(workspace, isDebugMode(), tasks, userDataSource);
 	}
 	
-	public Job createSystemJob(Workspace workspace){
-		JobContext context = new JobContext(workspace, dataSource, isDebugMode());
-		return createJob(context);
+	/**
+	 * Create a job with write-access to the calc schema. Used for updating
+	 * metadata (e.g. importing sampling design, variables)  
+	 */
+	public Job createSystemJob(Workspace workspace, List<Task> tasks){
+		return new Job(workspace, isDebugMode(), tasks, dataSource);
 	}
 
-	private Job createJob(JobContext context) {
-		Job job = applContext.getBean(Job.class);
-		job.setContext(context);
-		return job;
-	}
-	
 	public <T extends Task> T createTask(Class<T> type) {
 		try {
 			T task = type.newInstance();
@@ -97,8 +95,7 @@ public class TaskManager {
 	 */
 	synchronized
 	public void startJob(final Job job) throws WorkspaceLockedException {
-		final JobContext ctx = job.getContext();
-		final Workspace ws = ctx.getWorkspace();
+		final Workspace ws = job.getWorkspace();
 		final SimpleLock lock = workspaceManager.lock(ws.getId());
 		jobs.put(ws.getId(), job);
 		taskExecutor.execute(new Runnable() {
@@ -111,5 +108,15 @@ public class TaskManager {
 				}
 			}
 		});
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Task> createTasks(Class<?>... types) {
+		List<Task> tasks = new ArrayList<Task>();
+		for (Class<?> type : types) {
+			Task task = createTask((Class<Task>) type);
+			tasks.add(task);
+		}
+		return tasks;
 	}
 }

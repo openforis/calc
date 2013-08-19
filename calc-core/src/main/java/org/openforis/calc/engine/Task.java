@@ -1,6 +1,9 @@
 package org.openforis.calc.engine;
 
+import javax.sql.DataSource;
+
 import org.openforis.calc.nls.Captionable;
+import org.openforis.calc.persistence.postgis.Psql;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -16,16 +19,12 @@ public abstract class Task extends Worker implements Captionable {
 	@JsonIgnore
 	private Job job;
 	
-	public JobContext getContext() {
-		return getJob().getContext();
-	}
-
 	public Workspace getWorkspace() {
-		return getContext().getWorkspace();
+		return getJob().getWorkspace();
 	}
 	
 	public boolean isDebugMode() {
-		return getContext().isDebugMode();
+		return getJob().isDebugMode();
 	}
 	
 	public Job getJob() {
@@ -34,5 +33,24 @@ public abstract class Task extends Worker implements Captionable {
 	
 	void setJob(Job job) {
 		this.job = job;
+	}
+	
+	// Helpers
+	
+	protected DataSource getDataSource() {
+		return getJob().getDataSource();
+	}
+	
+	protected Psql psql() {
+		DataSource dataSource = getDataSource();
+		return new Psql(dataSource);
+	}
+
+	// TODO delete; always use schema name in table references 
+	protected void setDefaultSchemaSearchPath() {
+		Workspace workspace = getWorkspace();
+		psql()
+			.setSchemaSearchPath(workspace.getOutputSchema(), Psql.PUBLIC)
+			.execute();
 	}
 }

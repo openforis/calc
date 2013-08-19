@@ -2,7 +2,7 @@ package org.openforis.calc.metadata.task;
 
 import java.util.List;
 
-import org.openforis.calc.engine.SqlTask;
+import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.AoiHierarchyLevel;
@@ -12,7 +12,7 @@ import org.openforis.calc.metadata.AoiHierarchyLevel;
  * 
  * @author M. Togna
  */
-public final class UpdateSamplingUnitAoisTask extends SqlTask {
+public final class UpdateSamplingUnitAoisTask extends Task {
 	
 	@Override
 	protected void execute() throws Throwable {

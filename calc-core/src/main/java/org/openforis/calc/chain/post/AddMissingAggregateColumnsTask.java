@@ -5,7 +5,7 @@ import static org.openforis.calc.persistence.postgis.Psql.table;
 
 import java.util.List;
 
-import org.openforis.calc.engine.SqlTask;
+import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
@@ -17,7 +17,7 @@ import org.openforis.calc.metadata.VariableAggregate;
  * 
  * @author G. Miceli
  */
-public final class AddMissingAggregateColumnsTask extends SqlTask {
+public final class AddMissingAggregateColumnsTask extends Task {
 	@Override
 	protected void execute() throws Throwable {
 		Workspace workspace = getWorkspace();

@@ -1,8 +1,10 @@
 package org.openforis.calc.chain.pre;
 
+import java.util.List;
+
 import org.junit.Test;
-import org.openforis.calc.chain.post.CalculateExpansionFactorsTask;
 import org.openforis.calc.engine.Job;
+import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceDao;
@@ -27,16 +29,17 @@ public class PrepareOutputSchemaTest extends AbstractTransactionalJUnit4SpringCo
 	@Test
 	public void testRun() throws WorkspaceLockedException {
 		Workspace foundWorkspace = workspaceDao.find(1);
-		Job job = taskManager.createUserJob(foundWorkspace);
-		job.addTask(DropOutputSchemaTask.class);
-		job.addTask(CreateOutputSchemaTask.class);
-		job.addTask(CreateCategoryDimensionTablesTask.class);
-		job.addTask(CreateAoiDimensionTablesTask.class);
-		job.addTask(CreateFactTablesTask.class);
-		job.addTask(CreateLocationColumnsTask.class);
-		job.addTask(CreateAoiColumnsTask.class);
-		job.addTask(CreateStratumDimensionTableTask.class);
-		job.addTask(OutputSchemaGrantsTask.class);
+		List<Task> tasks = taskManager.createTasks(
+				DropOutputSchemaTask.class,
+				CreateOutputSchemaTask.class,
+				CreateCategoryDimensionTablesTask.class,
+				CreateAoiDimensionTablesTask.class,
+				CreateOutputTablesTask.class,
+				CreateLocationColumnsTask.class,
+				CreateAoiColumnsTask.class,
+				CreateStratumDimensionTableTask.class,
+				OutputSchemaGrantsTask.class);
+		Job job = taskManager.createUserJob(foundWorkspace, tasks);
 		taskManager.startJob(job);
 		job.waitFor(5000);
 	}

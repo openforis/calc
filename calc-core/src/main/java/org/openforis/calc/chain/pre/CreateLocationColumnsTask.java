@@ -4,7 +4,7 @@ import static org.openforis.calc.persistence.postgis.Psql.quote;
 
 import java.util.List;
 
-import org.openforis.calc.engine.SqlTask;
+import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.persistence.postgis.Psql;
@@ -14,7 +14,7 @@ import org.openforis.calc.persistence.postgis.Psql;
  * 
  * @author G. Miceli
  */
-public final class CreateLocationColumnsTask extends SqlTask {
+public final class CreateLocationColumnsTask extends Task {
 	public static final String LOCATION_COLUMN = "_location";	
 	private static final String TO_WGS84 = "ST_Transform(ST_SetSRID(ST_Point(%s::float,%s::float),srid),4326)";
 	private static final String SRS_TABLE = "calc.srs";

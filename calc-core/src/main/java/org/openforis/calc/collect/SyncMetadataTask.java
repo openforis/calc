@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.openforis.calc.engine.JobContext;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceDao;
@@ -160,8 +159,7 @@ public class SyncMetadataTask extends Task {
 		NodeDefinition defn = table.getNodeDefinition();
 		if ( defn instanceof EntityDefinition || 
 				(defn instanceof AttributeDefinition && defn.isMultiple()) ) {
-			JobContext context = getContext();
-			Workspace workspace = context.getWorkspace();
+			Workspace workspace = getWorkspace();
 			Entity e = new Entity();
 			e.setName(table.getName());
 			e.setWorkspace(workspace);

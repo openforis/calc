@@ -1,18 +1,18 @@
 package org.openforis.calc.engine;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.InvalidProcessingChainException;
 import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.chain.ProcessingChainDao;
-import org.openforis.calc.chain.post.AggregateSamplingUnitsTask;
-import org.openforis.calc.chain.post.CalculateExpansionFactorsTask;
 import org.openforis.calc.chain.post.AddMissingAggregateColumnsTask;
+import org.openforis.calc.chain.post.CalculateExpansionFactorsTask;
+import org.openforis.calc.chain.post.CreateFactTablesTask;
 import org.openforis.calc.chain.pre.CreateAoiColumnsTask;
 import org.openforis.calc.chain.pre.CreateAoiDimensionTablesTask;
 import org.openforis.calc.chain.pre.CreateCategoryDimensionTablesTask;
-import org.openforis.calc.chain.pre.CreateFactTablesTask;
 import org.openforis.calc.chain.pre.CreateLocationColumnsTask;
 import org.openforis.calc.chain.pre.CreateOutputSchemaTask;
 import org.openforis.calc.chain.pre.CreateStratumDimensionTableTask;
@@ -45,6 +45,22 @@ public class CalculationEngine {
 	@Autowired
 	private WorkspaceDao workspaceDao;
 
+	private Class<?>[] PREPROCESSING_TASKS = {
+			DropOutputSchemaTask.class,
+			CreateOutputSchemaTask.class,
+			CreateCategoryDimensionTablesTask.class,
+			CreateAoiDimensionTablesTask.class,
+			CreateStratumDimensionTableTask.class,
+			CreateFactTablesTask.class,
+			CreateLocationColumnsTask.class,
+			CreateAoiColumnsTask.class,
+			OutputSchemaGrantsTask.class};
+
+	private Class<?>[] POSTPROCESSING_TASKS = { 
+			CalculateExpansionFactorsTask.class,
+			AddMissingAggregateColumnsTask.class,
+			CreateFactTablesTask.class};
+
 	synchronized
 	public Job runProcessingChain(int chainId) throws WorkspaceLockedException, InvalidProcessingChainException {
 		Job job = createProcessingChainJob(chainId);
@@ -59,55 +75,40 @@ public class CalculationEngine {
 			throw new IllegalArgumentException("No processing chain with id "+chainId);
 		}
 		Workspace workspace = chain.getWorkspace();
-		Job job = taskManager.createUserJob(workspace);
-
-		// Add preprocess steps to the job
-		addPreprocessingTasks(job);
-
+		List<Task> tasks = new ArrayList<Task>();
+		
+		// Add preprocessing tasks
+		
+		tasks.addAll( taskManager.createTasks(PREPROCESSING_TASKS) );
+		
 		// Add steps to job
 		List<CalculationStep> steps = chain.getCalculationSteps();
-		addCalculationStepTasks(job, steps);
-		
-		addPostprocessingTasks(job);
-		return job;
-	}
-
-	private void addPreprocessingTasks(Job job) {
-		job.addTask(DropOutputSchemaTask.class);
-		job.addTask(CreateOutputSchemaTask.class);
-		job.addTask(CreateCategoryDimensionTablesTask.class);
-		job.addTask(CreateAoiDimensionTablesTask.class);
-		job.addTask(CreateStratumDimensionTableTask.class);
-		job.addTask(CreateFactTablesTask.class);
-		job.addTask(CreateLocationColumnsTask.class);
-		job.addTask(CreateAoiColumnsTask.class);
-		job.addTask(OutputSchemaGrantsTask.class);
-	}
-
-	private void addCalculationStepTasks(Job job, List<CalculationStep> steps)
-			throws InvalidProcessingChainException {
 		for (CalculationStep step : steps) {
 			Operation<?> operation = moduleRegistry.getOperation(step);
 			if ( operation == null ) {
 				throw new InvalidProcessingChainException("Unknown operation in step "+step);
 			}
 			Class<? extends CalculationStepTask> taskType = operation.getTaskType();
-			CalculationStepTask task = job.addTask(taskType);
+			CalculationStepTask task = taskManager.createTask(taskType);
 			task.setCalculationStep(step);			
+			tasks.add(task);
 		}
+		
+		// Add preprocessing tasks
+		tasks.addAll( taskManager.createTasks(POSTPROCESSING_TASKS) );
+		
+		Job job = taskManager.createUserJob(workspace, tasks);
+		
+		return job;
 	}
 
-	private void addPostprocessingTasks(Job job) {
-		job.addTask(CalculateExpansionFactorsTask.class);
-		job.addTask(AddMissingAggregateColumnsTask.class);
-		job.addTask(AggregateSamplingUnitsTask.class);
-	}
+
 
 	synchronized
 	public Job updateStratumWeights(int workspaceId) throws WorkspaceLockedException {
 		Workspace workspace = workspaceDao.find(workspaceId);
-		Job job = taskManager.createSystemJob(workspace);
-		job.addTask(UpdateSamplingUnitAoisTask.class);
+		List<Task> tasks = taskManager.createTasks(UpdateSamplingUnitAoisTask.class);
+		Job job = taskManager.createSystemJob(workspace, tasks);
 		taskManager.startJob(job);
 		return job;
 	}

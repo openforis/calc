@@ -1,34 +1,10 @@
 package org.openforis.calc.collect;
 
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.openforis.calc.engine.Task;
-import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceService;
-import org.openforis.calc.metadata.BinaryVariable;
-import org.openforis.calc.metadata.CategoricalVariable;
-import org.openforis.calc.metadata.Category;
 import org.openforis.calc.metadata.CategoryDao;
-import org.openforis.calc.metadata.Entity;
-import org.openforis.calc.metadata.Variable;
 import org.openforis.collect.persistence.xml.CollectSurveyIdmlBinder;
-import org.openforis.collect.relational.CollectRdbException;
-import org.openforis.collect.relational.model.CodeColumn;
-import org.openforis.collect.relational.model.CodeLabelColumn;
-import org.openforis.collect.relational.model.CodeListCodeColumn;
-import org.openforis.collect.relational.model.CodeListDescriptionColumn;
-import org.openforis.collect.relational.model.CodeTable;
-import org.openforis.collect.relational.model.Column;
 import org.openforis.collect.relational.model.RelationalSchema;
-import org.openforis.collect.relational.model.RelationalSchemaGenerator;
-import org.openforis.collect.relational.model.Table;
-import org.openforis.idm.metamodel.CodeAttributeDefinition;
-import org.openforis.idm.metamodel.CodeList;
-import org.openforis.idm.metamodel.NodeDefinition;
-import org.openforis.idm.metamodel.Survey;
-import org.openforis.idm.metamodel.xml.IdmlParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**

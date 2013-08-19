@@ -28,6 +28,8 @@
 	
 	<properties>
 		<mondrian-source-files-dir>${project.build.directory}/generated-sources/mondrian</mondrian-source-files-dir>
+		<jooq-codegen.target.directory>target/generated-sources/jooq</jooq-codegen.target.directory>
+		<jooq-codegen.target.package>org.openforis.calc.persistence.jooq</jooq-codegen.target.package>
 	</properties>
 	
 	<build>
@@ -52,7 +54,70 @@
 					<quiet>true</quiet>
 				</configuration>
 			</plugin>
-
+				
+			<plugin>
+		
+				<!-- Specify the maven code generator plugin -->
+				<groupId>org.jooq</groupId>
+				<artifactId>jooq-codegen-maven</artifactId>
+				<version>2.4.2</version>
+		
+				<!-- The plugin should hook into the generate goal -->
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+				</executions>
+		
+				<dependencies>
+					<dependency>
+						<groupId>postgresql</groupId>
+						<artifactId>postgresql</artifactId>
+						<version>${postgres-driver.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.openforis.build-tools</groupId>
+						<artifactId>jooq-codegen</artifactId>
+						<version>1.0-SNAPSHOT</version>
+					</dependency>
+				</dependencies>
+		
+				<!-- Specify the plugin configuration -->
+				<configuration>
+		
+					<!-- JDBC connection parameters -->
+					<jdbc>
+						<driver>${calc.jdbc.driver}</driver>
+						<url>${calc.jdbc.url}</url>
+						<user>${calc.jdbc.username}</user>
+						<password>${calc.jdbc.password}</password>
+					</jdbc>
+		
+					<!-- Generator parameters -->
+					<generator>
+						<name>org.jooq.util.DefaultGenerator</name>
+						<strategy>
+							<name>org.openforis.jooq.codegen.CustomGeneratorStrategy</name>
+						</strategy>
+						<database>
+							<name>org.jooq.util.postgres.PostgresDatabase</name>
+							<includes>.*</includes>
+							<excludes></excludes>
+							<inputSchema>calc</inputSchema>
+						</database>
+						<generate>
+							<relations>true</relations>
+							<deprecated>false</deprecated>
+						</generate>
+						<target>
+							<packageName>${jooq-codegen.target.package}</packageName>
+							<directory>${jooq-codegen.target.directory}</directory>
+						</target>
+					</generator>
+				</configuration>
+			</plugin>
 
 			<!-- Generate java file from mondrian xsd using jaxb2 maven plugin  -->
 			<plugin>
@@ -107,7 +172,7 @@
 						</configuration>
 					</execution>
 					<execution>
-						<id>add-mondrian-sources</id>
+						<id>add-generated-sources</id>
 						<phase>process-sources</phase>
 						<goals>
 							<goal>add-source</goal>
@@ -115,6 +180,7 @@
 						<configuration>
 							<sources>
 								<source>${mondrian-source-files-dir}</source>
+								<source>${jooq-codegen.target.directory}</source>
 							</sources>							
 						</configuration>
 					</execution>
@@ -198,6 +264,23 @@
 										</versionRange>
 										<goals>
 											<goal>update</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.jooq</groupId>
+										<artifactId>
+											jooq-codegen-maven
+										</artifactId>
+										<versionRange>
+											[2.4.2,)
+										</versionRange>
+										<goals>
+											<goal>generate</goal>
 										</goals>
 									</pluginExecutionFilter>
 									<action>

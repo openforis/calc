@@ -5,7 +5,7 @@ import static org.openforis.calc.persistence.postgis.Psql.table;
 
 import java.util.List;
 
-import org.openforis.calc.engine.SqlTask;
+import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.AoiHierarchyLevel;
@@ -18,7 +18,7 @@ import org.openforis.calc.metadata.Entity;
  * @author M. Togna
  * @author G. Miceli
  */
-public final class CalculateExpansionFactorsTask extends SqlTask {
+public final class CalculateExpansionFactorsTask extends Task {
 	
 	public static final String EXPF_TABLE = "_expf";
 	

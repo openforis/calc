@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 
 import org.openforis.calc.engine.CalculationStepTask;
-import org.openforis.calc.engine.JobContext;
 import org.openforis.calc.engine.ParameterMap;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.persistence.postgis.Psql;
@@ -23,9 +22,8 @@ public final class CustomSqlTask extends CalculationStepTask {
 	protected void execute() throws SQLException {
 		ParameterMap params = parameters();
 		String sql = params.getString("sql");
-		JobContext context = getContext();
-		DataSource ds = context.getDataSource();
-		Workspace workspace = context.getWorkspace();
+		DataSource ds = getDataSource();
+		Workspace workspace = getWorkspace();
 		String outputSchema = workspace.getOutputSchema();
 		log().debug("Executing custom SQL");
 		new Psql(ds).setSchemaSearchPath(outputSchema, Psql.PUBLIC).execute();

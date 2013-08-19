@@ -1,13 +1,15 @@
 package org.openforis.calc.chain.pre;
 
+import static org.openforis.calc.persistence.postgis.Psql.INTEGER;
+import static org.openforis.calc.persistence.postgis.Psql.quote;
+
 import java.util.List;
 
-import org.openforis.calc.engine.SqlTask;
+import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.AoiHierarchyLevel;
 import org.openforis.calc.metadata.Entity;
-import static org.openforis.calc.persistence.postgis.Psql.*;
 import org.openforis.calc.persistence.postgis.Psql;
 
 /**
@@ -17,7 +19,7 @@ import org.openforis.calc.persistence.postgis.Psql;
  * @author G. Miceli
  * @author M. Togna
  */
-public final class CreateAoiColumnsTask extends SqlTask {
+public final class CreateAoiColumnsTask extends Task {
 	
 	@Override
 	protected void execute() throws Throwable {

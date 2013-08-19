@@ -1,6 +1,6 @@
 package org.openforis.calc.chain.pre;
 
-import org.openforis.calc.engine.SqlTask;
+import org.openforis.calc.engine.Task;
 import org.openforis.calc.persistence.postgis.Psql;
 
 /**
@@ -8,7 +8,7 @@ import org.openforis.calc.persistence.postgis.Psql;
  * @author Alfonso Sanchez-Paus Diaz
  *
  */
-public class CreateStratumDimensionTableTask extends SqlTask {
+public class CreateStratumDimensionTableTask extends Task {
 
 	private static final Object CALC_STRATUM_TABLE = "calc.stratum";
 	private static final String WORKSPACE_ID = "workspace_id";
