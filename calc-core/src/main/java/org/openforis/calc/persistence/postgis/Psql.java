@@ -48,6 +48,7 @@ public final class Psql {
 	private static final String SET = "set %s";
 	private static final String WHERE = "where %s";
 	private static final String AND = "and %s";
+	private static final String OR = "and %s";
 	private static final String CREATE_TABLE_AS = "create table %s";
 	private static final String CREATE_TABLE = "create table %s (%s)";
 	private static final String AS = "as %s";
@@ -73,6 +74,7 @@ public final class Psql {
 	public static final String FLOAT8 = "float8";
 	public static final String POINT4326 = "Geometry(Point,4326)";
 	private static final String IS_NULL = " IS NULL";
+	private static final String IS_NOT_NULL = " IS NOT NULL";
 
 	public Psql() {
 		sb = new StringBuilder();
@@ -236,6 +238,10 @@ public final class Psql {
 		return append(AND, condition);
 	}
 	
+	public Psql or(Object condition) {
+		return append(OR, condition);
+	}
+	
 	public Psql dropSchemaIfExistsCascade(String schema) {
 		return append(DROP_SCHEMA_IF_EXISTS_CASCADE, schema);
 	}
@@ -298,6 +304,10 @@ public final class Psql {
 		return this;
 	}
 
+	public Psql isNotNull(){
+		sb.append( IS_NOT_NULL );
+		return this;
+	}
 	public static String table(String schema, String table) {
 		return quote(schema)+"."+quote(table);
 	}

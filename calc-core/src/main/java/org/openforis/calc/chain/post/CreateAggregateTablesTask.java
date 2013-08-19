@@ -3,7 +3,7 @@ package org.openforis.calc.chain.post;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openforis.calc.chain.pre.CreateOutputTablesTask;
+import org.openforis.calc.chain.pre.CreateFactTablesTask;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.AoiHierarchy;
@@ -61,7 +61,7 @@ public final class CreateAggregateTablesTask extends Task {
 				throw new UnsupportedOperationException("Unknown variable class");
 			}
 		}
-		groupBy.add(CreateOutputTablesTask.STRATUM_ID);
+		groupBy.add(CreateFactTablesTask.STRATUM_ID);
 		groupBy.add(aoiFkColumn);
 		select.addAll(0, groupBy);
 		
