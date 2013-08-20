@@ -15,6 +15,7 @@ import org.springframework.jdbc.datasource.DataSourceUtils;
  */
 public final class Psql extends DefaultDSLContext {
 	private static final long serialVersionUID = 1L;
+	
 	public enum Privilege {ALL, SELECT};
 	
 	public Psql() {
@@ -25,8 +26,6 @@ public final class Psql extends DefaultDSLContext {
 		super(DataSourceUtils.getConnection(dataSource), SQLDialect.POSTGRES);
 	}
 	
-	// New DSL-based PSQL class
-
 	public GrantStep grant(Privilege... privileges) {
 		return new GrantStep(this, privileges);
 	}
