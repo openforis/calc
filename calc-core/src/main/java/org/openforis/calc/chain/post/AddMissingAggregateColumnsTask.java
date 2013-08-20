@@ -45,14 +45,14 @@ public final class AddMissingAggregateColumnsTask extends Task {
 
 	private void updateAggregateColumn(String factTable, String valueColumn,
 			String aggColumn) {
-		psql()
+		createPsqlBuilder()
 			.update(factTable)
 			.set(aggColumn + "=" + valueColumn)
 			.execute();
 	}
 	
 	private void addAggregateColumn(String factTable, String aggColumn) {
-		psql()
+		createPsqlBuilder()
 			.alterTable(factTable)
 			.addColumn(aggColumn, FLOAT8)
 			.execute();

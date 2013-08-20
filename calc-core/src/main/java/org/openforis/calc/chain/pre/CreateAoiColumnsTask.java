@@ -55,7 +55,7 @@ public final class CreateAoiColumnsTask extends Task {
 		String dataTable = quote(entity.getDataTable());
 		String aoiFkColumn = quote(level.getFkColumn());
 		
-		psql()
+		createPsqlBuilder()
 			.alterTable(dataTable)
 			.addColumn(aoiFkColumn, INTEGER)
 			.execute();
@@ -84,7 +84,7 @@ public final class CreateAoiColumnsTask extends Task {
 			.select("a.id, a.parent_aoi_id")
 			.from(childAoiDimTable +" a");
 		
-		psql()
+		createPsqlBuilder()
 			.with("tmp", selectAois)
 			.update(dataTable+" f")
 				.set(aoiFkColumn + " = tmp.parent_aoi_id")
@@ -102,7 +102,7 @@ public final class CreateAoiColumnsTask extends Task {
 			.on("ST_Contains(a.shape, f."+CreateLocationColumnsTask.LOCATION_COLUMN+")")
 			.and("a.aoi_level_id = " + levelId);
 		
-		psql()
+		createPsqlBuilder()
 			.with("tmp", selectAois)
 			.update(dataTable+" f")
 				.set(aoiFkColumn + " = aid")

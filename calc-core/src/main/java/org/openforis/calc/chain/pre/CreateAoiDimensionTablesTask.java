@@ -35,12 +35,12 @@ public final class CreateAoiDimensionTablesTask extends Task {
 					.from(CALC_AOI_TABLE)
 					.where(AOI_LEVEL_ID_COLUMN+"=?");
 				
-				psql()
+				createPsqlBuilder()
 					.createTable(tableName)
 					.as(select) 
 					.execute(varId);
 				
-				psql()
+				createPsqlBuilder()
 					.alterTable(tableName)
 					.addPrimaryKey(DIMENSION_ID_COLUMN);
 			}

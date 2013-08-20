@@ -19,7 +19,7 @@ public final class OutputSchemaGrantsTask extends Task {
 	protected void execute() throws Throwable {
 		Workspace workspace = getWorkspace();
 		String outputSchema = PsqlBuilder.quote(workspace.getOutputSchema());
-		psql().grantAllOnTables(outputSchema, systemUser).execute();
-		psql().grantAllOnSchema(outputSchema, systemUser).execute();
+		createPsqlBuilder().grantAllOnTables(outputSchema, systemUser).execute();
+		createPsqlBuilder().grantAllOnSchema(outputSchema, systemUser).execute();
 	}
 }

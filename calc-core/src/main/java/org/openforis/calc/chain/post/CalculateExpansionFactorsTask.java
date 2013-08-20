@@ -30,7 +30,7 @@ public final class CalculateExpansionFactorsTask extends Task {
 		String expfTable = table(outputSchema, EXPF_TABLE);
 
 		if ( isDebugMode() ) {
-			psql().dropTableIfExistsCascade(expfTable).execute();
+			createPsqlBuilder().dropTableIfExistsCascade(expfTable).execute();
 		}
 		
 		createExpansionFactorTable(expfTable);
@@ -39,7 +39,7 @@ public final class CalculateExpansionFactorsTask extends Task {
 	}
 
 	private void createExpansionFactorTable(String expfTable) {
-		psql()
+		createPsqlBuilder()
 			.createTable(expfTable, 
 					"stratum_id integer not null", 
 					"aoi_id integer not null", 
@@ -72,7 +72,7 @@ public final class CalculateExpansionFactorsTask extends Task {
 	}
 
 	private void insertExpansionFactors(Integer wsId, String expfTable, String factTable, String aoiFkColumn) {
-		psql()
+		createPsqlBuilder()
 			.insertInto(expfTable, "stratum_id", "aoi_id", "entity_id", "_expf")
 			.select("s.stratum_id" , "s.aoi_id" , "s.entity_id" , "s.area / sum(f.weight)")
 			.from("calc.stratum_aoi_view s")

@@ -42,7 +42,7 @@ public final class CreateLocationColumnsTask extends Task {
 
 	private void convertCoordinates(String dataTable, String xColumn, String yColumn, String srsColumn) {
 		String expr = String.format(TO_WGS84, xColumn, yColumn);
-		psql()
+		createPsqlBuilder()
 			.update(dataTable+" f")
 			.set(LOCATION_COLUMN + "=" + expr)
 			.from(SRS_TABLE)
@@ -51,7 +51,7 @@ public final class CreateLocationColumnsTask extends Task {
 	}
 
 	private void createLocationColumn(String dataTable) {
-		psql()
+		createPsqlBuilder()
 			.alterTable(dataTable)
 			.addColumn(LOCATION_COLUMN, PsqlBuilder.POINT4326)
 			.execute();

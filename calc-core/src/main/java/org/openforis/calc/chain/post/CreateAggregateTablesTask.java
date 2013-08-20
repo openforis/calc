@@ -69,7 +69,7 @@ public final class CreateAggregateTablesTask extends Task {
 		select.add("count(*) as " + "_agg_cnt");
 
 		if ( isDebugMode() ) {
-			psql().dropTableIfExistsCascade(aggTable).execute();
+			createPsqlBuilder().dropTableIfExistsCascade(aggTable).execute();
 		}
 		
 		createAggregateTable(factTable, aoiFkColumn, aggTable, entityId, select, groupBy);
@@ -105,7 +105,7 @@ public final class CreateAggregateTablesTask extends Task {
 				.and("x.entity_id = ?")
 				.groupBy(groupBy.toArray());
 		
-		psql()
+		createPsqlBuilder()
 			.createTable(aggTable)
 			.as(aggSelect)
 			.execute(entityId);

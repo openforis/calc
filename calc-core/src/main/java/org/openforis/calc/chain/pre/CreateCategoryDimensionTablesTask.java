@@ -7,6 +7,7 @@ import java.util.List;
 import org.jooq.Select;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.metadata.CategoricalVariable;
+import org.openforis.calc.persistence.postgis.Psql.Privilege;
 import org.openforis.calc.rolap.CategoryDimensionTable;
 import org.openforis.calc.rolap.RelationalSchema;
 import org.openforis.calc.rolap.RolapSchema;
@@ -34,33 +35,35 @@ public final class CreateCategoryDimensionTablesTask extends Task {
 			if ( !var.isDegenerateDimension() ) {
 				Integer varId = var.getId();
 				
-				Select<?> select = psql().dsl()
-					.select(CATEGORY.ID.as(t.ID.getName()), 
-							CATEGORY.CODE.as(t.CODE.getName()),
-							CATEGORY.NAME.as(t.CAPTION.getName()),
+				Select<?> select = psql()
+					.select(CATEGORY.ID			.as(t.ID.getName()), 
+							CATEGORY.CODE		.as(t.CODE.getName()),
+							CATEGORY.NAME		.as(t.CAPTION.getName()),
 							CATEGORY.DESCRIPTION.as(t.DESCRIPTION.getName()), 
-							CATEGORY.SORT_ORDER.as(t.SORT_ORDER.getName()))
+							CATEGORY.SORT_ORDER	.as(t.SORT_ORDER.getName()))
 					.from(CATEGORY)
 					.where(CATEGORY.VARIABLE_ID.eq(varId));
 				
 				if ( isDebugMode() ) {
-					psql()
+					createPsqlBuilder()
 						.dropTableIfExistsCascade(t)
 						.execute();
 				}
 				
-				psql()
+				createPsqlBuilder()
 					.createTable(t)
 					.as(select) 
 					.execute();
 			
-				psql()
+				createPsqlBuilder()
 					.alterTable(t)
 					.addPrimaryKey(t.ID.getName())
 					.execute();
 				
 				psql()
-					.grantAllOnTable(t, systemUser)
+					.grant(Privilege.ALL)
+					.on(t)
+					.to(systemUser)
 					.execute();
 			}
 		}

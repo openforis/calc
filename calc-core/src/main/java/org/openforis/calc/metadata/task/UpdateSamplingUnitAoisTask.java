@@ -22,7 +22,7 @@ public final class UpdateSamplingUnitAoisTask extends Task {
 	}
 
 	private void deleteSamplingUnitAois(int wsId) {
-		psql()
+		createPsqlBuilder()
 			.deleteFrom("calc.sampling_unit_aoi")
 			.where("workspace_id = ?")
 			.execute(wsId);
@@ -51,7 +51,7 @@ public final class UpdateSamplingUnitAoisTask extends Task {
 
 	private void insertAncestorStratumAois(Workspace ws,
 			AoiHierarchyLevel childLevel) {
-		psql()
+		createPsqlBuilder()
 		.insertInto("calc.sampling_unit_aoi","sampling_unit_id", "aoi_id","workspace_id")
 		.select("s.sampling_unit_id", "a.parent_aoi_id", ws.getId() )
 		.from("calc.sampling_unit_aoi s")
@@ -62,7 +62,7 @@ public final class UpdateSamplingUnitAoisTask extends Task {
 	}
 
 	private void insertLeafStratumAois(Workspace ws, AoiHierarchyLevel level) {
-		psql()
+		createPsqlBuilder()
 			.insertInto("calc.sampling_unit_aoi","sampling_unit_id", "aoi_id","workspace_id")
 			.select("u.id", "a.id", ws.getId())
 			.from("calc.sampling_unit u")

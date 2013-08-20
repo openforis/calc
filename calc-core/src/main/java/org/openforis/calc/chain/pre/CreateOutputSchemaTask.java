@@ -17,7 +17,7 @@ public final class CreateOutputSchemaTask extends Task {
 	protected void execute() throws Throwable {
 		Workspace workspace = getWorkspace();
 		String outputSchemaName = PsqlBuilder.quote(workspace.getOutputSchema());
-		psql().createSchema(outputSchemaName).execute();
+		createPsqlBuilder().createSchema(outputSchemaName).execute();
 		setDefaultSchemaSearchPath();
 		
 	}

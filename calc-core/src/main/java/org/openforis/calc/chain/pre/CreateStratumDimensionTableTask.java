@@ -22,7 +22,7 @@ public class CreateStratumDimensionTableTask extends Task {
 			.from(CALC_STRATUM_TABLE)
 			.where(WORKSPACE_ID+"=?");
 
-		psql()
+		createPsqlBuilder()
 			.createTable("_stratum_dim")
 			.as(select) 
 			.execute(workspaceId);

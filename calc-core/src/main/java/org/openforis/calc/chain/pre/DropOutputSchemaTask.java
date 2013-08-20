@@ -16,6 +16,6 @@ public final class DropOutputSchemaTask extends Task {
 	protected void execute() throws Throwable {
 		Workspace workspace = getWorkspace();
 		String outputSchema = PsqlBuilder.quote(workspace.getOutputSchema());
-		psql().dropSchemaIfExistsCascade(outputSchema).execute();
+		createPsqlBuilder().dropSchemaIfExistsCascade(outputSchema).execute();
 	}
 }

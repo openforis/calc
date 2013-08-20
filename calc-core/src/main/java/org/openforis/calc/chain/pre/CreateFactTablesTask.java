@@ -83,7 +83,7 @@ public final class CreateFactTablesTask extends Task {
 			String valueColumn = PsqlBuilder.quote(variable.getValueColumn());
 			Double defaultValue = quantitativeVariable.getDefaultValue();
 			
-			psql().update( outputFactTable )
+			createPsqlBuilder().update( outputFactTable )
 				.set( valueColumn + " = ? ")
 				.where( valueColumn ).isNull()
 				.execute( defaultValue);
@@ -95,7 +95,7 @@ public final class CreateFactTablesTask extends Task {
 			String idColumn =  PsqlBuilder.quote( categoricalVariable.getCategoryIdColumn());
 			Category defaultValue = categoricalVariable.getDefaultValue();
 			
-			psql().update( outputFactTable )
+			createPsqlBuilder().update( outputFactTable )
 				.set( valueColumn + " = ?, " + idColumn + " = " + defaultValue.getId())
 				.where( valueColumn ).isNull()
 				.or( idColumn ).isNull()
@@ -105,13 +105,13 @@ public final class CreateFactTablesTask extends Task {
 
 	private void addReferenceToDimensionTable(String outputFactTable,
 			String categoryIdColumn) {
-		psql().alterTable(outputFactTable).addColumn( categoryIdColumn, PsqlBuilder.INTEGER).execute();
+		createPsqlBuilder().alterTable(outputFactTable).addColumn( categoryIdColumn, PsqlBuilder.INTEGER).execute();
 	}
 
 	private void updateReferenceToDimensionTable(String outputFactTable, String dimensionTable, String categoryIdColumn, Integer variableId ) {
 		String nameBinaryValueColumn = categoryIdColumn.substring(0, categoryIdColumn.indexOf(DIMENSION_CODE_ID_SUFFIX));
 		
-		psql()
+		createPsqlBuilder()
 			.update( outputFactTable)
 			.set(categoryIdColumn + " = " + CALC_CATEGORY_ID )
 			.from(CALC_CATEGORY_TABLE)
@@ -123,7 +123,7 @@ public final class CreateFactTablesTask extends Task {
 
 	private void addDimensionTableFK(String outputFactTable,
 			String dimensionTable, String categoryColumn) {
-		psql()
+		createPsqlBuilder()
 			.alterTable(outputFactTable)
 			.addForeignKey( categoryColumn, dimensionTable, DIMENSION_TABLE_ID_COLUMN)
 			.execute();
@@ -131,7 +131,7 @@ public final class CreateFactTablesTask extends Task {
 
 	private void updateDimensionIdColumn(String outputFactTable,
 			String dimensionTable, String categoryColumn) {
-		psql()
+		createPsqlBuilder()
 			.update( outputFactTable )
 			.set(categoryColumn  + "= " + dimensionTable+ "."+ DIMENSION_TABLE_ID_COLUMN )
 			.from( dimensionTable  )
@@ -144,32 +144,32 @@ public final class CreateFactTablesTask extends Task {
 		.select("*")
 		.from(inputTable);
 
-		psql().createTable(outputTable).as(select).execute();
+		createPsqlBuilder().createTable(outputTable).as(select).execute();
 
 		if ( idColumn != null ) {
-			psql().alterTable(outputTable).addPrimaryKey(idColumn).execute();
+			createPsqlBuilder().alterTable(outputTable).addPrimaryKey(idColumn).execute();
 		}
 		
 		// Add _stratum_id column
-		psql().alterTable( outputTable).addColumn(STRATUM_ID, PsqlBuilder.INTEGER).execute();
+		createPsqlBuilder().alterTable( outputTable).addColumn(STRATUM_ID, PsqlBuilder.INTEGER).execute();
 	}
 
 	private void addQuantityColumn(String outputTable, String valueColumn) {
-		psql()
+		createPsqlBuilder()
 		.alterTable(outputTable)
 		.addColumn(valueColumn, PsqlBuilder.FLOAT8)
 		.execute();
 	}
 
 	private void addCategoryValueColumn(String outputTable, String valueColumn) {
-		psql()
+		createPsqlBuilder()
 		.alterTable(outputTable)
 		.addColumn(valueColumn, PsqlBuilder.VARCHAR, 255)
 		.execute();
 	}
 
 	private void addCategoryIdColumn(String outputTable, String valueIdColumn) {
-		psql()
+		createPsqlBuilder()
 		.alterTable(outputTable)
 		.addColumn(valueIdColumn, PsqlBuilder.INTEGER)
 		.execute();
