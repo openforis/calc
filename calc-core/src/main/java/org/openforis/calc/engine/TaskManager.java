@@ -9,7 +9,7 @@ import java.util.concurrent.Executor;
 import javax.sql.DataSource;
 
 import org.openforis.calc.rolap.RolapSchema;
-import org.openforis.calc.rolap.RolapSchemaFactory;
+import org.openforis.calc.rolap.RolapSchemaGenerator;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
@@ -47,7 +47,7 @@ public class TaskManager {
 	private DataSource dataSource;
 
 	@Autowired
-	private RolapSchemaFactory rolapSchemaFactory;
+	private RolapSchemaGenerator rolapSchemaFactory;
 
 	@Autowired
 	private PropertyPlaceholderConfigurer placeholderConfigurer;

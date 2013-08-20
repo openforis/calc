@@ -42,6 +42,10 @@ public class CategoricalVariable extends Variable {
 	@Column(name = "disaggregate")
 	private boolean disaggregate;
 
+	// TODO remove term "dimension" from name (Calc model uses statistical terminology while "dimension" is OLAP term)
+	@Column(name = "degenerate_dimension")
+	private boolean degenerateDimension;
+
 	public CategoricalVariable() {
 	}
 	
@@ -114,5 +118,13 @@ public class CategoricalVariable extends Variable {
 			throw new IllegalArgumentException("Illegal scale: " + scale);
 		}
 		super.setScale(scale);
+	}
+
+	public Boolean isDegenerateDimension() {
+		return degenerateDimension;
+	}
+
+	public void setDegenerateDimension(boolean degenerateDimension) {
+		this.degenerateDimension = degenerateDimension;
 	}
 }

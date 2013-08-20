@@ -54,9 +54,6 @@ public abstract class Variable extends UserObject {
 	@Column(name = "override")
 	private Boolean override;
 
-	@Column(name = "degenerate_dimension")
-	private boolean degenerateDimension;
-
 	public enum Type {
 		QUANTITATIVE, CATEGORICAL, BINARY;
 	}
@@ -129,13 +126,5 @@ public abstract class Variable extends UserObject {
 
 	public void setOverride(Boolean override) {
 		this.override = override;
-	}
-
-	public Boolean isDegenerateDimension() {
-		return degenerateDimension;
-	}
-
-	public void setDegenerateDimension(boolean degenerateDimension) {
-		this.degenerateDimension = degenerateDimension;
 	}
 }

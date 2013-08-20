@@ -55,21 +55,23 @@ public final class CreateFactTablesTask extends Task {
 					} else {
 						addQuantityColumn(outputFactTable, valueColumn);						
 					}
-				} else if( variable instanceof CategoricalVariable && !variable.isDegenerateDimension() ) {
+				} else if( variable instanceof CategoricalVariable ) {
 					CategoricalVariable catvar = (CategoricalVariable) variable;
-					// CHANGE THE VALUES FROM THE ORIGINAL_ID TO THE INTERNAL ID OF THE CATEGORICAL DIMENSION TABLE
-					String dimensionTable = catvar.getDimensionTable();
-					String categoryIdColumn = catvar.getCategoryIdColumn();
-					
-					if( variable instanceof BinaryVariable ){
-						addReferenceToDimensionTable(outputFactTable, categoryIdColumn);
-						updateReferenceToDimensionTable(outputFactTable, dimensionTable, categoryIdColumn, catvar.getId() );
-					}else{
-						updateDimensionIdColumn(outputFactTable, dimensionTable, categoryIdColumn);
+					if ( !catvar.isDegenerateDimension() ) {
+						// CHANGE THE VALUES FROM THE ORIGINAL_ID TO THE INTERNAL ID OF THE CATEGORICAL DIMENSION TABLE
+						String dimensionTable = catvar.getDimensionTable();
+						String categoryIdColumn = catvar.getCategoryIdColumn();
+						
+						if( variable instanceof BinaryVariable ){
+							addReferenceToDimensionTable(outputFactTable, categoryIdColumn);
+							updateReferenceToDimensionTable(outputFactTable, dimensionTable, categoryIdColumn, catvar.getId() );
+						}else{
+							updateDimensionIdColumn(outputFactTable, dimensionTable, categoryIdColumn);
+						}
+						
+						// ADD FK relationship
+						addDimensionTableFK(outputFactTable, dimensionTable, categoryIdColumn);
 					}
-					
-					// ADD FK relationship
-					addDimensionTableFK(outputFactTable, dimensionTable, categoryIdColumn);
 				}
 				
 				applyDefaultVariableValue(outputFactTable, variable);

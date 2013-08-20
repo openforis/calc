@@ -56,6 +56,9 @@ public class VariableAggregate extends UserObject {
 		this.caption = caption;
 	}
 
+	/**
+	 * Mondrian function used for aggregating across categories 
+	 */
 	public String getAggregateFunction() {
 		return aggregateFunction;
 	}
@@ -64,6 +67,10 @@ public class VariableAggregate extends UserObject {
 		this.aggregateFunction = aggregateFunction;
 	}
 
+	/**
+	 * Psql expression used for aggregating from single observations 
+	 * to stratum/AOI level 
+	 */
 	public String getAggregateFormula() {
 		return aggregateFormula;
 	}
