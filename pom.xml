@@ -48,7 +48,6 @@
 <!-- 			</modules> -->
 <!-- 		</profile> -->
 <!-- 	</profiles> -->
-
 	<repositories>
 		<repository>
 			<id>openforis-releases</id>
@@ -109,6 +108,24 @@
 <!-- 			<url>http://nexus.bedatadriven.com/content/groups/public/</url> -->
 <!-- 		</repository> -->
 	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>openforis-plugin-releases</id>
+			<name>Open Foris Maven Plugin Releases</name>
+			<url>http://www.openforis.org/nexus/content/groups/public/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</pluginRepository>
+		<pluginRepository>
+			<id>openforis-plugin-snapshots</id>
+			<name>Open Foris Maven Plugin Snapshots</name>
+			<url>http://www.openforis.org/nexus/content/groups/public/</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
 	
 	<build>
 		<pluginManagement>
