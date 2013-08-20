@@ -21,8 +21,9 @@ import org.springframework.jdbc.core.ResultSetExtractor;
  * 
  * @author G. Miceli
  * @author M. Togna
- *
+ * @deprecated replaced with {@link Psql}
  */
+@Deprecated
 public final class PsqlBuilder {
 	private static final String SPACE = " ";
 	private static final String COMMA = ",";

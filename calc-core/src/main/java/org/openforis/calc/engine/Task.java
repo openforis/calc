@@ -47,6 +47,11 @@ public abstract class Task extends Worker implements Captionable {
 		return new Psql(dataSource);
 	}
 	
+	/**
+	 * 
+	 * @deprecated use psql() instead
+	 */
+	@Deprecated
 	protected PsqlBuilder createPsqlBuilder() {
 		DataSource dataSource = getDataSource();
 		return new PsqlBuilder(dataSource);
