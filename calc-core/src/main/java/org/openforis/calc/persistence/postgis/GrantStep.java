@@ -12,24 +12,17 @@ import org.openforis.calc.persistence.postgis.Psql.Privilege;
  */
 public class GrantStep extends DdlStep {
 
-	private Privilege[] privileges;
-
 	GrantStep(Psql psql, Privilege... privileges) {
 		super(psql);
-		this.privileges = privileges;
+		append("grant ");
+		append(StringUtils.join(privileges, ", "));
 	}
 
 	public OnStep on(Table<?> table) {
 		return new OnStep(table);
 	}
 	
-	@Override
-	protected String toSql() {
-		return "grant " + StringUtils.join(privileges, ", ");
-	}
-	
 	public class OnStep extends DdlStep {
-
 		OnStep(Table<?> table) {
 			super(GrantStep.this);
 			append("on ");
@@ -41,13 +34,11 @@ public class GrantStep extends DdlStep {
 		}
 		
 		public class ToStep extends DdlStep {
-
 			public ToStep(String user) {
 				super(OnStep.this);
 				append("to ");
 				append(user);
 			}
-			
 		}
 	}
 	
