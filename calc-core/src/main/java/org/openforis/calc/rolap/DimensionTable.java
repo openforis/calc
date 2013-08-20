@@ -28,7 +28,7 @@ public class DimensionTable extends TableImpl<Record> {
 	@SuppressWarnings("unchecked")
 	DimensionTable(String name, RelationalSchema schema) {
 		super(name, schema);
-		this.primaryKey = KeyFactory.createUniqueKey(this, ID);
+		this.primaryKey = KeyFactory.newUniqueKey(this, ID);
 	}
 
 	@Override
