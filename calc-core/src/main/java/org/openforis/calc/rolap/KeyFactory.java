@@ -16,7 +16,7 @@ class KeyFactory extends AbstractKeys {
     /**
      * Factory method for unique keys
      */
-    public static UniqueKey<Record> createUniqueKey(Table<Record> table, TableField<Record, ?>... fields) {
+    static UniqueKey<Record> newUniqueKey(Table<Record> table, TableField<Record, ?>... fields) {
         return AbstractKeys.createUniqueKey(table, fields);
     }
 }
