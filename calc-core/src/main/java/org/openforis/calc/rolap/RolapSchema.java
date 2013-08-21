@@ -37,10 +37,13 @@ public class RolapSchema {
 	}
 
 	void addCube(Cube cube) {
+		if( cubes == null ){
+			cubes = new ArrayList<Cube>();
+		}
 		cubes.add(cube);
 	}
 	
 	public List<Cube> getCubes() {
-		return Collections.unmodifiableList(cubes);
+		return cubes == null?null:Collections.unmodifiableList(cubes);
 	}
 }

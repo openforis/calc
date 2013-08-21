@@ -31,6 +31,10 @@ public class RelationalSchema extends SchemaImpl {
 	
 	void addTable(Table<?> table) {
 		tables.add(table);
+		if( categoryDimensionTables == null ){
+			categoryDimensionTables = new ArrayList<CategoryDimensionTable>();
+		}
+		
 		if ( table instanceof CategoryDimensionTable ) {
 			categoryDimensionTables.add((CategoryDimensionTable) table);
 		}
@@ -38,6 +42,6 @@ public class RelationalSchema extends SchemaImpl {
 
 
 	public List<CategoryDimensionTable> getCategoryDimensionTables() {
-		return Collections.unmodifiableList(categoryDimensionTables);
+		return categoryDimensionTables==null?null:Collections.unmodifiableList(categoryDimensionTables);
 	}
 }
