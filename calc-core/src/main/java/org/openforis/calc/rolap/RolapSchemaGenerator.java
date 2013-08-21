@@ -8,6 +8,7 @@ import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.VariableAggregate;
+import org.openforis.calc.rdb.OutputSchema;
 import org.openforis.calc.rdb.RelationalSchema;
 import org.springframework.stereotype.Component;
 
@@ -19,8 +20,9 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class RolapSchemaGenerator {
-	public RolapSchema createRolapSchema(Workspace workspace) {
-		RolapSchema rolapSchema = new RolapSchema(workspace);
+	
+	public RolapSchema createRolapSchema(Workspace workspace, OutputSchema outputSchema) {
+		RolapSchema rolapSchema = new RolapSchema(workspace, outputSchema);
 
 		addCubes(rolapSchema);
 		
@@ -61,7 +63,7 @@ public class RolapSchemaGenerator {
 				// TODO support for degenerate dimensions
 			} else {
 				// Relational database table
-				RelationalSchema relationalSchema = rolapSchema.getRelationalSchema();
+				RelationalSchema relationalSchema = rolapSchema.getOutputSchema();
 				CategoryDimensionTable table = new CategoryDimensionTable(relationalSchema, variable);
 				relationalSchema.addTable(table);
 				

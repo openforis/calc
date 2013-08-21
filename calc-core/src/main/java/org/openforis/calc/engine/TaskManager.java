@@ -8,6 +8,8 @@ import java.util.concurrent.Executor;
 
 import javax.sql.DataSource;
 
+import org.openforis.calc.rdb.OutputSchema;
+import org.openforis.calc.rdb.OutputSchemaGenerator;
 import org.openforis.calc.rolap.RolapSchema;
 import org.openforis.calc.rolap.RolapSchemaGenerator;
 import org.springframework.beans.factory.BeanFactory;
@@ -47,7 +49,10 @@ public class TaskManager {
 	private DataSource dataSource;
 
 	@Autowired
-	private RolapSchemaGenerator rolapSchemaFactory;
+	private OutputSchemaGenerator outputSchemaGenerator;
+	
+	@Autowired
+	private RolapSchemaGenerator rolapSchemaGenerator;
 
 	@Autowired
 	private PropertyPlaceholderConfigurer placeholderConfigurer;
@@ -69,7 +74,9 @@ public class TaskManager {
 	 * calc and input schemas.  Used when running processing chains.
 	 */
 	public Job createUserJob(Workspace workspace) {
-		RolapSchema rolapSchema = rolapSchemaFactory.createRolapSchema(workspace);		
+		OutputSchema outputSchema = outputSchemaGenerator.createOutputSchema(workspace);
+		
+		RolapSchema rolapSchema = rolapSchemaGenerator.createRolapSchema(workspace, outputSchema);		
 
 		return new Job(workspace, isDebugMode(), userDataSource, rolapSchema);
 	}

@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.openforis.calc.engine.Workspace;
-import org.openforis.calc.rdb.RelationalSchema;
+import org.openforis.calc.rdb.OutputSchema;
 
 /**
  * 
@@ -15,19 +15,16 @@ import org.openforis.calc.rdb.RelationalSchema;
  */
 public class RolapSchema {
 
-	private RelationalSchema relationalSchema;
 	private Workspace workspace;
 	private List<CategoryDimension> categoryDimensions;
 	private List<Cube> cubes;
+	private OutputSchema outputSchema;
 
-	public RolapSchema(Workspace workspace) {
+	public RolapSchema(Workspace workspace, OutputSchema outputSchema) {
 		this.workspace = workspace;
-		this.relationalSchema = new RelationalSchema(workspace.getOutputSchema());
+		this.outputSchema = outputSchema;
 		this.categoryDimensions = new ArrayList<CategoryDimension>();
-	}
-
-	public RelationalSchema getRelationalSchema() {
-		return relationalSchema;
+		this.cubes = new ArrayList<Cube>();
 	}
 
 	public Workspace getWorkspace() {
@@ -39,18 +36,18 @@ public class RolapSchema {
 	}
 
 	void addCube(Cube cube) {
-		if( cubes == null ){
-			cubes = new ArrayList<Cube>();
-		}
 		cubes.add(cube);
 	}
 
 	public List<Cube> getCubes() {
-		return cubes == null?null:Collections.unmodifiableList(cubes);
+		return Collections.unmodifiableList(cubes);
 	}
 
 	public List<CategoryDimension> getCategoryDimensions() {
 		return Collections.unmodifiableList(categoryDimensions);
 	}
 	
+	public OutputSchema getOutputSchema() {
+		return outputSchema;
+	}
 }

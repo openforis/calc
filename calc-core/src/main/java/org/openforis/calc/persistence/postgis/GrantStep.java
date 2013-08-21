@@ -23,7 +23,7 @@ public class GrantStep extends DdlStep {
 	}
 	
 	public class OnStep extends DdlStep {
-		OnStep(Table<?> table) {
+		OnStep(Object table) {
 			super(GrantStep.this);
 			append("on ");
 			append(table);

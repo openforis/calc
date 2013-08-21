@@ -2,6 +2,8 @@ package org.openforis.calc.chain.pre;
 
 import java.util.List;
 
+import org.jooq.Select;
+import org.jooq.Table;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.BinaryVariable;
@@ -11,6 +13,10 @@ import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.persistence.postgis.PsqlBuilder;
+import org.openforis.calc.rdb.InputDataTable;
+import org.openforis.calc.rdb.OutputDataTable;
+import org.openforis.calc.rdb.OutputSchema;
+import org.openforis.calc.rolap.RolapSchema;
 
 /**
  * Copy tables into output schema based on {@link Category}s
@@ -33,16 +39,22 @@ public final class CreateDataTablesTask extends Task {
 	
 	@Override
 	protected void execute() throws Throwable {
+		RolapSchema rolapSchema = getJob().getRolapSchema();
+		OutputSchema outputSchema = rolapSchema.getOutputSchema();
+		List<Table<?>> tables = outputSchema.getTables();
+		for ( Table<?> table : tables ) {
+			if (table instanceof OutputDataTable){
+				createOutputDataTable((OutputDataTable) table);
+			}
+		}
+		oldExecute();
+	}
+	
+	private void oldExecute() {
 		Workspace workspace = getWorkspace();
 		List<Entity> entities = workspace.getEntities();
 		String inputSchema = workspace.getInputSchema();
-
 		for (Entity entity : entities) {
-			
-			
-			
-			
-			
 			String inputTable = inputSchema + "." + PsqlBuilder.quote(entity.getDataTable());
 			String outputFactTable = PsqlBuilder.quote(entity.getDataTable());
 			String idColumnFactTable = PsqlBuilder.quote(entity.getIdColumn());
@@ -83,6 +95,17 @@ public final class CreateDataTablesTask extends Task {
 				applyDefaultVariableValue(outputFactTable, variable);
 			}
 		}
+	}
+
+	private void createOutputDataTable(OutputDataTable outputTable) {
+		InputDataTable inputTable = outputTable.getInputDataTable();
+		
+		Select<?> select = psql().selectStar(inputTable);
+		
+		psql()
+			.createTable(outputTable)
+			.as(select)
+			.execute();
 	}
 
 	private void applyDefaultVariableValue(String outputFactTable, Variable variable) {
@@ -148,11 +171,6 @@ public final class CreateDataTablesTask extends Task {
 	}
 	
 	private void createFactTable(String inputTable, String outputTable, String idColumn) {
-		PsqlBuilder select = new PsqlBuilder()
-		.select("*")
-		.from(inputTable);
-
-		createPsqlBuilder().createTable(outputTable).as(select).execute();
 
 		if ( idColumn != null ) {
 			createPsqlBuilder().alterTable(outputTable).addPrimaryKey(idColumn).execute();

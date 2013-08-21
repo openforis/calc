@@ -1,5 +1,9 @@
 package org.openforis.calc.persistence.postgis;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * 
  * @author G. Miceli
@@ -10,23 +14,34 @@ public abstract class DdlStep {
 	private Psql psql;
 	private DdlStep previous;
 	private StringBuilder sb;
+	private Logger log;
 	
 	DdlStep(Psql psql) {
 		this.psql = psql;
-		this.sb = new StringBuilder();
+		this.log = LoggerFactory.getLogger(getClass());
 	}
 
 	DdlStep(DdlStep previous) {
+		this(previous.psql);
 		this.previous = previous;
-		this.psql = previous.psql;
 	}
 	
-	public int execute() {
+	public int execute(Object... bindings) {
 		String sql = toString();
-		return psql.execute(sql);
+		
+		if ( bindings.length == 0 ) {
+			log.debug(sql+";");
+		} else {
+			log.debug(sql+"; -- Parameters: "+StringUtils.join(bindings)+"");			
+		}
+		
+		return psql.execute(sql, bindings);
 	}
 
 	protected void append(Object s) {
+		if ( sb == null ) {
+			this.sb = new StringBuilder();
+		}
 		sb.append(s);
 	}
 	

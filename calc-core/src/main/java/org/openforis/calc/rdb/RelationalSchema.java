@@ -12,7 +12,7 @@ import org.jooq.impl.SchemaImpl;
  * @author G. Miceli
  * @author M. Togna
  */
-public class RelationalSchema extends SchemaImpl {
+public abstract class RelationalSchema extends SchemaImpl {
 
 	private static final long serialVersionUID = 1L;
 	private List<Table<?>> tables;
