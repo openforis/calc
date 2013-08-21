@@ -17,6 +17,7 @@ public class Cube {
 	Cube(RolapSchema rolapSchema) {
 		this.dimensionUsages = new ArrayList<Dimension>();
 		this.measures = new ArrayList<Measure>();
+		this.rolapSchema = rolapSchema;
 	}
 	
 	void addDimensionUsage(Dimension dim) {
