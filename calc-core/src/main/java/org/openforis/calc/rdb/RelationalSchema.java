@@ -1,4 +1,4 @@
-package org.openforis.calc.rolap;
+package org.openforis.calc.rdb;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.jooq.Table;
 import org.jooq.impl.SchemaImpl;
+import org.openforis.calc.rolap.CategoryDimensionTable;
 
 /**
  * 
@@ -16,9 +17,9 @@ public class RelationalSchema extends SchemaImpl {
 
 	private static final long serialVersionUID = 1L;
 	private List<Table<?>> tables;
-	private List<CategoryDimensionTable> categoryDimensionTables;
+//	private List<CategoryDimensionTable> categoryDimensionTables;
 	
-	RelationalSchema(String name) {
+	public RelationalSchema(String name) {
 		super(name);
 		this.tables = new ArrayList<Table<?>>();
 	}
@@ -29,15 +30,16 @@ public class RelationalSchema extends SchemaImpl {
 		return Collections.unmodifiableList(tables);
 	}
 	
-	void addTable(Table<?> table) {
+	public void addTable(Table<?> table) {
 		tables.add(table);
-		if ( table instanceof CategoryDimensionTable ) {
-			categoryDimensionTables.add((CategoryDimensionTable) table);
-		}
+//		if ( table instanceof CategoryDimensionTable ) {
+//			categoryDimensionTables.add((CategoryDimensionTable) table);
+//		}
 	}
 
 
-	public List<CategoryDimensionTable> getCategoryDimensionTables() {
-		return Collections.unmodifiableList(categoryDimensionTables);
-	}
+//	public List<CategoryDimensionTable> getCategoryDimensionTables() {
+//		return Collections.unmodifiableList(categoryDimensionTables);
+//	}
+	
 }

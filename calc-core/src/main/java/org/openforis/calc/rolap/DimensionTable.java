@@ -6,7 +6,9 @@ import static org.jooq.impl.SQLDataType.VARCHAR;
 import org.jooq.Record;
 import org.jooq.TableField;
 import org.jooq.UniqueKey;
-import org.jooq.impl.TableImpl;
+import org.openforis.calc.rdb.AbstractTable;
+import org.openforis.calc.rdb.KeyFactory;
+import org.openforis.calc.rdb.RelationalSchema;
 
 /**
  * 
@@ -14,7 +16,7 @@ import org.jooq.impl.TableImpl;
  * @author S. Ricci
  *
  */
-public class DimensionTable extends TableImpl<Record> {
+public class DimensionTable extends AbstractTable {
 
 	private static final long serialVersionUID = 1L;
 

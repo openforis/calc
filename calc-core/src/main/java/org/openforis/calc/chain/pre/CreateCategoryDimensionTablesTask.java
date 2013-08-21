@@ -8,8 +8,8 @@ import org.jooq.Select;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.persistence.postgis.Psql.Privilege;
+import org.openforis.calc.rolap.CategoryDimension;
 import org.openforis.calc.rolap.CategoryDimensionTable;
-import org.openforis.calc.rolap.RelationalSchema;
 import org.openforis.calc.rolap.RolapSchema;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,10 +27,12 @@ public final class CreateCategoryDimensionTablesTask extends Task {
 	@Override
 	@Transactional
 	protected void execute() throws Throwable {
+		
 		RolapSchema rolapSchema = getJob().getRolapSchema();
-		RelationalSchema relationalSchema = rolapSchema.getRelationalSchema();
-		List<CategoryDimensionTable> tables = relationalSchema.getCategoryDimensionTables();
-		for (CategoryDimensionTable t : tables) {
+		List<CategoryDimension> dims = rolapSchema.getCategoryDimensions();
+		
+		for ( CategoryDimension dim : dims ) {
+			CategoryDimensionTable t = dim.getTable();
 			CategoricalVariable var = t.getVariable();
 			if ( !var.isDegenerateDimension() ) {
 				Integer varId = var.getId();

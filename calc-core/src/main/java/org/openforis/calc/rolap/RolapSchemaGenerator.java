@@ -8,6 +8,7 @@ import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.VariableAggregate;
+import org.openforis.calc.rdb.RelationalSchema;
 import org.springframework.stereotype.Component;
 
 /**
@@ -45,8 +46,8 @@ public class RolapSchemaGenerator {
 		for (Variable var : variables) {
 			if (var instanceof CategoricalVariable ) {
 				addCategoryDimension(cube, (CategoricalVariable) var);
-				} else if (var instanceof QuantitativeVariable) {
-					addVariableMeasures(cube, (QuantitativeVariable) var);
+			} else if (var instanceof QuantitativeVariable) {
+				addVariableMeasures(cube, (QuantitativeVariable) var);
 			}
 		}
 		rolapSchema.addCube(cube);
@@ -66,7 +67,7 @@ public class RolapSchemaGenerator {
 				
 				// OLAP dimension
 				CategoryDimension dim = new CategoryDimension(variable, table);
-				rolapSchema.addSharedDimension(dim);
+				rolapSchema.addCategoryDimension(dim);
 				cube.addDimensionUsage(dim);
 			}
 		}

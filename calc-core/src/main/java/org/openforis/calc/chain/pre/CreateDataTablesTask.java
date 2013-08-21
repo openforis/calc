@@ -17,8 +17,9 @@ import org.openforis.calc.persistence.postgis.PsqlBuilder;
  * 
  * @author G. Miceli
  * @author A. Sanchez-Paus Diaz
+ * @author M. Togna
  */
-public final class CreateFactTablesTask extends Task {
+public final class CreateDataTablesTask extends Task {
 
 	private static final String DIMENSION_CODE_ID_SUFFIX = "_code_id";
 	// TODO group system table and columns names into single class
@@ -37,6 +38,11 @@ public final class CreateFactTablesTask extends Task {
 		String inputSchema = workspace.getInputSchema();
 
 		for (Entity entity : entities) {
+			
+			
+			
+			
+			
 			String inputTable = inputSchema + "." + PsqlBuilder.quote(entity.getDataTable());
 			String outputFactTable = PsqlBuilder.quote(entity.getDataTable());
 			String idColumnFactTable = PsqlBuilder.quote(entity.getIdColumn());

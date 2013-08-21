@@ -1,4 +1,4 @@
-package org.openforis.calc.rolap;
+package org.openforis.calc.rdb;
 
 import org.jooq.Record;
 import org.jooq.Table;
@@ -12,11 +12,11 @@ import org.jooq.impl.AbstractKeys;
  * @author S. Ricci
  *
  */
-class KeyFactory extends AbstractKeys {
+public final class KeyFactory extends AbstractKeys {
     /**
      * Factory method for unique keys
      */
-    static UniqueKey<Record> newUniqueKey(Table<Record> table, TableField<Record, ?>... fields) {
+    public static UniqueKey<Record> newUniqueKey(Table<Record> table, TableField<Record, ?>... fields) {
         return AbstractKeys.createUniqueKey(table, fields);
     }
 }

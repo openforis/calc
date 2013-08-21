@@ -28,7 +28,7 @@
 	
 	<properties>
 		<mondrian-source-files-dir>${project.build.directory}/generated-sources/mondrian</mondrian-source-files-dir>
-		<jooq-codegen.target.directory>target/generated-sources/jooq</jooq-codegen.target.directory>
+		<jooq-codegen.target.directory>${project.build.directory}/generated-sources/jooq</jooq-codegen.target.directory>
 		<jooq-codegen.target.package>org.openforis.calc.persistence.jooq</jooq-codegen.target.package>
 	</properties>
 	
