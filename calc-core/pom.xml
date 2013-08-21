@@ -257,12 +257,8 @@
 								<pluginExecution>
 									<pluginExecutionFilter>
 										<groupId>org.liquibase</groupId>
-										<artifactId>
-											liquibase-maven-plugin
-										</artifactId>
-										<versionRange>
-											[2.0.1,)
-										</versionRange>
+										<artifactId>liquibase-maven-plugin</artifactId>
+										<versionRange>[2.0.1,)</versionRange>
 										<goals>
 											<goal>update</goal>
 										</goals>
@@ -274,14 +270,23 @@
 								<pluginExecution>
 									<pluginExecutionFilter>
 										<groupId>org.jooq</groupId>
-										<artifactId>
-											jooq-codegen-maven
-										</artifactId>
-										<versionRange>
-											[2.4.2,)
-										</versionRange>
+										<artifactId>jooq-codegen-maven</artifactId>
+										<versionRange>[2.4.2,)</versionRange>
 										<goals>
 											<goal>generate</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+						                <groupId>org.codehaus.mojo</groupId>
+						                <artifactId>jaxb2-maven-plugin</artifactId>
+						                <versionRange>[1.5,)</versionRange>			
+										<goals>
+											<goal>xjc</goal>
 										</goals>
 									</pluginExecutionFilter>
 									<action>
