@@ -14,10 +14,12 @@ import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.persistence.postgis.PsqlBuilder;
+import org.openforis.calc.persistence.postgis.Psql.Privilege;
 import org.openforis.calc.rdb.InputDataTable;
 import org.openforis.calc.rdb.OutputDataTable;
 import org.openforis.calc.rdb.OutputSchema;
 import org.openforis.calc.rolap.RolapSchema;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * Copy tables into output schema based on {@link Category}s
@@ -27,6 +29,8 @@ import org.openforis.calc.rolap.RolapSchema;
  * @author M. Togna
  */
 public final class CreateDataTablesTask extends Task {
+	@Value("${calc.jdbc.username}")
+	private String systemUser;
 
 	private static final String DIMENSION_CODE_ID_SUFFIX = "_code_id";
 	// TODO group system table and columns names into single class
@@ -104,6 +108,7 @@ public final class CreateDataTablesTask extends Task {
 		
 		// Copying entire table from input schema
 		Select<?> select = psql().selectAll(inputTable);
+		select.execute();
 		psql()
 			.createTable(outputTable)
 			.as(select)
@@ -125,6 +130,14 @@ public final class CreateDataTablesTask extends Task {
 					.execute();
 			}
 		}
+		
+		// Grant access to system user
+		psql()
+			.grant(Privilege.ALL)
+			.on(outputTable)
+			.to(systemUser)
+			.execute();
+		
 	}
 
 	private void applyDefaultVariableValue(String outputFactTable, Variable variable) {

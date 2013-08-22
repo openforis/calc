@@ -10,7 +10,6 @@ import javax.sql.DataSource;
 
 import org.openforis.calc.rdb.OutputSchema;
 import org.openforis.calc.rolap.RolapSchema;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -31,13 +30,23 @@ public class Job extends Worker implements Iterable<Task> {
 	private OutputSchema outputSchema;
 	private RolapSchema rolapSchema;
 	
-	Job(Workspace workspace, boolean debugMode, DataSource dataSource, OutputSchema outputSchema, RolapSchema rolapSchema) {
+	Job(Workspace workspace, DataSource dataSource) {
 		this.currentTaskIndex = -1;
 		this.tasks = new ArrayList<Task>();
 		this.workspace = workspace;
-		this.debugMode = debugMode;
+		this.debugMode = false;
 		this.dataSource = dataSource;
+	}
+
+	void setDebugMode(boolean debugMode) {
+		this.debugMode = debugMode;
+	}
+	
+	void setOutputSchema(OutputSchema outputSchema) {
 		this.outputSchema = outputSchema;
+	}
+
+	void setRolapSchema(RolapSchema rolapSchema) {
 		this.rolapSchema = rolapSchema;
 	}
 
@@ -71,13 +80,12 @@ public class Job extends Worker implements Iterable<Task> {
 //	}
 
 	@Override
-	@Transactional
 	public synchronized void run() {
 		log().debug("Starting job");
 		super.run();
 		log().debug(String.format("Finished in %.1f sec", getDuration() / 1000f));
 	}
-	
+
 	/**
 	 * Runs each contained task in order.
 	 * 

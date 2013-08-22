@@ -4,12 +4,12 @@
 package org.openforis.calc.rdb;
 
 import static org.jooq.impl.SQLDataType.BOOLEAN;
-import static org.jooq.impl.SQLDataType.DOUBLE;
 import static org.jooq.impl.SQLDataType.INTEGER;
 import static org.jooq.impl.SQLDataType.VARCHAR;
 
 import java.util.List;
 
+import org.jooq.DataType;
 import org.jooq.Record;
 import org.jooq.TableField;
 import org.jooq.UniqueKey;
@@ -48,28 +48,30 @@ public abstract class DataTable extends AbstractTable {
 		for (Variable var : variables) {
 			if ( !inputFieldsOnly || var.isInput() ) {
 				if ( var instanceof QuantitativeVariable ) {
-					createQuantitativeVariableField((QuantitativeVariable) var);
+					createValueField(var, DOUBLE_PRECISION);
 				} else if ( var instanceof BinaryVariable ) {
-					createBinaryVariableFields((BinaryVariable) var);
+					createValueField(var, BOOLEAN);
+					createIdField((BinaryVariable) var);
 				} else if ( var instanceof CategoricalVariable ) {
-					createCategoricalVariableFields((CategoricalVariable) var);
+					createValueField(var, VARCHAR.length(255));
+					createIdField((CategoricalVariable) var);
 				}
 			}
 		}
 	}
 
-	private void createQuantitativeVariableField(QuantitativeVariable var) {
-		createField(var.getValueColumn(), DOUBLE, this);
+	private void createIdField(CategoricalVariable var) {
+		String categoryIdColumn = var.getCategoryIdColumn();
+		if ( categoryIdColumn != null ) {
+			createField(categoryIdColumn, INTEGER, this);
+		}
 	}
 
-	private void createBinaryVariableFields(BinaryVariable var) {
-		createField(var.getValueColumn(), BOOLEAN, this);
-		createField(var.getCategoryIdColumn(), INTEGER, this);
-	}
-
-	private void createCategoricalVariableFields(CategoricalVariable var) {
-		createField(var.getValueColumn(), VARCHAR.length(255), this);
-		createField(var.getCategoryIdColumn(), INTEGER, this);
+	private void createValueField(Variable var, DataType<?> valueType) {
+		String valueColumn = var.getValueColumn();
+		if ( valueColumn != null ) {
+			createField(valueColumn, valueType, this);
+		}
 	}
 
 	public TableField<Record, Integer> getIdField() {

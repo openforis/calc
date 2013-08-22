@@ -78,7 +78,11 @@ public class TaskManager {
 		
 		RolapSchema rolapSchema = rolapSchemaGenerator.createRolapSchema(workspace, outputSchema);		
 
-		return new Job(workspace, isDebugMode(), userDataSource, outputSchema, rolapSchema);
+		Job job = new Job(workspace, userDataSource);
+		job.setDebugMode(isDebugMode());
+		job.setOutputSchema(outputSchema);
+		job.setRolapSchema(rolapSchema);
+		return job;
 	}
 	
 	/**
@@ -86,7 +90,9 @@ public class TaskManager {
 	 * metadata (e.g. importing sampling design, variables)  
 	 */
 	public Job createSystemJob(Workspace workspace){
-		return new Job(workspace, isDebugMode(), dataSource, null, null);
+		Job job = new Job(workspace, dataSource);
+		job.setDebugMode(isDebugMode());
+		return job;
 	}
 
 	public <T extends Task> T createTask(Class<T> type) {

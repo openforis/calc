@@ -8,7 +8,6 @@ import org.jooq.Select;
 import org.jooq.Table;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultDSLContext;
-import org.springframework.jdbc.datasource.DataSourceUtils;
 
 /**
  * Simple PostreSQL query builder
@@ -29,7 +28,9 @@ public final class Psql extends DefaultDSLContext {
 	}
 
 	public Psql(DataSource dataSource) {
-		super(DataSourceUtils.getConnection(dataSource), SQLDialect.POSTGRES);
+		super(dataSource, SQLDialect.POSTGRES);
+//		super(DataSourceUtils.getConnection(dataSource), SQLDialect.POSTGRES);
+		// TODO correctly implement transactions (CALC-125)
 	}
 
 	public GrantStep grant(Privilege... privileges) {
