@@ -1,6 +1,7 @@
 package org.openforis.calc.chain.pre;
 
 import org.openforis.calc.engine.Task;
+import org.openforis.calc.persistence.postgis.Psql.Privilege;
 import org.openforis.calc.rdb.OutputSchema;
 
 /**
@@ -18,5 +19,7 @@ public final class ResetOutputSchemaTask extends Task {
 		psql().dropSchemaIfExists(outputSchema).cascade().execute();
 		// Create empty schema
 		psql().createSchema(outputSchema).execute();
+		// Grant access to calc system user
+		psql().grant(Privilege.ALL).onSchema(outputSchema).to(getSystemUser()).execute();
 	}
 }

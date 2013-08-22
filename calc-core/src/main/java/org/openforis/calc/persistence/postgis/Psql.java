@@ -22,7 +22,10 @@ public final class Psql extends DefaultDSLContext {
 	public static final Schema PUBLIC = DSL.schemaByName("public");
 
 	public enum Privilege {
-		ALL, SELECT
+		ALL, SELECT;
+		public String toString() {
+			return name().toLowerCase();
+		};
 	};
 
 	public Psql() {
@@ -43,7 +46,7 @@ public final class Psql extends DefaultDSLContext {
 		return new CreateTableStep(this, table);
 	}
 
-	public Select<?> selectAll(Table<?> table) {		
+	public Select<?> selectStarFrom(Table<?> table) {		
 		String tableName = table.getName();
 		String schemaName = table.getSchema().getName();
 		return select().from(DSL.tableByName(schemaName, tableName));

@@ -31,11 +31,11 @@ public class PrepareOutputSchemaTest extends AbstractTransactionalJUnit4SpringCo
 				ResetOutputSchemaTask.class,
 //				CreateCategoryDimensionTablesTask.class
 //				CreateAoiDimensionTablesTask.class,
-				CreateDataTablesTask.class
+//				CreateDataTablesTask.class
 //				,
 //				CreateLocationColumnsTask.class,
 //				CreateAoiColumnsTask.class,
-//				CreateStratumDimensionTableTask.class,
+				CreateStratumDimensionTableTask.class
 //				OutputSchemaGrantsTask.class
 				));
 		taskManager.startJob(job);

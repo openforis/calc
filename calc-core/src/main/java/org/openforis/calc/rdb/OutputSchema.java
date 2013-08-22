@@ -4,6 +4,7 @@
 package org.openforis.calc.rdb;
 
 import org.openforis.calc.engine.Workspace;
+import org.openforis.calc.rolap.StratumDimensionTable;
 
 /**
  * @author G. Miceli
@@ -16,11 +17,13 @@ public class OutputSchema extends RelationalSchema {
 
 	private Workspace workspace;
 	private InputSchema inputSchema;
+	private StratumDimensionTable stratumDimensionTable;
 	
 	public OutputSchema(Workspace workspace, InputSchema inputSchema) {
 		super(workspace.getOutputSchema());
 		this.workspace = workspace;
 		this.inputSchema = inputSchema;
+		this.stratumDimensionTable = new StratumDimensionTable(this);
 	}
 
 	public Workspace getWorkspace() {
@@ -29,5 +32,9 @@ public class OutputSchema extends RelationalSchema {
 	
 	public InputSchema getInputSchema() {
 		return inputSchema;
+	}
+	
+	public StratumDimensionTable getStratumDimensionTable() {
+		return stratumDimensionTable;
 	}
 }
