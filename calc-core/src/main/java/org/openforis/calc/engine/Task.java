@@ -57,7 +57,8 @@ public abstract class Task extends Worker implements Captionable {
 		return new PsqlBuilder(dataSource);
 	}
 
-	// TODO delete; always use schema name in table references 
+	// @deprecated always use schema name in table references; this is useful only in CustomSqlTask 
+	@Deprecated
 	protected void setDefaultSchemaSearchPath() {
 		Workspace workspace = getWorkspace();
 		createPsqlBuilder()

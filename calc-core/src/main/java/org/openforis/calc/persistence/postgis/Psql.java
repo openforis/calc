@@ -4,6 +4,7 @@ import javax.sql.DataSource;
 
 import org.jooq.Field;
 import org.jooq.SQLDialect;
+import org.jooq.Schema;
 import org.jooq.Select;
 import org.jooq.Table;
 import org.jooq.impl.DSL;
@@ -42,11 +43,17 @@ public final class Psql extends DefaultDSLContext {
 	}
 
 	public Select<?> selectAll(Table<?> table) {		
-		return select().from(DSL.tableByName(table.getSchema().getName(), table.getName()));
+		String tableName = table.getName();
+		String schemaName = table.getSchema().getName();
+		return select().from(DSL.tableByName(schemaName, tableName));
 	}
 
 	public AlterTableStep alterTable(Table<?> table) {
 		return new AlterTableStep(this, table);
+	}
+
+	public CreateSchemaStep createSchema(Schema schema) {
+		return new CreateSchemaStep(this, schema);
 	}
 
 	public static String[] names(Field<?>[] fields) {
