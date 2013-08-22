@@ -35,7 +35,12 @@ public class OutputSchemaGenerator {
 		for (Entity entity : entities) {
 			InputDataTable inputTable = new InputDataTable(entity, in);
 			DataTable outputTable = new OutputDataTable(entity, out, inputTable);
-
+			// Add variable columns
+			List<Variable> variables = entity.getVariables();
+			for (Variable var : variables) {
+				
+			}
+			
 			in.addTable(inputTable);
 			out.addTable(outputTable);
 		}

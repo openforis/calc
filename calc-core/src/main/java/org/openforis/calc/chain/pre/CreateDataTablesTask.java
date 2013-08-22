@@ -2,6 +2,7 @@ package org.openforis.calc.chain.pre;
 
 import java.util.List;
 
+import org.jooq.Field;
 import org.jooq.Select;
 import org.jooq.Table;
 import org.openforis.calc.engine.Task;
@@ -45,6 +46,8 @@ public final class CreateDataTablesTask extends Task {
 		for ( Table<?> table : tables ) {
 			if (table instanceof OutputDataTable){
 				createOutputDataTable((OutputDataTable) table);
+				// Add FK column for binary variables
+				// Update ids of dimension columns from input schema ids to actual dimension ids
 			}
 		}
 		oldExecute();
@@ -59,7 +62,7 @@ public final class CreateDataTablesTask extends Task {
 			String outputFactTable = PsqlBuilder.quote(entity.getDataTable());
 			String idColumnFactTable = PsqlBuilder.quote(entity.getIdColumn());
 
-			createFactTable(inputTable, outputFactTable, idColumnFactTable);
+//			createFactTable(inputTable, outputFactTable, idColumnFactTable);
 
 			List<Variable> variables = entity.getVariables();
 			for (Variable variable : variables) {
@@ -100,12 +103,29 @@ public final class CreateDataTablesTask extends Task {
 	private void createOutputDataTable(OutputDataTable outputTable) {
 		InputDataTable inputTable = outputTable.getInputDataTable();
 		
+		// Copying entire table from input schema
 		Select<?> select = psql().selectStar(inputTable);
-		
 		psql()
 			.createTable(outputTable)
 			.as(select)
 			.execute();
+		
+		// Add primary key constraint and index
+		psql()
+			.alterTable(outputTable)
+			.addPrimaryKey(outputTable.getPrimaryKey())
+			.execute();
+		
+		// Add missing columns for variables not in input schema
+		for (Field<?> field : outputTable.fields()) {
+			String fieldName = field.getName();
+			if ( !inputTable.hasField(fieldName) ) { 
+				psql()
+					.alterTable(outputTable)
+					.addColumn(field)
+					.execute();
+			}
+		}
 	}
 
 	private void applyDefaultVariableValue(String outputFactTable, Variable variable) {
@@ -170,16 +190,6 @@ public final class CreateDataTablesTask extends Task {
 			.execute();
 	}
 	
-	private void createFactTable(String inputTable, String outputTable, String idColumn) {
-
-		if ( idColumn != null ) {
-			createPsqlBuilder().alterTable(outputTable).addPrimaryKey(idColumn).execute();
-		}
-		
-		// Add _stratum_id column
-		createPsqlBuilder().alterTable( outputTable).addColumn(STRATUM_ID, PsqlBuilder.INTEGER).execute();
-	}
-
 	private void addQuantityColumn(String outputTable, String valueColumn) {
 		createPsqlBuilder()
 		.alterTable(outputTable)

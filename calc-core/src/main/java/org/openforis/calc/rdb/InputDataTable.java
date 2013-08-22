@@ -14,5 +14,6 @@ public class InputDataTable extends DataTable {
 
 	public InputDataTable(Entity entity, InputSchema schema) {
 		super(entity, schema);
+		createVariableFields(true);
 	}
 }

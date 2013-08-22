@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import javax.sql.DataSource;
 
+import org.openforis.calc.rdb.OutputSchema;
 import org.openforis.calc.rolap.RolapSchema;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,14 +28,16 @@ public class Job extends Worker implements Iterable<Task> {
 	private Workspace workspace;
 	private boolean debugMode;
 	private DataSource dataSource;
+	private OutputSchema outputSchema;
 	private RolapSchema rolapSchema;
 	
-	Job(Workspace workspace, boolean debugMode, DataSource dataSource, RolapSchema rolapSchema) {
+	Job(Workspace workspace, boolean debugMode, DataSource dataSource, OutputSchema outputSchema, RolapSchema rolapSchema) {
 		this.currentTaskIndex = -1;
 		this.tasks = new ArrayList<Task>();
 		this.workspace = workspace;
 		this.debugMode = debugMode;
 		this.dataSource = dataSource;
+		this.outputSchema = outputSchema;
 		this.rolapSchema = rolapSchema;
 	}
 
@@ -166,5 +169,9 @@ public class Job extends Worker implements Iterable<Task> {
 	
 	public RolapSchema getRolapSchema() {
 		return rolapSchema;
+	}
+	
+	public OutputSchema getOutputSchema() {
+		return outputSchema;
 	}
 }

@@ -19,4 +19,7 @@ public abstract class AbstractTable extends TableImpl<Record> {
 		super(name, schema);
 	}
 
+	public boolean hasField(String name) {
+		return field(name) != null;
+	}
 }

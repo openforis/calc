@@ -1,5 +1,8 @@
 package org.openforis.calc.persistence.postgis;
 
+import org.jooq.Select;
+import org.jooq.Table;
+
 
 /**
  * 
@@ -9,19 +12,19 @@ package org.openforis.calc.persistence.postgis;
  */
 public class CreateTableStep extends DdlStep {
 
-	CreateTableStep(Psql psql, Object table) {
+	CreateTableStep(Psql psql, Table<?> table) {
 		super(psql);
 		append("create table ");
 		append(table);
 	}
 
-	public AsStep as(Object select) {
+	public AsStep as(Select<?> select) {
 		return new AsStep(select);
 	}
 	
 	public class AsStep extends DdlStep {
 		
-		AsStep(Object select) {
+		AsStep(Select<?> select) {
 			super(CreateTableStep.this);
 			append("as ");
 			append(select);
