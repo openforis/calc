@@ -13,10 +13,9 @@ import org.openforis.calc.chain.pre.CreateAoiColumnsTask;
 import org.openforis.calc.chain.pre.CreateAoiDimensionTablesTask;
 import org.openforis.calc.chain.pre.CreateCategoryDimensionTablesTask;
 import org.openforis.calc.chain.pre.CreateLocationColumnsTask;
-import org.openforis.calc.chain.pre.CreateOutputSchemaTask;
 import org.openforis.calc.chain.pre.CreateStratumDimensionTableTask;
-import org.openforis.calc.chain.pre.DropOutputSchemaTask;
 import org.openforis.calc.chain.pre.OutputSchemaGrantsTask;
+import org.openforis.calc.chain.pre.ResetOutputSchemaTask;
 import org.openforis.calc.metadata.task.UpdateSamplingUnitAoisTask;
 import org.openforis.calc.module.ModuleRegistry;
 import org.openforis.calc.module.Operation;
@@ -45,8 +44,7 @@ public class CalculationEngine {
 	private WorkspaceDao workspaceDao;
 
 	private Class<?>[] PREPROCESSING_TASKS = {
-			DropOutputSchemaTask.class,
-			CreateOutputSchemaTask.class,
+			ResetOutputSchemaTask.class,
 			CreateCategoryDimensionTablesTask.class,
 			CreateAoiDimensionTablesTask.class,
 			CreateStratumDimensionTableTask.class,

@@ -19,6 +19,7 @@ import org.jooq.impl.DefaultDSLContext;
  */
 public final class Psql extends DefaultDSLContext {
 	private static final long serialVersionUID = 1L;
+	public static final Schema PUBLIC = DSL.schemaByName("public");
 
 	public enum Privilege {
 		ALL, SELECT
@@ -56,11 +57,19 @@ public final class Psql extends DefaultDSLContext {
 		return new CreateSchemaStep(this, schema);
 	}
 
+	public DropSchemaStep dropSchemaIfExists(Schema schema) {
+		return new DropSchemaStep(this, true, schema);
+	}
+
 	public static String[] names(Field<?>[] fields) {
 		String[] names = new String[fields.length];
 		for (int i = 0; i < fields.length; i++) {
 			names[i] = fields[i].getName();
 		}
 		return names;
+	}
+
+	public SetDefaultSchemaSearchPathStep setDefaultSchemaSearchPath(Schema... schemas) {
+		return new SetDefaultSchemaSearchPathStep(this, schemas);
 	}
 }
