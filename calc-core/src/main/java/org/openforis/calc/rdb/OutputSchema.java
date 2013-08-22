@@ -15,7 +15,6 @@ public class OutputSchema extends RelationalSchema {
 	private static final long serialVersionUID = 1L;
 
 	private Workspace workspace;
-
 	private InputSchema inputSchema;
 	
 	public OutputSchema(Workspace workspace, InputSchema inputSchema) {
@@ -31,5 +30,4 @@ public class OutputSchema extends RelationalSchema {
 	public InputSchema getInputSchema() {
 		return inputSchema;
 	}
-
 }
