@@ -104,7 +104,7 @@ public final class CreateDataTablesTask extends Task {
 		InputDataTable inputTable = outputTable.getInputDataTable();
 		
 		// Copying entire table from input schema
-		Select<?> select = psql().selectStar(inputTable);
+		Select<?> select = psql().selectAll(inputTable);
 		psql()
 			.createTable(outputTable)
 			.as(select)

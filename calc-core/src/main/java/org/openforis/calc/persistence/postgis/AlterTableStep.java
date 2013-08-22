@@ -2,11 +2,8 @@ package org.openforis.calc.persistence.postgis;
 
 import org.apache.commons.lang.StringUtils;
 import org.jooq.Field;
-import org.jooq.Record;
 import org.jooq.Table;
-import org.jooq.TableField;
 import org.jooq.UniqueKey;
-import org.openforis.calc.engine.Worker;
 
 /**
  * 

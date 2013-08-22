@@ -3,7 +3,10 @@
  */
 package org.openforis.calc.rdb;
 
-import static org.jooq.impl.SQLDataType.*;
+import static org.jooq.impl.SQLDataType.BOOLEAN;
+import static org.jooq.impl.SQLDataType.DOUBLE;
+import static org.jooq.impl.SQLDataType.INTEGER;
+import static org.jooq.impl.SQLDataType.VARCHAR;
 
 import java.util.List;
 

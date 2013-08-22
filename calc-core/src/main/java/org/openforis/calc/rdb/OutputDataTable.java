@@ -1,9 +1,10 @@
 package org.openforis.calc.rdb;
 
+import static org.jooq.impl.SQLDataType.INTEGER;
+
 import org.jooq.Record;
 import org.jooq.TableField;
 import org.openforis.calc.metadata.Entity;
-import static org.jooq.impl.SQLDataType.INTEGER;
 
 /**
  * 

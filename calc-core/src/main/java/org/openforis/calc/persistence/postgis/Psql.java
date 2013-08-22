@@ -7,7 +7,6 @@ import org.jooq.Select;
 import org.jooq.Table;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultDSLContext;
-import org.openforis.calc.rdb.OutputDataTable;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 
 /**
@@ -40,7 +39,7 @@ public final class Psql extends DefaultDSLContext {
 		return new CreateTableStep(this, table);
 	}
 
-	public Select<?> selectStar(Table<?> table) {		
+	public Select<?> selectAll(Table<?> table) {		
 		return select().from(DSL.tableByName(table.getSchema().getName(), table.getName()));
 	}
 
