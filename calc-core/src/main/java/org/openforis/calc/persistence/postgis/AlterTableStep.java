@@ -35,7 +35,7 @@ public class AlterTableStep extends DdlStep {
 		AddPrimaryKeyStep(UniqueKey<?> key) {
 			super(AlterTableStep.this);
 			append("add primary key (");
-			append(StringUtils.join(key.getFields().iterator(),", "));
+			append(StringUtils.join(Psql.names(key.getFieldsArray())));
 			append(")");
 		}
 	}
@@ -47,7 +47,7 @@ public class AlterTableStep extends DdlStep {
 			append("add column ");
 			append(field.getName());
 			append(" ");
-			append(field.getDataType().getSQLDataType());
+			append(field.getDataType().getTypeName());
 			if ( !nullable ) {
 				append(" not null");
 			}

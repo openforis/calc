@@ -46,11 +46,10 @@ public final class CreateDataTablesTask extends Task {
 		for ( Table<?> table : tables ) {
 			if (table instanceof OutputDataTable){
 				createOutputDataTable((OutputDataTable) table);
-				// Add FK column for binary variables
 				// Update ids of dimension columns from input schema ids to actual dimension ids
 			}
 		}
-		oldExecute();
+//		oldExecute();
 	}
 	
 	private void oldExecute() {

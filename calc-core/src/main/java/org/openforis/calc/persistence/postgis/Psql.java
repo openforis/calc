@@ -2,6 +2,7 @@ package org.openforis.calc.persistence.postgis;
 
 import javax.sql.DataSource;
 
+import org.jooq.Field;
 import org.jooq.SQLDialect;
 import org.jooq.Select;
 import org.jooq.Table;
@@ -45,5 +46,13 @@ public final class Psql extends DefaultDSLContext {
 
 	public AlterTableStep alterTable(Table<?> table) {
 		return new AlterTableStep(this, table);
+	}
+
+	public static String[] names(Field<?>[] fields) {
+		String[] names = new String[fields.length];
+		for (int i = 0; i < fields.length; i++) {
+			names[i] = fields[i].getName();
+		}
+		return names;
 	}
 }
