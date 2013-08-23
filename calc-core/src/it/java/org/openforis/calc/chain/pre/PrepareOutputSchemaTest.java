@@ -31,13 +31,13 @@ public class PrepareOutputSchemaTest extends AbstractTransactionalJUnit4SpringCo
 		Job job = taskManager.createUserJob(foundWorkspace);
 		job.addTasks(taskManager.createTasks(
 				ResetOutputSchemaTask.class,
-//				CreateCategoryDimensionTablesTask.class
+				CreateCategoryDimensionTablesTask.class
 //				CreateAoiDimensionTablesTask.class,
 //				CreateDataTablesTask.class
 //				,
 //				CreateLocationColumnsTask.class,
 //				CreateAoiColumnsTask.class,
-				CreateStratumDimensionTableTask.class
+//				CreateStratumDimensionTableTask.class
 //				OutputSchemaGrantsTask.class
 				));
 		taskManager.startJob(job);

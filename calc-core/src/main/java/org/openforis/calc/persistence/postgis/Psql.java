@@ -11,6 +11,8 @@ import org.jooq.Table;
 import org.jooq.Update;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultDSLContext;
+import org.openforis.calc.engine.Worker;
+import org.openforis.calc.rdb.CategoryDimensionTable;
 
 /**
  * Simple PostreSQL query builder
@@ -80,5 +82,9 @@ public final class Psql extends DefaultDSLContext {
 
 	public UpdateWithStep updateWith(Table<?> cursor, Update<?> update, Condition joinCondition) {
 		return new UpdateWithStep(this, cursor, update, joinCondition);
+	}
+
+	public DropTableStep dropTableIfExists(Table<?> table) {
+		return new DropTableStep(this, true, table);
 	}
 }

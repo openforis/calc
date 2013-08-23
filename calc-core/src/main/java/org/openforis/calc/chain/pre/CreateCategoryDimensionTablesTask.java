@@ -9,8 +9,7 @@ import org.openforis.calc.engine.Task;
 import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.persistence.postgis.Psql.Privilege;
 import org.openforis.calc.rdb.CategoryDimensionTable;
-import org.openforis.calc.rolap.CategoryDimension;
-import org.openforis.calc.rolap.RolapSchema;
+import org.openforis.calc.rdb.OutputSchema;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -23,12 +22,9 @@ public final class CreateCategoryDimensionTablesTask extends Task {
 	@Override
 	@Transactional
 	protected void execute() throws Throwable {
-		
-		RolapSchema rolapSchema = getRolapSchema();
-		List<CategoryDimension> dims = rolapSchema.getCategoryDimensions();
-		
-		for ( CategoryDimension dim : dims ) {
-			CategoryDimensionTable t = dim.getTable();
+		OutputSchema outputSchema = getOutputSchema();
+		List<CategoryDimensionTable> tables = outputSchema.getCategoryDimensionTables();
+		for (CategoryDimensionTable t : tables) {
 			CategoricalVariable var = t.getVariable();
 			if ( !var.isDegenerateDimension() ) {
 				Integer varId = var.getId();
@@ -43,19 +39,19 @@ public final class CreateCategoryDimensionTablesTask extends Task {
 					.where(CATEGORY.VARIABLE_ID.eq(varId));
 				
 				if ( isDebugMode() ) {
-					createPsqlBuilder()
-						.dropTableIfExistsCascade(t)
+					psql()
+						.dropTableIfExists(t)
 						.execute();
 				}
 				
-				createPsqlBuilder()
+				psql()
 					.createTable(t)
 					.as(select) 
 					.execute();
 			
-				createPsqlBuilder()
+				psql()
 					.alterTable(t)
-					.addPrimaryKey(t.ID.getName())
+					.addPrimaryKey(t.getPrimaryKey())
 					.execute();
 				
 				psql()
