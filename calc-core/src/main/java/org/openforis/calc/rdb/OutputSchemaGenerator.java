@@ -3,6 +3,8 @@ package org.openforis.calc.rdb;
 import java.util.List;
 
 import org.openforis.calc.engine.Workspace;
+import org.openforis.calc.metadata.AoiHierarchy;
+import org.openforis.calc.metadata.AoiHierarchyLevel;
 import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.Variable;
@@ -22,6 +24,7 @@ public class OutputSchemaGenerator {
 		OutputSchema out = new OutputSchema(workspace, in);
 		createDataTables(out);
 		createCategoryDimensionTables(out);
+		createAoiDimensionTables(out);
 		// TODO
 		return out;
 	}
@@ -41,14 +44,26 @@ public class OutputSchemaGenerator {
 	private void createCategoryDimensionTables(OutputSchema out) {
 		Workspace workspace = out.getWorkspace();
 		List<Entity> entities = workspace.getEntities();
-		for (Entity entity : entities) {
+		for ( Entity entity : entities ) {
 			// Add variable columns
 			List<Variable> variables = entity.getVariables();
-			for (Variable var : variables) {
+			for ( Variable var : variables ) {
 				if ( var instanceof CategoricalVariable ) {
 					CategoryDimensionTable table = new CategoryDimensionTable(out, (CategoricalVariable) var);
 					out.addTable(table);
 				}
+			}
+		}
+	}
+
+	private void createAoiDimensionTables(OutputSchema out) {
+		Workspace workspace = out.getWorkspace();
+		List<AoiHierarchy> aoiHierarchies = workspace.getAoiHierarchies();
+		for ( AoiHierarchy aoiHierarchy : aoiHierarchies ) {
+			List<AoiHierarchyLevel> levels = aoiHierarchy.getLevels();
+			for ( AoiHierarchyLevel aoiHierarchyLevel : levels ) {
+				AoiDimensionTable table = new AoiDimensionTable(out, aoiHierarchyLevel);
+				out.addTable(table);
 			}
 		}
 	}

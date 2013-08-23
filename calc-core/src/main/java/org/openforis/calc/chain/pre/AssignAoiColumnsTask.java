@@ -3,6 +3,7 @@ package org.openforis.calc.chain.pre;
 import static org.openforis.calc.persistence.postgis.PsqlBuilder.INTEGER;
 import static org.openforis.calc.persistence.postgis.PsqlBuilder.quote;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.jooq.Table;
@@ -11,7 +12,9 @@ import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.AoiHierarchyLevel;
 import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.persistence.postgis.Psql;
 import org.openforis.calc.persistence.postgis.PsqlBuilder;
+import org.openforis.calc.rdb.AoiDimensionTable;
 import org.openforis.calc.rdb.OutputDataTable;
 import org.openforis.calc.rdb.OutputSchema;
 
@@ -27,8 +30,8 @@ public final class AssignAoiColumnsTask extends Task {
 	@Override
 	protected void execute() throws Throwable {
 
-		OutputSchema outputSchema = getJob().getOutputSchema();
-		List<OutputDataTable> tables = outputSchema.getDataTables();
+		OutputSchema outputSchema = getOutputSchema();
+		Collection<OutputDataTable> tables = outputSchema.getDataTables();
 		for ( OutputDataTable table : tables ) {
 			if ( table.getEntity().isGeoreferenced() ) {
 				populateAoiColumns(table);
@@ -61,9 +64,33 @@ public final class AssignAoiColumnsTask extends Task {
 	}
 
 	private void populateAoiColumn(OutputDataTable table, AoiHierarchyLevel level, AoiHierarchyLevel childLevel) {
+		OutputSchema outputSchema = getOutputSchema();
+		AoiDimensionTable aoiDimTable = outputSchema.getAoiDimensionTable(level);
+		
 		// spatial query only for leaf aoi hierarchy level
 		if ( childLevel == null ) {
 			
+//			new Psql()
+//				.select()
+//				.from(tables)
+//			
+//			
+//			PsqlBuilder selectAois = 
+//					new PsqlBuilder()
+//						.select("f." + factIdColumn + " as fid", "a.id as aid")
+//						.from(dataTable + " f")
+//						.innerJoin(aoiDimTable + " a")
+//							.on("ST_Contains(a.shape, f." + CreateLocationColumnsTask.LOCATION_COLUMN + ")")
+//							.and("a.aoi_level_id = " + levelId);
+//
+//			createPsqlBuilder()
+//				.with("tmp", selectAois)
+//				.update(dataTable + " f")
+//				.set(aoiFkColumn + " = aid")
+//				.from("tmp")
+//				.where("f." + factIdColumn + " = tmp.fid")
+//				.execute();
+
 		} else {
 			
 		}
@@ -124,4 +151,8 @@ public final class AssignAoiColumnsTask extends Task {
 		createPsqlBuilder().with("tmp", selectAois).update(dataTable + " f").set(aoiFkColumn + " = aid").from("tmp").where("f." + factIdColumn + " = tmp.fid").execute();
 	}
 
+	
+	private OutputSchema getOutputSchema() {
+		return getJob().getOutputSchema();
+	}
 }
