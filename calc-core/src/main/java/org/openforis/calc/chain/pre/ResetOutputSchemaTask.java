@@ -14,7 +14,7 @@ public final class ResetOutputSchemaTask extends Task {
 
 	@Override
 	protected void execute() throws Throwable {
-		OutputSchema outputSchema = getJob().getOutputSchema();
+		OutputSchema outputSchema = getOutputSchema();
 		// Drop old schema
 		psql().dropSchemaIfExists(outputSchema).cascade().execute();
 		// Create empty schema

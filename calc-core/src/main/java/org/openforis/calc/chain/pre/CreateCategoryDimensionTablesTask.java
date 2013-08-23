@@ -11,7 +11,6 @@ import org.openforis.calc.persistence.postgis.Psql.Privilege;
 import org.openforis.calc.rdb.CategoryDimensionTable;
 import org.openforis.calc.rolap.CategoryDimension;
 import org.openforis.calc.rolap.RolapSchema;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -25,7 +24,7 @@ public final class CreateCategoryDimensionTablesTask extends Task {
 	@Transactional
 	protected void execute() throws Throwable {
 		
-		RolapSchema rolapSchema = getJob().getRolapSchema();
+		RolapSchema rolapSchema = getRolapSchema();
 		List<CategoryDimension> dims = rolapSchema.getCategoryDimensions();
 		
 		for ( CategoryDimension dim : dims ) {
