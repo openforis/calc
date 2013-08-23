@@ -2,7 +2,7 @@ package org.openforis.calc.chain.pre;
 
 import static org.openforis.calc.persistence.jooq.Tables.CATEGORY;
 
-import java.util.List;
+import java.util.Collection;
 
 import org.jooq.Select;
 import org.openforis.calc.engine.Task;
@@ -23,7 +23,7 @@ public final class CreateCategoryDimensionTablesTask extends Task {
 	@Transactional
 	protected void execute() throws Throwable {
 		OutputSchema outputSchema = getOutputSchema();
-		List<CategoryDimensionTable> tables = outputSchema.getCategoryDimensionTables();
+		Collection<CategoryDimensionTable> tables = outputSchema.getCategoryDimensionTables();
 		for (CategoryDimensionTable t : tables) {
 			CategoricalVariable var = t.getVariable();
 			if ( !var.isDegenerateDimension() ) {
