@@ -22,41 +22,38 @@ public class SchemaGenerator {
 
 	public Schemas createSchemas(Workspace workspace) {
 		Schemas schemas = new Schemas(workspace);
-		addCategoryDimensionTables(schemas);
 		addAoiDimensionTables(schemas);
-		addDataTables(schemas);
-		addFactTables(schemas);
-		// TODO
-		return schemas;
-	}
-
-	private void addDataTables(Schemas schemas) {
-		Workspace workspace = schemas.getWorkspace();
-		List<Entity> entities = workspace.getEntities();
+		
 		InputSchema in = schemas.getInputSchema();
 		OutputSchema out = schemas.getOutputSchema();
+		List<Entity> entities = workspace.getEntities();
 		for ( Entity entity : entities ) {
+			// Add dimensions for categorical variables
+			List<Variable> variables = entity.getVariables();
+			for ( Variable var : variables ) {
+				if ( var instanceof CategoricalVariable ) {
+					addCategoryDimension(out, var);
+				}
+			}
+			
+			// Create data tables
 			InputDataTable inputTable = new InputDataTable(entity, in);
 			DataTable outputTable = new OutputDataTable(entity, out, inputTable);
 			in.addTable(inputTable);
 			out.addTable(outputTable);
-		}
-	}
-
-	private void addCategoryDimensionTables(Schemas schemas) {
-		Workspace workspace = schemas.getWorkspace();
-		OutputSchema out = schemas.getOutputSchema();
-		List<Entity> entities = workspace.getEntities();
-		for ( Entity entity : entities ) {
-			// Add variable columns
-			List<Variable> variables = entity.getVariables();
-			for ( Variable var : variables ) {
-				if ( var instanceof CategoricalVariable ) {
-					CategoryDimensionTable table = new CategoryDimensionTable(out, (CategoricalVariable) var);
-					out.addTable(table);
-				}
+			
+			// Create fact table
+			if ( entity.isUnitOfAnalysis() ) {
+//				FactTable factTable = new FactTable();
 			}
 		}
+		// TODO
+		return schemas;
+	}
+
+	private void addCategoryDimension(OutputSchema out, Variable var) {
+		CategoryDimensionTable table = new CategoryDimensionTable(out, (CategoricalVariable) var);
+		out.addTable(table);
 	}
 
 	private void addAoiDimensionTables(Schemas schemas) {
@@ -70,22 +67,5 @@ public class SchemaGenerator {
 				out.addTable(table);
 			}
 		}
-	}
-
-	private void addFactTables(Schemas schemas) {
-		Workspace workspace = schemas.getWorkspace();
-		List<Entity> entities = workspace.getEntities();
-		for ( Entity entity : entities ) {
-			if ( entity.isUnitOfAnalysis() ) {
-				List<Variable> variables = entity.getVariables();
-				for (Variable var : variables) {
-					if (var instanceof CategoricalVariable ) {
-//						addCategoryDimension(cube, (CategoricalVariable) var);
-					} else if (var instanceof QuantitativeVariable) {
-//						addVariableMeasures(cube, (QuantitativeVariable) var);
-					}
-				}
-			}
-		}		
 	}
 }
