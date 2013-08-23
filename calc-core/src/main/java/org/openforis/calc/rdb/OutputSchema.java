@@ -23,6 +23,7 @@ public class OutputSchema extends RelationalSchema {
 
 	private Workspace workspace;
 	private InputSchema inputSchema;
+	private List<OutputDataTable> dataTables;
 	private StratumDimensionTable stratumDimensionTable;
 	private Map<CategoricalVariable, CategoryDimensionTable> categoryDimensionTables;
 	
@@ -30,6 +31,7 @@ public class OutputSchema extends RelationalSchema {
 		super(workspace.getOutputSchema());
 		this.workspace = workspace;
 		this.inputSchema = inputSchema;
+		this.dataTables = new ArrayList<OutputDataTable>();
 		this.stratumDimensionTable = new StratumDimensionTable(this);
 		this.categoryDimensionTables = new HashMap<CategoricalVariable, CategoryDimensionTable>();
 	}
@@ -37,21 +39,28 @@ public class OutputSchema extends RelationalSchema {
 	public Workspace getWorkspace() {
 		return workspace;
 	}
-	
+
 	public InputSchema getInputSchema() {
 		return inputSchema;
 	}
-	
-	public StratumDimensionTable getStratumDimensionTable() {
-		return stratumDimensionTable;
-	}
-	
+
 	@Override
 	public void addTable(Table<?> table) {
 		super.addTable(table);
+		if ( table instanceof OutputDataTable ) {
+			dataTables.add((OutputDataTable) table);
+		}
 		if ( table instanceof CategoryDimensionTable ) {
 			categoryDimensionTables.put(((CategoryDimensionTable) table).getVariable(), (CategoryDimensionTable) table);
 		}
+	}
+
+	public List<OutputDataTable> getDataTables() {
+		return dataTables;
+	}
+
+	public StratumDimensionTable getStratumDimensionTable() {
+		return stratumDimensionTable;
 	}
 	
 	public List<CategoryDimensionTable> getCategoryDimensionTables() {

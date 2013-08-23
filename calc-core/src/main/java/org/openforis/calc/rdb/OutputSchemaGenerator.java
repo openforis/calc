@@ -10,9 +10,9 @@ import org.springframework.stereotype.Component;
 
 /**
  * 
- * @author G. Miceli	
+ * @author G. Miceli
  * @author M. Togna
- *
+ * 
  */
 @Component
 public class OutputSchemaGenerator {
@@ -30,7 +30,7 @@ public class OutputSchemaGenerator {
 		Workspace workspace = out.getWorkspace();
 		List<Entity> entities = workspace.getEntities();
 		InputSchema in = out.getInputSchema();
-		for (Entity entity : entities) {
+		for ( Entity entity : entities ) {
 			InputDataTable inputTable = new InputDataTable(entity, in);
 			DataTable outputTable = new OutputDataTable(entity, out, inputTable);
 			in.addTable(inputTable);
@@ -52,4 +52,5 @@ public class OutputSchemaGenerator {
 			}
 		}
 	}
+
 }
