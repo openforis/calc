@@ -2,11 +2,13 @@ package org.openforis.calc.persistence.postgis;
 
 import javax.sql.DataSource;
 
+import org.jooq.Condition;
 import org.jooq.Field;
 import org.jooq.SQLDialect;
 import org.jooq.Schema;
 import org.jooq.Select;
 import org.jooq.Table;
+import org.jooq.Update;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultDSLContext;
 
@@ -38,6 +40,14 @@ public final class Psql extends DefaultDSLContext {
 		// TODO correctly implement transactions (CALC-125)
 	}
 
+	static String[] names(Field<?>[] fields) {
+		String[] names = new String[fields.length];
+		for (int i = 0; i < fields.length; i++) {
+			names[i] = fields[i].getName();
+		}
+		return names;
+	}
+
 	public GrantStep grant(Privilege... privileges) {
 		return new GrantStep(this, privileges);
 	}
@@ -64,15 +74,11 @@ public final class Psql extends DefaultDSLContext {
 		return new DropSchemaStep(this, true, schema);
 	}
 
-	public static String[] names(Field<?>[] fields) {
-		String[] names = new String[fields.length];
-		for (int i = 0; i < fields.length; i++) {
-			names[i] = fields[i].getName();
-		}
-		return names;
-	}
-
 	public SetDefaultSchemaSearchPathStep setDefaultSchemaSearchPath(Schema... schemas) {
 		return new SetDefaultSchemaSearchPathStep(this, schemas);
+	}
+
+	public UpdateWithStep updateWith(Table<?> cursor, Update<?> update, Condition joinCondition) {
+		return new UpdateWithStep(this, cursor, update, joinCondition);
 	}
 }

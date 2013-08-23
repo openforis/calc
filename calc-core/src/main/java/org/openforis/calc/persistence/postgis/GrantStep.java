@@ -11,7 +11,7 @@ import org.openforis.calc.persistence.postgis.Psql.Privilege;
  * @author S. Ricci
  *
  */
-public class GrantStep extends DdlStep {
+public class GrantStep extends PsqlPart {
 
 	GrantStep(Psql psql, Privilege... privileges) {
 		super(psql);
@@ -27,7 +27,7 @@ public class GrantStep extends DdlStep {
 		return new OnStep(schema);
 	}
 	
-	public class OnStep extends DdlStep {
+	public class OnStep extends PsqlPart {
 		OnStep(Table<?> table) {
 			super(GrantStep.this);
 			append("on ");
@@ -44,7 +44,7 @@ public class GrantStep extends DdlStep {
 			return new ToStep(user);
 		}
 		
-		public class ToStep extends DdlStep {
+		public class ToStep extends PsqlPart {
 			public ToStep(String user) {
 				super(OnStep.this);
 				append("to ");

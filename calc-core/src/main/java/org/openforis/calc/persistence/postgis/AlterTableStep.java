@@ -11,7 +11,7 @@ import org.jooq.UniqueKey;
  * @author M. Togna
  *
  */
-public class AlterTableStep extends DdlStep {
+public class AlterTableStep extends PsqlPart {
 
 	AlterTableStep(Psql psql, Table<?> table) {
 		super(psql);
@@ -31,7 +31,7 @@ public class AlterTableStep extends DdlStep {
 		return new AddColumnStep(field, nullable);
 	}
 
-	public class AddPrimaryKeyStep extends DdlStep {
+	public class AddPrimaryKeyStep extends PsqlPart {
 		AddPrimaryKeyStep(UniqueKey<?> key) {
 			super(AlterTableStep.this);
 			append("add primary key (");
@@ -41,7 +41,7 @@ public class AlterTableStep extends DdlStep {
 	}
 	
 
-	public class AddColumnStep extends DdlStep {
+	public class AddColumnStep extends PsqlPart {
 		AddColumnStep(Field<?> field, boolean nullable) {
 			super(AlterTableStep.this);
 			append("add column ");
