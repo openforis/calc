@@ -8,8 +8,9 @@ import java.util.UUID;
 
 import javax.sql.DataSource;
 
-import org.openforis.calc.rdb.OutputSchema;
-import org.openforis.calc.rolap.RolapSchema;
+import org.openforis.calc.schema.OutputSchema;
+import org.openforis.calc.schema.RolapSchema;
+import org.openforis.calc.schema.Schemas;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -27,8 +28,7 @@ public class Job extends Worker implements Iterable<Task> {
 	private Workspace workspace;
 	private boolean debugMode;
 	private DataSource dataSource;
-	private OutputSchema outputSchema;
-	private RolapSchema rolapSchema;
+	private Schemas schemas;
 	
 	Job(Workspace workspace, DataSource dataSource) {
 		this.currentTaskIndex = -1;
@@ -42,14 +42,13 @@ public class Job extends Worker implements Iterable<Task> {
 		this.debugMode = debugMode;
 	}
 	
-	void setOutputSchema(OutputSchema outputSchema) {
-		this.outputSchema = outputSchema;
+	void setSchemas(Schemas schemas) {
+		this.schemas = schemas;
 	}
-
-	void setRolapSchema(RolapSchema rolapSchema) {
-		this.rolapSchema = rolapSchema;
+	
+	public Schemas getSchemas() {
+		return schemas;
 	}
-
 	/**
 	 * Initializes each contained task in order. Called after all tasks have been added 
 	 * (i.e. not in constructor!)
@@ -176,10 +175,10 @@ public class Job extends Worker implements Iterable<Task> {
 	}
 	
 	public RolapSchema getRolapSchema() {
-		return rolapSchema;
+		return schemas.getRolapSchema();
 	}
 	
 	public OutputSchema getOutputSchema() {
-		return outputSchema;
+		return schemas.getOutputSchema();
 	}
 }

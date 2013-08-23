@@ -12,9 +12,9 @@ import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.AoiHierarchyLevel;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.persistence.postgis.PsqlBuilder;
-import org.openforis.calc.rdb.AoiDimensionTable;
-import org.openforis.calc.rdb.OutputDataTable;
-import org.openforis.calc.rdb.OutputSchema;
+import org.openforis.calc.schema.AoiDimensionTable;
+import org.openforis.calc.schema.OutputDataTable;
+import org.openforis.calc.schema.OutputSchema;
 
 /**
  * Task responsible for assigning AOI codes and/or ids to an output table based on a Point column. Assigns AOI ids to each georeferenced entity

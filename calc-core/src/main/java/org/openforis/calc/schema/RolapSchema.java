@@ -1,11 +1,10 @@
-package org.openforis.calc.rolap;
+package org.openforis.calc.schema;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.openforis.calc.engine.Workspace;
-import org.openforis.calc.rdb.OutputSchema;
 
 /**
  * 

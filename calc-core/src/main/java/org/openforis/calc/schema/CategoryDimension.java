@@ -1,7 +1,6 @@
-package org.openforis.calc.rolap;
+package org.openforis.calc.schema;
 
 import org.openforis.calc.metadata.CategoricalVariable;
-import org.openforis.calc.rdb.CategoryDimensionTable;
 
 /**
  * 

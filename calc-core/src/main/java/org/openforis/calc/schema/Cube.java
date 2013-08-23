@@ -1,4 +1,4 @@
-package org.openforis.calc.rolap;
+package org.openforis.calc.schema;
 
 import java.util.ArrayList;
 import java.util.Collections;

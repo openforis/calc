@@ -25,7 +25,6 @@ import org.openforis.calc.persistence.postgis.PsqlBuilder;
 public final class CreateAggregateTablesTask extends Task {
 	@Override
 	protected void execute() throws Throwable {
-		setDefaultSchemaSearchPath();
 		Workspace workspace = getWorkspace();
 
 		List<Entity> entities = workspace.getEntities();

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.openforis.calc.rdb;
+package org.openforis.calc.schema;
 
 import static org.jooq.impl.SQLDataType.BOOLEAN;
 import static org.jooq.impl.SQLDataType.INTEGER;

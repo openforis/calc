@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import org.openforis.calc.engine.CalculationStepTask;
 import org.openforis.calc.engine.ParameterMap;
 import org.openforis.calc.persistence.postgis.Psql;
-import org.openforis.calc.rdb.OutputSchema;
+import org.openforis.calc.schema.OutputSchema;
 
 
 /**

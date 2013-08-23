@@ -1,4 +1,4 @@
-package org.openforis.calc.rdb;
+package org.openforis.calc.schema;
 
 import org.jooq.Record;
 import org.jooq.Table;

@@ -1,4 +1,4 @@
-package org.openforis.calc.rolap;
+package org.openforis.calc.schema;
 
 import java.util.List;
 
@@ -8,9 +8,6 @@ import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.VariableAggregate;
-import org.openforis.calc.rdb.CategoryDimensionTable;
-import org.openforis.calc.rdb.OutputSchema;
-import org.openforis.calc.rdb.RelationalSchema;
 import org.springframework.stereotype.Component;
 
 /**

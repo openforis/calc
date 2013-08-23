@@ -1,10 +1,8 @@
 /**
  * 
  */
-package org.openforis.calc.rolap;
+package org.openforis.calc.schema;
 
-import org.openforis.calc.rdb.AbstractTable;
-import org.openforis.calc.rdb.RelationalSchema;
 
 /**
  * @author G. Miceli

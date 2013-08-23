@@ -1,4 +1,4 @@
-package org.openforis.calc.rdb;
+package org.openforis.calc.schema;
 
 import static org.openforis.calc.persistence.jooq.Tables.STRATUM;
 

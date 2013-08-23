@@ -8,8 +8,8 @@ import org.jooq.Select;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.persistence.postgis.Psql.Privilege;
-import org.openforis.calc.rdb.CategoryDimensionTable;
-import org.openforis.calc.rdb.OutputSchema;
+import org.openforis.calc.schema.CategoryDimensionTable;
+import org.openforis.calc.schema.OutputSchema;
 import org.springframework.transaction.annotation.Transactional;
 
 /**

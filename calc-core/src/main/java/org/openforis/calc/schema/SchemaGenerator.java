@@ -1,4 +1,4 @@
-package org.openforis.calc.rdb;
+package org.openforis.calc.schema;
 
 import java.util.List;
 
@@ -7,6 +7,7 @@ import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.AoiHierarchyLevel;
 import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.Variable;
 import org.springframework.stereotype.Component;
 
@@ -17,22 +18,23 @@ import org.springframework.stereotype.Component;
  * 
  */
 @Component
-public class OutputSchemaGenerator {
+public class SchemaGenerator {
 
-	public OutputSchema createOutputSchema(Workspace workspace) {
-		InputSchema in = new InputSchema(workspace);
-		OutputSchema out = new OutputSchema(workspace, in);
-		createDataTables(out);
-		createCategoryDimensionTables(out);
-		createAoiDimensionTables(out);
+	public Schemas createSchemas(Workspace workspace) {
+		Schemas schemas = new Schemas(workspace);
+		addCategoryDimensionTables(schemas);
+		addAoiDimensionTables(schemas);
+		addDataTables(schemas);
+		addFactTables(schemas);
 		// TODO
-		return out;
+		return schemas;
 	}
 
-	private void createDataTables(OutputSchema out) {
-		Workspace workspace = out.getWorkspace();
+	private void addDataTables(Schemas schemas) {
+		Workspace workspace = schemas.getWorkspace();
 		List<Entity> entities = workspace.getEntities();
-		InputSchema in = out.getInputSchema();
+		InputSchema in = schemas.getInputSchema();
+		OutputSchema out = schemas.getOutputSchema();
 		for ( Entity entity : entities ) {
 			InputDataTable inputTable = new InputDataTable(entity, in);
 			DataTable outputTable = new OutputDataTable(entity, out, inputTable);
@@ -41,8 +43,9 @@ public class OutputSchemaGenerator {
 		}
 	}
 
-	private void createCategoryDimensionTables(OutputSchema out) {
-		Workspace workspace = out.getWorkspace();
+	private void addCategoryDimensionTables(Schemas schemas) {
+		Workspace workspace = schemas.getWorkspace();
+		OutputSchema out = schemas.getOutputSchema();
 		List<Entity> entities = workspace.getEntities();
 		for ( Entity entity : entities ) {
 			// Add variable columns
@@ -56,8 +59,9 @@ public class OutputSchemaGenerator {
 		}
 	}
 
-	private void createAoiDimensionTables(OutputSchema out) {
-		Workspace workspace = out.getWorkspace();
+	private void addAoiDimensionTables(Schemas schemas) {
+		Workspace workspace = schemas.getWorkspace();
+		OutputSchema out = schemas.getOutputSchema();
 		List<AoiHierarchy> aoiHierarchies = workspace.getAoiHierarchies();
 		for ( AoiHierarchy aoiHierarchy : aoiHierarchies ) {
 			List<AoiHierarchyLevel> levels = aoiHierarchy.getLevels();
@@ -68,4 +72,20 @@ public class OutputSchemaGenerator {
 		}
 	}
 
+	private void addFactTables(Schemas schemas) {
+		Workspace workspace = schemas.getWorkspace();
+		List<Entity> entities = workspace.getEntities();
+		for ( Entity entity : entities ) {
+			if ( entity.isUnitOfAnalysis() ) {
+				List<Variable> variables = entity.getVariables();
+				for (Variable var : variables) {
+					if (var instanceof CategoricalVariable ) {
+//						addCategoryDimension(cube, (CategoricalVariable) var);
+					} else if (var instanceof QuantitativeVariable) {
+//						addVariableMeasures(cube, (QuantitativeVariable) var);
+					}
+				}
+			}
+		}		
+	}
 }

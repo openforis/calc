@@ -5,8 +5,8 @@ import javax.sql.DataSource;
 import org.openforis.calc.nls.Captionable;
 import org.openforis.calc.persistence.postgis.Psql;
 import org.openforis.calc.persistence.postgis.PsqlBuilder;
-import org.openforis.calc.rdb.OutputSchema;
-import org.openforis.calc.rolap.RolapSchema;
+import org.openforis.calc.schema.OutputSchema;
+import org.openforis.calc.schema.RolapSchema;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -70,15 +70,6 @@ public abstract class Task extends Worker implements Captionable {
 	protected PsqlBuilder createPsqlBuilder() {
 		DataSource dataSource = getDataSource();
 		return new PsqlBuilder(dataSource);
-	}
-
-	// @deprecated always use schema name in table references; this is useful only in CustomSqlTask 
-	@Deprecated
-	protected void setDefaultSchemaSearchPath() {
-		Workspace workspace = getWorkspace();
-		createPsqlBuilder()
-			.setSchemaSearchPath(workspace.getOutputSchema(), PsqlBuilder.PUBLIC)
-			.execute();
 	}
 	
 	protected String getSystemUser() {

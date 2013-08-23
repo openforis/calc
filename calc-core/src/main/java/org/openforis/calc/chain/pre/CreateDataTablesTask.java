@@ -15,10 +15,10 @@ import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.persistence.postgis.Psql.Privilege;
 import org.openforis.calc.persistence.postgis.PsqlBuilder;
-import org.openforis.calc.rdb.InputDataTable;
-import org.openforis.calc.rdb.OutputDataTable;
-import org.openforis.calc.rdb.OutputSchema;
-import org.openforis.calc.rolap.RolapSchema;
+import org.openforis.calc.schema.InputDataTable;
+import org.openforis.calc.schema.OutputDataTable;
+import org.openforis.calc.schema.OutputSchema;
+import org.openforis.calc.schema.RolapSchema;
 
 /**
  * Copy tables into output schema based on {@link Category}s

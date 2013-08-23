@@ -1,4 +1,4 @@
-package org.openforis.calc.rolap;
+package org.openforis.calc.schema;
 
 import org.openforis.calc.metadata.VariableAggregate;
 
