@@ -6,13 +6,11 @@ import static org.openforis.calc.persistence.postgis.PsqlBuilder.quote;
 import java.util.Collection;
 import java.util.List;
 
-import org.jooq.Table;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.AoiHierarchyLevel;
 import org.openforis.calc.metadata.Entity;
-import org.openforis.calc.persistence.postgis.Psql;
 import org.openforis.calc.persistence.postgis.PsqlBuilder;
 import org.openforis.calc.rdb.AoiDimensionTable;
 import org.openforis.calc.rdb.OutputDataTable;
@@ -149,10 +147,5 @@ public final class AssignAoiColumnsTask extends Task {
 				.on("ST_Contains(a.shape, f." + CreateLocationColumnsTask.LOCATION_COLUMN + ")").and("a.aoi_level_id = " + levelId);
 
 		createPsqlBuilder().with("tmp", selectAois).update(dataTable + " f").set(aoiFkColumn + " = aid").from("tmp").where("f." + factIdColumn + " = tmp.fid").execute();
-	}
-
-	
-	private OutputSchema getOutputSchema() {
-		return getJob().getOutputSchema();
 	}
 }

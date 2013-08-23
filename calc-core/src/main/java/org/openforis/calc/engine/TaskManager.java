@@ -9,7 +9,7 @@ import java.util.concurrent.Executor;
 import javax.sql.DataSource;
 
 import org.openforis.calc.rdb.OutputSchema;
-import org.openforis.calc.rdb.OutputSchemaGenerator;
+import org.openforis.calc.rdb.SchemaGenerator;
 import org.openforis.calc.rolap.RolapSchema;
 import org.openforis.calc.rolap.RolapSchemaGenerator;
 import org.springframework.beans.factory.BeanFactory;
@@ -49,7 +49,7 @@ public class TaskManager {
 	private DataSource dataSource;
 
 	@Autowired
-	private OutputSchemaGenerator outputSchemaGenerator;
+	private SchemaGenerator outputSchemaGenerator;
 	
 	@Autowired
 	private RolapSchemaGenerator rolapSchemaGenerator;
