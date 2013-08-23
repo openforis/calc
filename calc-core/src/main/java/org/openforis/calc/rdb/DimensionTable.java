@@ -1,4 +1,4 @@
-package org.openforis.calc.rolap;
+package org.openforis.calc.rdb;
 
 import static org.jooq.impl.SQLDataType.INTEGER;
 import static org.jooq.impl.SQLDataType.VARCHAR;
@@ -6,9 +6,6 @@ import static org.jooq.impl.SQLDataType.VARCHAR;
 import org.jooq.Record;
 import org.jooq.TableField;
 import org.jooq.UniqueKey;
-import org.openforis.calc.rdb.AbstractTable;
-import org.openforis.calc.rdb.KeyFactory;
-import org.openforis.calc.rdb.RelationalSchema;
 
 /**
  * 

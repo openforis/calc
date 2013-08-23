@@ -1,10 +1,9 @@
-package org.openforis.calc.rolap;
+package org.openforis.calc.rdb;
 
 import static org.openforis.calc.persistence.jooq.Tables.STRATUM;
 
 import org.jooq.Record;
 import org.jooq.TableField;
-import org.openforis.calc.rdb.OutputSchema;
 
 /**
  * 

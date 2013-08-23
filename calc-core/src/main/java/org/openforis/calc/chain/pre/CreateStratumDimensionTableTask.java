@@ -6,7 +6,7 @@ import org.jooq.Select;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.persistence.postgis.Psql.Privilege;
 import org.openforis.calc.rdb.OutputSchema;
-import org.openforis.calc.rolap.StratumDimensionTable;
+import org.openforis.calc.rdb.StratumDimensionTable;
 
 /**
  * Copies the data from the stratum table in calc schema to the _stratum_dim table on the output schema

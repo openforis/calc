@@ -8,8 +8,8 @@ import org.jooq.Select;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.persistence.postgis.Psql.Privilege;
+import org.openforis.calc.rdb.CategoryDimensionTable;
 import org.openforis.calc.rolap.CategoryDimension;
-import org.openforis.calc.rolap.CategoryDimensionTable;
 import org.openforis.calc.rolap.RolapSchema;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,9 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
  * @author G. Miceli
  */
 public final class CreateCategoryDimensionTablesTask extends Task {
-	@Value("${calc.jdbc.username}")
-	private String systemUser;
-
 	@Override
 	@Transactional
 	protected void execute() throws Throwable {
@@ -65,7 +62,7 @@ public final class CreateCategoryDimensionTablesTask extends Task {
 				psql()
 					.grant(Privilege.ALL)
 					.on(t)
-					.to(systemUser)
+					.to(getSystemUser())
 					.execute();
 			}
 		}

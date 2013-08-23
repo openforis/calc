@@ -8,6 +8,7 @@ import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.VariableAggregate;
+import org.openforis.calc.rdb.CategoryDimensionTable;
 import org.openforis.calc.rdb.OutputSchema;
 import org.openforis.calc.rdb.RelationalSchema;
 import org.springframework.stereotype.Component;
@@ -63,14 +64,15 @@ public class RolapSchemaGenerator {
 				// TODO support for degenerate dimensions
 			} else {
 				// Relational database table
-				RelationalSchema relationalSchema = rolapSchema.getOutputSchema();
-				CategoryDimensionTable table = new CategoryDimensionTable(relationalSchema, variable);
-				relationalSchema.addTable(table);
+//				RelationalSchema relationalSchema = rolapSchema.getOutputSchema();
+//				CategoryDimensionTable table = new CategoryDimensionTable(relationalSchema, variable);
+//				relationalSchema.addTable(table);
 				
 				// OLAP dimension
-				CategoryDimension dim = new CategoryDimension(variable, table);
-				rolapSchema.addCategoryDimension(dim);
-				cube.addDimensionUsage(dim);
+//				CategoryDimension dim = new CategoryDimension(variable, table);
+//				rolapSchema.addCategoryDimension(dim);
+//				cube.addDimensionUsage(dim);
+				// TODO
 			}
 		}
 	}

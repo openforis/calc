@@ -30,5 +30,4 @@ public abstract class RelationalSchema extends SchemaImpl {
 	public void addTable(Table<?> table) {
 		tables.add(table);
 	}
-
 }
