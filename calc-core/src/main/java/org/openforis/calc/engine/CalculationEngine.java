@@ -9,7 +9,7 @@ import org.openforis.calc.chain.ProcessingChainDao;
 import org.openforis.calc.chain.post.AddMissingAggregateColumnsTask;
 import org.openforis.calc.chain.post.CalculateExpansionFactorsTask;
 import org.openforis.calc.chain.post.CreateFactTablesTask;
-import org.openforis.calc.chain.pre.CreateAoiColumnsTask;
+import org.openforis.calc.chain.pre.AssignAoiColumnsTask;
 import org.openforis.calc.chain.pre.CreateAoiDimensionTablesTask;
 import org.openforis.calc.chain.pre.CreateCategoryDimensionTablesTask;
 import org.openforis.calc.chain.pre.CreateLocationColumnsTask;
@@ -50,7 +50,7 @@ public class CalculationEngine {
 			CreateStratumDimensionTableTask.class,
 			CreateFactTablesTask.class,
 			CreateLocationColumnsTask.class,
-			CreateAoiColumnsTask.class,
+			AssignAoiColumnsTask.class,
 			OutputSchemaGrantsTask.class};
 
 	private Class<?>[] POSTPROCESSING_TASKS = { 

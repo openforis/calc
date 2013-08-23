@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component;
 
 /**
  * 
- * @author G. Miceli	
+ * @author G. Miceli
  * @author M. Togna
- *
+ * 
  */
 @Component
 public class OutputSchemaGenerator {
@@ -29,15 +29,16 @@ public class OutputSchemaGenerator {
 		Workspace workspace = out.getWorkspace();
 		List<Entity> entities = workspace.getEntities();
 		InputSchema in = out.getInputSchema();
-		for (Entity entity : entities) {
+		for ( Entity entity : entities ) {
 			InputDataTable inputTable = new InputDataTable(entity, in);
 			DataTable outputTable = new OutputDataTable(entity, out, inputTable);
+
 			// Add variable columns
 			List<Variable> variables = entity.getVariables();
-			for (Variable var : variables) {
-				
+			for ( Variable var : variables ) {
+
 			}
-			
+
 			in.addTable(inputTable);
 			out.addTable(outputTable);
 		}
@@ -45,6 +46,6 @@ public class OutputSchemaGenerator {
 
 	private void createCategoryDimensionTables(OutputSchema out) {
 		// TODO Auto-generated method stub
-		
 	}
+
 }
