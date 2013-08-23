@@ -5,6 +5,8 @@ import javax.sql.DataSource;
 import org.openforis.calc.nls.Captionable;
 import org.openforis.calc.persistence.postgis.Psql;
 import org.openforis.calc.persistence.postgis.PsqlBuilder;
+import org.openforis.calc.rdb.OutputSchema;
+import org.openforis.calc.rolap.RolapSchema;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -31,6 +33,15 @@ public abstract class Task extends Worker implements Captionable {
 	public boolean isDebugMode() {
 		return getJob().isDebugMode();
 	}
+
+	protected OutputSchema getOutputSchema() {
+		return getJob().getOutputSchema();
+	}
+
+	protected RolapSchema getRolapSchema() {
+		return getJob().getRolapSchema();
+	}
+
 	
 	public Job getJob() {
 		return job;

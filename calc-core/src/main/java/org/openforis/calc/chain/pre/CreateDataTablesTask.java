@@ -40,7 +40,7 @@ public final class CreateDataTablesTask extends Task {
 	
 	@Override
 	protected void execute() throws Throwable {
-		RolapSchema rolapSchema = getJob().getRolapSchema();
+		RolapSchema rolapSchema = getRolapSchema();
 		OutputSchema outputSchema = rolapSchema.getOutputSchema();
 		List<Table<?>> tables = outputSchema.getTables();
 		for ( Table<?> table : tables ) {

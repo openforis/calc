@@ -20,7 +20,7 @@ public class CreateStratumDimensionTableTask extends Task {
 	@Override
 	protected void execute() throws Throwable {
 		int workspaceId = getWorkspace().getId();
-		OutputSchema outputSchema = getJob().getOutputSchema();
+		OutputSchema outputSchema = getOutputSchema();
 		StratumDimensionTable stratumDimensionTable = outputSchema.getStratumDimensionTable();
 		
 		Select<?> select = psql()
