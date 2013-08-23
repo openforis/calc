@@ -6,8 +6,6 @@ import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceDao;
 import org.openforis.calc.engine.WorkspaceLockedException;
-import org.openforis.calc.persistence.jooq.Tables;
-import org.openforis.calc.persistence.postgis.Psql;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
@@ -31,13 +29,13 @@ public class PrepareOutputSchemaTest extends AbstractTransactionalJUnit4SpringCo
 		Job job = taskManager.createUserJob(foundWorkspace);
 		job.addTasks(taskManager.createTasks(
 				ResetOutputSchemaTask.class,
-				CreateCategoryDimensionTablesTask.class
-//				CreateAoiDimensionTablesTask.class,
-//				CreateDataTablesTask.class
-//				,
+				CreateCategoryDimensionTablesTask.class,
+				CreateAoiDimensionTablesTask.class,
+				CreateDataTablesTask.class
+				,
 //				CreateLocationColumnsTask.class,
-//				CreateAoiColumnsTask.class,
-//				CreateStratumDimensionTableTask.class
+//				AssignAoiColumnsTask.class,
+				CreateStratumDimensionTableTask.class
 //				OutputSchemaGrantsTask.class
 				));
 		taskManager.startJob(job);

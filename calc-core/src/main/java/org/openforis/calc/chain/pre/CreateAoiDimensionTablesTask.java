@@ -1,50 +1,68 @@
 package org.openforis.calc.chain.pre;
+import static org.openforis.calc.persistence.jooq.Tables.AOI;
+import static org.openforis.calc.persistence.jooq.Tables.AOI_HIERARCHY;
+import static org.openforis.calc.persistence.jooq.Tables.AOI_LEVEL;
 
-import java.util.List;
-
+import org.jooq.Select;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
-import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.AoiHierarchyLevel;
-import org.openforis.calc.persistence.postgis.PsqlBuilder;
+import org.openforis.calc.persistence.postgis.Psql;
+import org.openforis.calc.persistence.postgis.Psql.Privilege;
+import org.openforis.calc.schema.AoiDimensionTable;
+import org.openforis.calc.schema.OutputSchema;
 
 /**
- * Copies category tables into the output schema.  Fails if output schema already exists.
+ * Creates Aoi Dimension tables for each aoi level for the current workspace
  * 
- * @author A. Sanchez-Paus Diaz
- * @author G. Miceli
+ * @author M. Togna
  */
-public final class CreateAoiDimensionTablesTask extends Task {
 
-	private static final String CALC_AOI_TABLE = "calc.aoi";
-	private static final String DIMENSION_ID_COLUMN = "id";
-	private static final String AOI_LEVEL_ID_COLUMN = "aoi_level_id";
+public final class CreateAoiDimensionTablesTask extends Task {
 
 	@Override
 	protected void execute() throws Throwable {
+		
 		Workspace workspace = getWorkspace();
-		List<AoiHierarchy> hierarchies = workspace.getAoiHierarchies();
-		for (AoiHierarchy hierarchy : hierarchies) {
-			List<AoiHierarchyLevel> levels = hierarchy.getLevels();
-			for (AoiHierarchyLevel level : levels) {
-				String tableName = PsqlBuilder.quote(level.getDimensionTable());
-				Integer varId = level.getId();
+		Integer workspaceId = workspace.getId();
+		OutputSchema outputSchema = getOutputSchema();
+		
+		for ( AoiDimensionTable aoiDimensionTable : outputSchema.getAoiDimensionTables() ) {
+			AoiHierarchyLevel hierarchyLevel = aoiDimensionTable.getHierarchyLevel();
+			Integer aoiLevelId = hierarchyLevel.getId();
+			
+			//selects from calc.aoi table
+			Select<?> select = new Psql()
+				.select( AOI.ID, AOI.AOI_LEVEL_ID, AOI.PARENT_AOI_ID, AOI.CODE, AOI.CAPTION, AOI.SHAPE, AOI.TOTAL_AREA, AOI.LAND_AREA )
+				.from( AOI )
+				.join( AOI_LEVEL )
+				.on( AOI.AOI_LEVEL_ID.eq(AOI_LEVEL.ID) )
+				.and( AOI_LEVEL.ID.eq(aoiLevelId) )
+				.join( AOI_HIERARCHY )
+				.on( AOI_LEVEL.AOI_HIERARCHY_ID.eq(AOI_HIERARCHY.ID) )
+				.where( AOI_HIERARCHY.WORKSPACE_ID.eq(workspaceId) );
+			
+			// create table from select
+			psql()
+				.createTable(aoiDimensionTable)
+				.as(select)
+				.execute();
+			
+			//add PK to aoi dim table
+			psql()
+				.alterTable( aoiDimensionTable )
+				.addPrimaryKey( aoiDimensionTable.getPrimaryKey() )
+				.execute();
+			
+			// Grant access to system user
+			psql()
+				.grant( Privilege.ALL )
+				.on( aoiDimensionTable )
+				.to(getSystemUser())
+				.execute();		
 
-				PsqlBuilder select = new PsqlBuilder()
-					.select("*")
-					.from(CALC_AOI_TABLE)
-					.where(AOI_LEVEL_ID_COLUMN+"=?");
-				
-				createPsqlBuilder()
-					.createTable(tableName)
-					.as(select) 
-					.execute(varId);
-				
-				createPsqlBuilder()
-					.alterTable(tableName)
-					.addPrimaryKey(DIMENSION_ID_COLUMN);
-			}
 		}
+		
 	}
 
 }

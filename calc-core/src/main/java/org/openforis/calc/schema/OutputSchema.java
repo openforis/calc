@@ -78,6 +78,10 @@ public class OutputSchema extends RelationalSchema {
 		return Collections.unmodifiableCollection(categoryDimensionTables.values());
 	}
 
+	public Collection<AoiDimensionTable> getAoiDimensionTables() {
+		return Collections.unmodifiableCollection(aoiDimensionTables.values());
+	}
+	
 	public AoiDimensionTable getAoiDimensionTable(AoiHierarchyLevel aoiHierarchyLevel) {
 		return aoiDimensionTables.get(aoiHierarchyLevel);
 	}
