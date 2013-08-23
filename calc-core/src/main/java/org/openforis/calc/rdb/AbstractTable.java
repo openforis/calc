@@ -6,7 +6,9 @@ package org.openforis.calc.rdb;
 import java.math.BigDecimal;
 
 import org.jooq.DataType;
+import org.jooq.Field;
 import org.jooq.Record;
+import org.jooq.TableField;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 
@@ -27,5 +29,9 @@ public abstract class AbstractTable extends TableImpl<Record> {
 
 	public boolean hasField(String name) {
 		return field(name) != null;
+	}
+	
+	protected <T> TableField<Record, T> copyField(Field<T> field) {
+		return createField(field.getName(), field.getDataType(), this);
 	}
 }

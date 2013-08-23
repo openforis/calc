@@ -10,7 +10,7 @@ import org.jooq.Table;
  * @author M. Togna
  *
  */
-public class CreateTableStep extends DdlStep {
+public class CreateTableStep extends PsqlPart {
 
 	CreateTableStep(Psql psql, Table<?> table) {
 		super(psql);
@@ -22,7 +22,7 @@ public class CreateTableStep extends DdlStep {
 		return new AsStep(select);
 	}
 	
-	public class AsStep extends DdlStep {
+	public class AsStep extends PsqlPart {
 		
 		AsStep(Select<?> select) {
 			super(CreateTableStep.this);

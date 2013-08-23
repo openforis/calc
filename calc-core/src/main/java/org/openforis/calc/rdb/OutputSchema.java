@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.jooq.Table;
 import org.openforis.calc.engine.Workspace;
+import org.openforis.calc.rolap.StratumDimensionTable;
 
 /**
  * @author G. Miceli
@@ -20,13 +21,17 @@ public class OutputSchema extends RelationalSchema {
 
 	private Workspace workspace;
 	private InputSchema inputSchema;
+
 	private List<OutputDataTable> dataTables;
+
+	private StratumDimensionTable stratumDimensionTable;
 
 	public OutputSchema(Workspace workspace, InputSchema inputSchema) {
 		super(workspace.getOutputSchema());
 		this.workspace = workspace;
 		this.inputSchema = inputSchema;
 		this.dataTables = new ArrayList<OutputDataTable>();
+		this.stratumDimensionTable = new StratumDimensionTable(this);
 	}
 
 	public Workspace getWorkspace() {
@@ -48,6 +53,10 @@ public class OutputSchema extends RelationalSchema {
 
 	public List<OutputDataTable> getDataTables() {
 		return dataTables;
+	}
+
+	public StratumDimensionTable getStratumDimensionTable() {
+		return stratumDimensionTable;
 	}
 
 }

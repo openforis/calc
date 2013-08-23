@@ -5,6 +5,7 @@ import javax.sql.DataSource;
 import org.openforis.calc.nls.Captionable;
 import org.openforis.calc.persistence.postgis.Psql;
 import org.openforis.calc.persistence.postgis.PsqlBuilder;
+import org.springframework.beans.factory.annotation.Value;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -17,6 +18,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author M. Togna
  */
 public abstract class Task extends Worker implements Captionable {
+	@Value("${calc.jdbc.username}")
+	private String systemUser;
+
 	@JsonIgnore
 	private Job job;
 	
@@ -64,5 +68,9 @@ public abstract class Task extends Worker implements Captionable {
 		createPsqlBuilder()
 			.setSchemaSearchPath(workspace.getOutputSchema(), PsqlBuilder.PUBLIC)
 			.execute();
+	}
+	
+	protected String getSystemUser() {
+		return systemUser;
 	}
 }

@@ -8,33 +8,33 @@ import org.slf4j.LoggerFactory;
  * 
  * @author G. Miceli
  * @author S. Ricci
- *
+ * 
  */
-public abstract class DdlStep {
+public abstract class PsqlPart {
 	private Psql psql;
-	private DdlStep previous;
+	private PsqlPart previous;
 	private StringBuilder sb;
 	private Logger log;
-	
-	DdlStep(Psql psql) {
+
+	PsqlPart(Psql psql) {
 		this.psql = psql;
 		this.log = LoggerFactory.getLogger(getClass());
 	}
 
-	DdlStep(DdlStep previous) {
+	PsqlPart(PsqlPart previous) {
 		this(previous.psql);
 		this.previous = previous;
 	}
-	
+
 	public int execute(Object... bindings) {
 		String sql = toString();
-		
+
 		if ( bindings.length == 0 ) {
-			log.debug(sql+";");
+			log.debug(sql + ";");
 		} else {
-			log.debug(sql+"; -- Parameters: "+StringUtils.join(bindings)+"");			
+			log.debug(sql + "; -- Parameters: " + StringUtils.join(bindings) + "");
 		}
-		
+
 		return psql.execute(sql, bindings);
 	}
 
@@ -44,11 +44,11 @@ public abstract class DdlStep {
 		}
 		sb.append(s);
 	}
-	
+
 	protected String toSql() {
 		return sb.toString();
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();

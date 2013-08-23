@@ -19,7 +19,6 @@ import org.openforis.calc.rdb.InputDataTable;
 import org.openforis.calc.rdb.OutputDataTable;
 import org.openforis.calc.rdb.OutputSchema;
 import org.openforis.calc.rolap.RolapSchema;
-import org.springframework.beans.factory.annotation.Value;
 
 /**
  * Copy tables into output schema based on {@link Category}s
@@ -29,9 +28,6 @@ import org.springframework.beans.factory.annotation.Value;
  * @author M. Togna
  */
 public final class CreateDataTablesTask extends Task {
-	@Value("${calc.jdbc.username}")
-	private String systemUser;
-
 	private static final String DIMENSION_CODE_ID_SUFFIX = "_code_id";
 	// TODO group system table and columns names into single class
 	public static final String STRATUM_ID = "_stratum_id";
@@ -107,7 +103,7 @@ public final class CreateDataTablesTask extends Task {
 		InputDataTable inputTable = outputTable.getInputDataTable();
 		
 		// Copying entire table from input schema
-		Select<?> select = psql().selectAll(inputTable);
+		Select<?> select = psql().selectStarFrom(inputTable);
 		select.execute();
 		psql()
 			.createTable(outputTable)
@@ -135,7 +131,7 @@ public final class CreateDataTablesTask extends Task {
 		psql()
 			.grant(Privilege.ALL)
 			.on(outputTable)
-			.to(systemUser)
+			.to(getSystemUser())
 			.execute();
 		
 	}
