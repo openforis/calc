@@ -3,14 +3,10 @@
  */
 package org.openforis.calc.schema;
 
-import java.math.BigDecimal;
-
-import org.jooq.DataType;
 import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Schema;
 import org.jooq.TableField;
-import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
 
 /**

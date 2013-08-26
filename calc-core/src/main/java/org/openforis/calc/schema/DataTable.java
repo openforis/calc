@@ -52,15 +52,7 @@ public abstract class DataTable extends AbstractTable {
 	private Map<AoiHierarchyLevel, Field<Integer>> aoiIdFields;
 
 	private Field<Integer> stratumIdField;
-	
-	/**
-	 * The point location field
-	 */
 	private Field<GeodeticCoordinate> locationField;
-	
-	/**
-	 * The coordinate fields
-	 */
 	private Field<BigDecimal> xField;
 	private Field<BigDecimal> yField;
 	private Field<String> srsIdField;
