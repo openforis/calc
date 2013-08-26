@@ -29,6 +29,7 @@ public class OutputSchema extends RelationalSchema {
 	private InputSchema inputSchema;
 	private StratumDimensionTable stratumDimensionTable;
 	private Map<Entity, OutputDataTable> dataTables;
+	private Map<Entity, FactTable> factTables;
 	private Map<CategoricalVariable, CategoryDimensionTable> categoryDimensionTables;
 	private Map<AoiHierarchyLevel, AoiDimensionTable> aoiDimensionTables;
 
@@ -60,11 +61,13 @@ public class OutputSchema extends RelationalSchema {
 	}
 
 	private void initFactTables() {
-		List<Entity> entities = workspace.getEntities();
+		this.factTables = new HashMap<Entity, FactTable>();		
+		List<Entity> entities = workspace.getEntities();	
 		for ( Entity entity : entities ) {
 			if ( entity.isUnitOfAnalysis() ) {
 				FactTable table = new FactTable(entity, this);
 				addTable(table);
+				factTables.put(entity, table);
 			}
 		}		
 	}
@@ -128,5 +131,9 @@ public class OutputSchema extends RelationalSchema {
 
 	public CategoryDimensionTable getCategoryDimensionTable(CategoricalVariable variable) {
 		return categoryDimensionTables.get(variable);
+	}
+
+	public Collection<FactTable> getFactTables() {
+		return Collections.unmodifiableCollection(factTables.values());
 	}
 }

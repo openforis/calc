@@ -33,7 +33,7 @@ public class FactTable extends DataTable {
 	private void createCategoryFields(Entity entity) {
 		Entity parent = entity.getParent();
 		if ( parent != null && parent.isUnitOfAnalysis() ) {
-			createCategoryFields(entity);
+			createCategoryFields(parent);
 		}
 		createCategoryFields(entity, false);
 	}
