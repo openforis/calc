@@ -1,8 +1,11 @@
 package org.openforis.calc.persistence.postgis;
 
+import java.math.BigDecimal;
+
 import javax.sql.DataSource;
 
 import org.jooq.Condition;
+import org.jooq.DataType;
 import org.jooq.Field;
 import org.jooq.SQLDialect;
 import org.jooq.Schema;
@@ -11,6 +14,7 @@ import org.jooq.Table;
 import org.jooq.Update;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultDSLContext;
+import org.jooq.impl.SQLDataType;
 
 /**
  * Simple PostreSQL query builder
@@ -22,7 +26,8 @@ import org.jooq.impl.DefaultDSLContext;
 public final class Psql extends DefaultDSLContext {
 	private static final long serialVersionUID = 1L;
 	
-	public static final GeodeticCoordinateDataType GEODETIC_COORDINATE_DATA_TYPE = new GeodeticCoordinateDataType();
+	public static final DataType<BigDecimal> DOUBLE_PRECISION = SQLDataType.NUMERIC.precision(15, 5);
+	public static final DataType<GeodeticCoordinate> GEODETIC_COORDINATE = new GeodeticCoordinateDataType();
 	
 	public static final Schema PUBLIC = DSL.schemaByName("public");
 

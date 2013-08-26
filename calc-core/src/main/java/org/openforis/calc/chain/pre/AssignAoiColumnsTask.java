@@ -79,7 +79,7 @@ public final class AssignAoiColumnsTask extends Task {
 							.select(dataTablePKField, aoiTable.ID)				
 							.from(dataTable)
 							.join(aoiTable, JoinType.JOIN)
-							.on("ST_Contains(" + aoiTable.SHAPE +","+dataTable.field(CreateLocationColumnsTask.LOCATION_COLUMN)+")" )
+							.on("ST_Contains(" + aoiTable.SHAPE +","+dataTable.field(AssignLocationColumnsTask.LOCATION_COLUMN)+")" )
 							.and( aoiTable.AOI_LEVEL_ID.eq(level.getId()) )
 							.asTable("tmp");
 		

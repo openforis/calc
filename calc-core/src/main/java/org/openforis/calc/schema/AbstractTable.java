@@ -22,8 +22,6 @@ public abstract class AbstractTable extends TableImpl<Record> {
 
 	private static final long serialVersionUID = 1L;
 
-	protected static final DataType<BigDecimal> DOUBLE_PRECISION = SQLDataType.NUMERIC.precision(15, 5);
-
 	protected AbstractTable(String name, Schema schema) {
 		super(name, schema);
 	}

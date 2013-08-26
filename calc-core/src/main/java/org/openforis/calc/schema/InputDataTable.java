@@ -13,7 +13,9 @@ public class InputDataTable extends DataTable {
 	private static final long serialVersionUID = 1L;
 
 	public InputDataTable(Entity entity, InputSchema schema) {
-		super(entity, schema);
-		createVariableFields(true);
+		super(entity, entity.getDataTable(), schema);
+		createCategoryFields(entity, true);
+		createQuantityFields(true);
+		createCoordinateFields();
 	}
 }
