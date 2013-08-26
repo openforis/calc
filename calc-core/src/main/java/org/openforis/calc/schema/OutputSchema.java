@@ -40,6 +40,7 @@ public class OutputSchema extends RelationalSchema {
 		initStratumDimensionTable();
 		initAoiDimensionTables();
 		initDataTables();
+		initFactTables();
 	}
 
 	private void initCategoryDimensionTables() {
@@ -57,6 +58,17 @@ public class OutputSchema extends RelationalSchema {
 			}
 		}
 	}
+
+	private void initFactTables() {
+		List<Entity> entities = workspace.getEntities();
+		for ( Entity entity : entities ) {
+			if ( entity.isUnitOfAnalysis() ) {
+				FactTable table = new FactTable(entity, this);
+				addTable(table);
+			}
+		}		
+	}
+
 
 	private void initStratumDimensionTable() {
 		this.stratumDimensionTable = new StratumDimensionTable(this);
