@@ -12,7 +12,7 @@ public class Schemas {
 	private OutputSchema outputSchema;
 	private RolapSchema rolapSchema;
 	
-	Schemas(Workspace workspace) {
+	public Schemas(Workspace workspace) {
 		inputSchema = new InputSchema(workspace);
 		outputSchema = new OutputSchema(workspace, inputSchema);
 		rolapSchema = new RolapSchema(workspace, outputSchema);

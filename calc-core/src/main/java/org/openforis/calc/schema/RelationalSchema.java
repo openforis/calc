@@ -27,7 +27,7 @@ public abstract class RelationalSchema extends SchemaImpl {
 		return Collections.unmodifiableList(tables);
 	}
 
-	public void addTable(Table<?> table) {
+	protected void addTable(Table<?> table) {
 		tables.add(table);
 	}
 }

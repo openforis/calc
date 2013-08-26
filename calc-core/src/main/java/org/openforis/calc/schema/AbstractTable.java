@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import org.jooq.DataType;
 import org.jooq.Field;
 import org.jooq.Record;
+import org.jooq.Schema;
 import org.jooq.TableField;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
@@ -23,7 +24,7 @@ public abstract class AbstractTable extends TableImpl<Record> {
 
 	protected static final DataType<BigDecimal> DOUBLE_PRECISION = SQLDataType.NUMERIC.precision(15, 5);
 
-	protected AbstractTable(String name, RelationalSchema schema) {
+	protected AbstractTable(String name, Schema schema) {
 		super(name, schema);
 	}
 

@@ -39,7 +39,7 @@ public class OutputDataTable extends DataTable {
 		this.aoiLevelFieldMap = new HashMap<AoiHierarchyLevel, Field<Integer>>();
 		// Add aoi columns if entity is geo referenced
 		if ( entity.isGeoreferenced() ) {
-			createAoiColumns();
+			createAoiFields();
 		}
 	}
 
@@ -51,7 +51,7 @@ public class OutputDataTable extends DataTable {
 		return aoiLevelFieldMap.get(aoiLevel);
 	}
 	
-	private void createAoiColumns() {
+	private void createAoiFields() {
 		Entity entity = getEntity();
 		Workspace workspace = entity.getWorkspace();
 		List<AoiHierarchy> aoiHierarchies = workspace.getAoiHierarchies();

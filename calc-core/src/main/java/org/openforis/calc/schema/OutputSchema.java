@@ -6,13 +6,15 @@ package org.openforis.calc.schema;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import org.jooq.Table;
 import org.openforis.calc.engine.Workspace;
+import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.AoiHierarchyLevel;
 import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.Variable;
 
 /**
  * @author G. Miceli
@@ -34,10 +36,54 @@ public class OutputSchema extends RelationalSchema {
 		super(workspace.getOutputSchema());
 		this.workspace = workspace;
 		this.inputSchema = inputSchema;
-		this.stratumDimensionTable = new StratumDimensionTable(this);
-		this.dataTables = new HashMap<Entity, OutputDataTable>();
+		initCategoryDimensionTables();
+		initStratumDimensionTable();
+		initAoiDimensionTables();
+		initDataTables();
+	}
+
+	private void initCategoryDimensionTables() {
 		this.categoryDimensionTables = new HashMap<CategoricalVariable, CategoryDimensionTable>();
+		List<Entity> entities = workspace.getEntities();
+		for ( Entity entity : entities ) {
+			// Add dimensions for categorical variables
+			List<Variable> variables = entity.getVariables();
+			for ( Variable var : variables ) {
+				if ( var instanceof CategoricalVariable ) {
+					CategoryDimensionTable table = new CategoryDimensionTable(this, (CategoricalVariable) var);
+					addTable(table);
+					categoryDimensionTables.put((CategoricalVariable) var, table);
+				}
+			}
+		}
+	}
+
+	private void initStratumDimensionTable() {
+		this.stratumDimensionTable = new StratumDimensionTable(this);
+	}
+
+	private void initDataTables() {
+		this.dataTables = new HashMap<Entity, OutputDataTable>();
+		List<Entity> entities = workspace.getEntities();
+		for ( Entity entity : entities ) {
+			InputDataTable inputTable = inputSchema.getDataTable(entity);
+			OutputDataTable outputTable = new OutputDataTable(entity, this, inputTable);
+			addTable(outputTable);
+			dataTables.put(entity, outputTable);
+		}
+	}
+
+	private void initAoiDimensionTables() {
 		this.aoiDimensionTables = new HashMap<AoiHierarchyLevel, AoiDimensionTable>();
+		List<AoiHierarchy> aoiHierarchies = workspace.getAoiHierarchies();
+		for ( AoiHierarchy aoiHierarchy : aoiHierarchies ) {
+			List<AoiHierarchyLevel> levels = aoiHierarchy.getLevels();
+			for ( AoiHierarchyLevel level : levels ) {
+				AoiDimensionTable table = new AoiDimensionTable(this, level);
+				addTable(table);
+				aoiDimensionTables.put(level, table);
+			}
+		}
 	}
 
 	public Workspace getWorkspace() {
@@ -46,24 +92,6 @@ public class OutputSchema extends RelationalSchema {
 
 	public InputSchema getInputSchema() {
 		return inputSchema;
-	}
-
-	@Override
-	public void addTable(Table<?> table) {
-		super.addTable(table);
-		if ( table instanceof OutputDataTable ) {
-			OutputDataTable dataTable = (OutputDataTable) table;
-			Entity entity = dataTable.getEntity();
-			dataTables.put(entity, dataTable);
-		}
-		if ( table instanceof CategoryDimensionTable ) {
-			CategoryDimensionTable dimTable = (CategoryDimensionTable) table;
-			categoryDimensionTables.put(dimTable.getVariable(), dimTable);
-		}
-		if ( table instanceof AoiDimensionTable ) {
-			AoiDimensionTable aoiDimTable = (AoiDimensionTable) table;
-			aoiDimensionTables.put(aoiDimTable.getHierarchyLevel(), aoiDimTable);
-		}
 	}
 
 	public StratumDimensionTable getStratumDimensionTable() {

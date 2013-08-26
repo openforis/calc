@@ -8,7 +8,6 @@ import java.util.concurrent.Executor;
 
 import javax.sql.DataSource;
 
-import org.openforis.calc.schema.SchemaGenerator;
 import org.openforis.calc.schema.Schemas;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,9 +46,6 @@ public class TaskManager {
 	private DataSource dataSource;
 
 	@Autowired
-	private SchemaGenerator schemaGenerator;
-
-	@Autowired
 	private PropertyPlaceholderConfigurer placeholderConfigurer;
 	
 	private Map<Integer, Job> jobs;
@@ -69,7 +65,7 @@ public class TaskManager {
 	 * calc and input schemas.  Used when running processing chains.
 	 */
 	public Job createUserJob(Workspace workspace) {
-		Schemas schemas = schemaGenerator.createSchemas(workspace);
+		Schemas schemas = new Schemas(workspace);
 		Job job = new Job(workspace, userDataSource);
 		job.setDebugMode(isDebugMode());
 		job.setSchemas(schemas);

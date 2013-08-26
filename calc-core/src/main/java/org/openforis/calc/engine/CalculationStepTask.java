@@ -9,7 +9,7 @@ import org.openforis.calc.chain.CalculationStep;
  * @author M. Togna
  * 
  */
-public class CalculationStepTask extends Task {
+public abstract class CalculationStepTask extends Task {
 
 	private ParameterMap parameters;
 	private CalculationStep calculationStep;

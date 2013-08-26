@@ -26,8 +26,8 @@ public class SyncCategoriesTask extends Task {
 
 	private RelationalSchema schema;
 //
-//	@Override
-//	protected void execute() throws Throwable {
+	@Override
+	protected void execute() throws Throwable {
 //		// TODO use CategoricalVariable metadata to identify and sync code list tables into Calc schema
 //
 //		//TODO pass schema from outside?
@@ -53,7 +53,7 @@ public class SyncCategoriesTask extends Task {
 //				insertBooleanCategories((BinaryVariable) v);
 //			}
 //		}
-//	}
+	}
 //
 //	protected void insertBooleanCategories(BinaryVariable v) {
 //		insertBooleanCategory(v, Boolean.TRUE, 1);

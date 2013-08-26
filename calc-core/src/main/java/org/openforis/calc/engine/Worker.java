@@ -52,9 +52,7 @@ public abstract class Worker {
 //	protected abstract long countTotalItems();
 	protected long countTotalItems() { return 1; };
 
-	// TODO
-//	protected abstract void execute() throws Throwable;
-	protected void execute() throws Throwable {};
+	protected abstract void execute() throws Throwable;
 
 	public synchronized void run() {
 		if ( !isPending() ) { 
