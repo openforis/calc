@@ -9,6 +9,7 @@ import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.VariableAggregate;
+import org.openforis.calc.persistence.postgis.Psql;
 
 /**
  * @author G. Miceli
@@ -50,7 +51,7 @@ public class FactTable extends DataTable {
 	private void createAggregateFields(QuantitativeVariable var) {
 		List<VariableAggregate> aggregates = var.getAggregates();
 		for (VariableAggregate agg : aggregates) {
-			createField(agg.getName(), DOUBLE_PRECISION, this);
+			createField(agg.getName(), Psql.DOUBLE_PRECISION, this);
 		}
 	}
 

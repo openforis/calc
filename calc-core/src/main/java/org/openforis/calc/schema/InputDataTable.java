@@ -16,5 +16,6 @@ public class InputDataTable extends DataTable {
 		super(entity, entity.getDataTable(), schema);
 		createCategoryFields(entity, true);
 		createQuantityFields(true);
+		createCoordinateFields();
 	}
 }

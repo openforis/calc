@@ -21,13 +21,16 @@ public class OutputDataTable extends DataTable {
 		createQuantityFields(false);
 		createStratumIdField();
 		createAoiIdFields();
+		createCoordinateFields();
+		createLocationField();		
 	}
-	
+
 	OutputDataTable(Entity entity, OutputSchema schema, InputDataTable sourceTable) {
 		this(entity, entity.getDataTable(), schema, sourceTable);
 	}
 
 	public InputDataTable getSourceTable() {
 		return sourceTable;
-	} 
+	}
+
 }

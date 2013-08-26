@@ -12,7 +12,7 @@ import org.openforis.calc.chain.post.CreateFactTablesTask;
 import org.openforis.calc.chain.pre.AssignAoiColumnsTask;
 import org.openforis.calc.chain.pre.CreateAoiDimensionTablesTask;
 import org.openforis.calc.chain.pre.CreateCategoryDimensionTablesTask;
-import org.openforis.calc.chain.pre.CreateLocationColumnsTask;
+import org.openforis.calc.chain.pre.AssignLocationColumnsTask;
 import org.openforis.calc.chain.pre.CreateStratumDimensionTableTask;
 import org.openforis.calc.chain.pre.OutputSchemaGrantsTask;
 import org.openforis.calc.chain.pre.ResetOutputSchemaTask;
@@ -49,7 +49,7 @@ public class CalculationEngine {
 			CreateAoiDimensionTablesTask.class,
 			CreateStratumDimensionTableTask.class,
 			CreateFactTablesTask.class,
-			CreateLocationColumnsTask.class,
+			AssignLocationColumnsTask.class,
 			AssignAoiColumnsTask.class,
 			OutputSchemaGrantsTask.class};
 
