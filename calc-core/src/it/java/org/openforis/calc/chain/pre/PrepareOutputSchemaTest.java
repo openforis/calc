@@ -33,7 +33,7 @@ public class PrepareOutputSchemaTest extends AbstractTransactionalJUnit4SpringCo
 				CreateAoiDimensionTablesTask.class,
 				CreateDataTablesTask.class
 				,
-//				CreateLocationColumnsTask.class,
+				CreateLocationColumnsTask.class,
 //				AssignAoiColumnsTask.class,
 				CreateStratumDimensionTableTask.class
 //				OutputSchemaGrantsTask.class

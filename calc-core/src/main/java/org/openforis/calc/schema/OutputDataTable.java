@@ -13,6 +13,8 @@ import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.AoiHierarchyLevel;
 import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.persistence.postgis.GeodeticCoordinate;
+import org.openforis.calc.persistence.postgis.Psql;
 
 /**
  * 
@@ -23,12 +25,20 @@ import org.openforis.calc.metadata.Entity;
 public class OutputDataTable extends DataTable {
 
 	private static final long serialVersionUID = 1L;
+
+	private static final String LOCATION_COLUMN_NAME = "_location";
+
 	public final TableField<Record, Integer> STRATUM_ID;
 
 	private InputDataTable inputDataTable;
 
 	private Map<AoiHierarchyLevel, Field<Integer>> aoiLevelFieldMap;
-	
+
+	/**
+	 * The point location field
+	 */
+	private Field<GeodeticCoordinate> locationField;
+
 	public OutputDataTable(Entity entity, OutputSchema schema, InputDataTable inputDataTable) {
 		super(entity, schema);
 
@@ -40,6 +50,7 @@ public class OutputDataTable extends DataTable {
 		// Add aoi columns if entity is geo referenced
 		if ( entity.isGeoreferenced() ) {
 			createAoiFields();
+			createLocationField();
 		}
 	}
 
@@ -50,7 +61,11 @@ public class OutputDataTable extends DataTable {
 	public Field<Integer> getAoiField(AoiHierarchyLevel aoiLevel) {
 		return aoiLevelFieldMap.get(aoiLevel);
 	}
-	
+
+	public Field<GeodeticCoordinate> getLocationField() {
+		return locationField;
+	}
+
 	private void createAoiFields() {
 		Entity entity = getEntity();
 		Workspace workspace = entity.getWorkspace();
@@ -65,7 +80,9 @@ public class OutputDataTable extends DataTable {
 			}
 		}
 	}
-	
-	
-	
+
+	private void createLocationField() {
+		locationField = createField(LOCATION_COLUMN_NAME, Psql.GEODETIC_COORDINATE_DATA_TYPE, this);
+	}
+
 }

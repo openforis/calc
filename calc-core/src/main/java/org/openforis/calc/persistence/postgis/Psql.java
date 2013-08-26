@@ -11,8 +11,6 @@ import org.jooq.Table;
 import org.jooq.Update;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultDSLContext;
-import org.openforis.calc.engine.Worker;
-import org.openforis.calc.schema.CategoryDimensionTable;
 
 /**
  * Simple PostreSQL query builder
@@ -23,6 +21,9 @@ import org.openforis.calc.schema.CategoryDimensionTable;
  */
 public final class Psql extends DefaultDSLContext {
 	private static final long serialVersionUID = 1L;
+	
+	public static final GeodeticCoordinateDataType GEODETIC_COORDINATE_DATA_TYPE = new GeodeticCoordinateDataType();
+	
 	public static final Schema PUBLIC = DSL.schemaByName("public");
 
 	public enum Privilege {
@@ -32,7 +33,7 @@ public final class Psql extends DefaultDSLContext {
 		};
 	};
 
-	public Psql() {
+	public Psql() {		
 		super(SQLDialect.POSTGRES);
 	}
 
