@@ -2,8 +2,11 @@ package org.openforis.calc.chain.post;
 
 import java.util.Collection;
 
+import org.jooq.SelectQuery;
 import org.openforis.calc.engine.Task;
+import org.openforis.calc.schema.DataTable;
 import org.openforis.calc.schema.FactTable;
+import org.openforis.calc.schema.OutputDataTable;
 import org.openforis.calc.schema.OutputSchema;
 
 /**
@@ -16,7 +19,10 @@ public final class CreateFactTablesTask extends Task {
 	protected void execute() throws Throwable {
 		OutputSchema outputSchema = getOutputSchema();
 		Collection<FactTable> factTables = outputSchema.getFactTables();
-//		SelectQuery<?> select = psql().selectQuery(table)
+		for (FactTable factTable : factTables) {
+			OutputDataTable sourceTable = (OutputDataTable) factTable.getSourceTable();
+			SelectQuery<?> select = psql().selectQuery(sourceTable);
+		}
 		// TODO Auto-generated method stub
 	}
 }

@@ -28,7 +28,7 @@ public class OutputSchema extends RelationalSchema {
 	private Workspace workspace;
 	private InputSchema inputSchema;
 	private StratumDimensionTable stratumDimensionTable;
-	private Map<Entity, OutputDataTable> dataTables;
+	private Map<Entity, OutputDataTable> outputDataTables;
 	private Map<Entity, FactTable> factTables;
 	private Map<CategoricalVariable, CategoryDimensionTable> categoryDimensionTables;
 	private Map<AoiHierarchyLevel, AoiDimensionTable> aoiDimensionTables;
@@ -62,12 +62,12 @@ public class OutputSchema extends RelationalSchema {
 
 	private void initFactTables() {
 		this.factTables = new HashMap<Entity, FactTable>();		
-		List<Entity> entities = workspace.getEntities();	
-		for ( Entity entity : entities ) {
+		for (OutputDataTable outputTable : outputDataTables.values() ) {
+			Entity entity = outputTable.getEntity();
 			if ( entity.isUnitOfAnalysis() ) {
-				FactTable table = new FactTable(entity, this);
-				addTable(table);
-				factTables.put(entity, table);
+				FactTable factTable = new FactTable(entity, this, outputTable);
+				addTable(factTable);
+				factTables.put(entity, factTable);
 			}
 		}		
 	}
@@ -78,13 +78,13 @@ public class OutputSchema extends RelationalSchema {
 	}
 
 	private void initDataTables() {
-		this.dataTables = new HashMap<Entity, OutputDataTable>();
+		this.outputDataTables = new HashMap<Entity, OutputDataTable>();
 		List<Entity> entities = workspace.getEntities();
 		for ( Entity entity : entities ) {
 			InputDataTable inputTable = inputSchema.getDataTable(entity);
 			OutputDataTable outputTable = new OutputDataTable(entity, this, inputTable);
 			addTable(outputTable);
-			dataTables.put(entity, outputTable);
+			outputDataTables.put(entity, outputTable);
 		}
 	}
 
@@ -113,8 +113,8 @@ public class OutputSchema extends RelationalSchema {
 		return stratumDimensionTable;
 	}
 
-	public Collection<OutputDataTable> getDataTables() {
-		return Collections.unmodifiableCollection(dataTables.values());
+	public Collection<OutputDataTable> getOutputDataTables() {
+		return Collections.unmodifiableCollection(outputDataTables.values());
 	}
 
 	public Collection<CategoryDimensionTable> getCategoryDimensionTables() {

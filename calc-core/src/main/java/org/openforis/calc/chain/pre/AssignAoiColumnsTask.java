@@ -32,7 +32,7 @@ public final class AssignAoiColumnsTask extends Task {
 	protected void execute() throws Throwable {
 
 		OutputSchema outputSchema = getOutputSchema();
-		Collection<OutputDataTable> tables = outputSchema.getDataTables();
+		Collection<OutputDataTable> tables = outputSchema.getOutputDataTables();
 		
 		for ( OutputDataTable table : tables ) {
 			if ( table.getEntity().isGeoreferenced() ) {

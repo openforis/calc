@@ -28,7 +28,7 @@ public final class AssignLocationColumnsTask extends Task {
 	protected void execute() throws Throwable {
 		// TODO
 		OutputSchema outputSchema = getOutputSchema();
-		for ( OutputDataTable dataTable : outputSchema.getDataTables() ) {
+		for ( OutputDataTable dataTable : outputSchema.getOutputDataTables() ) {
 
 			Entity entity = dataTable.getEntity();
 			if ( entity.isGeoreferenced() ) {

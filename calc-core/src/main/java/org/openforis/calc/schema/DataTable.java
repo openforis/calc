@@ -52,10 +52,12 @@ public abstract class DataTable extends AbstractTable {
 	private Map<AoiHierarchyLevel, Field<Integer>> aoiIdFields;
 
 	private Field<Integer> stratumIdField;
+	
 	/**
 	 * The point location field
 	 */
 	private Field<GeodeticCoordinate> locationField;
+	
 	/**
 	 * The coordinate fields
 	 */
@@ -63,12 +65,15 @@ public abstract class DataTable extends AbstractTable {
 	private Field<BigDecimal> yField;
 	private Field<String> srsIdField;
 
+	private DataTable sourceTable;
+
 	@SuppressWarnings("unchecked")
-	protected DataTable(Entity entity, String name, Schema schema) {
+	protected DataTable(Entity entity, String name, Schema schema, DataTable sourceTable) {
 		super(name, schema);
 		this.entity = entity;
 		this.idField = createField(entity.getIdColumn(), INTEGER, this);
 		this.primaryKey = KeyFactory.newUniqueKey(this, idField);
+		this.sourceTable = sourceTable;
 	}
 
 	protected void createStratumIdField() {
@@ -189,4 +194,7 @@ public abstract class DataTable extends AbstractTable {
 		}
 	}
 
+	public DataTable getSourceTable() {
+		return sourceTable;
+	}
 }

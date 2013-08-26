@@ -20,8 +20,8 @@ public class FactTable extends DataTable {
 	private static final long serialVersionUID = 1L;
 	private static final String FACT_TABLE_NAME_FORMAT = "_%s_fact";
 	
-	FactTable(Entity entity, OutputSchema schema) {
-		super(entity, getName(entity), schema);
+	FactTable(Entity entity, OutputSchema schema, OutputDataTable sourceTable) {
+		super(entity, getName(entity), schema, sourceTable);
 		createCategoryFields(entity);
 		createStratumIdField();
 		createAoiIdFields();
