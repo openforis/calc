@@ -59,7 +59,7 @@ public final class AssignAoiColumnsTask extends Task {
 				if ( childLevel == null ) {
 					assignLeafAoiColumn(dataTable, aoiTable, level);
 				} else {
-					assignAncestorAoiColumn(dataTable, childLevel, aoiTable);
+					assignAncestorAoiColumn(dataTable, aoiTable, level, childLevel);
 				}
 				
 				childLevel = level;
@@ -87,15 +87,16 @@ public final class AssignAoiColumnsTask extends Task {
 								.update(dataTable)
 								.set( dataTableAoiFkField , cursor.field(aoiTable.ID) );
 		
-		UpdateWithStep updateWithStep =  new Psql().updateWith( cursor, update, dataTablePKField.eq(cursor.field(dataTablePKField)) );
+		UpdateWithStep updateWithStep =  psql().updateWith( cursor, update, dataTablePKField.eq(cursor.field(dataTablePKField)) );
 			
 		updateWithStep.execute();
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void assignAncestorAoiColumn(OutputDataTable dataTable, AoiHierarchyLevel childLevel, AoiDimensionTable aoiTable) {
+	private void assignAncestorAoiColumn(OutputDataTable dataTable, AoiDimensionTable aoiTable, AoiHierarchyLevel level, AoiHierarchyLevel childLevel) {
 		AoiDimensionTable childAoiTable = getOutputSchema().getAoiDimensionTable(childLevel); 
 		Field<Integer> dataTableChildAoiFkField = (Field<Integer>)dataTable.field(childLevel.getFkColumn());	
+		Field<Integer> dataTableAoiFkField = (Field<Integer>)dataTable.field(level.getFkColumn());
 		
 		Table<?> cursor = new Psql()
 								.select( childAoiTable.ID, childAoiTable.PARENT_AOI_ID )				
@@ -104,9 +105,9 @@ public final class AssignAoiColumnsTask extends Task {
 		
 		Update<?> update =  new Psql()
 								.update(dataTable)
-								.set( dataTableChildAoiFkField , cursor.field(aoiTable.PARENT_AOI_ID) );
+								.set( dataTableAoiFkField , cursor.field(aoiTable.PARENT_AOI_ID) );
 		
-		UpdateWithStep updateWithStep = new Psql().updateWith( cursor, update, dataTableChildAoiFkField.eq( cursor.field(childAoiTable.ID) ) );
+		UpdateWithStep updateWithStep = psql().updateWith( cursor, update, dataTableChildAoiFkField.eq( cursor.field(childAoiTable.ID) ) );
 		
 		updateWithStep.execute();
 	}
