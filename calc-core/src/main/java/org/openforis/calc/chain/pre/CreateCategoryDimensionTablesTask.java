@@ -34,7 +34,8 @@ public final class CreateCategoryDimensionTablesTask extends Task {
 							CATEGORY.CODE		.as(t.CODE.getName()),
 							CATEGORY.NAME		.as(t.CAPTION.getName()),
 							CATEGORY.DESCRIPTION.as(t.DESCRIPTION.getName()), 
-							CATEGORY.SORT_ORDER	.as(t.SORT_ORDER.getName()))
+							CATEGORY.SORT_ORDER	.as(t.SORT_ORDER.getName()),
+							CATEGORY.VALUE      .as(t.VALUE.getName()))
 					.from(CATEGORY)
 					.where(CATEGORY.VARIABLE_ID.eq(varId));
 				

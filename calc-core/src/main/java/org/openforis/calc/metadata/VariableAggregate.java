@@ -18,7 +18,7 @@ public class VariableAggregate extends UserObject {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "variable_id")
-	private Variable variable;
+	private QuantitativeVariable variable;
 
 	@Column(name = "aggregate_column")
 	private String aggregateColumn;
@@ -32,11 +32,11 @@ public class VariableAggregate extends UserObject {
 	@Column(name = "aggregate_formula")
 	private String aggregateFormula;
 
-	public Variable getVariable() {
+	public QuantitativeVariable getVariable() {
 		return variable;
 	}
 
-	public void setVariable(Variable variable) {
+	public void setVariable(QuantitativeVariable variable) {
 		this.variable = variable;
 	}
 

@@ -8,6 +8,8 @@ import static org.jooq.impl.SQLDataType.INTEGER;
 import static org.jooq.impl.SQLDataType.VARCHAR;
 
 import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,22 +52,28 @@ public abstract class DataTable extends AbstractTable {
 	private UniqueKey<Record> primaryKey;
 
 	private Map<AoiHierarchyLevel, Field<Integer>> aoiIdFields;
-
+//	private Collection<Field<Integer>> categoryIdFields;
+	private Map<QuantitativeVariable, Field<BigDecimal>> quantityFields;
+	private Map<CategoricalVariable, Field<?>> categoryValueFields;
+	
 	private Field<Integer> stratumIdField;
 	private Field<GeodeticCoordinate> locationField;
 	private Field<BigDecimal> xField;
 	private Field<BigDecimal> yField;
 	private Field<String> srsIdField;
+	private Field<Integer> parentIdField;
 
 	private DataTable sourceTable;
-
+	private DataTable parentTable;
+	
 	@SuppressWarnings("unchecked")
-	protected DataTable(Entity entity, String name, Schema schema, DataTable sourceTable) {
+	protected DataTable(Entity entity, String name, Schema schema, DataTable sourceTable, DataTable parentTable) {
 		super(name, schema);
 		this.entity = entity;
 		this.idField = createField(entity.getIdColumn(), INTEGER, this);
 		this.primaryKey = KeyFactory.newUniqueKey(this, idField);
 		this.sourceTable = sourceTable;
+		this.parentTable = parentTable;
 	}
 
 	protected void createStratumIdField() {
@@ -77,44 +85,45 @@ public abstract class DataTable extends AbstractTable {
 	}
 
 	protected void createQuantityFields(boolean inputOnly) {
+		this.quantityFields = new HashMap<QuantitativeVariable, Field<BigDecimal>>();
 		Entity entity = getEntity();
 		List<Variable> variables = entity.getVariables();
 		for ( Variable var : variables ) {
 			if ( var.isInput() || !inputOnly ) {
 				if ( var instanceof QuantitativeVariable ) {
-					createValueField((QuantitativeVariable) var, Psql.DOUBLE_PRECISION);
+					createQuantityField((QuantitativeVariable) var);
 				}
 			}
 		}
 	}
 
-	protected void createCategoryFields(Entity entity, boolean inputOnly) {
+	private void createQuantityField(QuantitativeVariable var) {
+		Field<BigDecimal> field = createValueField(var, Psql.DOUBLE_PRECISION);
+		quantityFields.put(var, field);
+	}
+
+	protected void createCategoryValueFields(Entity entity, boolean inputOnly) {
+		this.categoryValueFields = new HashMap<CategoricalVariable, Field<?>>();
 		List<Variable> variables = entity.getVariables();
 		for ( Variable var : variables ) {
 			if ( var.isInput() || !inputOnly ) {
 				if ( var instanceof BinaryVariable ) {
-					createValueField((BinaryVariable) var, BOOLEAN);
-					createCategoryIdField((BinaryVariable) var);
+					Field<Boolean> fld = createValueField((BinaryVariable) var, BOOLEAN);
+					categoryValueFields.put((CategoricalVariable) var, fld);
 				} else if ( var instanceof CategoricalVariable ) {
-					createValueField(var, VARCHAR.length(255));
-					createCategoryIdField((CategoricalVariable) var);
+					Field<String> fld = createValueField(var, VARCHAR.length(255));
+					categoryValueFields.put((CategoricalVariable) var, fld);
 				}
 			}
 		}
 	}
 
-	protected void createCategoryIdField(CategoricalVariable var) {
-		String categoryIdColumn = var.getCategoryIdColumn();
-		if ( categoryIdColumn != null ) {
-			createField(categoryIdColumn, INTEGER, this);
-		}
-	}
-
-	private void createValueField(Variable var, DataType<?> valueType) {
+	private <T> Field<T> createValueField(Variable var, DataType<T> valueType) {
 		String valueColumn = var.getValueColumn();
 		if ( valueColumn != null ) {
-			createField(valueColumn, valueType, this);
+			return createField(valueColumn, valueType, this);
 		}
+		return null;				
 	}
 
 	public TableField<Record, Integer> getIdField() {
@@ -186,7 +195,40 @@ public abstract class DataTable extends AbstractTable {
 		}
 	}
 
+	protected void createParentIdField() {
+		String parentIdColumn = entity.getParentIdColumn();
+		if ( parentIdColumn != null ) {
+			this.parentIdField = createField(parentIdColumn, INTEGER, this);
+		}
+	}
+	
 	public DataTable getSourceTable() {
 		return sourceTable;
 	}
+	
+	public Field<Integer> getParentIdField() {
+		return parentIdField;
+	}
+	
+	public DataTable getParentTable() {
+		return parentTable;
+	}
+	
+	public Collection<Field<?>> getCategoryValueFields() {
+		return Collections.unmodifiableCollection(categoryValueFields.values());
+	}
+	
+	public Collection<Field<Integer>> getAoiIdFields() {
+		return Collections.unmodifiableCollection(aoiIdFields.values());
+	}
+	
+	public Field<BigDecimal> getQuantityField(QuantitativeVariable var) {
+		return quantityFields == null ? null : quantityFields.get(var);
+	}
+	
+	public Field<?> getCategoryValueField(CategoricalVariable var) {
+		return categoryValueFields.get(var);
+	}
 }
+
+

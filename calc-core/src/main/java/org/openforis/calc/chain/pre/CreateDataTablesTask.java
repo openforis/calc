@@ -102,9 +102,17 @@ public final class CreateDataTablesTask extends Task {
 	private void createOutputDataTable(OutputDataTable outputTable) {
 		InputDataTable inputTable = (InputDataTable) outputTable.getSourceTable();
 		
+		if ( isDebugMode() ) {
+			psql()
+				.dropTableIfExists(outputTable)
+				.execute();
+		}
+		
 		// Copying entire table from input schema
+		// TODO replace with select of specific columns
 		Select<?> select = psql().selectStarFrom(inputTable);
-		select.execute();
+		
+		
 		psql()
 			.createTable(outputTable)
 			.as(select)

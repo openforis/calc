@@ -11,7 +11,6 @@ import org.jooq.Table;
  *
  */
 public class CreateTableStep extends PsqlPart {
-
 	CreateTableStep(Psql psql, Table<?> table) {
 		super(psql);
 		append("create table ");
@@ -23,13 +22,10 @@ public class CreateTableStep extends PsqlPart {
 	}
 	
 	public class AsStep extends PsqlPart {
-		
 		AsStep(Select<?> select) {
 			super(CreateTableStep.this);
 			append("as ");
 			append(select);
 		}
-		
 	}
-	
 }

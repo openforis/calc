@@ -1,6 +1,5 @@
 package org.openforis.calc.persistence.postgis;
 
-import org.jooq.Schema;
 import org.jooq.Table;
 
 /**

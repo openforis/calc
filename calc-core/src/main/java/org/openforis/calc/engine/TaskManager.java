@@ -8,6 +8,11 @@ import java.util.concurrent.Executor;
 
 import javax.sql.DataSource;
 
+import org.openforis.calc.chain.CalculationStep;
+import org.openforis.calc.chain.InvalidProcessingChainException;
+import org.openforis.calc.chain.ProcessingChain;
+import org.openforis.calc.module.ModuleRegistry;
+import org.openforis.calc.module.Operation;
 import org.openforis.calc.schema.Schemas;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +52,10 @@ public class TaskManager {
 
 	@Autowired
 	private PropertyPlaceholderConfigurer placeholderConfigurer;
-	
+
+	@Autowired
+	private ModuleRegistry moduleRegistry;
+
 	private Map<Integer, Job> jobs;
 	
 	public TaskManager() {
@@ -92,6 +100,22 @@ public class TaskManager {
 		} catch ( IllegalAccessException e ) {
 			throw new IllegalArgumentException("Invalid task " + type.getClass(), e);
 		}
+	}
+
+	public List<Task> createCalculationStepTasks(ProcessingChain chain) throws InvalidProcessingChainException {
+		List<Task> tasks = new ArrayList<Task>();
+		List<CalculationStep> steps = chain.getCalculationSteps();
+		for (CalculationStep step : steps) {
+			Operation<?> operation = moduleRegistry.getOperation(step);
+			if ( operation == null ) {
+				throw new InvalidProcessingChainException("Unknown operation in step "+step);
+			}
+			Class<? extends CalculationStepTask> taskType = operation.getTaskType();
+			CalculationStepTask task = createTask(taskType);
+			task.setCalculationStep(step);			
+			tasks.add(task);
+		}
+		return tasks;
 	}
 
 	/**

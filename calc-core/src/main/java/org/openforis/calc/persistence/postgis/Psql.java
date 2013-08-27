@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 
 import javax.sql.DataSource;
 
-import org.jooq.Condition;
 import org.jooq.DataType;
 import org.jooq.Field;
 import org.jooq.SQLDialect;
@@ -26,7 +25,7 @@ import org.jooq.impl.SQLDataType;
 public final class Psql extends DefaultDSLContext {
 	private static final long serialVersionUID = 1L;
 	
-	public static final DataType<BigDecimal> DOUBLE_PRECISION = SQLDataType.NUMERIC.precision(15, 5);
+	public static final DataType<BigDecimal> DOUBLE_PRECISION = SQLDataType.NUMERIC;
 	public static final DataType<GeodeticCoordinate> GEODETIC_COORDINATE = new GeodeticCoordinateDataType();
 	
 	public static final Schema PUBLIC = DSL.schemaByName("public");
@@ -86,11 +85,15 @@ public final class Psql extends DefaultDSLContext {
 		return new SetDefaultSchemaSearchPathStep(this, schemas);
 	}
 
-	public UpdateWithStep updateWith(Table<?> cursor, Update<?> update, Condition joinCondition) {
+	public UpdateWithStep updateWith(Table<?> cursor, Update<?> update, Object joinCondition) {
 		return new UpdateWithStep(this, cursor, update, joinCondition);
 	}
 
 	public DropTableStep dropTableIfExists(Table<?> table) {
 		return new DropTableStep(this, true, table);
+	}
+
+	public CaseStep decode() {
+		return new CaseStep(this);
 	}
 }

@@ -40,7 +40,7 @@ public class OutputSchema extends RelationalSchema {
 		initCategoryDimensionTables();
 		initStratumDimensionTable();
 		initAoiDimensionTables();
-		initDataTables();
+		initOutputDataTables();
 		initFactTables();
 	}
 
@@ -62,29 +62,55 @@ public class OutputSchema extends RelationalSchema {
 
 	private void initFactTables() {
 		this.factTables = new HashMap<Entity, FactTable>();		
-		for (OutputDataTable outputTable : outputDataTables.values() ) {
-			Entity entity = outputTable.getEntity();
-			if ( entity.isUnitOfAnalysis() ) {
-				FactTable factTable = new FactTable(entity, this, outputTable);
-				addTable(factTable);
-				factTables.put(entity, factTable);
-			}
+		List<Entity> entities = workspace.getEntities();
+		for ( Entity entity : entities ) {
+			initFactTables(entity, null);
 		}		
 	}
 
+	/**
+	 * Recursively initialize fact tables
+	 */
+	private void initFactTables(Entity entity, FactTable parentFact) {
+		if ( entity.isUnitOfAnalysis() ) {
+			OutputDataTable outputTable = outputDataTables.get(entity);
+			FactTable factTable = new FactTable(entity, this, outputTable, parentFact);
+			addTable(factTable);
+			factTables.put(entity, factTable);
+			
+			List<Entity> children = entity.getChildren();
+			for (Entity child : children) {
+				if ( child.isUnitOfAnalysis() ) {
+					initFactTables(child, factTable);
+				}
+			}
+		}
+	}
 
 	private void initStratumDimensionTable() {
 		this.stratumDimensionTable = new StratumDimensionTable(this);
 	}
 
-	private void initDataTables() {
+	private void initOutputDataTables() {
 		this.outputDataTables = new HashMap<Entity, OutputDataTable>();
 		List<Entity> entities = workspace.getEntities();
 		for ( Entity entity : entities ) {
-			InputDataTable inputTable = inputSchema.getDataTable(entity);
-			OutputDataTable outputTable = new OutputDataTable(entity, this, inputTable);
-			addTable(outputTable);
-			outputDataTables.put(entity, outputTable);
+			initOutputDataTables(entity, null);
+		}
+	}
+
+	/**
+	 * Recursively add tables for each entity
+	 */
+	private void initOutputDataTables(Entity entity, OutputDataTable parentTable) {
+		InputDataTable inputTable = inputSchema.getDataTable(entity);
+		OutputDataTable outputTable = new OutputDataTable(entity, this, inputTable, parentTable);
+		addTable(outputTable);
+		outputDataTables.put(entity, outputTable);
+		
+		List<Entity> children = entity.getChildren();
+		for (Entity child : children) {
+			initOutputDataTables(child, outputTable);
 		}
 	}
 

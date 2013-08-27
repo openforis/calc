@@ -18,9 +18,9 @@ public final class CustomSqlTask extends CalculationStepTask {
 
 	@Override
 	protected void execute() throws SQLException {
-		log().debug("Executing custom SQL");
 		ParameterMap params = parameters();
 		String sql = params.getString("sql");
+		log().debug(sql);
 		OutputSchema outputSchema = getOutputSchema();
 		psql().setDefaultSchemaSearchPath(outputSchema, Psql.PUBLIC).execute();
 		psql().execute(sql);

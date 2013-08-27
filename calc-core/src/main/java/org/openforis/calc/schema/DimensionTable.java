@@ -1,7 +1,10 @@
 package org.openforis.calc.schema;
 
+import static org.openforis.calc.persistence.postgis.Psql.DOUBLE_PRECISION;
 import static org.jooq.impl.SQLDataType.INTEGER;
 import static org.jooq.impl.SQLDataType.VARCHAR;
+
+import java.math.BigDecimal;
 
 import org.jooq.Record;
 import org.jooq.TableField;
@@ -22,6 +25,8 @@ public class DimensionTable extends AbstractTable {
 	public final TableField<Record, String> CAPTION = createField("caption", VARCHAR.length(255), this);
 	public final TableField<Record, String> DESCRIPTION = createField("description", VARCHAR.length(1024), this);
 	public final TableField<Record, Integer> SORT_ORDER = createField("sort_order", INTEGER, this);
+	public final TableField<Record, BigDecimal> VALUE = createField("value", DOUBLE_PRECISION, this);
+	
 	private UniqueKey<Record> primaryKey;
 	
 	@SuppressWarnings("unchecked")

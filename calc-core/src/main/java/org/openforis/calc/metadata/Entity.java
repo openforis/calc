@@ -12,6 +12,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.functors.InstanceofPredicate;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Fetch;
@@ -130,6 +132,16 @@ public class Entity extends UserObject {
 		return Collections.unmodifiableList(variables);
 	}
 
+	public List<VariableAggregate> getVariableAggregates() {
+		List<VariableAggregate> aggs = new ArrayList<VariableAggregate>();
+		for (Variable var : variables) {
+			if ( var instanceof QuantitativeVariable ) {
+				aggs.addAll(((QuantitativeVariable) var).getAggregates());
+			}
+		}
+		return Collections.unmodifiableList(aggs);
+	}
+	
 	public Entity getParent() {
 		return parent;
 	}
@@ -232,6 +244,21 @@ public class Entity extends UserObject {
 
 	public void setUnitOfAnalysis(boolean unitOfAnalysis) {
 		this.unitOfAnalysis = unitOfAnalysis;
+	}
+
+	public List<CategoricalVariable> getCategoricalVariables() {
+		return Collections.unmodifiableList(selectInstancesOf(variables, CategoricalVariable.class));
+	}
+
+	public List<QuantitativeVariable> getQuantitativeVariables() {
+		return Collections.unmodifiableList(selectInstancesOf(variables, QuantitativeVariable.class));
+	}
+
+	// TODO move to Open Foris commons
+	static <I,O extends I> List<O> selectInstancesOf(List<I> items, Class<O> type) {
+		List<O> out = new ArrayList<O>();
+		CollectionUtils.select(items, new InstanceofPredicate(type), out);
+		return out;
 	}
 }
 

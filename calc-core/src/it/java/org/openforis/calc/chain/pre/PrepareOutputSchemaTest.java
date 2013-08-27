@@ -1,6 +1,7 @@
 package org.openforis.calc.chain.pre;
 
 import org.junit.Test;
+import org.openforis.calc.chain.post.CreateFactTablesTask;
 import org.openforis.calc.engine.Job;
 import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
@@ -28,15 +29,13 @@ public class PrepareOutputSchemaTest extends AbstractTransactionalJUnit4SpringCo
 		Workspace foundWorkspace = workspaceDao.find(1);
 		Job job = taskManager.createUserJob(foundWorkspace);
 		job.addTasks(taskManager.createTasks(
-				ResetOutputSchemaTask.class,
-				CreateCategoryDimensionTablesTask.class,
-				CreateAoiDimensionTablesTask.class,
-				CreateDataTablesTask.class
-				,
-				AssignLocationColumnsTask.class,
-				AssignAoiColumnsTask.class,
-				CreateStratumDimensionTableTask.class
-//				OutputSchemaGrantsTask.class
+//				ResetOutputSchemaTask.class,
+				CreateCategoryDimensionTablesTask.class
+//				CreateAoiDimensionTablesTask.class,
+//				CreateStratumDimensionTableTask.class,				
+//				CreateDataTablesTask.class,
+//				AssignLocationColumnsTask.class,
+//				AssignAoiColumnsTask.class
 				));
 		taskManager.startJob(job);
 		job.waitFor(5000);

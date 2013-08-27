@@ -48,7 +48,7 @@ public abstract class PsqlPart {
 	protected String toSql() {
 		return sb.toString();
 	}
-
+	
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
@@ -58,5 +58,9 @@ public abstract class PsqlPart {
 		}
 		sb.append(this.toSql());
 		return sb.toString();
+	}
+	
+	public int hashCode() {
+		return toString().hashCode();
 	}
 }

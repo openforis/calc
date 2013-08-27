@@ -12,17 +12,18 @@ public class OutputDataTable extends DataTable {
 
 	private static final long serialVersionUID = 1L;
 
-	protected OutputDataTable(Entity entity, String name, OutputSchema schema, DataTable sourceTable) {
-		super(entity, name, schema, sourceTable);
-		createCategoryFields(entity, false);
+	protected OutputDataTable(Entity entity, String name, OutputSchema schema, DataTable sourceTable, DataTable parentTable) {
+		super(entity, name, schema, sourceTable, parentTable);
+		createCategoryValueFields(entity, false);
 		createQuantityFields(false);
 		createStratumIdField();
 		createAoiIdFields();
 		createCoordinateFields();
-		createLocationField();		
+		createLocationField();	
+		createParentIdField();
 	}
 
-	OutputDataTable(Entity entity, OutputSchema schema, InputDataTable sourceTable) {
-		this(entity, entity.getDataTable(), schema, sourceTable);
+	OutputDataTable(Entity entity, OutputSchema schema, InputDataTable sourceTable, OutputDataTable parentTable) {
+		this(entity, entity.getDataTable(), schema, sourceTable, parentTable);
 	}
 }

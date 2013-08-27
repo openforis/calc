@@ -13,6 +13,6 @@ public class SetDefaultSchemaSearchPathStep extends PsqlPart {
 	SetDefaultSchemaSearchPathStep(Psql psql, Schema... schemas) {
 		super(psql);
 		append("set search_path to ");
-		append(StringUtils.join(schemas));
+		append(StringUtils.join(schemas, ", "));
 	}
 }
