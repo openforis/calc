@@ -23,6 +23,8 @@ import org.openforis.calc.persistence.postgis.PsqlBuilder;
  * @author M. Togna
  */
 public final class CreateAggregateTablesTask extends Task {
+	private static final String STRATUM_ID = "stratum_id";
+
 	@Override
 	protected void execute() throws Throwable {
 		Workspace workspace = getWorkspace();
@@ -60,7 +62,7 @@ public final class CreateAggregateTablesTask extends Task {
 				throw new UnsupportedOperationException("Unknown variable class");
 			}
 		}
-		groupBy.add(CreateDataTablesTask.STRATUM_ID);
+		groupBy.add(STRATUM_ID);
 		groupBy.add(aoiFkColumn);
 		select.addAll(0, groupBy);
 		
