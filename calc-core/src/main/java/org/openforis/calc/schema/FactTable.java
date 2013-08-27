@@ -14,7 +14,7 @@ import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.VariableAggregate;
-import org.openforis.calc.persistence.postgis.Psql;
+import org.openforis.calc.psql.Psql;
 
 /**
  * @author G. Miceli

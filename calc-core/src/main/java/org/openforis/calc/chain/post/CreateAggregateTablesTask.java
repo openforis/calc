@@ -13,7 +13,7 @@ import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.VariableAggregate;
-import org.openforis.calc.persistence.postgis.PsqlBuilder;
+import org.openforis.calc.psql.PsqlBuilder;
 
 /**
  * Creates and populates aggregate tables for sampling unit entities and descendants.

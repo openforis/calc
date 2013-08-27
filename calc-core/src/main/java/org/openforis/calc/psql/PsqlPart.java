@@ -1,8 +1,5 @@
-package org.openforis.calc.persistence.postgis;
+package org.openforis.calc.psql;
 
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -14,11 +11,9 @@ public abstract class PsqlPart {
 	private Psql psql;
 	private PsqlPart previous;
 	private StringBuilder sb;
-	private Logger log;
 
 	PsqlPart(Psql psql) {
 		this.psql = psql;
-		this.log = LoggerFactory.getLogger(getClass());
 	}
 
 	PsqlPart(PsqlPart previous) {
@@ -29,11 +24,7 @@ public abstract class PsqlPart {
 	public int execute(Object... bindings) {
 		String sql = toString();
 
-		if ( bindings.length == 0 ) {
-			log.debug(sql + ";");
-		} else {
-			log.debug(sql + "; -- Parameters: " + StringUtils.join(bindings) + "");
-		}
+		psql.logSql(sql, bindings);
 
 		return psql.execute(sql, bindings);
 	}

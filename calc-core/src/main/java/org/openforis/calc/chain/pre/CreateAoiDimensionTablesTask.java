@@ -7,8 +7,8 @@ import org.jooq.Select;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.AoiHierarchyLevel;
-import org.openforis.calc.persistence.postgis.Psql;
-import org.openforis.calc.persistence.postgis.Psql.Privilege;
+import org.openforis.calc.psql.Psql;
+import org.openforis.calc.psql.Psql.Privilege;
 import org.openforis.calc.schema.AoiDimensionTable;
 import org.openforis.calc.schema.OutputSchema;
 

@@ -1,4 +1,4 @@
-package org.openforis.calc.persistence.postgis;
+package org.openforis.calc.psql;
 
 import org.apache.commons.lang.StringUtils;
 import org.jooq.Field;
@@ -35,7 +35,7 @@ public class AlterTableStep extends PsqlPart {
 		AddPrimaryKeyStep(UniqueKey<?> key) {
 			super(AlterTableStep.this);
 			append("add primary key (");
-			append(StringUtils.join(Psql.names(key.getFieldsArray())));
+			append(StringUtils.join(Psql.names(key.getFieldsArray()), ", "));
 			append(")");
 		}
 	}

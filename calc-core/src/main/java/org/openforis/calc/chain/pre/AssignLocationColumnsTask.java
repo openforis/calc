@@ -8,8 +8,8 @@ import org.jooq.Update;
 import org.jooq.impl.DSL;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.metadata.Entity;
-import org.openforis.calc.persistence.postgis.Psql;
-import org.openforis.calc.persistence.postgis.UpdateWithStep;
+import org.openforis.calc.psql.Psql;
+import org.openforis.calc.psql.UpdateWithStep;
 import org.openforis.calc.schema.OutputDataTable;
 import org.openforis.calc.schema.OutputSchema;
 

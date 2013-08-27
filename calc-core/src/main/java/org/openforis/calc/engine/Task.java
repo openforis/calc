@@ -3,8 +3,8 @@ package org.openforis.calc.engine;
 import javax.sql.DataSource;
 
 import org.openforis.calc.nls.Captionable;
-import org.openforis.calc.persistence.postgis.Psql;
-import org.openforis.calc.persistence.postgis.PsqlBuilder;
+import org.openforis.calc.psql.Psql;
+import org.openforis.calc.psql.PsqlBuilder;
 import org.openforis.calc.schema.OutputSchema;
 import org.openforis.calc.schema.RolapSchema;
 import org.springframework.beans.factory.annotation.Value;

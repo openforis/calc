@@ -28,10 +28,12 @@ public class OutputSchema extends RelationalSchema {
 	private Workspace workspace;
 	private InputSchema inputSchema;
 	private StratumDimensionTable stratumDimensionTable;
+	private ExpansionFactorTable expansionFactorTable;
 	private Map<Entity, OutputDataTable> outputDataTables;
 	private Map<Entity, FactTable> factTables;
 	private Map<CategoricalVariable, CategoryDimensionTable> categoryDimensionTables;
 	private Map<AoiHierarchyLevel, AoiDimensionTable> aoiDimensionTables;
+
 
 	public OutputSchema(Workspace workspace, InputSchema inputSchema) {
 		super(workspace.getOutputSchema());
@@ -42,6 +44,11 @@ public class OutputSchema extends RelationalSchema {
 		initAoiDimensionTables();
 		initOutputDataTables();
 		initFactTables();
+		initExpansionFactorTable();
+	}
+
+	private void initExpansionFactorTable() {
+		this.expansionFactorTable = new ExpansionFactorTable(this);
 	}
 
 	private void initCategoryDimensionTables() {
@@ -161,5 +168,9 @@ public class OutputSchema extends RelationalSchema {
 
 	public Collection<FactTable> getFactTables() {
 		return Collections.unmodifiableCollection(factTables.values());
+	}
+	
+	public ExpansionFactorTable getExpansionFactorTable() {
+		return expansionFactorTable;
 	}
 }

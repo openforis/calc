@@ -1,9 +1,9 @@
-package org.openforis.calc.persistence.postgis;
+package org.openforis.calc.psql;
 
 import org.apache.commons.lang.StringUtils;
 import org.jooq.Schema;
 import org.jooq.Table;
-import org.openforis.calc.persistence.postgis.Psql.Privilege;
+import org.openforis.calc.psql.Psql.Privilege;
 
 /**
  * 

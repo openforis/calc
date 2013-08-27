@@ -5,7 +5,7 @@ import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Category;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.Variable;
-import org.openforis.calc.persistence.postgis.PsqlBuilder;
+import org.openforis.calc.psql.PsqlBuilder;
 
 public class AssignDefaultValuesTask extends Task {
 

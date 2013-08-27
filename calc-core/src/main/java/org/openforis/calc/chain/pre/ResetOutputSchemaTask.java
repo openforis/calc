@@ -1,7 +1,7 @@
 package org.openforis.calc.chain.pre;
 
 import org.openforis.calc.engine.Task;
-import org.openforis.calc.persistence.postgis.Psql.Privilege;
+import org.openforis.calc.psql.Psql.Privilege;
 import org.openforis.calc.schema.OutputSchema;
 
 /**

@@ -1,4 +1,4 @@
-package org.openforis.calc.persistence.postgis;
+package org.openforis.calc.psql;
 
 import org.jooq.Select;
 import org.jooq.Table;

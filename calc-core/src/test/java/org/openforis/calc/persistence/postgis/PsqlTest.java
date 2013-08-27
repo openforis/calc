@@ -8,6 +8,8 @@ import org.jooq.Table;
 import org.jooq.Update;
 import org.junit.Assert;
 import org.junit.Test;
+import org.openforis.calc.psql.Psql;
+import org.openforis.calc.psql.UpdateWithStep;
 
 /**
  * 

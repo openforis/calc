@@ -30,8 +30,8 @@ import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.Variable;
-import org.openforis.calc.persistence.postgis.GeodeticCoordinate;
-import org.openforis.calc.persistence.postgis.Psql;
+import org.openforis.calc.psql.GeodeticCoordinate;
+import org.openforis.calc.psql.Psql;
 
 /**
  * A table derived from a Calc entity; this includes input and output data tables as well as OLAP fact tables
@@ -62,7 +62,7 @@ public abstract class DataTable extends AbstractTable {
 	private Field<BigDecimal> yField;
 	private Field<String> srsIdField;
 	private Field<Integer> parentIdField;
-
+	
 	private DataTable sourceTable;
 	private DataTable parentTable;
 	
@@ -232,6 +232,12 @@ public abstract class DataTable extends AbstractTable {
 	
 	public Field<?> getCategoryValueField(CategoricalVariable var) {
 		return categoryValueFields.get(var);
+	}
+	
+	// TODO HARD-CODED: allow user-configuration of variable to use as weight! 
+	@SuppressWarnings("unchecked")
+	public Field<BigDecimal> getWeightField() {
+		return (Field<BigDecimal>) field("weight");
 	}
 }
 

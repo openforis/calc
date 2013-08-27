@@ -4,7 +4,7 @@ import static org.openforis.calc.persistence.jooq.Tables.STRATUM;
 
 import org.jooq.Select;
 import org.openforis.calc.engine.Task;
-import org.openforis.calc.persistence.postgis.Psql.Privilege;
+import org.openforis.calc.psql.Psql.Privilege;
 import org.openforis.calc.schema.OutputSchema;
 import org.openforis.calc.schema.StratumDimensionTable;
 

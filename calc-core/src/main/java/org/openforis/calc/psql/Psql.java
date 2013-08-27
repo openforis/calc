@@ -1,9 +1,10 @@
-package org.openforis.calc.persistence.postgis;
+package org.openforis.calc.psql;
 
 import java.math.BigDecimal;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jooq.DataType;
 import org.jooq.Field;
 import org.jooq.SQLDialect;
@@ -13,7 +14,10 @@ import org.jooq.Table;
 import org.jooq.Update;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultDSLContext;
+import org.jooq.impl.DefaultExecuteListenerProvider;
 import org.jooq.impl.SQLDataType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Simple PostreSQL query builder
@@ -30,6 +34,8 @@ public final class Psql extends DefaultDSLContext {
 	
 	public static final Schema PUBLIC = DSL.schemaByName("public");
 
+	private Logger log;
+
 	public enum Privilege {
 		ALL, SELECT;
 		public String toString() {
@@ -37,14 +43,19 @@ public final class Psql extends DefaultDSLContext {
 		};
 	};
 
-	public Psql() {		
+	public Psql() {
 		super(SQLDialect.POSTGRES);
+		init();
 	}
 
 	public Psql(DataSource dataSource) {
 		super(dataSource, SQLDialect.POSTGRES);
-//		super(DataSourceUtils.getConnection(dataSource), SQLDialect.POSTGRES);
-		// TODO correctly implement transactions (CALC-125)
+		init();
+	}
+
+	private void init() {
+		this.log = LoggerFactory.getLogger(getClass());		
+		configuration().set(new DefaultExecuteListenerProvider(new LogSqlListener(this)));
 	}
 
 	static String[] names(Field<?>[] fields) {
@@ -95,5 +106,17 @@ public final class Psql extends DefaultDSLContext {
 
 	public CaseStep decode() {
 		return new CaseStep(this);
+	}
+
+	public CreateTableWithFieldsStep createTable(Table<?> table, Field<?>... fields) {
+		return new CreateTableWithFieldsStep(this, table, fields);
+	}
+
+	void logSql(String sql, Object... bindings) {
+		if ( bindings.length == 0 ) {
+			log.debug(sql + ";");
+		} else {
+			log.debug(sql + "; -- Parameters: " + StringUtils.join(bindings) + "");
+		}
 	}
 }

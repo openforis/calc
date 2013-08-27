@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.openforis.calc.persistence.postgis;
+package org.openforis.calc.psql;
 
 import org.jooq.SQLDialect;
 import org.jooq.impl.DefaultDataType;
