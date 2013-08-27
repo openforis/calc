@@ -8,7 +8,7 @@ import org.jooq.Schema;
  * @author G. Miceli
  *
  */
-public class SetDefaultSchemaSearchPathStep extends PsqlPart {
+public class SetDefaultSchemaSearchPathStep extends ExecutablePsqlPart {
 
 	SetDefaultSchemaSearchPathStep(Psql psql, Schema... schemas) {
 		super(psql);

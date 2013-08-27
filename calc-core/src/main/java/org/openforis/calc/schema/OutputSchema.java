@@ -3,6 +3,7 @@
  */
 package org.openforis.calc.schema;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -33,7 +34,7 @@ public class OutputSchema extends RelationalSchema {
 	private Map<Entity, FactTable> factTables;
 	private Map<CategoricalVariable, CategoryDimensionTable> categoryDimensionTables;
 	private Map<AoiHierarchyLevel, AoiDimensionTable> aoiDimensionTables;
-
+	private List<AggregateTable> aggregateTables;
 
 	public OutputSchema(Workspace workspace, InputSchema inputSchema) {
 		super(workspace.getOutputSchema());
@@ -43,8 +44,8 @@ public class OutputSchema extends RelationalSchema {
 		initStratumDimensionTable();
 		initAoiDimensionTables();
 		initOutputDataTables();
-		initFactTables();
 		initExpansionFactorTable();
+		initFactTables();
 	}
 
 	private void initExpansionFactorTable() {
@@ -68,7 +69,8 @@ public class OutputSchema extends RelationalSchema {
 	}
 
 	private void initFactTables() {
-		this.factTables = new HashMap<Entity, FactTable>();		
+		this.factTables = new HashMap<Entity, FactTable>();
+		this.aggregateTables = new ArrayList<AggregateTable>();
 		List<Entity> entities = workspace.getEntities();
 		for ( Entity entity : entities ) {
 			initFactTables(entity, null);
@@ -85,15 +87,30 @@ public class OutputSchema extends RelationalSchema {
 			addTable(factTable);
 			factTables.put(entity, factTable);
 			
+			// Create children fact tables
 			List<Entity> children = entity.getChildren();
 			for (Entity child : children) {
 				if ( child.isUnitOfAnalysis() ) {
 					initFactTables(child, factTable);
 				}
 			}
+
+			if ( entity.isSamplingUnit() ) {
+				initAggregateTables(factTable);
+			}
 		}
 	}
 
+	private void initAggregateTables(FactTable factTable) {
+		List<AoiHierarchy> aoiHierarchies = workspace.getAoiHierarchies();
+		for (AoiHierarchy aoiHierarchy : aoiHierarchies) {
+			List<AoiHierarchyLevel> levels = aoiHierarchy.getLevels();
+			for (AoiHierarchyLevel level : levels) {
+				AggregateTable aggregateTable = new AggregateTable(factTable, level);
+				aggregateTables.add(aggregateTable);
+			}
+		}
+	}
 	private void initStratumDimensionTable() {
 		this.stratumDimensionTable = new StratumDimensionTable(this);
 	}
@@ -172,5 +189,9 @@ public class OutputSchema extends RelationalSchema {
 	
 	public ExpansionFactorTable getExpansionFactorTable() {
 		return expansionFactorTable;
+	}
+	
+	public List<AggregateTable> getAggregateTables() {
+		return Collections.unmodifiableList(aggregateTables);
 	}
 }

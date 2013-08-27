@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 public final class Psql extends DefaultDSLContext {
 	private static final long serialVersionUID = 1L;
 	
-	public static final DataType<BigDecimal> DOUBLE_PRECISION = SQLDataType.NUMERIC;
+	public static final DataType<BigDecimal> DOUBLE_PRECISION = SQLDataType.NUMERIC.precision(15, 5);
 	public static final DataType<GeodeticCoordinate> GEODETIC_COORDINATE = new GeodeticCoordinateDataType();
 	
 	public static final Schema PUBLIC = DSL.schemaByName("public");

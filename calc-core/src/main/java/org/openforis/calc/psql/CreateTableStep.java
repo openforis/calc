@@ -21,7 +21,7 @@ public class CreateTableStep extends PsqlPart {
 		return new AsStep(select);
 	}
 	
-	public class AsStep extends PsqlPart {
+	public class AsStep extends ExecutablePsqlPart {
 		AsStep(Select<?> select) {
 			super(CreateTableStep.this);
 			append("as ");

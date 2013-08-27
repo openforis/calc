@@ -24,7 +24,7 @@ public class ExpansionFactorTable extends AbstractTable {
 	public final TableField<Record,Integer> STRATUM_ID = createField("stratum_id", INTEGER, this);
 	public final TableField<Record,Integer> AOI_ID = createField("aoi_id", INTEGER, this);
 	public final TableField<Record,Integer> ENTITY_ID = createField("entity_id", INTEGER, this);
-	public final TableField<Record,BigDecimal> EXPF = createField("expf", Psql.DOUBLE_PRECISION, this);
+	public final TableField<Record,BigDecimal> EXPF = createField("_expf", Psql.DOUBLE_PRECISION, this);
 	@SuppressWarnings("unchecked")
 	private final UniqueKey<Record> primaryKey = KeyFactory.newUniqueKey(this, STRATUM_ID, AOI_ID, ENTITY_ID);
 

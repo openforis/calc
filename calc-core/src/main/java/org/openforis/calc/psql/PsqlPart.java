@@ -21,14 +21,6 @@ public abstract class PsqlPart {
 		this.previous = previous;
 	}
 
-	public int execute(Object... bindings) {
-		String sql = toString();
-
-		psql.logSql(sql, bindings);
-
-		return psql.execute(sql, bindings);
-	}
-
 	protected void append(Object s) {
 		if ( sb == null ) {
 			this.sb = new StringBuilder();
@@ -53,5 +45,9 @@ public abstract class PsqlPart {
 	
 	public int hashCode() {
 		return toString().hashCode();
+	}
+	
+	protected Psql getPsql() {
+		return psql;
 	}
 }

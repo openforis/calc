@@ -10,7 +10,7 @@ import org.jooq.impl.TableAliasUtil;
  * @author M. Togna
  *
  */
-public class UpdateWithStep extends PsqlPart {
+public class UpdateWithStep extends ExecutablePsqlPart {
 
 	UpdateWithStep(Psql psql, Table<?> cursor, Update<?> update, Object joinCondition) {
 		super(psql); 

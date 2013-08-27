@@ -42,20 +42,19 @@ import org.openforis.calc.psql.Psql;
  */
 public abstract class DataTable extends AbstractTable {
 
-	private static final String LOCATION_COLUMN_NAME = "_location";
 	private static final long serialVersionUID = 1L;
 
-	private final TableField<Record, Integer> idField;
-
+	private static final String LOCATION_COLUMN_NAME = "_location";
+	
 	private Entity entity;
 
 	private UniqueKey<Record> primaryKey;
 
 	private Map<AoiHierarchyLevel, Field<Integer>> aoiIdFields;
-//	private Collection<Field<Integer>> categoryIdFields;
 	private Map<QuantitativeVariable, Field<BigDecimal>> quantityFields;
 	private Map<CategoricalVariable, Field<?>> categoryValueFields;
 	
+	private TableField<Record, Integer> idField;
 	private Field<Integer> stratumIdField;
 	private Field<GeodeticCoordinate> locationField;
 	private Field<BigDecimal> xField;
@@ -66,14 +65,17 @@ public abstract class DataTable extends AbstractTable {
 	private DataTable sourceTable;
 	private DataTable parentTable;
 	
-	@SuppressWarnings("unchecked")
 	protected DataTable(Entity entity, String name, Schema schema, DataTable sourceTable, DataTable parentTable) {
 		super(name, schema);
 		this.entity = entity;
-		this.idField = createField(entity.getIdColumn(), INTEGER, this);
-		this.primaryKey = KeyFactory.newUniqueKey(this, idField);
 		this.sourceTable = sourceTable;
 		this.parentTable = parentTable;
+	}
+
+	@SuppressWarnings("unchecked")
+	protected void createPrimaryKeyField() {
+		this.idField = createField(entity.getIdColumn(), INTEGER, this);
+		this.primaryKey = KeyFactory.newUniqueKey(this, idField);
 	}
 
 	protected void createStratumIdField() {
@@ -102,15 +104,15 @@ public abstract class DataTable extends AbstractTable {
 		quantityFields.put(var, field);
 	}
 
-	protected void createCategoryValueFields(Entity entity, boolean inputOnly) {
+	protected void createCategoryValueFields(Entity entity, boolean inputOnly, boolean disaggregatesOnly) {
 		this.categoryValueFields = new HashMap<CategoricalVariable, Field<?>>();
-		List<Variable> variables = entity.getVariables();
-		for ( Variable var : variables ) {
-			if ( var.isInput() || !inputOnly ) {
+		List<CategoricalVariable> variables = entity.getCategoricalVariables();
+		for ( CategoricalVariable var : variables ) {
+			if ( (var.isInput() || !inputOnly) && (var.isDisaggregate() || !disaggregatesOnly) ) {
 				if ( var instanceof BinaryVariable ) {
 					Field<Boolean> fld = createValueField((BinaryVariable) var, BOOLEAN);
 					categoryValueFields.put((CategoricalVariable) var, fld);
-				} else if ( var instanceof CategoricalVariable ) {
+				} else {
 					Field<String> fld = createValueField(var, VARCHAR.length(255));
 					categoryValueFields.put((CategoricalVariable) var, fld);
 				}
@@ -159,7 +161,7 @@ public abstract class DataTable extends AbstractTable {
 		return srsIdField;
 	}
 	
-	protected void createAoiIdFields() {
+	protected void createAoiIdFields(AoiHierarchyLevel lowestLevel) {
 		this.aoiIdFields = new HashMap<AoiHierarchyLevel, Field<Integer>>();
 		if ( entity.isGeoreferenced() ) {
 			Workspace workspace = entity.getWorkspace();
@@ -167,9 +169,11 @@ public abstract class DataTable extends AbstractTable {
 			for ( AoiHierarchy hierarchy : aoiHierarchies ) {
 				List<AoiHierarchyLevel> levels = hierarchy.getLevels();
 				for ( AoiHierarchyLevel level : levels ) {
-					String fkColumn = level.getFkColumn();
-					Field<Integer> aoiField = createField(fkColumn, INTEGER, this);
-					aoiIdFields.put(level, aoiField);
+					if ( lowestLevel == null || level.getRank() <= lowestLevel.getRank() ) {
+						String fkColumn = level.getFkColumn();
+						Field<Integer> aoiField = createField(fkColumn, INTEGER, this);
+						aoiIdFields.put(level, aoiField);
+					}
 				}
 			}
 		}

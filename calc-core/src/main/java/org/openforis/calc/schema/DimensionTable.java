@@ -1,8 +1,8 @@
 package org.openforis.calc.schema;
 
-import static org.openforis.calc.psql.Psql.DOUBLE_PRECISION;
 import static org.jooq.impl.SQLDataType.INTEGER;
 import static org.jooq.impl.SQLDataType.VARCHAR;
+import static org.openforis.calc.psql.Psql.DOUBLE_PRECISION;
 
 import java.math.BigDecimal;
 

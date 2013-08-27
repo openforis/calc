@@ -44,7 +44,7 @@ public class GrantStep extends PsqlPart {
 			return new ToStep(user);
 		}
 		
-		public class ToStep extends PsqlPart {
+		public class ToStep extends ExecutablePsqlPart {
 			public ToStep(String user) {
 				super(OnStep.this);
 				append("to ");

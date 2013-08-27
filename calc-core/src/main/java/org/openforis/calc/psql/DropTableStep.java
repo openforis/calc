@@ -7,7 +7,7 @@ import org.jooq.Table;
  * @author G. Miceli
  *
  */
-public class DropTableStep extends PsqlPart {
+public class DropTableStep extends ExecutablePsqlPart {
 
 	DropTableStep(Psql psql, boolean ifExists, Table<?> table) {
 		super(psql);
@@ -21,8 +21,8 @@ public class DropTableStep extends PsqlPart {
 	public CascadeStep cascade() {
 		return new CascadeStep();
 	}
-
-	public class CascadeStep extends PsqlPart {
+	
+	public class CascadeStep extends ExecutablePsqlPart {
 
 		CascadeStep() {
 			super(DropTableStep.this);

@@ -7,7 +7,7 @@ import org.jooq.Schema;
  * @author G. Miceli
  *
  */
-public class DropSchemaStep extends PsqlPart {
+public class DropSchemaStep extends ExecutablePsqlPart {
 
 	DropSchemaStep(Psql psql, boolean ifExists, Schema schema) {
 		super(psql);
@@ -22,7 +22,7 @@ public class DropSchemaStep extends PsqlPart {
 		return new CascadeStep();
 	}
 
-	public class CascadeStep extends PsqlPart {
+	public class CascadeStep extends ExecutablePsqlPart {
 
 		CascadeStep() {
 			super(DropSchemaStep.this);

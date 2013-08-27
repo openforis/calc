@@ -9,7 +9,7 @@ import org.jooq.Table;
  * @author M. Togna
  *
  */
-public class CreateTableWithFieldsStep extends PsqlPart {
+public class CreateTableWithFieldsStep extends ExecutablePsqlPart {
 
 	CreateTableWithFieldsStep(Psql psql, Table<?> table, Field<?>[] fields) {
 		super(psql);

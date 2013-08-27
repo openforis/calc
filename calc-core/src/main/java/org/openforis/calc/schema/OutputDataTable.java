@@ -14,10 +14,11 @@ public class OutputDataTable extends DataTable {
 
 	protected OutputDataTable(Entity entity, String name, OutputSchema schema, DataTable sourceTable, DataTable parentTable) {
 		super(entity, name, schema, sourceTable, parentTable);
-		createCategoryValueFields(entity, false);
+		createParentIdField();		
+		createCategoryValueFields(entity, false, false);
 		createQuantityFields(false);
 		createStratumIdField();
-		createAoiIdFields();
+		createAoiIdFields(null);
 		createCoordinateFields();
 		createLocationField();	
 		createParentIdField();

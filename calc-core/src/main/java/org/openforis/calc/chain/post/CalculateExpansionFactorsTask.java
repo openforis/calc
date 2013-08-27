@@ -1,17 +1,14 @@
 package org.openforis.calc.chain.post;
 
 
+import static org.jooq.impl.DSL.sum;
+import static org.openforis.calc.persistence.jooq.Tables.STRATUM_AOI_VIEW;
+
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 
 import org.jooq.Field;
-import org.jooq.Record;
-import org.jooq.Record4;
-import org.jooq.Select;
-import org.jooq.SelectHavingStep;
-import org.jooq.Table;
-import static org.jooq.impl.DSL.sum;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.AoiHierarchy;
@@ -19,11 +16,6 @@ import org.openforis.calc.metadata.AoiHierarchyLevel;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.persistence.jooq.tables.StratumAoiViewTable;
 import org.openforis.calc.psql.Psql;
-
-import static org.openforis.calc.persistence.jooq.Tables.*;
-import static org.openforis.calc.psql.PsqlBuilder.quote;
-import static org.openforis.calc.psql.PsqlBuilder.table;
-
 import org.openforis.calc.schema.ExpansionFactorTable;
 import org.openforis.calc.schema.FactTable;
 import org.openforis.calc.schema.OutputSchema;
