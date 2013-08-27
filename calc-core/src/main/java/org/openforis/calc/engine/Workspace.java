@@ -1,6 +1,7 @@
 package org.openforis.calc.engine;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -10,6 +11,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Fetch;
@@ -117,4 +120,13 @@ public class Workspace extends UserObject {
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
+	public Collection<Entity> getRootEntities() {
+		return CollectionUtils.select(entities, new Predicate() {
+			@Override
+			public boolean evaluate(Object object) {
+				return ((Entity)object).getParent() == null;
+			}
+		});
+	}
 }

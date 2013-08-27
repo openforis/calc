@@ -18,7 +18,7 @@ import org.springframework.test.context.junit4.AbstractTransactionalJUnit4Spring
  * 
  */
 @ContextConfiguration(locations = { "classpath:applicationContext.xml" })
-public class PrepareOutputSchemaTest extends AbstractTransactionalJUnit4SpringContextTests {
+public class PreProcessingTest extends AbstractTransactionalJUnit4SpringContextTests {
 	@Autowired
 	private TaskManager taskManager;
 	@Autowired

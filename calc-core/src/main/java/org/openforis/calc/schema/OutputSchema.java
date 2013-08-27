@@ -93,7 +93,7 @@ public class OutputSchema extends RelationalSchema {
 
 	private void initOutputDataTables() {
 		this.outputDataTables = new HashMap<Entity, OutputDataTable>();
-		List<Entity> entities = workspace.getEntities();
+		Collection<Entity> entities = workspace.getRootEntities();
 		for ( Entity entity : entities ) {
 			initOutputDataTables(entity, null);
 		}

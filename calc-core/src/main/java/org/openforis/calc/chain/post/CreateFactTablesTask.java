@@ -42,16 +42,17 @@ public final class CreateFactTablesTask extends Task {
 			selectQuantities(select, outputTable);
 			selectMeasures(select, factTable);
 			
-			if ( isDebugMode() ) {
-				psql()
-					.dropTableIfExists(factTable)
-					.execute();
-			}
-			
-			psql()
-				.createTable(factTable)
-				.as(select)
-				.execute();
+//			if ( isDebugMode() ) {
+//				psql()
+//					.dropTableIfExists(factTable)
+//					.execute();
+//			}
+//			
+//			psql()
+//				.createTable(factTable)
+//				.as(select)
+//				.execute();
+			System.out.println(select);
 		}
 	}
 

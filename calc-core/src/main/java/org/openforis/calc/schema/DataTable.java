@@ -197,7 +197,11 @@ public abstract class DataTable extends AbstractTable {
 
 	protected void createParentIdField() {
 		String parentIdColumn = entity.getParentIdColumn();
-		if ( parentIdColumn != null ) {
+		if ( parentIdColumn == null ) {
+			if ( entity.getParent() != null ) {
+				throw new NullPointerException("parent_id_column not defined for entity "+entity);
+			}
+		} else {
 			this.parentIdField = createField(parentIdColumn, INTEGER, this);
 		}
 	}

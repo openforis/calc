@@ -33,8 +33,9 @@ public class PostProcessingTest extends AbstractTransactionalJUnit4SpringContext
 		Workspace ws = workspaceDao.find(1);
 		Job job = taskManager.createUserJob(ws);
 		job.addTasks(taskManager.createTasks(
-//				CreateFactTablesTask.class,
-				AssignDimensionIdsTask.class));
+				CreateFactTablesTask.class
+//				,AssignDimensionIdsTask.class
+				));
 //		job.addTask(CalculateExpansionFactorsTask.class);
 //		job.addTask(AggregateSamplingUnitsTask.class);
 //		job.addTask(CalculateExpansionFactorsTask.class);
