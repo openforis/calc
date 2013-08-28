@@ -16,6 +16,7 @@ import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.VariableAggregate;
 import org.openforis.calc.psql.Psql;
+import org.openforis.calc.psql.Psql.Privilege;
 import org.openforis.calc.schema.DataTable;
 import org.openforis.calc.schema.FactTable;
 import org.openforis.calc.schema.OutputDataTable;
@@ -51,6 +52,13 @@ public final class CreateFactTablesTask extends Task {
 			psql()
 				.createTable(factTable)
 				.as(select)
+				.execute();
+			
+			// Grant access to system user
+			psql()
+				.grant(Privilege.ALL)
+				.on(factTable)
+				.to(getSystemUser())
 				.execute();
 		}
 	}

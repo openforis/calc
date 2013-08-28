@@ -3,9 +3,13 @@ package org.openforis.calc.engine;
 import org.openforis.calc.chain.InvalidProcessingChainException;
 import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.chain.ProcessingChainDao;
+import org.openforis.calc.chain.post.AssignDimensionIdsTask;
 import org.openforis.calc.chain.post.CalculateExpansionFactorsTask;
+import org.openforis.calc.chain.post.CreateAggregateTablesTask;
 import org.openforis.calc.chain.post.CreateFactTablesTask;
+import org.openforis.calc.chain.post.PublishRolapSchemaTask;
 import org.openforis.calc.chain.pre.AssignAoiColumnsTask;
+import org.openforis.calc.chain.pre.AssignDefaultValuesTask;
 import org.openforis.calc.chain.pre.AssignLocationColumnsTask;
 import org.openforis.calc.chain.pre.CreateAoiDimensionTablesTask;
 import org.openforis.calc.chain.pre.CreateCategoryDimensionTablesTask;
@@ -34,19 +38,24 @@ public class CalculationEngine {
 	@Autowired
 	private WorkspaceDao workspaceDao;
 
-	private Class<?>[] PREPROCESSING_TASKS = {
+	public static final Class<?>[] PREPROCESSING_TASKS = {
 			ResetOutputSchemaTask.class,
 			CreateCategoryDimensionTablesTask.class,
 			CreateAoiDimensionTablesTask.class,
 			CreateStratumDimensionTableTask.class,
 			CreateDataTablesTask.class,
+			AssignDefaultValuesTask.class,
 			AssignLocationColumnsTask.class,
-			AssignAoiColumnsTask.class};
+			AssignAoiColumnsTask.class
+		};
 
-	private Class<?>[] POSTPROCESSING_TASKS = {
+	public static final Class<?>[] POSTPROCESSING_TASKS = {
 			CreateFactTablesTask.class,
+			AssignDimensionIdsTask.class,
 			CalculateExpansionFactorsTask.class,
-			CreateFactTablesTask.class};
+			CreateAggregateTablesTask.class,
+			PublishRolapSchemaTask.class
+		};
 
 	synchronized
 	public Job runProcessingChain(int chainId) throws WorkspaceLockedException, InvalidProcessingChainException {

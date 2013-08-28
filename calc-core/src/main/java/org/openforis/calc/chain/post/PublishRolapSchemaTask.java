@@ -43,7 +43,7 @@ import org.springframework.beans.factory.annotation.Value;
  * @author M. Togna
  * 
  */
-public class GenerateRolapSchemaTask extends Task {
+public class PublishRolapSchemaTask extends Task {
 
 	private static final String NUMBER_FORMAT_STRING = "#,###.##";
 	private static final String DATA_TYPE_NUMERIC = "Numeric";

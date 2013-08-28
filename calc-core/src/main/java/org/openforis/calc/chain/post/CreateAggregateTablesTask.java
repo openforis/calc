@@ -8,12 +8,10 @@ import org.jooq.SelectQuery;
 import org.jooq.impl.DSL;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.metadata.AoiHierarchyLevel;
-import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
-import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.VariableAggregate;
 import org.openforis.calc.psql.Psql;
-import org.openforis.calc.psql.PsqlBuilder;
+import org.openforis.calc.psql.Psql.Privilege;
 import org.openforis.calc.schema.AggregateTable;
 import org.openforis.calc.schema.ExpansionFactorTable;
 import org.openforis.calc.schema.FactTable;
@@ -33,7 +31,9 @@ public final class CreateAggregateTablesTask extends Task {
 		OutputSchema outputSchema = getOutputSchema();
 		List<AggregateTable> aggTables = outputSchema.getAggregateTables();
 		ExpansionFactorTable expf = outputSchema.getExpansionFactorTable();
+		
 		for (AggregateTable aggTable : aggTables) {
+			
 			AoiHierarchyLevel level = aggTable.getAoiHierarchyLevel();
 			FactTable f = (FactTable) aggTable.getSourceTable();
 			Field<Integer> aoiId = f.getAoiIdField(level);
@@ -62,6 +62,8 @@ public final class CreateAggregateTablesTask extends Task {
 				String aggCol = varAgg.getAggregateColumn();
 				select.addSelect(DSL.field(formula).as(aggCol));
 			}
+			//add aggregate fact count column
+			select.addSelect(DSL.count().as(aggTable.getAggregateFactCountField().getName()));
 			
 			if ( isDebugMode() ) {
 				psql()
@@ -78,6 +80,13 @@ public final class CreateAggregateTablesTask extends Task {
 			psql()
 				.createTable(aggTable)
 				.as(select)
+				.execute();
+			
+			// Grant access to system user
+			psql()
+				.grant(Privilege.ALL)
+				.on(aggTable)
+				.to(getSystemUser())
 				.execute();
 			
 //			String aoiFkColumn = level.getFkColumn();
@@ -112,39 +121,39 @@ public final class CreateAggregateTablesTask extends Task {
 		}
 	}
 	
-	private void addDimensionColumn(CategoricalVariable var, List<String> groupBy) {
-		String idCol = var.getCategoryIdColumn();
-		if ( idCol != null && var.isDisaggregate() ) {
-			groupBy.add(idCol);
-		}
-	}
-
-	private void addMeasureColumn(QuantitativeVariable var, List<String> select) {
-		String valueCol = var.getValueColumn();
-		List<VariableAggregate> aggregates = var.getAggregates();
-		for (VariableAggregate aggregate : aggregates) {
-			String formula = aggregate.getAggregateFormula();
-			String aggCol = aggregate.getAggregateColumn();
-			aggCol = aggCol == null ? valueCol : aggCol;
-			select.add(formula+" as "+aggCol);
-		}
-	}
-
-	private void createAggregateTable(String factTable, String aoiFkColumn, String aggTable, int entityId, 
-			List<String> select, List<String> groupBy) {
-		
-		PsqlBuilder aggSelect = new PsqlBuilder()
-				.select(select.toArray())
-				.from(factTable+" f")
-				.innerJoin(CalculateExpansionFactorsTask.EXPF_TABLE+" x")
-				.on("f._stratum_id = x.stratum_id")
-				.and("f."+aoiFkColumn+" = x.aoi_id")
-				.and("x.entity_id = ?")
-				.groupBy(groupBy.toArray());
-		
-		createPsqlBuilder()
-			.createTable(aggTable)
-			.as(aggSelect)
-			.execute(entityId);
-	}
+//	private void addDimensionColumn(CategoricalVariable var, List<String> groupBy) {
+//		String idCol = var.getCategoryIdColumn();
+//		if ( idCol != null && var.isDisaggregate() ) {
+//			groupBy.add(idCol);
+//		}
+//	}
+//
+//	private void addMeasureColumn(QuantitativeVariable var, List<String> select) {
+//		String valueCol = var.getValueColumn();
+//		List<VariableAggregate> aggregates = var.getAggregates();
+//		for (VariableAggregate aggregate : aggregates) {
+//			String formula = aggregate.getAggregateFormula();
+//			String aggCol = aggregate.getAggregateColumn();
+//			aggCol = aggCol == null ? valueCol : aggCol;
+//			select.add(formula+" as "+aggCol);
+//		}
+//	}
+//
+//	private void createAggregateTable(String factTable, String aoiFkColumn, String aggTable, int entityId, 
+//			List<String> select, List<String> groupBy) {
+//		
+//		PsqlBuilder aggSelect = new PsqlBuilder()
+//				.select(select.toArray())
+//				.from(factTable+" f")
+//				.innerJoin(CalculateExpansionFactorsTask.EXPF_TABLE+" x")
+//				.on("f._stratum_id = x.stratum_id")
+//				.and("f."+aoiFkColumn+" = x.aoi_id")
+//				.and("x.entity_id = ?")
+//				.groupBy(groupBy.toArray());
+//		
+//		createPsqlBuilder()
+//			.createTable(aggTable)
+//			.as(aggSelect)
+//			.execute(entityId);
+//	}
 }

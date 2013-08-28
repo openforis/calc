@@ -14,6 +14,7 @@ public class InputDataTable extends DataTable {
 
 	public InputDataTable(Entity entity, InputSchema schema) {
 		super(entity, entity.getDataTable(), schema, null, null);
+		createPrimaryKeyField();
 		createParentIdField();		
 		createCategoryValueFields(entity, true, false);
 		createQuantityFields(true);

@@ -14,13 +14,13 @@ public class OutputDataTable extends DataTable {
 
 	protected OutputDataTable(Entity entity, String name, OutputSchema schema, DataTable sourceTable, DataTable parentTable) {
 		super(entity, name, schema, sourceTable, parentTable);
-		createParentIdField();		
+		createPrimaryKeyField();		
 		createCategoryValueFields(entity, false, false);
 		createQuantityFields(false);
 		createStratumIdField();
 		createAoiIdFields(null);
 		createCoordinateFields();
-		createLocationField();	
+		createLocationField();
 		createParentIdField();
 	}
 
