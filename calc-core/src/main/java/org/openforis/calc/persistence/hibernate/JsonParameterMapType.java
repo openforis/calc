@@ -49,9 +49,11 @@ public class JsonParameterMapType extends AbstractSingleColumnStandardBasicType<
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public <X> X unwrap(ParameterMap value, Class<X> type, WrapperOptions options) {
-			if ( type.isAssignableFrom(String.class) ) {
-				return (X) value.toJsonString();
+		public <X> X unwrap(ParameterMap map, Class<X> type, WrapperOptions options) {
+			if ( map == null ) {
+				return (X) "";
+			} else if ( type.isAssignableFrom(String.class) ) {
+				return (X) map.toJsonString();
 			} else {
 				throw new IllegalArgumentException(type.getClass().getName());
 			}
@@ -59,7 +61,9 @@ public class JsonParameterMapType extends AbstractSingleColumnStandardBasicType<
 
 		@Override
 		public <X> ParameterMap wrap(X value, WrapperOptions options) {
-			if ( value instanceof String ) {
+			if ( value == null ) {
+				return new ParameterHashMap();
+			} else  if ( value instanceof String ) {
 				return parseJson((String) value);
 			} else {
 				throw new IllegalArgumentException("value");
@@ -67,7 +71,7 @@ public class JsonParameterMapType extends AbstractSingleColumnStandardBasicType<
 		}
 
 		@SuppressWarnings("unchecked")
-		private <X> ParameterMap parseJson(String str) {
+		private ParameterMap parseJson(String str) {
 			try {
 				JSONParser parser = new JSONParser();
 				Object obj = parser.parse(str);

@@ -4,6 +4,7 @@ import java.util.Set;
 
 /**
  * 
+ * 
  * @author G. Miceli
  * @author M. Togna
  */
@@ -24,7 +25,7 @@ public interface ParameterMap {
 	ParameterMap getMap(String name);
 	void setMap(String name, ParameterMap value);
 
-	void removeValue(String name);
+	void remove(String name);
 	
 	String toJsonString();
 	

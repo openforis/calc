@@ -32,14 +32,13 @@ public class ParameterHashMap implements ParameterMap {
 		this.map = map;
 	}
 
-
 	@Override
 	public Set<String> names() {
 		return Collections.unmodifiableSet( map.keySet() );
 	}
 
 	@Override
-	public void removeValue(String name) {
+	public void remove(String name) {
 		map.remove(name);
 	}
 
@@ -127,5 +126,5 @@ public class ParameterHashMap implements ParameterMap {
 			newMap.put(name, value);
 		}
 		return new ParameterHashMap(newMap);
-	} 
+	}
 }

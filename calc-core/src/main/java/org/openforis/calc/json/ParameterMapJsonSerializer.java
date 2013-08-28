@@ -21,16 +21,13 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 public class ParameterMapJsonSerializer extends JsonSerializer<ParameterMap> {
 
 	@Override
-	public void serialize(ParameterMap value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
+	public void serialize(ParameterMap map, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
 		jgen.writeStartObject();
-
-		for ( String paramName : value.names() ) {
-			Object paramValue = value.get(paramName);
+		for ( String paramName : map.names() ) {
+			Object paramValue = map.get(paramName);
 
 			jgen.writeObjectField(paramName, paramValue);
 		}
-
 		jgen.writeEndObject();
 	}
-
 }

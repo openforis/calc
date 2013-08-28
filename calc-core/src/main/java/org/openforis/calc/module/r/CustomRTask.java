@@ -1,7 +1,6 @@
 package org.openforis.calc.module.r;
 
 import org.openforis.calc.engine.CalculationStepTask;
-import org.openforis.calc.engine.ParameterMap;
 import org.openforis.calc.r.R;
 import org.openforis.calc.r.REnvironment;
 import org.openforis.calc.r.RException;
@@ -22,9 +21,8 @@ public final class CustomRTask extends CalculationStepTask {
 	synchronized
 	protected void execute() throws RException {
 		REnvironment env = r.newEnvironment();
-		ParameterMap params = parameters();
-		String rScript = params.getString("r");
-		log().debug("Custom R: "+rScript);
-		env.eval(rScript);
+		String script = getCalculationStep().getScript();
+		log().debug("Custom R: "+script);
+		env.eval(script);
 	}
 }

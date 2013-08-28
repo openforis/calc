@@ -46,6 +46,9 @@ public class CalculationStep extends UserObject {
 	@Column(name = "parameters")
 	private ParameterMap parameters;
 
+	@Column(name = "script")
+	private String script;
+
 	public CalculationStep() {
 		this.parameters = new ParameterHashMap();
 	}
@@ -92,6 +95,14 @@ public class CalculationStep extends UserObject {
 	
 	public void setProcessingChain(ProcessingChain chain) {
 		this.processingChain = chain;
+	}
+	
+	public String getScript() {
+		return script;
+	}
+	
+	public void setScript(String script) {
+		this.script = script;
 	}
 	
 	@Override

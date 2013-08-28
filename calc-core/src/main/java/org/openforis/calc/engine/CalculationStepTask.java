@@ -26,6 +26,10 @@ public abstract class CalculationStepTask extends Task {
 		this.calculationStep = calculationStep;
 		
 		ParameterMap parameterMap = calculationStep.parameters();
-		this.parameters = parameterMap.deepCopy();
+		if ( parameterMap == null ) {
+			this.parameters = new ParameterHashMap();			
+		} else {
+			this.parameters = parameterMap.deepCopy();
+		}
 	}
 }
