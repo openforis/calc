@@ -1,7 +1,6 @@
 package org.openforis.calc.chain.pre;
 
 import org.junit.Test;
-import org.openforis.calc.chain.post.CreateFactTablesTask;
 import org.openforis.calc.engine.Job;
 import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
@@ -18,7 +17,8 @@ import org.springframework.test.context.junit4.AbstractTransactionalJUnit4Spring
  * 
  */
 @ContextConfiguration(locations = { "classpath:applicationContext.xml" })
-public class PreProcessingTest extends AbstractTransactionalJUnit4SpringContextTests {
+public class PreProcessingTest extends
+		AbstractTransactionalJUnit4SpringContextTests {
 	@Autowired
 	private TaskManager taskManager;
 	@Autowired
@@ -28,15 +28,14 @@ public class PreProcessingTest extends AbstractTransactionalJUnit4SpringContextT
 	public void testRun() throws WorkspaceLockedException {
 		Workspace foundWorkspace = workspaceDao.find(1);
 		Job job = taskManager.createUserJob(foundWorkspace);
-		job.addTasks(taskManager.createTasks(
-//				ResetOutputSchemaTask.class,
-				CreateCategoryDimensionTablesTask.class
-//				CreateAoiDimensionTablesTask.class,
-//				CreateStratumDimensionTableTask.class,				
-//				CreateDataTablesTask.class,
-//				AssignLocationColumnsTask.class,
-//				AssignAoiColumnsTask.class
-				));
+//		job.addTasks(taskManager.createTasks(CalculationEngine.PREPROCESSING_TASKS));
+//		job.addTask(taskManager.createTask(ResetOutputSchemaTask.class));
+//		job.addTask(taskManager.createTask(CreateCategoryDimensionTablesTask.class));
+//		job.addTask(taskManager.createTask(CreateAoiDimensionTablesTask.class));
+//		job.addTask(taskManager.createTask(CreateStratumDimensionTableTask.class));
+//		job.addTask(taskManager.createTask(CreateOutputTablesTask.class));
+//		job.addTask(taskManager.createTask(AssignLocationColumnsTask.class));
+//		job.addTask(taskManager.createTask(AssignAoiColumnsTask.class));
 		taskManager.startJob(job);
 		job.waitFor(5000);
 	}

@@ -16,7 +16,7 @@ import org.openforis.calc.metadata.AoiHierarchyLevel;
 import org.openforis.calc.psql.Psql;
 import org.openforis.calc.psql.UpdateWithStep;
 import org.openforis.calc.schema.AoiDimensionTable;
-import org.openforis.calc.schema.OutputDataTable;
+import org.openforis.calc.schema.OutputTable;
 import org.openforis.calc.schema.OutputSchema;
 
 /**
@@ -32,9 +32,9 @@ public final class AssignAoiColumnsTask extends Task {
 	protected void execute() throws Throwable {
 
 		OutputSchema outputSchema = getOutputSchema();
-		Collection<OutputDataTable> tables = outputSchema.getOutputDataTables();
+		Collection<OutputTable> tables = outputSchema.getOutputTables();
 		
-		for ( OutputDataTable table : tables ) {
+		for ( OutputTable table : tables ) {
 			if ( table.getEntity().isGeoreferenced() ) {
 				assignAoiColumns(table);
 			}
@@ -42,7 +42,7 @@ public final class AssignAoiColumnsTask extends Task {
 
 	}
 
-	private void assignAoiColumns(OutputDataTable dataTable) {
+	private void assignAoiColumns(OutputTable dataTable) {
 		Workspace workspace = getWorkspace();
 		List<AoiHierarchy> hierarchies = workspace.getAoiHierarchies();
 
@@ -69,7 +69,7 @@ public final class AssignAoiColumnsTask extends Task {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void assignLeafAoiColumn(OutputDataTable dataTable, AoiDimensionTable aoiTable,  AoiHierarchyLevel level) {
+	private void assignLeafAoiColumn(OutputTable dataTable, AoiDimensionTable aoiTable,  AoiHierarchyLevel level) {
 		
 		UniqueKey<Record> tablePK = dataTable.getPrimaryKey();
 		Field<Integer> dataTablePKField = (Field<Integer>) tablePK.getFields().get(0);
@@ -93,7 +93,7 @@ public final class AssignAoiColumnsTask extends Task {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void assignAncestorAoiColumn(OutputDataTable dataTable, AoiDimensionTable aoiTable, AoiHierarchyLevel level, AoiHierarchyLevel childLevel) {
+	private void assignAncestorAoiColumn(OutputTable dataTable, AoiDimensionTable aoiTable, AoiHierarchyLevel level, AoiHierarchyLevel childLevel) {
 		AoiDimensionTable childAoiTable = getOutputSchema().getAoiDimensionTable(childLevel); 
 		Field<Integer> dataTableChildAoiFkField = (Field<Integer>)dataTable.field(childLevel.getFkColumn());	
 		Field<Integer> dataTableAoiFkField = (Field<Integer>)dataTable.field(level.getFkColumn());

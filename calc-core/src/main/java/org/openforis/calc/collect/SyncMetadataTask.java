@@ -261,9 +261,10 @@ public class SyncMetadataTask extends Task {
 			}
 			if ( v != null ) {
 				v.setName(column.getName());
-				v.setValueColumn(column.getName());
+				v.setInputValueColumn(column.getName());
+				// TODO generate unique name
+				v.setOutputValueColumn(column.getName());
 				v.setDimensionTable(e.getName() + "_" + v.getName() + DIMENSION_TABLE_SUFFIX);
-				v.setInput(true);
 			}
 		}
 		return v;

@@ -35,7 +35,7 @@ public final class CreateAggregateTablesTask extends Task {
 		for (AggregateTable aggTable : aggTables) {
 			
 			AoiHierarchyLevel level = aggTable.getAoiHierarchyLevel();
-			FactTable f = (FactTable) aggTable.getSourceTable();
+			FactTable f = (FactTable) aggTable.getSourceFactTable();
 			Field<Integer> aoiId = f.getAoiIdField(level);
 			Field<Integer> stratumId = f.getStratumIdField();
 			Entity entity = aggTable.getEntity();

@@ -110,7 +110,7 @@ public class PublishRolapSchemaTask extends Task {
 			if ( variable instanceof CategoricalVariable ) {
 				CategoricalVariable catVariable = (CategoricalVariable) variable;
 				if ( catVariable.isDisaggregate() ) {
-					String fKey = catVariable.getCategoryIdColumn();
+					String fKey = catVariable.getOutputCategoryIdColumn();
 					DimensionUsage dim = createDimensionUsage(variableName, fKey);
 					cube.getDimensionUsageOrDimension().add(dim);
 				}
@@ -124,7 +124,7 @@ public class PublishRolapSchemaTask extends Task {
 					String name = aggregate.getName();
 					name = (name == null) ? variableName : name;
 
-					String valueColumn = variable.getValueColumn();
+					String valueColumn = variable.getOutputValueColumn();
 					String column = aggregate.getAggregateColumn();
 					column = (column == null) ? valueColumn : column;
 
@@ -160,7 +160,7 @@ public class PublishRolapSchemaTask extends Task {
 					if ( variable instanceof CategoricalVariable ) {
 						CategoricalVariable catVariable = (CategoricalVariable) variable;
 						if ( catVariable.isDisaggregate() ) {
-							String fKey = catVariable.getCategoryIdColumn();
+							String fKey = catVariable.getOutputCategoryIdColumn();
 							
 							AggForeignKey aggForeignKey = createAggForeignKey(fKey, fKey);
 							
@@ -176,7 +176,7 @@ public class PublishRolapSchemaTask extends Task {
 							String name = aggregate.getName();
 							name = (name == null) ? variableName : name;
 
-							String valueColumn = variable.getValueColumn();
+							String valueColumn = variable.getOutputValueColumn();
 							String column = aggregate.getAggregateColumn();
 							column = (column == null) ? valueColumn : column;
 

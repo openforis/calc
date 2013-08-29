@@ -21,7 +21,7 @@ public class InputSchema extends RelationalSchema {
 
 	private Workspace workspace;
 
-	private Map<Entity, InputDataTable> dataTables;
+	private Map<Entity, InputTable> dataTables;
 	
 	public InputSchema(Workspace workspace) {
 		super(workspace.getInputSchema());
@@ -34,17 +34,17 @@ public class InputSchema extends RelationalSchema {
 	}
 	
 	private void initDataTables() {
-		this.dataTables = new HashMap<Entity, InputDataTable>();
+		this.dataTables = new HashMap<Entity, InputTable>();
 		List<Entity> entities = workspace.getEntities();
 		for ( Entity entity : entities ) {
-			InputDataTable inputTable = new InputDataTable(entity, this);
+			InputTable inputTable = new InputTable(entity, this);
 			addTable(inputTable);
 			dataTables.put(entity, inputTable);
 		}
 	}
 
 	
-	public InputDataTable getDataTable(Entity entity) {
+	public InputTable getDataTable(Entity entity) {
 		return dataTables.get(entity);
 	}
 

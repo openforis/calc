@@ -30,7 +30,7 @@ public class OutputSchema extends RelationalSchema {
 	private InputSchema inputSchema;
 	private StratumDimensionTable stratumDimensionTable;
 	private ExpansionFactorTable expansionFactorTable;
-	private Map<Entity, OutputDataTable> outputDataTables;
+	private Map<Entity, OutputTable> outputTables;
 	private Map<Entity, FactTable> factTables;
 	private Map<CategoricalVariable, CategoryDimensionTable> categoryDimensionTables;
 	private Map<AoiHierarchyLevel, AoiDimensionTable> aoiDimensionTables;
@@ -43,7 +43,7 @@ public class OutputSchema extends RelationalSchema {
 		initCategoryDimensionTables();
 		initStratumDimensionTable();
 		initAoiDimensionTables();
-		initOutputDataTables();
+		initOutputTables();
 		initExpansionFactorTable();
 		initFactTables();
 	}
@@ -82,7 +82,7 @@ public class OutputSchema extends RelationalSchema {
 	 */
 	private void initFactTables(Entity entity, FactTable parentFact) {
 		if ( entity.isUnitOfAnalysis() ) {
-			OutputDataTable outputTable = outputDataTables.get(entity);
+			OutputTable outputTable = outputTables.get(entity);
 			FactTable factTable = new FactTable(entity, this, outputTable, parentFact);
 			addTable(factTable);
 			factTables.put(entity, factTable);
@@ -90,9 +90,7 @@ public class OutputSchema extends RelationalSchema {
 			// Create children fact tables
 			List<Entity> children = entity.getChildren();
 			for (Entity child : children) {
-				if ( child.isUnitOfAnalysis() ) {
-					initFactTables(child, factTable);
-				}
+				initFactTables(child, factTable);
 			}
 
 			if ( entity.isSamplingUnit() ) {
@@ -111,30 +109,31 @@ public class OutputSchema extends RelationalSchema {
 			}
 		}
 	}
+	
 	private void initStratumDimensionTable() {
 		this.stratumDimensionTable = new StratumDimensionTable(this);
 	}
 
-	private void initOutputDataTables() {
-		this.outputDataTables = new HashMap<Entity, OutputDataTable>();
+	private void initOutputTables() {
+		this.outputTables = new HashMap<Entity, OutputTable>();
 		Collection<Entity> entities = workspace.getRootEntities();
 		for ( Entity entity : entities ) {
-			initOutputDataTables(entity, null);
+			initOutputTables(entity, null);
 		}
 	}
 
 	/**
 	 * Recursively add tables for each entity
 	 */
-	private void initOutputDataTables(Entity entity, OutputDataTable parentTable) {
-		InputDataTable inputTable = inputSchema.getDataTable(entity);
-		OutputDataTable outputTable = new OutputDataTable(entity, this, inputTable, parentTable);
+	private void initOutputTables(Entity entity, OutputTable parentTable) {
+		InputTable inputTable = inputSchema.getDataTable(entity);
+		OutputTable outputTable = new OutputTable(entity, this, inputTable, parentTable);
 		addTable(outputTable);
-		outputDataTables.put(entity, outputTable);
+		outputTables.put(entity, outputTable);
 		
 		List<Entity> children = entity.getChildren();
 		for (Entity child : children) {
-			initOutputDataTables(child, outputTable);
+			initOutputTables(child, outputTable);
 		}
 	}
 
@@ -163,8 +162,8 @@ public class OutputSchema extends RelationalSchema {
 		return stratumDimensionTable;
 	}
 
-	public Collection<OutputDataTable> getOutputDataTables() {
-		return Collections.unmodifiableCollection(outputDataTables.values());
+	public Collection<OutputTable> getOutputTables() {
+		return Collections.unmodifiableCollection(outputTables.values());
 	}
 
 	public Collection<CategoryDimensionTable> getCategoryDimensionTables() {

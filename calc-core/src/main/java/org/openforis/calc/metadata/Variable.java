@@ -42,14 +42,14 @@ public abstract class Variable extends UserObject {
 	@Column(name = "scale")
 	private Scale scale;
 
-	@Column(name = "value_column")
-	private String valueColumn;
+	@Column(name = "input_value_column")
+	private String inputValueColumn;
+
+	@Column(name = "output_value_column")
+	private String outputValueColumn;
 
 	@Column(name = "dimension_table")
 	private String dimensionTable;
-
-	@Column(name = "input")
-	private Boolean input;
 
 	@Column(name = "override")
 	private Boolean override;
@@ -96,12 +96,20 @@ public abstract class Variable extends UserObject {
 		this.sortOrder = sortOrder;
 	}
 
-	public String getValueColumn() {
-		return valueColumn;
+	public String getInputValueColumn() {
+		return inputValueColumn;
 	}
 
-	public void setValueColumn(String valueColumn) {
-		this.valueColumn = valueColumn;
+	public void setInputValueColumn(String inputValueColumn) {
+		this.inputValueColumn = inputValueColumn;
+	}
+
+	public String getOutputValueColumn() {
+		return outputValueColumn;
+	}
+
+	public void setOutputValueColumn(String outputValueColumn) {
+		this.outputValueColumn = outputValueColumn;
 	}
 
 	public String getDimensionTable() {
@@ -113,11 +121,7 @@ public abstract class Variable extends UserObject {
 	}
 
 	public boolean isInput() {
-		return input;
-	}
-
-	public void setInput(Boolean input) {
-		this.input = input;
+		return inputValueColumn != null;
 	}
 
 	public Boolean isOverride() {

@@ -4,6 +4,7 @@ import org.openforis.calc.chain.InvalidProcessingChainException;
 import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.chain.ProcessingChainDao;
 import org.openforis.calc.chain.post.AssignDimensionIdsTask;
+import org.openforis.calc.chain.post.AssignStratumIdsTask;
 import org.openforis.calc.chain.post.CalculateExpansionFactorsTask;
 import org.openforis.calc.chain.post.CreateAggregateTablesTask;
 import org.openforis.calc.chain.post.CreateFactTablesTask;
@@ -13,7 +14,7 @@ import org.openforis.calc.chain.pre.AssignDefaultValuesTask;
 import org.openforis.calc.chain.pre.AssignLocationColumnsTask;
 import org.openforis.calc.chain.pre.CreateAoiDimensionTablesTask;
 import org.openforis.calc.chain.pre.CreateCategoryDimensionTablesTask;
-import org.openforis.calc.chain.pre.CreateDataTablesTask;
+import org.openforis.calc.chain.pre.CreateOutputTablesTask;
 import org.openforis.calc.chain.pre.CreateStratumDimensionTableTask;
 import org.openforis.calc.chain.pre.ResetOutputSchemaTask;
 import org.openforis.calc.metadata.task.UpdateSamplingUnitAoisTask;
@@ -43,7 +44,7 @@ public class CalculationEngine {
 			CreateCategoryDimensionTablesTask.class,
 			CreateAoiDimensionTablesTask.class,
 			CreateStratumDimensionTableTask.class,
-			CreateDataTablesTask.class,
+			CreateOutputTablesTask.class,
 			AssignDefaultValuesTask.class,
 			AssignLocationColumnsTask.class,
 			AssignAoiColumnsTask.class
@@ -51,6 +52,7 @@ public class CalculationEngine {
 
 	public static final Class<?>[] POSTPROCESSING_TASKS = {
 			CreateFactTablesTask.class,
+			AssignStratumIdsTask.class,
 			AssignDimensionIdsTask.class,
 			CalculateExpansionFactorsTask.class,
 			CreateAggregateTablesTask.class,

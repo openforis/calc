@@ -98,7 +98,15 @@ public class Entity extends UserObject {
 	@Fetch(FetchMode.SUBSELECT) 
 	@Cascade(CascadeType.ALL)
 	private List<Entity> children = new ArrayList<Entity>();
-	
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "cluster_variable_id")
+	private Variable clusterVariable;
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "unit_no_variable_id")
+	private Variable unitNoVariable;
+
 	public Workspace getWorkspace() {
 		return this.workspace;
 	}
@@ -259,6 +267,22 @@ public class Entity extends UserObject {
 		List<O> out = new ArrayList<O>();
 		CollectionUtils.select(items, new InstanceofPredicate(type), out);
 		return out;
+	}
+
+	public Variable getClusterVariable() {
+		return clusterVariable;
+	}
+
+	public void setClusterVariable(Variable clusterVariable) {
+		this.clusterVariable = clusterVariable;
+	}
+
+	public Variable getUnitNoVariable() {
+		return unitNoVariable;
+	}
+
+	public void setUnitNoVariable(Variable plotVariable) {
+		this.unitNoVariable = plotVariable;
 	}
 }
 

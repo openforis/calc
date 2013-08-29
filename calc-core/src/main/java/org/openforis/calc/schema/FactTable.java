@@ -3,6 +3,8 @@
  */
 package org.openforis.calc.schema;
 
+import static org.jooq.impl.SQLDataType.INTEGER;
+
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Collections;
@@ -31,17 +33,23 @@ public class FactTable extends DataTable {
 	
 	private Map<VariableAggregate, Field<BigDecimal>> measureFields;
 	private Map<CategoricalVariable, Field<Integer>> dimensionIdFields;
+	
+	private Field<Integer> stratumIdField;
+	private OutputTable sourceOutputTable;
+	private FactTable parentTable;
 
 	protected FactTable(Entity entity, String name, Schema schema, DataTable sourceTable, FactTable parentTable) {
-		super(entity, name, schema, sourceTable, parentTable);
+		super(entity, name, schema);
 	}
 	
-	FactTable(Entity entity, Schema schema, OutputDataTable sourceTable, FactTable parentTable) {
-		this(entity, getName(entity), schema, sourceTable, parentTable);
+	FactTable(Entity entity, Schema schema, OutputTable sourceOutputTable, FactTable parentTable) {
+		super(entity, getName(entity), schema);
+		this.sourceOutputTable = sourceOutputTable;
+		this.parentTable = parentTable;
 		createPrimaryKeyField();
-		createDimensionFields(entity);
+		createDimensionFieldsRecursive(entity, false);
 		createStratumIdField();
-		createAoiIdFields(null);
+		createAoiIdFields();
 		createQuantityFields(false);
 		createMeasureFields(entity);
 		createParentIdField();
@@ -49,14 +57,15 @@ public class FactTable extends DataTable {
 
 	/**
 	 * Recursively up to root unit of analysis
+	 * @param disaggregatesOnly 
 	 */
-	protected void createDimensionFields(Entity entity) {
+	protected void createDimensionFieldsRecursive(Entity entity, boolean disaggregatesOnly) {
 		Entity parent = entity.getParent();
-		if ( parent != null && parent.isUnitOfAnalysis() ) {
-			createDimensionFields(parent);
+		if ( parent != null ) {
+			createDimensionFieldsRecursive(parent, disaggregatesOnly);
 		}
 		createDimensionIdFields(entity);
-		createCategoryValueFields(entity, false, true);
+		createCategoryValueFields(entity, false);
 	}
 
 	private void createDimensionIdFields(Entity entity) {
@@ -101,15 +110,20 @@ public class FactTable extends DataTable {
 	public Collection<Field<Integer>> getDimensionIdFields() {
 		return Collections.unmodifiableCollection(dimensionIdFields.values());
 	}
-//
-//	@SuppressWarnings("unchecked")
-//	public Collection<Field<?>> getAoiIdFields(final AoiHierarchyLevel lowestLevel) {
-//		return CollectionUtils.select(getAoiIdFields(), new Predicate() {
-//			@Override
-//			public boolean evaluate(Object object) {
-//				AoiHierarchyLevel level = (AoiHierarchyLevel) object;
-//				return level.getRank() <= lowestLevel.getRank();
-//			}
-//		});
-//	}
+	
+	protected void createStratumIdField() {
+		this.stratumIdField = createField("_stratum_id", INTEGER, this);
+	}
+
+	public Field<Integer> getStratumIdField() {
+		return stratumIdField;
+	}
+
+	public OutputTable getSourceOutputTable() {
+		return sourceOutputTable;
+	}
+
+	public FactTable getParentTable() {
+		return parentTable;
+	}
 }

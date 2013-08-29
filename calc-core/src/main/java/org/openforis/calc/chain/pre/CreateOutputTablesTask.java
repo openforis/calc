@@ -1,15 +1,16 @@
 package org.openforis.calc.chain.pre;
 
-import java.util.List;
+import java.util.Collection;
 
+import org.jooq.DataType;
 import org.jooq.Field;
-import org.jooq.Select;
-import org.jooq.Table;
+import org.jooq.SelectQuery;
+import org.jooq.impl.DSL;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.metadata.Category;
 import org.openforis.calc.psql.Psql.Privilege;
-import org.openforis.calc.schema.InputDataTable;
-import org.openforis.calc.schema.OutputDataTable;
+import org.openforis.calc.schema.InputTable;
+import org.openforis.calc.schema.OutputTable;
 import org.openforis.calc.schema.OutputSchema;
 import org.openforis.calc.schema.RolapSchema;
 
@@ -20,22 +21,20 @@ import org.openforis.calc.schema.RolapSchema;
  * @author A. Sanchez-Paus Diaz
  * @author M. Togna
  */
-public final class CreateDataTablesTask extends Task {
+public final class CreateOutputTablesTask extends Task {
 	
 	@Override
 	protected void execute() throws Throwable {
 		RolapSchema rolapSchema = getRolapSchema();
 		OutputSchema outputSchema = rolapSchema.getOutputSchema();
-		List<Table<?>> tables = outputSchema.getTables();
-		for ( Table<?> table : tables ) {
-			if (table instanceof OutputDataTable){
-				createOutputDataTable((OutputDataTable) table);
-			}
+		Collection<OutputTable> tables = outputSchema.getOutputTables();
+		for ( OutputTable table : tables ) {
+			createOutputDataTable((OutputTable) table);
 		}
 	}
 	
-	private void createOutputDataTable(OutputDataTable outputTable) {
-		InputDataTable inputTable = (InputDataTable) outputTable.getSourceTable();
+	private void createOutputDataTable(OutputTable outputTable) {
+		InputTable inputTable = outputTable.getInputTable();
 		
 		if ( isDebugMode() ) {
 			psql()
@@ -43,10 +42,20 @@ public final class CreateDataTablesTask extends Task {
 				.execute();
 		}
 		
-		// Copying entire table from input schema
-		// TODO replace with select of specific columns
-		Select<?> select = psql().selectStarFrom(inputTable);
-		
+		// Copy table from input schema
+		SelectQuery<?> select = psql().selectQuery(inputTable);
+		for (Field<?> outputField : outputTable.fields()) {
+			Field<?> inputField = outputTable.getInputField(outputField);
+			String name = outputField.getName();
+			if ( inputField == null ) {
+				// add null to select, cast and alias				
+				DataType<?> type = outputField.getDataType();
+				select.addSelect(DSL.val(null).cast(type).as(name));
+			} else {
+				// add to select and alias
+				select.addSelect(inputField.as(name));
+			}
+		}
 		
 		psql()
 			.createTable(outputTable)
@@ -58,18 +67,7 @@ public final class CreateDataTablesTask extends Task {
 			.alterTable(outputTable)
 			.addPrimaryKey(outputTable.getPrimaryKey())
 			.execute();
-		
-		// Add missing columns for variables not in input schema
-		for (Field<?> field : outputTable.fields()) {
-			String fieldName = field.getName();
-			if ( !inputTable.hasField(fieldName) ) { 
-				psql()
-					.alterTable(outputTable)
-					.addColumn(field)
-					.execute();
-			}
-		}
-		
+
 		// Grant access to system user
 		psql()
 			.grant(Privilege.ALL)

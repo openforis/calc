@@ -8,15 +8,15 @@ import org.openforis.calc.metadata.Entity;
  * @author M. Togna
  *
  */
-public class InputDataTable extends DataTable {
+public class InputTable extends DataTable {
 
 	private static final long serialVersionUID = 1L;
 
-	public InputDataTable(Entity entity, InputSchema schema) {
-		super(entity, entity.getDataTable(), schema, null, null);
+	public InputTable(Entity entity, InputSchema schema) {
+		super(entity, entity.getDataTable(), schema);
 		createPrimaryKeyField();
 		createParentIdField();		
-		createCategoryValueFields(entity, true, false);
+		createCategoryValueFields(entity, true);
 		createQuantityFields(true);
 		createCoordinateFields();
 	}

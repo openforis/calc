@@ -36,8 +36,11 @@ public class CategoricalVariable extends Variable {
 	@JsonIgnore
 	private Category defaultValue;
 
-	@Column(name = "category_id_column")
-	private String categoryIdColumn;
+	@Column(name = "input_category_id_column")
+	private String inputCategoryIdColumn;
+
+	@Column(name = "output_category_id_column")
+	private String outputCategoryIdColumn;
 
 	@Column(name = "disaggregate")
 	private boolean disaggregate;
@@ -91,12 +94,20 @@ public class CategoricalVariable extends Variable {
 		return Collections.unmodifiableList(hierarchies);
 	}
 	
-	public String getCategoryIdColumn() {
-		return categoryIdColumn;
+	public String getInputCategoryIdColumn() {
+		return inputCategoryIdColumn;
 	}
 
-	public void setCategoryIdColumn(String categoryIdColumn) {
-		this.categoryIdColumn = categoryIdColumn;
+	public void setInputCategoryIdColumn(String inputCcategoryIdColumn) {
+		this.inputCategoryIdColumn = inputCcategoryIdColumn;
+	}
+
+	public String getOutputCategoryIdColumn() {
+		return outputCategoryIdColumn;
+	}
+
+	public void setOutputCategoryIdColumn(String outputCategoryIdColumn) {
+		this.outputCategoryIdColumn = outputCategoryIdColumn;
 	}
 
 	@Override
@@ -126,5 +137,10 @@ public class CategoricalVariable extends Variable {
 
 	public void setDegenerateDimension(boolean degenerateDimension) {
 		this.degenerateDimension = degenerateDimension;
+	}
+	
+	@Override
+	public boolean isInput() {
+		return super.isInput() || inputCategoryIdColumn != null;
 	}
 }

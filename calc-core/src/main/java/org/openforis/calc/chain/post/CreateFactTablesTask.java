@@ -19,8 +19,8 @@ import org.openforis.calc.psql.Psql;
 import org.openforis.calc.psql.Psql.Privilege;
 import org.openforis.calc.schema.DataTable;
 import org.openforis.calc.schema.FactTable;
-import org.openforis.calc.schema.OutputDataTable;
 import org.openforis.calc.schema.OutputSchema;
+import org.openforis.calc.schema.OutputTable;
 
 /**
  * Creates and populates fact tables for entities marked "unit of analysis"
@@ -33,15 +33,20 @@ public final class CreateFactTablesTask extends Task {
 		OutputSchema outputSchema = getOutputSchema();
 		Collection<FactTable> factTables = outputSchema.getFactTables();
 		for (FactTable factTable : factTables) {
-			OutputDataTable outputTable = (OutputDataTable) factTable.getSourceTable();
+			OutputTable outputTable = (OutputTable) factTable.getSourceOutputTable();
 			
 			SelectQuery<?> select = new Psql().selectQuery(outputTable);
 			select.addSelect(outputTable.getIdField());
 			selectDimensionsRecursive(select, factTable, outputTable);
-			select.addSelect(outputTable.getStratumIdField());
 			select.addSelect(outputTable.getAoiIdFields());
 			selectQuantities(select, outputTable);
 			selectMeasures(select, factTable);
+			Field<Integer> stratumId = factTable.getStratumIdField();
+			select.addSelect(Psql.nullAs(stratumId));
+			
+			if ( factTable.getEntity().isSamplingUnit() ) {
+				addStratumId(select, factTable);
+			}
 			
 			if ( isDebugMode() ) {
 				psql()
@@ -63,7 +68,16 @@ public final class CreateFactTablesTask extends Task {
 		}
 	}
 
-	private void selectQuantities(SelectQuery<?> select, OutputDataTable outputTable) {
+	private void addStratumId(SelectQuery<?> select, FactTable factTable) {
+//		OutputSchema outputSchema = (OutputSchema) factTable.getSchema();
+//		select.addSelect(SAMPLING_UNIT.STRATUM_ID.as(factTable.getStratumIdField().getName()));
+//		Condition cond = SAMPLING_UNIT.CLUSTER.eq(DSL.field(""))
+//				.and();
+//		select.addJoin(SAMPLING_UNIT, JoinType.LEFT_OUTER_JOIN, cond);
+		
+	}
+
+	private void selectQuantities(SelectQuery<?> select, OutputTable outputTable) {
 		Entity entity = outputTable.getEntity();
 		List<QuantitativeVariable> vars = entity.getQuantitativeVariables();
 		for (QuantitativeVariable var : vars) {
@@ -75,7 +89,7 @@ public final class CreateFactTablesTask extends Task {
 	private void selectMeasures(SelectQuery<?> select, FactTable factTable) {
 		Entity entity = factTable.getEntity();
 		List<VariableAggregate> aggs = entity.getVariableAggregates();
-		OutputDataTable outputDataTable = (OutputDataTable) factTable.getSourceTable();
+		OutputTable outputDataTable = (OutputTable) factTable.getSourceOutputTable();
 		for (VariableAggregate agg : aggs) {
 			QuantitativeVariable var = agg.getVariable();
 			Field<BigDecimal> measureFld = factTable.getMeasureField(agg);
@@ -84,15 +98,15 @@ public final class CreateFactTablesTask extends Task {
 		}
 	}
 
-	private void selectDimensionsRecursive(SelectQuery<?> select, FactTable factTable, OutputDataTable outputTable) {
+	private void selectDimensionsRecursive(SelectQuery<?> select, FactTable factTable, OutputTable outputTable) {
 		Entity entity = outputTable.getEntity();
-		OutputDataTable parentTable = (OutputDataTable) outputTable.getParentTable();
+		OutputTable parentTable = (OutputTable) outputTable.getParentTable();
 		if ( parentTable != null ) {
-			Entity parentEntity = parentTable.getEntity();
-			if ( parentEntity.isUnitOfAnalysis() ) {
-				selectDimensionsRecursive(select, factTable, parentTable);
-				addJoin(select, outputTable);
-			}
+//			Entity parentEntity = parentTable.getEntity();
+//			if ( parentEntity.isUnitOfAnalysis() ) {
+			addJoin(select, outputTable);
+			selectDimensionsRecursive(select, factTable, parentTable);
+//			}
 		}
 		List<CategoricalVariable> variables = entity.getCategoricalVariables();
 		for (CategoricalVariable var : variables) {
@@ -105,7 +119,7 @@ public final class CreateFactTablesTask extends Task {
 		}
 	}
 	
-	private void addJoin(SelectQuery<?> select, OutputDataTable outputTable) {
+	private void addJoin(SelectQuery<?> select, OutputTable outputTable) {
 		DataTable parentTable = outputTable.getParentTable();
 		Field<Integer> parentId = outputTable.getParentIdField();
 		TableField<Record, Integer> id = parentTable.getIdField();

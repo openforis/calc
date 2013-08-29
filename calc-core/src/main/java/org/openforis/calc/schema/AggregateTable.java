@@ -21,12 +21,14 @@ public class AggregateTable extends FactTable {
 	
 	private AoiHierarchyLevel aoiHierarchyLevel;
 	private TableField<Record, Integer> aggregateFactCountField;
+	private FactTable sourceFactTable;
 
 	AggregateTable(FactTable factTable, AoiHierarchyLevel level) {
 		super(factTable.getEntity(), getName(factTable, level), factTable.getSchema(), factTable, null);
 		this.aoiHierarchyLevel = level;
+		this.sourceFactTable = factTable;
 		Entity entity = factTable.getEntity();
-		createDimensionFields(entity);
+		createDimensionFieldsRecursive(entity, true);
 		createStratumIdField();
 		createAoiIdFields(level);
 		createMeasureFields(entity);
@@ -51,4 +53,7 @@ public class AggregateTable extends FactTable {
 		return aggregateFactCountField;
 	}
 
+	public FactTable getSourceFactTable() {
+		return sourceFactTable;
+	}
 }

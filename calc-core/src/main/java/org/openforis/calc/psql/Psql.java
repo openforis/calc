@@ -119,4 +119,17 @@ public final class Psql extends DefaultDSLContext {
 			log.debug(sql + "; -- Parameters: " + StringUtils.join(bindings) + "");
 		}
 	}
+
+	public static <T> Field<T> typedNull(DataType<T> type) {
+		return DSL.val(null).cast(type);
+	}
+
+	public static <T> Field<T> nullAs(Field<T> field) {
+		return typedNull(field.getDataType()).as(field.getName());
+	}
+
+	public static Field<?> nullValue(Field<Integer> stratumId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

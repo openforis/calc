@@ -10,7 +10,7 @@ import org.openforis.calc.engine.Task;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.psql.Psql;
 import org.openforis.calc.psql.UpdateWithStep;
-import org.openforis.calc.schema.OutputDataTable;
+import org.openforis.calc.schema.OutputTable;
 import org.openforis.calc.schema.OutputSchema;
 
 /**
@@ -28,7 +28,7 @@ public final class AssignLocationColumnsTask extends Task {
 	protected void execute() throws Throwable {
 		// TODO
 		OutputSchema outputSchema = getOutputSchema();
-		for ( OutputDataTable dataTable : outputSchema.getOutputDataTables() ) {
+		for ( OutputTable dataTable : outputSchema.getOutputTables() ) {
 
 			Entity entity = dataTable.getEntity();
 			if ( entity.isGeoreferenced() ) {
@@ -47,7 +47,7 @@ public final class AssignLocationColumnsTask extends Task {
 
 	}
 
-	private void convertCoordinates(OutputDataTable dataTable, String xColumn, String yColumn, String srsColumn) {
+	private void convertCoordinates(OutputTable dataTable, String xColumn, String yColumn, String srsColumn) {
 		String expr = String.format(TO_WGS84, xColumn, yColumn);
 
 		Table<?> cursor = new Psql().select().from(SRS).asTable("srs");
