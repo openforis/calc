@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
  * @author S. Ricci
  *
  */
+@Deprecated
 @Component
 public class RolapSchemaGenerator {
 	

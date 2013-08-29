@@ -16,6 +16,7 @@ import org.openforis.calc.metadata.AoiHierarchyLevel;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.persistence.jooq.tables.StratumAoiViewTable;
 import org.openforis.calc.psql.Psql;
+import org.openforis.calc.schema.DataTable;
 import org.openforis.calc.schema.ExpansionFactorTable;
 import org.openforis.calc.schema.FactTable;
 import org.openforis.calc.schema.OutputSchema;
@@ -55,7 +56,7 @@ public final class CalculateExpansionFactorsTask extends Task {
 		
 		List<AoiHierarchy> hierarchies = workspace.getAoiHierarchies();
 		Collection<FactTable> factTables = outputSchema.getFactTables();
-		for (FactTable factTable : factTables) {
+		for (DataTable factTable : factTables) {
 			Entity entity = factTable.getEntity();
 			if ( entity.isSamplingUnit() ) {
 				for ( AoiHierarchy hierarchy : hierarchies ) {

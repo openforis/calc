@@ -22,7 +22,7 @@ public class AggregateTable extends FactTable {
 	private AoiHierarchyLevel aoiHierarchyLevel;
 	private TableField<Record, Integer> aggregateFactCountField;
 
-	AggregateTable(FactTable factTable, AoiHierarchyLevel level) {
+	AggregateTable(DataTable factTable, AoiHierarchyLevel level) {
 		super(factTable.getEntity(), getName(factTable, level), factTable.getSchema(), factTable, null);
 		this.aoiHierarchyLevel = level;
 		Entity entity = factTable.getEntity();
@@ -33,7 +33,7 @@ public class AggregateTable extends FactTable {
 		createAggregateFactCountField();
 	}
 
-	private static String getName(FactTable factTable, AoiHierarchyLevel level) {
+	private static String getName(DataTable factTable, AoiHierarchyLevel level) {
 		String entityName = factTable.getEntity().getName();
 		String levelName = level.getName();
 		return String.format(TABLE_NAME_FORMAT, entityName, levelName);
