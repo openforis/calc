@@ -6,7 +6,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import org.openforis.calc.common.UserObject;
+import org.openforis.calc.common.NamedUserObject;
 
 /**
  * Provides metadata about a AOI Hierarchy Level. A hierarchy might be an "Administrative division" or "Ecological division" of an area.
@@ -17,7 +17,7 @@ import org.openforis.calc.common.UserObject;
  */
 @javax.persistence.Entity
 @Table(name = "aoi_level")
-public class AoiHierarchyLevel extends UserObject  {
+public class AoiLevel extends NamedUserObject {
 
 	private static final String DIMENSION_TABLE_FORMAT = "_%s_%s_aoi_dim";
 	private static final String FK_COLUMN_FORMAT = "_%s_%s_id";

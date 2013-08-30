@@ -11,7 +11,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.DiscriminatorFormula;
-import org.openforis.calc.common.UserObject;
+import org.openforis.calc.common.NamedUserObject;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -26,10 +26,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Table(name = "variable")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorFormula("case when scale in ('RATIO','INTERVAL','OTHER') then 'Q' when scale='BINARY' then 'B' else 'C' end")
-public abstract class Variable extends UserObject {
-	@Column(name = "caption")
-	private String caption;
-
+public abstract class Variable extends NamedUserObject {
 	@Column(name = "sort_order")
 	private int sortOrder;
 
@@ -78,14 +75,6 @@ public abstract class Variable extends UserObject {
 
 	public void setScale(Scale scale) {
 		this.scale = scale;
-	}
-
-	public String getCaption() {
-		return caption;
-	}
-
-	public void setCaption(String caption) {
-		this.caption = caption;
 	}
 
 	public int getSortOrder() {

@@ -10,7 +10,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
-import org.openforis.calc.common.UserObject;
+import org.openforis.calc.common.NamedUserObject;
 import org.openforis.calc.engine.Workspace;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 @javax.persistence.Entity
 @Table(name = "aoi_hierarchy")
-public class AoiHierarchy extends UserObject {
+public class AoiHierarchy extends NamedUserObject {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "workspace_id")
@@ -33,7 +33,7 @@ public class AoiHierarchy extends UserObject {
 
 	@OneToMany(mappedBy = "hierarchy", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@OrderBy("rank")
-	private List<AoiHierarchyLevel> levels;
+	private List<AoiLevel> levels;
 
 	public Workspace getWorkspace() {
 		return this.workspace;
@@ -43,11 +43,11 @@ public class AoiHierarchy extends UserObject {
 		this.workspace = workspace;
 	}
 
-	public List<AoiHierarchyLevel> getLevels() {
+	public List<AoiLevel> getLevels() {
 		return levels;
 	}
 
-	public void setLevels(List<AoiHierarchyLevel> levels) {
+	public void setLevels(List<AoiLevel> levels) {
 		this.levels = levels;
 	}
 }

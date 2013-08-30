@@ -7,7 +7,7 @@ import org.jooq.Field;
 import org.jooq.SelectQuery;
 import org.jooq.impl.DSL;
 import org.openforis.calc.engine.Task;
-import org.openforis.calc.metadata.AoiHierarchyLevel;
+import org.openforis.calc.metadata.AoiLevel;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.VariableAggregate;
 import org.openforis.calc.psql.Psql;
@@ -31,7 +31,7 @@ public final class CreateAggregateTablesTask extends Task {
 		Collection<AggregateTable> aggTables = outputSchema.getAggregateTables();
 		ExpansionFactorTable expf = outputSchema.getExpansionFactorTable();
 		for (AggregateTable aggTable : aggTables) {
-			AoiHierarchyLevel level = aggTable.getAoiHierarchyLevel();
+			AoiLevel level = aggTable.getAoiHierarchyLevel();
 			FactTable f = (FactTable) aggTable.getSourceFactTable();
 			Field<Integer> aoiId = f.getAoiIdField(level);
 			Field<Integer> stratumId = f.getStratumIdField();

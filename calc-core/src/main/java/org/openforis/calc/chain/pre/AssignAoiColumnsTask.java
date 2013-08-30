@@ -12,7 +12,7 @@ import org.jooq.Update;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.AoiHierarchy;
-import org.openforis.calc.metadata.AoiHierarchyLevel;
+import org.openforis.calc.metadata.AoiLevel;
 import org.openforis.calc.psql.Psql;
 import org.openforis.calc.psql.UpdateWithStep;
 import org.openforis.calc.schema.AoiDimensionTable;
@@ -47,12 +47,12 @@ public final class AssignAoiColumnsTask extends Task {
 		List<AoiHierarchy> hierarchies = workspace.getAoiHierarchies();
 
 		for ( AoiHierarchy hierarchy : hierarchies ) {
-			List<AoiHierarchyLevel> levels = hierarchy.getLevels();
+			List<AoiLevel> levels = hierarchy.getLevels();
 			
-			AoiHierarchyLevel childLevel = null;
+			AoiLevel childLevel = null;
 			for ( int i = levels.size() - 1 ; i >= 0 ; i-- ) {
 				
-				AoiHierarchyLevel level = levels.get(i);
+				AoiLevel level = levels.get(i);
 				AoiDimensionTable aoiTable = getOutputSchema().getAoiDimensionTable(level);
 				
 				// spatial query only for leaf aoi hierarchy level
@@ -69,7 +69,7 @@ public final class AssignAoiColumnsTask extends Task {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void assignLeafAoiColumn(OutputTable dataTable, AoiDimensionTable aoiTable,  AoiHierarchyLevel level) {
+	private void assignLeafAoiColumn(OutputTable dataTable, AoiDimensionTable aoiTable,  AoiLevel level) {
 		
 		UniqueKey<Record> tablePK = dataTable.getPrimaryKey();
 		Field<Integer> dataTablePKField = (Field<Integer>) tablePK.getFields().get(0);
@@ -93,7 +93,7 @@ public final class AssignAoiColumnsTask extends Task {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void assignAncestorAoiColumn(OutputTable dataTable, AoiDimensionTable aoiTable, AoiHierarchyLevel level, AoiHierarchyLevel childLevel) {
+	private void assignAncestorAoiColumn(OutputTable dataTable, AoiDimensionTable aoiTable, AoiLevel level, AoiLevel childLevel) {
 		AoiDimensionTable childAoiTable = getOutputSchema().getAoiDimensionTable(childLevel); 
 		Field<Integer> dataTableChildAoiFkField = (Field<Integer>)dataTable.field(childLevel.getFkColumn());	
 		Field<Integer> dataTableAoiFkField = (Field<Integer>)dataTable.field(level.getFkColumn());

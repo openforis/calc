@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.jooq.Field;
-import org.openforis.calc.metadata.AoiHierarchyLevel;
+import org.openforis.calc.metadata.AoiLevel;
 import org.openforis.calc.metadata.BinaryVariable;
 import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
@@ -45,7 +45,7 @@ public class OutputTable extends DataTable {
 	}
 
 	@Override
-	protected void createAoiIdField(AoiHierarchyLevel level, String fkColumn) {
+	protected void createAoiIdField(AoiLevel level, String fkColumn) {
 		super.createAoiIdField(level, fkColumn);
 		addInputField(getAoiIdField(level), inputTable.getAoiIdField(level));
 	}

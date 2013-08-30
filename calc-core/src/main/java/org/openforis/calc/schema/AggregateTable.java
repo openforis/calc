@@ -4,7 +4,7 @@ import static org.jooq.impl.SQLDataType.INTEGER;
 
 import org.jooq.Record;
 import org.jooq.TableField;
-import org.openforis.calc.metadata.AoiHierarchyLevel;
+import org.openforis.calc.metadata.AoiLevel;
 import org.openforis.calc.metadata.BinaryVariable;
 import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
@@ -21,11 +21,11 @@ public class AggregateTable extends FactTable {
 	private static final String TABLE_NAME_FORMAT = "_%s_%s_stratum_agg";
 	private static final String AGG_FACT_CNT_COLUMN = "_agg_cnt";
 	
-	private AoiHierarchyLevel aoiHierarchyLevel;
+	private AoiLevel aoiHierarchyLevel;
 	private TableField<Record, Integer> aggregateFactCountField;
 	private FactTable sourceFactTable;
 
-	AggregateTable(FactTable factTable, AoiHierarchyLevel level) {
+	AggregateTable(FactTable factTable, AoiLevel level) {
 		super(factTable.getEntity(), getName(factTable, level), factTable.getSchema(), factTable, null);
 		this.aoiHierarchyLevel = level;
 		this.sourceFactTable = factTable;
@@ -37,13 +37,13 @@ public class AggregateTable extends FactTable {
 		createAggregateFactCountField();
 	}
 
-	private static String getName(DataTable factTable, AoiHierarchyLevel level) {
+	private static String getName(DataTable factTable, AoiLevel level) {
 		String entityName = factTable.getEntity().getName();
 		String levelName = level.getName();
 		return String.format(TABLE_NAME_FORMAT, entityName, levelName);
 	}
 
-	public AoiHierarchyLevel getAoiHierarchyLevel() {
+	public AoiLevel getAoiHierarchyLevel() {
 		return aoiHierarchyLevel;
 	}
 

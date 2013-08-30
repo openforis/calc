@@ -24,7 +24,7 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.SQLDataType;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.AoiHierarchy;
-import org.openforis.calc.metadata.AoiHierarchyLevel;
+import org.openforis.calc.metadata.AoiLevel;
 import org.openforis.calc.metadata.BinaryVariable;
 import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
@@ -47,7 +47,7 @@ public abstract class DataTable extends AbstractTable {
 	private Entity entity;
 	private UniqueKey<Record> primaryKey;
 	
-	private Map<AoiHierarchyLevel, Field<Integer>> aoiIdFields;
+	private Map<AoiLevel, Field<Integer>> aoiIdFields;
 	private Map<QuantitativeVariable, Field<BigDecimal>> quantityFields;
 	private Map<CategoricalVariable, Field<?>> categoryValueFields;
 	
@@ -61,7 +61,7 @@ public abstract class DataTable extends AbstractTable {
 	protected DataTable(Entity entity, String name, Schema schema) {
 		super(name, schema);
 		this.entity = entity;
-		this.aoiIdFields = new HashMap<AoiHierarchyLevel, Field<Integer>>();
+		this.aoiIdFields = new HashMap<AoiLevel, Field<Integer>>();
 		this.quantityFields = new HashMap<QuantitativeVariable, Field<BigDecimal>>();
 		this.categoryValueFields = new HashMap<CategoricalVariable, Field<?>>();
 	}
@@ -135,7 +135,7 @@ public abstract class DataTable extends AbstractTable {
 		return primaryKey;
 	}
 
-	public Field<Integer> getAoiIdField(AoiHierarchyLevel level) {
+	public Field<Integer> getAoiIdField(AoiLevel level) {
 		return aoiIdFields == null ? null : aoiIdFields.get(level);
 	}
 
@@ -159,13 +159,13 @@ public abstract class DataTable extends AbstractTable {
 		createAoiIdFields(null);
 	}
 	
-	protected void createAoiIdFields(AoiHierarchyLevel lowestLevel) {
+	protected void createAoiIdFields(AoiLevel lowestLevel) {
 		if ( isGeoreferenced() ) {
 			Workspace workspace = entity.getWorkspace();
 			List<AoiHierarchy> aoiHierarchies = workspace.getAoiHierarchies();
 			for ( AoiHierarchy hierarchy : aoiHierarchies ) {
-				List<AoiHierarchyLevel> levels = hierarchy.getLevels();
-				for ( AoiHierarchyLevel level : levels ) {
+				List<AoiLevel> levels = hierarchy.getLevels();
+				for ( AoiLevel level : levels ) {
 					if ( lowestLevel == null || level.getRank() <= lowestLevel.getRank() ) {
 						String fkColumn = level.getFkColumn();
 						createAoiIdField(level, fkColumn);
@@ -175,7 +175,7 @@ public abstract class DataTable extends AbstractTable {
 		}
 	}
 
-	protected void createAoiIdField(AoiHierarchyLevel level, String fkColumn) {
+	protected void createAoiIdField(AoiLevel level, String fkColumn) {
 		Field<Integer> aoiField = createField(fkColumn, INTEGER, this);
 		aoiIdFields.put(level, aoiField);
 	}

@@ -17,14 +17,24 @@ import javax.persistence.MappedSuperclass;
 // TODO better name?
 @MappedSuperclass
 public abstract class UserObject implements Identifiable {
-	@Column(name = "description")
-	private String description;
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private Integer id;
-	@Column(name = "name")
-	private String name;
+	
+	@Column(name = "caption")
+	private String caption;
+
+	@Column(name = "description")
+	private String description;
+
+	public String getCaption() {
+		return caption;
+	}
+
+	public void setCaption(String caption) {
+		this.caption = caption;
+	}
 
 	public void setDescription(String description) {
 		this.description = description;
@@ -43,17 +53,10 @@ public abstract class UserObject implements Identifiable {
 	public Integer getId() {
 		return this.id;
 	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getName() {
-		return this.name;
-	}
+	
 
 	@Override
 	public String toString() {
-		return name + " [" + id + "]";
+		return caption + " [" + id + "]";
 	}
 }

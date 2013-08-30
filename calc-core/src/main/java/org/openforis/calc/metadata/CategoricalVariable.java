@@ -29,7 +29,7 @@ public class CategoricalVariable extends Variable {
 	private boolean pivotCategories;
 	
 	@Transient // TODO persist
-	private ArrayList<Hierarchy> hierarchies = new ArrayList<Hierarchy>();
+	private ArrayList<CategoryHierarchy> hierarchies = new ArrayList<CategoryHierarchy>();
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "default_category_id")
@@ -90,7 +90,7 @@ public class CategoricalVariable extends Variable {
 		return this.pivotCategories;
 	}
 	
-	public List<Hierarchy> getHierarchies() {
+	public List<CategoryHierarchy> getHierarchies() {
 		return Collections.unmodifiableList(hierarchies);
 	}
 	

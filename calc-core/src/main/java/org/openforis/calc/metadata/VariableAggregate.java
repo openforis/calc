@@ -6,7 +6,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import org.openforis.calc.common.UserObject;
+import org.openforis.calc.common.NamedUserObject;
 
 /**
  * 
@@ -14,7 +14,7 @@ import org.openforis.calc.common.UserObject;
  */
 @javax.persistence.Entity
 @Table(name = "variable_aggregate")
-public class VariableAggregate extends UserObject {
+public class VariableAggregate extends NamedUserObject {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "variable_id")
@@ -22,9 +22,6 @@ public class VariableAggregate extends UserObject {
 
 	@Column(name = "aggregate_column")
 	private String aggregateColumn;
-
-	@Column(name = "caption")
-	private String caption;
 
 	@Column(name = "aggregate_function")
 	private String aggregateFunction;
@@ -46,14 +43,6 @@ public class VariableAggregate extends UserObject {
 
 	public void setAggregateName(String aggregateName) {
 		this.aggregateColumn = aggregateName;
-	}
-
-	public String getCaption() {
-		return caption;
-	}
-
-	public void setCaption(String caption) {
-		this.caption = caption;
 	}
 
 	/**

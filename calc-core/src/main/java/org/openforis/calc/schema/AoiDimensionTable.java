@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 
 import org.jooq.Record;
 import org.jooq.TableField;
-import org.openforis.calc.metadata.AoiHierarchyLevel;
+import org.openforis.calc.metadata.AoiLevel;
 
 /**
  * 
@@ -23,14 +23,14 @@ public class AoiDimensionTable extends DimensionTable {
 	public final TableField<Record, BigDecimal> TOTAL_AREA = copyField(AOI.TOTAL_AREA);
 	public final TableField<Record, BigDecimal> LAND_AREA = copyField(AOI.LAND_AREA);
 
-	private AoiHierarchyLevel hierarchyLevel;
+	private AoiLevel hierarchyLevel;
 
-	AoiDimensionTable(RelationalSchema schema, AoiHierarchyLevel aoiHierarchyLevel) {
+	AoiDimensionTable(RelationalSchema schema, AoiLevel aoiHierarchyLevel) {
 		super(aoiHierarchyLevel.getDimensionTable(), schema);
 		this.hierarchyLevel = aoiHierarchyLevel;
 	}
 
-	public AoiHierarchyLevel getHierarchyLevel() {
+	public AoiLevel getHierarchyLevel() {
 		return hierarchyLevel;
 	}
 }

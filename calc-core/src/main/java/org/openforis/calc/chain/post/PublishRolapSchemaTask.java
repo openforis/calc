@@ -19,7 +19,7 @@ import org.jooq.SelectQuery;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.AoiHierarchy;
-import org.openforis.calc.metadata.AoiHierarchyLevel;
+import org.openforis.calc.metadata.AoiLevel;
 import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
@@ -123,8 +123,8 @@ public class PublishRolapSchemaTask extends Task {
 			if( factTable.isGeoreferenced() ) {
 				for ( AoiHierarchy hierarchy : hierarchies ) {
 					String hierarchyName = hierarchy.getName();
-					List<AoiHierarchyLevel> levels = hierarchy.getLevels();
-					AoiHierarchyLevel leafLevel = levels.get(levels.size() - 1);
+					List<AoiLevel> levels = hierarchy.getLevels();
+					AoiLevel leafLevel = levels.get(levels.size() - 1);
 					Field<Integer> aoiIdField = factTable.getAoiIdField(leafLevel);
 					DimensionUsage dim = createDimensionUsage(hierarchyName, aoiIdField.getName());
 	//				String fKey = leafLevel.getFkColumn();
@@ -237,8 +237,8 @@ public class PublishRolapSchemaTask extends Task {
 					
 //					
 					//add aoi levels aggregation
-					AoiHierarchyLevel level = aggTable.getAoiHierarchyLevel();
-					for ( AoiHierarchyLevel aoiHierarchyAggLevel : hierarchy.getLevels() ) {
+					AoiLevel level = aggTable.getAoiHierarchyLevel();
+					for ( AoiLevel aoiHierarchyAggLevel : hierarchy.getLevels() ) {
 						Field<Integer> aoiIdField = aggTable.getAoiIdField(aoiHierarchyAggLevel);
 						String aoiAggLevelName = aoiHierarchyAggLevel.getName();
 						String aggLevelName = toMdx( hierarchy.getName(), aoiAggLevelName );
@@ -293,9 +293,9 @@ public class PublishRolapSchemaTask extends Task {
 		h.setHasAll(false);
 		
 		SelectQuery<Record> select = new Psql().selectQuery();
-		List<AoiHierarchyLevel> aoiLevels = aoiHierarchy.getLevels();
+		List<AoiLevel> aoiLevels = aoiHierarchy.getLevels();
 		for ( int i = aoiLevels.size() - 1 ; i >= 0 ; i-- ) {
-			AoiHierarchyLevel aoiLevel = aoiLevels.get(i);
+			AoiLevel aoiLevel = aoiLevels.get(i);
 			AoiDimensionTable aoiDimTable = outputSchema.getAoiDimensionTable(aoiLevel);
 			
 			String aoiLevelName = aoiLevel.getName();
@@ -309,7 +309,7 @@ public class PublishRolapSchemaTask extends Task {
 			if ( i == aoiLevels.size() - 1 ) {
 				select.addFrom( aoiDimTable );
 			} else {
-				AoiHierarchyLevel childLevel = aoiLevels.get(i + 1);
+				AoiLevel childLevel = aoiLevels.get(i + 1);
 				AoiDimensionTable childAoiDimTable = outputSchema.getAoiDimensionTable(childLevel);
 				
 				select.addJoin(aoiDimTable, childAoiDimTable.PARENT_AOI_ID.eq(aoiDimTable.ID) );

@@ -12,7 +12,7 @@ import java.util.Map;
 
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.AoiHierarchy;
-import org.openforis.calc.metadata.AoiHierarchyLevel;
+import org.openforis.calc.metadata.AoiLevel;
 import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.Variable;
@@ -33,7 +33,7 @@ public class OutputSchema extends RelationalSchema {
 	private Map<Entity, OutputTable> outputTables;
 	private Map<Entity, FactTable> factTables;
 	private Map<CategoricalVariable, CategoryDimensionTable> categoryDimensionTables;
-	private Map<AoiHierarchyLevel, AoiDimensionTable> aoiDimensionTables;
+	private Map<AoiLevel, AoiDimensionTable> aoiDimensionTables;
 
 	public OutputSchema(Workspace workspace, InputSchema inputSchema) {
 		super(workspace.getOutputSchema());
@@ -122,11 +122,11 @@ public class OutputSchema extends RelationalSchema {
 	}
 
 	private void initAoiDimensionTables() {
-		this.aoiDimensionTables = new HashMap<AoiHierarchyLevel, AoiDimensionTable>();
+		this.aoiDimensionTables = new HashMap<AoiLevel, AoiDimensionTable>();
 		List<AoiHierarchy> aoiHierarchies = workspace.getAoiHierarchies();
 		for ( AoiHierarchy aoiHierarchy : aoiHierarchies ) {
-			List<AoiHierarchyLevel> levels = aoiHierarchy.getLevels();
-			for ( AoiHierarchyLevel level : levels ) {
+			List<AoiLevel> levels = aoiHierarchy.getLevels();
+			for ( AoiLevel level : levels ) {
 				AoiDimensionTable table = new AoiDimensionTable(this, level);
 				addTable(table);
 				aoiDimensionTables.put(level, table);
@@ -158,7 +158,7 @@ public class OutputSchema extends RelationalSchema {
 		return Collections.unmodifiableCollection(aoiDimensionTables.values());
 	}
 	
-	public AoiDimensionTable getAoiDimensionTable(AoiHierarchyLevel aoiHierarchyLevel) {
+	public AoiDimensionTable getAoiDimensionTable(AoiLevel aoiHierarchyLevel) {
 		return aoiDimensionTables.get(aoiHierarchyLevel);
 	}
 

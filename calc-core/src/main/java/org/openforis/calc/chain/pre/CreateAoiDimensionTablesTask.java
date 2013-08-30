@@ -6,7 +6,7 @@ import static org.openforis.calc.persistence.jooq.Tables.AOI_LEVEL;
 import org.jooq.Select;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
-import org.openforis.calc.metadata.AoiHierarchyLevel;
+import org.openforis.calc.metadata.AoiLevel;
 import org.openforis.calc.psql.Psql;
 import org.openforis.calc.psql.Psql.Privilege;
 import org.openforis.calc.schema.AoiDimensionTable;
@@ -28,7 +28,7 @@ public final class CreateAoiDimensionTablesTask extends Task {
 		OutputSchema outputSchema = getOutputSchema();
 		
 		for ( AoiDimensionTable aoiDimensionTable : outputSchema.getAoiDimensionTables() ) {
-			AoiHierarchyLevel hierarchyLevel = aoiDimensionTable.getHierarchyLevel();
+			AoiLevel hierarchyLevel = aoiDimensionTable.getHierarchyLevel();
 			Integer aoiLevelId = hierarchyLevel.getId();
 			
 			//selects from calc.aoi table

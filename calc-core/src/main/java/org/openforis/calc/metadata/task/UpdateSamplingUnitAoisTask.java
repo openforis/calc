@@ -5,7 +5,7 @@ import java.util.List;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.AoiHierarchy;
-import org.openforis.calc.metadata.AoiHierarchyLevel;
+import org.openforis.calc.metadata.AoiLevel;
 
 /**
  * Task responsible for assigning AOI codes and/or ids to the first phase plots.
@@ -31,11 +31,11 @@ public final class UpdateSamplingUnitAoisTask extends Task {
 	private void populateSamplingUnitAois(Workspace ws) {
 		List<AoiHierarchy> hierarchies = ws.getAoiHierarchies();
 		for ( AoiHierarchy hierarchy : hierarchies ) {
-			List<AoiHierarchyLevel> levels = hierarchy.getLevels();
+			List<AoiLevel> levels = hierarchy.getLevels();
 			
-			AoiHierarchyLevel childLevel = null;
+			AoiLevel childLevel = null;
 			for ( int i = levels.size() - 1 ; i >= 0 ; i-- ) {
-				AoiHierarchyLevel level = levels.get(i);
+				AoiLevel level = levels.get(i);
 				log().debug("AOI Level: "+level);
 				
 				if (childLevel == null) {
@@ -50,7 +50,7 @@ public final class UpdateSamplingUnitAoisTask extends Task {
 	}
 
 	private void insertAncestorStratumAois(Workspace ws,
-			AoiHierarchyLevel childLevel) {
+			AoiLevel childLevel) {
 		createPsqlBuilder()
 		.insertInto("calc.sampling_unit_aoi","sampling_unit_id", "aoi_id","workspace_id")
 		.select("s.sampling_unit_id", "a.parent_aoi_id", ws.getId() )
@@ -61,7 +61,7 @@ public final class UpdateSamplingUnitAoisTask extends Task {
 		.execute();
 	}
 
-	private void insertLeafStratumAois(Workspace ws, AoiHierarchyLevel level) {
+	private void insertLeafStratumAois(Workspace ws, AoiLevel level) {
 		createPsqlBuilder()
 			.insertInto("calc.sampling_unit_aoi","sampling_unit_id", "aoi_id","workspace_id")
 			.select("u.id", "a.id", ws.getId())

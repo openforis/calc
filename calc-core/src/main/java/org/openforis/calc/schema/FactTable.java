@@ -18,7 +18,7 @@ import org.jooq.Schema;
 import org.jooq.impl.SQLDataType;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.AoiHierarchy;
-import org.openforis.calc.metadata.AoiHierarchyLevel;
+import org.openforis.calc.metadata.AoiLevel;
 import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.Variable;
@@ -110,7 +110,7 @@ public class FactTable extends DataTable {
 			Workspace workspace = entity.getWorkspace();
 			
 			for ( AoiHierarchy aoiHierarchy : workspace.getAoiHierarchies() ) {
-				for ( AoiHierarchyLevel level : aoiHierarchy.getLevels() ) {
+				for ( AoiLevel level : aoiHierarchy.getLevels() ) {
 					AggregateTable aggregateTable = new AggregateTable(this, level);
 					addAggregateTable(aoiHierarchy, aggregateTable);
 				}

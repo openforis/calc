@@ -55,7 +55,7 @@ public class CalcTest {
 		System.out.println("Chains:");
 
 		ProcessingChain newChain = new ProcessingChain();
-		newChain.setName("Test Chain");
+		newChain.setCaption("Test Chain");
 		newChain.parameters().setNumber("p", 1);
 
 		ParameterMap innerMap = new ParameterHashMap();
@@ -63,7 +63,7 @@ public class CalcTest {
 		newChain.parameters().setMap("inner", innerMap);
 
 		CalculationStep step = new CalculationStep();
-		step.setName("Step 1");
+		step.setCaption("Step 1");
 		step.setStepNo(1);
 		step.setModuleName("calc-sql");
 		step.setModuleVersion("1.0");

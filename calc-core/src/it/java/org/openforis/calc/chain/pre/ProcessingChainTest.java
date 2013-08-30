@@ -6,7 +6,12 @@ import org.junit.Test;
 import org.openforis.calc.chain.InvalidProcessingChainException;
 import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.chain.ProcessingChainDao;
+import org.openforis.calc.chain.post.AssignDimensionIdsTask;
+import org.openforis.calc.chain.post.AssignStratumIdsTask;
+import org.openforis.calc.chain.post.CalculateExpansionFactorsTask;
 import org.openforis.calc.chain.post.CreateAggregateTablesTask;
+import org.openforis.calc.chain.post.CreateFactTablesTask;
+import org.openforis.calc.chain.post.PublishRolapSchemaTask;
 import org.openforis.calc.engine.CalculationEngine;
 import org.openforis.calc.engine.Job;
 import org.openforis.calc.engine.TaskManager;
@@ -46,17 +51,17 @@ public class ProcessingChainTest extends AbstractTransactionalJUnit4SpringContex
 //		job.addTask(taskManager.createTask(CreateOutputTablesTask.class));
 //		job.addTask(taskManager.createTask(AssignLocationColumnsTask.class));
 //		job.addTask(taskManager.createTask(AssignAoiColumnsTask.class));
-		
-		// User steps
+//		
+//		// User steps
 //		job.addTasks(taskManager.createCalculationStepTasks(chain));
-		
-		// Postprocessing
+//		
+//		// Postprocessing
 //		job.addTask(taskManager.createTask(CreateFactTablesTask.class));
 //		job.addTask(taskManager.createTask(AssignStratumIdsTask.class));
 //		job.addTask(taskManager.createTask(AssignDimensionIdsTask.class));
 //		job.addTask(taskManager.createTask(CalculateExpansionFactorsTask.class));
-		job.addTask(taskManager.createTask(CreateAggregateTablesTask.class));
-//		job.addTask(taskManager.createTask(PublishRolapSchemaTask.class));
+//		job.addTask(taskManager.createTask(CreateAggregateTablesTask.class));
+		job.addTask(taskManager.createTask(PublishRolapSchemaTask.class));
 		
 		taskManager.startJob(job);
 		job.waitFor(5000);
