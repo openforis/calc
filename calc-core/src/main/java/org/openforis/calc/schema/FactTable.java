@@ -53,7 +53,7 @@ public class FactTable extends DataTable {
 		this.sourceOutputTable = sourceOutputTable;
 		this.parentTable = parentTable;
 		createPrimaryKeyField();
-		createDimensionFieldsRecursive(entity, false);
+		createDimensionFieldsRecursive(entity);
 		createStratumIdField();
 		createAoiIdFields();
 		createQuantityFields(false);
@@ -66,10 +66,10 @@ public class FactTable extends DataTable {
 	 * Recursively up to root unit of analysis
 	 * @param disaggregatesOnly 
 	 */
-	protected void createDimensionFieldsRecursive(Entity entity, boolean disaggregatesOnly) {
+	protected void createDimensionFieldsRecursive(Entity entity) {
 		Entity parent = entity.getParent();
 		if ( parent != null ) {
-			createDimensionFieldsRecursive(parent, disaggregatesOnly);
+			createDimensionFieldsRecursive(parent);
 		}
 		createDimensionIdFields(entity);
 		createCategoryValueFields(entity, false);

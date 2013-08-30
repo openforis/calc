@@ -6,8 +6,6 @@ import org.junit.Test;
 import org.openforis.calc.chain.InvalidProcessingChainException;
 import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.chain.ProcessingChainDao;
-import org.openforis.calc.chain.post.AssignDimensionIdsTask;
-import org.openforis.calc.chain.post.CalculateExpansionFactorsTask;
 import org.openforis.calc.chain.post.CreateAggregateTablesTask;
 import org.openforis.calc.engine.CalculationEngine;
 import org.openforis.calc.engine.Job;

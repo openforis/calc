@@ -5,6 +5,8 @@ import static org.jooq.impl.SQLDataType.INTEGER;
 import org.jooq.Record;
 import org.jooq.TableField;
 import org.openforis.calc.metadata.AoiHierarchyLevel;
+import org.openforis.calc.metadata.BinaryVariable;
+import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
 
 /**
@@ -28,7 +30,7 @@ public class AggregateTable extends FactTable {
 		this.aoiHierarchyLevel = level;
 		this.sourceFactTable = factTable;
 		Entity entity = factTable.getEntity();
-		createDimensionFieldsRecursive(entity, true);
+		createDimensionFieldsRecursive(entity);
 		createStratumIdField();
 		createAoiIdFields(level);
 		createMeasureFields(entity);
@@ -49,6 +51,27 @@ public class AggregateTable extends FactTable {
 		aggregateFactCountField = createField(AGG_FACT_CNT_COLUMN, INTEGER, this);
 	}
 
+	@Override
+	protected void createBinaryCategoryValueField(BinaryVariable var, String valueColumn) {
+		if ( var.isDisaggregate() ) {
+			super.createBinaryCategoryValueField(var, valueColumn);
+		}
+	}
+	
+	@Override
+	protected void createCategoryValueField(CategoricalVariable var, String valueColumn) {
+		if ( var.isDisaggregate() ) {
+			super.createCategoryValueField(var, valueColumn);
+		}
+	}
+	
+	@Override
+	protected void createDimensionIdField(CategoricalVariable var) {
+		if ( var.isDisaggregate() ) {
+			super.createDimensionIdField(var);
+		}
+	}
+	
 	public TableField<Record, Integer> getAggregateFactCountField() {
 		return aggregateFactCountField;
 	}

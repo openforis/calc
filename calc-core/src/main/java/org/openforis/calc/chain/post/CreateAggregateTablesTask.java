@@ -26,12 +26,11 @@ import org.openforis.calc.schema.OutputSchema;
 public final class CreateAggregateTablesTask extends Task {
 	@Override
 	protected void execute() throws Throwable {
-		// TODO agg_count and threshold
+		// TODO threshold
 		OutputSchema outputSchema = getOutputSchema();
 		Collection<AggregateTable> aggTables = outputSchema.getAggregateTables();
 		ExpansionFactorTable expf = outputSchema.getExpansionFactorTable();
 		for (AggregateTable aggTable : aggTables) {
-			
 			AoiHierarchyLevel level = aggTable.getAoiHierarchyLevel();
 			FactTable f = (FactTable) aggTable.getSourceFactTable();
 			Field<Integer> aoiId = f.getAoiIdField(level);
@@ -60,6 +59,7 @@ public final class CreateAggregateTablesTask extends Task {
 				String aggCol = varAgg.getAggregateColumn();
 				select.addSelect(DSL.field(formula).as(aggCol));
 			}
+			
 			//add aggregate fact count column
 			select.addSelect(DSL.count().as(aggTable.getAggregateFactCountField().getName()));
 			
