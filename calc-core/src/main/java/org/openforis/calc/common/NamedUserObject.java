@@ -1,12 +1,14 @@
 package org.openforis.calc.common;
 
 import javax.persistence.Column;
+import javax.persistence.MappedSuperclass;
 
 /**
  * 
  * @author G. Miceli
  *
  */
+@MappedSuperclass
 public abstract class NamedUserObject extends UserObject {
 	
 	@Column(name = "name")

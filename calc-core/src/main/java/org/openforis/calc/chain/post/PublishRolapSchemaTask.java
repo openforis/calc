@@ -74,7 +74,7 @@ public class PublishRolapSchemaTask extends Task {
 		OutputSchema outputSchema = getOutputSchema();
 		String outputSchemaName = outputSchema.getName();
 		Workspace workspace = getWorkspace();
-		String workspaceName = workspace.getName();	
+		String workspaceName = workspace.getInputSchema();	
 		
 		// create schema
 		Schema schema = createSchema(workspaceName);

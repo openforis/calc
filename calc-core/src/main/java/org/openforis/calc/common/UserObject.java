@@ -14,7 +14,6 @@ import javax.persistence.MappedSuperclass;
  * @author G. Miceli
  * @author M. Togna
  */
-// TODO better name?
 @MappedSuperclass
 public abstract class UserObject implements Identifiable {
 	@Id

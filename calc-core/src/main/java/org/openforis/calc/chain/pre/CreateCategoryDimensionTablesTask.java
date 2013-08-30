@@ -32,7 +32,7 @@ public final class CreateCategoryDimensionTablesTask extends Task {
 				Select<?> select = psql()
 					.select(CATEGORY.ID			.as(t.ID.getName()), 
 							CATEGORY.CODE		.as(t.CODE.getName()),
-							CATEGORY.NAME		.as(t.CAPTION.getName()),
+							CATEGORY.CAPTION		.as(t.CAPTION.getName()),
 							CATEGORY.DESCRIPTION.as(t.DESCRIPTION.getName()), 
 							CATEGORY.SORT_ORDER	.as(t.SORT_ORDER.getName()),
 							CATEGORY.VALUE      .as(t.VALUE.getName()))

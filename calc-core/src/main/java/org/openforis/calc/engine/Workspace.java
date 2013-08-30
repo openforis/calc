@@ -18,7 +18,7 @@ import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.openforis.calc.chain.ProcessingChain;
-import org.openforis.calc.common.NamedUserObject;
+import org.openforis.calc.common.UserObject;
 import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.Entity;
 
@@ -31,7 +31,7 @@ import org.openforis.calc.metadata.Entity;
 @javax.persistence.Entity
 @Table(name = "workspace")
 @org.hibernate.annotations.Cache(usage = org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE)
-public class Workspace extends NamedUserObject {
+public class Workspace extends UserObject {
 	
 	@Column(name = "input_schema")
 	private String inputSchema;
