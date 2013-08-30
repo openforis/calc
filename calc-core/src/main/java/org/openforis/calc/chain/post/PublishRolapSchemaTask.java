@@ -46,6 +46,7 @@ import org.openforis.calc.schema.AoiDimensionTable;
 import org.openforis.calc.schema.CategoryDimensionTable;
 import org.openforis.calc.schema.FactTable;
 import org.openforis.calc.schema.OutputSchema;
+import org.openforis.calc.schema.RolapSchema;
 import org.springframework.beans.factory.annotation.Value;
 
 /**
@@ -67,14 +68,8 @@ public class PublishRolapSchemaTask extends Task {
 	
 	@Override
 	protected void execute() throws Throwable {
-
-//		Entity entity = getSamplingUnitEntity();
-//		String entityName = entity.getName();
-//		String entityDataTable = entity.getDataTable();
-//		List<Variable> variables = entity.getVariables();
-
 		
-		
+		RolapSchema rolapSchema = getRolapSchema();
 		
 		OutputSchema outputSchema = getOutputSchema();
 		String outputSchemaName = outputSchema.getName();
@@ -91,26 +86,13 @@ public class PublishRolapSchemaTask extends Task {
 			schema.getDimension().add(dim);
 		}
 		
-		// create plot shared dimensions
+		// create shared dimensions
 		Collection<CategoryDimensionTable> categoryDimensionTables = outputSchema.getCategoryDimensionTables();
 		for ( CategoryDimensionTable categoryDimTable : categoryDimensionTables ) {
 			CategoricalVariable variable = categoryDimTable.getVariable();
 			SharedDimension dim = createSharedDimension(variable.getName(), categoryDimTable.getName(), categoryDimTable.getSchema().getName(), "id", "caption");
 			schema.getDimension().add(dim);
 		}
-//		for ( Variable variable : variables ) {
-//			if ( variable instanceof CategoricalVariable ) {
-//				CategoricalVariable cVariable = (CategoricalVariable) variable;
-//				if ( cVariable.isDisaggregate() ) {
-//					String dimensionTable = variable.getDimensionTable();
-//					String variableName = variable.getName();
-//
-//					SharedDimension dim = createSharedDimension(variableName, dimensionTable, outputSchemaName);
-//					schema.getDimension().add(dim);
-//				}
-//			}
-//		}
-
 		// create cubes for each fact table
 		Collection<FactTable> factTables = outputSchema.getFactTables();
 		for ( FactTable factTable : factTables ) {
@@ -160,12 +142,6 @@ public class PublishRolapSchemaTask extends Task {
 						String fieldName = measureField.getName();
 						String caption = aggregate.getCaption();
 						String aggFunction = aggregate.getAggregateFunction();
-//						
-//						String valueColumn = variable.getValueColumn();
-//						String column = aggregate.getAggregateColumn();
-//						column = (column == null) ? valueColumn : column;
-//						String dataType = DATA_TYPE_NUMERIC;
-//						String formatString = NUMBER_FORMAT_STRING;
 						
 						Measure m = createMeasure(measureName, caption, fieldName, aggFunction, DATA_TYPE_NUMERIC, NUMBER_FORMAT_STRING);
 						
@@ -182,23 +158,9 @@ public class PublishRolapSchemaTask extends Task {
 				int approxRowCnt = 100;
 				for ( AggregateTable aggTable : aggregateTables ) {
 					AggName aggName = createAggregateName(aggTable.getName(), approxRowCnt);
-//				}
-				
-//				String hierarchyName = hierarchy.getName();
-//				List<AoiHierarchyLevel> levels = hierarchy.getLevels();
-//				for ( AoiHierarchyLevel level : levels ) {
-					
-//					factTable.get
-					
-					
-//					String levelName = level.getName();
-//					String aggName = "_agg_"+levelName +"_stratum_"+ entityDataTable;
-					
-//					AggName aggTable = createAggregateName(aggName, approxRowCnt);
 					
 					// add aggregates members
 					for ( Variable variable : variables ) {
-//						String variableName = variable.getName();
 						if ( variable instanceof CategoricalVariable ) {
 							CategoricalVariable catVariable = (CategoricalVariable) variable;
 							Field<Integer> dimensionIdField = aggTable.getDimensionIdField(catVariable);
@@ -217,15 +179,6 @@ public class PublishRolapSchemaTask extends Task {
 								
 								String measureName = aggregate.getName(); 
 								String fieldName = measureField.getName();
-//								String caption = aggregate.getCaption();
-//								String aggFunction = aggregate.getAggregateFunction();
-								
-//								String name = aggregate.getName();
-//								name = (name == null) ? variableName : name;
-//	
-//								String valueColumn = variable.getValueColumn();
-//								String column = aggregate.getAggregateColumn();
-//								column = (column == null) ? valueColumn : column;
 	
 								AggMeasure aggMeasure = createAggMeasure(measureName, fieldName);
 								
@@ -235,14 +188,12 @@ public class PublishRolapSchemaTask extends Task {
 						}
 					}
 					
-//					
 					//add aoi levels aggregation
 					AoiHierarchyLevel level = aggTable.getAoiHierarchyLevel();
 					for ( AoiHierarchyLevel aoiHierarchyAggLevel : hierarchy.getLevels() ) {
 						Field<Integer> aoiIdField = aggTable.getAoiIdField(aoiHierarchyAggLevel);
 						String aoiAggLevelName = aoiHierarchyAggLevel.getName();
 						String aggLevelName = toMdx( hierarchy.getName(), aoiAggLevelName );
-//						String fkColumn = aoiHierarchyAggLevel.getFkColumn();
 						
 						AggLevel aggLevel = createAggLevel(aggLevelName, aoiIdField.getName());
 						
@@ -254,7 +205,7 @@ public class PublishRolapSchemaTask extends Task {
 					}
 					 
 					table.getAggTable().add(aggName);
-//					
+
 					approxRowCnt+=100;
 				}
 			}
@@ -327,20 +278,5 @@ public class PublishRolapSchemaTask extends Task {
 
 		return dim;
 	}
-
-
-//	private Entity getSamplingUnitEntity() {
-//		Workspace ws = getWorkspace();
-//
-//		Entity suEntity = null;
-//		List<Entity> entities = ws.getEntities();
-//		for ( Entity entity : entities ) {
-//			if ( entity.isSamplingUnit() ) {
-//				suEntity = entity;
-//				break;
-//			}
-//		}
-//		return suEntity;
-//	}
 
 }
