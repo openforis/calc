@@ -13,7 +13,8 @@ public class Measure extends Member {
 	private Cube cube;
 	private VariableAggregate aggregate;
 
-	public Measure(Cube cube, VariableAggregate aggregate) {
+	public Measure(RolapSchema rolapSchema, Cube cube, VariableAggregate aggregate) {
+		super(rolapSchema);
 		this.cube = cube;
 		this.aggregate = aggregate;
 	}
