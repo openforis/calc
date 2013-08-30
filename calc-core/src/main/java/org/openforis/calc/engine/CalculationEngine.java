@@ -10,7 +10,7 @@ import org.openforis.calc.chain.post.CreateAggregateTablesTask;
 import org.openforis.calc.chain.post.CreateFactTablesTask;
 import org.openforis.calc.chain.post.PublishRolapSchemaTask;
 import org.openforis.calc.chain.pre.AssignAoiColumnsTask;
-import org.openforis.calc.chain.pre.AssignDefaultValuesTask;
+import org.openforis.calc.chain.pre.ApplyDefaultsTask;
 import org.openforis.calc.chain.pre.AssignLocationColumnsTask;
 import org.openforis.calc.chain.pre.CreateAoiDimensionTablesTask;
 import org.openforis.calc.chain.pre.CreateCategoryDimensionTablesTask;
@@ -45,7 +45,7 @@ public class CalculationEngine {
 			CreateAoiDimensionTablesTask.class,
 			CreateStratumDimensionTableTask.class,
 			CreateOutputTablesTask.class,
-			AssignDefaultValuesTask.class,
+			ApplyDefaultsTask.class,
 			AssignLocationColumnsTask.class,
 			AssignAoiColumnsTask.class
 		};

@@ -42,7 +42,7 @@ public class RolapSchema {
 	}
 
 	private void createCubes() {
-//		this.cubes = new ArrayList<Cube>();
+		this.cubes = new ArrayList<Cube>();
 		
 		Collection<FactTable> factTables = outputSchema.getFactTables();
 		for ( FactTable factTable : factTables ) {

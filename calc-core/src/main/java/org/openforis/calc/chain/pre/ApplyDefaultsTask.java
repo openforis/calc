@@ -14,7 +14,7 @@ import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.schema.OutputSchema;
 import org.openforis.calc.schema.OutputTable;
 
-public class AssignDefaultValuesTask extends Task {
+public class ApplyDefaultsTask extends Task {
 
 	@Override
 	protected void execute() throws Throwable {
@@ -50,25 +50,23 @@ public class AssignDefaultValuesTask extends Task {
 	private void applyDefaultValue(OutputTable outputTable, BinaryVariable variable) {
 		Boolean defaultValue = variable.getDefaultValue();
 		if(  defaultValue != null ) {
-//			Field<Boolean> valueField = (Field<Boolean>) outputTable.getCategoryValueField(variable);
-//			boolean defaultValue = Category.TRUE_VALUE.equals(defaultCategory.getValue());
-//			psql().update( outputTable )
-//				.set( valueField, defaultValue )
-//				.where( valueField.isNull() )
-//				.execute();
+			Field<Boolean> valueField = (Field<Boolean>) outputTable.getCategoryValueField(variable);
+			psql().update( outputTable )
+				.set( valueField, defaultValue )
+				.where( valueField.isNull() )
+				.execute();
 		}
 	}
 	
 	@SuppressWarnings("unchecked")
 	private void applyDefaultValue(OutputTable outputTable, MultiwayVariable variable) {
-//		Category defaultCategory = variable.getDefaultCategory();;
-//		if(  defaultCategory != null ) {
-//			Field<String> valueField = (Field<String>) outputTable.getCategoryValueField(variable);
-//			String defaultValue = defaultCategory.getCode();
-//			psql().update( outputTable )
-//				.set( valueField, defaultValue )
-//				.where( valueField.isNull() )
-//				.execute();
-//		}
+		String defaultValue = variable.getDefaultValue();
+		if(  defaultValue != null ) {
+			Field<String> valueField = (Field<String>) outputTable.getCategoryValueField(variable);
+			psql().update( outputTable )
+				.set( valueField, defaultValue )
+				.where( valueField.isNull() )
+				.execute();
+		}
 	}
 }

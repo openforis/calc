@@ -49,19 +49,20 @@ public class ProcessingChainTest extends AbstractTransactionalJUnit4SpringContex
 		job.addTask(taskManager.createTask(CreateAoiDimensionTablesTask.class));
 		job.addTask(taskManager.createTask(CreateStratumDimensionTableTask.class));
 		job.addTask(taskManager.createTask(CreateOutputTablesTask.class));
-		job.addTask(taskManager.createTask(AssignLocationColumnsTask.class));
-		job.addTask(taskManager.createTask(AssignAoiColumnsTask.class));
-		
-		// User steps
-		job.addTasks(taskManager.createCalculationStepTasks(chain));
+		job.addTask(taskManager.createTask(ApplyDefaultsTask.class));
+//		job.addTask(taskManager.createTask(AssignLocationColumnsTask.class));
+//		job.addTask(taskManager.createTask(AssignAoiColumnsTask.class));
+//		
+//		// User steps
+//		job.addTasks(taskManager.createCalculationStepTasks(chain));
 		
 		// Postprocessing
-		job.addTask(taskManager.createTask(CreateFactTablesTask.class));
-		job.addTask(taskManager.createTask(AssignStratumIdsTask.class));
-		job.addTask(taskManager.createTask(AssignDimensionIdsTask.class));
-		job.addTask(taskManager.createTask(CalculateExpansionFactorsTask.class));
-		job.addTask(taskManager.createTask(CreateAggregateTablesTask.class));
-		job.addTask(taskManager.createTask(PublishRolapSchemaTask.class));
+//		job.addTask(taskManager.createTask(CreateFactTablesTask.class));
+//		job.addTask(taskManager.createTask(AssignStratumIdsTask.class));
+//		job.addTask(taskManager.createTask(AssignDimensionIdsTask.class));
+//		job.addTask(taskManager.createTask(CalculateExpansionFactorsTask.class));
+//		job.addTask(taskManager.createTask(CreateAggregateTablesTask.class));
+//		job.addTask(taskManager.createTask(PublishRolapSchemaTask.class));
 		
 		taskManager.startJob(job);
 		job.waitFor(5000);
