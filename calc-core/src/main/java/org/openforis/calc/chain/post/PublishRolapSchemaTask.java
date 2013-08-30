@@ -19,13 +19,12 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 
 import org.jooq.Field;
-import org.jooq.Record;
-import org.jooq.SelectQuery;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.AoiHierarchy;
@@ -48,10 +47,10 @@ import org.openforis.calc.mondrian.Table.AggName.AggForeignKey;
 import org.openforis.calc.mondrian.Table.AggName.AggLevel;
 import org.openforis.calc.mondrian.Table.AggName.AggMeasure;
 import org.openforis.calc.mondrian.View;
-import org.openforis.calc.psql.Psql;
 import org.openforis.calc.schema.AggregateTable;
-import org.openforis.calc.schema.AoiDimensionTable;
-import org.openforis.calc.schema.CategoryDimensionTable;
+import org.openforis.calc.schema.AoiDimension;
+import org.openforis.calc.schema.CategoryDimension;
+import org.openforis.calc.schema.Dimension;
 import org.openforis.calc.schema.FactTable;
 import org.openforis.calc.schema.OutputSchema;
 import org.openforis.calc.schema.RolapSchema;
@@ -82,26 +81,70 @@ public class PublishRolapSchemaTask extends Task {
 		OutputSchema outputSchema = getOutputSchema();
 		String outputSchemaName = outputSchema.getName();
 		Workspace workspace = getWorkspace();
-		String workspaceName = workspace.getInputSchema();	
+//		String workspaceName = workspace.getInputSchema();	
 		
 		// create schema
-		Schema schema = createSchema(workspaceName);
-
+		Schema schema = createSchema(rolapSchema.getName());
+		
 		// create aoi dimensions
-		List<AoiHierarchy> hierarchies = workspace.getAoiHierarchies();
-		for ( AoiHierarchy hierarchy : hierarchies ) {
-			SharedDimension dim = createAoiSharedDimension(hierarchy);
+		List<AoiDimension> aoiDimensions = rolapSchema.getAoiDimensions();
+		for ( AoiDimension aoiDimension : aoiDimensions ) {
+			SharedDimension dim = createAoiSharedDimension(aoiDimension);
 			schema.getDimension().add(dim);
 		}
+		List<AoiHierarchy> hierarchies = workspace.getAoiHierarchies();
+//		for ( AoiHierarchy hierarchy : hierarchies ) {
+//			SharedDimension dim = createAoiSharedDimension(hierarchy);
+//			schema.getDimension().add(dim);
+//		}
 		
 		// create shared dimensions
-		Collection<CategoryDimensionTable> categoryDimensionTables = outputSchema.getCategoryDimensionTables();
-		for ( CategoryDimensionTable categoryDimTable : categoryDimensionTables ) {
-			CategoricalVariable<?> variable = categoryDimTable.getVariable();
-			SharedDimension dim = createSharedDimension(variable.getName(), categoryDimTable.getName(), categoryDimTable.getSchema().getName(), "id", "caption");
+		Collection<CategoryDimension> sharedDimensions = rolapSchema.getSharedDimensions();
+		for ( CategoryDimension categoryDimension : sharedDimensions ) {
+			org.openforis.calc.schema.Hierarchy hierarchy = categoryDimension.getHierarchy();
+			org.openforis.calc.schema.Hierarchy.Table table = hierarchy.getTable();
+			org.openforis.calc.schema.Hierarchy.Level level = hierarchy.getLevels().get(0);
+			SharedDimension dim = createSharedDimension(categoryDimension.getName(), table.getName(), table.getSchema(), level.getColumn(), level.getNameColumn());
 			schema.getDimension().add(dim);
 		}
+//		Collection<CategoryDimensionTable> categoryDimensionTables = outputSchema.getCategoryDimensionTables();
+//		for ( CategoryDimensionTable categoryDimTable : categoryDimensionTables ) {
+//			CategoricalVariable variable = categoryDimTable.getVariable();
+//			SharedDimension dim = createSharedDimension(variable.getName(), categoryDimTable.getName(), categoryDimTable.getSchema().getName(), "id", "caption");
+//			schema.getDimension().add(dim);
+//		}
+		
+		
+		
 		// create cubes for each fact table
+		List<org.openforis.calc.schema.Cube> cubes = rolapSchema.getCubes();
+		for ( org.openforis.calc.schema.Cube rolapCube : cubes ) {
+			Cube cube = createCube( rolapCube.getName() );
+			
+			Table table = createTable( rolapCube.getSchema(), rolapCube.getTable() );
+			cube.setTable(table);
+			
+			// add aoi dimension usages
+			Map<AoiDimension, Field<Integer>> aoiDimensionUsages = rolapCube.getAoiDimensionUsages();
+			for ( AoiDimension aoiDimension : aoiDimensionUsages.keySet() ) {
+				Field<Integer> field = aoiDimensionUsages.get(aoiDimension);
+				DimensionUsage dim = createDimensionUsage(aoiDimension.getName(), field.getName());
+				cube.getDimensionUsageOrDimension().add(dim);
+			}
+			
+			// add dimension usages
+			Map<Dimension, Field<Integer>> dimensionUsages = rolapCube.getDimensionUsages();
+			for ( Dimension dimension : dimensionUsages.keySet() ) {
+				Field<Integer> field = dimensionUsages.get(dimension);
+				
+				DimensionUsage dim = createDimensionUsage(dimension.getName(), field.getName());
+				cube.getDimensionUsageOrDimension().add(dim);
+			}
+			
+		}
+		
+		
+		
 		Collection<FactTable> factTables = outputSchema.getFactTables();
 		for ( FactTable factTable : factTables ) {
 			Entity entity = factTable.getEntity();
@@ -110,17 +153,16 @@ public class PublishRolapSchemaTask extends Task {
 			Table table = createTable( outputSchemaName, factTable.getName() );
 			
 			// add aoi dimension usages to sampling unit cube if table is geo referenced
-			if( factTable.isGeoreferenced() ) {
-				for ( AoiHierarchy hierarchy : hierarchies ) {
-					String hierarchyName = hierarchy.getName();
-					List<AoiLevel> levels = hierarchy.getLevels();
-					AoiLevel leafLevel = levels.get(levels.size() - 1);
-					Field<Integer> aoiIdField = factTable.getAoiIdField(leafLevel);
-					DimensionUsage dim = createDimensionUsage(hierarchyName, aoiIdField.getName());
-	//				String fKey = leafLevel.getFkColumn();
-					cube.getDimensionUsageOrDimension().add(dim);
-				}
-			}
+//			if( factTable.isGeoreferenced() ) {
+//				for ( AoiHierarchy hierarchy : hierarchies ) {
+//					String hierarchyName = hierarchy.getName();
+//					List<AoiLevel> levels = hierarchy.getLevels();
+//					AoiLevel leafLevel = levels.get(levels.size() - 1);
+//					Field<Integer> aoiIdField = factTable.getAoiIdField(leafLevel);
+//					DimensionUsage dim = createDimensionUsage(hierarchyName, aoiIdField.getName());
+//					cube.getDimensionUsageOrDimension().add(dim);
+//				}
+//			}
 			
 			// add members (dimensions and measures) to cube
 			List<Variable<?>> variables = entity.getVariables();
@@ -129,13 +171,12 @@ public class PublishRolapSchemaTask extends Task {
 				// add dimension usages to cube
 				String variableName = variable.getName();
 				if ( variable instanceof CategoricalVariable ) {
-					CategoricalVariable<?> catVariable = (CategoricalVariable<?>) variable;
-					Field<Integer> dimensionIdField = factTable.getDimensionIdField(catVariable);
-					if ( dimensionIdField != null ) { // it's null when variable is not disaggregate
-//						String fKey = catVariable.getCategoryIdColumn();
-						DimensionUsage dim = createDimensionUsage(variableName, dimensionIdField.getName());
-						cube.getDimensionUsageOrDimension().add(dim);
-					}
+//					CategoricalVariable catVariable = (CategoricalVariable) variable;
+//					Field<Integer> dimensionIdField = factTable.getDimensionIdField(catVariable);
+//					if ( dimensionIdField != null ) { // it's null when variable is not disaggregate
+//						DimensionUsage dim = createDimensionUsage(variableName, dimensionIdField.getName());
+//						cube.getDimensionUsageOrDimension().add(dim);
+//					}
 				}
 				
 				// add measures to sampling unit cube
@@ -238,48 +279,35 @@ public class PublishRolapSchemaTask extends Task {
 
 	}
 
-	private SharedDimension createAoiSharedDimension(AoiHierarchy aoiHierarchy) {
-		OutputSchema outputSchema = getOutputSchema();
-		String aoiHierarchyName = aoiHierarchy.getName();
+	
+	
+//	private SharedDimension createAoiSharedDimension(AoiDimension aoiDimension) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
+//
+
+
+	private SharedDimension createAoiSharedDimension(AoiDimension aoiDimension) {
+		org.openforis.calc.schema.Hierarchy hierarchy = aoiDimension.getHierarchy();
+		org.openforis.calc.schema.Hierarchy.View view = hierarchy.getView();
 		
 		SharedDimension dim = new SharedDimension();
-		dim.setName(aoiHierarchyName);
+		dim.setName(aoiDimension.getName());
 		dim.setType(DIMENSION_TYPE_STANDARD);
 		// ? dim.setCaption(hierarchy.get)
 
 		Hierarchy h = new Hierarchy();
-		h.setName(aoiHierarchyName);
+		h.setName(hierarchy.getName());
 		h.setHasAll(false);
 		
-		SelectQuery<Record> select = new Psql().selectQuery();
-		List<AoiLevel> aoiLevels = aoiHierarchy.getLevels();
-		for ( int i = aoiLevels.size() - 1 ; i >= 0 ; i-- ) {
-			AoiLevel aoiLevel = aoiLevels.get(i);
-			AoiDimensionTable aoiDimTable = outputSchema.getAoiDimensionTable(aoiLevel);
-			
-			String aoiLevelName = aoiLevel.getName();
-			
-			String aliasIdColumn = aoiLevelName + "_id";
-			String aliasCaptionColumn = aoiLevelName + "_caption";
-
-			select.addSelect( aoiDimTable.ID.as(aliasIdColumn) );
-			select.addSelect( aoiDimTable.CAPTION.as(aliasCaptionColumn) );
-			
-			if ( i == aoiLevels.size() - 1 ) {
-				select.addFrom( aoiDimTable );
-			} else {
-				AoiLevel childLevel = aoiLevels.get(i + 1);
-				AoiDimensionTable childAoiDimTable = outputSchema.getAoiDimensionTable(childLevel);
-				
-				select.addJoin(aoiDimTable, childAoiDimTable.PARENT_AOI_ID.eq(aoiDimTable.ID) );
-			}
-
-			Level l = createLevel(aoiLevelName, aliasIdColumn, aliasCaptionColumn);
-
-			h.getLevel().add(0, l);
+		List<org.openforis.calc.schema.Hierarchy.Level> levels = hierarchy.getLevels();
+		for ( org.openforis.calc.schema.Hierarchy.Level level : levels ) {
+			Level l = createLevel(level.getName(), level.getColumn(), level.getNameColumn());
+			h.getLevel().add(l);
 		}
-		View v = createSqlView ( aoiHierarchyName, select.getSQL() );
 		
+		View v = createSqlView ( view.getAlias(), view.getSql() );
 		h.setView(v);
 
 		dim.getHierarchy().add(h);

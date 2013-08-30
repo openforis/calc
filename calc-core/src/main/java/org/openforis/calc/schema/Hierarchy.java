@@ -33,7 +33,11 @@ public class Hierarchy {
 	void addLevel(Level level) {
 		levels.add(level);
 	}
-
+	
+	void addLevel(int index, Level level) {
+		levels.add(index, level);
+	}
+	
 	public View getView() {
 		return view;
 	}
