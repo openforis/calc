@@ -1,14 +1,21 @@
 package org.openforis.calc.chain.post;
 
+import static org.openforis.calc.mondrian.Rolap.*;
+
 import java.io.File;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jooq.Field;
+import org.jooq.Record;
+import org.jooq.SelectQuery;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.AoiHierarchy;
@@ -33,6 +40,12 @@ import org.openforis.calc.mondrian.Table.AggName.AggForeignKey;
 import org.openforis.calc.mondrian.Table.AggName.AggLevel;
 import org.openforis.calc.mondrian.Table.AggName.AggMeasure;
 import org.openforis.calc.mondrian.View;
+import org.openforis.calc.psql.Psql;
+import org.openforis.calc.schema.AggregateTable;
+import org.openforis.calc.schema.AoiDimensionTable;
+import org.openforis.calc.schema.CategoryDimensionTable;
+import org.openforis.calc.schema.FactTable;
+import org.openforis.calc.schema.OutputSchema;
 import org.springframework.beans.factory.annotation.Value;
 
 /**
@@ -47,7 +60,7 @@ public class PublishRolapSchemaTask extends Task {
 
 	private static final String NUMBER_FORMAT_STRING = "#,###.##";
 	private static final String DATA_TYPE_NUMERIC = "Numeric";
-	private static final String DIMENSION_TYPE_STANDARD = "StandardDimension";
+	
 
 	@Value("${calc.rolapSchemaOutputFile}")
 	private String rolapSchemaOutputFile;
@@ -55,171 +68,204 @@ public class PublishRolapSchemaTask extends Task {
 	@Override
 	protected void execute() throws Throwable {
 
-		Workspace ws = getWorkspace();
-		String wsName = ws.getName();
-		String outputSchema = ws.getOutputSchema();
+//		Entity entity = getSamplingUnitEntity();
+//		String entityName = entity.getName();
+//		String entityDataTable = entity.getDataTable();
+//		List<Variable> variables = entity.getVariables();
 
-		Entity entity = getSamplingUnitEntity();
-		String entityName = entity.getName();
-		String entityDataTable = entity.getDataTable();
-		List<Variable> variables = entity.getVariables();
-
+		
+		
+		
+		OutputSchema outputSchema = getOutputSchema();
+		String outputSchemaName = outputSchema.getName();
+		Workspace workspace = getWorkspace();
+		String workspaceName = workspace.getName();	
+		
 		// create schema
-		Schema schema = createSchema(wsName);
+		Schema schema = createSchema(workspaceName);
 
 		// create aoi dimensions
-		List<AoiHierarchy> hierarchies = ws.getAoiHierarchies();
+		List<AoiHierarchy> hierarchies = workspace.getAoiHierarchies();
 		for ( AoiHierarchy hierarchy : hierarchies ) {
-			SharedDimension dim = createAoiDimension(hierarchy, outputSchema);
+			SharedDimension dim = createAoiSharedDimension(hierarchy);
 			schema.getDimension().add(dim);
 		}
-
+		
 		// create plot shared dimensions
-		for ( Variable variable : variables ) {
-			if ( variable instanceof CategoricalVariable ) {
-				CategoricalVariable cVariable = (CategoricalVariable) variable;
-				if ( cVariable.isDisaggregate() ) {
-					String dimensionTable = variable.getDimensionTable();
-					String variableName = variable.getName();
-
-					SharedDimension dim = createSharedDimension(variableName, dimensionTable, outputSchema);
-					schema.getDimension().add(dim);
-				}
-			}
+		Collection<CategoryDimensionTable> categoryDimensionTables = outputSchema.getCategoryDimensionTables();
+		for ( CategoryDimensionTable categoryDimTable : categoryDimensionTables ) {
+			CategoricalVariable variable = categoryDimTable.getVariable();
+			SharedDimension dim = createSharedDimension(variable.getName(), categoryDimTable.getName(), categoryDimTable.getSchema().getName(), "id", "caption");
+			schema.getDimension().add(dim);
 		}
+//		for ( Variable variable : variables ) {
+//			if ( variable instanceof CategoricalVariable ) {
+//				CategoricalVariable cVariable = (CategoricalVariable) variable;
+//				if ( cVariable.isDisaggregate() ) {
+//					String dimensionTable = variable.getDimensionTable();
+//					String variableName = variable.getName();
+//
+//					SharedDimension dim = createSharedDimension(variableName, dimensionTable, outputSchemaName);
+//					schema.getDimension().add(dim);
+//				}
+//			}
+//		}
 
-		// create sampling unit cube
-		Cube cube = createCube(entityName);
-
-		Table t = createTable(outputSchema, entityDataTable);
-
-		// add aoi dimension usages to sampling unit cube
-		for ( AoiHierarchy hierarchy : hierarchies ) {
-			String hierarchyName = hierarchy.getName();
-			List<AoiHierarchyLevel> levels = hierarchy.getLevels();
-			AoiHierarchyLevel leafLevel = levels.get(levels.size() - 1);
-			String fKey = leafLevel.getFkColumn();
-
-			DimensionUsage dim = createDimensionUsage(hierarchyName, fKey);
-			cube.getDimensionUsageOrDimension().add(dim);
-		}
-		// add members (dimensions and measures) to sampling unit cube
-		for ( Variable variable : variables ) {
-			// add dimension usages to sampling unit cube
-			String variableName = variable.getName();
-			if ( variable instanceof CategoricalVariable ) {
-				CategoricalVariable catVariable = (CategoricalVariable) variable;
-				if ( catVariable.isDisaggregate() ) {
-					String fKey = catVariable.getOutputCategoryIdColumn();
-					DimensionUsage dim = createDimensionUsage(variableName, fKey);
+		// create cubes for each fact table
+		Collection<FactTable> factTables = outputSchema.getFactTables();
+		for ( FactTable factTable : factTables ) {
+			Entity entity = factTable.getEntity();
+			
+			Cube cube = createCube( entity.getName() );
+			Table table = createTable( outputSchemaName, factTable.getName() );
+			
+			// add aoi dimension usages to sampling unit cube if table is geo referenced
+			if( factTable.isGeoreferenced() ) {
+				for ( AoiHierarchy hierarchy : hierarchies ) {
+					String hierarchyName = hierarchy.getName();
+					List<AoiHierarchyLevel> levels = hierarchy.getLevels();
+					AoiHierarchyLevel leafLevel = levels.get(levels.size() - 1);
+					Field<Integer> aoiIdField = factTable.getAoiIdField(leafLevel);
+					DimensionUsage dim = createDimensionUsage(hierarchyName, aoiIdField.getName());
+	//				String fKey = leafLevel.getFkColumn();
 					cube.getDimensionUsageOrDimension().add(dim);
 				}
 			}
-			// add measures to sampling unit cube
-			else if ( variable instanceof QuantitativeVariable ) {
-				QuantitativeVariable qVariable = (QuantitativeVariable) variable;
-				List<VariableAggregate> aggregates = qVariable.getAggregates();
-				for ( VariableAggregate aggregate : aggregates ) {
-
-					String name = aggregate.getName();
-					name = (name == null) ? variableName : name;
-
-					String valueColumn = variable.getOutputValueColumn();
-					String column = aggregate.getAggregateColumn();
-					column = (column == null) ? valueColumn : column;
-
-					String caption = aggregate.getCaption();
-
-					String aggFunction = aggregate.getAggregateFunction();
-
-					String dataType = DATA_TYPE_NUMERIC;
-					String formatString = NUMBER_FORMAT_STRING;
-
-					Measure m = createMeasure(name, caption, column, aggFunction, dataType, formatString);
-
-					cube.getMeasure().add(m);
+			
+			// add members (dimensions and measures) to cube
+			List<Variable> variables = entity.getVariables();
+			for ( Variable variable : variables ) {
+				
+				// add dimension usages to cube
+				String variableName = variable.getName();
+				if ( variable instanceof CategoricalVariable ) {
+					CategoricalVariable catVariable = (CategoricalVariable) variable;
+					Field<Integer> dimensionIdField = factTable.getDimensionIdField(catVariable);
+					if ( dimensionIdField != null ) { // it's null when variable is not disaggregate
+//						String fKey = catVariable.getCategoryIdColumn();
+						DimensionUsage dim = createDimensionUsage(variableName, dimensionIdField.getName());
+						cube.getDimensionUsageOrDimension().add(dim);
+					}
 				}
-
+				
+				// add measures to sampling unit cube
+				else if ( variable instanceof QuantitativeVariable ) {
+					QuantitativeVariable qVariable = (QuantitativeVariable) variable;
+					List<VariableAggregate> aggregates = qVariable.getAggregates();
+					
+					for ( VariableAggregate aggregate : aggregates ) {
+						Field<BigDecimal> measureField = factTable.getMeasureField(aggregate);
+						
+						String measureName = aggregate.getName(); 
+						String fieldName = measureField.getName();
+						String caption = aggregate.getCaption();
+						String aggFunction = aggregate.getAggregateFunction();
+//						
+//						String valueColumn = variable.getValueColumn();
+//						String column = aggregate.getAggregateColumn();
+//						column = (column == null) ? valueColumn : column;
+//						String dataType = DATA_TYPE_NUMERIC;
+//						String formatString = NUMBER_FORMAT_STRING;
+						
+						Measure m = createMeasure(measureName, caption, fieldName, aggFunction, DATA_TYPE_NUMERIC, NUMBER_FORMAT_STRING);
+						
+						cube.getMeasure().add(m);
+					}
+					
+				}
 			}
-		}
-
-		//add aggregate names to table
-		for ( AoiHierarchy hierarchy : hierarchies ) {
-			String hierarchyName = hierarchy.getName();
-			List<AoiHierarchyLevel> levels = hierarchy.getLevels();
-			int approxRowCnt = 100;
-			for ( AoiHierarchyLevel level : levels ) {
-				String levelName = level.getName();
-				String aggName = "_agg_"+levelName +"_stratum_"+ entityDataTable;
+			
+			//add aggregate names to table
+			for ( AoiHierarchy hierarchy : hierarchies ) {
+				List<AggregateTable> aggregateTables = factTable.getAggregateTables(hierarchy);
 				
-				AggName aggTable = createAggregateName(aggName, approxRowCnt);
+				int approxRowCnt = 100;
+				for ( AggregateTable aggTable : aggregateTables ) {
+					AggName aggName = createAggregateName(aggTable.getName(), approxRowCnt);
+//				}
 				
-				// add aggregates members
-				for ( Variable variable : variables ) {
-					String variableName = variable.getName();
-					if ( variable instanceof CategoricalVariable ) {
-						CategoricalVariable catVariable = (CategoricalVariable) variable;
-						if ( catVariable.isDisaggregate() ) {
-							String fKey = catVariable.getOutputCategoryIdColumn();
-							
-							AggForeignKey aggForeignKey = createAggForeignKey(fKey, fKey);
-							
-							aggTable.getAggForeignKey().add(aggForeignKey);
+//				String hierarchyName = hierarchy.getName();
+//				List<AoiHierarchyLevel> levels = hierarchy.getLevels();
+//				for ( AoiHierarchyLevel level : levels ) {
+					
+//					factTable.get
+					
+					
+//					String levelName = level.getName();
+//					String aggName = "_agg_"+levelName +"_stratum_"+ entityDataTable;
+					
+//					AggName aggTable = createAggregateName(aggName, approxRowCnt);
+					
+					// add aggregates members
+					for ( Variable variable : variables ) {
+//						String variableName = variable.getName();
+						if ( variable instanceof CategoricalVariable ) {
+							CategoricalVariable catVariable = (CategoricalVariable) variable;
+							Field<Integer> dimensionIdField = aggTable.getDimensionIdField(catVariable);
+							if ( dimensionIdField != null ) {
+								String fKey = dimensionIdField.getName();
+								AggForeignKey aggForeignKey = createAggForeignKey(fKey, fKey);
+								aggName.getAggForeignKey().add(aggForeignKey);
+							}
+						}
+						// add measures to sampling unit cube
+						else if ( variable instanceof QuantitativeVariable ) {
+							QuantitativeVariable qVariable = (QuantitativeVariable) variable;
+							List<VariableAggregate> aggregates = qVariable.getAggregates();
+							for ( VariableAggregate aggregate : aggregates ) {
+								Field<BigDecimal> measureField = factTable.getMeasureField(aggregate);
+								
+								String measureName = aggregate.getName(); 
+								String fieldName = measureField.getName();
+//								String caption = aggregate.getCaption();
+//								String aggFunction = aggregate.getAggregateFunction();
+								
+//								String name = aggregate.getName();
+//								name = (name == null) ? variableName : name;
+//	
+//								String valueColumn = variable.getValueColumn();
+//								String column = aggregate.getAggregateColumn();
+//								column = (column == null) ? valueColumn : column;
+	
+								AggMeasure aggMeasure = createAggMeasure(measureName, fieldName);
+								
+								aggName.getAggMeasure().add(aggMeasure);
+							}
+	
 						}
 					}
-					// add measures to sampling unit cube
-					else if ( variable instanceof QuantitativeVariable ) {
-						QuantitativeVariable qVariable = (QuantitativeVariable) variable;
-						List<VariableAggregate> aggregates = qVariable.getAggregates();
-						for ( VariableAggregate aggregate : aggregates ) {
-
-							String name = aggregate.getName();
-							name = (name == null) ? variableName : name;
-
-							String valueColumn = variable.getOutputValueColumn();
-							String column = aggregate.getAggregateColumn();
-							column = (column == null) ? valueColumn : column;
-
-//							String caption = aggregate.getCaption();
-//							String aggFunction = aggregate.getAggregateFunction();
-//							String dataType = DATA_TYPE_NUMERIC;
-//							String formatString = NUMBER_FORMAT_STRING;
-
-							AggMeasure aggMeasure = createAggMeasure(name, column);
-							
-							aggTable.getAggMeasure().add(aggMeasure);
-//							Measure m = createMeasure(name, caption, column, aggFunction, dataType, formatString);
-
+					
+//					
+					//add aoi levels aggregation
+					AoiHierarchyLevel level = aggTable.getAoiHierarchyLevel();
+					for ( AoiHierarchyLevel aoiHierarchyAggLevel : hierarchy.getLevels() ) {
+						Field<Integer> aoiIdField = aggTable.getAoiIdField(aoiHierarchyAggLevel);
+						String aoiAggLevelName = aoiHierarchyAggLevel.getName();
+						String aggLevelName = toMdx( hierarchy.getName(), aoiAggLevelName );
+//						String fkColumn = aoiHierarchyAggLevel.getFkColumn();
+						
+						AggLevel aggLevel = createAggLevel(aggLevelName, aoiIdField.getName());
+						
+						aggName.getAggLevel().add(aggLevel);
+						
+						if( aoiHierarchyAggLevel.equals(level) ) {
+							break;
 						}
-
 					}
+					 
+					table.getAggTable().add(aggName);
+//					
+					approxRowCnt+=100;
 				}
-				
-				
-				//add aoi levels aggregation
-				for ( AoiHierarchyLevel aoiHierarchyAggLevel : levels ) {
-					String aoiHierarchyName = aoiHierarchyAggLevel.getName();
-					String aggLevelName = "["+hierarchyName+ "]" + ".["+aoiHierarchyName+"]";
-					String fkColumn = aoiHierarchyAggLevel.getFkColumn();
-					
-					AggLevel aggLevel = createAggLevel(aggLevelName, fkColumn);
-					
-					aggTable.getAggLevel().add(aggLevel);
-					
-					if(aoiHierarchyAggLevel.equals(level)){
-						break;
-					}
-				}
-				
-				t.getAggTable().add(aggTable);
-				
-				approxRowCnt+=100;
 			}
+			
+			cube.setTable(table);
+
+			schema.getCube().add(cube);
 		}
 		
-		cube.setTable(t);
 
-		schema.getCube().add(cube);
+
 
 		JAXBContext jaxbContext = JAXBContext.newInstance(Schema.class);
 		Marshaller marshaller = jaxbContext.createMarshaller();
@@ -230,109 +276,11 @@ public class PublishRolapSchemaTask extends Task {
 			f.delete();
 		}
 		marshaller.marshal(schema, f);
-		// suEntity.get
 
 	}
 
-	private AggLevel createAggLevel(String name, String column) {
-		AggLevel aggLevel = new AggLevel();
-		aggLevel.setColumn(column);
-		aggLevel.setName(name);
-		return aggLevel;
-	}
-
-	private AggMeasure createAggMeasure(String name, String column) {
-		AggMeasure aggMeasure = new AggMeasure();
-		aggMeasure.setColumn(column);
-		String aggMeasureName = "[Measures]."+"["+name+"]";
-		aggMeasure.setName(aggMeasureName );
-		return aggMeasure;
-	}
-
-	private AggForeignKey createAggForeignKey(String factColumn, String aggColumn) {
-		AggForeignKey aggForeignKey = new AggForeignKey();
-		aggForeignKey.setFactColumn(factColumn);
-		aggForeignKey.setAggColumn(aggColumn);
-		return aggForeignKey;
-	}
-
-	private AggName createAggregateName(String name, int approxRowCnt) {
-		AggName aggTable = new AggName();
-		aggTable.setName(name);
-		aggTable.setApproxRowCount( BigInteger.valueOf(approxRowCnt) );
-
-		AggColumnName aggFactCount = new AggColumnName();
-		aggFactCount.setColumn("_agg_cnt");
-		aggTable.setAggFactCount(aggFactCount);
-		return aggTable;
-	}
-
-	private Schema createSchema(String name) {
-		Schema schema = new Schema();
-		schema.setName(name);
-		return schema;
-	}
-
-	private Table createTable(String schema, String table) {
-		Table t = new Table();
-		t.setName(table);
-		t.setSchema(schema);
-		return t;
-	}
-
-	private Cube createCube(String name) {
-		Cube cube = new Cube();
-		cube.setCache(false);
-		cube.setEnabled(true);
-		cube.setName(name);
-		return cube;
-	}
-
-	private Measure createMeasure(String name, String caption, String column, String aggregator, String dataType, String formatString) {
-		Measure m = new Measure();
-		m.setName(name);
-		m.setColumn(column);
-		m.setDatatype(dataType);
-		m.setFormatString(formatString);
-		m.setAggregator(aggregator);
-		m.setCaption(caption);
-		m.setVisible(true);
-		return m;
-	}
-
-	private DimensionUsage createDimensionUsage(String name, String fKey) {
-		DimensionUsage dim = new DimensionUsage();
-		dim.setSource(name);
-		dim.setName(name);
-		dim.setForeignKey(fKey);
-		dim.setHighCardinality(false);
-		return dim;
-	}
-
-	private SharedDimension createSharedDimension(String name, String table, String schema) {
-		SharedDimension dim = new SharedDimension();
-		dim.setType(DIMENSION_TYPE_STANDARD);
-		dim.setName(name);
-
-		Hierarchy h = new Hierarchy();
-		h.setName(name);
-		h.setHasAll(true);
-
-		Table t = createTable(schema, table);
-		h.setTable(t);
-
-		Level l = new Level();
-		l.setName(name);
-		l.setTable(table);
-		l.setColumn("id");
-		l.setNameColumn("caption");
-		h.getLevel().add(l);
-
-		dim.getHierarchy().add(h);
-		return dim;
-	}
-
-	private SharedDimension createAoiDimension(AoiHierarchy aoiHierarchy, String schema) {
+	private SharedDimension createAoiSharedDimension(AoiHierarchy aoiHierarchy) {
+		OutputSchema outputSchema = getOutputSchema();
 		String aoiHierarchyName = aoiHierarchy.getName();
 		
 		SharedDimension dim = new SharedDimension();
@@ -343,39 +291,35 @@ public class PublishRolapSchemaTask extends Task {
 		Hierarchy h = new Hierarchy();
 		h.setName(aoiHierarchyName);
 		h.setHasAll(false);
-
-		List<String> select = new ArrayList<String>();
-		String from = "";
-		List<String> joins = new ArrayList<String>();
-
+		
+		SelectQuery<Record> select = new Psql().selectQuery();
 		List<AoiHierarchyLevel> aoiLevels = aoiHierarchy.getLevels();
 		for ( int i = aoiLevels.size() - 1 ; i >= 0 ; i-- ) {
 			AoiHierarchyLevel aoiLevel = aoiLevels.get(i);
-			String aoiLevelName = aoiLevel.getName();
-			String dimensionTable = aoiLevel.getDimensionTable();
+			AoiDimensionTable aoiDimTable = outputSchema.getAoiDimensionTable(aoiLevel);
 			
-			String levelColumn = aoiLevelName + "_id";
-			String levelNameColumn = aoiLevelName + "_caption";
+			String aoiLevelName = aoiLevel.getName();
+			
+			String aliasIdColumn = aoiLevelName + "_id";
+			String aliasCaptionColumn = aoiLevelName + "_caption";
 
-			select.add(dimensionTable + ".id as " + levelColumn);
-			select.add(dimensionTable + ".caption as " + levelNameColumn);
-
+			select.addSelect( aoiDimTable.ID.as(aliasIdColumn) );
+			select.addSelect( aoiDimTable.CAPTION.as(aliasCaptionColumn) );
+			
 			if ( i == aoiLevels.size() - 1 ) {
-				from = schema + "." + dimensionTable;
+				select.addFrom( aoiDimTable );
 			} else {
 				AoiHierarchyLevel childLevel = aoiLevels.get(i + 1);
-				String childDimensionTable = childLevel.getDimensionTable();
-				joins.add(" inner join " + schema + "." + dimensionTable + " on " + childDimensionTable + ".parent_aoi_id = " + dimensionTable + ".id");
+				AoiDimensionTable childAoiDimTable = outputSchema.getAoiDimensionTable(childLevel);
+				
+				select.addJoin(aoiDimTable, childAoiDimTable.PARENT_AOI_ID.eq(aoiDimTable.ID) );
 			}
 
-			Level l = createLevel(aoiLevelName, levelColumn, levelNameColumn);
+			Level l = createLevel(aoiLevelName, aliasIdColumn, aliasCaptionColumn);
 
 			h.getLevel().add(0, l);
 		}
-
-		String sqlContent = "select " + StringUtils.join(select, ",") + " " + " from " + from + " " + StringUtils.join(joins, " ");
-		
-		View v = createSqlView(aoiHierarchyName, sqlContent);
+		View v = createSqlView ( aoiHierarchyName, select.getSQL() );
 		
 		h.setView(v);
 
@@ -384,35 +328,19 @@ public class PublishRolapSchemaTask extends Task {
 		return dim;
 	}
 
-	private View createSqlView(String alias, String sql) {
-		View v = new View();
-		v.setAlias(alias);
-		SQL s = new SQL();
-		s.setContent(sql);
-		v.getSQL().add(s);
-		return v;
-	}
 
-	private Level createLevel(String name, String column, String nameColumn) {
-		Level l = new Level();
-		l.setName(name);
-		l.setColumn(column);
-		l.setNameColumn(nameColumn);
-		return l;
-	}
-
-	private Entity getSamplingUnitEntity() {
-		Workspace ws = getWorkspace();
-
-		Entity suEntity = null;
-		List<Entity> entities = ws.getEntities();
-		for ( Entity entity : entities ) {
-			if ( entity.isSamplingUnit() ) {
-				suEntity = entity;
-				break;
-			}
-		}
-		return suEntity;
-	}
+//	private Entity getSamplingUnitEntity() {
+//		Workspace ws = getWorkspace();
+//
+//		Entity suEntity = null;
+//		List<Entity> entities = ws.getEntities();
+//		for ( Entity entity : entities ) {
+//			if ( entity.isSamplingUnit() ) {
+//				suEntity = entity;
+//				break;
+//			}
+//		}
+//		return suEntity;
+//	}
 
 }
