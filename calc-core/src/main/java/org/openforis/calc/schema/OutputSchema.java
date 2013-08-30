@@ -32,7 +32,7 @@ public class OutputSchema extends RelationalSchema {
 	private ExpansionFactorTable expansionFactorTable;
 	private Map<Entity, OutputTable> outputTables;
 	private Map<Entity, FactTable> factTables;
-	private Map<CategoricalVariable, CategoryDimensionTable> categoryDimensionTables;
+	private Map<CategoricalVariable<?>, CategoryDimensionTable> categoryDimensionTables;
 	private Map<AoiLevel, AoiDimensionTable> aoiDimensionTables;
 
 	public OutputSchema(Workspace workspace, InputSchema inputSchema) {
@@ -52,16 +52,16 @@ public class OutputSchema extends RelationalSchema {
 	}
 
 	private void initCategoryDimensionTables() {
-		this.categoryDimensionTables = new HashMap<CategoricalVariable, CategoryDimensionTable>();
+		this.categoryDimensionTables = new HashMap<CategoricalVariable<?>, CategoryDimensionTable>();
 		List<Entity> entities = workspace.getEntities();
 		for ( Entity entity : entities ) {
 			// Add dimensions for categorical variables
-			List<Variable> variables = entity.getVariables();
-			for ( Variable var : variables ) {
+			List<Variable<?>> variables = entity.getVariables();
+			for ( Variable<?> var : variables ) {
 				if ( var instanceof CategoricalVariable ) {
-					CategoryDimensionTable table = new CategoryDimensionTable(this, (CategoricalVariable) var);
+					CategoryDimensionTable table = new CategoryDimensionTable(this, (CategoricalVariable<?>) var);
 					addTable(table);
-					categoryDimensionTables.put((CategoricalVariable) var, table);
+					categoryDimensionTables.put((CategoricalVariable<?>) var, table);
 				}
 			}
 		}
@@ -162,7 +162,7 @@ public class OutputSchema extends RelationalSchema {
 		return aoiDimensionTables.get(aoiHierarchyLevel);
 	}
 
-	public CategoryDimensionTable getCategoryDimensionTable(CategoricalVariable variable) {
+	public CategoryDimensionTable getCategoryDimensionTable(CategoricalVariable<?> variable) {
 		return categoryDimensionTables.get(variable);
 	}
 

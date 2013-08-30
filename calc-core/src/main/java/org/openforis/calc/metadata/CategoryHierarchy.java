@@ -7,16 +7,16 @@ import java.util.List;
 import org.openforis.calc.common.NamedUserObject;
 
 /**
- * Describes a categorical variable hierarchy, made up of one or more hierarchy {@link Level}s.
+ * Describes a categorical variable hierarchy, made up of one or more hierarchy {@link CategoryLevel}s.
  * 
  * @author G. Miceli
  * @author M. Togna
  */
 public class CategoryHierarchy extends NamedUserObject {
-	private CategoricalVariable variable;
+	private MultiwayVariable variable;
 	private List<CategoryLevel> levels = new ArrayList<CategoryLevel>();
 	
-	public CategoricalVariable getVariable() {
+	public MultiwayVariable getVariable() {
 		return variable;
 	}
 	

@@ -9,15 +9,15 @@ import org.openforis.calc.metadata.CategoricalVariable;
  *
  */
 public class CategoryDimension extends Dimension {
-	private CategoricalVariable variable;
+	private CategoricalVariable<?> variable;
 	private CategoryDimensionTable table;
 	
-	public CategoryDimension(CategoricalVariable variable, CategoryDimensionTable table) {
+	public CategoryDimension(CategoricalVariable<?> variable, CategoryDimensionTable table) {
 		this.variable = variable;
 		this.table = table;
 	}
 
-	public CategoricalVariable getVariable() {
+	public CategoricalVariable<?> getVariable() {
 		return variable;
 	}
 	

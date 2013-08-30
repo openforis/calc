@@ -1,5 +1,7 @@
 package org.openforis.calc.metadata;
 
+import java.math.BigDecimal;
+
 import javax.persistence.Column;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -21,6 +23,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Table(name = "category")
 public class Category extends UserObject {
 	
+	public static final BigDecimal TRUE_VALUE = BigDecimal.valueOf(1.0);
+	public static final BigDecimal FALSE_VALUE = BigDecimal.valueOf(0.0);
+
 	@Column(name = "code")
 	private String code;
 	
@@ -36,17 +41,17 @@ public class Category extends UserObject {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "variable_id")
 	@JsonIgnore
-	private Variable variable;
+	private Variable<?> variable;
 
 	@Column(name = "value")
 	private Double value;
 	
 
-	public Variable getVariable() {
+	public Variable<?> getVariable() {
 		return this.variable;
 	}
 	
-	public void setVariable(Variable variable) {
+	public void setVariable(Variable<?> variable) {
 		this.variable = variable;
 	}
 
@@ -81,6 +86,4 @@ public class Category extends UserObject {
 	public void setValue(Double value) {
 		this.value = value;
 	}
-
-	
 }

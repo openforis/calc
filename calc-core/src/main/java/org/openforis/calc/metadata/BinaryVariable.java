@@ -1,5 +1,6 @@
 package org.openforis.calc.metadata;
 
+import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 
 /**
@@ -13,12 +14,14 @@ import javax.persistence.DiscriminatorValue;
  */
 @javax.persistence.Entity
 @DiscriminatorValue("B")
-public class BinaryVariable extends CategoricalVariable {
-	
+public class BinaryVariable extends CategoricalVariable<Boolean> {
+
+	@Column(name = "default_value")
+	private Boolean defaultValue;
+
 	// TODO implement as subclass of CategoricalVariable?
 	public BinaryVariable() {
 		super(Scale.BINARY);
-		super.setMultipleResponse(false);
 	}
 	
 	@Override
@@ -27,21 +30,19 @@ public class BinaryVariable extends CategoricalVariable {
 			throw new IllegalArgumentException("Illegal scale: " + scale);
 		}
 	}
-
-	@Override
-	public void setMultipleResponse(boolean multipleResponse) {
-		if ( multipleResponse ) {
-			throw new IllegalArgumentException("Binary variables may not be multiple response");
-		}
-	}
 	
 	@Override
 	public Type getType() {
 		return Type.BINARY;
 	}
-	
+
 	@Override
-	public boolean isOrdered() {
-		return true;
+	public Boolean getDefaultValue() {
+		return defaultValue;
+	}
+
+	@Override
+	public void setDefaultValue(Boolean defaultValue) {
+		this.defaultValue = defaultValue;
 	}
 }

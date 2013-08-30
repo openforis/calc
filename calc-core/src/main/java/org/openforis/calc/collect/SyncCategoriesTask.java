@@ -4,7 +4,6 @@ import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.CategoryDao;
 import org.openforis.collect.persistence.xml.CollectSurveyIdmlBinder;
-import org.openforis.collect.relational.model.RelationalSchema;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -24,7 +23,7 @@ public class SyncCategoriesTask extends Task {
 	@Autowired
 	private CategoryDao categoryDao;
 
-	private RelationalSchema schema;
+//	private RelationalSchema schema;
 //
 	@Override
 	protected void execute() throws Throwable {
@@ -36,7 +35,7 @@ public class SyncCategoriesTask extends Task {
 //		Workspace ws = getWorkspace();
 //		
 //		List<Variable> vars = getVariables();
-//		for (Variable v : vars) {
+//		for (Variable<?> v : vars) {
 //			if ( v instanceof CategoricalVariable ) {
 //				CodeTable rdbCodeTable = getRDBCodeTable((CategoricalVariable) v);
 //				if ( rdbCodeTable != null ) { //TODO it should never be != null, ofc_sampling_design code list?
@@ -77,7 +76,7 @@ public class SyncCategoriesTask extends Task {
 //		this.schema = generateSchema(ws, survey);
 //	}
 //	
-//	protected CodeTable getRDBCodeTable(CategoricalVariable v) {
+//	protected CodeTable getRDBCodeTable(CategoricalVariable<?> v) {
 //		Entity entity = v.getEntity();
 //		String entityDataTableName = entity.getDataTable();
 //		Table<?> entityRDBTable = getRDBTable(entityDataTableName);
@@ -122,7 +121,7 @@ public class SyncCategoriesTask extends Task {
 //		List<Entity> entities = ws.getEntities();
 //		for (Entity entity : entities) {
 //			List<Variable> variables = entity.getVariables();
-//			for (Variable v : variables) {
+//			for (Variable<?> v : variables) {
 //				result.add(v);
 //			}
 //		}

@@ -17,14 +17,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class CategoryDao extends AbstractJpaDao<Category> {
 	
-	private static final String CATEGORY_TABLE_NAME = "category";
-	private static final String CATEGORY_VARIABLE_ID_COL_NAME = "variable_id";
-	private static final String CATEGORY_CODE_COL_NAME = "code";
-	private static final String CATEGORY_NAME_COL_NAME = "name";
-	private static final String CATEGORY_DESCR_COL_NAME = "description";
-	private static final String CATEGORY_SORT_ORDER_COL_NAME = "sort_order";
-	private static final String CATEGORY_ORIGINAL_ID_COL_NAME = "original_id";
-	
 	@Autowired
 	private DataSource dataSource;
 

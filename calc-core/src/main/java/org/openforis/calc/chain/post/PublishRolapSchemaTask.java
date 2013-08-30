@@ -1,18 +1,28 @@
 package org.openforis.calc.chain.post;
 
-import static org.openforis.calc.mondrian.Rolap.*;
+import static org.openforis.calc.mondrian.Rolap.DIMENSION_TYPE_STANDARD;
+import static org.openforis.calc.mondrian.Rolap.createAggForeignKey;
+import static org.openforis.calc.mondrian.Rolap.createAggLevel;
+import static org.openforis.calc.mondrian.Rolap.createAggMeasure;
+import static org.openforis.calc.mondrian.Rolap.createAggregateName;
+import static org.openforis.calc.mondrian.Rolap.createCube;
+import static org.openforis.calc.mondrian.Rolap.createDimensionUsage;
+import static org.openforis.calc.mondrian.Rolap.createLevel;
+import static org.openforis.calc.mondrian.Rolap.createMeasure;
+import static org.openforis.calc.mondrian.Rolap.createSchema;
+import static org.openforis.calc.mondrian.Rolap.createSharedDimension;
+import static org.openforis.calc.mondrian.Rolap.createSqlView;
+import static org.openforis.calc.mondrian.Rolap.createTable;
+import static org.openforis.calc.mondrian.Rolap.toMdx;
 
 import java.io.File;
 import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 
-import org.apache.commons.lang3.StringUtils;
 import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.SelectQuery;
@@ -25,11 +35,9 @@ import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.VariableAggregate;
-import org.openforis.calc.mondrian.AggColumnName;
 import org.openforis.calc.mondrian.DimensionUsage;
 import org.openforis.calc.mondrian.Hierarchy;
 import org.openforis.calc.mondrian.Hierarchy.Level;
-import org.openforis.calc.mondrian.SQL;
 import org.openforis.calc.mondrian.Schema;
 import org.openforis.calc.mondrian.Schema.Cube;
 import org.openforis.calc.mondrian.Schema.Cube.Measure;
@@ -89,7 +97,7 @@ public class PublishRolapSchemaTask extends Task {
 		// create shared dimensions
 		Collection<CategoryDimensionTable> categoryDimensionTables = outputSchema.getCategoryDimensionTables();
 		for ( CategoryDimensionTable categoryDimTable : categoryDimensionTables ) {
-			CategoricalVariable variable = categoryDimTable.getVariable();
+			CategoricalVariable<?> variable = categoryDimTable.getVariable();
 			SharedDimension dim = createSharedDimension(variable.getName(), categoryDimTable.getName(), categoryDimTable.getSchema().getName(), "id", "caption");
 			schema.getDimension().add(dim);
 		}
@@ -115,13 +123,13 @@ public class PublishRolapSchemaTask extends Task {
 			}
 			
 			// add members (dimensions and measures) to cube
-			List<Variable> variables = entity.getVariables();
-			for ( Variable variable : variables ) {
+			List<Variable<?>> variables = entity.getVariables();
+			for ( Variable<?> variable : variables ) {
 				
 				// add dimension usages to cube
 				String variableName = variable.getName();
 				if ( variable instanceof CategoricalVariable ) {
-					CategoricalVariable catVariable = (CategoricalVariable) variable;
+					CategoricalVariable<?> catVariable = (CategoricalVariable<?>) variable;
 					Field<Integer> dimensionIdField = factTable.getDimensionIdField(catVariable);
 					if ( dimensionIdField != null ) { // it's null when variable is not disaggregate
 //						String fKey = catVariable.getCategoryIdColumn();
@@ -160,9 +168,9 @@ public class PublishRolapSchemaTask extends Task {
 					AggName aggName = createAggregateName(aggTable.getName(), approxRowCnt);
 					
 					// add aggregates members
-					for ( Variable variable : variables ) {
+					for ( Variable<?> variable : variables ) {
 						if ( variable instanceof CategoricalVariable ) {
-							CategoricalVariable catVariable = (CategoricalVariable) variable;
+							CategoricalVariable<?> catVariable = (CategoricalVariable<?>) variable;
 							Field<Integer> dimensionIdField = aggTable.getDimensionIdField(catVariable);
 							if ( dimensionIdField != null ) {
 								String fKey = dimensionIdField.getName();

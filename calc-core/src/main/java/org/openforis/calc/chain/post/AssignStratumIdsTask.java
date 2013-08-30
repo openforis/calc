@@ -33,8 +33,8 @@ public class AssignStratumIdsTask extends Task {
 			FactTable f = factTable;
 			while ( f != null ){
 				Entity entity = f.getEntity();
-				Variable clusterVar = entity.getClusterVariable();
-				Variable plotVar = entity.getUnitNoVariable();
+				Variable<?> clusterVar = entity.getClusterVariable();
+				Variable<?> plotVar = entity.getUnitNoVariable();
 				if ( clusterVar != null || plotVar != null ) {
 					String clusterColumn = clusterVar.getOutputValueColumn();
 					String plotColumn = plotVar.getOutputValueColumn();

@@ -1,5 +1,6 @@
 package org.openforis.calc.metadata;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -16,10 +17,11 @@ import javax.persistence.Transient;
  */
 @javax.persistence.Entity
 @DiscriminatorValue("Q")
-public class QuantitativeVariable extends Variable {
+public class QuantitativeVariable extends Variable<BigDecimal> {
+
 	@Column(name = "default_value")
-	private Double defaultValue;
-	
+	private BigDecimal defaultValue;
+
 	@Transient //TODO map to column
 	private transient Unit<?> unit; 
 
@@ -32,14 +34,6 @@ public class QuantitativeVariable extends Variable {
 
 	public Unit<?> getUnit() {
 		return this.unit;
-	}
-
-	public void setDefaultValue(Double defaultValue) {
-		this.defaultValue = defaultValue;
-	}
-
-	public Double getDefaultValue() {
-		return this.defaultValue;
 	}
 	
 	@Override
@@ -62,4 +56,15 @@ public class QuantitativeVariable extends Variable {
 	public void setAggregates(List<VariableAggregate> aggregates) {
 		this.aggregates = aggregates;
 	}
+
+	@Override
+	public BigDecimal getDefaultValue() {
+		return defaultValue;
+	}
+
+	@Override
+	public void setDefaultValue(BigDecimal defaultValue) {
+		this.defaultValue = defaultValue;
+	}
+	
 }

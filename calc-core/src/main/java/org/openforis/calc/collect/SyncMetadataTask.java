@@ -10,8 +10,8 @@ import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceDao;
 import org.openforis.calc.metadata.BinaryVariable;
-import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.Variable.Scale;
@@ -141,8 +141,8 @@ public class SyncMetadataTask extends Task {
 	protected void printToLog(List<Entity> entityList) {
 		// TODO print to debug log instead
 		for (Entity entity : entityList) {
-			List<Variable> vars = entity.getVariables();
-			for (Variable var : vars) {
+			List<Variable<?>> vars = entity.getVariables();
+			for (Variable<?> var : vars) {
 				System.out.printf("%s.%s (%s)%n", entity.getName(), var.getName(), var.getScale());
 			}
 		}
@@ -189,7 +189,7 @@ public class SyncMetadataTask extends Task {
 			List<Column<?>> columns = table.getColumns();
 			for (Column<?> column : columns) {
 				if ( column instanceof DataColumn ) {
-					Variable variable = convert((DataColumn) column, e);
+					Variable<?> variable = convert((DataColumn) column, e);
 					if ( variable != null ) {
 						variable.setSortOrder(sortOrder++);
 						e.addVariable(variable);
@@ -242,16 +242,16 @@ public class SyncMetadataTask extends Task {
 	 * @param e 
 	 * @return
 	 */
-	private Variable convert(DataColumn column, Entity e) {
+	private Variable<?> convert(DataColumn column, Entity e) {
 		AttributeDefinition defn = column.getAttributeDefinition();
-		Variable v = null;
+		Variable<?> v = null;
 		if ( isValueColumn(column) ) {
 			if ( defn instanceof BooleanAttributeDefinition ) {
 				v = new BinaryVariable();
 			} else if ( defn instanceof CodeAttributeDefinition) {
-				v = new CategoricalVariable();
+				v = new MultiwayVariable();
 				v.setScale(Scale.NOMINAL);
-				((CategoricalVariable) v).setMultipleResponse(defn.isMultiple());
+				((MultiwayVariable) v).setMultipleResponse(defn.isMultiple());
 			} else if ( defn instanceof NumberAttributeDefinition ) {
 				v = new QuantitativeVariable();
 				v.setScale(Scale.RATIO);

@@ -88,7 +88,7 @@ public class Entity extends NamedUserObject {
 	@OrderBy("sortOrder")
 	@Fetch(FetchMode.SUBSELECT) 
 	@Cascade(CascadeType.ALL)
-	private List<Variable> variables = new ArrayList<Variable>();
+	private List<Variable<?>> variables = new ArrayList<Variable<?>>();
 
 	@OneToMany(mappedBy = "parent", fetch = FetchType.EAGER)
 	@OrderBy("sortOrder")
@@ -98,11 +98,11 @@ public class Entity extends NamedUserObject {
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "cluster_variable_id")
-	private Variable clusterVariable;
+	private Variable<?> clusterVariable;
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "unit_no_variable_id")
-	private Variable unitNoVariable;
+	private Variable<?> unitNoVariable;
 
 	public Workspace getWorkspace() {
 		return this.workspace;
@@ -120,18 +120,18 @@ public class Entity extends NamedUserObject {
 		this.dataTable = table;
 	}
 	
-	public void addVariable(Variable variable) {
+	public void addVariable(Variable<?> variable) {
 		variable.setEntity(this);
 		variables.add(variable);
 	}
 	
-	public List<Variable> getVariables() {
+	public List<Variable<?>> getVariables() {
 		return Collections.unmodifiableList(variables);
 	}
 
 	public List<VariableAggregate> getVariableAggregates() {
 		List<VariableAggregate> aggs = new ArrayList<VariableAggregate>();
-		for (Variable var : variables) {
+		for (Variable<?> var : variables) {
 			if ( var instanceof QuantitativeVariable ) {
 				aggs.addAll(((QuantitativeVariable) var).getAggregates());
 			}
@@ -243,8 +243,9 @@ public class Entity extends NamedUserObject {
 		this.unitOfAnalysis = unitOfAnalysis;
 	}
 
-	public List<CategoricalVariable> getCategoricalVariables() {
-		return Collections.unmodifiableList(selectInstancesOf(variables, CategoricalVariable.class));
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public List<CategoricalVariable<?>> getCategoricalVariables() {
+		return Collections.unmodifiableList(selectInstancesOf((List)variables, CategoricalVariable.class));
 	}
 
 	public List<QuantitativeVariable> getQuantitativeVariables() {
@@ -258,19 +259,19 @@ public class Entity extends NamedUserObject {
 		return out;
 	}
 
-	public Variable getClusterVariable() {
+	public Variable<?> getClusterVariable() {
 		return clusterVariable;
 	}
 
-	public void setClusterVariable(Variable clusterVariable) {
+	public void setClusterVariable(Variable<?> clusterVariable) {
 		this.clusterVariable = clusterVariable;
 	}
 
-	public Variable getUnitNoVariable() {
+	public Variable<?> getUnitNoVariable() {
 		return unitNoVariable;
 	}
 
-	public void setUnitNoVariable(Variable plotVariable) {
+	public void setUnitNoVariable(Variable<?> plotVariable) {
 		this.unitNoVariable = plotVariable;
 	}
 }

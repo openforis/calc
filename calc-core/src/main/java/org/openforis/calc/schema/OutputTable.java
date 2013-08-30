@@ -6,8 +6,8 @@ import java.util.Map;
 import org.jooq.Field;
 import org.openforis.calc.metadata.AoiLevel;
 import org.openforis.calc.metadata.BinaryVariable;
-import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.QuantitativeVariable;
 
 /**
@@ -57,7 +57,7 @@ public class OutputTable extends DataTable {
 	}
 	
 	@Override
-	protected void createCategoryValueField(CategoricalVariable var, String valueColumn) {
+	protected void createCategoryValueField(MultiwayVariable var, String valueColumn) {
 		super.createCategoryValueField(var, valueColumn);
 		addInputField(getCategoryValueField(var), inputTable.getCategoryValueField(var));
 	}

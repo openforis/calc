@@ -3,8 +3,6 @@
  */
 package org.openforis.calc.schema;
 
-import java.util.ArrayList;
-
 import org.openforis.calc.metadata.AoiHierarchy;
 
 /**

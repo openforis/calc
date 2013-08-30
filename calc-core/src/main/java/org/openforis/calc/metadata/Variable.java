@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Table(name = "variable")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorFormula("case when scale in ('RATIO','INTERVAL','OTHER') then 'Q' when scale='BINARY' then 'B' else 'C' end")
-public abstract class Variable extends NamedUserObject {
+public abstract class Variable<T> extends NamedUserObject {
 	@Column(name = "sort_order")
 	private int sortOrder;
 
@@ -120,4 +120,8 @@ public abstract class Variable extends NamedUserObject {
 	public void setOverride(Boolean override) {
 		this.override = override;
 	}
+
+	public abstract T getDefaultValue();
+
+	public abstract void setDefaultValue(T defaultValue);
 }

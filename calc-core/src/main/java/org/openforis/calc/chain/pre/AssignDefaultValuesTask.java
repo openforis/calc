@@ -1,42 +1,74 @@
 package org.openforis.calc.chain.pre;
 
+import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.List;
+
+import org.jooq.Field;
 import org.openforis.calc.engine.Task;
-import org.openforis.calc.metadata.CategoricalVariable;
-import org.openforis.calc.metadata.Category;
+import org.openforis.calc.metadata.BinaryVariable;
+import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.Variable;
-import org.openforis.calc.psql.PsqlBuilder;
+import org.openforis.calc.schema.OutputSchema;
+import org.openforis.calc.schema.OutputTable;
 
 public class AssignDefaultValuesTask extends Task {
 
 	@Override
 	protected void execute() throws Throwable {
-		// TODO Auto-generated method stub
+		OutputSchema outputSchema = getOutputSchema();
+		Collection<OutputTable> outputTables = outputSchema.getOutputTables();
+		for (OutputTable outputTable : outputTables) {
+			Entity entity = outputTable.getEntity();
+			List<Variable<?>> variables = entity.getVariables();
+			for (Variable<?> variable : variables) {
+				if ( variable instanceof QuantitativeVariable ) {
+					applyDefaultValue(outputTable, (QuantitativeVariable) variable);
+				} else if ( variable instanceof BinaryVariable ){
+					applyDefaultValue(outputTable, (BinaryVariable) variable);					
+				} else if ( variable instanceof MultiwayVariable ){
+					applyDefaultValue(outputTable, (MultiwayVariable) variable);					
+				}
+			}
+		}
 	}
 	
-	private void applyDefaultVariableValue(String outputFactTable, Variable variable) {
-		if(  variable instanceof QuantitativeVariable &&  ( (QuantitativeVariable)variable).getDefaultValue() != null ){
-			QuantitativeVariable quantitativeVariable = (QuantitativeVariable)variable;
-			String valueColumn = PsqlBuilder.quote(variable.getOutputValueColumn());
-			Double defaultValue = quantitativeVariable.getDefaultValue();
-			
-			createPsqlBuilder().update( outputFactTable )
-				.set( valueColumn + " = ? ")
-				.where( valueColumn ).isNull()
-				.execute( defaultValue);
-			
-		}else if ( variable instanceof CategoricalVariable &&  ( (CategoricalVariable)variable).getDefaultValue() != null  ){
-			
-			CategoricalVariable categoricalVariable = (CategoricalVariable)variable;
-			String valueColumn = PsqlBuilder.quote(variable.getOutputValueColumn());
-			String idColumn =  PsqlBuilder.quote( categoricalVariable.getOutputCategoryIdColumn());
-			Category defaultValue = categoricalVariable.getDefaultValue();
-			
-			createPsqlBuilder().update( outputFactTable )
-				.set( valueColumn + " = ?, " + idColumn + " = " + defaultValue.getId())
-				.where( valueColumn ).isNull()
-				.or( idColumn ).isNull()
-				.execute( defaultValue.getCode()  );
+	private void applyDefaultValue(OutputTable outputTable, QuantitativeVariable variable) {
+		BigDecimal defaultValue = variable.getDefaultValue();
+		if(  defaultValue != null ){
+			Field<BigDecimal> valueField = outputTable.getQuantityField(variable);
+			psql().update( outputTable )
+				.set( valueField, defaultValue )
+				.where( valueField.isNull() )
+				.execute();
 		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void applyDefaultValue(OutputTable outputTable, BinaryVariable variable) {
+		Boolean defaultValue = variable.getDefaultValue();
+		if(  defaultValue != null ) {
+//			Field<Boolean> valueField = (Field<Boolean>) outputTable.getCategoryValueField(variable);
+//			boolean defaultValue = Category.TRUE_VALUE.equals(defaultCategory.getValue());
+//			psql().update( outputTable )
+//				.set( valueField, defaultValue )
+//				.where( valueField.isNull() )
+//				.execute();
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void applyDefaultValue(OutputTable outputTable, MultiwayVariable variable) {
+//		Category defaultCategory = variable.getDefaultCategory();;
+//		if(  defaultCategory != null ) {
+//			Field<String> valueField = (Field<String>) outputTable.getCategoryValueField(variable);
+//			String defaultValue = defaultCategory.getCode();
+//			psql().update( outputTable )
+//				.set( valueField, defaultValue )
+//				.where( valueField.isNull() )
+//				.execute();
+//		}
 	}
 }

@@ -108,8 +108,8 @@ public final class CreateFactTablesTask extends Task {
 			selectDimensionsRecursive(select, factTable, parentTable);
 //			}
 		}
-		List<CategoricalVariable> variables = entity.getCategoricalVariables();
-		for (CategoricalVariable var : variables) {
+		List<CategoricalVariable<?>> variables = entity.getCategoricalVariables();
+		for (CategoricalVariable<?> var : variables) {
 			Field<?> valueField = outputTable.getCategoryValueField(var);
 			select.addSelect(valueField);
 			Field<Integer> idField = factTable.getDimensionIdField(var);

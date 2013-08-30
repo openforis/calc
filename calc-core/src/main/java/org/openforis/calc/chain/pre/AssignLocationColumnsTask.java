@@ -10,8 +10,8 @@ import org.openforis.calc.engine.Task;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.psql.Psql;
 import org.openforis.calc.psql.UpdateWithStep;
-import org.openforis.calc.schema.OutputTable;
 import org.openforis.calc.schema.OutputSchema;
+import org.openforis.calc.schema.OutputTable;
 
 /**
  * Update Point columns, taking X, Y and SRSID from other columns and converting them to the default SRS.

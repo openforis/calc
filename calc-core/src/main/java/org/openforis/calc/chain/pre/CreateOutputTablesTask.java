@@ -10,8 +10,8 @@ import org.openforis.calc.engine.Task;
 import org.openforis.calc.metadata.Category;
 import org.openforis.calc.psql.Psql.Privilege;
 import org.openforis.calc.schema.InputTable;
-import org.openforis.calc.schema.OutputTable;
 import org.openforis.calc.schema.OutputSchema;
+import org.openforis.calc.schema.OutputTable;
 import org.openforis.calc.schema.RolapSchema;
 
 /**

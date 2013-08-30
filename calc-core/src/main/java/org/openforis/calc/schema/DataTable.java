@@ -28,6 +28,7 @@ import org.openforis.calc.metadata.AoiLevel;
 import org.openforis.calc.metadata.BinaryVariable;
 import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.psql.GeodeticCoordinate;
@@ -49,7 +50,7 @@ public abstract class DataTable extends AbstractTable {
 	
 	private Map<AoiLevel, Field<Integer>> aoiIdFields;
 	private Map<QuantitativeVariable, Field<BigDecimal>> quantityFields;
-	private Map<CategoricalVariable, Field<?>> categoryValueFields;
+	private Map<CategoricalVariable<?>, Field<?>> categoryValueFields;
 	
 	private TableField<Record, Integer> idField;
 	private Field<GeodeticCoordinate> locationField;
@@ -63,7 +64,7 @@ public abstract class DataTable extends AbstractTable {
 		this.entity = entity;
 		this.aoiIdFields = new HashMap<AoiLevel, Field<Integer>>();
 		this.quantityFields = new HashMap<QuantitativeVariable, Field<BigDecimal>>();
-		this.categoryValueFields = new HashMap<CategoricalVariable, Field<?>>();
+		this.categoryValueFields = new HashMap<CategoricalVariable<?>, Field<?>>();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -79,8 +80,8 @@ public abstract class DataTable extends AbstractTable {
 	
 	protected void createQuantityFields(boolean input) {
 		Entity entity = getEntity();
-		List<Variable> variables = entity.getVariables();
-		for ( Variable var : variables ) {
+		List<Variable<?>> variables = entity.getVariables();
+		for ( Variable<?> var : variables ) {
 			if ( var instanceof QuantitativeVariable ) {
 				String valueColumn = input ? var.getInputValueColumn() : var.getOutputValueColumn();
 				if ( valueColumn != null ) {
@@ -91,30 +92,30 @@ public abstract class DataTable extends AbstractTable {
 	}
 
 	protected void createCategoryValueFields(Entity entity, boolean input) {
-		List<CategoricalVariable> variables = entity.getCategoricalVariables();
-		for ( CategoricalVariable var : variables ) {
+		List<CategoricalVariable<?>> variables = entity.getCategoricalVariables();
+		for ( CategoricalVariable<?> var : variables ) {
 			String valueColumn = input ? var.getInputValueColumn() : var.getOutputValueColumn();
 			if ( valueColumn != null ) {
 				if ( var instanceof BinaryVariable ) {
 					createBinaryCategoryValueField((BinaryVariable) var, valueColumn);
-				} else {
-					createCategoryValueField(var, valueColumn);
+				} else if ( var instanceof MultiwayVariable ) {
+					createCategoryValueField((MultiwayVariable) var, valueColumn);
 				}
 			}
 		}
 	}
 
-	protected void createCategoryValueField(CategoricalVariable var, String valueColumn) {
+	protected void createCategoryValueField(MultiwayVariable var, String valueColumn) {
 		Field<String> fld = createValueField(var, VARCHAR.length(255), valueColumn);
-		categoryValueFields.put((CategoricalVariable) var, fld);
+		categoryValueFields.put(var, fld);
 	}
 
 	protected void createBinaryCategoryValueField(BinaryVariable var, String valueColumn) {
 		Field<Boolean> fld = createValueField((BinaryVariable) var, BOOLEAN, valueColumn);
-		categoryValueFields.put((CategoricalVariable) var, fld);
+		categoryValueFields.put(var, fld);
 	}
 
-	private <T> Field<T> createValueField(Variable var, DataType<T> valueType, String valueColumn) {
+	private <T> Field<T> createValueField(Variable<?> var, DataType<T> valueType, String valueColumn) {
 		if ( valueColumn == null ) {
 			return null;
 		} else {
@@ -227,7 +228,7 @@ public abstract class DataTable extends AbstractTable {
 		return quantityFields == null ? null : quantityFields.get(var);
 	}
 	
-	public Field<?> getCategoryValueField(CategoricalVariable var) {
+	public Field<?> getCategoryValueField(CategoricalVariable<?> var) {
 		return categoryValueFields.get(var);
 	}
 	

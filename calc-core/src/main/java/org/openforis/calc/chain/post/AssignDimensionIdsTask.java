@@ -11,7 +11,9 @@ import org.jooq.Update;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.metadata.BinaryVariable;
 import org.openforis.calc.metadata.CategoricalVariable;
+import org.openforis.calc.metadata.Category;
 import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.psql.Psql;
 import org.openforis.calc.psql.PsqlPart;
 import org.openforis.calc.schema.CategoryDimensionTable;
@@ -25,8 +27,6 @@ import org.openforis.calc.schema.OutputSchema;
  * @author M. Togna
  */
 public final class AssignDimensionIdsTask extends Task {
-	private static final BigDecimal FALSE_VALUE = BigDecimal.valueOf(0.0);
-	private static final BigDecimal TRUE_VALUE = BigDecimal.valueOf(1.0);
 
 	@Override
 	protected void execute() throws Throwable {
@@ -34,13 +34,13 @@ public final class AssignDimensionIdsTask extends Task {
 		Collection<FactTable> factTables = outputSchema.getFactTables();
 		for (FactTable factTable : factTables) {
 			Entity entity = factTable.getEntity();
-			List<CategoricalVariable> vars = entity.getCategoricalVariables();
-			for (CategoricalVariable var : vars) {
+			List<CategoricalVariable<?>> vars = entity.getCategoricalVariables();
+			for (CategoricalVariable<?> var : vars) {
 //				if ( var.isDisaggregate() ) {
 					if ( var instanceof BinaryVariable ) {
 						assignBinaryDimensionIds(factTable, (BinaryVariable) var);
-					} else {
-						assignCategoricalDimensionIds(factTable, var);
+					} else if ( var instanceof MultiwayVariable ){
+						assignCategoricalDimensionIds(factTable, (MultiwayVariable) var);
 					}
 //				}
 			}
@@ -68,8 +68,8 @@ public final class AssignDimensionIdsTask extends Task {
 			PsqlPart joinCondition = new Psql()
 					.decode()
 					.when(factValue.isNull(), dimValue.isNull())
-					.when(factValue.isTrue(), dimValue.eq(TRUE_VALUE))
-					.when(factValue.isFalse(), dimValue.eq(FALSE_VALUE))
+					.when(factValue.isTrue(), dimValue.eq(Category.TRUE_VALUE))
+					.when(factValue.isFalse(), dimValue.eq(Category.FALSE_VALUE))
 					.end();
 			
 			psql()
@@ -79,7 +79,7 @@ public final class AssignDimensionIdsTask extends Task {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void assignCategoricalDimensionIds(FactTable factTable, CategoricalVariable var) {
+	private void assignCategoricalDimensionIds(FactTable factTable, MultiwayVariable var) {
 		OutputSchema outputSchema = (OutputSchema) factTable.getSchema();
 		CategoryDimensionTable dim = outputSchema.getCategoryDimensionTable(var);
 		Field<Integer> id = factTable.getDimensionIdField(var);

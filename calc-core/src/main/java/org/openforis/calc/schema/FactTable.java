@@ -37,7 +37,7 @@ public class FactTable extends DataTable {
 	private static final String DIMENSION_ID_COLUMN_FORMAT = "%s_id";
 
 	private Map<VariableAggregate, Field<BigDecimal>> measureFields;
-	private Map<CategoricalVariable, Field<Integer>> dimensionIdFields;
+	private Map<CategoricalVariable<?>, Field<Integer>> dimensionIdFields;
 	
 	private Field<Integer> stratumIdField;
 	private OutputTable sourceOutputTable;
@@ -76,16 +76,16 @@ public class FactTable extends DataTable {
 	}
 
 	private void createDimensionIdFields(Entity entity) {
-		this.dimensionIdFields = new HashMap<CategoricalVariable, Field<Integer>>();
-		List<Variable> variables = entity.getVariables();
-		for ( Variable var : variables ) {
+		this.dimensionIdFields = new HashMap<CategoricalVariable<?>, Field<Integer>>();
+		List<Variable<?>> variables = entity.getVariables();
+		for ( Variable<?> var : variables ) {
 			if ( var instanceof CategoricalVariable ) {
-				createDimensionIdField((CategoricalVariable) var);
+				createDimensionIdField((CategoricalVariable<?>) var);
 			}
 		}
 	}
 
-	protected void createDimensionIdField(CategoricalVariable var) {
+	protected void createDimensionIdField(CategoricalVariable<?> var) {
 		if ( !var.isDegenerateDimension() && var.isDisaggregate() ) {
 			String fieldName = String.format(DIMENSION_ID_COLUMN_FORMAT, var.getName());
 			Field<Integer> fld = createField(fieldName, SQLDataType.INTEGER, this);
@@ -135,7 +135,7 @@ public class FactTable extends DataTable {
 		return measureFields.get(aggregate);
 	}
 
-	public Field<Integer> getDimensionIdField(CategoricalVariable variable) {
+	public Field<Integer> getDimensionIdField(CategoricalVariable<?> variable) {
 		return dimensionIdFields.get(variable);
 	}
 

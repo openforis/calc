@@ -16,8 +16,8 @@ import org.openforis.calc.metadata.AoiLevel;
 import org.openforis.calc.psql.Psql;
 import org.openforis.calc.psql.UpdateWithStep;
 import org.openforis.calc.schema.AoiDimensionTable;
-import org.openforis.calc.schema.OutputTable;
 import org.openforis.calc.schema.OutputSchema;
+import org.openforis.calc.schema.OutputTable;
 
 /**
  * Task responsible for assigning AOI codes and/or ids to an output table based on a Point column. <br/>

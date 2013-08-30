@@ -164,7 +164,7 @@ public abstract class AbstractFieldDataCsvImporter {
 		List<String> varcols = new ArrayList<String>();
 		List<Variable> vars = new ArrayList<Variable>();
 		for (String col : colnames) {
-			Variable var = unit.getVariable(col);
+			Variable<?> var = unit.getVariable(col);
 			if ( var == null ) {
 				skipped.add(col);
 			} else {

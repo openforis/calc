@@ -8,6 +8,7 @@ import org.openforis.calc.metadata.AoiLevel;
 import org.openforis.calc.metadata.BinaryVariable;
 import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.MultiwayVariable;
 
 /**
  * 
@@ -59,14 +60,14 @@ public class AggregateTable extends FactTable {
 	}
 	
 	@Override
-	protected void createCategoryValueField(CategoricalVariable var, String valueColumn) {
+	protected void createCategoryValueField(MultiwayVariable var, String valueColumn) {
 		if ( var.isDisaggregate() ) {
 			super.createCategoryValueField(var, valueColumn);
 		}
 	}
 	
 	@Override
-	protected void createDimensionIdField(CategoricalVariable var) {
+	protected void createDimensionIdField(CategoricalVariable<?> var) {
 		if ( var.isDisaggregate() ) {
 			super.createDimensionIdField(var);
 		}

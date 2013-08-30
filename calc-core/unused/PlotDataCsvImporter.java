@@ -148,7 +148,7 @@ public class PlotDataCsvImporter extends AbstractFieldDataCsvImporter {
 	private void insertPlotValues(PlotSection section, CsvLine line, List<Variable> vars) {
 		List<PlotNumericValue> pms = new ArrayList<PlotNumericValue>();
 		List<PlotCategoricalValue> pcs = new ArrayList<PlotCategoricalValue>();
-		for (Variable var : vars) {
+		for (Variable<?> var : vars) {
 			String name = var.getVariableName();
 			if ( var.isNumeric() ) {
 				Double value = line.getDouble(name);
