@@ -7,7 +7,8 @@ import java.util.List;
 import org.openforis.calc.engine.Workspace;
 
 /**
- * 
+ * @author G. Miceli
+ * @author S. Ricci
  * @author M. Togna
  * 
  */
@@ -23,8 +24,7 @@ public class RolapSchema {
 		this.outputSchema = outputSchema;
 		this.categoryDimensions = new ArrayList<CategoryDimension>();
 		this.cubes = new ArrayList<Cube>();
-		
-		
+
 	}
 
 	public Workspace getWorkspace() {
@@ -46,7 +46,7 @@ public class RolapSchema {
 	public List<CategoryDimension> getCategoryDimensions() {
 		return Collections.unmodifiableList(categoryDimensions);
 	}
-	
+
 	public OutputSchema getOutputSchema() {
 		return outputSchema;
 	}
