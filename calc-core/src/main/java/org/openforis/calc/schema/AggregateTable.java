@@ -35,7 +35,7 @@ public class AggregateTable extends FactTable {
 		createAggregateFactCountField();
 	}
 
-	private static String getName(FactTable factTable, AoiHierarchyLevel level) {
+	private static String getName(DataTable factTable, AoiHierarchyLevel level) {
 		String entityName = factTable.getEntity().getName();
 		String levelName = level.getName();
 		return String.format(TABLE_NAME_FORMAT, entityName, levelName);

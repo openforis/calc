@@ -160,7 +160,7 @@ public abstract class DataTable extends AbstractTable {
 	}
 	
 	protected void createAoiIdFields(AoiHierarchyLevel lowestLevel) {
-		if ( entity.isGeoreferenced() ) {
+		if ( isGeoreferenced() ) {
 			Workspace workspace = entity.getWorkspace();
 			List<AoiHierarchy> aoiHierarchies = workspace.getAoiHierarchies();
 			for ( AoiHierarchy hierarchy : aoiHierarchies ) {
@@ -181,13 +181,13 @@ public abstract class DataTable extends AbstractTable {
 	}
 
 	protected void createLocationField() {
-		if ( entity.isGeoreferenced() ) {
+		if ( isGeoreferenced() ) {
 			locationField = createField("_location", Psql.GEODETIC_COORDINATE, this);
 		}
 	}
 
 	protected void createCoordinateFields() {
-		if ( entity.isGeoreferenced() ) {
+		if ( isGeoreferenced() ) {
 			String xColumn = entity.getXColumn();
 			String yColumn = entity.getYColumn();
 			String srsColumn = entity.getSrsColumn();
@@ -235,6 +235,10 @@ public abstract class DataTable extends AbstractTable {
 	@SuppressWarnings("unchecked")
 	public Field<BigDecimal> getWeightField() {
 		return (Field<BigDecimal>) field("weight");
+	}
+
+	public boolean isGeoreferenced() {
+		return getEntity().isGeoreferenced();
 	}
 }
 

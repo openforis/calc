@@ -34,7 +34,6 @@ public class OutputSchema extends RelationalSchema {
 	private Map<Entity, FactTable> factTables;
 	private Map<CategoricalVariable, CategoryDimensionTable> categoryDimensionTables;
 	private Map<AoiHierarchyLevel, AoiDimensionTable> aoiDimensionTables;
-	private List<AggregateTable> aggregateTables;
 
 	public OutputSchema(Workspace workspace, InputSchema inputSchema) {
 		super(workspace.getOutputSchema());
@@ -70,7 +69,6 @@ public class OutputSchema extends RelationalSchema {
 
 	private void initFactTables() {
 		this.factTables = new HashMap<Entity, FactTable>();
-		this.aggregateTables = new ArrayList<AggregateTable>();
 		List<Entity> entities = workspace.getEntities();
 		for ( Entity entity : entities ) {
 			initFactTables(entity, null);
@@ -93,23 +91,9 @@ public class OutputSchema extends RelationalSchema {
 				initFactTables(child, factTable);
 			}
 
-			if ( entity.isSamplingUnit() ) {
-				initAggregateTables(factTable);
-			}
 		}
 	}
 
-	private void initAggregateTables(FactTable factTable) {
-		List<AoiHierarchy> aoiHierarchies = workspace.getAoiHierarchies();
-		for (AoiHierarchy aoiHierarchy : aoiHierarchies) {
-			List<AoiHierarchyLevel> levels = aoiHierarchy.getLevels();
-			for (AoiHierarchyLevel level : levels) {
-				AggregateTable aggregateTable = new AggregateTable(factTable, level);
-				aggregateTables.add(aggregateTable);
-			}
-		}
-	}
-	
 	private void initStratumDimensionTable() {
 		this.stratumDimensionTable = new StratumDimensionTable(this);
 	}
@@ -189,8 +173,12 @@ public class OutputSchema extends RelationalSchema {
 	public ExpansionFactorTable getExpansionFactorTable() {
 		return expansionFactorTable;
 	}
-	
-	public List<AggregateTable> getAggregateTables() {
-		return Collections.unmodifiableList(aggregateTables);
+
+	public Collection<AggregateTable> getAggregateTables() {
+		Collection<AggregateTable> tables = new ArrayList<AggregateTable>();
+		for (FactTable table : factTables.values()) {
+			tables.addAll(table.getAggregateTables());
+		}
+		return Collections.unmodifiableCollection(tables);
 	}
 }

@@ -12,6 +12,7 @@ import org.openforis.calc.engine.Workspace;
  * @author S. Ricci
  * 
  */
+@Deprecated
 public class RolapSchema {
 
 	private Workspace workspace;

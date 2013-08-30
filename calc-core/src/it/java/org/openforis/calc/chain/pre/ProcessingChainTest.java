@@ -9,7 +9,6 @@ import org.openforis.calc.chain.ProcessingChainDao;
 import org.openforis.calc.chain.post.AssignDimensionIdsTask;
 import org.openforis.calc.chain.post.CalculateExpansionFactorsTask;
 import org.openforis.calc.chain.post.CreateAggregateTablesTask;
-import org.openforis.calc.chain.post.PublishRolapSchemaTask;
 import org.openforis.calc.engine.CalculationEngine;
 import org.openforis.calc.engine.Job;
 import org.openforis.calc.engine.TaskManager;
@@ -23,6 +22,7 @@ import org.springframework.test.context.junit4.AbstractTransactionalJUnit4Spring
  * 
  * @author A. Sanchez-Paus Diaz
  * @author G. Miceli
+ * @author M. Togna
  *
  */
 @ContextConfiguration(locations = { "classpath:applicationContext.xml" })
@@ -39,6 +39,7 @@ public class ProcessingChainTest extends AbstractTransactionalJUnit4SpringContex
 		ProcessingChain chain = processingChainDao.find(21);
 		Workspace workspace = chain.getWorkspace(); 
 		Job job = taskManager.createUserJob(workspace);
+		
 		// Preprocessing steps
 //		job.addTask(taskManager.createTask(ResetOutputSchemaTask.class));
 //		job.addTask(taskManager.createTask(CreateCategoryDimensionTablesTask.class));
@@ -49,13 +50,13 @@ public class ProcessingChainTest extends AbstractTransactionalJUnit4SpringContex
 //		job.addTask(taskManager.createTask(AssignAoiColumnsTask.class));
 		
 		// User steps
-		job.addTasks(taskManager.createCalculationStepTasks(chain));
+//		job.addTasks(taskManager.createCalculationStepTasks(chain));
 		
 		// Postprocessing
 //		job.addTask(taskManager.createTask(CreateFactTablesTask.class));
 //		job.addTask(taskManager.createTask(AssignStratumIdsTask.class));
-		job.addTask(taskManager.createTask(AssignDimensionIdsTask.class));
-		job.addTask(taskManager.createTask(CalculateExpansionFactorsTask.class));
+//		job.addTask(taskManager.createTask(AssignDimensionIdsTask.class));
+//		job.addTask(taskManager.createTask(CalculateExpansionFactorsTask.class));
 		job.addTask(taskManager.createTask(CreateAggregateTablesTask.class));
 //		job.addTask(taskManager.createTask(PublishRolapSchemaTask.class));
 		
