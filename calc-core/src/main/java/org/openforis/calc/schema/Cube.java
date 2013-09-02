@@ -1,4 +1,6 @@
 package org.openforis.calc.schema;
+import static org.openforis.calc.mondrian.Rolap.getMdxMeasureName;
+import static org.openforis.calc.mondrian.Rolap.toMdx;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -64,44 +66,61 @@ public class Cube {
 				this.aggNames.add(aggName);
 			}
 		}
-
 	}
 
 	private AggName createAggName(AggregateTable aggregateTable) {
 		Field<Integer> factCountField = aggregateTable.getAggregateFactCountField();
-		//iterate over dims of cube to create aggForeignKey
+		List<AggForeignKey> aggFKs = createAggForeignKeys();
+		List<AggMeasure> aggMeasures = createAggMeasures();
+		List<AggLevel> aggLevels = createAggLevels(aggregateTable);
+		return new AggName(factCountField.getName(), aggFKs, aggMeasures, aggLevels);
+	}
+
+	private List<AggForeignKey> createAggForeignKeys() {
 		List<AggForeignKey> aggFKs = new ArrayList<AggForeignKey>();
 		Map<Dimension, Field<Integer>> dimUsages = getDimensionUsages();
 		for (Entry<Dimension, Field<Integer>> entry : dimUsages.entrySet()) {
-			Dimension dim = entry.getKey();
 			Field<Integer> field = entry.getValue();
-			String aggColumn = null; //TODO
-			String factColumn = null; //TODO
-			AggForeignKey aggFK = new AggForeignKey(factColumn, aggColumn);
+			AggForeignKey aggFK = new AggForeignKey(field.getName(), field.getName());
 			aggFKs.add(aggFK);
 		}
-		//iterate over measures of cube to create aggMeasures
+		return aggFKs;
+	}
+
+	private List<AggMeasure> createAggMeasures() {
 		List<AggMeasure> aggMeasures = new ArrayList<AggMeasure>();
 		Map<Measure, Field<BigDecimal>> measures = getMeasures();
 		for (Entry<Measure, Field<BigDecimal>> entry : measures.entrySet()) {
 			Measure measure = entry.getKey();
 			Field<BigDecimal> field = entry.getValue();
-			AggMeasure aggMeasure = new AggMeasure(field.getName(), measure.getName());
+			AggMeasure aggMeasure = new AggMeasure(field.getName(), getMdxMeasureName( measure.getName() ));
 			aggMeasures.add(aggMeasure);
 		}
-		//iterate over aoi hierarchies and levels up to current aoi level of aggTable
+		return aggMeasures;
+	}
+
+	private List<AggLevel> createAggLevels(AggregateTable aggregateTable) {
 		List<AggLevel> aggLevels = new ArrayList<AggLevel>();
 		AoiLevel aggTableLevel = aggregateTable.getAoiHierarchyLevel();
 		AoiHierarchy aoiHierarchy = aggTableLevel.getHierarchy();
-		List<AoiLevel> levels = aoiHierarchy.getLevels();
-		for (AoiLevel level : levels) {
+		AoiDimension aoiDim = getAoiDimension(aoiHierarchy);
+		for (AoiLevel level : aoiHierarchy.getLevels()) {
 			if ( level.getRank() <= aggTableLevel.getRank() ) {
-				String levelColumn = null; //TODO
-				AggLevel aggLevel = new AggLevel(levelColumn, level.getName());
+				Field<Integer> field = aggregateTable.getAoiIdField(level);
+				AggLevel aggLevel = new AggLevel(field.getName(), toMdx(aoiDim.getName(), level.getName()) );
 				aggLevels.add(aggLevel);
 			}
 		}
-		return new AggName(factCountField.getName(), aggFKs, aggMeasures, aggLevels);
+		return aggLevels;
+	}
+
+	private AoiDimension getAoiDimension(AoiHierarchy aoiHierarchy) {
+		for (AoiDimension aoiDimension : aoiDimensionUsages.keySet()) {
+			if( aoiDimension.getAoiHierarchy().equals(aoiHierarchy)){
+				return aoiDimension;
+			}
+		}
+		throw new IllegalArgumentException("Unable to find aoi dimension for aoi hierarchy " + aoiHierarchy.getName());
 	}
 
 	private void createMeasures() {
@@ -225,7 +244,7 @@ public class Cube {
 		private String factColumn;
 		private String aggColumn;
 
-		public AggForeignKey(String factColumn, String aggColumn) {
+		AggForeignKey(String factColumn, String aggColumn) {
 			this.factColumn = factColumn;
 			this.aggColumn = aggColumn;
 		}
@@ -244,7 +263,7 @@ public class Cube {
 		private String column;
 		private String name;
 
-		public AggMeasure(String column, String name) {
+		AggMeasure(String column, String name) {
 			this.column = column;
 			this.name = name;
 		}
@@ -263,7 +282,7 @@ public class Cube {
 		private String column;
 		private String name;
 
-		public AggLevel(String column, String name) {
+		AggLevel(String column, String name) {
 			this.column = column;
 			this.name = name;
 		}
