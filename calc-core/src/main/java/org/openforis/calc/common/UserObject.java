@@ -53,9 +53,8 @@ public abstract class UserObject implements Identifiable {
 		return this.id;
 	}
 	
-
 	@Override
 	public String toString() {
-		return caption + " [" + id + "]";
+		return String.format("\"%s\" [%s]", caption, id);
 	}
 }

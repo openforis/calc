@@ -47,13 +47,13 @@ public final class CreateOutputTablesTask extends Task {
 		for (Field<?> outputField : outputTable.fields()) {
 			Field<?> inputField = outputTable.getInputField(outputField);
 			String name = outputField.getName();
+			DataType<?> type = outputField.getDataType();
 			if ( inputField == null ) {
 				// add null to select, cast and alias				
-				DataType<?> type = outputField.getDataType();
 				select.addSelect(DSL.val(null).cast(type).as(name));
 			} else {
-				// add to select and alias
-				select.addSelect(inputField.as(name));
+				// add column to select, cast and alias
+				select.addSelect(inputField.cast(type).as(name));
 			}
 		}
 		

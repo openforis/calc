@@ -22,4 +22,10 @@ public abstract class NamedUserObject extends UserObject {
 	public String getName() {
 		return this.name;
 	}
+	
+	
+	@Override
+	public String toString() {
+		return String.format("%s [%s]", name, getId());
+	}
 }

@@ -115,7 +115,7 @@ public abstract class DataTable extends AbstractTable {
 		categoryValueFields.put(var, fld);
 	}
 
-	private <T> Field<T> createValueField(Variable<?> var, DataType<T> valueType, String valueColumn) {
+	protected <T> Field<T> createValueField(Variable<?> var, DataType<T> valueType, String valueColumn) {
 		if ( valueColumn == null ) {
 			return null;
 		} else {
