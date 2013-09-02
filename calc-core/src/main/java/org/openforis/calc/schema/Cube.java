@@ -1,6 +1,6 @@
 package org.openforis.calc.schema;
 
-import java.util.ArrayList;
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -10,42 +10,62 @@ import org.jooq.Field;
 import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.AoiLevel;
 import org.openforis.calc.metadata.CategoricalVariable;
+import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.QuantitativeVariable;
+import org.openforis.calc.metadata.VariableAggregate;
 
 /**
  * 
  * @author G. Miceli
+ * @author M. Togna
  * 
  */
 public class Cube {
 
 	private Map<Dimension, Field<Integer>> dimensionUsages;
 	private Map<AoiDimension, Field<Integer>> aoiDimensionUsages;
-	private List<Measure> measures;
+	private Map<Measure, Field<BigDecimal>> measures;
 
 	private RolapSchema rolapSchema;
 	private FactTable factTable;
 
 	private String name;
-	private String schema;
-	private String table;
+
+	private Table table;
+
+	// private String schema;
+	// private String table;
 
 	Cube(RolapSchema rolapSchema, FactTable factTable) {
 		this.name = factTable.getEntity().getName();
-		this.schema = rolapSchema.getOutputSchema().getName();
-		this.table = factTable.getName();
 
 		// this.dimensionUsages = new ArrayList<Dimension>();
-		this.measures = new ArrayList<Measure>();
 		this.rolapSchema = rolapSchema;
 		this.factTable = factTable;
 
 		createDimensionUsages();
 		createAoiDimensionUsages();
+		createMeasures();
+		createTable();
 	}
 
-	// void addDimensionUsage(Dimension dim) {
-	// dimensionUsages.add(dim);
-	// }
+	private void createTable() {
+		OutputSchema outputSchema = rolapSchema.getOutputSchema();
+		this.table = new Table(factTable.getName(), outputSchema.getName());
+	}
+
+	private void createMeasures() {
+		measures = new HashMap<Measure, Field<BigDecimal>>();
+		Entity entity = factTable.getEntity();
+
+		for ( QuantitativeVariable var : entity.getQuantitativeVariables() ) {
+			for ( VariableAggregate varAgg : var.getAggregates() ) {
+				Field<BigDecimal> measureField = factTable.getMeasureField(varAgg);
+				Measure measure = new Measure(getRolapSchema(), this, varAgg);
+				measures.put(measure, measureField);
+			}
+		}
+	}
 
 	private void createAoiDimensionUsages() {
 		this.aoiDimensionUsages = new HashMap<AoiDimension, Field<Integer>>();
@@ -76,16 +96,24 @@ public class Cube {
 		}
 	}
 
-	void addMeasure(Measure measure) {
-		measures.add(measure);
+	public Field<Integer> getStratumIdField() {
+		return factTable.getStratumIdField();
+	}
+
+	public StratumDimension getStratumDimension() {
+		return rolapSchema.getStratumDimension();
 	}
 
 	public Map<Dimension, Field<Integer>> getDimensionUsages() {
 		return Collections.unmodifiableMap(dimensionUsages);
 	}
 
-	public List<Measure> getMeasures() {
-		return Collections.unmodifiableList(measures);
+	public Map<AoiDimension, Field<Integer>> getAoiDimensionUsages() {
+		return Collections.unmodifiableMap(aoiDimensionUsages);
+	}
+
+	public Map<Measure, Field<BigDecimal>> getMeasures() {
+		return Collections.unmodifiableMap(measures);
 	}
 
 	public RolapSchema getRolapSchema() {
@@ -100,16 +128,8 @@ public class Cube {
 		return name;
 	}
 
-	public String getSchema() {
-		return schema;
-	}
-
-	public String getTable() {
+	public Table getTable() {
 		return table;
-	}
-
-	public Map<AoiDimension, Field<Integer>> getAoiDimensionUsages() {
-		return Collections.unmodifiableMap(aoiDimensionUsages);
 	}
 
 }

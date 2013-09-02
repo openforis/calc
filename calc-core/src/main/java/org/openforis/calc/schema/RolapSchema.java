@@ -23,6 +23,7 @@ public class RolapSchema {
 
 	private List<AoiDimension> aoiDimensions;
 	private Map<CategoricalVariable<?>, CategoryDimension> sharedDimensions;
+	private StratumDimension stratumDimension;
 
 	private Workspace workspace;
 	// private List<CategoryDimension> categoryDimensions;
@@ -36,14 +37,20 @@ public class RolapSchema {
 		this.outputSchema = outputSchema;
 		// this.categoryDimensions = new ArrayList<CategoryDimension>();
 
+		createStratumDimension();
 		createAoiDimensions();
 		createSharedDimensions();
 		createCubes();
 	}
 
+	private void createStratumDimension() {
+		StratumDimensionTable stratumDimensionTable = outputSchema.getStratumDimensionTable();
+		this.stratumDimension = new StratumDimension(this, stratumDimensionTable);
+	}
+
 	private void createCubes() {
 		this.cubes = new ArrayList<Cube>();
-		
+
 		Collection<FactTable> factTables = outputSchema.getFactTables();
 		for ( FactTable factTable : factTables ) {
 			Cube cube = new Cube(this, factTable);
@@ -77,12 +84,16 @@ public class RolapSchema {
 		return Collections.unmodifiableCollection(sharedDimensions.values());
 	}
 
-	Map<CategoricalVariable<?>, CategoryDimension> getSharedDimensionsMap(){
+	Map<CategoricalVariable<?>, CategoryDimension> getSharedDimensionsMap() {
 		return Collections.unmodifiableMap(sharedDimensions);
 	}
-	
+
 	public List<AoiDimension> getAoiDimensions() {
 		return Collections.unmodifiableList(aoiDimensions);
+	}
+
+	public StratumDimension getStratumDimension() {
+		return stratumDimension;
 	}
 
 	public Workspace getWorkspace() {

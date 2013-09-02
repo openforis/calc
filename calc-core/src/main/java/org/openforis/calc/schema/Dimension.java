@@ -9,6 +9,7 @@ package org.openforis.calc.schema;
 public class Dimension extends Member {
 
 	protected String name;
+	protected String caption;
 	protected Hierarchy hierarchy;
 
 	Dimension(RolapSchema rolapSchema) {
@@ -22,7 +23,7 @@ public class Dimension extends Member {
 	void setHierarchy(Hierarchy hierarchy) {
 		this.hierarchy = hierarchy;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
@@ -30,6 +31,13 @@ public class Dimension extends Member {
 	void setName(String name) {
 		this.name = name;
 	}
-	
+
+	public String getCaption() {
+		return caption;
+	}
+
+	void setCaption(String caption) {
+		this.caption = caption;
+	}
 
 }

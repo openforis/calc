@@ -20,7 +20,9 @@ import org.openforis.calc.mondrian.Table.AggName.AggMeasure;
 public class Rolap {
 
 	public static final String DIMENSION_TYPE_STANDARD = "StandardDimension";
-
+	public static final String NUMBER_FORMAT_STRING = "#,###.##";
+	public static final String DATA_TYPE_NUMERIC = "Numeric";
+	
 	public static AggLevel createAggLevel(String name, String column) {
 		AggLevel aggLevel = new AggLevel();
 		aggLevel.setColumn(column);
@@ -87,11 +89,11 @@ public class Rolap {
 		return m;
 	}
 
-	public static DimensionUsage createDimensionUsage(String name, String fKey) {
+	public static DimensionUsage createDimensionUsage(String name, String foreignKey) {
 		DimensionUsage dim = new DimensionUsage();
 		dim.setSource(name);
 		dim.setName(name);
-		dim.setForeignKey(fKey);
+		dim.setForeignKey(foreignKey);
 		dim.setHighCardinality(false);
 		return dim;
 	}
@@ -108,15 +110,20 @@ public class Rolap {
 		Table t = createTable(schema, table);
 		h.setTable(t);
 
+		Level l = createLevel(name, table, column, nameColumn);
+		h.getLevel().add(l);
+
+		dim.getHierarchy().add(h);
+		return dim;
+	}
+
+	private static Level createLevel(String name, String table, String column, String nameColumn) {
 		Level l = new Level();
 		l.setName(name);
 		l.setTable(table);
 		l.setColumn(column);
 		l.setNameColumn(nameColumn);
-		h.getLevel().add(l);
-
-		dim.getHierarchy().add(h);
-		return dim;
+		return l;
 	}
 
 	public static View createSqlView(String alias, String sql) {
