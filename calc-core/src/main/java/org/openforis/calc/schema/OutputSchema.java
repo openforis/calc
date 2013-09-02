@@ -39,6 +39,7 @@ public class OutputSchema extends RelationalSchema {
 		super(workspace.getOutputSchema());
 		this.workspace = workspace;
 		this.inputSchema = inputSchema;
+		
 		initCategoryDimensionTables();
 		initStratumDimensionTable();
 		initAoiDimensionTables();
