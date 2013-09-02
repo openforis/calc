@@ -110,7 +110,7 @@ public class PublishRolapSchemaTask extends Task {
 			Cube cube = createCube( rolapCube.getName() );
 			schema.getCube().add(cube);
 			
-			Table table = createTable( rolapCube.getTable().getSchema(), rolapCube.getTable().getName() );
+			Table table = createTable( rolapCube.getSchema(), rolapCube.getTable() );
 			cube.setTable(table);
 			
 			// add stratum dimension usage
