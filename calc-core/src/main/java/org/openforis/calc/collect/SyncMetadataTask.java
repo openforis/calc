@@ -3,8 +3,10 @@ package org.openforis.calc.collect;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
@@ -24,6 +26,7 @@ import org.openforis.collect.relational.model.DataColumn;
 import org.openforis.collect.relational.model.DataParentKeyColumn;
 import org.openforis.collect.relational.model.DataPrimaryKeyColumn;
 import org.openforis.collect.relational.model.DataTable;
+import org.openforis.collect.relational.model.PrimaryKeyColumn;
 import org.openforis.collect.relational.model.RelationalSchema;
 import org.openforis.collect.relational.model.RelationalSchemaGenerator;
 import org.openforis.collect.relational.model.Table;
@@ -56,12 +59,17 @@ public class SyncMetadataTask extends Task {
 	private CollectSurveyIdmlBinder collectSurveyIdmlBinder;
 
 	// Transient states
-	private Map<String, Entity> entities;
+	private Map<String, Entity> entitiesByName;
 	private RelationalSchema schema;
+	private Set<String> variableNames;
+	private Set<String> outputValueColumnNames;
+	
 
 	@Override
 	protected void execute() throws Throwable {
-		this.entities = new HashMap<String, Entity>();
+		this.entitiesByName = new HashMap<String, Entity>();
+		this.variableNames = new HashSet<String>();
+		this.outputValueColumnNames = new HashSet<String>();
 		this.schema = generateSchema();
 		// convert into entities
 		sync();
@@ -120,13 +128,13 @@ public class SyncMetadataTask extends Task {
 				Entity entity = convert((DataTable) table);
 				if ( entity != null ) {
 					entity.setSortOrder(sortOrder++);
-					entities.put(table.getName(), entity);
+					entitiesByName.put(table.getName(), entity);
 				}
 			} else if ( table instanceof CodeTable ) {
 				System.out.printf("CODE TABLE %s%n", table.getName());
 			}
 		}
-		List<Entity> entityList = new ArrayList<Entity>(entities.values());
+		List<Entity> entityList = new ArrayList<Entity>(entitiesByName.values());
 		
 		Workspace workspace = getWorkspace();
 		
@@ -175,7 +183,7 @@ public class SyncMetadataTask extends Task {
 			// Assign parent entity. 
 			DataTable parentTable = table.getParent();
 			if ( parentTable != null ) {
-				Entity parentEntity = entities.get(parentTable.getName());
+				Entity parentEntity = entitiesByName.get(parentTable.getName());
 				if ( parentEntity == null ) {
 					// This should never happen because RDB API generates schema with 
 					// proper ordering of relational hierarchy (preordered DFS) 
@@ -248,10 +256,12 @@ public class SyncMetadataTask extends Task {
 		if ( isValueColumn(column) ) {
 			if ( defn instanceof BooleanAttributeDefinition ) {
 				v = new BinaryVariable();
+				((BinaryVariable) v).setDisaggregate(! (column instanceof PrimaryKeyColumn));
 			} else if ( defn instanceof CodeAttributeDefinition) {
 				v = new MultiwayVariable();
 				v.setScale(Scale.NOMINAL);
 				((MultiwayVariable) v).setMultipleResponse(defn.isMultiple());
+				((MultiwayVariable) v).setDisaggregate(! (column instanceof PrimaryKeyColumn));
 			} else if ( defn instanceof NumberAttributeDefinition ) {
 				v = new QuantitativeVariable();
 				v.setScale(Scale.RATIO);
@@ -260,16 +270,49 @@ public class SyncMetadataTask extends Task {
 //				((QuantitativeVariable) variable).setUnit(convert(defaultUnit));
 			}
 			if ( v != null ) {
-				v.setName(column.getName());
+				String variableName = generateVariableName(e.getName(), column.getName());
+				v.setName(variableName);
 				v.setInputValueColumn(column.getName());
-				// TODO generate unique name
-				v.setOutputValueColumn(column.getName());
+				String outputValueColumnName = generateOutputValueColumnName(e.getName(), column.getName());
+				v.setOutputValueColumn(outputValueColumnName);
 				v.setDimensionTable(e.getName() + "_" + v.getName() + DIMENSION_TABLE_SUFFIX);
 			}
 		}
 		return v;
 	}
 	
+	private String generateVariableName(String entityName, String columnName) {
+		String name = columnName;
+		if ( variableNames.contains(name) ) {
+			//name = ENTITYNAME_COLUMNNAME
+			name = entityName + "_" + name;
+			String baseName = name;
+			int count = 0;
+			while ( variableNames.contains(name) ) {
+				//name = ENTITYNAME_COLUMNNAME#
+				name = baseName + (++count);
+			}
+		}
+		variableNames.add(name);
+		return name;
+	}
+	
+	private String generateOutputValueColumnName(String entityName, String columnName) {
+		String name = columnName;
+		if ( outputValueColumnNames.contains(name) ) {
+			//name = ENTITYNAME_COLUMNNAME
+			name = entityName + "_" + name;
+			String baseName = name;
+			int count = 0;
+			while ( outputValueColumnNames.contains(name) ) {
+				//name = ENTITYNAME_COLUMNNAME#
+				name = baseName + (++count);
+			}
+		}
+		outputValueColumnNames.add(name);
+		return name;
+	}
+
 	//TODO move it to RDB Column?
 	/**
 	 * Returns true if the column contains values that can be used as a {@link Variable}
