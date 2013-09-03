@@ -78,11 +78,7 @@ public class Workspace extends UserObject {
 	}
 
 	public List<Entity> getEntities() {
-		if (entities != null) {
-			return Collections.unmodifiableList(entities);
-		} else {
-			return null;
-		}
+		return org.openforis.commons.collection.CollectionUtils.unmodifiableList(entities);
 	}
 	
 	public void setEntities(List<Entity> entities) {
@@ -90,7 +86,7 @@ public class Workspace extends UserObject {
 	}
 	
 	public List<AoiHierarchy> getAoiHierarchies() {
-		return aoiHierarchies;
+		return org.openforis.commons.collection.CollectionUtils.unmodifiableList(aoiHierarchies);
 	}
 
 	public void setAoiHierarchies(List<AoiHierarchy> aoiHierarchies) {
@@ -98,11 +94,7 @@ public class Workspace extends UserObject {
 	}
 
 	public List<ProcessingChain> getProcessingChains() {
-		if (processingChains != null) {
-			return Collections.unmodifiableList(processingChains);
-		} else {
-			return null;
-		}
+		return org.openforis.commons.collection.CollectionUtils.unmodifiableList(processingChains);
 	}
 
 	public void addProcessingChain(ProcessingChain chain) {
@@ -122,11 +114,15 @@ public class Workspace extends UserObject {
 
 	@SuppressWarnings("unchecked")
 	public Collection<Entity> getRootEntities() {
-		return CollectionUtils.select(entities, new Predicate() {
-			@Override
-			public boolean evaluate(Object object) {
-				return ((Entity)object).getParent() == null;
-			}
-		});
+		if ( entities == null || entities.isEmpty() ) {
+			return Collections.emptyList();
+		} else {
+			return CollectionUtils.select(entities, new Predicate() {
+				@Override
+				public boolean evaluate(Object object) {
+					return ((Entity)object).getParent() == null;
+				}
+			});
+		}
 	}
 }
