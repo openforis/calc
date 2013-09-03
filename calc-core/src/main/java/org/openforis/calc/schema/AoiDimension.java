@@ -68,7 +68,7 @@ public class AoiDimension extends Dimension {
 
 		setHierarchy(hierarchy);
 	}
-	
+
 	AoiHierarchy getAoiHierarchy() {
 		return aoiHierarchy;
 	}

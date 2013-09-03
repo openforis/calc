@@ -20,22 +20,22 @@ import org.openforis.calc.mondrian.Table.AggName.AggMeasure;
 public class Rolap {
 
 	private static final String MEASURES = "Measures";
-	
+
 	public static final String DIMENSION_TYPE_STANDARD = "StandardDimension";
 	public static final String NUMBER_FORMAT_STRING = "#,###.##";
 	public static final String DATA_TYPE_NUMERIC = "Numeric";
-	
-	public static AggLevel createAggLevel(String name, String column) {
+
+	public static AggLevel createAggLevel(String hierarchy, String name, String column) {
 		AggLevel aggLevel = new AggLevel();
 		aggLevel.setColumn(column);
-		aggLevel.setName(name);
+		aggLevel.setName(toMdx(hierarchy, name));
 		return aggLevel;
 	}
 
 	public static AggMeasure createAggMeasure(String name, String column) {
 		AggMeasure aggMeasure = new AggMeasure();
 		aggMeasure.setColumn(column);
-		String aggMeasureName = "[Measures]." + "[" + name + "]";
+		String aggMeasureName = getMdxMeasureName(name);
 		aggMeasure.setName(aggMeasureName);
 		return aggMeasure;
 	}
@@ -146,7 +146,7 @@ public class Rolap {
 	}
 
 	public static String getMdxMeasureName(String name) {
-		return toMdx(MEASURES , name);
+		return toMdx(MEASURES, name);
 	}
 
 	public static String toMdx(String prefix, String postfix) {

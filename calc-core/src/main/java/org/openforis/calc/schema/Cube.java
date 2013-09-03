@@ -1,6 +1,4 @@
 package org.openforis.calc.schema;
-import static org.openforis.calc.mondrian.Rolap.getMdxMeasureName;
-import static org.openforis.calc.mondrian.Rolap.toMdx;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -43,14 +41,13 @@ public class Cube {
 	Cube(RolapSchema rolapSchema, FactTable factTable) {
 		this.name = factTable.getEntity().getName();
 
-		// this.dimensionUsages = new ArrayList<Dimension>();
 		this.rolapSchema = rolapSchema;
 		this.factTable = factTable;
 
 		this.table = factTable.getName();
 		OutputSchema outputSchema = rolapSchema.getOutputSchema();
 		this.schema = outputSchema.getName();
-		
+
 		createDimensionUsages();
 		createAoiDimensionUsages();
 		createMeasures();
@@ -62,61 +59,15 @@ public class Cube {
 		if ( factTable.isGeoreferenced() ) {
 			Collection<AggregateTable> aggregateTables = factTable.getAggregateTables();
 			for ( AggregateTable aggregateTable : aggregateTables ) {
-				AggName aggName = createAggName(aggregateTable);
+				AggName aggName = new AggName(aggregateTable);
 				this.aggNames.add(aggName);
 			}
 		}
 	}
 
-	private AggName createAggName(AggregateTable aggregateTable) {
-		Field<Integer> factCountField = aggregateTable.getAggregateFactCountField();
-		List<AggForeignKey> aggFKs = createAggForeignKeys();
-		List<AggMeasure> aggMeasures = createAggMeasures();
-		List<AggLevel> aggLevels = createAggLevels(aggregateTable);
-		return new AggName(factCountField.getName(), aggFKs, aggMeasures, aggLevels);
-	}
-
-	private List<AggForeignKey> createAggForeignKeys() {
-		List<AggForeignKey> aggFKs = new ArrayList<AggForeignKey>();
-		Map<Dimension, Field<Integer>> dimUsages = getDimensionUsages();
-		for (Entry<Dimension, Field<Integer>> entry : dimUsages.entrySet()) {
-			Field<Integer> field = entry.getValue();
-			AggForeignKey aggFK = new AggForeignKey(field.getName(), field.getName());
-			aggFKs.add(aggFK);
-		}
-		return aggFKs;
-	}
-
-	private List<AggMeasure> createAggMeasures() {
-		List<AggMeasure> aggMeasures = new ArrayList<AggMeasure>();
-		Map<Measure, Field<BigDecimal>> measures = getMeasures();
-		for (Entry<Measure, Field<BigDecimal>> entry : measures.entrySet()) {
-			Measure measure = entry.getKey();
-			Field<BigDecimal> field = entry.getValue();
-			AggMeasure aggMeasure = new AggMeasure(field.getName(), getMdxMeasureName( measure.getName() ));
-			aggMeasures.add(aggMeasure);
-		}
-		return aggMeasures;
-	}
-
-	private List<AggLevel> createAggLevels(AggregateTable aggregateTable) {
-		List<AggLevel> aggLevels = new ArrayList<AggLevel>();
-		AoiLevel aggTableLevel = aggregateTable.getAoiHierarchyLevel();
-		AoiHierarchy aoiHierarchy = aggTableLevel.getHierarchy();
-		AoiDimension aoiDim = getAoiDimension(aoiHierarchy);
-		for (AoiLevel level : aoiHierarchy.getLevels()) {
-			if ( level.getRank() <= aggTableLevel.getRank() ) {
-				Field<Integer> field = aggregateTable.getAoiIdField(level);
-				AggLevel aggLevel = new AggLevel(field.getName(), toMdx(aoiDim.getName(), level.getName()) );
-				aggLevels.add(aggLevel);
-			}
-		}
-		return aggLevels;
-	}
-
 	private AoiDimension getAoiDimension(AoiHierarchy aoiHierarchy) {
-		for (AoiDimension aoiDimension : aoiDimensionUsages.keySet()) {
-			if( aoiDimension.getAoiHierarchy().equals(aoiHierarchy)){
+		for ( AoiDimension aoiDimension : aoiDimensionUsages.keySet() ) {
+			if ( aoiDimension.getAoiHierarchy().equals(aoiHierarchy) ) {
 				return aoiDimension;
 			}
 		}
@@ -149,7 +100,6 @@ public class Cube {
 				aoiDimensionUsages.put(aoiDimension, aoiIdField);
 			}
 		}
-
 	}
 
 	private void createDimensionUsages() {
@@ -200,31 +150,74 @@ public class Cube {
 	public String getTable() {
 		return table;
 	}
-	
+
 	public String getSchema() {
 		return schema;
 	}
-	
+
 	public List<AggName> getAggNames() {
 		return aggNames;
 	}
 
-	public static class AggName {
+	public class AggName {
 
-		private String aggFactCount;
 		private List<AggForeignKey> aggForeignKeys;
 		private List<AggMeasure> aggMeasures;
 		private List<AggLevel> aggLevels;
 
-		AggName(String aggFactCount, List<AggForeignKey> fks, List<AggMeasure> measures, List<AggLevel> levels) {
-			this.aggFactCount = aggFactCount;
-			this.aggForeignKeys = fks;
-			this.aggMeasures = measures;
-			this.aggLevels = levels;
+		private AggregateTable aggregateTable;
+
+		public AggName(AggregateTable aggregateTable) {
+			this.aggregateTable = aggregateTable;
+
+			createAggForeignKeys();
+			createAggMeasures();
+			createAggLevels();
 		}
 
-		public String getAggFactCount() {
-			return aggFactCount;
+		public String getName() {
+			return aggregateTable.getName();
+		}
+
+		public Field<Integer> getFactCountField() {
+			return aggregateTable.getAggregateFactCountField();
+		}
+
+		private void createAggForeignKeys() {
+			aggForeignKeys = new ArrayList<AggForeignKey>();
+
+			Map<Dimension, Field<Integer>> dimUsages = Cube.this.getDimensionUsages();
+			for ( Entry<Dimension, Field<Integer>> entry : dimUsages.entrySet() ) {
+				Field<Integer> field = entry.getValue();
+				AggForeignKey aggFK = new AggForeignKey(field.getName(), field.getName());
+				aggForeignKeys.add(aggFK);
+			}
+		}
+
+		private void createAggMeasures() {
+			aggMeasures = new ArrayList<AggMeasure>();
+
+			Map<Measure, Field<BigDecimal>> measures = Cube.this.getMeasures();
+			for ( Entry<Measure, Field<BigDecimal>> entry : measures.entrySet() ) {
+				Measure measure = entry.getKey();
+				Field<BigDecimal> field = entry.getValue();
+				AggMeasure aggMeasure = new AggMeasure(field.getName(), measure.getName());
+				aggMeasures.add(aggMeasure);
+			}
+		}
+
+		private void createAggLevels() {
+			aggLevels = new ArrayList<AggLevel>();
+			AoiLevel aggTableLevel = aggregateTable.getAoiHierarchyLevel();
+			AoiHierarchy aoiHierarchy = aggTableLevel.getHierarchy();
+			AoiDimension aoiDim = getAoiDimension(aoiHierarchy);
+			for ( AoiLevel level : aoiHierarchy.getLevels() ) {
+				if ( level.getRank() <= aggTableLevel.getRank() ) {
+					Field<Integer> field = aggregateTable.getAoiIdField(level);
+					AggLevel aggLevel = new AggLevel(aoiDim.getName(), level.getName(), field.getName());
+					aggLevels.add(aggLevel);
+				}
+			}
 		}
 
 		public List<AggForeignKey> getAggForeignKeys() {
@@ -240,7 +233,7 @@ public class Cube {
 		}
 	}
 
-	public static class AggForeignKey {
+	public class AggForeignKey {
 		private String factColumn;
 		private String aggColumn;
 
@@ -259,7 +252,7 @@ public class Cube {
 
 	}
 
-	public static class AggMeasure {
+	public class AggMeasure {
 		private String column;
 		private String name;
 
@@ -275,16 +268,21 @@ public class Cube {
 		public String getName() {
 			return name;
 		}
-
 	}
 
-	public static class AggLevel {
+	public class AggLevel {
 		private String column;
 		private String name;
+		private String hierarchy;
 
-		AggLevel(String column, String name) {
-			this.column = column;
+		AggLevel(String hierarchy, String name, String column) {
+			this.hierarchy = hierarchy;
 			this.name = name;
+			this.column = column;
+		}
+
+		public String getHierarchy() {
+			return hierarchy;
 		}
 
 		public String getColumn() {
@@ -294,6 +292,5 @@ public class Cube {
 		public String getName() {
 			return name;
 		}
-
-	}	
+	}
 }

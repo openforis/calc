@@ -17,7 +17,7 @@ public class CategoryDimension extends Dimension {
 		super(rolapSchema);
 		this.table = table;
 		
-		setName(table.getVariable().getName());
+		setName(table.getVariable().getOutputValueColumn());
 		createHierarchy();
 	}
 
