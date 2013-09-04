@@ -12,6 +12,7 @@ import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceDao;
 import org.openforis.calc.metadata.BinaryVariable;
+import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.QuantitativeVariable;
@@ -33,6 +34,7 @@ import org.openforis.collect.relational.model.Table;
 import org.openforis.idm.metamodel.AttributeDefinition;
 import org.openforis.idm.metamodel.BooleanAttributeDefinition;
 import org.openforis.idm.metamodel.CodeAttributeDefinition;
+import org.openforis.idm.metamodel.CodeList;
 import org.openforis.idm.metamodel.CoordinateAttributeDefinition;
 import org.openforis.idm.metamodel.DateAttributeDefinition;
 import org.openforis.idm.metamodel.EntityDefinition;
@@ -262,6 +264,8 @@ public class SyncMetadataTask extends Task {
 				v.setScale(Scale.NOMINAL);
 				((MultiwayVariable) v).setMultipleResponse(defn.isMultiple());
 				((MultiwayVariable) v).setDisaggregate(! (column instanceof PrimaryKeyColumn));
+				CodeList list = ((CodeAttributeDefinition) defn).getList();
+				((CategoricalVariable<?>) v).setDegenerateDimension(list.isExternal());
 			} else if ( defn instanceof NumberAttributeDefinition ) {
 				v = new QuantitativeVariable();
 				v.setScale(Scale.RATIO);
