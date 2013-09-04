@@ -111,8 +111,7 @@ public class SyncCategoriesTask extends Task {
 			NodeDefinition codeFieldDefn = ((CodeColumn) valueRDBColumn).getNodeDefinition();
 			CodeAttributeDefinition codeAttrDefn = (CodeAttributeDefinition) codeFieldDefn.getParentDefinition();
 			CodeList codeList = codeAttrDefn.getList();
-			Integer codeListLevelIdx = codeList.isHierarchical() ? codeAttrDefn.getCodeListLevel(): null;
-			CodeTable codeListTable = schema.getCodeListTable(codeList, codeListLevelIdx);
+			CodeTable codeListTable = schema.getCodeListTable(codeList, codeAttrDefn.getListLevelIndex());
 			return codeListTable;
 		} else {
 			throw new IllegalStateException("Expected CodeColum instance, found: " + valueRDBColumn.getClass().getName());
