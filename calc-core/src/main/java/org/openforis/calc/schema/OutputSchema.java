@@ -15,7 +15,6 @@ import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.AoiLevel;
 import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
-import org.openforis.calc.metadata.Variable;
 
 /**
  * @author G. Miceli
@@ -57,12 +56,11 @@ public class OutputSchema extends RelationalSchema {
 		List<Entity> entities = workspace.getEntities();
 		for ( Entity entity : entities ) {
 			// Add dimensions for categorical variables
-			List<Variable<?>> variables = entity.getVariables();
-			for ( Variable<?> var : variables ) {
-				if ( var instanceof CategoricalVariable ) {
-					CategoryDimensionTable table = new CategoryDimensionTable(this, (CategoricalVariable<?>) var);
+			for (CategoricalVariable<?> var : entity.getCategoricalVariables()) {
+				if ( ! var.isDegenerateDimension() ) {
+					CategoryDimensionTable table = new CategoryDimensionTable(this, var);
 					addTable(table);
-					categoryDimensionTables.put((CategoricalVariable<?>) var, table);
+					categoryDimensionTables.put(var, table);
 				}
 			}
 		}
