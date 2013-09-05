@@ -1,9 +1,14 @@
 package org.openforis.calc.collect;
 
+import static org.openforis.calc.persistence.jooq.tables.CategoryTable.CATEGORY;
+
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jooq.Insert;
+import org.jooq.Record;
+import org.jooq.impl.DSL;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceService;
@@ -58,26 +63,48 @@ public class SyncCategoriesTask extends Task {
 		//TODO pass schema from outside?
 		initSchema();
 		
-		Workspace ws = getWorkspace();
-		
 		List<Variable<?>> vars = getVariables();
 		for (Variable<?> v : vars) {
 			if ( v instanceof MultiwayVariable ) {
 				CodeTable rdbCodeTable = getRDBCodeTable((CategoricalVariable<?>) v);
-				if ( rdbCodeTable != null ) { //TODO it should never be == null, is it related to ofc_sampling_design code list?
-					List<Column<?>> columns = rdbCodeTable.getColumns();
-					String codeColumnName = getColumnName(columns, CodeListCodeColumn.class);
-					String descriptionColumnName = getColumnName(columns, CodeListDescriptionColumn.class);
-					String labelColumnName = getColumnName(columns, CodeLabelColumn.class);
-					categoryDao.copyCodesIntoCategories(
-							ws.getInputSchema(), ws.getOutputSchema(), 
-							v.getId(),
-							rdbCodeTable.getName(), codeColumnName, labelColumnName, descriptionColumnName);
+				if ( rdbCodeTable != null ) { //TODO it should never be == null; if so, is it related to ofc_sampling_design code list?
+					copyCodesIntoCategoryTable(rdbCodeTable, v);
 				}
 			} else if ( v instanceof BinaryVariable ) {
 				insertBooleanCategories((BinaryVariable) v);
 			}
 		}
+	}
+
+	private void copyCodesIntoCategoryTable(CodeTable rdbCodeTable, Variable<?> v) {
+		Workspace ws = getWorkspace();
+		List<Column<?>> columns = rdbCodeTable.getColumns();
+		String codeColumnName = getColumnName(columns, CodeListCodeColumn.class);
+		String descriptionColumnName = getColumnName(columns, CodeListDescriptionColumn.class);
+		String labelColumnName = getColumnName(columns, CodeLabelColumn.class);
+		
+		CollectCodeListTable codeTable = new CollectCodeListTable(
+				rdbCodeTable.getName(), ws.getInputSchema(),
+				codeColumnName, labelColumnName, descriptionColumnName);
+		
+		Insert<Record> insert = psql()
+			.insertInto(CATEGORY, 
+						CATEGORY.VARIABLE_ID, 
+						CATEGORY.ORIGINAL_ID, 
+						CATEGORY.CODE, 
+						CATEGORY.CAPTION,
+						CATEGORY.DESCRIPTION,
+						CATEGORY.SORT_ORDER)
+			.select(psql()
+				.select(
+						DSL.val(v.getId()),
+						codeTable.getIdField(), 
+						codeTable.getCodeField(),
+						codeTable.getLabelField(),
+						codeTable.getDescriptionField(),
+						codeTable.getIdField()
+				).from(codeTable));
+		insert.execute();
 	}
 
 	protected void insertBooleanCategories(BinaryVariable v) {
