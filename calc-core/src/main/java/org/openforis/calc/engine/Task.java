@@ -4,7 +4,6 @@ import javax.sql.DataSource;
 
 import org.openforis.calc.nls.Captionable;
 import org.openforis.calc.psql.Psql;
-import org.openforis.calc.psql.PsqlBuilder;
 import org.openforis.calc.schema.OutputSchema;
 import org.openforis.calc.schema.RolapSchema;
 import org.springframework.beans.factory.annotation.Value;
@@ -60,16 +59,6 @@ public abstract class Task extends Worker implements Captionable {
 	protected Psql psql() {
 		DataSource dataSource = getDataSource();
 		return new Psql(dataSource);
-	}
-	
-	/**
-	 * 
-	 * @deprecated use psql() instead
-	 */
-	@Deprecated
-	protected PsqlBuilder createPsqlBuilder() {
-		DataSource dataSource = getDataSource();
-		return new PsqlBuilder(dataSource);
 	}
 	
 	protected String getSystemUser() {
