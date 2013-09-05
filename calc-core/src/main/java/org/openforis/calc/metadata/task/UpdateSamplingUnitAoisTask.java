@@ -1,7 +1,15 @@
 package org.openforis.calc.metadata.task;
 
+import static org.openforis.calc.persistence.jooq.tables.AoiTable.AOI;
+import static org.openforis.calc.persistence.jooq.tables.EntityTable.ENTITY;
+import static org.openforis.calc.persistence.jooq.tables.SamplingUnitAoiTable.SAMPLING_UNIT_AOI;
+import static org.openforis.calc.persistence.jooq.tables.SamplingUnitTable.SAMPLING_UNIT;
+
 import java.util.List;
 
+import org.jooq.Insert;
+import org.jooq.Record;
+import org.jooq.impl.DSL;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.AoiHierarchy;
@@ -11,6 +19,7 @@ import org.openforis.calc.metadata.AoiLevel;
  * Task responsible for assigning AOI codes and/or ids to the first phase plots.
  * 
  * @author M. Togna
+ * @author S. Ricci
  */
 public final class UpdateSamplingUnitAoisTask extends Task {
 	
@@ -22,10 +31,10 @@ public final class UpdateSamplingUnitAoisTask extends Task {
 	}
 
 	private void deleteSamplingUnitAois(int wsId) {
-		createPsqlBuilder()
-			.deleteFrom("calc.sampling_unit_aoi")
-			.where("workspace_id = ?")
-			.execute(wsId);
+		psql()
+			.delete(SAMPLING_UNIT_AOI)
+			.where(SAMPLING_UNIT_AOI.WORKSPACE_ID.eq(wsId))
+			.execute();
 	}
 
 	private void populateSamplingUnitAois(Workspace ws) {
@@ -51,28 +60,41 @@ public final class UpdateSamplingUnitAoisTask extends Task {
 
 	private void insertAncestorStratumAois(Workspace ws,
 			AoiLevel childLevel) {
-		createPsqlBuilder()
-		.insertInto("calc.sampling_unit_aoi","sampling_unit_id", "aoi_id","workspace_id")
-		.select("s.sampling_unit_id", "a.parent_aoi_id", ws.getId() )
-		.from("calc.sampling_unit_aoi s")
-		.innerJoin("calc.aoi a")
-		.on("s.aoi_id = a.id")
-		.and("a.aoi_level_id = " + childLevel.getId() )
-		.execute();
+		Insert<Record> insert = psql()
+			.insertInto(SAMPLING_UNIT_AOI, 
+					SAMPLING_UNIT_AOI.SAMPLING_UNIT_ID,
+					SAMPLING_UNIT_AOI.AOI_ID,
+					SAMPLING_UNIT_AOI.WORKSPACE_ID)
+			.select(psql()
+					.select(
+							SAMPLING_UNIT_AOI.SAMPLING_UNIT_ID,
+							AOI.PARENT_AOI_ID, 
+							DSL.val(ws.getId()))
+					.from(SAMPLING_UNIT_AOI)
+						.join(AOI)
+						.on(AOI.ID.eq(SAMPLING_UNIT_AOI.AOI_ID))
+					.where(AOI.AOI_LEVEL_ID.eq(childLevel.getId()))
+					);
+		insert.execute();
 	}
 
 	private void insertLeafStratumAois(Workspace ws, AoiLevel level) {
-		createPsqlBuilder()
-			.insertInto("calc.sampling_unit_aoi","sampling_unit_id", "aoi_id","workspace_id")
-			.select("u.id", "a.id", ws.getId())
-			.from("calc.sampling_unit u")
-			.innerJoin("calc.entity e")
-			.on("u.entity_id = e.id")
-			.and("e.workspace_id  = " + ws.getId())
-			.innerJoin("calc.aoi a")
-			.on("ST_Contains(a.shape, u.location)")
-			.and("a.aoi_level_id = " + level.getId())
-			.execute();
+		Insert<Record> insert = psql()
+			.insertInto(SAMPLING_UNIT_AOI, 
+					SAMPLING_UNIT_AOI.SAMPLING_UNIT_ID, 
+					SAMPLING_UNIT_AOI.AOI_ID, 
+					SAMPLING_UNIT_AOI.WORKSPACE_ID)
+			.select(psql()
+					.select(SAMPLING_UNIT.ID, AOI.ID, DSL.val(ws.getId()))
+					.from(SAMPLING_UNIT)
+						.join(ENTITY)
+							.on(SAMPLING_UNIT.ENTITY_ID.eq(ENTITY.ID))
+						.join(AOI).on("ST_Contains("+ AOI.SHAPE +","+ SAMPLING_UNIT.LOCATION+")")
+					.where(ENTITY.WORKSPACE_ID.eq(ws.getId())
+							.and(AOI.AOI_LEVEL_ID.eq(level.getId()))
+					)
+				);
+		insert.execute();
 	}
 
 
