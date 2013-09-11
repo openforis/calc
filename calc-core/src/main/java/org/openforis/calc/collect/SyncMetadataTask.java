@@ -41,6 +41,7 @@ import org.openforis.idm.metamodel.EntityDefinition;
 import org.openforis.idm.metamodel.NodeDefinition;
 import org.openforis.idm.metamodel.NumberAttributeDefinition;
 import org.openforis.idm.metamodel.Survey;
+import org.openforis.idm.metamodel.TaxonAttributeDefinition;
 import org.openforis.idm.metamodel.xml.IdmlParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -51,6 +52,9 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  */
 public class SyncMetadataTask extends Task {
+
+	private static final String SPECIES_CODE_VAR_NAME = "species_code";
+	private static final String SPECIES_SCIENT_NAME_VAR_NAME = "species_scient_name";
 
 	private static final String DIMENSION_TABLE_SUFFIX = "_dim";
 
@@ -65,7 +69,6 @@ public class SyncMetadataTask extends Task {
 	private RelationalSchema schema;
 	private Set<String> variableNames;
 	private Set<String> outputValueColumnNames;
-	
 
 	@Override
 	protected void execute() throws Throwable {
@@ -224,13 +227,13 @@ public class SyncMetadataTask extends Task {
 					String fieldName = fieldDefn.getName();
 					AttributeDefinition attrDefn = dataCol.getAttributeDefinition();
 					if ( attrDefn instanceof CoordinateAttributeDefinition ) {
-						if ( "x".equals(fieldName) ) {
+						if ( CoordinateAttributeDefinition.X_FIELD_NAME.equals(fieldName) ) {
 							e.setXColumn(c.getName());
 							xSet = true;
-						} else if ( "y".equals(fieldName) ) {
+						} else if ( CoordinateAttributeDefinition.Y_FIELD_NAME.equals(fieldName) ) {
 							e.setYColumn(c.getName());
 							ySet = true;
-						} else if ( "srs".equals(fieldName) ) {
+						} else if ( CoordinateAttributeDefinition.SRS_FIELD_NAME.equals(fieldName) ) {
 							e.setSrsColumn(c.getName());
 							srsSet = true;
 						}
@@ -253,9 +256,9 @@ public class SyncMetadataTask extends Task {
 	 * @return
 	 */
 	private Variable<?> convert(DataColumn column, Entity e) {
-		AttributeDefinition defn = column.getAttributeDefinition();
 		Variable<?> v = null;
 		if ( isValueColumn(column) ) {
+			AttributeDefinition defn = column.getAttributeDefinition();
 			if ( defn instanceof BooleanAttributeDefinition ) {
 				v = new BinaryVariable();
 				((BinaryVariable) v).setDisaggregate(! (column instanceof PrimaryKeyColumn));
@@ -272,10 +275,22 @@ public class SyncMetadataTask extends Task {
 				//TODO set unit...
 //				Unit defaultUnit = ((NumberAttributeDefinition) attributeDefn).getDefaultUnit();
 //				((QuantitativeVariable) variable).setUnit(convert(defaultUnit));
+			} else if ( defn instanceof TaxonAttributeDefinition ) {
+				v = new MultiwayVariable();
+				v.setScale(Scale.NOMINAL);
+				NodeDefinition columnNodeDefn = column.getNodeDefinition();
+				String fieldName = columnNodeDefn.getName();
+				String name = fieldName.equals(TaxonAttributeDefinition.CODE_FIELD_NAME ) ? SPECIES_CODE_VAR_NAME: SPECIES_SCIENT_NAME_VAR_NAME;
+				String generateVariableName = generateVariableName(e.getName(), name);
+				v.setName(generateVariableName);
+				((MultiwayVariable) v).setDegenerateDimension(true);
 			}
 			if ( v != null ) {
-				String variableName = generateVariableName(e.getName(), column.getName());
-				v.setName(variableName);
+				String variableName = v.getName();
+				if ( variableName == null ) {
+					variableName = generateVariableName(e.getName(), column.getName());
+					v.setName(variableName);
+				}
 				v.setInputValueColumn(column.getName());
 				String outputValueColumnName = generateOutputValueColumnName(e.getName(), column.getName());
 				v.setOutputValueColumn(outputValueColumnName);
@@ -339,6 +354,11 @@ public class SyncMetadataTask extends Task {
 			} else if ( defn instanceof BooleanAttributeDefinition ) {
 				return true;
 			} else if ( defn instanceof DateAttributeDefinition ) {
+				return true;
+			} else if ( defn instanceof TaxonAttributeDefinition && 
+					( fieldDefnName.equals(TaxonAttributeDefinition.CODE_FIELD_NAME) ||
+						fieldDefnName.equals(TaxonAttributeDefinition.SCIENTIFIC_NAME_FIELD_NAME) ) 
+					) {
 				return true;
 			} else {
 				return false;

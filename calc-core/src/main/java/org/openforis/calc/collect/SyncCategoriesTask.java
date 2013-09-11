@@ -6,9 +6,17 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jooq.DataType;
+import org.jooq.Field;
 import org.jooq.Insert;
 import org.jooq.Record;
+import org.jooq.Record1;
+import org.jooq.Select;
+import org.jooq.TableField;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SQLDataType;
+import org.jooq.impl.SchemaImpl;
+import org.jooq.impl.TableImpl;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceService;
@@ -19,6 +27,7 @@ import org.openforis.calc.metadata.CategoryDao;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.Variable;
+import org.openforis.calc.schema.AbstractTable;
 import org.openforis.collect.persistence.xml.CollectSurveyIdmlBinder;
 import org.openforis.collect.relational.CollectRdbException;
 import org.openforis.collect.relational.model.CodeColumn;
@@ -27,13 +36,16 @@ import org.openforis.collect.relational.model.CodeListCodeColumn;
 import org.openforis.collect.relational.model.CodeListDescriptionColumn;
 import org.openforis.collect.relational.model.CodeTable;
 import org.openforis.collect.relational.model.Column;
+import org.openforis.collect.relational.model.DataColumn;
 import org.openforis.collect.relational.model.RelationalSchema;
 import org.openforis.collect.relational.model.RelationalSchemaGenerator;
 import org.openforis.collect.relational.model.Table;
+import org.openforis.idm.metamodel.AttributeDefinition;
 import org.openforis.idm.metamodel.CodeAttributeDefinition;
 import org.openforis.idm.metamodel.CodeList;
 import org.openforis.idm.metamodel.NodeDefinition;
 import org.openforis.idm.metamodel.Survey;
+import org.openforis.idm.metamodel.TaxonAttributeDefinition;
 import org.openforis.idm.metamodel.xml.IdmlParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -58,17 +70,25 @@ public class SyncCategoriesTask extends Task {
 
 	@Override
 	protected void execute() throws Throwable {
-		// TODO use CategoricalVariable metadata to identify and sync code list tables into Calc schema
-
 		//TODO pass schema from outside?
 		initSchema();
 		
 		List<Variable<?>> vars = getVariables();
 		for (Variable<?> v : vars) {
 			if ( v instanceof MultiwayVariable ) {
-				CodeTable rdbCodeTable = getRDBCodeTable((CategoricalVariable<?>) v);
-				if ( rdbCodeTable != null ) { //TODO it should never be == null; if so, is it related to ofc_sampling_design code list?
-					copyCodesIntoCategoryTable(rdbCodeTable, v);
+				DataColumn valueRDBColumn = getRDBDataColumn((CategoricalVariable<?>) v);
+				if ( valueRDBColumn instanceof CodeColumn ) {
+					CodeTable rdbCodeTable = getRDBCodeTable((CodeColumn) valueRDBColumn);
+					if ( rdbCodeTable == null ) {
+						//degenerate CategoricalVariable
+					} else {
+						copyCodesIntoCategoryTable(rdbCodeTable, v);
+					}
+				} else {
+					AttributeDefinition colAttrDefn = valueRDBColumn.getAttributeDefinition();
+					if ( colAttrDefn instanceof TaxonAttributeDefinition ) {
+						copyDistinctColumnValuesIntoCategoryTable((MultiwayVariable) v);
+					}
 				}
 			} else if ( v instanceof BinaryVariable ) {
 				insertBooleanCategories((BinaryVariable) v);
@@ -107,6 +127,36 @@ public class SyncCategoriesTask extends Task {
 		insert.execute();
 	}
 
+	private void copyDistinctColumnValuesIntoCategoryTable(MultiwayVariable v) {
+		Entity entity = v.getEntity();
+		Workspace ws = entity.getWorkspace();
+		String entityDataTableName = entity.getDataTable();
+		String inputSchemaName = ws.getInputSchema();
+		CollectGenericDataTable dbTable = new CollectGenericDataTable(entityDataTableName, inputSchemaName);
+		TableField<Record, String> dbColumn = dbTable.getOrCreateField(v.getInputValueColumn(), SQLDataType.VARCHAR);
+		
+		Select<Record1<String>> subSelect = psql()
+				.selectDistinct(dbColumn)
+				.from(dbTable)
+				.orderBy(dbColumn);
+		@SuppressWarnings("unchecked")
+		Field<String> valueColumn = (Field<String>) subSelect.field(0);
+		
+		Insert<Record> insert = psql()
+				.insertInto(CATEGORY, 
+							CATEGORY.VARIABLE_ID,
+							CATEGORY.CODE, 
+							CATEGORY.SORT_ORDER)
+				.select(psql()
+					.select(
+							DSL.val(v.getId()),
+							valueColumn,
+							DSL.rowNumber().over().partitionByOne())
+					.from(subSelect)
+ 				);
+		insert.execute();
+	}
+	
 	protected void insertBooleanCategories(BinaryVariable v) {
 		insertBooleanCategory(v, Boolean.TRUE, 1);
 		insertBooleanCategory(v, Boolean.FALSE, 2);
@@ -129,22 +179,26 @@ public class SyncCategoriesTask extends Task {
 		this.schema = generateSchema(ws, survey);
 	}
 	
-	protected CodeTable getRDBCodeTable(CategoricalVariable<?> v) {
+	private DataColumn getRDBDataColumn(CategoricalVariable<?> v) {
 		Entity entity = v.getEntity();
-		String entityDataTableName = entity.getDataTable();
-		Table<?> entityRDBTable = getRDBTable(entityDataTableName);
-		Column<?> valueRDBColumn = getRDBColumn(entityRDBTable, v.getInputValueColumn());
-		if ( valueRDBColumn instanceof CodeColumn ) {
-			NodeDefinition codeFieldDefn = ((CodeColumn) valueRDBColumn).getNodeDefinition();
-			CodeAttributeDefinition codeAttrDefn = (CodeAttributeDefinition) codeFieldDefn.getParentDefinition();
-			CodeList codeList = codeAttrDefn.getList();
-			CodeTable codeListTable = schema.getCodeListTable(codeList, codeAttrDefn.getListLevelIndex());
-			return codeListTable;
+		String tableName = entity.getDataTable();
+		Table<?> table = getRDBTable(tableName);
+		Column<?> column = getRDBColumn(table, v.getInputValueColumn());
+		if ( column instanceof DataColumn ) {
+			return (DataColumn) column;
 		} else {
-			throw new IllegalStateException("Expected CodeColum instance, found: " + valueRDBColumn.getClass().getName());
+			throw new IllegalArgumentException("DataColumn type expected, found: " + column.getClass().getName());
 		}
 	}
 
+	private CodeTable getRDBCodeTable(CodeColumn column) {
+		NodeDefinition codeFieldDefn = column.getNodeDefinition();
+		CodeAttributeDefinition codeAttrDefn = (CodeAttributeDefinition) codeFieldDefn.getParentDefinition();
+		CodeList codeList = codeAttrDefn.getList();
+		CodeTable codeListTable = schema.getCodeListTable(codeList, codeAttrDefn.getListLevelIndex());
+		return codeListTable;
+	}
+	
 	//TODO move to RDB Table
 	protected Column<?> getRDBColumn(Table<?> table, String name) {
 		List<Column<?>> columns = table.getColumns();
@@ -207,4 +261,23 @@ public class SyncCategoriesTask extends Task {
 		return schema;
 	}
 
+	private static class CollectGenericDataTable extends AbstractTable {
+
+		private static final long serialVersionUID = 1L;
+		
+		public CollectGenericDataTable(String name, String schema) {
+			super(name, new SchemaImpl(schema));
+		}
+		
+		@SuppressWarnings("unchecked")
+		public <R extends Record, T> TableField<R, T>  getOrCreateField(String name, DataType<T> type) {
+			Field<?> field = ((TableImpl<R>) this).field(name);
+			if ( field == null ) {
+				field = createField(name, type, this);
+			}
+			return (TableField<R, T>) field;
+		}
+		
+	}
+	
 }
