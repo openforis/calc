@@ -55,9 +55,11 @@ public final class CreateAggregateTablesTask extends Task {
 			// Add aggregate columns
 			List<VariableAggregate> variableAggregates = entity.getVariableAggregates();
 			for (VariableAggregate varAgg : variableAggregates) {
-				String formula = varAgg.getAggregateFormula();
-				String aggCol = varAgg.getAggregateColumn();
-				select.addSelect(DSL.field(formula).as(aggCol));
+				if( !varAgg.isVirtual() ){
+					String formula = varAgg.getAggregateFormula();
+					String aggCol = varAgg.getAggregateColumn();
+					select.addSelect(DSL.field(formula).as(aggCol));
+				}
 			}
 			
 			//add aggregate fact count column

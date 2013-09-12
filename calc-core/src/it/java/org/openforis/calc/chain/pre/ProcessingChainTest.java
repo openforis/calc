@@ -37,7 +37,7 @@ public class ProcessingChainTest extends AbstractTransactionalJUnit4SpringContex
 	@Autowired
 	private TaskManager taskManager;
 
-	@Test
+//	@Test
 	public void testTasks() throws WorkspaceLockedException, InvalidProcessingChainException {
 		ProcessingChain chain = processingChainDao.find(21);
 		Workspace workspace = chain.getWorkspace(); 
@@ -66,5 +66,11 @@ public class ProcessingChainTest extends AbstractTransactionalJUnit4SpringContex
 		
 		taskManager.startJob(job);
 		job.waitFor(5000);
+	}
+	
+	@Test
+	public void testChain() throws WorkspaceLockedException, InvalidProcessingChainException {
+		Job job = calculationEngine.runProcessingChain(21);
+		job.waitFor(10000);
 	}
 }
