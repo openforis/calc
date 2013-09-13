@@ -49,7 +49,10 @@ public abstract class Variable<T> extends NamedUserObject {
 	private String dimensionTable;
 
 	@Column(name = "override")
-	private Boolean override;
+	private boolean override;
+	
+	@Column(name = "original_id")
+	private Integer originalId;
 
 	public enum Type {
 		QUANTITATIVE, CATEGORICAL, BINARY;
@@ -113,15 +116,80 @@ public abstract class Variable<T> extends NamedUserObject {
 		return inputValueColumn != null;
 	}
 
-	public Boolean isOverride() {
+	public boolean isOverride() {
 		return override;
 	}
 
-	public void setOverride(Boolean override) {
+	public void setOverride(boolean override) {
 		this.override = override;
 	}
 
+	public Integer getOriginalId() {
+		return originalId;
+	}
+	
+	public void setOriginalId(Integer originalId) {
+		this.originalId = originalId;
+	}
+	
 	public abstract T getDefaultValue();
 
 	public abstract void setDefaultValue(T defaultValue);
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result
+				+ ((dimensionTable == null) ? 0 : dimensionTable.hashCode());
+		result = prime
+				* result
+				+ ((inputValueColumn == null) ? 0 : inputValueColumn.hashCode());
+		result = prime * result
+				+ ((originalId == null) ? 0 : originalId.hashCode());
+		result = prime
+				* result
+				+ ((outputValueColumn == null) ? 0 : outputValueColumn
+						.hashCode());
+		result = prime * result + (override ? 1231 : 1237);
+		result = prime * result + ((scale == null) ? 0 : scale.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Variable<?> other = (Variable<?>) obj;
+		if (dimensionTable == null) {
+			if (other.dimensionTable != null)
+				return false;
+		} else if (!dimensionTable.equals(other.dimensionTable))
+			return false;
+		if (inputValueColumn == null) {
+			if (other.inputValueColumn != null)
+				return false;
+		} else if (!inputValueColumn.equals(other.inputValueColumn))
+			return false;
+		if (originalId == null) {
+			if (other.originalId != null)
+				return false;
+		} else if (!originalId.equals(other.originalId))
+			return false;
+		if (outputValueColumn == null) {
+			if (other.outputValueColumn != null)
+				return false;
+		} else if (!outputValueColumn.equals(other.outputValueColumn))
+			return false;
+		if (override != other.override)
+			return false;
+		if (scale != other.scale)
+			return false;
+		return true;
+	}
+	
 }

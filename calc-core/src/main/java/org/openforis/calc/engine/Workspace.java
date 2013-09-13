@@ -112,17 +112,79 @@ public class Workspace extends UserObject {
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
 	public Collection<Entity> getRootEntities() {
-		if ( entities == null || entities.isEmpty() ) {
-			return Collections.emptyList();
-		} else {
-			return CollectionUtils.select(entities, new Predicate() {
+		return getEntities(new Predicate() {
 				@Override
 				public boolean evaluate(Object object) {
 					return ((Entity)object).getParent() == null;
 				}
-			});
+		});
+	}
+	
+	public Collection<Entity> getOverriddenEntities() {
+		return getEntities(new Predicate() {
+			@Override
+			public boolean evaluate(Object object) {
+				Entity e = (Entity) object;
+				return e.isOverride() || ! e.getOverriddenVariables().isEmpty();
+			}
+		});
+	}
+
+	public Collection<Entity> getNotOverriddenEntities() {
+		return getEntities(new Predicate() {
+			@Override
+			public boolean evaluate(Object object) {
+				Entity e = (Entity) object;
+				return ! e.isOverride() && e.getOverriddenVariables().isEmpty();
+			}
+		});
+	}
+	
+	@SuppressWarnings("unchecked")
+	private Collection<Entity> getEntities(Predicate predicate) {
+		if ( entities == null || entities.isEmpty() ) {
+			return Collections.emptyList();
+		} else {
+			return CollectionUtils.select(entities, predicate);
 		}
 	}
+	
+	public void removeEntities(Collection<Entity> entities) {
+		if ( CollectionUtils.isEmpty(this.entities) ||
+				CollectionUtils.isEmpty(entities)) {
+			return;
+		} else {
+			this.entities.removeAll(entities);
+		}
+	}
+	
+	public Collection<Entity> removeNotOverriddenEntities() {
+		Collection<Entity> notOverriddenEntities = getNotOverriddenEntities();
+		removeEntities(notOverriddenEntities);
+		return notOverriddenEntities;
+	}
+	
+	public Entity getEntityByName(String name) {
+		if ( name != null && CollectionUtils.isNotEmpty(entities) ) {
+			for (Entity e : entities ) {
+				if ( e.getName().equals(name) ) {
+					return e;
+				}
+			}
+		}
+		return null;
+	}
+	
+	public Entity getEntityByOriginalId(Integer originalId) {
+		if ( originalId != null && CollectionUtils.isNotEmpty(entities) ) {
+			for (Entity e : entities ) {
+				if ( e.getOriginalId() != null && e.getOriginalId().equals(originalId) ) {
+					return e;
+				}
+			}
+		}
+		return null;
+	}
+
 }

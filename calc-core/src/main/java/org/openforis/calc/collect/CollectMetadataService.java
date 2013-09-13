@@ -6,6 +6,8 @@ import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceLockedException;
 import org.openforis.calc.engine.WorkspaceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 
 /**
@@ -30,11 +32,10 @@ public class CollectMetadataService {
 
 	private Job createSyncJob(Workspace workspace) {
 		Job job = taskManager.createSystemJob(workspace);
-		job.addTasks(taskManager.createTasks(SyncMetadataTask.class, SyncCategoriesTask.class));
+		job.addTasks(taskManager.createTasks(SyncCollectMetadataTask.class, SyncCategoriesTask.class));
 		return job;
 	}
 
-	/*
 	public static void main(String[] args) throws WorkspaceLockedException {
 		@SuppressWarnings("resource")
 		ApplicationContext appContext = new ClassPathXmlApplicationContext(
@@ -50,5 +51,4 @@ public class CollectMetadataService {
 		CollectMetadataService service = appContext.getBean(CollectMetadataService.class);
 		service.startSync(wsId);
 	}
-	*/
 }

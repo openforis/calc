@@ -1,13 +1,18 @@
 package org.openforis.calc.collect;
 
+import static org.openforis.calc.persistence.jooq.tables.EntityTable.ENTITY;
+import static org.openforis.calc.persistence.jooq.tables.VariableTable.VARIABLE;
+
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.jooq.impl.DSL;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceDao;
@@ -21,7 +26,6 @@ import org.openforis.calc.metadata.Variable.Scale;
 import org.openforis.collect.persistence.xml.CollectSurveyIdmlBinder;
 import org.openforis.collect.relational.CollectRdbException;
 import org.openforis.collect.relational.model.CodeColumn;
-import org.openforis.collect.relational.model.CodeTable;
 import org.openforis.collect.relational.model.Column;
 import org.openforis.collect.relational.model.DataColumn;
 import org.openforis.collect.relational.model.DataParentKeyColumn;
@@ -75,9 +79,12 @@ public class SyncMetadataTask extends Task {
 		this.entitiesByName = new HashMap<String, Entity>();
 		this.variableNames = new HashSet<String>();
 		this.outputValueColumnNames = new HashSet<String>();
+		
 		this.schema = generateSchema();
-		// convert into entities
+		
+		// convert idm metadata into calc entities
 		sync();
+		
 		Workspace ws = getWorkspace();
 		workspaceDao.save(ws);
 		
@@ -123,6 +130,11 @@ public class SyncMetadataTask extends Task {
 	public List<Entity> sync() {
 		// TODO sync and return updated Workspace and map of which items 
 		// were new, modified or deleted  
+		entitiesByName.clear();
+		
+		Workspace ws = getWorkspace();
+		
+		deleteNotOverriddenEntities();
 		
 		// Convert IDM metadata and RDB schema to Calc metadata
 		int sortOrder = 1;
@@ -130,25 +142,67 @@ public class SyncMetadataTask extends Task {
 		for (Table<?> table : tables) {
 			// Sync entities and variables
 			if ( table instanceof DataTable ) {
-				Entity entity = convert((DataTable) table);
-				if ( entity != null ) {
+				Entity newEntity = convert((DataTable) table);
+				if ( newEntity != null ) {
+					Entity entity;
+					Entity oldEntity = ws.getEntityByOriginalId(newEntity.getOriginalId());
+					if ( oldEntity == null ) {
+						entity = newEntity;
+					} else {
+						merge(oldEntity, newEntity);
+						entity = oldEntity;
+					}
 					entity.setSortOrder(sortOrder++);
-					entitiesByName.put(table.getName(), entity);
+					entitiesByName.put(entity.getName(), entity);
 				}
-			} else if ( table instanceof CodeTable ) {
-				System.out.printf("CODE TABLE %s%n", table.getName());
 			}
 		}
-		List<Entity> entityList = new ArrayList<Entity>(entitiesByName.values());
-		
-		Workspace workspace = getWorkspace();
+		List<Entity> entities = new ArrayList<Entity>(entitiesByName.values());
 		
 		// Update metadata
-		workspace.setEntities(entityList);
+		ws.setEntities(entities);
 		
-		printToLog(entityList);
+		printToLog(entities);
 		
-		return entityList;
+		return entities;
+	}
+
+	private void deleteNotOverriddenEntities() {
+		Workspace ws = getWorkspace();
+		psql()
+			.delete(ENTITY)
+			.where(ENTITY.WORKSPACE_ID.eq(ws.getId())
+					.and(ENTITY.OVERRIDE.eq(false)
+					.and(DSL.notExists(
+							psql()
+							.select(VARIABLE.ID)
+							.from(VARIABLE)
+							.where(VARIABLE.ENTITY_ID.eq(ENTITY.ID)
+								.and(VARIABLE.OVERRIDE.eq(true)))
+							)))
+					).execute();
+		Collection<Entity> notOverriddenEntities = ws.removeNotOverriddenEntities();
+		log().debug(String.format("Removed %d not overridden entities", notOverriddenEntities.size()));
+	}
+
+	private void merge(Entity oldEntity, Entity newEntity) {
+		psql()
+			.delete(VARIABLE)
+			.where(VARIABLE.ENTITY_ID.eq(oldEntity.getId())
+				.and(VARIABLE.OVERRIDE.eq(false))
+				).execute();
+		Collection<Variable<?>> notOverriddenVariables = oldEntity.getNotOverriddenVariables();
+		oldEntity.removeVariables(notOverriddenVariables);
+		for (Variable<?> var : newEntity.getVariables()) {
+			Integer originalId = var.getOriginalId();
+			if ( originalId != null ) {
+				Variable<?> oldVar = oldEntity.getVariableByOriginalId(originalId);
+				if ( oldVar != null ) {
+					oldEntity.removeVariable(oldVar);
+				}
+			}
+			oldEntity.addVariable(var);
+		}
 	}
 
 	protected void printToLog(List<Entity> entityList) {
@@ -171,15 +225,19 @@ public class SyncMetadataTask extends Task {
 	private Entity convert(DataTable table) {
 		NodeDefinition defn = table.getNodeDefinition();
 		if ( defn instanceof EntityDefinition || 
-				(defn instanceof AttributeDefinition && defn.isMultiple()) ) {
+			(defn instanceof AttributeDefinition && defn.isMultiple()) ) {
+			
 			Workspace workspace = getWorkspace();
 			Entity e = new Entity();
 			e.setName(table.getName());
 			e.setWorkspace(workspace);
 			e.setDataTable(table.getName());
 			e.setInput(true); //TODO handle user defined or modified entities
+			e.setOriginalId(defn.getId());
+			
 			DataPrimaryKeyColumn idColumn = table.getPrimaryKeyColumn();
 			e.setIdColumn(idColumn.getName());
+			
 			DataParentKeyColumn parentIdColumn = table.getParentKeyColumn();
 			e.setParentIdColumn(parentIdColumn == null ? null : parentIdColumn.getName());
 			
@@ -220,6 +278,7 @@ public class SyncMetadataTask extends Task {
 		if ( defn instanceof EntityDefinition ) {
 			List<Column<?>> cols = table.getColumns();
 			boolean xSet = false, ySet = false, srsSet = false;
+			
 			for (Column<?> c : cols) {
 				if ( c instanceof DataColumn ) {
 					DataColumn dataCol = (DataColumn) c;
@@ -292,6 +351,7 @@ public class SyncMetadataTask extends Task {
 					v.setName(variableName);
 				}
 				v.setInputValueColumn(column.getName());
+				v.setOriginalId(defn.getId());
 				String outputValueColumnName = generateOutputValueColumnName(e.getName(), column.getName());
 				v.setOutputValueColumn(outputValueColumnName);
 				v.setDimensionTable(e.getName() + "_" + v.getName() + DIMENSION_TABLE_SUFFIX);
@@ -368,13 +428,4 @@ public class SyncMetadataTask extends Task {
 		}
 	}
 	
-	public synchronized void init() {
-	}
-	
-	/*
-	protected Unit<?> convert(org.openforis.idm.metamodel.Unit unit) {
-		//TODO
-		return null;
-	}
-	*/
 }

@@ -1,6 +1,7 @@
 package org.openforis.calc.metadata;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -13,6 +14,7 @@ import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.functors.InstanceofPredicate;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -61,10 +63,10 @@ public class Entity extends NamedUserObject {
 	private int sortOrder;
 	
 	@Column(name = "input")
-	private Boolean input;
+	private boolean input;
 	
 	@Column(name = "override")
-	private Boolean override;
+	private boolean override;
 	
 	@Column(name = "x_column")
 	private String xColumn;
@@ -103,6 +105,9 @@ public class Entity extends NamedUserObject {
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "unit_no_variable_id")
 	private Variable<?> unitNoVariable;
+	
+	@Column(name = "original_id")
+	private Integer originalId;
 
 	public Workspace getWorkspace() {
 		return this.workspace;
@@ -129,6 +134,17 @@ public class Entity extends NamedUserObject {
 		return Collections.unmodifiableList(variables);
 	}
 
+	public Variable<?> getVariableByOriginalId(int id) {
+		if ( variables != null && ! variables.isEmpty() ) {
+			for (Variable<?> var : variables) {
+				if ( var.getOriginalId() != null && var.getOriginalId().equals(id) ) {
+					return var;
+				}
+			}
+		}
+		return null;
+	}
+	
 	public List<VariableAggregate> getVariableAggregates() {
 		List<VariableAggregate> aggs = new ArrayList<VariableAggregate>();
 		for (Variable<?> var : variables) {
@@ -155,7 +171,7 @@ public class Entity extends NamedUserObject {
 		this.sortOrder = sortOrder;
 	}
 	
-	public void setInput(Boolean input) {
+	public void setInput(boolean input) {
 		this.input = input;
 	}
 	
@@ -163,7 +179,7 @@ public class Entity extends NamedUserObject {
 		return input;
 	}
 	
-	public void setOverride(Boolean override) {
+	public void setOverride(boolean override) {
 		this.override = override;
 	}
 	
@@ -251,6 +267,48 @@ public class Entity extends NamedUserObject {
 	public List<QuantitativeVariable> getQuantitativeVariables() {
 		return Collections.unmodifiableList(selectInstancesOf(variables, QuantitativeVariable.class));
 	}
+	
+	public Collection<Variable<?>> getOverriddenVariables() {
+		return getVariables(new Predicate() {
+			@Override
+			public boolean evaluate(Object object) {
+				return ((Variable<?>) object).isOverride();
+			}
+		});
+	}
+	
+	public Collection<Variable<?>> getNotOverriddenVariables() {
+		return getVariables(new Predicate() {
+			@Override
+			public boolean evaluate(Object object) {
+				return ! ((Variable<?>) object).isOverride();
+			}
+		});
+	}
+
+	private Collection<Variable<?>> getVariables(Predicate predicate) {
+		@SuppressWarnings("unchecked")
+		Collection<Variable<?>> result = CollectionUtils.select(variables, predicate);
+		return result;
+	}
+
+	public void removeVariable(Variable<?> variable) {
+		this.variables.remove(variable);
+	}
+	
+	public void removeVariables(Collection<Variable<?>> variables) {
+		if ( CollectionUtils.isNotEmpty(variables) && CollectionUtils.isNotEmpty(this.variables) ) {
+			this.variables.removeAll(variables);
+		}
+	}
+
+	public int getVariableNextSortOrder() {
+		int result = 0;
+		for ( Variable<?> v: variables ) {
+			result = Math.max(v.getSortOrder(), result);
+		}
+		return result + 1;
+	}
 
 	// TODO move to Open Foris commons
 	static <I,O extends I> List<O> selectInstancesOf(List<I> items, Class<O> type) {
@@ -274,5 +332,123 @@ public class Entity extends NamedUserObject {
 	public void setUnitNoVariable(Variable<?> plotVariable) {
 		this.unitNoVariable = plotVariable;
 	}
+	
+	public Integer getOriginalId() {
+		return originalId;
+	}
+	
+	public void setOriginalId(Integer originalId) {
+		this.originalId = originalId;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result
+				+ ((clusterVariable == null) ? 0 : clusterVariable.hashCode());
+		result = prime * result
+				+ ((dataTable == null) ? 0 : dataTable.hashCode());
+		result = prime * result
+				+ ((idColumn == null) ? 0 : idColumn.hashCode());
+		result = prime * result + (input ? 1231 : 1237);
+		result = prime * result
+				+ ((locationColumn == null) ? 0 : locationColumn.hashCode());
+		result = prime * result
+				+ ((originalId == null) ? 0 : originalId.hashCode());
+		result = prime * result + (override ? 1231 : 1237);
+		result = prime * result
+				+ ((parentIdColumn == null) ? 0 : parentIdColumn.hashCode());
+		result = prime * result + (samplingUnit ? 1231 : 1237);
+		result = prime * result + sortOrder;
+		result = prime * result
+				+ ((srsColumn == null) ? 0 : srsColumn.hashCode());
+		result = prime * result
+				+ ((unitNoVariable == null) ? 0 : unitNoVariable.hashCode());
+		result = prime * result + (unitOfAnalysis ? 1231 : 1237);
+		result = prime * result
+				+ ((variables == null) ? 0 : variables.hashCode());
+		result = prime * result + ((xColumn == null) ? 0 : xColumn.hashCode());
+		result = prime * result + ((yColumn == null) ? 0 : yColumn.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Entity other = (Entity) obj;
+		if (clusterVariable == null) {
+			if (other.clusterVariable != null)
+				return false;
+		} else if (!clusterVariable.equals(other.clusterVariable))
+			return false;
+		if (dataTable == null) {
+			if (other.dataTable != null)
+				return false;
+		} else if (!dataTable.equals(other.dataTable))
+			return false;
+		if (idColumn == null) {
+			if (other.idColumn != null)
+				return false;
+		} else if (!idColumn.equals(other.idColumn))
+			return false;
+		if (input != other.input)
+			return false;
+		if (locationColumn == null) {
+			if (other.locationColumn != null)
+				return false;
+		} else if (!locationColumn.equals(other.locationColumn))
+			return false;
+		if (originalId == null) {
+			if (other.originalId != null)
+				return false;
+		} else if (!originalId.equals(other.originalId))
+			return false;
+		if (override != other.override)
+			return false;
+		if (parentIdColumn == null) {
+			if (other.parentIdColumn != null)
+				return false;
+		} else if (!parentIdColumn.equals(other.parentIdColumn))
+			return false;
+		if (samplingUnit != other.samplingUnit)
+			return false;
+		if (sortOrder != other.sortOrder)
+			return false;
+		if (srsColumn == null) {
+			if (other.srsColumn != null)
+				return false;
+		} else if (!srsColumn.equals(other.srsColumn))
+			return false;
+		if (unitNoVariable == null) {
+			if (other.unitNoVariable != null)
+				return false;
+		} else if (!unitNoVariable.equals(other.unitNoVariable))
+			return false;
+		if (unitOfAnalysis != other.unitOfAnalysis)
+			return false;
+		if (variables == null) {
+			if (other.variables != null)
+				return false;
+		} else if (!variables.equals(other.variables))
+			return false;
+		if (xColumn == null) {
+			if (other.xColumn != null)
+				return false;
+		} else if (!xColumn.equals(other.xColumn))
+			return false;
+		if (yColumn == null) {
+			if (other.yColumn != null)
+				return false;
+		} else if (!yColumn.equals(other.yColumn))
+			return false;
+		return true;
+	}
+
 }
 
