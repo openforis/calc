@@ -208,11 +208,11 @@ public class CollectMetadataImportTask extends Task {
 			((MultiwayVariable) v).setDegenerateDimension(true);
 		}
 		if ( v != null ) {
-			v.setDimensionTable(entityName + "_" + v.getName() + DIMENSION_TABLE_SUFFIX);
 			v.setInputValueColumn(column.getName());
 			if ( v.getName() == null ) {
 				v.setName(generateVariableName(entityName, column.getName()));
 			}
+			v.setDimensionTable(entityName + "_" + v.getName() + DIMENSION_TABLE_SUFFIX);
 			v.setOriginalId(attrDefn.getId());
 			v.setOutputValueColumn(generateOutputValueColumnName(entityName, column.getName()));
 			v.setSortOrder(entity.getVariableNextSortOrder());
@@ -237,7 +237,7 @@ public class CollectMetadataImportTask extends Task {
 				entity.setXColumn(xCol.getName());
 			}
 			// Y
-			FieldDefinition<?> yField = coordinateAttrDefn.getFieldDefinition(CoordinateAttributeDefinition.X_FIELD_NAME);
+			FieldDefinition<?> yField = coordinateAttrDefn.getFieldDefinition(CoordinateAttributeDefinition.Y_FIELD_NAME);
 			DataColumn yCol = dataTable.getDataColumn(yField);
 			if ( srsCol != null ) {
 				entity.setYColumn(yCol.getName());
