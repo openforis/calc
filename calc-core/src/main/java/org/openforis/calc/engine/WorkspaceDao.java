@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class WorkspaceDao extends AbstractJpaDao<Workspace> {
 
 	@Transactional
-	public Workspace findByName(String name) {
+	public Workspace fetchByName(String name) {
 		EntityManager em = getEntityManager();
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Workspace> q = cb.createQuery(Workspace.class);
@@ -34,4 +34,20 @@ public class WorkspaceDao extends AbstractJpaDao<Workspace> {
 		}
 	}
 	
+	@Transactional
+	public Workspace fetchByCollectSurveyUri(String uri) {
+		EntityManager em = getEntityManager();
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Workspace> q = cb.createQuery(Workspace.class);
+		Root<Workspace> root = q.from(Workspace.class);
+		q.where(cb.equal(root.get("collectSurveyUri"), uri));
+		List<Workspace> results = em.createQuery(q).getResultList();
+		if ( results != null && ! results.isEmpty() ) {
+			return results.get(0);
+		} else {
+			return null;
+		}
+	}
+	
+
 }

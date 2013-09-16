@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Stack;
 
 import javax.persistence.Column;
 import javax.persistence.FetchType;
@@ -153,6 +154,23 @@ public class Entity extends NamedUserObject {
 			}
 		}
 		return Collections.unmodifiableList(aggs);
+	}
+	
+	public boolean hasOverriddenVariables() {
+		return ! getOverriddenVariables().isEmpty();
+	}
+	
+	public boolean hasOverriddenDescendants() {
+		Stack<Entity> stack = new Stack<Entity>();
+		stack.addAll(getChildren());
+		while ( ! stack.isEmpty() ) {
+			Entity descendant = stack.pop();
+			if ( descendant.isOverride() || hasOverriddenVariables() ) {
+				return true;
+			}
+			stack.addAll(descendant.getChildren());
+		}
+		return false;
 	}
 	
 	public Entity getParent() {

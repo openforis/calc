@@ -33,6 +33,12 @@ import org.openforis.calc.metadata.Entity;
 @org.hibernate.annotations.Cache(usage = org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE)
 public class Workspace extends UserObject {
 	
+	@Column(name = "name")
+	private String name;
+	
+	@Column(name = "collect_survey_uri")
+	private String collectSurveyUri;
+	
 	@Column(name = "input_schema")
 	private String inputSchema;
 
@@ -61,6 +67,22 @@ public class Workspace extends UserObject {
 		this.processingChains = new ArrayList<ProcessingChain>();
 	}
 	
+	public String getName() {
+		return name;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	public String getCollectSurveyUri() {
+		return collectSurveyUri;
+	}
+
+	public void setCollectSurveyUri(String collectSurveyUri) {
+		this.collectSurveyUri = collectSurveyUri;
+	}
+
 	public void setInputSchema(String inputSchema) {
 		this.inputSchema = inputSchema;
 	}
@@ -121,22 +143,12 @@ public class Workspace extends UserObject {
 		});
 	}
 	
-	public Collection<Entity> getOverriddenEntities() {
-		return getEntities(new Predicate() {
-			@Override
-			public boolean evaluate(Object object) {
-				Entity e = (Entity) object;
-				return e.isOverride() || ! e.getOverriddenVariables().isEmpty();
-			}
-		});
-	}
-
 	public Collection<Entity> getNotOverriddenEntities() {
 		return getEntities(new Predicate() {
 			@Override
 			public boolean evaluate(Object object) {
 				Entity e = (Entity) object;
-				return ! e.isOverride() && e.getOverriddenVariables().isEmpty();
+				return ! (e.isOverride() || e.hasOverriddenVariables() || e.hasOverriddenDescendants());
 			}
 		});
 	}

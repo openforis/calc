@@ -3,12 +3,7 @@
  */
 package org.openforis.calc.collect;
 
-import static org.openforis.calc.persistence.jooq.tables.EntityTable.ENTITY;
-import static org.openforis.calc.persistence.jooq.tables.VariableTable.VARIABLE;
-
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -16,18 +11,19 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
-import org.jooq.impl.DSL;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceDao;
 import org.openforis.calc.metadata.BinaryVariable;
 import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.EntityDao;
 import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.Variable.Scale;
-import org.openforis.collect.persistence.xml.CollectSurveyIdmlBinder;
+import org.openforis.calc.metadata.VariableDao;
+import org.openforis.calc.persistence.jooq.tables.EntityTable;
 import org.openforis.collect.relational.CollectRdbException;
 import org.openforis.collect.relational.model.DataColumn;
 import org.openforis.collect.relational.model.DataTable;
@@ -55,20 +51,22 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author M. Togna
  *
  */
-public class SyncCollectMetadataTask extends Task {
+public class CollectMetadataImportTask extends Task {
 
 	private static final String SPECIES_CODE_VAR_NAME = "species_code";
 	private static final String SPECIES_SCIENT_NAME_VAR_NAME = "species_scient_name";
 	private static final String DIMENSION_TABLE_SUFFIX = "_dim";
 
-	private String surveyName;
-	
 	@Autowired
 	private WorkspaceDao workspaceDao;
-	
 	@Autowired
-	private CollectSurveyIdmlBinder collectSurveyIdmlBinder;
-
+	private EntityDao entityDao;
+	@Autowired
+	private VariableDao variableDao;
+	
+	//parameters
+	private Survey survey;
+	
 	//transient variables
 	private Map<Integer, Entity> entitiesByEntityDefinitionId;
 	private Set<String> variableNames;
@@ -76,21 +74,22 @@ public class SyncCollectMetadataTask extends Task {
 
 	@Override
 	protected void execute() throws Throwable {
+		if ( survey == null ) {
+			throw new IllegalStateException("Survey must be set before importing");
+		}
 		entitiesByEntityDefinitionId = new HashMap<Integer, Entity>();
 		variableNames = new HashSet<String>();
 		outputValueColumnNames = new HashSet<String>();
 
-		deleteNotOverriddenEntities();
+		clearWorkspace();
 		
 		Workspace ws = getWorkspace();
 		
-		List<Entity> newEntities = createEntitiesFromSchema();
+		List<Entity> entities = createEntitiesFromSchema();
 		
-		List<Entity> entitiesToStore = mergeOldEntitiesWithNewOnes(newEntities);
+		ws.setEntities(entities);
 		
-		ws.setEntities(entitiesToStore);
-		
-		printToLog(entitiesToStore);
+		printToLog(entities);
 		
 		workspaceDao.save(ws);
 		
@@ -98,27 +97,17 @@ public class SyncCollectMetadataTask extends Task {
 		Workspace reloaded = workspaceDao.find(ws.getId());
 		ws.setEntities(reloaded.getEntities());
 	}
-
-	private List<Entity> mergeOldEntitiesWithNewOnes(List<Entity> newEntities) {
-		Workspace ws = getWorkspace();
-		List<Entity> entitiesToStore = new ArrayList<Entity>();
-		for (Entity newEntity : newEntities) {
-			Entity entityToStore;
-			Entity oldEntity = ws.getEntityByOriginalId(newEntity.getOriginalId());
-			if ( oldEntity == null ) {
-				entityToStore = newEntity;
-			} else {
-				merge(oldEntity, newEntity);
-				entityToStore = oldEntity;
-			}
-			entityToStore.setSortOrder(entitiesToStore.size() + 1);
-			entitiesToStore.add(entityToStore);
-		}
-		return entitiesToStore;
-	}
 	
+	private void clearWorkspace() {
+		int workspaceId = getWorkspace().getId();
+		psql()
+			.delete(EntityTable.ENTITY)
+			.where(EntityTable.ENTITY.WORKSPACE_ID.eq(workspaceId))
+			.execute();
+		getWorkspace().setEntities(null);
+	}
+
 	private List<Entity> createEntitiesFromSchema() throws IdmlParseException {
-		Survey survey = loadSurvey();
 		final RelationalSchema relationalSchema = generateSchema(survey);
 		
 		Schema schema = survey.getSchema();
@@ -134,14 +123,6 @@ public class SyncCollectMetadataTask extends Task {
 			}
 		});
 		return new ArrayList<Entity>(entitiesByEntityDefinitionId.values());
-	}
-
-	private Survey loadSurvey() throws IdmlParseException {
-		// TODO get survey from Collect
-		//return surveyDao.load( surveyName );
-		InputStream surveyIs = getClass().getClassLoader().getResourceAsStream("test.idm.xml");
-		Survey survey = collectSurveyIdmlBinder.unmarshal(surveyIs);
-		return survey;
 	}
 
 	private Entity createEntity(NodeDefinition nodeDefinition, RelationalSchema relationalSchema) {
@@ -176,44 +157,6 @@ public class SyncCollectMetadataTask extends Task {
 		return entity;
 	}
 	
-	private void deleteNotOverriddenEntities() {
-		Workspace ws = getWorkspace();
-		psql()
-			.delete(ENTITY)
-			.where(ENTITY.WORKSPACE_ID.eq(ws.getId())
-					.and(ENTITY.OVERRIDE.eq(false)
-					.and(DSL.notExists(
-							psql()
-							.select(VARIABLE.ID)
-							.from(VARIABLE)
-							.where(VARIABLE.ENTITY_ID.eq(ENTITY.ID)
-								.and(VARIABLE.OVERRIDE.eq(true)))
-							)))
-					).execute();
-		Collection<Entity> notOverriddenEntities = ws.removeNotOverriddenEntities();
-		log().debug(String.format("Removed %d not overridden entities", notOverriddenEntities.size()));
-	}
-
-	private void merge(Entity oldEntity, Entity newEntity) {
-		psql()
-			.delete(VARIABLE)
-			.where(VARIABLE.ENTITY_ID.eq(oldEntity.getId())
-				.and(VARIABLE.OVERRIDE.eq(false))
-				).execute();
-		Collection<Variable<?>> notOverriddenVariables = oldEntity.getNotOverriddenVariables();
-		oldEntity.removeVariables(notOverriddenVariables);
-		for (Variable<?> var : newEntity.getVariables()) {
-			Integer originalId = var.getOriginalId();
-			if ( originalId != null ) {
-				Variable<?> oldVar = oldEntity.getVariableByOriginalId(originalId);
-				if ( oldVar != null ) {
-					oldEntity.removeVariable(oldVar);
-				}
-			}
-			oldEntity.addVariable(var);
-		}
-	}
-
 	private void createVariables(Entity entity, DataTable dataTable) {
 		NodeDefinition nodeDefinition = dataTable.getNodeDefinition();
 		if ( nodeDefinition instanceof EntityDefinition ) {
@@ -226,33 +169,39 @@ public class SyncCollectMetadataTask extends Task {
 				}
 			}
 		} else {
-			//TODO
+			//TODO handle import multiple attributes
 		}
 	}
 
 	private void createVariable(Entity entity, DataColumn column) {
 		Variable<?> v = null;
 		String entityName = entity.getName();
+		NodeDefinition columnNodeDefn = column.getNodeDefinition();
+		String columnNodeDefnNam = columnNodeDefn.getName();
 		AttributeDefinition attrDefn = column.getAttributeDefinition();
-		if ( attrDefn instanceof BooleanAttributeDefinition ) {
+		if ( attrDefn instanceof BooleanAttributeDefinition && 
+				columnNodeDefnNam.equals(BooleanAttributeDefinition.VALUE_FIELD) ) {
 			v = new BinaryVariable();
 			((BinaryVariable) v).setDisaggregate(! (column instanceof PrimaryKeyColumn));
-		} else if ( attrDefn instanceof CodeAttributeDefinition) {
+		} else if ( attrDefn instanceof CodeAttributeDefinition &&
+				columnNodeDefnNam.equals(CodeAttributeDefinition.CODE_FIELD)) {
 			v = new MultiwayVariable();
 			v.setScale(Scale.NOMINAL);
 			((MultiwayVariable) v).setMultipleResponse(attrDefn.isMultiple());
 			((MultiwayVariable) v).setDisaggregate(! (column instanceof PrimaryKeyColumn));
 			CodeList list = ((CodeAttributeDefinition) attrDefn).getList();
 			((CategoricalVariable<?>) v).setDegenerateDimension(list.isExternal());
-		} else if ( attrDefn instanceof NumberAttributeDefinition ) {
+		} else if ( attrDefn instanceof NumberAttributeDefinition &&
+				columnNodeDefnNam.equals(NumberAttributeDefinition.VALUE_FIELD)) {
 			v = new QuantitativeVariable();
 			v.setScale(Scale.RATIO);
 			//TODO set unit...
-		} else if ( attrDefn instanceof TaxonAttributeDefinition ) {
+		} else if ( attrDefn instanceof TaxonAttributeDefinition &&
+				(columnNodeDefnNam.equals(TaxonAttributeDefinition.CODE_FIELD_NAME) ||
+					columnNodeDefnNam.equals(TaxonAttributeDefinition.SCIENTIFIC_NAME_FIELD_NAME) ) ) {
 			v = new MultiwayVariable();
 			v.setScale(Scale.NOMINAL);
-			NodeDefinition columnNodeDefn = column.getNodeDefinition();
-			String fieldName = columnNodeDefn.getName();
+			String fieldName = columnNodeDefnNam;
 			String name = fieldName.equals(TaxonAttributeDefinition.CODE_FIELD_NAME ) ? 
 					SPECIES_CODE_VAR_NAME: SPECIES_SCIENT_NAME_VAR_NAME;
 			v.setName(generateVariableName(entityName, name));
@@ -403,12 +352,8 @@ public class SyncCollectMetadataTask extends Task {
 		}
 	}
 
-	public String getSurveyName() {
-		return surveyName;
-	}
-
-	public void setSurveyName(String surveyName) {
-		this.surveyName = surveyName;
+	public void setSurvey(Survey survey) {
+		this.survey = survey;
 	}
 
 }

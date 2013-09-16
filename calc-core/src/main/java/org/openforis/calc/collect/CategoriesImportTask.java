@@ -1,8 +1,9 @@
 package org.openforis.calc.collect;
 
 import static org.openforis.calc.persistence.jooq.tables.CategoryTable.CATEGORY;
+import static org.openforis.calc.persistence.jooq.tables.EntityTable.ENTITY;
+import static org.openforis.calc.persistence.jooq.tables.VariableTable.VARIABLE;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +29,6 @@ import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.schema.AbstractTable;
-import org.openforis.collect.persistence.xml.CollectSurveyIdmlBinder;
 import org.openforis.collect.relational.CollectRdbException;
 import org.openforis.collect.relational.model.CodeColumn;
 import org.openforis.collect.relational.model.CodeLabelColumn;
@@ -46,7 +46,6 @@ import org.openforis.idm.metamodel.CodeList;
 import org.openforis.idm.metamodel.NodeDefinition;
 import org.openforis.idm.metamodel.Survey;
 import org.openforis.idm.metamodel.TaxonAttributeDefinition;
-import org.openforis.idm.metamodel.xml.IdmlParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -55,24 +54,30 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author G. Miceli
  *
  */
-public class SyncCategoriesTask extends Task {
+public class CategoriesImportTask extends Task {
 
 	@Autowired
 	private WorkspaceService workspaceService;
 	
 	@Autowired
-	private CollectSurveyIdmlBinder collectSurveyIdmlBinder;
-	
-	@Autowired
 	private CategoryDao categoryDao;
-
-	private RelationalSchema schema;
+	
+	private Survey survey;
+	private RelationalSchema inputRelationalSchema;
 
 	@Override
 	protected void execute() throws Throwable {
-		//TODO pass schema from outside?
-		initSchema();
+		if ( survey == null ) {
+			throw new IllegalStateException("Survey must be set before importing");
+		}
+		deleteCategories();
 		
+		generateSchema();
+		
+		insertCategories();
+	}
+
+	private void insertCategories() {
 		List<Variable<?>> vars = getVariables();
 		for (Variable<?> v : vars) {
 			if ( v instanceof MultiwayVariable ) {
@@ -96,6 +101,21 @@ public class SyncCategoriesTask extends Task {
 		}
 	}
 
+	private void deleteCategories() {
+		Integer workspaceId = getWorkspace().getId();
+		psql()
+			.delete(CATEGORY)
+			.where(CATEGORY.VARIABLE_ID.in(
+					psql()
+						.select(VARIABLE.ID)
+						.from(VARIABLE)
+							.join(ENTITY)
+								.on(VARIABLE.ENTITY_ID.eq(ENTITY.ID))
+						.where(ENTITY.WORKSPACE_ID.eq(workspaceId))
+					))
+			.execute();
+	}
+
 	private void copyCodesIntoCategoryTable(CodeTable rdbCodeTable, Variable<?> v) {
 		Workspace ws = getWorkspace();
 		List<Column<?>> columns = rdbCodeTable.getColumns();
@@ -107,7 +127,7 @@ public class SyncCategoriesTask extends Task {
 				rdbCodeTable.getName(), ws.getInputSchema(),
 				codeColumnName, labelColumnName, descriptionColumnName);
 		
-		Insert<Record> insert = psql()
+		Insert<? extends Record> insert = psql()
 			.insertInto(CATEGORY, 
 						CATEGORY.VARIABLE_ID, 
 						CATEGORY.ORIGINAL_ID, 
@@ -142,7 +162,7 @@ public class SyncCategoriesTask extends Task {
 		@SuppressWarnings("unchecked")
 		Field<String> valueColumn = (Field<String>) subSelect.field(0);
 		
-		Insert<Record> insert = psql()
+		Insert<? extends Record> insert = psql()
 				.insertInto(CATEGORY, 
 							CATEGORY.VARIABLE_ID,
 							CATEGORY.CODE, 
@@ -172,13 +192,6 @@ public class SyncCategoriesTask extends Task {
 		categoryDao.save(c);
 	}
 
-	protected void initSchema() throws IdmlParseException {
-		Workspace ws = getWorkspace();
-		Survey survey = loadSurvey();
-		// generate rdb schema
-		this.schema = generateSchema(ws, survey);
-	}
-	
 	private DataColumn getRDBDataColumn(CategoricalVariable<?> v) {
 		Entity entity = v.getEntity();
 		String tableName = entity.getDataTable();
@@ -195,7 +208,7 @@ public class SyncCategoriesTask extends Task {
 		NodeDefinition codeFieldDefn = column.getNodeDefinition();
 		CodeAttributeDefinition codeAttrDefn = (CodeAttributeDefinition) codeFieldDefn.getParentDefinition();
 		CodeList codeList = codeAttrDefn.getList();
-		CodeTable codeListTable = schema.getCodeListTable(codeList, codeAttrDefn.getListLevelIndex());
+		CodeTable codeListTable = inputRelationalSchema.getCodeListTable(codeList, codeAttrDefn.getListLevelIndex());
 		return codeListTable;
 	}
 	
@@ -212,7 +225,7 @@ public class SyncCategoriesTask extends Task {
 
 	//TODO move to RDB schema
 	protected Table<?> getRDBTable(String name) {
-		List<Table<?>> tables = schema.getTables();
+		List<Table<?>> tables = inputRelationalSchema.getTables();
 		for (Table<?> table : tables) {
 			if ( table.getName().equals(name) ) {
 				return table;
@@ -243,22 +256,14 @@ public class SyncCategoriesTask extends Task {
 		throw new IllegalArgumentException("Column of type " + type.getName() + " not found");
 	}
 
-	protected Survey loadSurvey() throws IdmlParseException {
-		// TODO get survey from input schema
-		InputStream surveyIs = getClass().getClassLoader().getResourceAsStream("test.idm.xml");
-		Survey survey = collectSurveyIdmlBinder.unmarshal(surveyIs);
-		return survey;
-	}
-
-	private RelationalSchema generateSchema(Workspace ws, Survey survey) {
+	private void generateSchema() {
+		Workspace ws = getWorkspace();
 		RelationalSchemaGenerator rdbGenerator = new RelationalSchemaGenerator();
-		RelationalSchema schema;
 		try {
-			schema = rdbGenerator.generateSchema(survey, ws.getInputSchema());
+			inputRelationalSchema = rdbGenerator.generateSchema(survey, ws.getInputSchema());
 		} catch (CollectRdbException e) {
 			throw new RuntimeException(e);
 		}
-		return schema;
 	}
 
 	private static class CollectGenericDataTable extends AbstractTable {
@@ -278,6 +283,14 @@ public class SyncCategoriesTask extends Task {
 			return (TableField<R, T>) field;
 		}
 		
+	}
+
+	public Survey getSurvey() {
+		return survey;
+	}
+
+	public void setSurvey(Survey survey) {
+		this.survey = survey;
 	}
 	
 }

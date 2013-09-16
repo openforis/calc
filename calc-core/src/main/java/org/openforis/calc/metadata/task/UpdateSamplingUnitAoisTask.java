@@ -60,7 +60,7 @@ public final class UpdateSamplingUnitAoisTask extends Task {
 
 	private void insertAncestorStratumAois(Workspace ws,
 			AoiLevel childLevel) {
-		Insert<Record> insert = psql()
+		Insert<? extends Record> insert = psql()
 			.insertInto(SAMPLING_UNIT_AOI, 
 					SAMPLING_UNIT_AOI.SAMPLING_UNIT_ID,
 					SAMPLING_UNIT_AOI.AOI_ID,
@@ -79,7 +79,7 @@ public final class UpdateSamplingUnitAoisTask extends Task {
 	}
 
 	private void insertLeafStratumAois(Workspace ws, AoiLevel level) {
-		Insert<Record> insert = psql()
+		Insert<? extends Record> insert = psql()
 			.insertInto(SAMPLING_UNIT_AOI, 
 					SAMPLING_UNIT_AOI.SAMPLING_UNIT_ID, 
 					SAMPLING_UNIT_AOI.AOI_ID, 

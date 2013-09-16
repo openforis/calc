@@ -32,7 +32,12 @@ public class WorkspaceService {
 
 	@Transactional
 	public Workspace fetchByName(String name) {
-		return dao.findByName(name);
+		return dao.fetchByName(name);
+	}
+	
+	@Transactional
+	public Workspace fetchCollectSurveyUri(String uri) {
+		return dao.fetchByCollectSurveyUri(uri);
 	}
 	
 	@Transactional

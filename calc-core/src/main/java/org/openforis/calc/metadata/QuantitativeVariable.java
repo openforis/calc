@@ -9,6 +9,9 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
 /**
  * A variable which may take on a single numeric value.
  * 
@@ -26,6 +29,7 @@ public class QuantitativeVariable extends Variable<BigDecimal> {
 	private transient Unit<?> unit; 
 
 	@OneToMany(mappedBy = "variable", fetch = FetchType.EAGER)
+	@Cascade(CascadeType.ALL)
 	private List<VariableAggregate> aggregates;
 
 	public void setUnit(Unit<?> unit) {
