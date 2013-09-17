@@ -25,8 +25,17 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @javax.persistence.Entity
 @Table(name = "variable")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorFormula("case when scale in ('RATIO','INTERVAL','OTHER') then 'Q' when scale='BINARY' then 'B' else 'C' end")
+@DiscriminatorFormula("case when scale='TEXT' then 'T' when scale in ('RATIO','INTERVAL','OTHER') then 'Q' when scale='BINARY' then 'B' else 'C' end")
 public abstract class Variable<T> extends NamedUserObject {
+	
+	public enum Type {
+		QUANTITATIVE, CATEGORICAL, BINARY, TEXT;
+	}
+
+	public enum Scale {
+		NOMINAL, ORDINAL, BINARY, RATIO, INTERVAL, OTHER, TEXT;
+	}
+
 	@Column(name = "sort_order")
 	private int sortOrder;
 
@@ -53,14 +62,6 @@ public abstract class Variable<T> extends NamedUserObject {
 	
 	@Column(name = "original_id")
 	private Integer originalId;
-
-	public enum Type {
-		QUANTITATIVE, CATEGORICAL, BINARY;
-	}
-
-	public enum Scale {
-		NOMINAL, ORDINAL, BINARY, RATIO, INTERVAL, OTHER;
-	}
 
 	public abstract Variable.Type getType();
 
