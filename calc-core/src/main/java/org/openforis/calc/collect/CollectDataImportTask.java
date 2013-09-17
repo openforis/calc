@@ -3,6 +3,7 @@
  */
 package org.openforis.calc.collect;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,6 +14,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
+import org.apache.commons.io.IOUtils;
+import org.jooq.Configuration;
 import org.openforis.calc.engine.Task;
 import org.openforis.collect.model.CollectRecord;
 import org.openforis.collect.model.CollectRecord.Step;
@@ -20,6 +23,11 @@ import org.openforis.collect.model.CollectSurvey;
 import org.openforis.collect.persistence.xml.DataHandler;
 import org.openforis.collect.persistence.xml.DataUnmarshaller;
 import org.openforis.collect.persistence.xml.DataUnmarshaller.ParseRecordResult;
+import org.openforis.collect.relational.CollectRdbException;
+import org.openforis.collect.relational.DatabaseExporter;
+import org.openforis.collect.relational.model.RelationalSchema;
+import org.openforis.collect.relational.model.RelationalSchemaGenerator;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author S. Ricci
@@ -27,26 +35,46 @@ import org.openforis.collect.persistence.xml.DataUnmarshaller.ParseRecordResult;
  */
 public class CollectDataImportTask extends Task {
 
-	private static final String IDML_FILE_NAME = "idml.xml";
-	
 	private CollectSurvey survey;
 	private Step step;
 	private File dataFile;
 	
+	@Autowired
+	private Configuration config;
+	
 	@Override
 	protected void execute() throws Throwable {
 		
-		DataHandler handler = new DataHandler(survey);
-		DataUnmarshaller dataUnmarshaller = new DataUnmarshaller(handler);
+		RelationalSchema targetSchema = createInputSchema();
 		
-		RecordExtractor recordExtractor = new RecordExtractor(dataUnmarshaller, dataFile);
-		ParseRecordResult parseRecordResult = recordExtractor.nextRecord(step);
-		while ( parseRecordResult != null ) {
-			if ( parseRecordResult.isSuccess()) {
-				CollectRecord parsedRecord = parseRecordResult.getRecord();
-				
-			}
+		DatabaseExporter databaseExporter = new CollectDatabaseExporter(config);
+		databaseExporter.insertReferenceData(targetSchema);
+		
+		RecordExtractor recordExtractor = null;
+		try {
+			recordExtractor = new RecordExtractor(survey, dataFile);
+			int recordId = 1;
+			ParseRecordResult parseRecordResult = recordExtractor.nextRecord(step);
+			while ( parseRecordResult != null ) {
+				if ( parseRecordResult.isSuccess()) {
+					CollectRecord record = parseRecordResult.getRecord();
+					record.setId(recordId++);
+					databaseExporter.insertData(targetSchema, record);
+				} else {
+					log().error("Error importing file: " + parseRecordResult.getMessage());
+				}
+				parseRecordResult = recordExtractor.nextRecord(step);
+			} 
+		} finally {
+			IOUtils.closeQuietly(recordExtractor);
 		}
+	}
+
+	private RelationalSchema createInputSchema() throws CollectRdbException {
+		String inputSchemaName = getWorkspace().getInputSchema();
+		RelationalSchemaGenerator rdbGenerator = new RelationalSchemaGenerator();
+		RelationalSchema schema = rdbGenerator.generateSchema(survey, inputSchemaName);
+		return schema;
 	}
 	
 	public CollectSurvey getSurvey() {
@@ -72,29 +100,44 @@ public class CollectDataImportTask extends Task {
 	public void setStep(Step step) {
 		this.step = step;
 	}
-
 	
-	private class RecordExtractor {
-		
-		//parameters
-		private DataUnmarshaller dataUnmarshaller;
+	private class RecordExtractor implements Closeable {
+
+		private static final String IDML_FILE_NAME = "idml.xml";
+
+		//params
+		private CollectSurvey survey;
+		private File file;
 		
 		//transient
 		private ZipFile zipFile;
+		private DataUnmarshaller dataUnmarshaller;
 		private Enumeration<? extends ZipEntry> zipEntries;
 
-		RecordExtractor(DataUnmarshaller dataUnmarshaller, File file) throws ZipException, IOException {
-			this.dataUnmarshaller = dataUnmarshaller;
+		RecordExtractor(CollectSurvey survey, File file) throws ZipException, IOException {
+			this.survey = survey;
+			this.file = file;
+			init();
+		}
+
+		@Override
+		public void close() throws IOException {
+			if ( zipFile != null ) {
+				zipFile.close();
+			}
+		}
+
+		private void init() throws ZipException,
+				IOException {
+			this.dataUnmarshaller = new DataUnmarshaller(new DataHandler(survey));
 			this.zipFile = new ZipFile(file);
-			zipEntries = zipFile.entries();
+			this.zipEntries = zipFile.entries();
 		}
 		
 		public ParseRecordResult nextRecord(Step step) throws Exception {
 			ParseRecordResult result = null;
 			ZipEntry zipEntry = nextRecordEntry();
-			if ( zipEntry == null ) {
-				return null;
-			} else {
+			while ( zipEntry != null ) {
 				String entryName = zipEntry.getName();
 				Step entryStep = extractStep(entryName);
 				if ( step == null || step == entryStep ) {
@@ -106,23 +149,25 @@ public class CollectDataImportTask extends Task {
 						record.updateRootEntityKeyValues();
 						record.updateEntityCounts();
 					}
+					return result;
+				} else {
+					zipEntry = nextRecordEntry();
 				}
 			}
 			return result;
 		}
 		
 		public ZipEntry nextRecordEntry() {
-			if ( zipEntries.hasMoreElements() ) {
+			while ( zipEntries.hasMoreElements() ) {
 				ZipEntry zipEntry = zipEntries.nextElement();
 				String entryName = zipEntry.getName();
 				if ( zipEntry.isDirectory() || IDML_FILE_NAME.equals(entryName)  ) {
-					return null;
+					continue;
 				} else {
 					return zipEntry;
 				}
-			} else {
-				return null;
 			}
+			return null;
 		}
 		
 		private Step extractStep(String zipEntryName) throws Exception {
