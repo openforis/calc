@@ -213,7 +213,6 @@ public class CollectMetadataImportTask extends Task {
 				((TextAttributeDefinition) attrDefn).getType() == Type.SHORT ) {
 			v = new TextVariable();
 			v.setScale(Scale.TEXT);
-			((TextVariable) v).setDegenerateDimension(true);
 		}
 		if ( v != null ) {
 			v.setInputValueColumn(column.getName());
@@ -221,7 +220,7 @@ public class CollectMetadataImportTask extends Task {
 				v.setName(generateVariableName(entityName, column.getName()));
 			}
 			if ( ! (v instanceof CategoricalVariable && ((CategoricalVariable<?>) v).isDegenerateDimension() ||
-					v instanceof TextVariable && ((TextVariable) v).isDegenerateDimension() ) ) {
+					v instanceof TextVariable ) ) {
 				v.setDimensionTable(getDimensionTableName(entityName, v.getName()));
 			}
 			v.setOriginalId(attrDefn.getId());
