@@ -20,6 +20,7 @@ import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.EntityDao;
 import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.QuantitativeVariable;
+import org.openforis.calc.metadata.TextVariable;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.Variable.Scale;
 import org.openforis.calc.metadata.VariableDao;
@@ -43,6 +44,8 @@ import org.openforis.idm.metamodel.NumberAttributeDefinition;
 import org.openforis.idm.metamodel.Schema;
 import org.openforis.idm.metamodel.Survey;
 import org.openforis.idm.metamodel.TaxonAttributeDefinition;
+import org.openforis.idm.metamodel.TextAttributeDefinition;
+import org.openforis.idm.metamodel.TextAttributeDefinition.Type;
 import org.openforis.idm.metamodel.xml.IdmlParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -55,7 +58,7 @@ public class CollectMetadataImportTask extends Task {
 
 	private static final String SPECIES_CODE_VAR_NAME = "species_code";
 	private static final String SPECIES_SCIENT_NAME_VAR_NAME = "species_scient_name";
-	private static final String DIMENSION_TABLE_SUFFIX = "_dim";
+	private static final String DIMENSION_TABLE_FORMAT = "%s_%s_dim";
 
 	@Autowired
 	private WorkspaceDao workspaceDao;
@@ -206,18 +209,31 @@ public class CollectMetadataImportTask extends Task {
 					SPECIES_CODE_VAR_NAME: SPECIES_SCIENT_NAME_VAR_NAME;
 			v.setName(generateVariableName(entityName, name));
 			((MultiwayVariable) v).setDegenerateDimension(true);
+		} else if ( attrDefn instanceof TextAttributeDefinition && 
+				((TextAttributeDefinition) attrDefn).getType() == Type.SHORT ) {
+			v = new TextVariable();
+			v.setScale(Scale.TEXT);
+			((TextVariable) v).setDegenerateDimension(true);
 		}
 		if ( v != null ) {
 			v.setInputValueColumn(column.getName());
 			if ( v.getName() == null ) {
 				v.setName(generateVariableName(entityName, column.getName()));
 			}
-			v.setDimensionTable(entityName + "_" + v.getName() + DIMENSION_TABLE_SUFFIX);
+			if ( ! (v instanceof CategoricalVariable && ((CategoricalVariable<?>) v).isDegenerateDimension() ||
+					v instanceof TextVariable && ((TextVariable) v).isDegenerateDimension() ) ) {
+				v.setDimensionTable(getDimensionTableName(entityName, v.getName()));
+			}
 			v.setOriginalId(attrDefn.getId());
 			v.setOutputValueColumn(generateOutputValueColumnName(entityName, column.getName()));
 			v.setSortOrder(entity.getVariableNextSortOrder());
 			entity.addVariable(v);
 		}
+	}
+
+	private String getDimensionTableName(String entityName, String variableName) {
+		String result = String.format(DIMENSION_TABLE_FORMAT, entityName, variableName);
+		return result;
 	}
 
 	private void setCoordinateColumns(Entity entity, DataTable dataTable) {

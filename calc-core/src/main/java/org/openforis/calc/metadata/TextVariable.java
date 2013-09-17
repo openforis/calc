@@ -15,6 +15,10 @@ public class TextVariable extends Variable<String> {
 
 	@Column(name = "default_value")
 	private String defaultValue;
+	
+	// TODO remove term "dimension" from name (Calc model uses statistical terminology while "dimension" is OLAP term)
+	@Column(name = "degenerate_dimension")
+	private boolean degenerateDimension;
 
 	@Override
 	public Type getType() {
@@ -37,6 +41,14 @@ public class TextVariable extends Variable<String> {
 			throw new IllegalArgumentException("Illegal scale: " + scale);
 		}
 		super.setScale(scale);
+	}
+
+	public boolean isDegenerateDimension() {
+		return degenerateDimension;
+	}
+
+	public void setDegenerateDimension(boolean degenerateDimension) {
+		this.degenerateDimension = degenerateDimension;
 	}
 	
 }
