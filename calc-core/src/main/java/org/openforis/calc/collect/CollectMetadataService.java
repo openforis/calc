@@ -54,7 +54,7 @@ public class CollectMetadataService {
 		
 		return job;
 	}
-
+	/*
 	public static void main(String[] args) throws WorkspaceLockedException, BeansException, IdmlParseException {
 		@SuppressWarnings("resource")
 		ApplicationContext appContext = new ClassPathXmlApplicationContext(
@@ -72,5 +72,5 @@ public class CollectMetadataService {
 		Survey survey = binder.unmarshal(surveyIs);
 		service.importMetadata(survey);
 	}
-	
+	*/
 }

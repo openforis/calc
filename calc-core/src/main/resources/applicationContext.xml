@@ -77,16 +77,23 @@
 	<bean id="expressionFactory" class="org.openforis.idm.model.expression.ExpressionFactory"/>
 
 	<bean id="validator" class="org.openforis.idm.metamodel.validation.Validator" />
-	
+
+    <bean id="codeListManager" 			class="org.openforis.collect.manager.CodeListManager" />
+	<bean id="codeListService"	 		class="org.openforis.collect.service.CollectCodeListService" />
+
 	<bean id="collectSurveyContext" class="org.openforis.collect.model.CollectSurveyContext">
-        <constructor-arg><ref bean="expressionFactory"/></constructor-arg>
-        <constructor-arg><ref bean="validator"/></constructor-arg>
-    </bean>
-    
+		<constructor-arg ref="expressionFactory" />
+		<constructor-arg ref="validator" />
+		<property name="codeListService" ref="codeListService" />
+	</bean>
+	
     <bean id="idmlBinder" class="org.openforis.collect.persistence.xml.CollectSurveyIdmlBinder">
-    	<constructor-arg><ref bean="collectSurveyContext"/></constructor-arg>
+    	<constructor-arg ref="collectSurveyContext"/>
     </bean>
     
+    
+	<!-- END Of OF Collect bean definitions -->
+	
 	<!-- Database -->
 	<bean id="dataSource" destroy-method="close" class="org.apache.commons.dbcp.BasicDataSource">
     	<property name="driverClassName" value="${calc.jdbc.driver}"/>
@@ -115,5 +122,22 @@
     
     <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
     
+    <bean id="transactionAwareDataSource"
+        class="org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy">
+        <constructor-arg ref="dataSource" />
+    </bean>
+    
+    <!-- Bridging Spring JDBC data sources to jOOQ's ConnectionProvider -->
+    <bean class="org.jooq.impl.DataSourceConnectionProvider" name="connectionProvider">
+        <constructor-arg ref="transactionAwareDataSource" />
+    </bean>
+
+    <bean id="dsl" class="org.jooq.impl.DefaultDSLContext">
+        <constructor-arg ref="config" />
+    </bean>
+
+    <bean class="org.openforis.calc.persistence.jooq.DialectAwareJooqConfiguration" name="config">
+        <constructor-arg ref="connectionProvider" />
+    </bean>
     
 </beans>
