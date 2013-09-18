@@ -285,6 +285,10 @@ public class Entity extends NamedUserObject {
 	public List<QuantitativeVariable> getQuantitativeVariables() {
 		return Collections.unmodifiableList(selectInstancesOf(variables, QuantitativeVariable.class));
 	}
+
+	public List<TextVariable> getTextVariables() {
+		return Collections.unmodifiableList(selectInstancesOf(variables, TextVariable.class));
+	}
 	
 	public Collection<Variable<?>> getOverriddenVariables() {
 		return getVariables(new Predicate() {

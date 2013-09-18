@@ -1,49 +1,61 @@
 package org.openforis.calc.schema;
 
+import static org.jooq.impl.SQLDataType.VARCHAR;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.jooq.DataType;
 import org.jooq.Field;
-import org.jooq.Table;
 import org.jooq.impl.SQLDataType;
 import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.TextVariable;
 import org.openforis.calc.metadata.Variable;
 
 /**
  * 
- * @author G. Miceli	
+ * @author G. Miceli
  * @author M. Togna
- *
+ * 
  */
 public class InputTable extends DataTable {
 
 	private static final long serialVersionUID = 1L;
 
+	private Map<TextVariable, Field<String>> textFields;
+
 	public InputTable(Entity entity, InputSchema schema) {
 		super(entity, entity.getDataTable(), schema);
 		createPrimaryKeyField();
-		createParentIdField();		
+		createParentIdField();
 		createCategoryValueFields(entity, true);
 		createQuantityFields(true);
 		createCoordinateFields();
-		
-		copyOtherDataTableFields(entity, schema);
+		createTextFields();
 	}
 
+	private void createTextFields() {
+		textFields = new HashMap<TextVariable, Field<String>>();
 
-	private void copyOtherDataTableFields(Entity entity, InputSchema schema) {
-		Table<?> table = schema.getTable( entity.getDataTable() );
-		for ( Field<?> tableField : table.fields() ) {
-			Field<?> field = this.field( tableField.getName() );
-			if( field == null ){
-				createField(tableField.getName(), tableField.getDataType(), this);
-			}
+		List<TextVariable> vars = getEntity().getTextVariables();
+		for ( TextVariable var : vars ) {
+			String name = var.getName();
+			Field<String> fld = createField(name, VARCHAR.length(255), this);
+			textFields.put(var, fld);
 		}
 	}
-	
 
 	@SuppressWarnings("unchecked")
 	@Override
 	protected <T> Field<T> createValueField(Variable<?> var, DataType<T> valueType, String valueColumn) {
 		// we don't know the datatype of columns in the input schema...
 		return (Field<T>) super.createValueField(var, SQLDataType.OTHER, valueColumn);
+	}
+
+	public Collection<Field<String>> getTextFields() {
+		return Collections.unmodifiableCollection(textFields.values());
 	}
 }

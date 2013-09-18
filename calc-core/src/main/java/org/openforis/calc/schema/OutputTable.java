@@ -22,13 +22,14 @@ public class OutputTable extends DataTable {
 	private InputTable inputTable;
 	private OutputTable parentTable;
 	private Map<Field<?>, Field<?>> inputFields;
-	
+
 	OutputTable(Entity entity, OutputSchema schema, InputTable inputTable, OutputTable parentTable) {
 		super(entity, entity.getDataTable(), schema);
 		this.inputTable = inputTable;
 		this.parentTable = parentTable;
-		this.inputFields =  new HashMap<Field<?>, Field<?>>();
-		createPrimaryKeyField();		
+		this.inputFields = new HashMap<Field<?>, Field<?>>();
+
+		createPrimaryKeyField();
 		addInputField(getIdField(), inputTable.getIdField());
 		createCategoryValueFields(entity, false);
 		createQuantityFields(false);
@@ -36,23 +37,13 @@ public class OutputTable extends DataTable {
 		createCoordinateFields();
 		createLocationField();
 		createParentIdField();
-		
-		copyOtherInputFields();
+		createTextFields();
 	}
 
-	/**
-	 * Copies the input fields that aren't neither categories nor measures (q.ti vars)
-	 */
-	private void copyOtherInputFields() {
-		Field<?>[] fields = inputTable.fields();
-		for ( Field<?> inputField : fields ) {
-			String name = inputField.getName();
-			Field<?> outputField = this.field( name );
-			if( outputField == null ) {
-				createField(name, inputField.getDataType(), this );
-			}
+	private void createTextFields() {
+		for ( Field<String> inputField : inputTable.getTextFields() ) {
+			createField(inputField.getName(), inputField.getDataType(), this);
 		}
-		
 	}
 
 	private void addInputField(Field<?> outputField, Field<?> inputField) {
@@ -66,13 +57,13 @@ public class OutputTable extends DataTable {
 		super.createAoiIdField(level, fkColumn);
 		addInputField(getAoiIdField(level), inputTable.getAoiIdField(level));
 	}
-	
+
 	@Override
 	protected void createBinaryCategoryValueField(BinaryVariable var, String valueColumn) {
 		super.createBinaryCategoryValueField(var, valueColumn);
 		addInputField(getCategoryValueField(var), inputTable.getCategoryValueField(var));
 	}
-	
+
 	@Override
 	protected void createCategoryValueField(MultiwayVariable var, String valueColumn) {
 		super.createCategoryValueField(var, valueColumn);
@@ -98,7 +89,7 @@ public class OutputTable extends DataTable {
 		super.createParentIdField();
 		addInputField(getParentIdField(), inputTable.getParentIdField());
 	}
-	
+
 	public InputTable getInputTable() {
 		return inputTable;
 	}
