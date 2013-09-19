@@ -52,6 +52,7 @@ public class CollectDataService {
 		
 		return job;
 	}
+	
 	/*
 	public static void main(String[] args) throws WorkspaceLockedException, BeansException, IdmlParseException {
 		@SuppressWarnings("resource")

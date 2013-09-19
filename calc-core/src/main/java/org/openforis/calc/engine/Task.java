@@ -22,6 +22,9 @@ public abstract class Task extends Worker implements Captionable {
 	@Value("${calc.jdbc.username}")
 	private String systemUser;
 
+	@Value("${calc-user.jdbc.username}")
+	private String calcUser;
+	
 	@JsonIgnore
 	private Job job;
 	
@@ -64,4 +67,9 @@ public abstract class Task extends Worker implements Captionable {
 	protected String getSystemUser() {
 		return systemUser;
 	}
+	
+	protected String getCalcUser() {
+		return calcUser;
+	}
+	
 }

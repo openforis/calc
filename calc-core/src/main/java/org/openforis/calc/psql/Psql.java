@@ -37,7 +37,9 @@ public final class Psql extends DefaultDSLContext {
 	private Logger log;
 
 	public enum Privilege {
-		ALL, SELECT;
+		
+		USAGE, ALL, SELECT;
+		
 		public String toString() {
 			return name().toLowerCase();
 		};
