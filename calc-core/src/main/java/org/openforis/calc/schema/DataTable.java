@@ -31,6 +31,7 @@ import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.Variable;
+import org.openforis.calc.metadata.VariableAggregate;
 import org.openforis.calc.psql.GeodeticCoordinate;
 import org.openforis.calc.psql.Psql;
 
@@ -43,6 +44,8 @@ import org.openforis.calc.psql.Psql;
  */
 public abstract class DataTable extends AbstractTable {
 
+	public static final String WEIGHT_COLUMN = "weight";
+
 	private static final long serialVersionUID = 1L;
 
 	private Entity entity;
@@ -51,6 +54,7 @@ public abstract class DataTable extends AbstractTable {
 	private Map<AoiLevel, Field<Integer>> aoiIdFields;
 	private Map<QuantitativeVariable, Field<BigDecimal>> quantityFields;
 	private Map<CategoricalVariable<?>, Field<?>> categoryValueFields;
+	private Map<VariableAggregate, Field<BigDecimal>> variableAggregateFields;
 	
 	private TableField<Record, Integer> idField;
 	private Field<GeodeticCoordinate> locationField;
@@ -65,6 +69,7 @@ public abstract class DataTable extends AbstractTable {
 		this.aoiIdFields = new HashMap<AoiLevel, Field<Integer>>();
 		this.quantityFields = new HashMap<QuantitativeVariable, Field<BigDecimal>>();
 		this.categoryValueFields = new HashMap<CategoricalVariable<?>, Field<?>>();
+		this.variableAggregateFields = new HashMap<VariableAggregate, Field<BigDecimal>>();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -79,18 +84,31 @@ public abstract class DataTable extends AbstractTable {
 	}
 	
 	protected void createQuantityFields(boolean input) {
+		createQuantityFields(input, false);
+	}
+	
+	protected void createQuantityFields(boolean input, boolean variableAggregates) {
 		Entity entity = getEntity();
-		List<Variable<?>> variables = entity.getVariables();
-		for ( Variable<?> var : variables ) {
-			if ( var instanceof QuantitativeVariable ) {
-				String valueColumn = input ? var.getInputValueColumn() : var.getOutputValueColumn();
-				if ( valueColumn != null ) {
-					createQuantityField((QuantitativeVariable) var, valueColumn);
-				}
+		List<QuantitativeVariable> variables = entity.getQuantitativeVariables();
+		for ( QuantitativeVariable var : variables ) {
+			String valueColumn = input ? var.getInputValueColumn() : var.getOutputValueColumn();
+			if ( StringUtils.isNotBlank(valueColumn) ) {
+				createQuantityField(var, valueColumn);
+			}
+			if( variableAggregates ) {
+				createVariableAggregateFields(var);
 			}
 		}
 	}
 
+	protected void createVariableAggregateFields(QuantitativeVariable var) {
+		List<VariableAggregate> aggregates = var.getAggregates();
+		for ( VariableAggregate varAgg : aggregates ) {
+			Field<BigDecimal> field = createField(varAgg.getName(), Psql.DOUBLE_PRECISION, this);
+			variableAggregateFields.put(varAgg, field);
+		}
+	}
+	
 	protected void createCategoryValueFields(Entity entity, boolean input) {
 		List<CategoricalVariable<?>> variables = entity.getCategoricalVariables();
 		for ( CategoricalVariable<?> var : variables ) {
@@ -232,10 +250,14 @@ public abstract class DataTable extends AbstractTable {
 		return categoryValueFields.get(var);
 	}
 	
+	public Field<BigDecimal> getVariableAggregateField(VariableAggregate variableAggregate){
+		return variableAggregateFields.get(variableAggregate);
+	}
+	
 	// TODO HARD-CODED: allow user-configuration of variable to use as weight! 
 	@SuppressWarnings("unchecked")
 	public Field<BigDecimal> getWeightField() {
-		return (Field<BigDecimal>) field("weight");
+		return (Field<BigDecimal>) field(WEIGHT_COLUMN);
 	}
 
 	public boolean isGeoreferenced() {

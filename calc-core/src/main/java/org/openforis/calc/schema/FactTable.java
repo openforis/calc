@@ -21,7 +21,6 @@ import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.AoiLevel;
 import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
-import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.VariableAggregate;
 import org.openforis.calc.psql.Psql;
 import org.openforis.commons.collection.CollectionUtils;
@@ -36,8 +35,8 @@ public class FactTable extends DataTable {
 	private static final String TABLE_NAME_FORMAT = "_%s_fact";
 	private static final String DIMENSION_ID_COLUMN_FORMAT = "%s_id";
 
-	private Map<VariableAggregate, Field<BigDecimal>> measureFields;
-	private Map<CategoricalVariable<?>, Field<Integer>> dimensionIdFields;
+	protected Map<VariableAggregate, Field<BigDecimal>> measureFields;
+	protected Map<CategoricalVariable<?>, Field<Integer>> dimensionIdFields;
 	
 	private Field<Integer> stratumIdField;
 	private OutputTable sourceOutputTable;
@@ -50,13 +49,19 @@ public class FactTable extends DataTable {
 	
 	FactTable(Entity entity, Schema schema, OutputTable sourceOutputTable, FactTable parentTable) {
 		super(entity, getName(entity), schema);
+		
 		this.sourceOutputTable = sourceOutputTable;
 		this.parentTable = parentTable;
+		
+		this.dimensionIdFields = new HashMap<CategoricalVariable<?>, Field<Integer>>();
+		this.measureFields = new HashMap<VariableAggregate, Field<BigDecimal>>();
+		this.aggregateTables = new HashMap<AoiHierarchy, List<AggregateTable>>();
+		
 		createPrimaryKeyField();
 		createDimensionFieldsRecursive(entity);
 		createStratumIdField();
 		createAoiIdFields();
-		createQuantityFields(false);
+		createQuantityFields(false, true);
 		createMeasureFields(entity);
 		createParentIdField();
 		createAggregateTables();
@@ -64,7 +69,6 @@ public class FactTable extends DataTable {
 
 	/**
 	 * Recursively up to root unit of analysis
-	 * @param disaggregatesOnly 
 	 */
 	protected void createDimensionFieldsRecursive(Entity entity) {
 		Entity parent = entity.getParent();
@@ -76,12 +80,9 @@ public class FactTable extends DataTable {
 	}
 
 	private void createDimensionIdFields(Entity entity) {
-		this.dimensionIdFields = new HashMap<CategoricalVariable<?>, Field<Integer>>();
-		List<Variable<?>> variables = entity.getVariables();
-		for ( Variable<?> var : variables ) {
-			if ( var instanceof CategoricalVariable ) {
-				createDimensionIdField((CategoricalVariable<?>) var);
-			}
+		List<CategoricalVariable<?>> variables = entity.getCategoricalVariables();
+		for ( CategoricalVariable<?> var : variables ) {
+			createDimensionIdField(var);
 		}
 	}
 
@@ -94,7 +95,6 @@ public class FactTable extends DataTable {
 	}
 
 	protected void createMeasureFields(Entity entity) {
-		this.measureFields = new HashMap<VariableAggregate, Field<BigDecimal>>();
 		List<VariableAggregate> aggregates = entity.getVariableAggregates();
 		for ( VariableAggregate agg : aggregates ) {
 			Field<BigDecimal> field = createField(agg.getName(), Psql.DOUBLE_PRECISION, this);
@@ -103,7 +103,6 @@ public class FactTable extends DataTable {
 	}
 	
 	protected void createAggregateTables() {
-		this.aggregateTables = new HashMap<AoiHierarchy, List<AggregateTable>>();
 		Entity entity = getEntity();
 	
 		if ( entity.isSamplingUnit() ) {

@@ -32,15 +32,18 @@ public final class CreateFactTablesTask extends Task {
 	protected void execute() throws Throwable {
 		OutputSchema outputSchema = getOutputSchema();
 		Collection<FactTable> factTables = outputSchema.getFactTables();
+		
 		for (FactTable factTable : factTables) {
 			OutputTable outputTable = (OutputTable) factTable.getSourceOutputTable();
 			
 			SelectQuery<?> select = new Psql().selectQuery(outputTable);
 			select.addSelect(outputTable.getIdField());
-			selectDimensionsRecursive(select, factTable, outputTable);
 			select.addSelect(outputTable.getAoiIdFields());
+			
+			selectDimensionsRecursive(select, factTable, outputTable);			
 			selectQuantities(select, outputTable);
 			selectMeasures(select, factTable);
+			
 			Field<Integer> stratumId = factTable.getStratumIdField();
 			select.addSelect(Psql.nullAs(stratumId));
 			
@@ -91,10 +94,13 @@ public final class CreateFactTablesTask extends Task {
 		List<VariableAggregate> aggs = entity.getVariableAggregates();
 		OutputTable outputDataTable = (OutputTable) factTable.getSourceOutputTable();
 		for (VariableAggregate agg : aggs) {
-			QuantitativeVariable var = agg.getVariable();
-			Field<BigDecimal> measureFld = factTable.getMeasureField(agg);
-			Field<BigDecimal> valueFld = outputDataTable.getQuantityField(var);
-			select.addSelect(valueFld.as(measureFld.getName()));
+			if( !VariableAggregate.AGGREGATE_TYPE.PER_UNIT_AREA.equals(agg.getAggregateType()) ) {
+				QuantitativeVariable var = agg.getVariable();
+//				Field<BigDecimal> measureFld = factTable.getMeasureField(agg);
+				Field<BigDecimal> measureFld = factTable.getVariableAggregateField(agg);
+				Field<BigDecimal> valueFld = outputDataTable.getQuantityField(var);
+				select.addSelect( valueFld.as(measureFld.getName()) );
+			}
 		}
 	}
 
