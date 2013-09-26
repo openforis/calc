@@ -17,3 +17,45 @@ IMPORTANT: When making updates to the database schema, ALWAYS ADD A Liquibase
            when building during Maven's "process-resources" phase.           
            See http://www.liquibase.org/quickstart.html for more details.   
   
+  
+UBUNTU:
+- Install R:
+	Follow the istructions on http://cran.rstudio.com/
+	
+	add repository to sources list: 
+		sudo gedit /etc/apt/sources.list
+			add a new entry:
+			deb http://cran.rstudio.com/bin/linux/ubuntu precise/
+	
+	
+	gpg --keyserver pgp.mit.edu --recv-key 51716619E084DAB9
+	gpg -a --export E084DAB9 | apt-key add -
+	
+	sudo apt-get update
+	sudo apt-get install r-base
+	
+
+	Set enviroment variable  (e.g. sudo gedit /etc/environment)
+		R_HOME=/usr/lib/R
+	
+	
+- Install R required packages:
+		
+		sudo apt-get install libpq-dev
+
+		tar -xvf calc/lib/lmfor_1.1_R_i686-pc-linux-gnu.tar.gz 
+		sudo R CMD INSTALL --build lmfor
+		rm -r lmfor
+		
+		sudo R
+			install.packages("RPostgreSQL")
+	
+	
+- Install rJava
+		If having problem (like : libjvm.so: cannot open shared object file: No such file or directory)
+			export LD_LIBRARY_PATH=/usr/lib/jvm/java-1.7.0-openjdk-i386/jre/lib/i386:/usr/lib/jvm/java-1.7.0-openjdk-i386/jre/lib/i386/client
+			sudo R CMD javareconf
+			(check with ll command the permission of libjvm file)
+			
+	 	install.packages("rJava")
+ 
