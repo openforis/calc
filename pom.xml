@@ -13,7 +13,7 @@
 	<modules>
 		<module>calc-core</module>
 <!-- 		<module>calc-webapp</module> -->
-<!-- 		<module>calc-server</module> -->
+		<module>calc-server</module>
 	</modules>
 
 	<properties>

@@ -146,6 +146,19 @@ public class Entity extends NamedUserObject {
 		return null;
 	}
 	
+	public Variable<?> getVariable(String name) {
+		if ( variables == null || variables.isEmpty() ) {
+			return null;
+		} else {
+			for (Variable<?> v : variables) {
+				if ( v.getName().equals(name) ) {
+					return v;
+				}
+			}
+			return null;
+		}
+	}
+	
 	public List<VariableAggregate> getVariableAggregates() {
 		List<VariableAggregate> aggs = new ArrayList<VariableAggregate>();
 		for (Variable<?> var : variables) {

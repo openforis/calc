@@ -30,7 +30,7 @@ public class Job extends Worker implements Iterable<Task> {
 	private DataSource dataSource;
 	private Schemas schemas;
 	
-	Job(Workspace workspace, DataSource dataSource) {
+	protected Job(Workspace workspace, DataSource dataSource) {
 		this.currentTaskIndex = -1;
 		this.tasks = new ArrayList<Task>();
 		this.workspace = workspace;
@@ -38,7 +38,7 @@ public class Job extends Worker implements Iterable<Task> {
 		this.dataSource = dataSource;
 	}
 
-	void setDebugMode(boolean debugMode) {
+	protected void setDebugMode(boolean debugMode) {
 		this.debugMode = debugMode;
 	}
 	

@@ -3,6 +3,7 @@ package org.openforis.calc.r;
 //import org.rosuda.JRI.RMainLoopCallbacks;
 //import org.rosuda.JRI.Rengine;
 import java.io.File;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Scanner;
 
@@ -67,7 +68,8 @@ public class R {
 			ProcessBuilder pb = new ProcessBuilder("R", "--slave", "-e","system.file(\"jri\",package=\"rJava\")");
 			Process p = pb.start();
 			p.waitFor();
-			Scanner s = new Scanner(p.getInputStream());
+			InputStream inputStream = p.getInputStream();
+			Scanner s = new Scanner(inputStream);
 			s.next("\\[1\\]");
 			String path = s.next(".*");
 			// Remove quotes

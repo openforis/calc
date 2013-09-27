@@ -25,6 +25,7 @@ import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.Variable.Scale;
 import org.openforis.calc.metadata.VariableDao;
 import org.openforis.calc.persistence.jooq.tables.EntityTable;
+import org.openforis.collect.model.CollectSurvey;
 import org.openforis.collect.relational.CollectRdbException;
 import org.openforis.collect.relational.model.DataColumn;
 import org.openforis.collect.relational.model.DataTable;
@@ -36,6 +37,7 @@ import org.openforis.idm.metamodel.BooleanAttributeDefinition;
 import org.openforis.idm.metamodel.CodeAttributeDefinition;
 import org.openforis.idm.metamodel.CodeList;
 import org.openforis.idm.metamodel.CoordinateAttributeDefinition;
+import org.openforis.idm.metamodel.DateAttributeDefinition;
 import org.openforis.idm.metamodel.EntityDefinition;
 import org.openforis.idm.metamodel.FieldDefinition;
 import org.openforis.idm.metamodel.NodeDefinition;
@@ -46,6 +48,7 @@ import org.openforis.idm.metamodel.Survey;
 import org.openforis.idm.metamodel.TaxonAttributeDefinition;
 import org.openforis.idm.metamodel.TextAttributeDefinition;
 import org.openforis.idm.metamodel.TextAttributeDefinition.Type;
+import org.openforis.idm.metamodel.TimeAttributeDefinition;
 import org.openforis.idm.metamodel.xml.IdmlParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -67,8 +70,6 @@ public class CollectMetadataImportTask extends Task {
 	@Autowired
 	private VariableDao variableDao;
 	
-	//parameters
-	private Survey survey;
 	
 	//transient variables
 	private Map<Integer, Entity> entitiesByEntityDefinitionId;
@@ -77,9 +78,6 @@ public class CollectMetadataImportTask extends Task {
 
 	@Override
 	protected void execute() throws Throwable {
-		if ( survey == null ) {
-			throw new IllegalStateException("Survey must be set before importing");
-		}
 		entitiesByEntityDefinitionId = new HashMap<Integer, Entity>();
 		variableNames = new HashSet<String>();
 		outputValueColumnNames = new HashSet<String>();
@@ -111,6 +109,8 @@ public class CollectMetadataImportTask extends Task {
 	}
 
 	private List<Entity> createEntitiesFromSchema() throws IdmlParseException {
+		CollectSurvey survey = ((CollectJob) getJob()).getSurvey();
+		
 		final RelationalSchema relationalSchema = generateSchema(survey);
 		
 		Schema schema = survey.getSchema();
@@ -194,6 +194,9 @@ public class CollectMetadataImportTask extends Task {
 			((MultiwayVariable) v).setDisaggregate(! (column instanceof PrimaryKeyColumn));
 			CodeList list = ((CodeAttributeDefinition) attrDefn).getList();
 			((CategoricalVariable<?>) v).setDegenerateDimension(list.isExternal());
+		} else if ( attrDefn instanceof DateAttributeDefinition ) {
+			v = new TextVariable();
+			v.setScale(Scale.TEXT);
 		} else if ( attrDefn instanceof NumberAttributeDefinition &&
 				columnNodeDefnNam.equals(NumberAttributeDefinition.VALUE_FIELD)) {
 			v = new QuantitativeVariable();
@@ -211,6 +214,9 @@ public class CollectMetadataImportTask extends Task {
 			((MultiwayVariable) v).setDegenerateDimension(true);
 		} else if ( attrDefn instanceof TextAttributeDefinition && 
 				((TextAttributeDefinition) attrDefn).getType() == Type.SHORT ) {
+			v = new TextVariable();
+			v.setScale(Scale.TEXT);
+		} else if ( attrDefn instanceof TimeAttributeDefinition ) {
 			v = new TextVariable();
 			v.setScale(Scale.TEXT);
 		}
@@ -365,10 +371,6 @@ public class CollectMetadataImportTask extends Task {
 				System.out.printf("%s.%s (%s)%n", entity.getName(), var.getName(), var.getScale());
 			}
 		}
-	}
-
-	public void setSurvey(Survey survey) {
-		this.survey = survey;
 	}
 
 }

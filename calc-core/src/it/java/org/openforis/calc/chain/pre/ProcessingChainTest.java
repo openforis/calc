@@ -90,7 +90,7 @@ public class ProcessingChainTest extends AbstractTransactionalJUnit4SpringContex
 		job.waitFor(5000);
 	}
 	
-//	@Test
+	@Test
 	public void testChain() throws WorkspaceLockedException, InvalidProcessingChainException {
 		Job job = calculationEngine.runProcessingChain(21);
 		while(!job.isEnded()){

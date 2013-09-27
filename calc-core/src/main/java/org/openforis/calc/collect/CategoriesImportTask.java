@@ -29,6 +29,7 @@ import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.schema.AbstractTable;
+import org.openforis.collect.model.CollectSurvey;
 import org.openforis.collect.relational.CollectRdbException;
 import org.openforis.collect.relational.model.CodeColumn;
 import org.openforis.collect.relational.model.CodeLabelColumn;
@@ -62,14 +63,10 @@ public class CategoriesImportTask extends Task {
 	@Autowired
 	private CategoryDao categoryDao;
 	
-	private Survey survey;
 	private RelationalSchema inputRelationalSchema;
 
 	@Override
 	protected void execute() throws Throwable {
-		if ( survey == null ) {
-			throw new IllegalStateException("Survey must be set before importing");
-		}
 		deleteCategories();
 		
 		generateSchema();
@@ -258,6 +255,7 @@ public class CategoriesImportTask extends Task {
 
 	private void generateSchema() {
 		Workspace ws = getWorkspace();
+		CollectSurvey survey = ((CollectJob) getJob()).getSurvey();
 		RelationalSchemaGenerator rdbGenerator = new RelationalSchemaGenerator();
 		try {
 			inputRelationalSchema = rdbGenerator.generateSchema(survey, ws.getInputSchema());
@@ -285,12 +283,4 @@ public class CategoriesImportTask extends Task {
 		
 	}
 
-	public Survey getSurvey() {
-		return survey;
-	}
-
-	public void setSurvey(Survey survey) {
-		this.survey = survey;
-	}
-	
 }
