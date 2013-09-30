@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
-<!--     <link rel="shortcut icon" href="../../assets/ico/favicon.png"> -->
 
     <title>Open Foris Calc</title>
 
@@ -13,6 +12,9 @@
    	<link rel="stylesheet" href="css/bootstrap.css" media="screen">
 	<link rel="stylesheet" href="css/font-awesome.min.css">
 	<link rel="stylesheet" href="css/bootswatch.min.css">
+	
+	<!-- ==== Custom style ==== -->
+	<link rel="stylesheet" href="css/calc.css">
 
 	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!--[if lt IE 9]>
@@ -21,8 +23,9 @@
     <![endif]-->	
   </head>
 
-  <body>
-    <div class="navbar navbar-default navbar-fixed-top">
+<body>
+  
+	<div class="navbar navbar-default navbar-fixed-top">
 		<div class="container">
 			<div class="navbar-header">
 				<a href="index.html" class="navbar-brand">Open Foris Calc</a>
@@ -33,6 +36,56 @@
 		</div>
 	</div>
 
+	<div class="container">
+	
+		<div id="page">
+			<!-- ====== Settings section ==== -->
+			<div class="row row-section">
+				<div class="col-xs-12 col-md-1 menu">
+<!-- 					<ul class="nav nav-pills"> -->
+<!-- 						<li class="active"> -->
+<!-- 							<a href="settings.html">Settings -->
+<!-- 								<span class="badge"></span> -->
+<!-- 							</a> -->
+<!-- 						</li> -->
+<!-- 					</ul> -->
+					<span class="label label-default settings-menu"><a href="settings.html">Settings</a></span>
+<!-- 					<a href="settings.html">Settings</a> -->
+				</div>
+				<div class="col-xs-12 col-md-11 links-container">
+					<div class="label label-success home-label-link" href="sd.html">Sampling<br/>Design</div>					
+				</div>
+			</div>
+			<!-- ====== Data section ==== -->
+			<div class="row row-section">
+				<div class="col-xs-12 col-md-1 menu">
+					<span class="label label-default settings-menu">Data</span>
+				</div>
+				<div class="col-xs-12 col-md-11 links-container">
+					<div class="label label-success home-label-link" href="synccollect.html">Collect<br/>Sync</div>					
+				</div>
+			</div>
+			
+			<!-- ====== Calculation section ==== -->
+			<div class="row row-section">
+				<div class="col-xs-12 col-md-1 menu">
+					<span class="label label-default settings-menu">Calculation</span>
+				</div>
+				<div class="col-xs-12 col-md-11 links-container">
+					<div class="label label-success home-label-link" href="synccollect.html">Tree<br/>Height</div>					
+				</div>
+			</div>
+			<!-- ====== Results section ==== -->
+			<div class="row row-section">
+				<div class="col-xs-12 col-md-1 menu">
+					<span class="label label-default settings-menu">Results</span>
+				</div>
+				<div class="col-xs-12 col-md-11 links-container">
+					<div class="label label-success home-label-link" href="synccollect.html">Bo</div>					
+				</div>
+			</div>
+		</div>
+	</div>	
 
 
     <!-- Bootstrap core JavaScript
@@ -41,5 +94,7 @@
 	<script src="./js/jquery.min.js"></script>
 	<script src="./js/bootstrap.min.js"></script>
 	
-  </body>
+	<!-- ==== Custom javascript -->
+	<script src="./js/calc.js"></script>
+</body>
 </html>

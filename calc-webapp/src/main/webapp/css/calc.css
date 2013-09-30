@@ -1,0 +1,46 @@
+/**
+* Custom style
+* @author Mino Togna
+*/
+
+@CHARSET "UTF-8";
+
+#page {	
+	margin-top : 2em;
+	height: 90%;
+}
+
+.row-section {
+	max-height: 500px;
+/* 	height: 1000px; */
+/* 	position: relative; */
+}
+.row-section .menu {
+/* 	border-right: #95a5a6 dashed 1px; */
+}
+.row-section .links-container {
+	border-bottom: #95a5a6 dashed 1px;
+	border-left: #95a5a6 dashed 1px;
+}
+.settings-menu {
+	padding: 1.3em;
+	border-radius: 5px; 
+}
+.settings-menu a {
+	color: white;
+	font-size: 1.2em; 
+}
+
+.home-label-link {
+	width: 8em;
+	height: 8em;
+	margin: 20px;
+	padding: 20px;
+	display:  inline-block;
+	text-align: center;
+	vertical-align: middle;
+	word-break: break-all;
+  	word-wrap: break-word;
+  	font-size: 1.0em;
+  	font-weight: 300;
+}
