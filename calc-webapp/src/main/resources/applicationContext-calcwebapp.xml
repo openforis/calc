@@ -55,21 +55,12 @@
 <!--     </bean> -->
     
 <!--     <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true" /> -->
-    	
- 	<bean id="dataMarshaller" class="org.openforis.collect.persistence.xml.DataMarshaller" lazy-init="false" 
-  		autowire-candidate="true" autowire="byName" />
 
-	<bean id="expressionFactory" class="org.openforis.idm.model.expression.ExpressionFactory"/>
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
 
-	<bean id="validator" class="org.openforis.idm.metamodel.validation.Validator" />
-	
-    <bean id="collectSurveyContext" class="org.openforis.collect.model.CollectSurveyContext">
-        <constructor-arg><ref bean="expressionFactory"/></constructor-arg>
-        <constructor-arg><ref bean="validator"/></constructor-arg>
-<!--         <constructor-arg><null/></constructor-arg> -->
-    </bean>
+		<!-- one of the properties available; the maximum file size in bytes -->
+		<property name="maxUploadSize" value="-1" />
+	</bean>	
     
-    <bean id="idmlBinder" class="org.openforis.collect.persistence.xml.CollectSurveyIdmlBinder">
-    	<constructor-arg><ref bean="collectSurveyContext"/></constructor-arg>
-    </bean>
 </beans>

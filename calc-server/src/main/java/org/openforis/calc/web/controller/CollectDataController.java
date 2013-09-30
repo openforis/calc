@@ -45,9 +45,11 @@ public class CollectDataController {
 	@Autowired
 	private TaskManager taskManager;
 	
-	@RequestMapping(value = "/data.json", method = RequestMethod.PUT, produces = "application/json")
+	@RequestMapping(value = "/data.json", method = RequestMethod.POST, produces = "application/json")
 	public @ResponseBody
-	Job importCollectData(@ModelAttribute("file") MultipartFile file, @RequestParam(value = "workspaceId", required = true) int workspaceId) {
+	Job importCollectData(
+			@ModelAttribute("file") MultipartFile file, 
+			@RequestParam(value = "workspaceId", required = true) int workspaceId) {
 		
 		Workspace ws = workspaceService.get(workspaceId);
 		try {
@@ -65,14 +67,14 @@ public class CollectDataController {
 	private Job createJob(Workspace workspace, CollectSurvey survey, File dataFile) {
 		CollectJob job = taskManager.createCollectJob(workspace, survey);
 		
+		CollectInputSchemaCreatorTask schemaCreatorTask = taskManager.createTask(CollectInputSchemaCreatorTask.class);
+		job.addTask(schemaCreatorTask);
+		
 		CollectMetadataImportTask importTask = taskManager.createTask(CollectMetadataImportTask.class);
 		job.addTask(importTask);
 		
 		CategoriesImportTask categoriesImportTask = taskManager.createTask(CategoriesImportTask.class);
 		job.addTask(categoriesImportTask);
-		
-		CollectInputSchemaCreatorTask schemaCreatorTask = taskManager.createTask(CollectInputSchemaCreatorTask.class);
-		job.addTask(schemaCreatorTask);
 		
 		CollectDataImportTask dataImportTask = taskManager.createTask(CollectDataImportTask.class);
 		dataImportTask.setDataFile(dataFile);

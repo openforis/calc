@@ -29,8 +29,6 @@ import org.springframework.jdbc.datasource.DataSourceUtils;
  */
 public class CollectInputSchemaCreatorTask extends Task {
 
-	private CollectSurvey survey;
-	
 	@Autowired
 	private Configuration config;
 	
@@ -80,6 +78,7 @@ public class CollectInputSchemaCreatorTask extends Task {
 		DataSourceConnectionProvider connectionProvider = (DataSourceConnectionProvider) config.connectionProvider();
 		DataSource dataSource = connectionProvider.dataSource();
 		RelationalSchemaGenerator rdbGenerator = new RelationalSchemaGenerator();
+		CollectSurvey survey = ((CollectJob) getJob()).getSurvey();
 		RelationalSchema schema = rdbGenerator.generateSchema(survey, inputSchemaName);
 		RelationalSchemaCreator relationalSchemaCreator = new LiquibaseRelationalSchemaCreator();
 		Connection connection = DataSourceUtils.getConnection(dataSource);
@@ -87,12 +86,4 @@ public class CollectInputSchemaCreatorTask extends Task {
 		return schema;
 	}
 	
-	public CollectSurvey getSurvey() {
-		return survey;
-	}
-
-	public void setSurvey(CollectSurvey survey) {
-		this.survey = survey;
-	}
-
 }
