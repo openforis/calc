@@ -8,9 +8,21 @@ home = "home.html";
 $page = $("#page");
 $nav = $(".container ul.breadcrumb");
 
+checkJobStatus = function() {
+//	console.log("aaaa2");
+	$.ajax({
+		url: "rest/workspace/job.json",
+		dataType: "json"
+	})
+	.done(function(response){
+//		console.log("aaaa");
+		console.log(response);
+	}); 
+};
+
 loadPage = function(page) {
 	$page.hide();
-	$page.html("");
+	$page.empty();
 	
 	$.ajax({
 		  url: page,
@@ -24,32 +36,20 @@ loadPage = function(page) {
 		}
 		$page.html(response);
 		$page.fadeIn(500);
+		
+		checkJobStatus();
 	});
 	
 }; 
 
 $(document).ready(function() {
-	
-//	$(".row-section .menu a").on("click", function(event) {
-//		event.preventDefault();
-//		
-//		$href = $(this).attr("href");
-//		console.log($href);
-//	});
-//	
-//	$(".home-label-link").on("click", function(event) {
-//		event.preventDefault();
-//		
-//		$href = $(this).attr("href");
-//		console.log($href);
-//	});
-	
-	$nav.find("a").on("click", function(event) {
+		
+	$nav.find("a").click(function(event) {
 		event.preventDefault();
 		
 		$href = $(this).attr("href");
 		loadPage($href);
 	});
 	
-	loadPage("home.html");
+	loadPage( home );
 });

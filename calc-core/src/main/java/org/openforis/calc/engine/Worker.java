@@ -50,7 +50,7 @@ public abstract class Worker {
 
 	// TODO
 //	protected abstract long countTotalItems();
-	protected long countTotalItems() { return 1; };
+	protected long countTotalItems() { return -1; };
 
 	protected abstract void execute() throws Throwable;
 

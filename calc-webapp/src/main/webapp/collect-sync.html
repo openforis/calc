@@ -1,0 +1,61 @@
+<!-- ==== Html here === -->
+
+<div class="row">
+	<div class="col-md-12">
+		<form id="imageform" method="post" enctype="multipart/form-data" action="rest/collect/data.json">
+		    <div id="uploadBox" class="well" onClick="$('#photoimg').click();">
+				<H2>Click to Upload</H2>
+		    </div>		    
+		    <input type="file" class="hide" name="file" id="photoimg" />		    		    
+		</form>	
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<div id="progressOverlay" class="hide">
+		    	<div class="progress progress-striped">
+		    		<div class="bar" id="progressBar" style="width: 0%;">0%</div>
+		    	</div>
+	    	</div>
+	</div>
+</div>
+
+<script>
+$(document).ready(function(){
+	
+	$('#imageform').ajaxForm( {
+	    dataType : 'json',
+	    beforeSubmit: function() {
+	    	console.log('before submit');
+	        $(this).addClass('loading');
+	        $('#uploadBox').addClass('hide');
+	        $("#progressOverlay").removeClass('hide');
+	    },
+	    uploadProgress: function ( event, position, total, percentComplete ) {
+	    	console.log('upload progress');
+	    	console.log(event);
+	    	console.log(position);
+	    	console.log(total);
+	    	console.log(percentComplete);
+	        if (percentComplete == 100) {
+	            $('#progressBar').css('width',percentComplete+'%').html('Processing...');
+	        } else {
+	            $('#progressBar').css('width',percentComplete+'%').html(percentComplete+'%');
+	        }
+	    },
+	    success : function ( json ) {
+	    	console.log('success');
+	        //Your Custom JS Code Here
+	    }
+	});	
+	
+	$("#photoimg").change(function(event){
+		
+		console.log('submit');
+		
+		$("#imageform").submit();
+		
+	});
+	
+});
+</script>

@@ -5,12 +5,17 @@
 
 @CHARSET "UTF-8";
 
+.progress {
+	height: 30px;	
+}
+
 .container ul.breadcrumb {
 	margin-top : 1em;
 	display: none;
 }
+
 #page {	
-	margin-top : 2em;
+	margin-top : 2.5em;
 /* 	padding-top: 20px; */
 	height: 90%;
 }
