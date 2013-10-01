@@ -3,6 +3,21 @@
  * 
  *  @author Mino Togna
  */
+
+$page = $("#page");
+
+loadPage = function(page) {
+	$page.html("");
+	
+	$.ajax({
+		  url: page,
+		  dataType: "html"
+	})
+	.done(function(response) {
+		$page.html(response);
+	});
+}; 
+
 $(document).ready(function() {
 	
 	$(".row-section .menu a").on("click", function(event) {
@@ -18,4 +33,6 @@ $(document).ready(function() {
 		$href = $(this).attr("href");
 		console.log($href);
 	});
+	
+	loadPage("home.html");
 });
