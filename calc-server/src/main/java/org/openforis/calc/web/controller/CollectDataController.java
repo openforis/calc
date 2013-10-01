@@ -1,6 +1,7 @@
 package org.openforis.calc.web.controller;
 
 import java.io.File;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.openforis.calc.collect.CategoriesImportTask;
@@ -47,18 +48,16 @@ public class CollectDataController {
 	
 	@RequestMapping(value = "/data.json", method = RequestMethod.POST, produces = "application/json")
 	public @ResponseBody
-	Job importCollectData(
-			@ModelAttribute("file") MultipartFile file, 
-			@RequestParam(value = "workspaceId", required = true) int workspaceId) {
-		
-		Workspace ws = workspaceService.get(workspaceId);
+	String importCollectData(@ModelAttribute("file") MultipartFile file) {
+		Workspace ws = loadWorkspace();
 		try {
 			File tempFile = File.createTempFile(TEMP_FILE_PREFIX, TEMP_FILE_SUFFIX);
 			FileUtils.copyInputStreamToFile(file.getInputStream(), tempFile);
 			CollectSurvey survey = idmExtractor.extractSurvey(tempFile);
 			Job job = createJob(ws, survey, tempFile);
 			taskManager.startJob(job);
-			return job;
+			//return job;
+			return Boolean.TRUE.toString();
 		} catch (Exception e) {
 			throw new RuntimeException("Error while uploading file", e);
 		}
@@ -84,6 +83,12 @@ public class CollectDataController {
 		return job;
 	}
 	
+	private Workspace loadWorkspace() {
+		List<Workspace> workspaces = workspaceService.loadAll();
+		Workspace ws = workspaces.get(0);
+		return ws;
+	}
+
 }
 	
 
