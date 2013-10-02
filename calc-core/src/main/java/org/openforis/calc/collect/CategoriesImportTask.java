@@ -45,7 +45,6 @@ import org.openforis.idm.metamodel.AttributeDefinition;
 import org.openforis.idm.metamodel.CodeAttributeDefinition;
 import org.openforis.idm.metamodel.CodeList;
 import org.openforis.idm.metamodel.NodeDefinition;
-import org.openforis.idm.metamodel.Survey;
 import org.openforis.idm.metamodel.TaxonAttributeDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -65,6 +64,12 @@ public class CategoriesImportTask extends Task {
 	
 	private RelationalSchema inputRelationalSchema;
 
+	@Override
+	protected long countTotalItems() {
+		List<Variable<?>> vars = getVariables();
+		return vars.size();
+	}
+	
 	@Override
 	protected void execute() throws Throwable {
 		deleteCategories();
@@ -95,6 +100,7 @@ public class CategoriesImportTask extends Task {
 			} else if ( v instanceof BinaryVariable ) {
 				insertBooleanCategories((BinaryVariable) v);
 			}
+			incrementItemsProcessed();
 		}
 	}
 

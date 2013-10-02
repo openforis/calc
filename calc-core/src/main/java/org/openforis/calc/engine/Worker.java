@@ -141,6 +141,18 @@ public abstract class Worker {
 	public final Throwable getLastException() {
 		return this.lastException;
 	}
+	
+	public void setItemsProcessed(long itemsProcessed) {
+		this.itemsProcessed = itemsProcessed;
+	}
+	
+	public long incrementItemsProcessed() {
+		return ++this.itemsProcessed;
+	}
+
+	public long incrementItemsSkipped() {
+		return ++this.itemsSkipped;
+	}
 
 	public UUID getId() {
 		return id;

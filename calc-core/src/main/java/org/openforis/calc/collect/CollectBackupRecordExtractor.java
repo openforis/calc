@@ -51,6 +51,7 @@ public class CollectBackupRecordExtractor implements Closeable {
 	}
 
 	public ParseRecordResult nextRecord(Step step) throws Exception {
+		checkInitialized();
 		ParseRecordResult result = null;
 		ZipEntry zipEntry = nextRecordEntry();
 		while ( zipEntry != null ) {
@@ -117,6 +118,17 @@ public class CollectBackupRecordExtractor implements Closeable {
 			throw new Exception("Packaged file format exception: wrong entry name: " + zipEntryName);
 		}
 		return entryNameSplitted;
+	}
+
+	public long countRecords() {
+		checkInitialized();
+		int count = 0;
+		ZipEntry entry = nextRecordEntry();
+		while ( entry != null ) {
+			count++;
+			entry = nextRecordEntry();
+		}
+		return count;
 	}
 	
 }

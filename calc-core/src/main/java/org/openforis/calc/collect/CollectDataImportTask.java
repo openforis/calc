@@ -31,6 +31,23 @@ public class CollectDataImportTask extends Task {
 	private Configuration config;
 	
 	@Override
+	protected long countTotalItems() {
+		long totalRecords;
+		CollectSurvey survey = ((CollectJob) getJob()).getSurvey();
+		CollectBackupRecordExtractor recordExtractor = null;
+		try {
+			recordExtractor = new CollectBackupRecordExtractor(survey, dataFile);
+			recordExtractor.init();
+			totalRecords = recordExtractor.countRecords();
+		} catch (Exception e) {
+			throw new RuntimeException("Error calculating total number of records", e);
+		} finally {
+			IOUtils.closeQuietly(recordExtractor);
+		}
+		return totalRecords;
+	}
+	
+	@Override
 	protected void execute() throws Throwable {
 		
 		RelationalSchema targetSchema = createInputSchema();
@@ -46,6 +63,7 @@ public class CollectDataImportTask extends Task {
 			int recordId = 1;
 			ParseRecordResult parseRecordResult = recordExtractor.nextRecord(step);
 			while ( parseRecordResult != null ) {
+				incrementItemsProcessed();
 				if ( parseRecordResult.isSuccess()) {
 					CollectRecord record = parseRecordResult.getRecord();
 					record.setId(recordId++);

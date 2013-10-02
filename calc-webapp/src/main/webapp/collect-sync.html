@@ -2,59 +2,61 @@
 
 <div class="row">
 	<div class="col-md-12">
-		<form id="imageform" method="post" enctype="multipart/form-data" action="rest/collect/data.json">
-		    <div id="uploadBox" class="well" onClick="$('#photoimg').click();">
-				<H2>Click to Upload</H2>
-		    </div>		    
-		    <input type="file" class="hide" name="file" id="photoimg" />		    		    
+		<form id="collectSyncForm" method="post" enctype="multipart/form-data" action="rest/collect/data.json">
+			<button id="collectSyncUploadButton" type="button" class="btn btn-info btn-lg">Upload Collect Backup File</button>
+		    <input id="collectSyncFile" type="file" name="file" style="display:none" />		    		    
 		</form>	
 	</div>
 </div>
 <div class="row">
 	<div class="col-md-12">
-		<div id="progressOverlay" class="hide">
-		    	<div class="progress progress-striped">
-		    		<div class="bar" id="progressBar" style="width: 0%;">0%</div>
-		    	</div>
-	    	</div>
-	</div>
+		<div id="collectSyncProgressOverlay" style="display:none">
+			<div class="progress progress-striped active">
+	        	<div id="collectSyncProgressBar" class="progress-bar progress-bar-info"></div>
+	        </div>
+	        <div id="collectSyncProgressPercent" class="percent">0%</div>
+	    </div>
+    </div>
 </div>
 
 <script>
-$(document).ready(function(){
+$(function(){
 	
-	$('#imageform').ajaxForm( {
+	$('#collectSyncForm').ajaxForm( {
 	    dataType : 'json',
 	    beforeSubmit: function() {
 	    	console.log('before submit');
 	        $(this).addClass('loading');
-	        $('#uploadBox').addClass('hide');
-	        $("#progressOverlay").removeClass('hide');
+	        $('#collectSyncUploadButton').hide();
+			$("#collectSyncProgressOverlay").show();
 	    },
 	    uploadProgress: function ( event, position, total, percentComplete ) {
 	    	console.log('upload progress');
 	    	console.log(event);
-	    	console.log(position);
-	    	console.log(total);
 	    	console.log(percentComplete);
-	        if (percentComplete == 100) {
-	            $('#progressBar').css('width',percentComplete+'%').html('Processing...');
-	        } else {
-	            $('#progressBar').css('width',percentComplete+'%').html(percentComplete+'%');
-	        }
+	    	var percentVal = percentComplete+'%';
+            $('#collectSyncProgressBar').width(percentVal);
+            $('#collectSyncProgressPercent').html(percentVal);
 	    },
-	    success : function ( json ) {
+	    success: function ( json ) {
 	    	console.log('success');
-	        //Your Custom JS Code Here
+	    	checkJobStatus();
+	    },
+	    error: function (e) {
+	    	console.log('error: ' + e);
+	    	alert('Error uploading file');
+	        $('#collectSyncUploadButton').show();
+			$("#collectSyncProgressOverlay").hide();
 	    }
 	});	
 	
-	$("#photoimg").change(function(event){
-		
+	$("#collectSyncUploadButton").click(function(event) {
+		$('#collectSyncFile').click();
+	});
+	
+	$("#collectSyncFile").change(function(event) {
 		console.log('submit');
-		
-		$("#imageform").submit();
-		
+		$('#collectSyncForm').submit();
 	});
 	
 });

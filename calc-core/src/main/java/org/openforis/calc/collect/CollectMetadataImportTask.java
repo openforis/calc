@@ -77,6 +77,24 @@ public class CollectMetadataImportTask extends Task {
 	private Set<String> outputValueColumnNames;
 
 	@Override
+	protected long countTotalItems() {
+		CollectSurvey survey = ((CollectJob) getJob()).getSurvey();
+		Schema schema = survey.getSchema();
+		Stack<NodeDefinition> stack = new Stack<NodeDefinition>();
+		stack.addAll(schema.getRootEntityDefinitions());
+		int totalNodes = 0;
+		while ( ! stack.isEmpty() ) {
+			NodeDefinition nodeDefn = stack.pop();
+			if ( nodeDefn instanceof EntityDefinition ) {
+				stack.addAll(((EntityDefinition) nodeDefn).getChildDefinitions());
+			} else {
+				totalNodes++;
+			}
+		}
+		return totalNodes;
+	}
+	
+	@Override
 	protected void execute() throws Throwable {
 		entitiesByEntityDefinitionId = new HashMap<Integer, Entity>();
 		variableNames = new HashSet<String>();
@@ -123,6 +141,7 @@ public class CollectMetadataImportTask extends Task {
 					entity.setSortOrder(entitiesByEntityDefinitionId.size() + 1);
 					entitiesByEntityDefinitionId.put(definition.getId(), entity);
 				}
+				incrementItemsProcessed();
 			}
 		});
 		return new ArrayList<Entity>(entitiesByEntityDefinitionId.values());

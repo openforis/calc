@@ -72,8 +72,6 @@
 	</bean>
 	
 	<!-- OF Collect / Idm -->
-	<bean id="dataMarshaller" class="org.openforis.collect.persistence.xml.DataMarshaller" lazy-init="false" autowire-candidate="true" autowire="byName" />
-
 	<bean id="expressionFactory" class="org.openforis.idm.model.expression.ExpressionFactory"/>
 
 	<bean id="validator" class="org.openforis.idm.metamodel.validation.Validator" />
