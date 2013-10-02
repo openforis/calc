@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 public abstract class Worker {
 
-	private Status status;
+	private Status status;	
 	private UUID id;
 	private long startTime;
 	private long endTime;

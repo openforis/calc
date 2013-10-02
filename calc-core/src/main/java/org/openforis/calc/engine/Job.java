@@ -12,6 +12,7 @@ import org.openforis.calc.schema.OutputSchema;
 import org.openforis.calc.schema.RolapSchema;
 import org.openforis.calc.schema.Schemas;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -25,9 +26,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Job extends Worker implements Iterable<Task> {
 	private int currentTaskIndex;
 	private List<Task> tasks;
+	@JsonIgnore
 	private Workspace workspace;
+	@JsonIgnore
 	private boolean debugMode;
+	@JsonIgnore
 	private DataSource dataSource;
+	@JsonIgnore
 	private Schemas schemas;
 	
 	protected Job(Workspace workspace, DataSource dataSource) {
@@ -174,10 +179,12 @@ public class Job extends Worker implements Iterable<Task> {
 		return dataSource;
 	}
 	
+	@JsonIgnore
 	public RolapSchema getRolapSchema() {
 		return schemas.getRolapSchema();
 	}
 	
+	@JsonIgnore
 	public OutputSchema getOutputSchema() {
 		return schemas.getOutputSchema();
 	}

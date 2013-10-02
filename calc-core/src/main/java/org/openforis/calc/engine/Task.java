@@ -19,9 +19,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author M. Togna
  */
 public abstract class Task extends Worker implements Captionable {
+	@JsonIgnore
 	@Value("${calc.jdbc.username}")
 	private String systemUser;
-
+	
+	@JsonIgnore
 	@Value("${calc-user.jdbc.username}")
 	private String calcUser;
 	
