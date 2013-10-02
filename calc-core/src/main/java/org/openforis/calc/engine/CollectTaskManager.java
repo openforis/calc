@@ -28,8 +28,7 @@ public class CollectTaskManager extends TaskManager {
 	 * @param survey
 	 */
 
-	public Job createImportJob(Workspace workspace, CollectSurvey survey,
-			File dataFile) {
+	public CollectJob createImportJob(Workspace workspace, CollectSurvey survey, File dataFile) {
 		CollectJob job = new CollectJob(workspace, getDataSource(), survey);
 		job.setDebugMode(isDebugMode());
 

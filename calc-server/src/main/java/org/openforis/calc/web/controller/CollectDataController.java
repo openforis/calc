@@ -1,7 +1,6 @@
 package org.openforis.calc.web.controller;
 
 import java.io.File;
-import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.openforis.calc.collect.CollectBackupIdmExtractor;
@@ -19,8 +18,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- * 
  * @author S. Ricci
+ * @author M. Togna
  * 
  */
 @Controller
@@ -42,13 +41,13 @@ public class CollectDataController {
 	@RequestMapping(value = "/data.json", method = RequestMethod.POST, produces = "application/json")
 	public @ResponseBody
 	String importCollectData(@ModelAttribute("file") MultipartFile file) {
-		Workspace ws = loadWorkspace();
+		Workspace ws = workspaceService.getWorkspace();
 		try {
 			File tempFile = File.createTempFile(TEMP_FILE_PREFIX, TEMP_FILE_SUFFIX);
 			FileUtils.copyInputStreamToFile(file.getInputStream(), tempFile);
-			
+
 			CollectSurvey survey = idmExtractor.extractSurvey(tempFile);
-			
+
 			Job job = collectTaskManager.createImportJob(ws, survey, tempFile);
 			collectTaskManager.startJob(job);
 			// return job;
@@ -56,12 +55,6 @@ public class CollectDataController {
 		} catch (Exception e) {
 			throw new RuntimeException("Error while uploading file", e);
 		}
-	}
-
-	private Workspace loadWorkspace() {
-		List<Workspace> workspaces = workspaceService.loadAll();
-		Workspace ws = workspaces.get(0);
-		return ws;
 	}
 
 }

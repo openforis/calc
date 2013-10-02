@@ -1,64 +1,81 @@
 <!-- ==== Html here === -->
 
-<div class="row">
+<div class="row" id="sync-form-section">
 	<div class="col-md-12 text-center">
-		<form id="collectSyncForm" method="post" enctype="multipart/form-data" action="rest/collect/data.json">
-			<button id="collectSyncUploadButton" type="button" class="btn btn-info btn-lg">Upload Collect Backup File</button>
-		    <input id="collectSyncFile" type="file" name="file" style="display:none" />		    		    
+		<form  method="post" enctype="multipart/form-data" action="rest/collect/data.json">
+			<button type="button" class="btn btn-info btn-lg" name="upload-btn">Upload Collect Backup File</button>
+		    <input type="file" name="file" style="display:none" />		    		    
 		</form>	
 	</div>
 </div>
-<div class="row hide" id="collectSyncProgressOverlay">
+
+<div class="row" id="sync-progress-section">
 	<div class="col-md-11">
 		<div class="progress progress-striped active">
-        	<div id="collectSyncProgressBar" class="progress-bar progress-bar-info"></div>
+        	<div class="progress-bar progress-bar-info"></div>
         </div>	        
     </div>
     <div class="col-md-1">
-    	<div id="collectSyncProgressPercent" class="percent">0%</div>
+    	<div class="percent">0%</div>
     </div>
 </div>
 
 <script>
 $(function(){
 	
-	$('#collectSyncForm').ajaxForm( {
+	$formSection = $('#sync-form-section');
+	$form = $formSection.find("form");
+	$uploadBtn = $form.find("button[name='upload-btn']"); 
+	$file = $form.find("input[name='file']");
+	
+	$progressSection = $("#sync-progress-section");
+	$progressBar = $progressSection.find(".progress-bar");
+	$progressPercent = $progressSection.find(".percent");
+	
+	$progressSection.hide();
+	
+	resetForm = function() {
+		$progressSection.hide();
+		$formSection.show();
+		
+		$progressPercent.html("0%");
+		$progressBar.width(0);
+	};
+	
+	
+	$form.ajaxForm( {
 	    dataType : 'json',
 	    beforeSubmit: function() {
-	    	console.log('before submit');
 	        $(this).addClass('loading');
-	        $('#collectSyncUploadButton').hide();
-			$("#collectSyncProgressOverlay").show();
+	        
+	        $formSection.hide();
+			$progressSection.show();
 	    },
 	    uploadProgress: function ( event, position, total, percentComplete ) {
-	    	console.log('upload progress');
-	    	console.log(event);
-	    	console.log(percentComplete);
 	    	var percentVal = percentComplete+'%';
-            $('#collectSyncProgressBar').width(percentVal);
-            $('#collectSyncProgressPercent').html(percentVal);
+	    	
+	    	$progressBar.width(percentVal);
+	    	$progressPercent.html(percentVal);
 	    },
 	    success: function ( json ) {
-	    	console.log('success');
 	    	checkJobStatus();
 	    },
 	    error: function (e) {
-	    	console.log('error: ' + e);
 	    	alert('Error uploading file');
-	        $('#collectSyncUploadButton').show();
-			$("#collectSyncProgressOverlay").hide();
+	    	resetForm();
 	    }
 	});	
 	
-	$("#collectSyncUploadButton").click(function(event) {
+	$uploadBtn.click(function(event) {
 		event.preventDefault();
-		$('#collectSyncFile').click();
+		$file.click();
 	});
 	
-	$("#collectSyncFile").change(function(event) {
+	$file.change(function(event) {
 		event.preventDefault();
-		$('#collectSyncForm').submit();
+		$form.submit();
 	});
+	
 	
 });
 </script>

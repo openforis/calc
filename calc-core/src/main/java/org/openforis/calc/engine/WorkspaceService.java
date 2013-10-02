@@ -19,7 +19,7 @@ public class WorkspaceService {
 	@Autowired
 	private WorkspaceDao dao;
 
-	private Map<Integer, SimpleLock> locks; 
+	private Map<Integer, SimpleLock> locks;
 
 	public WorkspaceService() {
 		this.locks = new HashMap<Integer, SimpleLock>();
@@ -34,12 +34,12 @@ public class WorkspaceService {
 	public Workspace fetchByName(String name) {
 		return dao.fetchByName(name);
 	}
-	
+
 	@Transactional
 	public Workspace fetchCollectSurveyUri(String uri) {
 		return dao.fetchByCollectSurveyUri(uri);
 	}
-	
+
 	@Transactional
 	public Workspace save(Workspace workspace) {
 		return dao.save(workspace);
@@ -50,26 +50,38 @@ public class WorkspaceService {
 		return dao.loadAll();
 	}
 
-	synchronized
-	public SimpleLock lock(int workspaceId) throws WorkspaceLockedException {
+	/**
+	 * It returns the first workspace
+	 * 
+	 * @return
+	 */
+	public Workspace getWorkspace() {
+		List<Workspace> list = loadAll();
+		if (list.isEmpty()) {
+			return null;
+		} else {
+			return list.get(0);
+		}
+	}
+
+	synchronized public SimpleLock lock(int workspaceId) throws WorkspaceLockedException {
 		SimpleLock lock = locks.get(workspaceId);
-		if ( lock == null ) {
+		if (lock == null) {
 			lock = new SimpleLock();
 			locks.put(workspaceId, lock);
 		}
-		if ( !lock.tryLock() ) {
+		if (!lock.tryLock()) {
 			throw new WorkspaceLockedException();
 		}
 		return lock;
 	}
-	
-	synchronized
-	public boolean isLocked(int workspaceId) {
+
+	synchronized public boolean isLocked(int workspaceId) {
 		SimpleLock lock = locks.get(workspaceId);
-		if ( lock == null ) {
+		if (lock == null) {
 			return false;
 		} else {
-			return lock.isLocked(); 
+			return lock.isLocked();
 		}
 	}
 }
