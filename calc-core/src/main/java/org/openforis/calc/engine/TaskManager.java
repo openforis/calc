@@ -125,6 +125,7 @@ public class TaskManager {
 	 */
 	synchronized
 	public void startJob(final Job job) throws WorkspaceLockedException {
+		job.init();
 		final Workspace ws = job.getWorkspace();
 		final SimpleLock lock = workspaceManager.lock(ws.getId());
 		jobs.put(ws.getId(), job);
