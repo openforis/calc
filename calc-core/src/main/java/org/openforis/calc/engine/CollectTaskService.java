@@ -12,6 +12,7 @@ import org.openforis.calc.collect.CollectJob;
 import org.openforis.calc.collect.CollectMetadataImportTask;
 import org.openforis.collect.model.CollectRecord.Step;
 import org.openforis.collect.model.CollectSurvey;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -19,8 +20,11 @@ import org.springframework.stereotype.Component;
  * 
  */
 @Component
-public class CollectTaskManager extends TaskManager {
+public class CollectTaskService {
 
+	@Autowired
+	private TaskManager taskManager; 
+	
 	/**
 	 * Create a job with write-access to the calc schema. Used for updating
 	 * metadata (e.g. importing survey, code lists,..)
@@ -29,19 +33,19 @@ public class CollectTaskManager extends TaskManager {
 	 */
 
 	public CollectJob createImportJob(Workspace workspace, CollectSurvey survey, File dataFile) {
-		CollectJob job = new CollectJob(workspace, getDataSource(), survey);
-		job.setDebugMode(isDebugMode());
+		CollectJob job = new CollectJob(workspace, taskManager.getDataSource(), survey);
+		job.setDebugMode(taskManager.isDebugMode());
 
-		CollectInputSchemaCreatorTask schemaCreatorTask = createTask(CollectInputSchemaCreatorTask.class);
+		CollectInputSchemaCreatorTask schemaCreatorTask = taskManager.createTask(CollectInputSchemaCreatorTask.class);
 		job.addTask(schemaCreatorTask);
 
-		CollectMetadataImportTask importTask = createTask(CollectMetadataImportTask.class);
+		CollectMetadataImportTask importTask = taskManager.createTask(CollectMetadataImportTask.class);
 		job.addTask(importTask);
 
-		CategoriesImportTask categoriesImportTask = createTask(CategoriesImportTask.class);
+		CategoriesImportTask categoriesImportTask = taskManager.createTask(CategoriesImportTask.class);
 		job.addTask(categoriesImportTask);
 
-		CollectDataImportTask dataImportTask = createTask(CollectDataImportTask.class);
+		CollectDataImportTask dataImportTask = taskManager.createTask(CollectDataImportTask.class);
 		dataImportTask.setDataFile(dataFile);
 		dataImportTask.setStep(Step.ANALYSIS);
 		job.addTask(dataImportTask);

@@ -6,12 +6,20 @@
 @CHARSET "UTF-8";
 
 .progress {
-	height: 30px;	
+/* 	height: 30px;	 */
 }
 
+#job-status .modal-dialog {
+	width: 65%;	
+	height: 80%;
+}
 .container ul.breadcrumb {
 	margin-top : 1em;
 	display: none;
+}
+.task-status {
+	padding: 5px 0px;
+	border-bottom: 1px solid #ecf0f1;
 }
 
 #page {	

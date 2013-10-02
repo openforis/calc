@@ -6,8 +6,11 @@ import org.openforis.calc.engine.Job;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.collect.model.CollectSurvey;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class CollectJob extends Job {
 
+	@JsonIgnore
 	private CollectSurvey survey;
 
 	public CollectJob(Workspace workspace, DataSource dataSource, CollectSurvey survey) {

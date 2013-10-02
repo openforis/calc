@@ -30,23 +30,27 @@ public abstract class Task extends Worker implements Captionable {
 	@JsonIgnore
 	private Job job;
 	
+	@JsonIgnore
 	public Workspace getWorkspace() {
 		return getJob().getWorkspace();
 	}
 	
+	@JsonIgnore
 	public boolean isDebugMode() {
 		return getJob().isDebugMode();
 	}
 
+	@JsonIgnore
 	protected OutputSchema getOutputSchema() {
 		return getJob().getOutputSchema();
 	}
 
+	@JsonIgnore
 	protected RolapSchema getRolapSchema() {
 		return getJob().getRolapSchema();
 	}
 
-	
+	@JsonIgnore
 	public Job getJob() {
 		return job;
 	}
@@ -56,20 +60,23 @@ public abstract class Task extends Worker implements Captionable {
 	}
 	
 	// Helpers
-	
+	@JsonIgnore
 	protected DataSource getDataSource() {
 		return getJob().getDataSource();
 	}
 	
+	@JsonIgnore
 	protected Psql psql() {
 		DataSource dataSource = getDataSource();
 		return new Psql(dataSource);
 	}
 	
+	@JsonIgnore
 	protected String getSystemUser() {
 		return systemUser;
 	}
 	
+	@JsonIgnore
 	protected String getCalcUser() {
 		return calcUser;
 	}

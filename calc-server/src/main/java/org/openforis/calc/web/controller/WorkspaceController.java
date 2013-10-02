@@ -1,8 +1,6 @@
 package org.openforis.calc.web.controller;
 
-import java.util.List;
-
-import org.openforis.calc.engine.CollectTaskManager;
+import org.openforis.calc.engine.CollectTaskService;
 import org.openforis.calc.engine.Job;
 import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
@@ -30,16 +28,16 @@ public class WorkspaceController {
 	private TaskManager taskManager;
 
 	@Autowired
-	private CollectTaskManager collectTaskManager;
-	
+	private CollectTaskService collectTaskManager;
+
 	@RequestMapping(value = "/job.json", method = RequestMethod.GET, produces = "application/json")
 	public @ResponseBody
 	Job getJob() {
-		List<Workspace> list = workspaceService.loadAll();
-		Workspace workspace = list.get(0);
+		Workspace workspace = workspaceService.getWorkspace();
 
-		return collectTaskManager.createImportJob(null, null, null);
-//		return taskManager.getJob(workspace.getId());
+		// return collectTaskManager.createImportJob(null, null, null);
+		Job job = taskManager.getJob(workspace.getId());
+		return job;
 	}
 
 }
