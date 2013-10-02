@@ -1,21 +1,21 @@
 <!-- ==== Html here === -->
 
 <div class="row">
-	<div class="col-md-12">
+	<div class="col-md-12 text-center">
 		<form id="collectSyncForm" method="post" enctype="multipart/form-data" action="rest/collect/data.json">
 			<button id="collectSyncUploadButton" type="button" class="btn btn-info btn-lg">Upload Collect Backup File</button>
 		    <input id="collectSyncFile" type="file" name="file" style="display:none" />		    		    
 		</form>	
 	</div>
 </div>
-<div class="row">
-	<div class="col-md-12">
-		<div id="collectSyncProgressOverlay" style="display:none">
-			<div class="progress progress-striped active">
-	        	<div id="collectSyncProgressBar" class="progress-bar progress-bar-info"></div>
-	        </div>
-	        <div id="collectSyncProgressPercent" class="percent">0%</div>
-	    </div>
+<div class="row hide" id="collectSyncProgressOverlay">
+	<div class="col-md-11">
+		<div class="progress progress-striped active">
+        	<div id="collectSyncProgressBar" class="progress-bar progress-bar-info"></div>
+        </div>	        
+    </div>
+    <div class="col-md-1">
+    	<div id="collectSyncProgressPercent" class="percent">0%</div>
     </div>
 </div>
 
@@ -51,11 +51,12 @@ $(function(){
 	});	
 	
 	$("#collectSyncUploadButton").click(function(event) {
+		event.preventDefault();
 		$('#collectSyncFile').click();
 	});
 	
 	$("#collectSyncFile").change(function(event) {
-		console.log('submit');
+		event.preventDefault();
 		$('#collectSyncForm').submit();
 	});
 	

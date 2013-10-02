@@ -11,11 +11,9 @@ import javax.sql.DataSource;
 import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.InvalidProcessingChainException;
 import org.openforis.calc.chain.ProcessingChain;
-import org.openforis.calc.collect.CollectJob;
 import org.openforis.calc.module.ModuleRegistry;
 import org.openforis.calc.module.Operation;
 import org.openforis.calc.schema.Schemas;
-import org.openforis.collect.model.CollectSurvey;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
@@ -65,7 +63,7 @@ public class TaskManager {
 	}
 
 	// TODO move to.. where?
-	private boolean isDebugMode() {
+	protected boolean isDebugMode() {
 		String mode = ((ConfigurableBeanFactory)beanFactory).resolveEmbeddedValue("${calc.debugMode}");
 		return "true".equals(mode);
 	}
@@ -92,17 +90,6 @@ public class TaskManager {
 		return job;
 	}
 
-	/**
-	 * Create a job with write-access to the calc schema. Used for updating
-	 * metadata (e.g. importing survey, code lists,..)  
-	 * @param survey 
-	 */
-	public CollectJob createCollectJob(Workspace workspace, CollectSurvey survey) {
-		CollectJob job = new CollectJob(workspace, dataSource, survey);
-		job.setDebugMode(isDebugMode());
-		return job;
-	}
-	
 	public <T extends Task> T createTask(Class<T> type) {
 		try {
 			T task = type.newInstance();
@@ -167,5 +154,9 @@ public class TaskManager {
 			tasks.add(task);
 		}
 		return tasks;
+	}
+	
+	protected DataSource getDataSource() {
+		return dataSource;
 	}
 }

@@ -4,10 +4,16 @@
  *  @author Mino Togna
  */
 
+/**
+ * Global variables
+ */
 home = "home.html";
 $page = $("#page");
 $nav = $(".container ul.breadcrumb");
 
+/**
+ * Global functions
+ */
 checkJobStatus = function() {
 //	console.log("aaaa2");
 	$.ajax({
@@ -42,9 +48,10 @@ loadPage = function(page) {
 	
 }; 
 
+
 $(document).ready(function() {
 		
-	$nav.find("a").click(function(event) {
+	$("a").click(function(event) {
 		event.preventDefault();
 		
 		$href = $(this).attr("href");
