@@ -2,94 +2,105 @@
 <div class="row">
 	<div class="col-lg-12">
 		<div class="well">
-			<form class="bs-example form-horizontal">
+			<form id="step-form" class="bs-example form-horizontal">
 				<fieldset>
 					<legend>Calculation Step Editor</legend>
 					<div class="form-group">
 						<label for="name" class="col-lg-2 control-label">Name</label>
 						<div class="col-lg-10">
-							<input type="text" class="form-control" id="name" placeholder="Name">
+							<input type="text" class="form-control" name="name">
 						</div>
 					</div>
 					<div class="form-group">
-						<label for="select-entity" class="col-lg-2 control-label">Select Entity</label>
+						<label class="col-lg-2 control-label">Select Entity</label>
 						<div class="col-lg-10">
-							<select class="form-control" id="select-entity">
-								<option>1</option>
-								<option>2</option>
-								<option>3</option>
-								<option>4</option>
-								<option>5</option>
-							</select>
+							<select class="form-control" name="entity"></select>
 						</div>
 					</div>
-					
-					
-								<div class="form-group">
-									<label for="inputPassword" class="col-lg-2 control-label">Password</label>
-									<div class="col-lg-10">
-										<input type="password" class="form-control" id="inputPassword" placeholder="Password">
-										<div class="checkbox">
-											<label> <input type="checkbox"> Checkbox </label>
-										</div>
-									</div>
-								</div>
-								<div class="form-group">
-									<label for="textArea" class="col-lg-2 control-label">Textarea</label>
-									<div class="col-lg-10">
-										<textarea class="form-control" rows="3" id="textArea"></textarea>
-										<span class="help-block">A longer block of help text
-											that breaks onto a new line and may extend beyond one line.</span>
-									</div>
-								</div>
-								<div class="form-group">
-									<label class="col-lg-2 control-label">Radios</label>
-									<div class="col-lg-10">
-										<div class="radio">
-											<label> <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked="">
-													Option one is this </label>
-										</div>
-										<div class="radio">
-											<label> <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2"> Option two can
-													be something else </label>
-										</div>
-									</div>
-								</div>
-								<div class="form-group">
-									<label for="select" class="col-lg-2 control-label">Selects</label>
-									<div class="col-lg-10">
-										<select class="form-control" id="select">
-											<option>1</option>
-											<option>2</option>
-											<option>3</option>
-											<option>4</option>
-											<option>5</option>
-										</select> <br>
-										<select multiple="" class="form-control">
-											<option>1</option>
-											<option>2</option>
-											<option>3</option>
-											<option>4</option>
-											<option>5</option>
-										</select>
-									</div>
-								</div>
-								<div class="form-group">
-									<div class="col-lg-10 col-lg-offset-2">
-										<button class="btn btn-default">Cancel</button>
-										<button type="submit" class="btn btn-primary">Submit</button>
-									</div>
-								</div>
-							</fieldset>
-						</form>
+					<div class="form-group">
+						<label for="select-variable" class="col-lg-2 control-label">Output Variable</label>
+						<div class="col-lg-10">
+							<select class="form-control" name="variable" disabled="disabled"></select>
+						</div>
 					</div>
-				</div>
+					<div class="form-group">
+						<label class="col-lg-2 control-label">Type</label>
+						<div class="col-lg-10">
+							<div class="radio">
+								<input type="radio" name="type" value="formula" checked />
+								<label>Formula</label>
+							</div>
+							<div class="radio">
+								<input type="radio" name="type" value="r" />
+								<label>R</label>
+							</div>
+							<div class="radio">
+								<input type="radio" name="type" value="sql" />
+								<label>SQL</label>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-lg-10 col-lg-offset-2">
+							<button class="btn btn-default">Cancel</button>
+							<button type="submit" class="btn btn-primary">Submit</button>
+						</div>
+					</div>
+				</fieldset>
+			</form>
+		</div>
+	</div>
 </div>
 
 <script>
-$(document).ready(function(){
+$(function(){
+	$stepForm = $('#step-form');
+	$entitySelect = $stepForm.find("[name='entity']");
+	$variableSelect = $stepForm.find("[name='variable']");
 	
-	// Javascript here
+	updateEntities = function() {
+		$entitySelect.empty();
+		$variableSelect.attr("disabled", "disabled");
+		$variableSelect.empty();
+		
+		$.ajax({
+			url: "rest/workspace/entities.json",
+			dataType: "json"
+		})
+		.done(function(response) {
+			var entities = response;
+			$.each(entities, function(i, entity) {
+				 $entitySelect.append($("<option />").val(entity.id).text(entity.name));
+			});
+			updateVariables();
+		}); 
+	};
+	
+	updateVariables = function() {
+		$variableSelect.attr("disabled", "disabled");
+		$variableSelect.empty();
+	
+		$selectedEntityOption = $entitySelect.find(":selected");
+		if ( $selectedEntityOption != null ) {
+			$.ajax({
+				url: "rest/workspace/entities/" + $selectedEntityOption.val() + "/variables.json",
+				dataType: "json"
+			})
+			.done(function(response) {
+				var variables = response;
+				$.each(variables, function(i, variable) {
+					 $variableSelect.append($("<option />").val(variable.id).text(variable.name));
+				});
+				$variableSelect.removeAttr("disabled");
+			}); 
+		}
+	};
+	
+	$entitySelect.change(function(event) {
+		updateVariables();
+	});
+	
+	updateEntities();
 	
 });
 </script>

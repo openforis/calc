@@ -36,6 +36,7 @@ public abstract class Variable<T> extends NamedUserObject {
 		NOMINAL, ORDINAL, BINARY, RATIO, INTERVAL, OTHER, TEXT;
 	}
 
+	@JsonIgnore
 	@Column(name = "sort_order")
 	private int sortOrder;
 

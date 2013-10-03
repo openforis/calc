@@ -91,20 +91,24 @@ public class Entity extends NamedUserObject {
 	@OrderBy("sortOrder")
 	@Fetch(FetchMode.SUBSELECT) 
 	@Cascade(CascadeType.ALL)
+	@JsonIgnore
 	private List<Variable<?>> variables = new ArrayList<Variable<?>>();
 
 	@OneToMany(mappedBy = "parent", fetch = FetchType.EAGER)
 	@OrderBy("sortOrder")
 	@Fetch(FetchMode.SUBSELECT) 
 	@Cascade(CascadeType.ALL)
+	@JsonIgnore
 	private List<Entity> children = new ArrayList<Entity>();
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "cluster_variable_id")
+	@JsonIgnore
 	private Variable<?> clusterVariable;
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "unit_no_variable_id")
+	@JsonIgnore
 	private Variable<?> unitNoVariable;
 	
 	@Column(name = "original_id")
@@ -159,6 +163,7 @@ public class Entity extends NamedUserObject {
 		}
 	}
 	
+	@JsonIgnore
 	public List<VariableAggregate> getVariableAggregates() {
 		List<VariableAggregate> aggs = new ArrayList<VariableAggregate>();
 		for (Variable<?> var : variables) {
@@ -169,10 +174,12 @@ public class Entity extends NamedUserObject {
 		return Collections.unmodifiableList(aggs);
 	}
 	
+	@JsonIgnore
 	public boolean hasOverriddenVariables() {
 		return ! getOverriddenVariables().isEmpty();
 	}
 	
+	@JsonIgnore
 	public boolean hasOverriddenDescendants() {
 		Stack<Entity> stack = new Stack<Entity>();
 		stack.addAll(getChildren());
@@ -290,19 +297,23 @@ public class Entity extends NamedUserObject {
 		this.unitOfAnalysis = unitOfAnalysis;
 	}
 
+	@JsonIgnore
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public List<CategoricalVariable<?>> getCategoricalVariables() {
 		return Collections.unmodifiableList(selectInstancesOf((List)variables, CategoricalVariable.class));
 	}
 
+	@JsonIgnore
 	public List<QuantitativeVariable> getQuantitativeVariables() {
 		return Collections.unmodifiableList(selectInstancesOf(variables, QuantitativeVariable.class));
 	}
 
+	@JsonIgnore
 	public List<TextVariable> getTextVariables() {
 		return Collections.unmodifiableList(selectInstancesOf(variables, TextVariable.class));
 	}
 	
+	@JsonIgnore
 	public Collection<Variable<?>> getOverriddenVariables() {
 		return getVariables(new Predicate() {
 			@Override
@@ -312,6 +323,7 @@ public class Entity extends NamedUserObject {
 		});
 	}
 	
+	@JsonIgnore
 	public Collection<Variable<?>> getNotOverriddenVariables() {
 		return getVariables(new Predicate() {
 			@Override
@@ -337,6 +349,7 @@ public class Entity extends NamedUserObject {
 		}
 	}
 
+	@JsonIgnore
 	public int getVariableNextSortOrder() {
 		int result = 0;
 		for ( Variable<?> v: variables ) {

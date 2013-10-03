@@ -177,6 +177,17 @@ public class Workspace extends UserObject {
 		return notOverriddenEntities;
 	}
 	
+	public Entity getEntityById(int id) {
+		if ( name != null && CollectionUtils.isNotEmpty(entities) ) {
+			for (Entity e : entities ) {
+				if ( e.getId().equals(id) ) {
+					return e;
+				}
+			}
+		}
+		return null;
+	}
+	
 	public Entity getEntityByName(String name) {
 		if ( name != null && CollectionUtils.isNotEmpty(entities) ) {
 			for (Entity e : entities ) {
