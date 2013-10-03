@@ -18,14 +18,12 @@ $taskStatus = $(".task-status");
  * Global functions
  */
 checkJobStatus = function(updateOnly) {
-	console.log("check job status");
 	$.ajax({
 		url: "rest/workspace/job.json",
 		dataType: "json"
 	})
 	.done(function(response) {
 		$job = response;
-		console.log("job status: " + $job.status);
 
 		if( $jobStatusOpen || $job.status == 'RUNNING'){
 			if( updateOnly ){
@@ -73,8 +71,6 @@ updateJobStatus = function($job) {
 		$progressBar.addClass("progress-bar");
 		$progressBar.parent().removeClass();
 		$progressBar.parent().addClass("progress");
-		
-		console.log(i + " - status: " + $task.status);
 		
 		totalItems = $task.totalItems;
 		itemsProcessed = $task.itemsProcessed;
