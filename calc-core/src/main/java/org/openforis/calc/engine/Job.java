@@ -59,6 +59,7 @@ public class Job extends Worker implements Iterable<Task> {
 	 * (i.e. not in constructor!)
 	 */
 	public final void init() {
+		super.init();
 		log().debug("Initializing");
 		for (Worker task : tasks) {
 			task.init();
