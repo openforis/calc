@@ -19,31 +19,43 @@
 					</div>
 					<div class="form-group">
 						<label for="select-variable" class="col-lg-2 control-label">Output Variable</label>
-						<div class="col-lg-10">
+						<div class="col-lg-9">
 							<select class="form-control" name="variable" disabled="disabled"></select>
+						</div>
+						<div class="col-lg-1">
+							<button name="add-variable" class="btn btn-info" >
+								<i class="icon-plus-sign-alt" style="font-size: 22px;"></i>
+							</button>
 						</div>
 					</div>
 					<div class="form-group">
 						<label class="col-lg-2 control-label">Type</label>
-						<div class="col-lg-10">
+						
+						<div class="col-lg-2">
 							<div class="radio">
-								<input type="radio" name="type" value="formula" checked />
-								<label>Formula</label>
-							</div>
-							<div class="radio">
-								<input type="radio" name="type" value="r" />
-								<label>R</label>
-							</div>
-							<div class="radio">
-								<input type="radio" name="type" value="sql" />
-								<label>SQL</label>
+								<label><input type="radio" name="type" value="formula" /> Formula</label>
 							</div>
 						</div>
+						<div class="col-lg-2">
+							<div class="radio">								
+								<label><input type="radio" name="type" value="r" /> R</label>
+							</div>	
+						</div>
+						<div class="col-lg-2">
+							<div class="radio">								
+								<label><input type="radio" name="type" value="sql" /> SQL</label>
+							</div>
+						</div>
+						<div class="col-lg-4"></div>
+						
 					</div>
-					<div class="form-group">
-						<div class="col-lg-10 col-lg-offset-2">
-							<button class="btn btn-default">Cancel</button>
-							<button type="submit" class="btn btn-primary">Submit</button>
+					<div class="form-group buttons">
+						<div class="col-lg-1 col-lg-offset-2">
+							<button type="submit" class="btn btn-primary">Save</button>
+							
+						</div>
+						<div class="col-lg-2">
+							<button class="btn btn-default cancel">Cancel</button>
 						</div>
 					</div>
 				</fieldset>
@@ -72,7 +84,8 @@ $(function(){
 			$.each(entities, function(i, entity) {
 				 $entitySelect.append($("<option />").val(entity.id).text(entity.name));
 			});
-			updateVariables();
+			//updateVariables();
+			$entitySelect.val([]);
 		}); 
 	};
 	

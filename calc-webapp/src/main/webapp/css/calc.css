@@ -72,3 +72,9 @@
   	font-size: 1.0em;
   	font-weight: 300;
 }
+
+/** Form */
+
+.buttons {
+	margin-top: 50px;
+}
