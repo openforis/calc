@@ -13,10 +13,20 @@
 	width: 65%;	
 	height: 80%;
 }
+
+#job-status .modal-title {
+	text-align: center;
+}
+
+#job-status .modal-footer {
+	text-align: center;
+}
+	
 .container ul.breadcrumb {
 	margin-top : 1em;
 	display: none;
 }
+
 .task-status {
 	padding: 5px 0px;
 	border-bottom: 1px solid #ecf0f1;

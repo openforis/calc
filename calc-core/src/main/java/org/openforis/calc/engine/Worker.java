@@ -54,6 +54,10 @@ public abstract class Worker {
 
 	protected abstract void execute() throws Throwable;
 
+	public String getName() {
+		return getClass().getSimpleName();
+	}
+	
 	public synchronized void run() {
 		if ( !isPending() ) { 
 			throw new IllegalStateException("Already run");

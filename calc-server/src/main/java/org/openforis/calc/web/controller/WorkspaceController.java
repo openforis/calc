@@ -34,8 +34,6 @@ public class WorkspaceController {
 	public @ResponseBody
 	Job getJob() {
 		Workspace workspace = workspaceService.getWorkspace();
-
-		// return collectTaskManager.createImportJob(null, null, null);
 		Job job = taskManager.getJob(workspace.getId());
 		return job;
 	}

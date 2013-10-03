@@ -33,6 +33,11 @@ public class CollectInputSchemaCreatorTask extends Task {
 	private Configuration config;
 	
 	@Override
+	public String getName() {
+		return "Create relational schema";
+	}
+	
+	@Override
 	protected void execute() throws Throwable {
 		dropInputSchema();
 		

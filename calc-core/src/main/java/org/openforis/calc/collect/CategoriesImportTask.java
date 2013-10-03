@@ -65,6 +65,11 @@ public class CategoriesImportTask extends Task {
 	private RelationalSchema inputRelationalSchema;
 
 	@Override
+	public String getName() {
+		return "Import categories";
+	}
+	
+	@Override
 	protected long countTotalItems() {
 		List<Variable<?>> vars = getVariables();
 		return vars.size();

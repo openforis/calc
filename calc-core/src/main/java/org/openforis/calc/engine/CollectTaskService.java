@@ -6,9 +6,9 @@ package org.openforis.calc.engine;
 import java.io.File;
 
 import org.openforis.calc.collect.CategoriesImportTask;
+import org.openforis.calc.collect.CollectDataImportJob;
 import org.openforis.calc.collect.CollectDataImportTask;
 import org.openforis.calc.collect.CollectInputSchemaCreatorTask;
-import org.openforis.calc.collect.CollectJob;
 import org.openforis.calc.collect.CollectMetadataImportTask;
 import org.openforis.collect.model.CollectRecord.Step;
 import org.openforis.collect.model.CollectSurvey;
@@ -32,8 +32,8 @@ public class CollectTaskService {
 	 * @param survey
 	 */
 
-	public CollectJob createImportJob(Workspace workspace, CollectSurvey survey, File dataFile) {
-		CollectJob job = new CollectJob(workspace, taskManager.getDataSource(), survey);
+	public CollectDataImportJob createImportJob(Workspace workspace, CollectSurvey survey, File dataFile) {
+		CollectDataImportJob job = new CollectDataImportJob(workspace, taskManager.getDataSource(), survey);
 		job.setDebugMode(taskManager.isDebugMode());
 
 		CollectInputSchemaCreatorTask schemaCreatorTask = taskManager.createTask(CollectInputSchemaCreatorTask.class);

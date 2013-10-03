@@ -11,38 +11,35 @@ home = "home.html";
 $page = $("#page");
 $nav = $(".container ul.breadcrumb");
 $jobStatus = $("#job-status");
+$jobStatusOpen = false;
 $taskStatus = $(".task-status");
 
 /**
  * Global functions
  */
 checkJobStatus = function(updateOnly) {
-	console.log("check job statys");
+	console.log("check job status");
 	$.ajax({
 		url: "rest/workspace/job.json",
 		dataType: "json"
 	})
 	.done(function(response) {
-		//TODO: open when status is 'RUNNING'
 		$job = response;
-		if( $job.status == 'RUNNING'){
-			$jobStatus.modal({keyboard:false,backdrop:"static"});
+		console.log("job status: " + $job.status);
+
+		if( $jobStatusOpen || $job.status == 'RUNNING'){
 			if( updateOnly ){
 				updateJobStatus($job);
 			} else {
 				createJobStatus($job);				
 			}
 		}
-		
-		
 	}); 
 };
 
 createJobStatus = function($job) {
-	console.log("createJobStatus");
-	
-	title = $job.name+" remove this"; 
-	$jobStatus.find('.modal-title').html(title);
+	$jobStatus.modal({keyboard:false,backdrop:"static"});
+	$jobStatus.find('.modal-title').text($job.name);
 	$modalBody = $jobStatus.find('.modal-body');
 	$modalBody.empty();
 	
@@ -55,34 +52,29 @@ createJobStatus = function($job) {
 		
 		$status.attr("id",$task.id);
 		
-		$status.find(".number").html( (i+1) +"." );
-		$status.find(".name").html( $task.name );
+		$status.find(".number").text( (i+1) +"." );
+		$status.find(".name").text( $task.name );
 		
 		$modalBody.append($status);	
 	});
-
+	$jobStatusOpen = true;
 	updateJobStatus($job);
 };
 
 
 updateJobStatus = function($job) {
-	console.log("updateJobStatus");
-	
 	$tasks = $job.tasks;
 	$.each($tasks, function(i, $task) {
 		
 		$status = $jobStatus.find("#"+$task.id);
-		
-//		$status.attr("id",$task.id);
-		
-		$status.find(".number").html( (i+1) +"." );
-		$status.find(".name").html( $task.name );
 		
 		$progressBar = $status.find(".progress-bar");		
 		$progressBar.removeClass();
 		$progressBar.addClass("progress-bar");
 		$progressBar.parent().removeClass();
 		$progressBar.parent().addClass("progress");
+		
+		console.log(i + " - status: " + $task.status);
 		
 		totalItems = $task.totalItems;
 		itemsProcessed = $task.itemsProcessed;
@@ -97,29 +89,26 @@ updateJobStatus = function($job) {
 				$progressBar.parent().addClass("active progress-striped");
 				$progressBar.width("100%");
 			}
+			htmlPercent = (percent >= 0) ? percent + " %" : " -% ";
+			$status.find(".percent").text(htmlPercent);
 			break;
 		case "COMPLETED": 
 			$progressBar.addClass("progress-bar-success");
 			$progressBar.width("100%");
+			$status.find(".percent").text("100%");
 			break;
 		default: // nothing for now;
 		}
 		
-		htmlPercent = (percent >= 0) ? percent+" %" : " -% ";
-		$status.find(".percent").html();
-		
-		
-		$modalBody.append($status);	
-		
+		$modalBody.append($status);
 		
 	});
 
-	if( $job.status == "COMPLETED" ){
-		$jobStatus.find(".modal-footer").removeClass("hide");
-	} else {
+	if( $job.status == "RUNNING" ){
 		setTimeout(function(){checkJobStatus(true);}, 1000);
+	} else {
+		$jobStatus.find(".modal-footer").removeClass("hide");
 	}
-
 	
 };
 
@@ -154,14 +143,6 @@ $(document).ready(function() {
 		$href = $(this).attr("href");
 		loadPage($href);
 	});
-	
-	$jobStatus.on('shown.bs.modal', function () {
-		console.log('showing');
-	    $(this).find('.modal-body').css({width:'auto',
-	                               height:'auto', 
-	                              'max-height':'100%'});
-	});
-	
 	loadPage( home );
 	
 });

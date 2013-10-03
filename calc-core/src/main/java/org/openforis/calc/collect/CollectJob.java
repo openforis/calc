@@ -8,7 +8,13 @@ import org.openforis.collect.model.CollectSurvey;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class CollectJob extends Job {
+/**
+ * 
+ * @author M. Togna
+ * @author S. Ricci
+ *
+ */
+public abstract class CollectJob extends Job {
 
 	@JsonIgnore
 	private CollectSurvey survey;

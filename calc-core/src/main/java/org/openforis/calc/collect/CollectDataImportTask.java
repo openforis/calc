@@ -31,6 +31,11 @@ public class CollectDataImportTask extends Task {
 	private Configuration config;
 	
 	@Override
+	public String getName() {
+		return "Import data";
+	}
+	
+	@Override
 	protected long countTotalItems() {
 		long totalRecords;
 		CollectSurvey survey = ((CollectJob) getJob()).getSurvey();

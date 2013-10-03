@@ -70,6 +70,10 @@ public class CollectMetadataImportTask extends Task {
 	@Autowired
 	private VariableDao variableDao;
 	
+	@Override
+	public String getName() {
+		return "Import metadata";
+	}
 	
 	//transient variables
 	private Map<Integer, Entity> entitiesByEntityDefinitionId;
@@ -87,9 +91,8 @@ public class CollectMetadataImportTask extends Task {
 			NodeDefinition nodeDefn = stack.pop();
 			if ( nodeDefn instanceof EntityDefinition ) {
 				stack.addAll(((EntityDefinition) nodeDefn).getChildDefinitions());
-			} else {
-				totalNodes++;
 			}
+			totalNodes++;
 		}
 		return totalNodes;
 	}
