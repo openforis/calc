@@ -1,16 +1,10 @@
-package org.openforis.calc.chain.pre;
+package test;
 
 //import java.util.List;
 
-import org.junit.Test;
 import org.openforis.calc.chain.InvalidProcessingChainException;
 import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.chain.ProcessingChainDao;
-import org.openforis.calc.chain.post.AssignDimensionIdsTask;
-import org.openforis.calc.chain.post.AssignStratumIdsTask;
-import org.openforis.calc.chain.post.CalculateExpansionFactorsTask;
-import org.openforis.calc.chain.post.CreateAggregateTablesTask;
-import org.openforis.calc.chain.post.CreateFactTablesTask;
 import org.openforis.calc.chain.post.PublishRolapSchemaTask;
 import org.openforis.calc.engine.CalculationEngine;
 import org.openforis.calc.engine.Job;
@@ -18,8 +12,6 @@ import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceLockedException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
 /**
  * 
@@ -28,8 +20,9 @@ import org.springframework.test.context.junit4.AbstractTransactionalJUnit4Spring
  * @author M. Togna
  *
  */
-@ContextConfiguration(locations = { "classpath:applicationContext.xml" })
-public class ProcessingChainTest extends AbstractTransactionalJUnit4SpringContextTests {
+//@ContextConfiguration(locations = { "classpath:applicationContext.xml" })
+public class ProcessingChainTest { 
+//extends AbstractTransactionalJUnit4SpringContextTests {
 	@Autowired
 	private CalculationEngine calculationEngine;
 	@Autowired
@@ -79,7 +72,7 @@ public class ProcessingChainTest extends AbstractTransactionalJUnit4SpringContex
 		job.waitFor(5000);
 	}
 	
-	@Test
+//	@Test
 	public void testPostProcessing() throws WorkspaceLockedException, InvalidProcessingChainException {
 		ProcessingChain chain = processingChainDao.find(21);
 		Workspace workspace = chain.getWorkspace(); 
@@ -90,7 +83,7 @@ public class ProcessingChainTest extends AbstractTransactionalJUnit4SpringContex
 		job.waitFor(5000);
 	}
 	
-	@Test
+//	@Test
 	public void testChain() throws WorkspaceLockedException, InvalidProcessingChainException {
 		Job job = calculationEngine.runProcessingChain(21);
 		while(!job.isEnded()){
