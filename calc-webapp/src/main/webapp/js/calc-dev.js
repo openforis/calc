@@ -189,6 +189,8 @@ $(document).ready(function() {
 			/**
 			 * hide home and shows loaded page
 			 */
+			//remove scrollbar
+			$("body").css('overflow','hidden');
 			//fade out footer links
 			$footerHomeLinks.fadeOut(500);
 			//move the home section buttons out of the screen towards left
@@ -223,7 +225,9 @@ $(document).ready(function() {
 			$extSection.remove();
 		},500);
 		
-		//show home sections and footer buttons
+		//show home section and footer buttons
+		//remove scroll when adding the item to the page
+		$btnSection.parent().css('overflow','hidden');
 		$btnSection.show();
 		$btnSection.animate({left:"0px"}, 1000,'easeOutExpo');
 		$footerHomeLinks.fadeIn(500);
@@ -233,7 +237,11 @@ $(document).ready(function() {
 		$('html, body').stop().animate({
 	        scrollTop: $section.offset().top
 	    }, 0);
-		
+		setTimeout(function(){
+			//reset scroll bars
+			$btnSection.parent().css('overflow','auto');
+			$("body").css('overflow','auto');
+		}, 800);
 	});
 	
 	
