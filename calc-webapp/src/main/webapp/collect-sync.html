@@ -1,26 +1,24 @@
-<!-- ==== Html here === -->
-
-<div class="row" id="sync-form-section">
-	<div class="col-md-12 text-center">
-		<form  method="post" enctype="multipart/form-data" action="rest/collect/data.json">
-			<button type="button" class="btn btn-info btn-lg" name="upload-btn">Upload Collect Backup File</button>
-		    <input type="file" name="file" style="display:none" />		    		    
-		</form>	
+<div class="page-section" style="margin-top:40px;">
+	<div class="row" id="sync-form-section">
+		<div class="col-md-12 text-center">
+			<form  method="post" enctype="multipart/form-data" action="rest/collect/data.json">
+				<button type="button" class="btn btn-default btn-lg" name="upload-btn">Start to upload Collect backup file</button>
+			    <input type="file" name="file" style="display:none" />		    		    
+			</form>	
+		</div>
 	</div>
-</div>
-
-<div class="row" id="sync-progress-section">
-	<div class="col-md-11">
-		<div class="progress progress-striped active">
-        	<div class="progress-bar progress-bar-info"></div>
-        </div>	        
-    </div>
-    <div class="col-md-1">
-    	<div class="percent">0%</div>
-    </div>
-</div>
-
-<script>
+	<div class="row" id="sync-progress-section">
+		<div class="col-md-11">
+			<div class="progress progress-striped active">
+	        	<div class="progress-bar progress-bar-info"></div>
+	        </div>	        
+	    </div>
+	    <div class="col-md-1">
+	    	<div class="percent">0%</div>
+	    </div>
+	</div>
+	
+	<script>
 $(function(){
 	
 	$formSection = $('#sync-form-section');
@@ -79,3 +77,6 @@ $(function(){
 	
 });
 </script>
+</div>
+
+

@@ -8,12 +8,22 @@
  * Global variables
  */
 home = "home.html";
+$footer = $("#footer");
+$footerHomeLinks = $("#footer .links");
+$backHomeButton = $("#footer button.back");
+
+//current working section
+$section  = null;
+
+
+
+
+
 $page = $("#page");
 $nav = $(".container ul.breadcrumb");
 $jobStatus = $("#job-status");
 $jobStatusOpen = false;
 $taskStatus = $(".task-status");
-
 /**
  * Global functions
  */
@@ -133,13 +143,98 @@ loadPage = function(page) {
 
 $(document).ready(function() {
 		
-	$("a").click(function(event) {
+//	$("a").click(function(event) {
+//		event.preventDefault();
+//		
+//		$href = $(this).attr("href");
+//		loadPage($href);
+//	});
+	
+//	loadPage( home );
+	//$("html, body").animate({scrollTop: $("#footer").position().top},1000);
+
+	
+	
+	//on load, the footer buttons is positioned to the bottom of the page
+	$footer.animate({top:$(window).height()-200 }, 300);
+	
+	$footer.find(".links button").click(function(event){
 		event.preventDefault();
+		target = $(this).attr("href");
 		
-		$href = $(this).attr("href");
-		loadPage($href);
+		$('html, body').stop().animate({
+	        scrollTop: $(target).offset().top
+	    }, 1200,'easeInOutExpo');
 	});
 	
-	loadPage( home );
+	$(".section-home button").click(function(event){
+		event.preventDefault();
+		
+		target = $(this).attr("href");
+		//set the current working section (calculation,results,data or settings)
+		$section = $(this).parents(".section-home");
+		//home page section (contains the button links to the external pages)
+		$homeSection = $section.find(".page-section");
+		
+		$.ajax({
+			url:target,
+			dataType:"html"
+		}).done(function(response){
+			$page = $(response);
+			
+			//hide loaded page
+//			$page = $('<div class="page-section">SECTIOOOON sti cazzi</div>');
+			$page.hide();
+
+			/**
+			 * hide home and shows loaded page
+			 */
+			//fade out footer links
+			$footerHomeLinks.fadeOut(500);
+			//move the home section buttons out of the screen towards left
+			$homeSection.animate({left:"-="+$(document).width()}, 1000,'easeInOutExpo');
+			setTimeout(function(){
+				//hide the home section buttons
+				$homeSection.hide();
+				// hide all other home sections of the page
+				$section.siblings('.section-home').fadeOut();
+				//append and show the loaded page to the current home section
+				$section.append($page);
+				$page.show();
+				//show the back home button
+				$backHomeButton.fadeIn(500);
+			},500);
+		});
+		
+		
+	});
+	
+	$backHomeButton.click(function(event){
+		event.preventDefault();
+		
+		$btnSection = $section.find(".page-section:nth-child(1)");
+		$extSection = $section.find(".page-section:nth-child(2)");
+		
+		//fade out loaded content and back button
+		$extSection.fadeOut(500);
+		$backHomeButton.fadeOut(500);
+		//remove loaded page from the document
+		setTimeout(function(){
+			$extSection.remove();
+		},500);
+		
+		//show home sections and footer buttons
+		$btnSection.show();
+		$btnSection.animate({left:"0px"}, 1000,'easeOutExpo');
+		$footerHomeLinks.fadeIn(500);
+		
+		//show home sections
+		$section.siblings('.section-home').fadeIn();
+		$('html, body').stop().animate({
+	        scrollTop: $section.offset().top
+	    }, 0);
+		
+	});
+	
 	
 });
