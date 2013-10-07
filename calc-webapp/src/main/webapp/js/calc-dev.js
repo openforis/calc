@@ -118,27 +118,26 @@ updateJobStatus = function($job) {
 	
 };
 
-loadPage = function(page) {
-	$page.hide();
-	$page.empty();
-	
-	$.ajax({
-		  url: page,
-		  dataType: "html"
-	})
-	.done(function(response) {
-		if(page == home) {
-			$nav.hide();
-		} else {
-			$nav.fadeIn(500);
-		}
-		$page.html(response);
-		$page.fadeIn(500);
-		
-		checkJobStatus();
-	});
-	
-}; 
+//loadPage = function(page) {
+//	$page.hide();
+//	$page.empty();
+//	
+//	$.ajax({
+//		  url: page,
+//		  dataType: "html"
+//	})
+//	.done(function(response) {
+//		if(page == home) {
+//			$nav.hide();
+//		} else {
+//			$nav.fadeIn(500);
+//		}
+//		$page.html(response);
+//		$page.fadeIn(500);
+//		
+//	});
+//	
+//}; 
 
 
 $(document).ready(function() {
@@ -154,9 +153,9 @@ $(document).ready(function() {
 	//$("html, body").animate({scrollTop: $("#footer").position().top},1000);
 
 	
-	
-	//on load, the footer buttons is positioned to the bottom of the page
-	$footer.animate({top:$(window).height()-200 }, 300);
+	positionFooter = function() {
+		$footer.animate({top:$(window).height()-200 }, 300);
+	};
 	
 	$footer.find(".links button").click(function(event){
 		event.preventDefault();
@@ -183,7 +182,6 @@ $(document).ready(function() {
 			$page = $(response);
 			
 			//hide loaded page
-//			$page = $('<div class="page-section">SECTIOOOON sti cazzi</div>');
 			$page.hide();
 
 			/**
@@ -244,5 +242,18 @@ $(document).ready(function() {
 		}, 800);
 	});
 	
+	$( window ).resize(function() {
+//		  $( "#log" ).append( "<div>Handler for .resize() called.</div>" );
+		positionFooter();
+	});
+	
+	init = function(){
+		checkJobStatus();
+
+		//on load, the footer buttons is positioned to the bottom of the page
+		positionFooter()();
+	};
+	
+	init();
 	
 });
