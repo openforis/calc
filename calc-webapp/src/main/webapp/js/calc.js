@@ -135,6 +135,7 @@ $(document).ready(function() {
 		$href = $(this).attr("href");
 		loadPage($href);
 	});
+	
 	loadPage( home );
 	
 });
