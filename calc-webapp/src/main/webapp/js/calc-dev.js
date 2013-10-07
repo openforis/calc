@@ -242,16 +242,15 @@ $(document).ready(function() {
 		}, 800);
 	});
 	
+	// on resize windows reposition footer
 	$( window ).resize(function() {
-//		  $( "#log" ).append( "<div>Handler for .resize() called.</div>" );
 		positionFooter();
 	});
 	
-	init = function(){
+	init = function() {
 		checkJobStatus();
-
 		//on load, the footer buttons is positioned to the bottom of the page
-		positionFooter()();
+		positionFooter();
 	};
 	
 	init();
