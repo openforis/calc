@@ -260,38 +260,6 @@
 				<version>${spring.version}</version>
 			</dependency>
 			
-			<!-- ZK -->
-			<dependency>
-				<groupId>org.zkoss.zk</groupId>
-				<artifactId>zkplus</artifactId>
-				<version>${zk.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.zkoss.zk</groupId>
-				<artifactId>zhtml</artifactId>
-				<version>${zk.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.zkoss.zk</groupId>
-				<artifactId>zkbind</artifactId>
-				<version>${zk.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.zkoss.zk</groupId>
-				<artifactId>zul</artifactId>
-				<version>${zk.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.zkoss.zk</groupId>
-				<artifactId>zkspring-core</artifactId>
-				<version>${zk.spring.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.zkoss.zk</groupId>
-				<artifactId>zkspring-webflow</artifactId>
-				<version>${zk.spring.version}</version>
-			</dependency>
-			
 			<!-- Pentaho -->
 <!-- 			<dependency> -->
 <!-- 				<groupId>pentaho-kettle</groupId> -->
