@@ -28,7 +28,6 @@ public class CalculationStepController {
 		if (!response.hasErrors()) {
 			// save the calculation step
 		}
-//<a href="#" data-toggle="tooltip" data-placement="top" title="" data-original-title="Tooltip on fuck">Tooltip on top</a>
 		return response;
 	}
 }

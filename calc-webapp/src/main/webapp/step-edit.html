@@ -8,11 +8,10 @@
 <!-- 		<div class="well"> -->
 			<form id="step-form" class="form-horizontal" method="POST" action="rest/calculationstep/save.json">
 				<fieldset>
-					Calculation Step Editor
+					<legend>Calculation Step Editor</legend>
 					<div class="form-group">
-						<label for="name" class="col-lg-2 control-label">Name</label>
-						<div class="col-lg-10" data-toggle="tooltip" data-placement="top" title="" data-original-title="Tooltip on fuck">
-						
+						<label class="col-lg-2 control-label">Name</label>
+						<div class="col-lg-10">
 							<input type="text" class="form-control" name="name">
 						</div>
 					</div>
@@ -122,6 +121,7 @@ $(function(){
 	    },
 	    success: function ( response ) {
 	    	console.log(response);
+	    	CalcForm.updateErrors($stepForm, response.errors);
 	    },
 	    error: function (e) {
 	    	alert('Error submitting form');
