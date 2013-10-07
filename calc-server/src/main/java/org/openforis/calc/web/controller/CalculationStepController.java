@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * @author S. Ricci
- *
+ * 
  */
 @Controller
 @RequestMapping(value = "/rest/calculationstep")
@@ -22,7 +22,13 @@ public class CalculationStepController {
 
 	@RequestMapping(value = "/save.json", method = RequestMethod.POST, produces = "application/json")
 	public @ResponseBody
-	BindingResult importCollectData(@Valid CalculationStepForm form, BindingResult result) {
-		return result;
+	Response save(@Valid CalculationStepForm form, BindingResult result) {
+		Response response = new Response(result.getAllErrors());
+		
+		if (!response.hasErrors()) {
+			// save the calculation step
+		}
+//<a href="#" data-toggle="tooltip" data-placement="top" title="" data-original-title="Tooltip on fuck">Tooltip on top</a>
+		return response;
 	}
 }

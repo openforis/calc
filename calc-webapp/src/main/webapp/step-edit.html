@@ -11,7 +11,8 @@
 					Calculation Step Editor
 					<div class="form-group">
 						<label for="name" class="col-lg-2 control-label">Name</label>
-						<div class="col-lg-10">
+						<div class="col-lg-10" data-toggle="tooltip" data-placement="top" title="" data-original-title="Tooltip on fuck">
+						
 							<input type="text" class="form-control" name="name">
 						</div>
 					</div>
@@ -119,8 +120,8 @@ $(function(){
 	    beforeSubmit: function() {
 	        $(this).addClass('loading');
 	    },
-	    success: function ( json ) {
-	    	
+	    success: function ( response ) {
+	    	console.log(response);
 	    },
 	    error: function (e) {
 	    	alert('Error submitting form');
