@@ -1,0 +1,1933 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 9.2.4
+-- Dumped by pg_dump version 9.2.4
+-- Started on 2013-10-07 17:00:25 CEST
+
+SET statement_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+
+--
+-- TOC entry 11 (class 2615 OID 169088)
+-- Name: calc; Type: SCHEMA; Schema: -; Owner: calcdev
+--
+
+CREATE SCHEMA calc;
+
+
+ALTER SCHEMA calc OWNER TO calcdev;
+
+SET search_path = calc, pg_catalog;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- TOC entry 280 (class 1259 OID 169090)
+-- Name: aoi; Type: TABLE; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+CREATE TABLE aoi (
+    id integer NOT NULL,
+    aoi_level_id integer NOT NULL,
+    parent_aoi_id integer,
+    code character varying(255),
+    caption character varying(255),
+    shape public.geometry(MultiPolygon,4326),
+    total_area numeric(15,5),
+    land_area numeric(15,5)
+);
+
+
+ALTER TABLE calc.aoi OWNER TO calcdev;
+
+--
+-- TOC entry 5383 (class 0 OID 0)
+-- Dependencies: 280
+-- Name: TABLE aoi; Type: COMMENT; Schema: calc; Owner: calcdev
+--
+
+COMMENT ON TABLE aoi IS 'Each area of interest (AOI) may be divided into sub-parts such that the sub-parts add up to the area of the whole (i.e. a compositional containment hierarchy)';
+
+
+--
+-- TOC entry 281 (class 1259 OID 169096)
+-- Name: aoi_hierarchy; Type: TABLE; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+CREATE TABLE aoi_hierarchy (
+    id integer NOT NULL,
+    workspace_id integer NOT NULL,
+    caption character varying(255),
+    description character varying(1024),
+    name character varying(255) NOT NULL
+);
+
+
+ALTER TABLE calc.aoi_hierarchy OWNER TO calcdev;
+
+--
+-- TOC entry 5384 (class 0 OID 0)
+-- Dependencies: 281
+-- Name: TABLE aoi_hierarchy; Type: COMMENT; Schema: calc; Owner: calcdev
+--
+
+COMMENT ON TABLE aoi_hierarchy IS 'A particular AOI hierarchy, such as "Administrative Units" or "Ecological Zones".';
+
+
+--
+-- TOC entry 282 (class 1259 OID 169102)
+-- Name: aoi_hierarchy_id_seq; Type: SEQUENCE; Schema: calc; Owner: calcdev
+--
+
+CREATE SEQUENCE aoi_hierarchy_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE calc.aoi_hierarchy_id_seq OWNER TO calcdev;
+
+--
+-- TOC entry 5385 (class 0 OID 0)
+-- Dependencies: 282
+-- Name: aoi_hierarchy_id_seq; Type: SEQUENCE OWNED BY; Schema: calc; Owner: calcdev
+--
+
+ALTER SEQUENCE aoi_hierarchy_id_seq OWNED BY aoi_hierarchy.id;
+
+
+--
+-- TOC entry 283 (class 1259 OID 169104)
+-- Name: aoi_id_seq; Type: SEQUENCE; Schema: calc; Owner: calcdev
+--
+
+CREATE SEQUENCE aoi_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE calc.aoi_id_seq OWNER TO calcdev;
+
+--
+-- TOC entry 5386 (class 0 OID 0)
+-- Dependencies: 283
+-- Name: aoi_id_seq; Type: SEQUENCE OWNED BY; Schema: calc; Owner: calcdev
+--
+
+ALTER SEQUENCE aoi_id_seq OWNED BY aoi.id;
+
+
+--
+-- TOC entry 284 (class 1259 OID 169106)
+-- Name: aoi_level; Type: TABLE; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+CREATE TABLE aoi_level (
+    id integer NOT NULL,
+    aoi_hierarchy_id integer NOT NULL,
+    caption character varying(255) NOT NULL,
+    rank integer NOT NULL,
+    name character varying(255) NOT NULL,
+    description character varying(1024)
+);
+
+
+ALTER TABLE calc.aoi_level OWNER TO calcdev;
+
+--
+-- TOC entry 285 (class 1259 OID 169112)
+-- Name: aoi_level_id_seq; Type: SEQUENCE; Schema: calc; Owner: calcdev
+--
+
+CREATE SEQUENCE aoi_level_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE calc.aoi_level_id_seq OWNER TO calcdev;
+
+--
+-- TOC entry 5387 (class 0 OID 0)
+-- Dependencies: 285
+-- Name: aoi_level_id_seq; Type: SEQUENCE OWNED BY; Schema: calc; Owner: calcdev
+--
+
+ALTER SEQUENCE aoi_level_id_seq OWNED BY aoi_level.id;
+
+
+--
+-- TOC entry 286 (class 1259 OID 169114)
+-- Name: calculation_step; Type: TABLE; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+CREATE TABLE calculation_step (
+    id integer NOT NULL,
+    chain_id integer NOT NULL,
+    step_no integer NOT NULL,
+    module_name character varying(255) NOT NULL,
+    module_version character varying(255) NOT NULL,
+    operation_name character varying(255) NOT NULL,
+    caption character varying(255),
+    description character varying(1024),
+    script text,
+    parameters text
+);
+
+
+ALTER TABLE calc.calculation_step OWNER TO calcdev;
+
+--
+-- TOC entry 287 (class 1259 OID 169120)
+-- Name: calculation_step_id_seq; Type: SEQUENCE; Schema: calc; Owner: calcdev
+--
+
+CREATE SEQUENCE calculation_step_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE calc.calculation_step_id_seq OWNER TO calcdev;
+
+--
+-- TOC entry 5388 (class 0 OID 0)
+-- Dependencies: 287
+-- Name: calculation_step_id_seq; Type: SEQUENCE OWNED BY; Schema: calc; Owner: calcdev
+--
+
+ALTER SEQUENCE calculation_step_id_seq OWNED BY calculation_step.id;
+
+
+--
+-- TOC entry 288 (class 1259 OID 169122)
+-- Name: category; Type: TABLE; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+CREATE TABLE category (
+    id integer NOT NULL,
+    variable_id integer NOT NULL,
+    code character varying(255),
+    caption character varying(255),
+    description character varying(1024),
+    override boolean DEFAULT false NOT NULL,
+    sort_order integer NOT NULL,
+    original_id integer,
+    value real
+);
+
+
+ALTER TABLE calc.category OWNER TO calcdev;
+
+--
+-- TOC entry 289 (class 1259 OID 169129)
+-- Name: category_category_group; Type: TABLE; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+CREATE TABLE category_category_group (
+    group_id integer NOT NULL,
+    category_id integer NOT NULL
+);
+
+
+ALTER TABLE calc.category_category_group OWNER TO calcdev;
+
+--
+-- TOC entry 290 (class 1259 OID 169132)
+-- Name: category_group; Type: TABLE; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+CREATE TABLE category_group (
+    id integer NOT NULL,
+    level_id integer NOT NULL,
+    parent_group_id integer NOT NULL,
+    code character varying(255),
+    caption character varying(255),
+    description character varying(1024),
+    sort_order integer NOT NULL
+);
+
+
+ALTER TABLE calc.category_group OWNER TO calcdev;
+
+--
+-- TOC entry 291 (class 1259 OID 169138)
+-- Name: category_hierarchy; Type: TABLE; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+CREATE TABLE category_hierarchy (
+    id integer NOT NULL,
+    variable_id integer NOT NULL,
+    caption character varying(255),
+    description character varying(1024),
+    name character varying(255) NOT NULL
+);
+
+
+ALTER TABLE calc.category_hierarchy OWNER TO calcdev;
+
+--
+-- TOC entry 292 (class 1259 OID 169144)
+-- Name: category_id_seq; Type: SEQUENCE; Schema: calc; Owner: calcdev
+--
+
+CREATE SEQUENCE category_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE calc.category_id_seq OWNER TO calcdev;
+
+--
+-- TOC entry 5389 (class 0 OID 0)
+-- Dependencies: 292
+-- Name: category_id_seq; Type: SEQUENCE OWNED BY; Schema: calc; Owner: calcdev
+--
+
+ALTER SEQUENCE category_id_seq OWNED BY category.id;
+
+
+--
+-- TOC entry 293 (class 1259 OID 169146)
+-- Name: category_level; Type: TABLE; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+CREATE TABLE category_level (
+    id integer NOT NULL,
+    hierarchy_id integer NOT NULL,
+    caption character varying(255) NOT NULL,
+    description character varying(1024),
+    value_column character varying(255),
+    rank integer NOT NULL,
+    name character varying(255) NOT NULL
+);
+
+
+ALTER TABLE calc.category_level OWNER TO calcdev;
+
+--
+-- TOC entry 294 (class 1259 OID 169152)
+-- Name: databasechangelog; Type: TABLE; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+CREATE TABLE databasechangelog (
+    id character varying(63) NOT NULL,
+    author character varying(63) NOT NULL,
+    filename character varying(200) NOT NULL,
+    dateexecuted timestamp with time zone NOT NULL,
+    orderexecuted integer NOT NULL,
+    exectype character varying(10) NOT NULL,
+    md5sum character varying(35),
+    description character varying(255),
+    comments character varying(255),
+    tag character varying(255),
+    liquibase character varying(20)
+);
+
+
+ALTER TABLE calc.databasechangelog OWNER TO calcdev;
+
+--
+-- TOC entry 295 (class 1259 OID 169158)
+-- Name: databasechangeloglock; Type: TABLE; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+CREATE TABLE databasechangeloglock (
+    id integer NOT NULL,
+    locked boolean NOT NULL,
+    lockgranted timestamp with time zone,
+    lockedby character varying(255)
+);
+
+
+ALTER TABLE calc.databasechangeloglock OWNER TO calcdev;
+
+--
+-- TOC entry 296 (class 1259 OID 169161)
+-- Name: entity; Type: TABLE; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+CREATE TABLE entity (
+    id integer NOT NULL,
+    workspace_id integer NOT NULL,
+    data_table character varying(255) NOT NULL,
+    parent_entity_id integer,
+    name character varying(255) NOT NULL,
+    caption character varying(255),
+    description character varying(1024),
+    sort_order integer NOT NULL,
+    x_column character varying(255),
+    y_column character varying(255),
+    srs_column character varying(255),
+    location_column character varying(255),
+    input boolean,
+    override boolean,
+    id_column character varying(255),
+    parent_id_column character varying(255),
+    sampling_unit boolean DEFAULT false NOT NULL,
+    unit_of_analysis boolean NOT NULL,
+    cluster_variable_id integer,
+    unit_no_variable_id integer,
+    original_id integer
+);
+
+
+ALTER TABLE calc.entity OWNER TO calcdev;
+
+--
+-- TOC entry 297 (class 1259 OID 169168)
+-- Name: entity_id_seq; Type: SEQUENCE; Schema: calc; Owner: calcdev
+--
+
+CREATE SEQUENCE entity_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE calc.entity_id_seq OWNER TO calcdev;
+
+--
+-- TOC entry 5390 (class 0 OID 0)
+-- Dependencies: 297
+-- Name: entity_id_seq; Type: SEQUENCE OWNED BY; Schema: calc; Owner: calcdev
+--
+
+ALTER SEQUENCE entity_id_seq OWNED BY entity.id;
+
+
+--
+-- TOC entry 298 (class 1259 OID 169170)
+-- Name: group_id_seq; Type: SEQUENCE; Schema: calc; Owner: calcdev
+--
+
+CREATE SEQUENCE group_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE calc.group_id_seq OWNER TO calcdev;
+
+--
+-- TOC entry 5391 (class 0 OID 0)
+-- Dependencies: 298
+-- Name: group_id_seq; Type: SEQUENCE OWNED BY; Schema: calc; Owner: calcdev
+--
+
+ALTER SEQUENCE group_id_seq OWNED BY category_group.id;
+
+
+--
+-- TOC entry 299 (class 1259 OID 169172)
+-- Name: hierarchy_id_seq; Type: SEQUENCE; Schema: calc; Owner: calcdev
+--
+
+CREATE SEQUENCE hierarchy_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE calc.hierarchy_id_seq OWNER TO calcdev;
+
+--
+-- TOC entry 5392 (class 0 OID 0)
+-- Dependencies: 299
+-- Name: hierarchy_id_seq; Type: SEQUENCE OWNED BY; Schema: calc; Owner: calcdev
+--
+
+ALTER SEQUENCE hierarchy_id_seq OWNED BY category_hierarchy.id;
+
+
+--
+-- TOC entry 300 (class 1259 OID 169174)
+-- Name: hierarchy_level_id_seq; Type: SEQUENCE; Schema: calc; Owner: calcdev
+--
+
+CREATE SEQUENCE hierarchy_level_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE calc.hierarchy_level_id_seq OWNER TO calcdev;
+
+--
+-- TOC entry 5393 (class 0 OID 0)
+-- Dependencies: 300
+-- Name: hierarchy_level_id_seq; Type: SEQUENCE OWNED BY; Schema: calc; Owner: calcdev
+--
+
+ALTER SEQUENCE hierarchy_level_id_seq OWNED BY category_level.id;
+
+
+--
+-- TOC entry 301 (class 1259 OID 169176)
+-- Name: processing_chain; Type: TABLE; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+CREATE TABLE processing_chain (
+    id integer NOT NULL,
+    workspace_id integer NOT NULL,
+    caption character varying(255),
+    description character varying(1024),
+    parameters text
+);
+
+
+ALTER TABLE calc.processing_chain OWNER TO calcdev;
+
+--
+-- TOC entry 302 (class 1259 OID 169182)
+-- Name: processing_chain_id_seq; Type: SEQUENCE; Schema: calc; Owner: calcdev
+--
+
+CREATE SEQUENCE processing_chain_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE calc.processing_chain_id_seq OWNER TO calcdev;
+
+--
+-- TOC entry 5394 (class 0 OID 0)
+-- Dependencies: 302
+-- Name: processing_chain_id_seq; Type: SEQUENCE OWNED BY; Schema: calc; Owner: calcdev
+--
+
+ALTER SEQUENCE processing_chain_id_seq OWNED BY processing_chain.id;
+
+
+--
+-- TOC entry 303 (class 1259 OID 169184)
+-- Name: sampling_unit; Type: TABLE; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+CREATE TABLE sampling_unit (
+    id integer NOT NULL,
+    entity_id integer,
+    panel integer,
+    cluster character varying(255),
+    unit_no character varying(255) NOT NULL,
+    location public.geometry(Point,4326),
+    shape public.geometry(MultiPolygon,4326),
+    sampling_phase integer,
+    permanent boolean NOT NULL,
+    stratum_id integer
+);
+
+
+ALTER TABLE calc.sampling_unit OWNER TO calcdev;
+
+--
+-- TOC entry 5395 (class 0 OID 0)
+-- Dependencies: 303
+-- Name: COLUMN sampling_unit.panel; Type: COMMENT; Schema: calc; Owner: calcdev
+--
+
+COMMENT ON COLUMN sampling_unit.panel IS 'For future use';
+
+
+--
+-- TOC entry 5396 (class 0 OID 0)
+-- Dependencies: 303
+-- Name: COLUMN sampling_unit.cluster; Type: COMMENT; Schema: calc; Owner: calcdev
+--
+
+COMMENT ON COLUMN sampling_unit.cluster IS 'May be null if clusters are not used';
+
+
+--
+-- TOC entry 304 (class 1259 OID 169190)
+-- Name: sampling_unit_aoi; Type: TABLE; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+CREATE TABLE sampling_unit_aoi (
+    sampling_unit_id integer NOT NULL,
+    aoi_id integer NOT NULL,
+    workspace_id integer NOT NULL
+);
+
+
+ALTER TABLE calc.sampling_unit_aoi OWNER TO calcdev;
+
+--
+-- TOC entry 305 (class 1259 OID 169193)
+-- Name: sampling_unit_count_view; Type: VIEW; Schema: calc; Owner: calcdev
+--
+
+CREATE VIEW sampling_unit_count_view AS
+    SELECT sua.aoi_id, su.stratum_id, su.entity_id, sua.workspace_id, count(*) AS count FROM (sampling_unit_aoi sua JOIN sampling_unit su ON ((su.id = sua.sampling_unit_id))) GROUP BY sua.aoi_id, su.stratum_id, su.entity_id, sua.workspace_id;
+
+
+ALTER TABLE calc.sampling_unit_count_view OWNER TO calcdev;
+
+--
+-- TOC entry 306 (class 1259 OID 169197)
+-- Name: sampling_unit_o; Type: TABLE; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+CREATE TABLE sampling_unit_o (
+    id integer NOT NULL,
+    entity_id integer,
+    panel integer,
+    cluster character varying(255),
+    unit_no character varying(255) NOT NULL,
+    location public.geometry(Point,4326),
+    shape public.geometry(MultiPolygon,4326),
+    sampling_phase integer,
+    permanent boolean NOT NULL,
+    stratum_id integer
+);
+
+
+ALTER TABLE calc.sampling_unit_o OWNER TO calcdev;
+
+--
+-- TOC entry 5397 (class 0 OID 0)
+-- Dependencies: 306
+-- Name: COLUMN sampling_unit_o.panel; Type: COMMENT; Schema: calc; Owner: calcdev
+--
+
+COMMENT ON COLUMN sampling_unit_o.panel IS 'For future use';
+
+
+--
+-- TOC entry 5398 (class 0 OID 0)
+-- Dependencies: 306
+-- Name: COLUMN sampling_unit_o.cluster; Type: COMMENT; Schema: calc; Owner: calcdev
+--
+
+COMMENT ON COLUMN sampling_unit_o.cluster IS 'May be null if clusters are not used';
+
+
+--
+-- TOC entry 307 (class 1259 OID 169203)
+-- Name: srs; Type: TABLE; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+CREATE TABLE srs (
+    id integer NOT NULL,
+    workspace_id integer NOT NULL,
+    srs_id character varying(255) NOT NULL,
+    srid integer NOT NULL,
+    caption character varying,
+    description character varying(255)
+);
+
+
+ALTER TABLE calc.srs OWNER TO calcdev;
+
+--
+-- TOC entry 308 (class 1259 OID 169209)
+-- Name: srs_id_seq; Type: SEQUENCE; Schema: calc; Owner: calcdev
+--
+
+CREATE SEQUENCE srs_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE calc.srs_id_seq OWNER TO calcdev;
+
+--
+-- TOC entry 5399 (class 0 OID 0)
+-- Dependencies: 308
+-- Name: srs_id_seq; Type: SEQUENCE OWNED BY; Schema: calc; Owner: calcdev
+--
+
+ALTER SEQUENCE srs_id_seq OWNED BY srs.id;
+
+
+--
+-- TOC entry 309 (class 1259 OID 169211)
+-- Name: stratum; Type: TABLE; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+CREATE TABLE stratum (
+    id integer NOT NULL,
+    workspace_id integer NOT NULL,
+    stratum_no integer NOT NULL,
+    caption character varying(255),
+    description character varying(1024)
+);
+
+
+ALTER TABLE calc.stratum OWNER TO calcdev;
+
+--
+-- TOC entry 310 (class 1259 OID 169217)
+-- Name: stratum_aoi_view; Type: VIEW; Schema: calc; Owner: calcdev
+--
+
+CREATE VIEW stratum_aoi_view AS
+    SELECT c1.aoi_id, c1.entity_id, c1.stratum_id, c1.workspace_id, ((c1.count)::numeric / sum(c1.count) OVER (PARTITION BY c1.aoi_id)) AS weight, ((a.land_area * (c1.count)::numeric) / sum(c1.count) OVER (PARTITION BY c1.aoi_id)) AS area FROM (sampling_unit_count_view c1 JOIN aoi a ON ((a.id = c1.aoi_id)));
+
+
+ALTER TABLE calc.stratum_aoi_view OWNER TO calcdev;
+
+--
+-- TOC entry 311 (class 1259 OID 169221)
+-- Name: stratum_id_seq; Type: SEQUENCE; Schema: calc; Owner: calcdev
+--
+
+CREATE SEQUENCE stratum_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE calc.stratum_id_seq OWNER TO calcdev;
+
+--
+-- TOC entry 5401 (class 0 OID 0)
+-- Dependencies: 311
+-- Name: stratum_id_seq; Type: SEQUENCE OWNED BY; Schema: calc; Owner: calcdev
+--
+
+ALTER SEQUENCE stratum_id_seq OWNED BY stratum.id;
+
+
+--
+-- TOC entry 312 (class 1259 OID 169223)
+-- Name: variable; Type: TABLE; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+CREATE TABLE variable (
+    id integer NOT NULL,
+    entity_id integer NOT NULL,
+    input_value_column character varying(255),
+    scale character varying(25) NOT NULL,
+    name character varying(255) NOT NULL,
+    caption character varying(255),
+    description character varying(1024),
+    default_value character varying(255),
+    sort_order integer NOT NULL,
+    multiple_response boolean DEFAULT false,
+    override boolean,
+    dimension_table character varying(255),
+    degenerate_dimension boolean DEFAULT false,
+    input_category_id_column character varying(255),
+    disaggregate boolean DEFAULT false NOT NULL,
+    output_value_column character varying(255),
+    output_category_id_column character varying(255),
+    original_id integer
+);
+
+
+ALTER TABLE calc.variable OWNER TO calcdev;
+
+--
+-- TOC entry 5402 (class 0 OID 0)
+-- Dependencies: 312
+-- Name: COLUMN variable.scale; Type: COMMENT; Schema: calc; Owner: calcdev
+--
+
+COMMENT ON COLUMN variable.scale IS 'Quantitative: RATIO|INTERVAL|OTHER
+Categorical: NOMINAL|ORDINAL|BINARY';
+
+
+--
+-- TOC entry 313 (class 1259 OID 169232)
+-- Name: variable_aggregate; Type: TABLE; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+CREATE TABLE variable_aggregate (
+    id integer NOT NULL,
+    variable_id integer NOT NULL,
+    name character varying(255),
+    aggregate_column character varying(255),
+    caption character varying(255),
+    description character varying(1024),
+    aggregate_formula character varying(1024) NOT NULL,
+    aggregate_type character varying(255) NOT NULL
+);
+
+
+ALTER TABLE calc.variable_aggregate OWNER TO calcdev;
+
+--
+-- TOC entry 314 (class 1259 OID 169238)
+-- Name: variable_aggregate_id_seq; Type: SEQUENCE; Schema: calc; Owner: calcdev
+--
+
+CREATE SEQUENCE variable_aggregate_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE calc.variable_aggregate_id_seq OWNER TO calcdev;
+
+--
+-- TOC entry 5403 (class 0 OID 0)
+-- Dependencies: 314
+-- Name: variable_aggregate_id_seq; Type: SEQUENCE OWNED BY; Schema: calc; Owner: calcdev
+--
+
+ALTER SEQUENCE variable_aggregate_id_seq OWNED BY variable_aggregate.id;
+
+
+--
+-- TOC entry 315 (class 1259 OID 169240)
+-- Name: variable_id_seq; Type: SEQUENCE; Schema: calc; Owner: calcdev
+--
+
+CREATE SEQUENCE variable_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE calc.variable_id_seq OWNER TO calcdev;
+
+--
+-- TOC entry 5404 (class 0 OID 0)
+-- Dependencies: 315
+-- Name: variable_id_seq; Type: SEQUENCE OWNED BY; Schema: calc; Owner: calcdev
+--
+
+ALTER SEQUENCE variable_id_seq OWNED BY variable.id;
+
+
+--
+-- TOC entry 316 (class 1259 OID 169242)
+-- Name: workspace; Type: TABLE; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+CREATE TABLE workspace (
+    id integer NOT NULL,
+    caption character varying(255) NOT NULL,
+    description character varying(1024),
+    input_schema character varying(255) NOT NULL,
+    output_schema character varying(255) NOT NULL,
+    name character varying(255),
+    collect_survey_uri character varying(255)
+);
+
+
+ALTER TABLE calc.workspace OWNER TO calcdev;
+
+--
+-- TOC entry 5405 (class 0 OID 0)
+-- Dependencies: 316
+-- Name: TABLE workspace; Type: COMMENT; Schema: calc; Owner: calcdev
+--
+
+COMMENT ON TABLE workspace IS 'One cycle of an inventory.';
+
+
+--
+-- TOC entry 317 (class 1259 OID 169248)
+-- Name: workspace_id_seq; Type: SEQUENCE; Schema: calc; Owner: calcdev
+--
+
+CREATE SEQUENCE workspace_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE calc.workspace_id_seq OWNER TO calcdev;
+
+--
+-- TOC entry 5406 (class 0 OID 0)
+-- Dependencies: 317
+-- Name: workspace_id_seq; Type: SEQUENCE OWNED BY; Schema: calc; Owner: calcdev
+--
+
+ALTER SEQUENCE workspace_id_seq OWNED BY workspace.id;
+
+
+--
+-- TOC entry 5238 (class 2604 OID 170288)
+-- Name: id; Type: DEFAULT; Schema: calc; Owner: calcdev
+--
+
+ALTER TABLE ONLY aoi ALTER COLUMN id SET DEFAULT nextval('aoi_id_seq'::regclass);
+
+
+--
+-- TOC entry 5239 (class 2604 OID 170289)
+-- Name: id; Type: DEFAULT; Schema: calc; Owner: calcdev
+--
+
+ALTER TABLE ONLY aoi_hierarchy ALTER COLUMN id SET DEFAULT nextval('aoi_hierarchy_id_seq'::regclass);
+
+
+--
+-- TOC entry 5240 (class 2604 OID 170290)
+-- Name: id; Type: DEFAULT; Schema: calc; Owner: calcdev
+--
+
+ALTER TABLE ONLY aoi_level ALTER COLUMN id SET DEFAULT nextval('aoi_level_id_seq'::regclass);
+
+
+--
+-- TOC entry 5241 (class 2604 OID 170291)
+-- Name: id; Type: DEFAULT; Schema: calc; Owner: calcdev
+--
+
+ALTER TABLE ONLY calculation_step ALTER COLUMN id SET DEFAULT nextval('calculation_step_id_seq'::regclass);
+
+
+--
+-- TOC entry 5243 (class 2604 OID 170292)
+-- Name: id; Type: DEFAULT; Schema: calc; Owner: calcdev
+--
+
+ALTER TABLE ONLY category ALTER COLUMN id SET DEFAULT nextval('category_id_seq'::regclass);
+
+
+--
+-- TOC entry 5244 (class 2604 OID 170293)
+-- Name: id; Type: DEFAULT; Schema: calc; Owner: calcdev
+--
+
+ALTER TABLE ONLY category_group ALTER COLUMN id SET DEFAULT nextval('group_id_seq'::regclass);
+
+
+--
+-- TOC entry 5245 (class 2604 OID 170294)
+-- Name: id; Type: DEFAULT; Schema: calc; Owner: calcdev
+--
+
+ALTER TABLE ONLY category_hierarchy ALTER COLUMN id SET DEFAULT nextval('hierarchy_id_seq'::regclass);
+
+
+--
+-- TOC entry 5246 (class 2604 OID 170295)
+-- Name: id; Type: DEFAULT; Schema: calc; Owner: calcdev
+--
+
+ALTER TABLE ONLY category_level ALTER COLUMN id SET DEFAULT nextval('hierarchy_level_id_seq'::regclass);
+
+
+--
+-- TOC entry 5248 (class 2604 OID 170296)
+-- Name: id; Type: DEFAULT; Schema: calc; Owner: calcdev
+--
+
+ALTER TABLE ONLY entity ALTER COLUMN id SET DEFAULT nextval('entity_id_seq'::regclass);
+
+
+--
+-- TOC entry 5249 (class 2604 OID 170297)
+-- Name: id; Type: DEFAULT; Schema: calc; Owner: calcdev
+--
+
+ALTER TABLE ONLY processing_chain ALTER COLUMN id SET DEFAULT nextval('processing_chain_id_seq'::regclass);
+
+
+--
+-- TOC entry 5250 (class 2604 OID 170298)
+-- Name: id; Type: DEFAULT; Schema: calc; Owner: calcdev
+--
+
+ALTER TABLE ONLY srs ALTER COLUMN id SET DEFAULT nextval('srs_id_seq'::regclass);
+
+
+--
+-- TOC entry 5251 (class 2604 OID 170299)
+-- Name: id; Type: DEFAULT; Schema: calc; Owner: calcdev
+--
+
+ALTER TABLE ONLY stratum ALTER COLUMN id SET DEFAULT nextval('stratum_id_seq'::regclass);
+
+
+--
+-- TOC entry 5255 (class 2604 OID 170300)
+-- Name: id; Type: DEFAULT; Schema: calc; Owner: calcdev
+--
+
+ALTER TABLE ONLY variable ALTER COLUMN id SET DEFAULT nextval('variable_id_seq'::regclass);
+
+
+--
+-- TOC entry 5256 (class 2604 OID 170301)
+-- Name: id; Type: DEFAULT; Schema: calc; Owner: calcdev
+--
+
+ALTER TABLE ONLY variable_aggregate ALTER COLUMN id SET DEFAULT nextval('variable_aggregate_id_seq'::regclass);
+
+
+--
+-- TOC entry 5257 (class 2604 OID 170302)
+-- Name: id; Type: DEFAULT; Schema: calc; Owner: calcdev
+--
+
+ALTER TABLE ONLY workspace ALTER COLUMN id SET DEFAULT nextval('workspace_id_seq'::regclass);
+
+
+--
+-- TOC entry 5341 (class 0 OID 169090)
+-- Dependencies: 280
+-- Data for Name: aoi; Type: TABLE DATA; Schema: calc; Owner: calcdev
+--
+
+COPY aoi (id, aoi_level_id, parent_aoi_id, code, caption, shape, total_area, land_area) FROM stdin;
+\.
+
+
+--
+-- TOC entry 5342 (class 0 OID 169096)
+-- Dependencies: 281
+-- Data for Name: aoi_hierarchy; Type: TABLE DATA; Schema: calc; Owner: calcdev
+--
+
+COPY aoi_hierarchy (id, workspace_id, caption, description, name) FROM stdin;
+\.
+
+
+--
+-- TOC entry 5407 (class 0 OID 0)
+-- Dependencies: 282
+-- Name: aoi_hierarchy_id_seq; Type: SEQUENCE SET; Schema: calc; Owner: calcdev
+--
+
+SELECT pg_catalog.setval('aoi_hierarchy_id_seq', 1, true);
+
+
+--
+-- TOC entry 5408 (class 0 OID 0)
+-- Dependencies: 283
+-- Name: aoi_id_seq; Type: SEQUENCE SET; Schema: calc; Owner: calcdev
+--
+
+SELECT pg_catalog.setval('aoi_id_seq', 1, false);
+
+
+--
+-- TOC entry 5345 (class 0 OID 169106)
+-- Dependencies: 284
+-- Data for Name: aoi_level; Type: TABLE DATA; Schema: calc; Owner: calcdev
+--
+
+COPY aoi_level (id, aoi_hierarchy_id, caption, rank, name, description) FROM stdin;
+\.
+
+
+--
+-- TOC entry 5409 (class 0 OID 0)
+-- Dependencies: 285
+-- Name: aoi_level_id_seq; Type: SEQUENCE SET; Schema: calc; Owner: calcdev
+--
+
+SELECT pg_catalog.setval('aoi_level_id_seq', 4, true);
+
+
+--
+-- TOC entry 5347 (class 0 OID 169114)
+-- Dependencies: 286
+-- Data for Name: calculation_step; Type: TABLE DATA; Schema: calc; Owner: calcdev
+--
+
+COPY calculation_step (id, chain_id, step_no, module_name, module_version, operation_name, caption, description, script, parameters) FROM stdin;
+\.
+
+
+--
+-- TOC entry 5410 (class 0 OID 0)
+-- Dependencies: 287
+-- Name: calculation_step_id_seq; Type: SEQUENCE SET; Schema: calc; Owner: calcdev
+--
+
+SELECT pg_catalog.setval('calculation_step_id_seq', 81, true);
+
+
+--
+-- TOC entry 5349 (class 0 OID 169122)
+-- Dependencies: 288
+-- Data for Name: category; Type: TABLE DATA; Schema: calc; Owner: calcdev
+--
+
+COPY category (id, variable_id, code, caption, description, override, sort_order, original_id, value) FROM stdin;
+\.
+
+
+--
+-- TOC entry 5350 (class 0 OID 169129)
+-- Dependencies: 289
+-- Data for Name: category_category_group; Type: TABLE DATA; Schema: calc; Owner: calcdev
+--
+
+COPY category_category_group (group_id, category_id) FROM stdin;
+\.
+
+
+--
+-- TOC entry 5351 (class 0 OID 169132)
+-- Dependencies: 290
+-- Data for Name: category_group; Type: TABLE DATA; Schema: calc; Owner: calcdev
+--
+
+COPY category_group (id, level_id, parent_group_id, code, caption, description, sort_order) FROM stdin;
+\.
+
+
+--
+-- TOC entry 5352 (class 0 OID 169138)
+-- Dependencies: 291
+-- Data for Name: category_hierarchy; Type: TABLE DATA; Schema: calc; Owner: calcdev
+--
+
+COPY category_hierarchy (id, variable_id, caption, description, name) FROM stdin;
+\.
+
+
+--
+-- TOC entry 5411 (class 0 OID 0)
+-- Dependencies: 292
+-- Name: category_id_seq; Type: SEQUENCE SET; Schema: calc; Owner: calcdev
+--
+
+SELECT pg_catalog.setval('category_id_seq', 169362, true);
+
+
+--
+-- TOC entry 5354 (class 0 OID 169146)
+-- Dependencies: 293
+-- Data for Name: category_level; Type: TABLE DATA; Schema: calc; Owner: calcdev
+--
+
+COPY category_level (id, hierarchy_id, caption, description, value_column, rank, name) FROM stdin;
+\.
+
+
+--
+-- TOC entry 5355 (class 0 OID 169152)
+-- Dependencies: 294
+-- Data for Name: databasechangelog; Type: TABLE DATA; Schema: calc; Owner: calcdev
+--
+
+COPY databasechangelog (id, author, filename, dateexecuted, orderexecuted, exectype, md5sum, description, comments, tag, liquibase) FROM stdin;
+1	G. Miceli	design/db/changelog/001-test-liquibase.xml	2013-08-07 16:20:45.342733+02	1	EXECUTED	3:0ec3ae6115bfb1f37db9e476e64fcf8c	Custom SQL	Test to ensure Liquibase is working properly	\N	2.0.1
+2	G. Miceli	design/db/changelog/002-plot-aggregation.xml	2013-08-07 16:25:00.371035+02	2	EXECUTED	3:4dc475446614b769c11901e07accd77a	Custom SQL		\N	2.0.1
+3	G. Miceli	design/db/changelog/003-plot-aggregation.xml	2013-08-08 09:43:18.5992+02	3	EXECUTED	3:841bfd50b200646c15f228957062007b	Custom SQL	Further updates for aggregation engine	\N	2.0.1
+4	G. Miceli	design/db/changelog/004-add-area-variable.xml	2013-08-09 09:55:17.008256+02	4	EXECUTED	3:1a444661070ce9df6287759547b4deb7	Custom SQL	Add plot area variable for aggregation engine	\N	2.0.1
+6	G. Miceli	design/db/changelog/006-variable-aggregate-fix.xml	2013-08-09 13:41:49.460114+02	6	EXECUTED	3:8d669b2b151386df334c59e7c3478fb0	Custom SQL	Allow nulls in variable aggregates	\N	2.0.1
+7	G. Miceli	design/db/changelog/007-variable-aggregate-fix2.xml	2013-08-09 13:41:49.487903+02	7	EXECUTED	3:4c149e64ffa0accac90c8f1df25f09bb	Custom SQL	Rename column	\N	2.0.1
+8	G. Miceli	design/db/changelog/008-update-aggs.xml	2013-08-09 13:54:46.611891+02	8	EXECUTED	3:55d2c6950a4f53948b0b2e57c8a6c081	Custom SQL		\N	2.0.1
+9	G. Miceli	design/db/changelog/009-update-varagg-table.xml	2013-08-09 14:32:29.181401+02	9	EXECUTED	3:12c1ed2e6163615c937e45f179f92c02	Custom SQL		\N	2.0.1
+10	G. Miceli	design/db/changelog/010-add-missing-grants.xml	2013-08-09 17:59:20.782755+02	10	EXECUTED	3:d1ab3ccedda432094a079d7e7856ff88	Custom SQL		\N	2.0.1
+11	G. Miceli	design/db/changelog/011-add-sampling-unit-flag.xml	2013-08-09 17:59:20.822128+02	11	EXECUTED	3:60586b026627494b39c9ffb02d86ebf2	Custom SQL		\N	2.0.1
+12	G. Miceli	design/db/changelog/012-remove-cluster-col.xml	2013-08-09 18:01:55.973265+02	12	EXECUTED	3:dad89f8fd7a4ef1427af4952c2ad13bb	Custom SQL		\N	2.0.1
+5	G. Miceli	design/db/changelog/005-add-variable-aggregate-table.xml	2013-08-09 11:29:50.987902+02	5	EXECUTED	3:ddb2204778cb7e7d7195a399b04c393a	Custom SQL	Add plot area variable for aggregation engine	\N	2.0.1
+13	G. Miceli	design/db/changelog/logs/013-add-disaggregate-flag.xml	2013-08-12 15:44:17.562729+02	13	EXECUTED	3:bd1639e88cf5a45c2b7fec7194502933	Custom SQL		\N	2.0.1
+14	A. Sanchez	design/db/changelog/logs/014-add-category-value-column.xml	2013-08-12 15:44:17.694061+02	14	EXECUTED	3:09e3a4bd70920c15bfa189cc7afd4db4	Custom SQL		\N	2.0.1
+15	G. Miceli	design/db/changelog/logs/015-add-unit-of-analysis.xml	2013-08-13 14:21:23.263528+02	15	EXECUTED	3:da5b0be400bde392b0d3c2abc92e1668	Custom SQL		\N	2.0.1
+16	G. Miceli	design/db/changelog/logs/016-set-parent-id-column.xml	2013-08-27 17:23:03.311847+02	16	EXECUTED	3:aa648ef18aaa0c9f1498935a57ba20fa	Custom SQL		\N	2.0.1
+17	G. Miceli	design/db/changelog/logs/017-create-calc-step-script-col.xml	2013-08-30 09:07:23.589216+02	17	EXECUTED	3:910f14ab59487b386b078369a2a6499c	Custom SQL		\N	2.0.1
+18	G. Miceli	design/db/changelog/logs/018-split-data-table-columns.xml	2013-08-30 09:07:23.717984+02	18	EXECUTED	3:6fe74fd65b8f24b72c5ed2a935ff1cee	Custom SQL		\N	2.0.1
+19	G. Miceli	design/db/changelog/logs/019-alter-input-table-columns.xml	2013-08-30 09:07:23.755254+02	19	EXECUTED	3:9e742a92df4e581275c1f6ea0bfd759b	Custom SQL		\N	2.0.1
+20	G. Miceli	design/db/changelog/logs/020-add-cluster-plot-id-cols.xml	2013-08-30 09:07:23.894857+02	20	EXECUTED	3:f36f954a5186382f09bb4fdba1660954	Custom SQL		\N	2.0.1
+20	G. Miceli	design/db/changelog/logs/021-rename-plot-no-var-id.xml	2013-08-30 09:07:23.926867+02	21	EXECUTED	3:01768718fbd7ce2d6b36b6477280f216	Custom SQL		\N	2.0.1
+20	G. Miceli	design/db/changelog/logs/022-rename-name-cols-to-caption.xml	2013-08-30 18:06:10.884087+02	22	EXECUTED	3:1b4f41bf75a1f03e19e8ba23426fdbf9	Custom SQL		\N	2.0.1
+20	G. Miceli	design/db/changelog/logs/023-category-group-tables.xml	2013-08-30 18:06:10.9083+02	23	EXECUTED	3:5a16ed970b5fb1ee1b55dda908a46176	Custom SQL		\N	2.0.1
+24	G. Miceli	design/db/changelog/logs/024-update-default-value-cols.xml	2013-09-02 09:54:10.516644+02	24	EXECUTED	3:a6d88f919ba6c115f616629945b39f1b	Custom SQL		\N	2.0.1
+25	G. Miceli	design/db/changelog/logs/025-update-default-values.xml	2013-09-02 09:54:10.635412+02	25	EXECUTED	3:a4ac0aa807a5b9d2cadb9e0568009f8f	Custom SQL		\N	2.0.1
+26	G. Miceli	design/db/changelog/logs/026-update-default-values.xml	2013-09-02 16:52:39.747439+02	26	EXECUTED	3:26167561053bb086e9f694faddf3fdff	Custom SQL		\N	2.0.1
+27	S. Ricci	design/db/changelog/logs/027-default-disaggregate-flag-value.xml	2013-09-03 17:09:08.850639+02	27	EXECUTED	3:a1ca8e2bafafd840920b7cde84c9a924	Custom SQL		\N	2.0.1
+28	S. Ricci	design/db/changelog/logs/028-add-entity-original-id-column.xml	2013-09-13 11:52:49.998132+02	28	EXECUTED	3:fc2621dab9467e0accfbe0a9a38b432d	Custom SQL		\N	2.0.1
+29	S. Ricci	design/db/changelog/logs/029-add-variable-original-id-column.xml	2013-09-13 11:52:50.023172+02	29	EXECUTED	3:8cc58b08176ecd283f97b4ad78b0c7e9	Custom SQL		\N	2.0.1
+30	S. Ricci	design/db/changelog/logs/030-add-workspace-name-column.xml	2013-09-16 16:16:10.234727+02	30	EXECUTED	3:9bd4042c1539f489632147eb08e68bff	Custom SQL		\N	2.0.1
+31	S. Ricci	design/db/changelog/logs/031-add-workspace-collect-uri-column.xml	2013-09-16 16:16:10.290752+02	31	EXECUTED	3:5396661b234af7267ce069b27b6cc15d	Custom SQL		\N	2.0.1
+\.
+
+
+--
+-- TOC entry 5356 (class 0 OID 169158)
+-- Dependencies: 295
+-- Data for Name: databasechangeloglock; Type: TABLE DATA; Schema: calc; Owner: calcdev
+--
+
+COPY databasechangeloglock (id, locked, lockgranted, lockedby) FROM stdin;
+1	f	\N	\N
+\.
+
+
+--
+-- TOC entry 5357 (class 0 OID 169161)
+-- Dependencies: 296
+-- Data for Name: entity; Type: TABLE DATA; Schema: calc; Owner: calcdev
+--
+
+COPY entity (id, workspace_id, data_table, parent_entity_id, name, caption, description, sort_order, x_column, y_column, srs_column, location_column, input, override, id_column, parent_id_column, sampling_unit, unit_of_analysis, cluster_variable_id, unit_no_variable_id, original_id) FROM stdin;
+\.
+
+
+--
+-- TOC entry 5412 (class 0 OID 0)
+-- Dependencies: 297
+-- Name: entity_id_seq; Type: SEQUENCE SET; Schema: calc; Owner: calcdev
+--
+
+SELECT pg_catalog.setval('entity_id_seq', 9676, true);
+
+
+--
+-- TOC entry 5413 (class 0 OID 0)
+-- Dependencies: 298
+-- Name: group_id_seq; Type: SEQUENCE SET; Schema: calc; Owner: calcdev
+--
+
+SELECT pg_catalog.setval('group_id_seq', 1, false);
+
+
+--
+-- TOC entry 5414 (class 0 OID 0)
+-- Dependencies: 299
+-- Name: hierarchy_id_seq; Type: SEQUENCE SET; Schema: calc; Owner: calcdev
+--
+
+SELECT pg_catalog.setval('hierarchy_id_seq', 1, false);
+
+
+--
+-- TOC entry 5415 (class 0 OID 0)
+-- Dependencies: 300
+-- Name: hierarchy_level_id_seq; Type: SEQUENCE SET; Schema: calc; Owner: calcdev
+--
+
+SELECT pg_catalog.setval('hierarchy_level_id_seq', 1, false);
+
+
+--
+-- TOC entry 5362 (class 0 OID 169176)
+-- Dependencies: 301
+-- Data for Name: processing_chain; Type: TABLE DATA; Schema: calc; Owner: calcdev
+--
+
+COPY processing_chain (id, workspace_id, caption, description, parameters) FROM stdin;
+\.
+
+
+--
+-- TOC entry 5416 (class 0 OID 0)
+-- Dependencies: 302
+-- Name: processing_chain_id_seq; Type: SEQUENCE SET; Schema: calc; Owner: calcdev
+--
+
+SELECT pg_catalog.setval('processing_chain_id_seq', 73, true);
+
+
+--
+-- TOC entry 5364 (class 0 OID 169184)
+-- Dependencies: 303
+-- Data for Name: sampling_unit; Type: TABLE DATA; Schema: calc; Owner: calcdev
+--
+
+COPY sampling_unit (id, entity_id, panel, cluster, unit_no, location, shape, sampling_phase, permanent, stratum_id) FROM stdin;
+\.
+
+
+--
+-- TOC entry 5365 (class 0 OID 169190)
+-- Dependencies: 304
+-- Data for Name: sampling_unit_aoi; Type: TABLE DATA; Schema: calc; Owner: calcdev
+--
+
+COPY sampling_unit_aoi (sampling_unit_id, aoi_id, workspace_id) FROM stdin;
+\.
+
+
+--
+-- TOC entry 5366 (class 0 OID 169197)
+-- Dependencies: 306
+-- Data for Name: sampling_unit_o; Type: TABLE DATA; Schema: calc; Owner: calcdev
+--
+
+COPY sampling_unit_o (id, entity_id, panel, cluster, unit_no, location, shape, sampling_phase, permanent, stratum_id) FROM stdin;
+\.
+
+
+--
+-- TOC entry 5367 (class 0 OID 169203)
+-- Dependencies: 307
+-- Data for Name: srs; Type: TABLE DATA; Schema: calc; Owner: calcdev
+--
+
+COPY srs (id, workspace_id, srs_id, srid, caption, description) FROM stdin;
+\.
+
+
+--
+-- TOC entry 5417 (class 0 OID 0)
+-- Dependencies: 308
+-- Name: srs_id_seq; Type: SEQUENCE SET; Schema: calc; Owner: calcdev
+--
+
+SELECT pg_catalog.setval('srs_id_seq', 3, true);
+
+
+--
+-- TOC entry 5369 (class 0 OID 169211)
+-- Dependencies: 309
+-- Data for Name: stratum; Type: TABLE DATA; Schema: calc; Owner: calcdev
+--
+
+COPY stratum (id, workspace_id, stratum_no, caption, description) FROM stdin;
+\.
+
+
+--
+-- TOC entry 5418 (class 0 OID 0)
+-- Dependencies: 311
+-- Name: stratum_id_seq; Type: SEQUENCE SET; Schema: calc; Owner: calcdev
+--
+
+SELECT pg_catalog.setval('stratum_id_seq', 18, true);
+
+
+--
+-- TOC entry 5371 (class 0 OID 169223)
+-- Dependencies: 312
+-- Data for Name: variable; Type: TABLE DATA; Schema: calc; Owner: calcdev
+--
+
+COPY variable (id, entity_id, input_value_column, scale, name, caption, description, default_value, sort_order, multiple_response, override, dimension_table, degenerate_dimension, input_category_id_column, disaggregate, output_value_column, output_category_id_column, original_id) FROM stdin;
+\.
+
+
+--
+-- TOC entry 5372 (class 0 OID 169232)
+-- Dependencies: 313
+-- Data for Name: variable_aggregate; Type: TABLE DATA; Schema: calc; Owner: calcdev
+--
+
+COPY variable_aggregate (id, variable_id, name, aggregate_column, caption, description, aggregate_formula, aggregate_type) FROM stdin;
+\.
+
+
+--
+-- TOC entry 5419 (class 0 OID 0)
+-- Dependencies: 314
+-- Name: variable_aggregate_id_seq; Type: SEQUENCE SET; Schema: calc; Owner: calcdev
+--
+
+SELECT pg_catalog.setval('variable_aggregate_id_seq', 39, true);
+
+
+--
+-- TOC entry 5420 (class 0 OID 0)
+-- Dependencies: 315
+-- Name: variable_id_seq; Type: SEQUENCE SET; Schema: calc; Owner: calcdev
+--
+
+SELECT pg_catalog.setval('variable_id_seq', 42456, true);
+
+
+--
+-- TOC entry 5375 (class 0 OID 169242)
+-- Dependencies: 316
+-- Data for Name: workspace; Type: TABLE DATA; Schema: calc; Owner: calcdev
+--
+
+COPY workspace (id, caption, description, input_schema, output_schema, name, collect_survey_uri) FROM stdin;
+\.
+
+
+--
+-- TOC entry 5421 (class 0 OID 0)
+-- Dependencies: 317
+-- Name: workspace_id_seq; Type: SEQUENCE SET; Schema: calc; Owner: calcdev
+--
+
+SELECT pg_catalog.setval('workspace_id_seq', 1, false);
+
+
+--
+-- TOC entry 5265 (class 2606 OID 170364)
+-- Name: aoi_hierarchy_level_pkey; Type: CONSTRAINT; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+ALTER TABLE ONLY aoi_level
+    ADD CONSTRAINT aoi_hierarchy_level_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 5261 (class 2606 OID 170366)
+-- Name: aoi_hierarchy_name; Type: CONSTRAINT; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+ALTER TABLE ONLY aoi_hierarchy
+    ADD CONSTRAINT aoi_hierarchy_name UNIQUE (workspace_id, name);
+
+
+--
+-- TOC entry 5263 (class 2606 OID 170368)
+-- Name: aoi_hierarchy_pkey; Type: CONSTRAINT; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+ALTER TABLE ONLY aoi_hierarchy
+    ADD CONSTRAINT aoi_hierarchy_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 5267 (class 2606 OID 170370)
+-- Name: aoi_level_hierarchy_name_key; Type: CONSTRAINT; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+ALTER TABLE ONLY aoi_level
+    ADD CONSTRAINT aoi_level_hierarchy_name_key UNIQUE (aoi_hierarchy_id, name);
+
+
+--
+-- TOC entry 5269 (class 2606 OID 170372)
+-- Name: aoi_level_hierarchy_rank_key; Type: CONSTRAINT; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+ALTER TABLE ONLY aoi_level
+    ADD CONSTRAINT aoi_level_hierarchy_rank_key UNIQUE (aoi_hierarchy_id, rank);
+
+
+--
+-- TOC entry 5259 (class 2606 OID 170374)
+-- Name: aoi_pkey; Type: CONSTRAINT; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+ALTER TABLE ONLY aoi
+    ADD CONSTRAINT aoi_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 5271 (class 2606 OID 170376)
+-- Name: calculation_step_pkey; Type: CONSTRAINT; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+ALTER TABLE ONLY calculation_step
+    ADD CONSTRAINT calculation_step_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 5273 (class 2606 OID 170378)
+-- Name: category_pkey; Type: CONSTRAINT; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+ALTER TABLE ONLY category
+    ADD CONSTRAINT category_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 5289 (class 2606 OID 170380)
+-- Name: entity_pkey; Type: CONSTRAINT; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+ALTER TABLE ONLY entity
+    ADD CONSTRAINT entity_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 5291 (class 2606 OID 170382)
+-- Name: entity_workspace_id_name_key; Type: CONSTRAINT; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+ALTER TABLE ONLY entity
+    ADD CONSTRAINT entity_workspace_id_name_key UNIQUE (workspace_id, name);
+
+
+--
+-- TOC entry 5275 (class 2606 OID 170384)
+-- Name: group_pkey; Type: CONSTRAINT; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+ALTER TABLE ONLY category_group
+    ADD CONSTRAINT group_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 5279 (class 2606 OID 170386)
+-- Name: hierarchy_level_hierarchy_id_key; Type: CONSTRAINT; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+ALTER TABLE ONLY category_level
+    ADD CONSTRAINT hierarchy_level_hierarchy_id_key UNIQUE (hierarchy_id);
+
+
+--
+-- TOC entry 5281 (class 2606 OID 170388)
+-- Name: hierarchy_level_pkey; Type: CONSTRAINT; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+ALTER TABLE ONLY category_level
+    ADD CONSTRAINT hierarchy_level_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 5283 (class 2606 OID 170390)
+-- Name: hierarchy_level_rank_key; Type: CONSTRAINT; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+ALTER TABLE ONLY category_level
+    ADD CONSTRAINT hierarchy_level_rank_key UNIQUE (rank);
+
+
+--
+-- TOC entry 5277 (class 2606 OID 170392)
+-- Name: hierarchy_pkey; Type: CONSTRAINT; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+ALTER TABLE ONLY category_hierarchy
+    ADD CONSTRAINT hierarchy_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 5285 (class 2606 OID 170394)
+-- Name: pk_databasechangelog; Type: CONSTRAINT; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+ALTER TABLE ONLY databasechangelog
+    ADD CONSTRAINT pk_databasechangelog PRIMARY KEY (id, author, filename);
+
+
+--
+-- TOC entry 5287 (class 2606 OID 170396)
+-- Name: pk_databasechangeloglock; Type: CONSTRAINT; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+ALTER TABLE ONLY databasechangeloglock
+    ADD CONSTRAINT pk_databasechangeloglock PRIMARY KEY (id);
+
+
+--
+-- TOC entry 5293 (class 2606 OID 170398)
+-- Name: processing_chain_pkey; Type: CONSTRAINT; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+ALTER TABLE ONLY processing_chain
+    ADD CONSTRAINT processing_chain_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 5297 (class 2606 OID 170400)
+-- Name: sample_plot_aoi_pkey; Type: CONSTRAINT; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+ALTER TABLE ONLY sampling_unit_aoi
+    ADD CONSTRAINT sample_plot_aoi_pkey PRIMARY KEY (sampling_unit_id, aoi_id);
+
+
+--
+-- TOC entry 5299 (class 2606 OID 170402)
+-- Name: sampling_unit_pkey; Type: CONSTRAINT; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+ALTER TABLE ONLY sampling_unit_o
+    ADD CONSTRAINT sampling_unit_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 5295 (class 2606 OID 170404)
+-- Name: sampling_unit_pkey1; Type: CONSTRAINT; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+ALTER TABLE ONLY sampling_unit
+    ADD CONSTRAINT sampling_unit_pkey1 PRIMARY KEY (id);
+
+
+--
+-- TOC entry 5301 (class 2606 OID 170406)
+-- Name: srs_mapping_pkey; Type: CONSTRAINT; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+ALTER TABLE ONLY srs
+    ADD CONSTRAINT srs_mapping_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 5303 (class 2606 OID 170408)
+-- Name: stratum_pkey; Type: CONSTRAINT; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+ALTER TABLE ONLY stratum
+    ADD CONSTRAINT stratum_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 5305 (class 2606 OID 170410)
+-- Name: stratum_stratum_no_workspace_id_key; Type: CONSTRAINT; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+ALTER TABLE ONLY stratum
+    ADD CONSTRAINT stratum_stratum_no_workspace_id_key UNIQUE (stratum_no, workspace_id);
+
+
+--
+-- TOC entry 5311 (class 2606 OID 170412)
+-- Name: variable_aggregate_pkey; Type: CONSTRAINT; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+ALTER TABLE ONLY variable_aggregate
+    ADD CONSTRAINT variable_aggregate_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 5307 (class 2606 OID 170414)
+-- Name: variable_name_key; Type: CONSTRAINT; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+ALTER TABLE ONLY variable
+    ADD CONSTRAINT variable_name_key UNIQUE (entity_id, name);
+
+
+--
+-- TOC entry 5309 (class 2606 OID 170416)
+-- Name: variable_pkey; Type: CONSTRAINT; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+ALTER TABLE ONLY variable
+    ADD CONSTRAINT variable_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 5313 (class 2606 OID 170418)
+-- Name: workspace_pkey; Type: CONSTRAINT; Schema: calc; Owner: calcdev; Tablespace: 
+--
+
+ALTER TABLE ONLY workspace
+    ADD CONSTRAINT workspace_pkey PRIMARY KEY (id);
+
+
+SET search_path = public, pg_catalog;
+
+--
+-- TOC entry 5232 (class 2618 OID 83043)
+-- Name: geometry_columns_delete; Type: RULE; Schema: public; Owner: postgres
+--
+
+CREATE RULE geometry_columns_delete AS ON DELETE TO geometry_columns DO INSTEAD NOTHING;
+
+
+--
+-- TOC entry 5230 (class 2618 OID 83041)
+-- Name: geometry_columns_insert; Type: RULE; Schema: public; Owner: postgres
+--
+
+CREATE RULE geometry_columns_insert AS ON INSERT TO geometry_columns DO INSTEAD NOTHING;
+
+
+--
+-- TOC entry 5231 (class 2618 OID 83042)
+-- Name: geometry_columns_update; Type: RULE; Schema: public; Owner: postgres
+--
+
+CREATE RULE geometry_columns_update AS ON UPDATE TO geometry_columns DO INSTEAD NOTHING;
+
+
+SET search_path = calc, pg_catalog;
+
+--
+-- TOC entry 5316 (class 2606 OID 170756)
+-- Name: aoi_hierarchy_workspace_fkey; Type: FK CONSTRAINT; Schema: calc; Owner: calcdev
+--
+
+ALTER TABLE ONLY aoi_hierarchy
+    ADD CONSTRAINT aoi_hierarchy_workspace_fkey FOREIGN KEY (workspace_id) REFERENCES workspace(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 5314 (class 2606 OID 170761)
+-- Name: aoi_level_fkey; Type: FK CONSTRAINT; Schema: calc; Owner: calcdev
+--
+
+ALTER TABLE ONLY aoi
+    ADD CONSTRAINT aoi_level_fkey FOREIGN KEY (aoi_level_id) REFERENCES aoi_level(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 5317 (class 2606 OID 170766)
+-- Name: aoi_level_hierarchy_fkey; Type: FK CONSTRAINT; Schema: calc; Owner: calcdev
+--
+
+ALTER TABLE ONLY aoi_level
+    ADD CONSTRAINT aoi_level_hierarchy_fkey FOREIGN KEY (aoi_hierarchy_id) REFERENCES aoi_hierarchy(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 5332 (class 2606 OID 170771)
+-- Name: aoi_sampling_unit_fkey; Type: FK CONSTRAINT; Schema: calc; Owner: calcdev
+--
+
+ALTER TABLE ONLY sampling_unit_aoi
+    ADD CONSTRAINT aoi_sampling_unit_fkey FOREIGN KEY (sampling_unit_id) REFERENCES sampling_unit(id);
+
+
+--
+-- TOC entry 5321 (class 2606 OID 170776)
+-- Name: category_group_fkey; Type: FK CONSTRAINT; Schema: calc; Owner: calcdev
+--
+
+ALTER TABLE ONLY category_category_group
+    ADD CONSTRAINT category_group_fkey FOREIGN KEY (group_id) REFERENCES category_group(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 5319 (class 2606 OID 170781)
+-- Name: category_variable_fkey; Type: FK CONSTRAINT; Schema: calc; Owner: calcdev
+--
+
+ALTER TABLE ONLY category
+    ADD CONSTRAINT category_variable_fkey FOREIGN KEY (variable_id) REFERENCES variable(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 5326 (class 2606 OID 170786)
+-- Name: entity_cluster_variable_fkey; Type: FK CONSTRAINT; Schema: calc; Owner: calcdev
+--
+
+ALTER TABLE ONLY entity
+    ADD CONSTRAINT entity_cluster_variable_fkey FOREIGN KEY (cluster_variable_id) REFERENCES variable(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 5327 (class 2606 OID 170791)
+-- Name: entity_plot_variable_fkey; Type: FK CONSTRAINT; Schema: calc; Owner: calcdev
+--
+
+ALTER TABLE ONLY entity
+    ADD CONSTRAINT entity_plot_variable_fkey FOREIGN KEY (unit_no_variable_id) REFERENCES variable(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 5328 (class 2606 OID 170796)
+-- Name: entity_workspace_fkey; Type: FK CONSTRAINT; Schema: calc; Owner: calcdev
+--
+
+ALTER TABLE ONLY entity
+    ADD CONSTRAINT entity_workspace_fkey FOREIGN KEY (workspace_id) REFERENCES workspace(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 5320 (class 2606 OID 170801)
+-- Name: group_category_fkey; Type: FK CONSTRAINT; Schema: calc; Owner: calcdev
+--
+
+ALTER TABLE ONLY category_category_group
+    ADD CONSTRAINT group_category_fkey FOREIGN KEY (category_id) REFERENCES category(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 5322 (class 2606 OID 170806)
+-- Name: group_level_fkey; Type: FK CONSTRAINT; Schema: calc; Owner: calcdev
+--
+
+ALTER TABLE ONLY category_group
+    ADD CONSTRAINT group_level_fkey FOREIGN KEY (level_id) REFERENCES category_level(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 5324 (class 2606 OID 170811)
+-- Name: hierarchy_variable_fkey; Type: FK CONSTRAINT; Schema: calc; Owner: calcdev
+--
+
+ALTER TABLE ONLY category_hierarchy
+    ADD CONSTRAINT hierarchy_variable_fkey FOREIGN KEY (variable_id) REFERENCES variable(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 5325 (class 2606 OID 170816)
+-- Name: level_hierarchy_fkey; Type: FK CONSTRAINT; Schema: calc; Owner: calcdev
+--
+
+ALTER TABLE ONLY category_level
+    ADD CONSTRAINT level_hierarchy_fkey FOREIGN KEY (hierarchy_id) REFERENCES category_hierarchy(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 5315 (class 2606 OID 170821)
+-- Name: parent_aoi_fkey; Type: FK CONSTRAINT; Schema: calc; Owner: calcdev
+--
+
+ALTER TABLE ONLY aoi
+    ADD CONSTRAINT parent_aoi_fkey FOREIGN KEY (parent_aoi_id) REFERENCES aoi(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 5329 (class 2606 OID 170826)
+-- Name: parent_entity_fkey; Type: FK CONSTRAINT; Schema: calc; Owner: calcdev
+--
+
+ALTER TABLE ONLY entity
+    ADD CONSTRAINT parent_entity_fkey FOREIGN KEY (parent_entity_id) REFERENCES entity(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 5323 (class 2606 OID 170831)
+-- Name: parent_group_fkey; Type: FK CONSTRAINT; Schema: calc; Owner: calcdev
+--
+
+ALTER TABLE ONLY category_group
+    ADD CONSTRAINT parent_group_fkey FOREIGN KEY (parent_group_id) REFERENCES category_group(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 5330 (class 2606 OID 170836)
+-- Name: processing_chain_workspace_fkey; Type: FK CONSTRAINT; Schema: calc; Owner: calcdev
+--
+
+ALTER TABLE ONLY processing_chain
+    ADD CONSTRAINT processing_chain_workspace_fkey FOREIGN KEY (workspace_id) REFERENCES workspace(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 5333 (class 2606 OID 170841)
+-- Name: sampling_unit_aoi_fkey; Type: FK CONSTRAINT; Schema: calc; Owner: calcdev
+--
+
+ALTER TABLE ONLY sampling_unit_aoi
+    ADD CONSTRAINT sampling_unit_aoi_fkey FOREIGN KEY (aoi_id) REFERENCES aoi(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 5334 (class 2606 OID 170849)
+-- Name: sampling_unit_entity_fkey; Type: FK CONSTRAINT; Schema: calc; Owner: calcdev
+--
+
+ALTER TABLE ONLY sampling_unit_o
+    ADD CONSTRAINT sampling_unit_entity_fkey FOREIGN KEY (entity_id) REFERENCES entity(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 5335 (class 2606 OID 170854)
+-- Name: sampling_unit_stratum_fkey; Type: FK CONSTRAINT; Schema: calc; Owner: calcdev
+--
+
+ALTER TABLE ONLY sampling_unit_o
+    ADD CONSTRAINT sampling_unit_stratum_fkey FOREIGN KEY (stratum_id) REFERENCES stratum(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 5331 (class 2606 OID 170859)
+-- Name: sampling_unit_stratum_fkey; Type: FK CONSTRAINT; Schema: calc; Owner: calcdev
+--
+
+ALTER TABLE ONLY sampling_unit
+    ADD CONSTRAINT sampling_unit_stratum_fkey FOREIGN KEY (stratum_id) REFERENCES stratum(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 5336 (class 2606 OID 170864)
+-- Name: srs_srid_fkey; Type: FK CONSTRAINT; Schema: calc; Owner: calcdev
+--
+
+ALTER TABLE ONLY srs
+    ADD CONSTRAINT srs_srid_fkey FOREIGN KEY (srid) REFERENCES public.spatial_ref_sys(srid);
+
+
+--
+-- TOC entry 5337 (class 2606 OID 170869)
+-- Name: srs_workspace_fkey; Type: FK CONSTRAINT; Schema: calc; Owner: calcdev
+--
+
+ALTER TABLE ONLY srs
+    ADD CONSTRAINT srs_workspace_fkey FOREIGN KEY (workspace_id) REFERENCES workspace(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 5318 (class 2606 OID 170874)
+-- Name: step_processing_chain_fkey; Type: FK CONSTRAINT; Schema: calc; Owner: calcdev
+--
+
+ALTER TABLE ONLY calculation_step
+    ADD CONSTRAINT step_processing_chain_fkey FOREIGN KEY (chain_id) REFERENCES processing_chain(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 5338 (class 2606 OID 170879)
+-- Name: stratum_workspace_id; Type: FK CONSTRAINT; Schema: calc; Owner: calcdev
+--
+
+ALTER TABLE ONLY stratum
+    ADD CONSTRAINT stratum_workspace_id FOREIGN KEY (workspace_id) REFERENCES workspace(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 5340 (class 2606 OID 170884)
+-- Name: variable_aggregate_variable_fkey; Type: FK CONSTRAINT; Schema: calc; Owner: calcdev
+--
+
+ALTER TABLE ONLY variable_aggregate
+    ADD CONSTRAINT variable_aggregate_variable_fkey FOREIGN KEY (variable_id) REFERENCES variable(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 5339 (class 2606 OID 170889)
+-- Name: variable_entity_fkey; Type: FK CONSTRAINT; Schema: calc; Owner: calcdev
+--
+
+ALTER TABLE ONLY variable
+    ADD CONSTRAINT variable_entity_fkey FOREIGN KEY (entity_id) REFERENCES entity(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 5382 (class 0 OID 0)
+-- Dependencies: 10
+-- Name: public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+--
+-- TOC entry 5400 (class 0 OID 0)
+-- Dependencies: 309
+-- Name: stratum; Type: ACL; Schema: calc; Owner: calcdev
+--
+
+REVOKE ALL ON TABLE stratum FROM PUBLIC;
+REVOKE ALL ON TABLE stratum FROM calcdev;
+GRANT ALL ON TABLE stratum TO calcdev;
+GRANT SELECT ON TABLE stratum TO calcuser;
+
+
+-- Completed on 2013-10-07 17:00:25 CEST
+
+--
+-- PostgreSQL database dump complete
+--
+
