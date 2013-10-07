@@ -11,7 +11,6 @@ home = "home.html";
 $page = $("#page");
 $nav = $(".container ul.breadcrumb");
 $jobStatus = $("#job-status");
-$jobStatusOpen = false;
 $taskStatus = $(".task-status");
 
 /**
@@ -25,12 +24,10 @@ checkJobStatus = function(updateOnly) {
 	.done(function(response) {
 		$job = response;
 
-		if( $jobStatusOpen || $job.status == 'RUNNING'){
-			if( updateOnly ){
-				updateJobStatus($job);
-			} else {
-				createJobStatus($job);				
-			}
+		if( updateOnly ){
+			updateJobStatus($job);
+		} else if ($job.status == 'RUNNING') {
+			createJobStatus($job);				
 		}
 	}); 
 };
@@ -55,7 +52,6 @@ createJobStatus = function($job) {
 		
 		$modalBody.append($status);	
 	});
-	$jobStatusOpen = true;
 	updateJobStatus($job);
 };
 
