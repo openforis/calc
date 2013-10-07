@@ -1,4 +1,4 @@
-<div class="page-section" style="margin-top:40px;">
+<div class="page-section" style="padding-top:40px;">
 	<div class="row" id="sync-form-section">
 		<div class="col-md-12 text-center">
 			<form  method="post" enctype="multipart/form-data" action="rest/collect/data.json">
@@ -56,6 +56,9 @@ $(function(){
 	    	$progressPercent.html(percentVal);
 	    },
 	    success: function ( json ) {
+			$progressSection.hide();
+	    	$formSection.show();
+			
 	    	checkJobStatus();
 	    },
 	    error: function (e) {
