@@ -7,6 +7,7 @@ var CalcForm = {
 	},
 	removeErrors: function (form) {
 		form.find('.form-group').removeClass('has-error');
+		form.find('.form-control').tooltip('destroy');
 	},
 	updateErrors: function(form, errors) {
 		CalcForm.removeErrors(form);
@@ -15,17 +16,20 @@ var CalcForm = {
 			var fieldName = error.field;
 			var $field = form.find('[name=' + fieldName + ']');
 			if ( $field != null ) {
-				$formGroup = $field.closest('.form-group');
-				$formGroup.addClass('has-error');
-				
-				var fieldLabel = CalcForm.getFieldLabel($field);
-				var message = fieldLabel + " " + error.defaultMessage;
-				
-				$field.tooltip({
-					title: message,
-					container: 'body'
-				});
+				CalcForm._createErrorTooltip($field, error);
 			}
+		});
+	},
+	_createErrorTooltip: function($field, error) {
+		$formGroup = $field.closest('.form-group');
+		$formGroup.addClass('has-error');
+		
+		var fieldLabel = CalcForm.getFieldLabel($field);
+		var message = fieldLabel + " " + error.defaultMessage;
+		
+		$field.tooltip({
+			title: message,
+			container: 'body'
 		});
 	}
 	
