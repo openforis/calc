@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Open Foris Calc</title>
+
+    <!-- Bootstrap core CSS -->
+   	<link rel="stylesheet" href="css/bootstrap.css" media="screen">
+	<link rel="stylesheet" href="css/bootswatch.min.css">
+	<link rel="stylesheet" href="css/font-awesome.min.css">
+	
+	<!-- ==== Custom style ==== -->
+	<link rel="stylesheet" href="css/calc.css">
+
+	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	<!--[if lt IE 9]>
+      <script src="js/html5shiv.js"></script>
+      <script src="js/respond.min.js"></script>
+    <![endif]-->	
+  </head>
+
+<body>
+  	
+  	<!-- Start header -->
+	<div class="navbar navbar-default navbar-fixed-top">
+		<div class="container">
+			<div class="navbar-header">
+				<a href="home.html" class="navbar-brand">
+					<img src="img/of-logo.png" width="28px" />pen Foris Calc
+				</a>
+			</div>
+		</div>
+	</div>
+	<!-- End header -->
+	
+	<div class="container">
+	
+		<ul class="breadcrumb">
+			<li>
+				<a href="home.html"><i class="icon-home"></i> Home</a>
+			</li>
+		</ul>
+		
+		<div id="page">
+			<!-- All components are loaded here -->
+		</div>
+		
+	</div>	
+	<!-- End container -->
+
+
+
+	<!-- ==== Job Status modal section ==== -->
+	<div class="modal fade" id="job-status">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title"></h4>
+				</div>
+				<div class="modal-body"></div>
+				<div class="modal-footer hide">
+					<button type="button" class="btn btn-default" data-dismiss="#job-status">Close</button>
+				</div>
+			</div><!-- /.modal-content -->
+		</div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+
+	<div class="row task-status hide">
+   		<div class="col-md-1 number"></div>
+   		<div class="col-md-2 name"></div>
+   		<div class="col-md-8">
+   			<div class="progress"> 
+				<div class="progress-bar"></div>
+			</div>
+   		</div> 
+   		<div class="col-md-1 percent">
+   		</div>
+	</div>
+	<!-- ==== End Job Status modal section ==== -->
+	
+	
+	
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+	
+	<script src="./js/jquery.min.js"></script>
+	<script src="./js/jquery.form.min.js"></script>	
+	<script src="./js/bootstrap.min.js"></script>
+	<script src="./js/modal.js"></script>
+	
+	<!-- ==== Custom javascript -->
+	<script src="./js/calc.js"></script>
+</body>
+</html>

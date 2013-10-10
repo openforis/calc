@@ -24,32 +24,72 @@
   </head>
 
 <body>
+ 	<div class="section-home calculation" id="calculation">
+ 		<div class="page-section">
+	  		<div class="row row1"></div>
+	 		<div class="row row2">
+	 			<button type="button" class="btn btn-default calculation btn-home-plus" href="step-edit.html">
+ 					<i class="icon-plus-sign-alt icon-5" style="font-size:3em"></i>
+ 				</button>
+ 				<button type="button" class="btn btn-default btn-home">Tree height</button>
+	  		</div>
+<!-- 	  		<div class="row row3"></div> -->
+  		</div>
+ 	</div>
+ 	
+  	<div class="section-home results" id="results">
+  		<div class="page-section">
+	  		<div class="row row1"></div>
+	 		<div class="row row2">
+	  		</div>
+	  		<div class="row row3"></div>
+  		</div>
+  	</div>
+  	<div class="section-home data" id="data">
+  		<div class="page-section">
+	  		<div class="row row1"></div>
+	 		<div class="row row2">
+	 			<button type="button" class="btn btn-default btn-home" href="collect-sync.html">Collect Import</button>
+	  		</div>
+	  		<div class="row row3"></div>
+  		</div>
+  	</div>
+  	<div class="section-home settings" id="settings">
+  		<div class="page-section">
+	  		<div class="row row1"></div>
+	 		<div class="row row2">
+	  		</div>
+	  		<div class="row row3"></div>
+  		</div>
+  	</div>
+  	
+  	
   	
   	<!-- Start header -->
-	<div class="navbar navbar-default navbar-fixed-top">
-		<div class="container">
-			<div class="navbar-header">
-				<a href="home.html" class="navbar-brand">
-					<img src="img/of-logo.png" width="28px" />pen Foris Calc
-				</a>
-			</div>
-		</div>
-	</div>
+<!-- 	<div class="navbar navbar-default navbar-fixed-top"> -->
+<!-- 		<div class="container"> -->
+<!-- 			<div class="navbar-header"> -->
+<!-- 				<a href="home.html" class="navbar-brand"> -->
+<!-- 					<img src="img/of-logo.png" width="28px" />pen Foris Calc -->
+<!-- 				</a> -->
+<!-- 			</div> -->
+<!-- 		</div> -->
+<!-- 	</div> -->
 	<!-- End header -->
 	
-	<div class="container">
+<!-- 	<div class="container"> -->
 	
-		<ul class="breadcrumb">
-			<li>
-				<a href="home.html"><i class="icon-home"></i> Home</a>
-			</li>
-		</ul>
+<!-- 		<ul class="breadcrumb"> -->
+<!-- 			<li> -->
+<!-- 				<a href="home.html"><i class="icon-home"></i> Home</a> -->
+<!-- 			</li> -->
+<!-- 		</ul> -->
 		
-		<div id="page">
+<!-- 		<div id="page"> -->
 			<!-- All components are loaded here -->
-		</div>
+<!-- 		</div> -->
 		
-	</div>	
+<!-- 	</div>	 -->
 	<!-- End container -->
 
 
@@ -63,7 +103,7 @@
 				</div>
 				<div class="modal-body"></div>
 				<div class="modal-footer hide">
-					<button type="button" class="btn btn-default" data-dismiss="#job-status">Close</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Close</button>
 				</div>
 			</div><!-- /.modal-content -->
 		</div><!-- /.modal-dialog -->
@@ -84,15 +124,46 @@
 	
 	
 	
+	<!--  ==== Footer ==== -->
+	<footer id="footer">
+		<div class="row">
+			<div class="col-md-2">
+				<button type="button" class="btn back" href="#settings">
+				<i class="icon-caret-left icon-5"></i>
+				</button>
+			</div>
+			<div class="col-md-8" >
+				<div class="links">
+				
+					<button type="button" class="calculation btn btn-default" href="#calculation">Calculation</button>
+					<button type="button" class="results btn btn-default" href="#results">Results</button>
+					<button type="button" class="data btn btn-default" href="#data">Data</button>
+					<button type="button" class="settings btn btn-default" href="#settings">Settings</button>
+				</div>
+			</div>
+			<div class="col-md-2">
+					<div class="logo">
+					<img src="img/of-logo.png" width="35em">pen Foris Calc
+					</div>
+			</div>
+		</div>
+	</footer>
+	<!--  ==== End Footer ==== -->
+	
     <!-- Bootstrap core JavaScript
     ================================================== -->
 	
 	<script src="./js/jquery.min.js"></script>
 	<script src="./js/jquery.form.min.js"></script>	
+	<script src="./js/jquery.easing.js"></script>	
+	<script src="./js/jquery-ui-effects.js"></script>	
 	<script src="./js/bootstrap.min.js"></script>
 	<script src="./js/modal.js"></script>
+	<script src="./js/tooltip.js"></script>
 	
 	<!-- ==== Custom javascript -->
 	<script src="./js/calc.js"></script>
+	<script src="./js/calc-form.js"></script>
+		
 </body>
 </html>
