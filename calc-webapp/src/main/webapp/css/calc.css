@@ -39,12 +39,20 @@ html, body {
 /* 	width:100%; */
 /* 	height:100%; */
 /* } */
-.page-section label {
+.page-section label , .page-section legend  {
     display: inline-block;
     margin-bottom: 5px;
-    font-weight: 100;
-    font-size: 0.4em;
+    font-weight: 100;    
+    color: white;
 }
+.page-section legend {
+	font-size: 0.5em;
+}
+.page-section label {
+	font-size: 0.4em;
+	padding-top: 8px;
+}
+
 .page-section .radio {
     
 }
@@ -185,6 +193,11 @@ button.settings:hover {
 	color:#2c3e50;
 }
 
+
+
+.small-text {
+	font-size: 0.4em;
+}
 
 
 

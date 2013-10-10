@@ -1,60 +1,110 @@
 <!-- ==== Html here === -->
 <div class="page-section">
 	<div class="row">
-		<div class="col-md-3">
+		<div class="col-md-2">
 		</div>
-		<div class="col-md-6">
+		<div class="col-md-8">
 		
 <!-- 		<div class="well"> -->
 			<form id="step-form" class="form-horizontal" method="POST" action="rest/calculationstep/save.json">
 				<fieldset>
 					<legend>Calculation Step Editor</legend>
 					<div class="form-group">
-						<label class="col-lg-2 control-label">Name</label>
-						<div class="col-lg-10">
+						<label class="col-md-2 control-label">Name</label>
+						<div class="col-md-10">
 							<input type="text" class="form-control" name="name">
 						</div>
 					</div>
 					<div class="form-group">
-						<label class="col-lg-2 control-label">Select Entity</label>
-						<div class="col-lg-10">
+						<label class="col-md-2 control-label">Entity</label>
+						<div class="col-md-10">
 							<select class="form-control" name="entity"></select>
 						</div>
 					</div>
 					<div class="form-group">
-						<label for="select-variable" class="col-lg-2 control-label">Output Variable</label>
-						<div class="col-lg-9">
+						<label for="select-variable" class="col-md-2 control-label">Output Variable</label>
+						<div class="col-md-9">
 							<select class="form-control" name="variable" disabled="disabled"></select>
 						</div>
-						<div class="no-padding col-lg-1">
-							<button name="add-variable" class="calculation btn btn-info">
+<!-- 						<div class="no-padding col-md-1"> -->
+							<button name="add-variable" class="calculation btn btn-info col-md-1">
 								<i class="icon-plus-sign-alt"></i>
 							</button>
-						</div>
+<!-- 						</div> -->
 					</div>
 					<div class="form-group">
-						<label class="col-lg-2 control-label">Type</label>
-						
-						<div class="col-lg-2">
-							<div class="radio">
-								<label><input type="radio" name="type" value="formula" /> Formula</label>
+<!-- 						<div class="row"> -->
+							<label class="col-md-2 control-label">Formula</label>
+							<div class="col-md-10">
+								
+								<!-- Formula editor -->
+								<div class="row small-text">
+									<div class="col-md-12">
+										Input variables
+										<button name="add-formula-input-variable" class="calculation btn btn-info">
+											<i class="icon-plus-sign-alt"></i>
+										</button>
+									</div>
+									<div class="row input-vars">
+										<div class="row input-var">
+											<div class="col-md-2">
+												Name
+											</div>
+											<div class="col-md-2">
+												<input type="text" class="form-control" name="input-var-name">
+											</div>
+											<div class="col-md-2">
+												Variable
+											</div>
+											<div class="col-md-4">
+												<select class="form-control" name="input-var"></select>
+											</div>
+											<div class="col-md-2">
+												<button name="delete-input-var" class="calculation btn btn-info">
+													<i class="icon-minus-sign-alt"></i>
+												</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							
+								<textarea class="form-control" rows="13" name="formula"></textarea>
+<!-- 										<span class="help-block">A longer block of help text -->
+<!-- 											that breaks onto a new line and may extend beyond one line.</span> -->
 							</div>
-						</div>
-						<div class="col-lg-2">
-							<div class="radio">								
-								<label><input type="radio" name="type" value="r" /> R</label>
-							</div>	
-						</div>
-						<div class="col-lg-2">
-							<div class="radio">								
-								<label><input type="radio" name="type" value="sql" /> SQL</label>
-							</div>
-						</div>
-						<div class="col-lg-4"></div>
+							
+<!-- 							<div class="checkbox col-lg-10"> -->
+<!-- 								<label> <input type="checkbox" name="external-formula"> Run as external process </label> -->
+<!-- 							</div> -->
+
+
+
+
+<!-- 							<label for="external-formula" class="col-lg-2 control-label">Run as external process</label> -->
+<!-- 							<div class="col-lg-10"> -->
+<!-- 								<input type="checkbox" name="external-formula" /> -->
+<!-- 							</div> -->
+<!-- 						</div> -->
+<!-- 						<div class="col-lg-2"> -->
+<!-- 							<div class="radio"> -->
+<!-- 								<label><input type="radio" name="type" value="formula" /> Formula</label> -->
+<!-- 							</div> -->
+<!-- 						</div> -->
+<!-- 						<div class="col-lg-2"> -->
+<!-- 							<div class="radio">								 -->
+<!-- 								<label><input type="radio" name="type" value="r" /> R</label> -->
+<!-- 							</div>	 -->
+<!-- 						</div> -->
+<!-- 						<div class="col-lg-2"> -->
+<!-- 							<div class="radio">								 -->
+<!-- 								<label><input type="radio" name="type" value="sql" /> SQL</label> -->
+<!-- 							</div> -->
+<!-- 						</div> -->
+<!-- 						<div class="col-lg-4"></div> -->
 						
 					</div>
 					<div class="form-group buttons">
-						<div class="col-lg-12" style="text-align: center;">
+						<div class="col-md-12" style="text-align: center;">
 							<button type="submit" class="btn btn-default btn-lg">Save</button>
 						</div>
 <!-- 						<div class="col-lg-2"> -->
@@ -64,7 +114,7 @@
 				</fieldset>
 			</form>
 		</div>
-		<div class="col-md-3">
+		<div class="col-md-2">
 		</div>
 <!-- 		</div> -->
 	</div>
@@ -74,6 +124,11 @@ $(function(){
 	$stepForm = $('#step-form');
 	$entitySelect = $stepForm.find("[name='entity']");
 	$variableSelect = $stepForm.find("[name='variable']");
+	
+	$inputVars = $(".input-vars");
+	$inputVar = $(".input-var");
+// 	$inputVars.hide();
+	$inputVar.hide();
 	
 	updateEntities = function() {
 		$entitySelect.empty();
@@ -98,10 +153,10 @@ $(function(){
 		$variableSelect.attr("disabled", "disabled");
 		$variableSelect.empty();
 	
-		$selectedEntityOption = $entitySelect.find(":selected");
-		if ( $selectedEntityOption != null ) {
+		$selectedEntity = $entitySelect.find(":selected");
+		if ( $selectedEntity != null ) {
 			$.ajax({
-				url: "rest/workspace/entities/" + $selectedEntityOption.val() + "/variables.json",
+				url: "rest/workspace/entities/" + $selectedEntity.val() + "/variables.json",
 				dataType: "json"
 			})
 			.done(function(response) {
@@ -110,6 +165,7 @@ $(function(){
 					 $variableSelect.append($("<option />").val(variable.id).text(variable.name));
 				});
 				$variableSelect.removeAttr("disabled");
+				$variableSelect.val([]);
 			}); 
 		}
 	};
@@ -126,7 +182,25 @@ $(function(){
 	    error: function (e) {
 	    	alert('Error submitting form');
 	    }
-	});	
+	});
+	
+	$stepForm.find("button[type='submit']").click(function(event){
+		event.preventDefault();
+		$stepForm.submit();
+		
+	});
+	
+	$stepForm.find("button[name='add-variable']").click(function(event){
+		event.preventDefault();
+		
+		$var = $inputVar.clone();
+		$inputVars.append($var);
+		$var.fadeIn();
+	});
+	
+	$stepForm.find("button[name='add-formula-input-variable']").click(function(event){
+		event.preventDefault();
+	});
 	
 	$entitySelect.change(function(event) {
 		updateVariables();
