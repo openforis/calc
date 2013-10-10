@@ -198,6 +198,7 @@ formula editor
 */
 .formula-editor input, .formula-editor select{
 	height: 30px;
+	padding: 2px;
 } 
 .formula-editor .input-var {
 	font-size: 0.8em;

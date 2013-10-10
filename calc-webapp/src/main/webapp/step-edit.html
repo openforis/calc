@@ -18,13 +18,13 @@
 					<div class="form-group">
 						<label class="col-md-2 control-label">Entity</label>
 						<div class="col-md-10">
-							<select class="form-control" name="entity"></select>
+							<select class="form-control" name="entityId"></select>
 						</div>
 					</div>
 					<div class="form-group">
 						<label for="select-variable" class="col-md-2 control-label">Output Variable</label>
 						<div class="col-md-9">
-							<select class="form-control" name="variable" disabled="disabled"></select>
+							<select class="form-control" name="variableId" disabled="disabled"></select>
 						</div>
 <!-- 						<div class="no-padding col-md-1"> -->
 							<button name="add-variable" class="calculation btn btn-info col-md-1">
@@ -128,8 +128,8 @@
 <script>
 $(function(){
 	$stepForm = $('#step-form');
-	$entitySelect = $stepForm.find("[name='entity']");
-	$variableSelect = $stepForm.find("[name='variable']");
+	$entitySelect = $stepForm.find("[name='entityId']");
+	$variableSelect = $stepForm.find("[name='variableId']");
 	
 	$inputVars = $(".input-vars");
 	$inputVar = $(".input-var");
@@ -222,9 +222,11 @@ $(function(){
 	
 		$var = $inputVar.clone();
 		$inputVars.append($var);
-					
+		//bind delete button click			
 		$var.find("[name='delete-input-var']").click(deleteInputVariable);
-		//select = $inputVar.find("[name='input-var']");
+		//remove selection of variable from select
+		select = $var.find(".input-var-id");
+		select.val([]);
 		// input-var-name,  input-var
 		renameInputVariables();
 		$var.fadeIn();
