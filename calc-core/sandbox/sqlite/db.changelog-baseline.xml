@@ -58,8 +58,14 @@
 			<column name="unit_of_analysis" type="bool">
 				<constraints nullable="false" />
 			</column>
-			<column name="cluster_variable_id" type="int4" />
-			<column name="unit_no_variable_id" type="int4" />
+			<column name="cluster_variable_id" type="int4">
+<!-- 				<constraints foreignKeyName="entity_cluster_variable_fkey" -->
+<!-- 					references="variable(id)" deferrable="true" initiallyDeferred="true" /> -->
+			</column>
+			<column name="unit_no_variable_id" type="int4">
+<!-- 				<constraints foreignKeyName="entity_unit_no_variable_fkey" -->
+<!-- 					references="variable(id)" deferrable="true" initiallyDeferred="true" /> -->
+			</column>
 			<column name="original_id" type="int4" />
 			<column name="caption" type="VARCHAR(255)" />
 			<column name="description" type="VARCHAR(1024)" />
@@ -138,13 +144,13 @@
 					references="variable(id)" deleteCascade="true" />
 			</column>
 			<column name="code" type="VARCHAR(255)" />
-			<column name="value" type="NUMERIC(8,8)" />
+			<column name="value" type="FLOAT4(8,8)" />
 			<column name="original_id" type="int4" />
 			<column defaultValueBoolean="false" name="override" type="bool">
 				<constraints nullable="false" />
 			</column>
 			<column name="caption" type="VARCHAR(255)" />
-			<column name="description" type="VARCHAR(1023)" />
+			<column name="description" type="VARCHAR(1024)" />
 			<column name="sort_order" type="int4">
 				<constraints nullable="false" />
 			</column>
@@ -412,26 +418,11 @@
 				
 	</changeSet>
 
-	<changeSet author="calc" id="baseline-add-constraints">
+	<changeSet author="calc" id="baseline-add-constraints" dbms="postgresql">
 	    
-	    <!-- Foreign keys -->
-		<addForeignKeyConstraint baseColumnNames="cluster_variable_id"
-			baseTableName="entity" constraintName="entity_cluster_variable_fkey"
-			deferrable="false" initiallyDeferred="false" onDelete="CASCADE"
-			onUpdate="CASCADE" referencedColumnNames="id" referencedTableName="variable"
-			referencesUniqueColumn="true" />
-	
-		<addForeignKeyConstraint baseColumnNames="unit_no_variable_id"
-			baseTableName="entity" constraintName="entity_unit_no_variable_fkey"
-			deferrable="false" initiallyDeferred="false" onDelete="CASCADE"
-			onUpdate="CASCADE" referencedColumnNames="id" referencedTableName="variable"
-			referencesUniqueColumn="true" />
-		
-		<!-- Primary Keys -->
 		<addPrimaryKey columnNames="sampling_unit_id, aoi_id"
 			constraintName="sample_plot_aoi_pkey" tableName="sampling_unit_aoi" />
 		
-		<!-- Unique Constraints -->
 		<addUniqueConstraint columnNames="workspace_id, name"
 			constraintName="aoi_hierarchy_name" deferrable="false" disabled="false"
 			initiallyDeferred="false" tableName="aoi_hierarchy" />
