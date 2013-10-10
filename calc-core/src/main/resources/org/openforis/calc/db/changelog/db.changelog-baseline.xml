@@ -4,7 +4,13 @@
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
 	<changeSet author="calc" id="baseline">
-
+		<preConditions onFail="MARK_RAN">
+		    <not>
+		        <tableExists tableName="workspace" />
+		    </not>
+	    </preConditions>
+	    
+		<!-- Tables -->
 		<createTable remarks="One cycle of an inventory."
 			tableName="workspace">
 			<column autoIncrement="true" name="id" type="serial">
@@ -396,6 +402,7 @@
 			<column name="description" type="VARCHAR(1024)" />
 		</createTable>
 
+		<!-- Views -->
 		<createView viewName="sampling_unit_count_view">
 		    SELECT sua.aoi_id, su.stratum_id, su.entity_id, sua.workspace_id, count(*) AS count 
 		    FROM (calc.sampling_unit_aoi sua JOIN calc.sampling_unit su ON ((su.id = sua.sampling_unit_id))) 
@@ -410,10 +417,6 @@
 		    	JOIN calc.aoi a ON((a.id = c1.aoi_id)));
 		</createView>
 				
-	</changeSet>
-
-	<changeSet author="calc" id="baseline-add-constraints">
-	    
 	    <!-- Foreign keys -->
 		<addForeignKeyConstraint baseColumnNames="cluster_variable_id"
 			baseTableName="entity" constraintName="entity_cluster_variable_fkey"
