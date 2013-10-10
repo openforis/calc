@@ -1,0 +1,3 @@
+CREATE SCHEMA calc;
+
+ALTER SCHEMA calc OWNER TO calcdev;
