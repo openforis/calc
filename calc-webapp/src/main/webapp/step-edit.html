@@ -38,37 +38,20 @@
 							<div class="col-md-10">
 								
 								<!-- Formula editor -->
-								<div class="row small-text">
+								<div class="row small-text formula-editor">
 									<div class="col-md-12">
 										Input variables
-										<button name="add-formula-input-variable" class="calculation btn btn-info">
+										<button name="add-input-variable" class="calculation btn btn-info">
 											<i class="icon-plus-sign-alt"></i>
 										</button>
 									</div>
 									<div class="row input-vars">
-										<div class="row input-var">
-											<div class="col-md-2">
-												Name
-											</div>
-											<div class="col-md-2">
-												<input type="text" class="form-control" name="input-var-name">
-											</div>
-											<div class="col-md-2">
-												Variable
-											</div>
-											<div class="col-md-4">
-												<select class="form-control" name="input-var"></select>
-											</div>
-											<div class="col-md-2">
-												<button name="delete-input-var" class="calculation btn btn-info">
-													<i class="icon-minus-sign-alt"></i>
-												</button>
-											</div>
-										</div>
 									</div>
 								</div>
-							
-								<textarea class="form-control" rows="13" name="formula"></textarea>
+								
+								<div class="row" style="margin-top: 5px;">
+									<textarea class="form-control" rows="13" name="formula"></textarea>
+								</div>
 <!-- 										<span class="help-block">A longer block of help text -->
 <!-- 											that breaks onto a new line and may extend beyond one line.</span> -->
 							</div>
@@ -112,11 +95,34 @@
 <!-- 						</div> -->
 					</div>
 				</fieldset>
+				
+				<!-- Input variable fields. //hidden by default -->
+				<div class="row input-var">
+					<div class="col-md-2">
+						Name
+					</div>
+					<div class="col-md-2">
+						<input type="text" class="form-control input-var-name" name="input-var-name" >
+					</div>
+					<div class="col-md-2">
+						Variable
+					</div>
+					<div class="col-md-4">
+						<select class="form-control input-var-id" name="input-var-id"></select>
+					</div>
+					<div class="col-md-2">
+						<button name="delete-input-var" class="calculation btn btn-info">
+							<i class="icon-minus-sign-alt"></i>
+						</button>
+					</div>
+				</div>
 			</form>
 		</div>
 		<div class="col-md-2">
 		</div>
 <!-- 		</div> -->
+
+
 	</div>
 	
 <script>
@@ -127,6 +133,8 @@ $(function(){
 	
 	$inputVars = $(".input-vars");
 	$inputVar = $(".input-var");
+	
+	
 // 	$inputVars.hide();
 	$inputVar.hide();
 	
@@ -152,17 +160,31 @@ $(function(){
 	updateVariables = function() {
 		$variableSelect.attr("disabled", "disabled");
 		$variableSelect.empty();
-	
+		
+		$inputVarSelects = $stepForm.find(".input-var-id");
+		$inputVarSelects.empty();
+		
 		$selectedEntity = $entitySelect.find(":selected");
 		if ( $selectedEntity != null ) {
 			$.ajax({
 				url: "rest/workspace/entities/" + $selectedEntity.val() + "/variables.json",
 				dataType: "json"
 			})
-			.done(function(response) {
-				var variables = response;
+			.done(function(response) {				
+				variables = response;
+				
 				$.each(variables, function(i, variable) {
-					 $variableSelect.append($("<option />").val(variable.id).text(variable.name));
+					
+					$option = $("<option />").val(variable.id).text(variable.name);
+					
+					$variableSelect.append($option);
+					
+					//update each input variable select
+					$.each($inputVarSelects, function(i,select){
+						$(select).append($option.clone());
+						$(select).val([]);
+					});
+					 
 				});
 				$variableSelect.removeAttr("disabled");
 				$variableSelect.val([]);
@@ -176,7 +198,7 @@ $(function(){
 	        $(this).addClass('loading');
 	    },
 	    success: function ( response ) {
-	    	console.log(response);
+// 	    	console.log(response);
 	    	CalcForm.updateErrors($stepForm, response.errors);
 	    },
 	    error: function (e) {
@@ -187,20 +209,53 @@ $(function(){
 	$stepForm.find("button[type='submit']").click(function(event){
 		event.preventDefault();
 		$stepForm.submit();
-		
 	});
 	
 	$stepForm.find("button[name='add-variable']").click(function(event){
 		event.preventDefault();
-		
-		$var = $inputVar.clone();
-		$inputVars.append($var);
-		$var.fadeIn();
 	});
 	
-	$stepForm.find("button[name='add-formula-input-variable']").click(function(event){
+	
+	// add input variable to the form
+	$stepForm.find("button[name='add-input-variable']").click(function(event){
 		event.preventDefault();
+	
+		$var = $inputVar.clone();
+		$inputVars.append($var);
+					
+		$var.find("[name='delete-input-var']").click(deleteInputVariable);
+		//select = $inputVar.find("[name='input-var']");
+		// input-var-name,  input-var
+		renameInputVariables();
+		$var.fadeIn();
+		
 	});
+	
+	renameInputVariables = function() {
+		vars = $inputVars.find('.input-var');
+		$.each(vars, function(i, div) {
+			$varId = $(div).find('.input-var-name');
+			$varName = $(div).find('.input-var-id');
+			
+			$varId.attr('name','input-var-id-'+i);
+			$varName.attr('name','input-var-name-'+i);
+			
+// 			console.log($varId.attr('name'));
+// 			console.log($varName.attr('name'));
+		});
+	}; 
+	
+	deleteInputVariable = function(event){
+		event.preventDefault();
+		$var = $(this).parents('.input-var');
+		$var.fadeOut(200);
+		setTimeout(function(){
+			
+			$var.remove();
+			renameInputVariables();
+		}, 300);
+// 		console.log($var);
+	};
 	
 	$entitySelect.change(function(event) {
 		updateVariables();

@@ -193,7 +193,15 @@ button.settings:hover {
 	color:#2c3e50;
 }
 
-
+/**
+formula editor
+*/
+.formula-editor input, .formula-editor select{
+	height: 30px;
+} 
+.formula-editor .input-var {
+	font-size: 0.8em;
+}
 
 .small-text {
 	font-size: 0.4em;
