@@ -12,20 +12,6 @@
 	<packaging>jar</packaging>
 	<name>Open Foris Calc Core</name>
 	
-<!-- 	<repositories> -->
-<!-- 	<repository> -->
-<!-- 		<id>terracotta-releases</id> -->
-<!-- 		<url>http://www.terracotta.org/download/reflector/releases</url> -->
-<!-- 		<releases> -->
-<!-- 			<enabled>true</enabled> -->
-<!-- 		</releases> -->
-<!-- 		<snapshots> -->
-<!-- 			<enabled>false</enabled> -->
-<!-- 		</snapshots> -->
-<!-- 	</repository> -->
-<!-- 	</repositories> -->
-		
-	
 	<properties>
 		<mondrian-source-files-dir>${project.build.directory}/generated-sources/mondrian</mondrian-source-files-dir>
 		<jooq-codegen.target.directory>${project.build.directory}/generated-sources/jooq</jooq-codegen.target.directory>
@@ -315,30 +301,24 @@
 			<groupId>org.openforis.commons</groupId>
 			<artifactId>commons-collections</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.openforis.commons</groupId>
 			<artifactId>commons-io</artifactId>
 		</dependency>
 		
-<!-- 		Spring  -->
-
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
-<!-- 			<version>${spring.version}</version> -->
-		</dependency>
-
+		<!--  Spring  -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-orm</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-jdbc</artifactId>
 		</dependency>
-
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
@@ -359,7 +339,7 @@
 			<artifactId>jackson-annotations</artifactId>
 		</dependency>
 		
-<!-- 		Database  -->
+		<!-- Database -->
 		<dependency>
 			<groupId>postgresql</groupId>
 			<artifactId>postgresql</artifactId>
@@ -373,48 +353,12 @@
 			<artifactId>commons-dbcp</artifactId>
 		</dependency>
 		
-<!-- 		<dependency> -->
-<!-- 			<groupId>net.sf.kxml</groupId> -->
-<!-- 			<artifactId>kxml2</artifactId> -->
-<!-- 		</dependency> -->
-<!-- 	    <dependency> -->
-<!-- 	      <groupId>net.sf.opencsv</groupId> -->
-<!-- 	      <artifactId>opencsv</artifactId> -->
-<!-- 	    </dependency> -->
-<!-- 	    <dependency> -->
-<!-- 	      <groupId>javax.annotation</groupId> -->
-<!-- 	      <artifactId>jsr250-api</artifactId> -->
-<!-- 	    </dependency> -->
-	    
-<!-- 		<dependency> -->
-<!-- 			<groupId>javax.persistence</groupId> -->
-<!-- 			<artifactId>persistence-api</artifactId> -->
-<!-- 			<version>1.0.2</version> -->
-<!-- 		</dependency> -->
-	
-	<!-- Hibernate / JPA -->
-		<dependency>
-			<groupId>org.hibernate.javax.persistence</groupId>
-			<artifactId>hibernate-jpa-2.0-api</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>net.sf.kxml</groupId>
-			<artifactId>kxml2</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.opencsv</groupId>
-			<artifactId>opencsv</artifactId>
-		</dependency>
 		<dependency>
 			<groupId>javax.annotation</groupId>
 			<artifactId>jsr250-api</artifactId>
 		</dependency>
-		<!-- <dependency> -->
-		<!-- <groupId>javax.persistence</groupId> -->
-		<!-- <artifactId>persistence-api</artifactId> -->
-		<!-- <version>1.0.2</version> -->
-		<!-- </dependency> -->
+		
+		<!-- Hibernate -->
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>
@@ -424,75 +368,13 @@
 			<artifactId>hibernate-ehcache</artifactId>
 		</dependency>
 		
-<!-- <dependency> -->
-<!--    <groupId>net.sf.ehcache</groupId> -->
-<!--    <artifactId>ehcache-core</artifactId> -->
-<!--    <version> 2.6.6</version> -->
-<!-- </dependency> -->
-
 		<!-- DDL utils -->
 		<dependency>
 			<groupId>org.apache.ddlutils</groupId>
 			<artifactId>ddlutils</artifactId>
 		</dependency>
 		
-<!-- 		<dependency> -->
-<!-- 			<groupId>pentaho</groupId> -->
-<!-- 			<artifactId>mondrian</artifactId> -->
-<!-- 			<exclusions> -->
-<!-- 				<exclusion> -->
-<!-- 					<artifactId>servlet-api</artifactId> -->
-<!-- 					<groupId>javax.servlet</groupId> -->
-<!-- 				</exclusion> -->
-<!-- 			</exclusions> -->
-<!-- 		</dependency> -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.olap4j</groupId> -->
-<!-- 			<artifactId>olap4j</artifactId> -->
-<!-- 			<version>1.0.1.550</version> -->
-<!-- 		</dependency> -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.jscience</groupId> -->
-<!-- 			<artifactId>jscience</artifactId> -->
-<!-- 			<version>4.3.1</version> -->
-<!-- 		</dependency>		 -->
-
-
-	<!-- Logging -->
-		<!-- <dependency> -->
-		<!-- <groupId>pentaho</groupId> -->
-		<!-- <artifactId>mondrian</artifactId> -->
-		<!-- <exclusions> -->
-		<!-- <exclusion> -->
-		<!-- <artifactId>servlet-api</artifactId> -->
-		<!-- <groupId>javax.servlet</groupId> -->
-		<!-- </exclusion> -->
-		<!-- </exclusions> -->
-		<!-- </dependency> -->
-		<!-- <dependency> -->
-		<!-- <groupId>org.olap4j</groupId> -->
-		<!-- <artifactId>olap4j</artifactId> -->
-		<!-- <version>1.0.1.550</version> -->
-		<!-- </dependency> -->
-		<!-- <dependency> -->
-		<!-- <groupId>org.jscience</groupId> -->
-		<!-- <artifactId>jscience</artifactId> -->
-		<!-- <version>4.3.1</version> -->
-		<!-- </dependency> -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-		</dependency>
-		
-		<!--  Json -->		
+		<!--  JSON -->		
 		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
 			<artifactId>json-simple</artifactId>
@@ -504,40 +386,36 @@
             <artifactId>jaxb-api</artifactId>
         </dependency>
         
-<!-- 		Testing -->
+		<!-- RJava -->
+		<dependency>
+		  <groupId>net.rforge.rjava</groupId>
+		  <artifactId>jriengine</artifactId>
+		</dependency>
+		<dependency>
+		  <groupId>net.rforge.rjava</groupId>
+		  <artifactId>rengine</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jooq</groupId>
+			<artifactId>jooq</artifactId>
+		</dependency>
+
+		<!-- Logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+		</dependency>
+		
+		<!-- Testing -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
-<!-- 		<dependency>		 -->
-<!-- 			<groupId>net.rforge.rjava</groupId> -->
-<!-- 			<artifactId>rengine</artifactId> -->
-<!-- 			<version>0.9-5</version> -->
-<!-- 		</dependency>		 -->
-<!-- 		<dependency>		 -->
-<!-- 			<groupId>net.rforge.rjava</groupId> -->
-<!-- 			<artifactId>jriengine</artifactId> -->
-<!-- 			<version>0.9-5</version> -->
-<!-- 		</dependency>		 -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>net.rforge</groupId> -->
-<!-- 			<artifactId>jri</artifactId> -->
-<!-- 			<version>0.5-5</version> -->
-<!-- 		</dependency> -->
-		<dependency>
-		  <groupId>net.rforge.rjava</groupId>
-		  <artifactId>jriengine</artifactId>
-		</dependency>
 		
-		<dependency>
-		  <groupId>net.rforge.rjava</groupId>
-		  <artifactId>rengine</artifactId>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.jooq</groupId>
-			<artifactId>jooq</artifactId>
-		</dependency>
 	</dependencies>
 </project>
