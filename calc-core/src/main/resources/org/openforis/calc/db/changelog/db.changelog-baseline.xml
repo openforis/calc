@@ -418,17 +418,17 @@
 		</createView>
 				
 	    <!-- Foreign keys -->
-		<addForeignKeyConstraint baseColumnNames="cluster_variable_id"
-			baseTableName="entity" constraintName="entity_cluster_variable_fkey"
-			deferrable="false" initiallyDeferred="false" onDelete="CASCADE"
-			onUpdate="CASCADE" referencedColumnNames="id" referencedTableName="variable"
-			referencesUniqueColumn="true" />
+<!-- 		<addForeignKeyConstraint baseColumnNames="cluster_variable_id" -->
+<!-- 			baseTableName="entity" constraintName="entity_cluster_variable_fkey" -->
+<!-- 			deferrable="false" initiallyDeferred="false" onDelete="CASCADE" -->
+<!-- 			onUpdate="CASCADE" referencedColumnNames="id" referencedTableName="variable" -->
+<!-- 			referencesUniqueColumn="true" /> -->
 	
-		<addForeignKeyConstraint baseColumnNames="unit_no_variable_id"
-			baseTableName="entity" constraintName="entity_unit_no_variable_fkey"
-			deferrable="false" initiallyDeferred="false" onDelete="CASCADE"
-			onUpdate="CASCADE" referencedColumnNames="id" referencedTableName="variable"
-			referencesUniqueColumn="true" />
+<!-- 		<addForeignKeyConstraint baseColumnNames="unit_no_variable_id" -->
+<!-- 			baseTableName="entity" constraintName="entity_unit_no_variable_fkey" -->
+<!-- 			deferrable="false" initiallyDeferred="false" onDelete="CASCADE" -->
+<!-- 			onUpdate="CASCADE" referencedColumnNames="id" referencedTableName="variable" -->
+<!-- 			referencesUniqueColumn="true" /> -->
 		
 		<!-- Primary Keys -->
 		<addPrimaryKey columnNames="sampling_unit_id, aoi_id"
