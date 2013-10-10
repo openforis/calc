@@ -22,6 +22,7 @@
 		<zk.spring.version>3.1</zk.spring.version>
 		<kettle.version>4.4.0-stable</kettle.version>
 		<postgres-driver.version>9.1-901-1.jdbc4</postgres-driver.version>
+		<sqlite-driver.version>3.7.2</sqlite-driver.version>
 		<jooq.version>3.1.0</jooq.version>
 		<collect.version>3.0-Alpha8-SNAPSHOT</collect.version>
 <!-- 		<commons-vfs.version>2.0-20090205</commons-vfs.version> -->
@@ -238,6 +239,11 @@
 				<artifactId>postgresql</artifactId>
 				<version>${postgres-driver.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>org.xerial</groupId>
+				<artifactId>sqlite-jdbc</artifactId>
+				<version>${sqlite-driver.version}</version>
+			</dependency>		
 			<dependency>
 				<groupId>org.postgis</groupId>
 				<artifactId>postgis-jdbc</artifactId>

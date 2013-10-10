@@ -62,5 +62,16 @@
 		<!-- one of the properties available; the maximum file size in bytes -->
 		<property name="maxUploadSize" value="-1" />
 	</bean>	
+	
+	<!-- ===================================== -->
+	<!-- Liquibase -->
+	<!-- ===================================== -->
+	<bean id="liquibase" class="org.openforis.calc.persistence.liquibase.DatabaseAwareSpringLiquibase"
+	    lazy-init="false">
+		<property name="dataSource" ref="dataSource" />
+		<property name="changeLog"
+			value="classpath:org/openforis/calc/db/changelog/db.changelog-master.xml" />
+		<property name="defaultSchema" value="calc" />
+	</bean>
     
 </beans>

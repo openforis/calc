@@ -1,0 +1,472 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+	<changeSet author="calc" id="baseline">
+		<preConditions onFail="MARK_RAN">
+		    <not>
+		        <tableExists tableName="workspace" />
+		    </not>
+	    </preConditions>
+	    
+		<!-- Tables -->
+		<createTable remarks="One cycle of an inventory."
+			tableName="workspace">
+			<column autoIncrement="true" name="id" type="serial">
+				<constraints nullable="false" primaryKey="true"
+					primaryKeyName="workspace_pkey" />
+			</column>
+			<column name="name" type="VARCHAR(255)" />
+			<column name="collect_survey_uri" type="VARCHAR(255)" />
+			<column name="input_schema" type="VARCHAR(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="output_schema" type="VARCHAR(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="caption" type="VARCHAR(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="description" type="VARCHAR(1024)" />
+		</createTable>
+		
+		<createTable tableName="entity">
+			<column autoIncrement="true" name="id" type="serial">
+				<constraints nullable="false" primaryKey="true"
+					primaryKeyName="entity_pkey" />
+			</column>
+			<column name="workspace_id" type="int4">
+				<constraints nullable="false" foreignKeyName="entity_workspace_fkey"
+					references="workspace(id)" deleteCascade="true" />
+			</column>
+			<column name="parent_entity_id" type="int4">
+				<constraints foreignKeyName="entity_parent_fkey"
+					references="entity(id)" deleteCascade="true" />
+			</column>
+			<column name="name" type="VARCHAR(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="data_table" type="VARCHAR(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="x_column" type="VARCHAR(255)" />
+			<column name="y_column" type="VARCHAR(255)" />
+			<column name="srs_column" type="VARCHAR(255)" />
+			<column name="location_column" type="VARCHAR(255)" />
+			<column name="input" type="bool" />
+			<column name="override" type="bool" />
+			<column name="id_column" type="VARCHAR(255)" />
+			<column name="parent_id_column" type="VARCHAR(255)" />
+			<column defaultValueBoolean="false" name="sampling_unit" type="bool">
+				<constraints nullable="false" />
+			</column>
+			<column name="unit_of_analysis" type="bool">
+				<constraints nullable="false" />
+			</column>
+			<column name="cluster_variable_id" type="int4" />
+			<column name="unit_no_variable_id" type="int4" />
+			<column name="original_id" type="int4" />
+			<column name="caption" type="VARCHAR(255)" />
+			<column name="description" type="VARCHAR(1024)" />
+			<column name="sort_order" type="int4">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+		
+		<createTable tableName="variable">
+			<column autoIncrement="true" name="id" type="serial">
+				<constraints nullable="false" primaryKey="true"
+					primaryKeyName="variable_pkey" />
+			</column>
+			<column name="entity_id" type="int4">
+				<constraints nullable="false" foreignKeyName="variable_entity_fkey"
+					references="entity(id)" deleteCascade="true" />
+			</column>
+			<column name="input_value_column" type="VARCHAR(255)" />
+			<column name="scale"
+				remarks="Quantitative: RATIO|INTERVAL|OTHER&#10;Categorical: NOMINAL|ORDINAL|BINARY"
+				type="VARCHAR(25)">
+				<constraints nullable="false" />
+			</column>
+			<column name="name" type="VARCHAR(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="original_id" type="int4" />
+			<column name="default_value" type="VARCHAR(255)" />
+			<column defaultValueBoolean="false" name="multiple_response"
+				type="bool" />
+			<column name="override" type="bool" />
+			<column name="dimension_table" type="VARCHAR(255)" />
+			<column defaultValueBoolean="false" name="degenerate_dimension"
+				type="bool" />
+			<column name="input_category_id_column" type="VARCHAR(255)" />
+			<column defaultValueBoolean="false" name="disaggregate" type="bool">
+				<constraints nullable="false" />
+			</column>
+			<column name="output_value_column" type="VARCHAR(255)" />
+			<column name="output_category_id_column" type="VARCHAR(255)" />
+			<column name="caption" type="VARCHAR(255)" />
+			<column name="description" type="VARCHAR(1024)" />
+			<column name="sort_order" type="int4">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+		
+		<createTable tableName="variable_aggregate">
+			<column autoIncrement="true" name="id" type="serial">
+				<constraints nullable="false" primaryKey="true"
+					primaryKeyName="variable_aggregate_pkey" />
+			</column>
+			<column name="variable_id" type="int4">
+				<constraints nullable="false" foreignKeyName="variable_aggregate_variable_fkey"
+					references="variable(id)" deleteCascade="true" />
+			</column>
+			<column name="name" type="VARCHAR(255)" />
+			<column name="aggregate_column" type="VARCHAR(255)" />
+			<column name="aggregate_formula" type="VARCHAR(1024)">
+				<constraints nullable="false" />
+			</column>
+			<column name="aggregate_type" type="VARCHAR(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="caption" type="VARCHAR(255)" />
+			<column name="description" type="VARCHAR(1024)" />
+		</createTable>
+
+		<createTable tableName="category">
+			<column autoIncrement="true" name="id" type="serial">
+				<constraints nullable="false" primaryKey="true"
+					primaryKeyName="category_pkey" />
+			</column>
+			<column name="variable_id" type="int4">
+				<constraints nullable="false" foreignKeyName="category_variable_fkey"
+					references="variable(id)" deleteCascade="true" />
+			</column>
+			<column name="code" type="VARCHAR(255)" />
+			<column name="value" type="NUMERIC(8,8)" />
+			<column name="original_id" type="int4" />
+			<column defaultValueBoolean="false" name="override" type="bool">
+				<constraints nullable="false" />
+			</column>
+			<column name="caption" type="VARCHAR(255)" />
+			<column name="description" type="VARCHAR(1023)" />
+			<column name="sort_order" type="int4">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+		
+		<createTable tableName="category_hierarchy">
+			<column autoIncrement="true" name="id" type="serial">
+				<constraints nullable="false" primaryKey="true"
+					primaryKeyName="hierarchy_pkey" />
+			</column>
+			<column name="variable_id" type="int4">
+				<constraints nullable="false" foreignKeyName="category_hierarchy_variable_fkey"
+					references="variable(id)" deleteCascade="true" />
+			</column>
+			<column name="name" type="VARCHAR(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="caption" type="VARCHAR(255)" />
+			<column name="description" type="VARCHAR(1024)" />
+		</createTable>
+
+		<createTable tableName="category_level">
+			<column autoIncrement="true" name="id" type="serial">
+				<constraints nullable="false" primaryKey="true"
+					primaryKeyName="hierarchy_level_pkey" />
+			</column>
+			<column name="hierarchy_id" type="int4">
+				<constraints nullable="false" foreignKeyName="category_level_hierarchy_fkey"
+					references="category_hierarchy(id)" deleteCascade="true" />
+			</column>
+			<column name="name" type="VARCHAR(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="value_column" type="VARCHAR(255)" />
+			<column name="rank" type="int4">
+				<constraints nullable="false" />
+			</column>
+			<column name="caption" type="VARCHAR(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="description" type="VARCHAR(1024)" />
+		</createTable>
+
+		<createTable tableName="category_group">
+			<column autoIncrement="true" name="id" type="serial">
+				<constraints nullable="false" primaryKey="true"
+					primaryKeyName="group_pkey" />
+			</column>
+			<column name="level_id" type="int4">
+				<constraints nullable="false" foreignKeyName="group_level_fkey"
+					references="category_level(id)" deleteCascade="true" />
+			</column>
+			<column name="parent_group_id" type="int4">
+				<constraints nullable="false" foreignKeyName="parent_group_fkey"
+					references="category_group(id)" deleteCascade="true" />
+			</column>
+			<column name="code" type="VARCHAR(255)" />
+			<column name="caption" type="VARCHAR(255)" />
+			<column name="description" type="VARCHAR(1024)" />
+			<column name="sort_order" type="int4">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+
+		<createTable tableName="category_category_group">
+			<column name="group_id" type="int4">
+				<constraints nullable="false" foreignKeyName="category_group_fkey"
+					references="category_group(id)" deleteCascade="true" />
+			</column>
+			<column name="category_id" type="int4">
+				<constraints nullable="false" foreignKeyName="group_category_fkey"
+					references="category(id)" deleteCascade="true" />
+			</column>
+		</createTable>
+
+		<createTable
+			remarks="A particular AOI hierarchy, such as &quot;Administrative Units&quot; or &quot;Ecological Zones&quot;."
+			tableName="aoi_hierarchy">
+			<column autoIncrement="true" name="id" type="serial">
+				<constraints nullable="false" primaryKey="true"
+					primaryKeyName="aoi_hierarchy_pkey" />
+			</column>
+			<column name="workspace_id" type="int4">
+				<constraints nullable="false" foreignKeyName="aoi_hierarchy_workspace_fkey"
+					references="workspace(id)" deleteCascade="true" />
+			</column>
+			<column name="name" type="VARCHAR(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="caption" type="VARCHAR(255)" />
+			<column name="description" type="VARCHAR(1024)" />
+		</createTable>
+		
+		<createTable tableName="aoi_level">
+			<column autoIncrement="true" name="id" type="serial">
+				<constraints nullable="false" primaryKey="true"
+					primaryKeyName="aoi_hierarchy_level_pkey" />
+			</column>
+			<column name="aoi_hierarchy_id" type="int4">
+				<constraints nullable="false" foreignKeyName="aoi_level_hierarchy_fkey"
+					references="aoi_hierarchy(id)" deleteCascade="true" />
+			</column>
+			<column name="name" type="VARCHAR(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="caption" type="VARCHAR(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="rank" type="int4">
+				<constraints nullable="false" />
+			</column>
+			<column name="description" type="VARCHAR(1024)" />
+		</createTable>
+
+		<createTable remarks="Each area of interest (AOI) may be divided into sub-parts such that the sub-parts add up to the area of the whole (i.e. a compositional containment hierarchy)"  tableName="aoi">
+            <column autoIncrement="true" name="id" type="serial">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="aoi_pkey"/>
+            </column>
+            <column name="aoi_level_id" type="int4">
+                <constraints nullable="false"
+                    foreignKeyName="aoi_level_fkey" 
+                    references="aoi_level(id)"/>
+            </column>
+            <column name="parent_aoi_id" type="int4">
+                <constraints
+                    foreignKeyName="aoi_parent_fkey" 
+                    references="aoi(id)"/>
+            </column>
+            <column name="code" type="VARCHAR(255)"/>
+<!--             <column name="shape" type="geometry"/> -->
+			<column name="shape" type="VARCHAR(255)"/>
+            <column name="total_area" type="NUMERIC(15,5)"/>
+            <column name="land_area" type="NUMERIC(15,5)"/>
+            <column name="caption" type="VARCHAR(255)"/>
+       	</createTable>
+        
+		<createTable tableName="processing_chain">
+			<column autoIncrement="true" name="id" type="serial">
+				<constraints nullable="false" primaryKey="true"
+					primaryKeyName="processing_chain_pkey" />
+			</column>
+			<column name="workspace_id" type="int4">
+				<constraints nullable="false" foreignKeyName="processing_chain_workspace_fkey"
+					references="workspace(id)" deleteCascade="true" />
+			</column>
+			<column name="parameters" type="TEXT" />
+			<column name="caption" type="VARCHAR(255)" />
+			<column name="description" type="VARCHAR(1024)" />
+		</createTable>
+
+		<createTable tableName="calculation_step">
+			<column autoIncrement="true" name="id" type="serial">
+				<constraints nullable="false" primaryKey="true"
+					primaryKeyName="calculation_step_pkey" />
+			</column>
+			<column name="chain_id" type="int4">
+				<constraints nullable="false" foreignKeyName="calculation_step_processing_chain_fkey"
+					references="processing_chain(id)" deleteCascade="true" />
+			</column>
+			<column name="step_no" type="int4">
+				<constraints nullable="false" />
+			</column>
+			<column name="module_name" type="VARCHAR(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="module_version" type="VARCHAR(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="operation_name" type="VARCHAR(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="script" type="TEXT" />
+			<column name="parameters" type="TEXT" />
+			<column name="caption" type="VARCHAR(255)" />
+			<column name="description" type="VARCHAR(1024)" />
+		</createTable>
+
+		<createTable tableName="sampling_unit">
+            <column name="id" type="int4">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="sampling_unit_pkey1"/>
+            </column>
+            <column name="entity_id" type="int4">
+                <constraints nullable="false" foreignKeyName="sampling_unit_entity_fkey"
+					references="entity(id)" deleteCascade="true" />
+            </column>
+            <column name="panel" remarks="For future use" type="int4"/>
+            <column name="cluster" remarks="May be null if clusters are not used" type="VARCHAR(255)"/>
+            <column name="unit_no" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+<!--             <column name="location" type="geometry"/> -->
+<!--             <column name="shape" type="geometry"/> -->
+            <column name="location" type="VARCHAR(255)"/>
+            <column name="shape" type="VARCHAR(255)"/>
+            <column name="sampling_phase" type="int4"/>
+            <column name="permanent" type="bool">
+                <constraints nullable="false"/>
+            </column>
+            <column name="stratum_id" type="int4"/>
+        </createTable>
+		
+		<createTable tableName="sampling_unit_aoi">
+			<column name="workspace_id" type="int4">
+				<constraints nullable="false" foreignKeyName="sampling_unit_aoi_workspace_fkey"
+					references="workspace(id)" deleteCascade="true" />
+			</column>
+			<column name="sampling_unit_id" type="int4">
+				<constraints nullable="false" foreignKeyName="sampling_unit_aoi_unit_fkey"
+					references="sampling_unit(id)" deleteCascade="true" />
+			</column>
+			<column name="aoi_id" type="int4">
+				<constraints nullable="false" foreignKeyName="sampling_unit_aoi_fkey"
+					references="aoi(id)" deleteCascade="true" />
+			</column>
+		</createTable>
+		
+		<createTable tableName="srs">
+			<column autoIncrement="true" name="id" type="serial">
+				<constraints nullable="false" primaryKey="true"
+					primaryKeyName="srs_mapping_pkey" />
+			</column>
+			<column name="workspace_id" type="int4">
+				<constraints nullable="false" foreignKeyName="srs_workspace_fkey"
+					references="workspace(id)" deleteCascade="true" />
+			</column>
+			<column name="srs_id" type="VARCHAR(255)">
+				<constraints nullable="false" />
+			</column>
+			<column name="srid" type="int4">
+				<constraints nullable="false" />
+			</column>
+			<column name="caption" type="VARCHAR(255)" />
+			<column name="description" type="VARCHAR(255)" />
+		</createTable>
+
+		<createTable tableName="stratum">
+			<column autoIncrement="true" name="id" type="serial">
+				<constraints nullable="false" primaryKey="true"
+					primaryKeyName="stratum_pkey" />
+			</column>
+			<column name="workspace_id" type="int4">
+				<constraints nullable="false" foreignKeyName="stratum_workspace_fkey"
+					references="workspace(id)" deleteCascade="true" />
+			</column>
+			<column name="stratum_no" type="int4">
+				<constraints nullable="false" />
+			</column>
+			<column name="caption" type="VARCHAR(255)" />
+			<column name="description" type="VARCHAR(1024)" />
+		</createTable>
+
+		<!-- Views -->
+		<createView viewName="sampling_unit_count_view">
+		    SELECT sua.aoi_id, su.stratum_id, su.entity_id, sua.workspace_id, count(*) AS count 
+		    FROM (calc.sampling_unit_aoi sua JOIN calc.sampling_unit su ON ((su.id = sua.sampling_unit_id))) 
+		    GROUP BY sua.aoi_id, su.stratum_id,	su.entity_id, sua.workspace_id;
+		</createView>
+		
+		<createView viewName="stratum_aoi_view">
+		    SELECT c1.aoi_id, c1.entity_id, c1.stratum_id, c1.workspace_id, 
+		    	((c1.count)::numeric / sum(c1.count) OVER (PARTITION BY c1.aoi_id)) AS weight, 
+		    	((a.land_area * (c1.count)::numeric) / sum(c1.count) OVER (PARTITION BY c1.aoi_id)) AS area 
+		    FROM (calc.sampling_unit_count_view c1 
+		    	JOIN calc.aoi a ON((a.id = c1.aoi_id)));
+		</createView>
+				
+	    <!-- Foreign keys -->
+		<addForeignKeyConstraint baseColumnNames="cluster_variable_id"
+			baseTableName="entity" constraintName="entity_cluster_variable_fkey"
+			deferrable="false" initiallyDeferred="false" onDelete="CASCADE"
+			onUpdate="CASCADE" referencedColumnNames="id" referencedTableName="variable"
+			referencesUniqueColumn="true" />
+	
+		<addForeignKeyConstraint baseColumnNames="unit_no_variable_id"
+			baseTableName="entity" constraintName="entity_unit_no_variable_fkey"
+			deferrable="false" initiallyDeferred="false" onDelete="CASCADE"
+			onUpdate="CASCADE" referencedColumnNames="id" referencedTableName="variable"
+			referencesUniqueColumn="true" />
+		
+		<!-- Primary Keys -->
+		<addPrimaryKey columnNames="sampling_unit_id, aoi_id"
+			constraintName="sample_plot_aoi_pkey" tableName="sampling_unit_aoi" />
+		
+		<!-- Unique Constraints -->
+		<addUniqueConstraint columnNames="workspace_id, name"
+			constraintName="aoi_hierarchy_name" deferrable="false" disabled="false"
+			initiallyDeferred="false" tableName="aoi_hierarchy" />
+		
+		<addUniqueConstraint columnNames="aoi_hierarchy_id, name"
+			constraintName="aoi_level_hierarchy_name_key" deferrable="false"
+			disabled="false" initiallyDeferred="false" tableName="aoi_level" />
+		
+		<addUniqueConstraint columnNames="aoi_hierarchy_id, rank"
+			constraintName="aoi_level_hierarchy_rank_key" deferrable="false"
+			disabled="false" initiallyDeferred="false" tableName="aoi_level" />
+		
+		<addUniqueConstraint columnNames="hierarchy_id"
+			constraintName="hierarchy_level_hierarchy_id_key" deferrable="false"
+			disabled="false" initiallyDeferred="false" tableName="category_level" />
+		
+		<addUniqueConstraint columnNames="rank"
+			constraintName="hierarchy_level_rank_key" deferrable="false"
+			disabled="false" initiallyDeferred="false" tableName="category_level" />
+		
+		<addUniqueConstraint columnNames="workspace_id, name"
+			constraintName="entity_workspace_id_name_key" deferrable="false"
+			disabled="false" initiallyDeferred="false" tableName="entity" />
+		
+		<addUniqueConstraint columnNames="stratum_no, workspace_id"
+			constraintName="stratum_stratum_no_workspace_id_key" deferrable="false"
+			disabled="false" initiallyDeferred="false" tableName="stratum" />
+		
+		<addUniqueConstraint columnNames="entity_id, name"
+			constraintName="variable_name_key" deferrable="false" disabled="false"
+			initiallyDeferred="false" tableName="variable" />
+		
+	</changeSet>
+
+</databaseChangeLog>
