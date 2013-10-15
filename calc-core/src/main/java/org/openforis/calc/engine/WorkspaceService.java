@@ -85,7 +85,7 @@ public class WorkspaceService {
 		}
 	}
 
-	public Workspace createAndActivateWorkspace(String name, String uri, String schema) {
+	public Workspace createAndActivate(String name, String uri, String schema) {
 		dao.deactivateAll();
 
 		Workspace ws = new Workspace();
@@ -99,5 +99,11 @@ public class WorkspaceService {
 		processingChainService.createDefaultProcessingChain(ws);
 
 		return ws;
+	}
+
+	public void activate(Workspace ws) {
+		dao.deactivateAll();
+		ws.setActive(true);
+		dao.save(ws);
 	}
 }

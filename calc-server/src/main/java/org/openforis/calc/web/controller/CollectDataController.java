@@ -57,7 +57,9 @@ public class CollectDataController {
 			Workspace ws = workspaceService.fetchCollectSurveyUri(surveyUri);
 			if (ws == null) {
 				String name = extractName(surveyUri);
-				ws = workspaceService.createAndActivateWorkspace(name, surveyUri, name);
+				ws = workspaceService.createAndActivate(name, surveyUri, name);
+			} else {
+				workspaceService.activate(ws);
 			}
 
 			// start import job
