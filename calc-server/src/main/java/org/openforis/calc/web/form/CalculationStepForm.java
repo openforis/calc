@@ -27,7 +27,7 @@ public class CalculationStepForm {
 	private Integer variableId;
 
 	@NotEmpty
-	private String formula;
+	private String script;
 	
 	public Integer getId() {
 		return id;
@@ -61,12 +61,12 @@ public class CalculationStepForm {
 		this.variableId = variableId;
 	}
 
-	public String getFormula() {
-		return formula;
+	public String getScript() {
+		return script;
 	}
 
-	public void setFormula(String formula) {
-		this.formula = formula;
+	public void setScript(String script) {
+		this.script = script;
 	}
 	
 }

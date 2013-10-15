@@ -46,14 +46,14 @@ public class CalculationStepController {
 		Response response = validate(form, result);
 		if ( ! response.hasErrors() ) {
 			Workspace ws = workspaceService.getActiveWorkspace();
-			ProcessingChain defaultProcessingChain = ws.getDefaultProcessingChain();
+			ProcessingChain chain = ws.getDefaultProcessingChain();
 			CalculationStep step;
 			Integer stepId = form.getId();
 			if ( stepId == null ) {
 				step = new CalculationStep();
-				step.setStepNo(defaultProcessingChain.getNextStepNo());
+				step.setStepNo(chain.getNextStepNo());
 			} else {
-				step = defaultProcessingChain.getCalculationStep(stepId);
+				step = chain.getCalculationStep(stepId);
 			}
 			Variable<?> outputVariable = variableDao.find(form.getVariableId());
 			step.setOutputVariable(outputVariable);
@@ -61,8 +61,8 @@ public class CalculationStepController {
 			step.setModuleVersion(CalcRModule.VERSION_1);
 			step.setOperationName(CustomROperation.NAME);
 			step.setCaption(form.getName());
-			step.setScript(form.getFormula());
-			defaultProcessingChain.addCalculationStep(step);
+			step.setScript(form.getScript());
+			chain.addCalculationStep(step);
 			calculationStepDao.save(step);
 		}
 		return response;
