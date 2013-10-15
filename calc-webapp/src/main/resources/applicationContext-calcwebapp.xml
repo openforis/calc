@@ -70,7 +70,7 @@
 	    lazy-init="false">
 		<property name="dataSource" ref="dataSource" />
 		<property name="changeLog"
-			value="classpath:org/openforis/calc/db/changelog/db.changelog-master.xml" />
+			value="classpath:org/openforis/calc/db/changelog/master.xml" />
 		<property name="defaultSchema" value="calc" />
 	</bean>
     

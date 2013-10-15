@@ -19,7 +19,7 @@ public class AoiDimensionTable extends DimensionTable {
 
 	public final TableField<Record, Integer> AOI_LEVEL_ID = copyField(AOI.AOI_LEVEL_ID);
 	public final TableField<Record, Integer> PARENT_AOI_ID = copyField(AOI.PARENT_AOI_ID);
-	public final TableField<Record, Object> SHAPE = copyField(AOI.SHAPE);
+	public final TableField<Record, String> SHAPE = copyField(AOI.SHAPE);
 	public final TableField<Record, BigDecimal> TOTAL_AREA = copyField(AOI.TOTAL_AREA);
 	public final TableField<Record, BigDecimal> LAND_AREA = copyField(AOI.LAND_AREA);
 

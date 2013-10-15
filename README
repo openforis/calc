@@ -18,6 +18,13 @@ In order to create the database (using PostgreSQL 9.2 or greater) run from comma
 
 Add dev database settings to calc-core/src/main/resources/dev.properties.
 
+Regenerate jOOQ stub classes*: 
+
+	cd calc-core
+	mvn properties:read-project-properties jooq-codegen:generate
+
+* Requires dev database settings in dev.properties.
+
 
 IMPORTANT: When making updates to the database schema, ALWAYS ADD A Liquibase 
            MIGRATION TO calc-core/design/db/changelog.  These will be automatically run
