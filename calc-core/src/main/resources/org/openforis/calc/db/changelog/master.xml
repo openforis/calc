@@ -5,5 +5,5 @@
 
 
 	<include file="org/openforis/calc/db/changelog/baseline.xml" />
-	<includeAll path="org/openforis/calc/db/changelog/logs" />
+<!-- 	<includeAll path="org/openforis/calc/db/changelog/logs" /> -->
 </databaseChangeLog> 
