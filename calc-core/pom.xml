@@ -14,7 +14,7 @@
 	
 	<properties>
 		<mondrian-source-files-dir>${project.build.directory}/generated-sources/mondrian</mondrian-source-files-dir>
-		<jooq-codegen.target.directory>${project.build.directory}/generated-sources/jooq</jooq-codegen.target.directory>
+		<jooq-codegen.target.directory>src/generated/java</jooq-codegen.target.directory>
 		<jooq-codegen.target.package>org.openforis.calc.persistence.jooq</jooq-codegen.target.package>
 	</properties>
 	
@@ -47,16 +47,6 @@
 				<groupId>org.jooq</groupId>
 				<artifactId>jooq-codegen-maven</artifactId>
 				<version>${jooq.version}</version>
-		
-				<!-- The plugin should hook into the generate goal -->
-				<executions>
-					<execution>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-					</execution>
-				</executions>
-		
 				<dependencies>
 					<dependency>
 						<groupId>postgresql</groupId>
@@ -174,36 +164,6 @@
 				</executions>
 			</plugin>
 			
-			<!--  Liquibase plugin -->
-			<plugin>
-				<groupId>org.liquibase</groupId>
-				<artifactId>liquibase-maven-plugin</artifactId>
-				<version>2.0.1</version>
-				<dependencies>
-					<dependency>
-						<groupId>postgresql</groupId>
-						<artifactId>postgresql</artifactId>
-						<version>${postgres-driver.version}</version>
-					</dependency>
-				</dependencies>
-				<executions>
-					<execution>
-						<phase>process-resources</phase>
-						<configuration>
-							<changeLogFile>design/db/changelog/dev-changelog.xml</changeLogFile>
-							<driver>${calc.jdbc.driver}</driver>
-							<defaultSchemaName>calc</defaultSchemaName>
-							<url>${calc.jdbc.url}</url>
-							<username>${calc.jdbc.username}</username>
-							<password>${calc.jdbc.password}</password>
-						</configuration>
-						<goals>
-							<goal>update</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>			
-
 		</plugins>
 		
 		<pluginManagement>
@@ -238,32 +198,6 @@
 									</pluginExecutionFilter>
 									<action>
 										<ignore />
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>org.liquibase</groupId>
-										<artifactId>liquibase-maven-plugin</artifactId>
-										<versionRange>[2.0.1,)</versionRange>
-										<goals>
-											<goal>update</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>org.jooq</groupId>
-										<artifactId>jooq-codegen-maven</artifactId>
-										<versionRange>[2.4.2,)</versionRange>
-										<goals>
-											<goal>generate</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
 									</action>
 								</pluginExecution>
 								<pluginExecution>
