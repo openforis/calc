@@ -12,7 +12,9 @@ import org.openforis.calc.module.Operation;
  */
 public final class CustomSqlOperation extends Operation<CustomSqlTask> {
 
+	public static final String NAME = "exec-sql";
+
 	CustomSqlOperation(Module module) {
-		super(module, "exec-sql");
+		super(module, NAME);
 	}
 }

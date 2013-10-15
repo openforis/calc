@@ -7,11 +7,14 @@ import org.openforis.calc.module.Module;
  * 
  * @author G. Miceli
  * @author M. Togna
+ * @author S. Ricci
  */
 public class CalcSqlModule extends Module {
 	
+	public static final String MODULE_NAME = "calc-sql";
+
 	public CalcSqlModule() {
-		super("calc-sql", "1.0");
+		super(MODULE_NAME, "1.0");
 		registerOperation(new CustomSqlOperation(this));
 	}
 

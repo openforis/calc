@@ -7,11 +7,15 @@ import org.openforis.calc.module.Module;
  * 
  * @author G. Miceli
  * @author M. Togna
+ * @author S. Ricci
  */
 public class CalcRModule extends Module {
 
+	public static final String MODULE_NAME = "calc-r";
+	public static final String VERSION_1 = "1.0";
+
 	public CalcRModule() {
-		super("calc-r", "1.0");
+		super(MODULE_NAME, VERSION_1);
 		registerOperation(new CustomROperation(this));
 	}
 }

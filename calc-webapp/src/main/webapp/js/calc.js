@@ -15,14 +15,9 @@ $backHomeButton = $("#footer button.back");
 //current working section
 $section  = null;
 
-
-
-
-
 $page = $("#page");
 $nav = $(".container ul.breadcrumb");
 $jobStatus = $("#job-status");
-$jobStatusOpen = false;
 $taskStatus = $(".task-status");
 /**
  * Global functions
@@ -35,12 +30,10 @@ checkJobStatus = function(updateOnly) {
 	.done(function(response) {
 		$job = response;
 		
-		if( $jobStatusOpen || $job.status == 'RUNNING'){
-			if( updateOnly ){
-				updateJobStatus($job);
-			} else {
-				createJobStatus($job);				
-			}
+		if( updateOnly ){
+			updateJobStatus($job);
+		} else if ( $job.status == 'RUNNING' ) {
+			createJobStatus($job);				
 		}
 	})
 	.error(function(e) {
@@ -68,7 +61,6 @@ createJobStatus = function($job) {
 		
 		$modalBody.append($status);	
 	});
-	$jobStatusOpen = true;
 	updateJobStatus($job);
 };
 

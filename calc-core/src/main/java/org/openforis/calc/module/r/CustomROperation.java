@@ -12,7 +12,9 @@ import org.openforis.calc.module.Operation;
  */
 public final class CustomROperation extends Operation<CustomRTask> {
 
+	public static final String NAME = "exec-r";
+
 	CustomROperation(Module module) {
-		super(module, "exec-r");
+		super(module, NAME);
 	}
 }

@@ -11,6 +11,7 @@ import org.openforis.calc.common.UserObject;
 import org.openforis.calc.engine.ParameterHashMap;
 import org.openforis.calc.engine.ParameterMap;
 import org.openforis.calc.json.ParameterMapJsonSerializer;
+import org.openforis.calc.metadata.Variable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -19,6 +20,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  * A single user-defined step in a {@link ProcessingChain}
  * 
  * @author G. Miceli
+ * @author S. Ricci
+ * 
  */
 @javax.persistence.Entity
 @Table(name = "calculation_step")
@@ -35,6 +38,11 @@ public class CalculationStep extends UserObject {
 		
 	@Column(name = "step_no")
 	private int stepNo;
+	
+	@JsonIgnore
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "output_variable_id")
+	private Variable<?> outputVariable;
 	
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.EAGER)
@@ -91,6 +99,14 @@ public class CalculationStep extends UserObject {
 
 	public int getStepNo() {
 		return this.stepNo;
+	}
+	
+	public Variable<?> getOutputVariable() {
+		return outputVariable;
+	}
+	
+	public void setOutputVariable(Variable<?> outputVariable) {
+		this.outputVariable = outputVariable;
 	}
 	
 	public void setProcessingChain(ProcessingChain chain) {

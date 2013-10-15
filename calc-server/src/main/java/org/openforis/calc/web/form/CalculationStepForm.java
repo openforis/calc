@@ -3,6 +3,7 @@
  */
 package org.openforis.calc.web.form;
 
+
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
@@ -14,6 +15,8 @@ import org.hibernate.validator.constraints.NotEmpty;
  */
 public class CalculationStepForm {
 
+	private Integer id;
+	
 	@NotEmpty
 	private String name;
 
@@ -25,7 +28,15 @@ public class CalculationStepForm {
 
 	@NotEmpty
 	private String formula;
-
+	
+	public Integer getId() {
+		return id;
+	}
+	
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	
 	public String getName() {
 		return name;
 	}
@@ -57,5 +68,5 @@ public class CalculationStepForm {
 	public void setFormula(String formula) {
 		this.formula = formula;
 	}
-
+	
 }
