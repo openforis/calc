@@ -34,7 +34,7 @@ public class ProcessingChainTest {
 	public void testTasks() throws WorkspaceLockedException, InvalidProcessingChainException {
 		ProcessingChain chain = processingChainDao.find(21);
 		Workspace workspace = chain.getWorkspace(); 
-		Job job = taskManager.createUserJob(workspace);
+		Job job = taskManager.createJob(workspace);
 		
 //		// Preprocessing steps
 //		job.addTask(taskManager.createTask(ResetOutputSchemaTask.class));
@@ -66,7 +66,7 @@ public class ProcessingChainTest {
 	public void testPreProcessing() throws WorkspaceLockedException, InvalidProcessingChainException {
 		ProcessingChain chain = processingChainDao.find(21);
 		Workspace workspace = chain.getWorkspace(); 
-		Job job = taskManager.createUserJob(workspace);
+		Job job = taskManager.createJob(workspace);
 		job.addTasks(taskManager.createTasks( CalculationEngine.PREPROCESSING_TASKS) );
 		taskManager.startJob(job);
 		job.waitFor(5000);
@@ -76,7 +76,7 @@ public class ProcessingChainTest {
 	public void testPostProcessing() throws WorkspaceLockedException, InvalidProcessingChainException {
 		ProcessingChain chain = processingChainDao.find(21);
 		Workspace workspace = chain.getWorkspace(); 
-		Job job = taskManager.createUserJob(workspace);
+		Job job = taskManager.createJob(workspace);
 		job.addTasks( taskManager.createTasks(CalculationEngine.POSTPROCESSING_TASKS) );
 		
 		taskManager.startJob(job);

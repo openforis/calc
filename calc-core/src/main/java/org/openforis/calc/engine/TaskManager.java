@@ -45,9 +45,6 @@ public class TaskManager {
 	private BeanFactory beanFactory;
 	
 	@Autowired
-	private DataSource userDataSource;
-	
-	@Autowired
 	private DataSource dataSource;
 
 	@Autowired
@@ -69,24 +66,13 @@ public class TaskManager {
 	}
 	
 	/**
-	 * Create a job with write-access to the output schema and read-only access to the
-	 * calc and input schemas.  Used when running processing chains.
-	 */
-	public Job createUserJob(Workspace workspace) {
-		Schemas schemas = new Schemas(workspace);
-		Job job = new Job(workspace, userDataSource);
-		job.setDebugMode(isDebugMode());
-		job.setSchemas(schemas);
-		return job;
-	}
-	
-	/**
 	 * Create a job with write-access to the calc schema. Used for updating
 	 * metadata (e.g. importing sampling design, variables)  
 	 */
-	public Job createSystemJob(Workspace workspace){
+	public Job createJob(Workspace workspace){
 		Job job = new Job(workspace, dataSource);
 		job.setDebugMode(isDebugMode());
+		job.setSchemas(new Schemas(workspace));
 		return job;
 	}
 

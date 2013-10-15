@@ -24,10 +24,6 @@ public abstract class Task extends Worker implements Captionable {
 	private String systemUser;
 	
 	@JsonIgnore
-	@Value("${calc-user.jdbc.username}")
-	private String calcUser;
-	
-	@JsonIgnore
 	private Job job;
 	
 	@JsonIgnore
@@ -74,11 +70,6 @@ public abstract class Task extends Worker implements Captionable {
 	@JsonIgnore
 	protected String getSystemUser() {
 		return systemUser;
-	}
-	
-	@JsonIgnore
-	protected String getCalcUser() {
-		return calcUser;
 	}
 	
 }
