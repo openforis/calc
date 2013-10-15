@@ -73,7 +73,7 @@ public class CalculationEngine {
 			throw new IllegalArgumentException("No processing chain with id "+chainId);
 		}
 		Workspace workspace = chain.getWorkspace();
-		Job job = taskManager.createUserJob(workspace);
+		Job job = taskManager.createJob(workspace);
 		
 		// Add preprocessing tasks
 		job.addTasks( taskManager.createTasks(PREPROCESSING_TASKS) );
@@ -90,7 +90,7 @@ public class CalculationEngine {
 	synchronized
 	public Job updateStratumWeights(int workspaceId) throws WorkspaceLockedException {
 		Workspace workspace = workspaceDao.find(workspaceId);
-		Job job = taskManager.createSystemJob(workspace);
+		Job job = taskManager.createJob(workspace);
 		job.addTask(taskManager.createTask(UpdateSamplingUnitAoisTask.class));
 		taskManager.startJob(job);
 		return job;

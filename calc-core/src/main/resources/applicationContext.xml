@@ -101,14 +101,6 @@
     	<property name="minIdle" value="5"/>     	
 	</bean>
 		
-	<bean id="userDataSource" destroy-method="close" class="org.apache.commons.dbcp.BasicDataSource">
-    	<property name="driverClassName" value="${calc.jdbc.driver}"/>
-    	<property name="url" value="${calc.jdbc.url}"/>
-    	<property name="username" value="${calc-user.jdbc.username}"/>
-    	<property name="password" value="${calc-user.jdbc.password}"/>
-		<property name="maxActive" value="10"/> 
-    	<property name="minIdle" value="5"/>    
-	</bean>
 <!--     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager"> -->
 <!--     	<property name="dataSource" ref="dataSource"/> -->
 <!--     </bean> -->
