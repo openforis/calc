@@ -64,7 +64,7 @@ UBUNTU:
 		If having problem (like : libjvm.so: cannot open shared object file: No such file or directory):
 			- check with ll command the permission of libjvm file
 			
-			- modify etc/environment file and add:
+			- modify /etc/environment file and add:
 				LD_LIBRARY_PATH=$JAVA_HOME/jre/lib/i386:$JAVA_HOME/jre/lib/i386/client
 			(log out and login again)
 			
