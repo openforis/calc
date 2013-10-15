@@ -16,8 +16,12 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class WorkspaceService {
+
 	@Autowired
 	private WorkspaceDao dao;
+
+	@Autowired
+	private ProcessingChainService processingChainService;
 
 	private Map<Integer, SimpleLock> locks;
 
@@ -51,17 +55,13 @@ public class WorkspaceService {
 	}
 
 	/**
-	 * It returns the first workspace
+	 * It returns the active workspace
 	 * 
 	 * @return
 	 */
-	public Workspace getWorkspace() {
-		List<Workspace> list = loadAll();
-		if (list.isEmpty()) {
-			return null;
-		} else {
-			return list.get(0);
-		}
+	public Workspace getActiveWorkspace() {
+		Workspace workspace = dao.fetchActive();
+		return workspace;
 	}
 
 	synchronized public SimpleLock lock(int workspaceId) throws WorkspaceLockedException {
@@ -83,5 +83,21 @@ public class WorkspaceService {
 		} else {
 			return lock.isLocked();
 		}
+	}
+
+	public Workspace createAndActivateWorkspace(String name, String uri, String schema) {
+		dao.deactivateAll();
+
+		Workspace ws = new Workspace();
+		ws.setActive(true);
+		ws.setCollectSurveyUri(uri);
+		ws.setInputSchema(schema);
+		ws.setName(name);
+		ws.setCaption(name);
+		dao.save(ws);
+
+		processingChainService.createDefaultProcessingChain(ws);
+
+		return ws;
 	}
 }

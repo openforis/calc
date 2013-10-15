@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class ProcessingChainService {
-	
+		
 	@Autowired
 	private ProcessingChainDao processingChainDao;
 	
@@ -22,4 +22,13 @@ public class ProcessingChainService {
 		processingChainDao.save(chain);
 		// TODO update Workspace?
 	}
+	
+	public void createDefaultProcessingChain(Workspace ws) {
+		ProcessingChain chain = new ProcessingChain();
+		chain.setCaption(Workspace.DEFAULT_CHAIN_CAPTION);
+		ws.addProcessingChain(chain);
+		
+		processingChainDao.save(chain);
+	}
+	
 }

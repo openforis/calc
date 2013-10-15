@@ -42,15 +42,19 @@ public class WorkspaceController {
 	@RequestMapping(value = "/job.json", method = RequestMethod.GET, produces = "application/json")
 	public @ResponseBody
 	Job getJob() {
-		Workspace workspace = workspaceService.getWorkspace();
-		Job job = taskManager.getJob(workspace.getId());
-		return job;
+		Workspace workspace = workspaceService.getActiveWorkspace();
+		if( workspace == null ){
+			return null;
+		} else { 
+			Job job = taskManager.getJob(workspace.getId());
+			return job;
+		}
 	}
 
 	@RequestMapping(value = "/entities.json", method = RequestMethod.GET, produces = "application/json")
 	public @ResponseBody
 	List<Entity> getEntities() {
-		Workspace workspace = workspaceService.getWorkspace();
+		Workspace workspace = workspaceService.getActiveWorkspace();
 		List<Entity> entities = new ArrayList<Entity>(workspace.getEntities());
 		sortByName(entities);
 		return entities;
@@ -59,7 +63,7 @@ public class WorkspaceController {
 	@RequestMapping(value = "/entities/{entityId}/variables.json", method = RequestMethod.GET, produces = "application/json")
 	public @ResponseBody
 	List<Variable<?>> getVariables(@PathVariable int entityId) {
-		Workspace workspace = workspaceService.getWorkspace();
+		Workspace workspace = workspaceService.getActiveWorkspace();
 		Entity entity = workspace.getEntityById(entityId);
 		List<Variable<?>> variables = new ArrayList<Variable<?>>(entity.getVariables());
 		sortByName(variables);

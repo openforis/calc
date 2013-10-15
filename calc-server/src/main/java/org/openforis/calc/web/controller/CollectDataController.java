@@ -45,20 +45,41 @@ public class CollectDataController {
 	@RequestMapping(value = "/data.json", method = RequestMethod.POST, produces = "application/json")
 	public @ResponseBody
 	String importCollectData(@ModelAttribute("file") MultipartFile file) {
-		Workspace ws = workspaceService.getWorkspace();
 		try {
+			
+			// upload file
 			File tempFile = File.createTempFile(TEMP_FILE_PREFIX, TEMP_FILE_SUFFIX);
 			FileUtils.copyInputStreamToFile(file.getInputStream(), tempFile);
 
+			// extract survey from xml file and creates it if it doesn't exist in the db
 			CollectSurvey survey = idmExtractor.extractSurvey(tempFile);
+			String surveyUri = survey.getUri();
+			Workspace ws = workspaceService.fetchCollectSurveyUri(surveyUri);
+			if (ws == null) {
+				String name = extractName(surveyUri);
+				ws = workspaceService.createAndActivateWorkspace(name, surveyUri, name);
+			}
 
+			// start import job
 			Job job = collectTaskService.createImportJob(ws, survey, tempFile);
 			taskManager.startJob(job);
-			// return job;
+			
 			return Boolean.TRUE.toString();
 		} catch (Exception e) {
 			throw new RuntimeException("Error while uploading file", e);
 		}
 	}
+
+	private String extractName(String uri) {
+		String name = uri.replaceFirst(".*/([^/?]+).*", "$1");
+		return name;
+	}
+
+	// public static void main(String[] args) {
+	// 
+//	String url = "http://www.openforis.org/idm/naforma1";
+	// url = url.replaceFirst(".*/([^/?]+).*", "$1");
+	// System.out.println(url);
+	// }
 
 }

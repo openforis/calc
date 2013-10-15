@@ -34,7 +34,7 @@ checkJobStatus = function(updateOnly) {
 	})
 	.done(function(response) {
 		$job = response;
-
+		
 		if( $jobStatusOpen || $job.status == 'RUNNING'){
 			if( updateOnly ){
 				updateJobStatus($job);
@@ -42,6 +42,9 @@ checkJobStatus = function(updateOnly) {
 				createJobStatus($job);				
 			}
 		}
+	})
+	.error(function(e) {
+//		console.log(e);
 	}); 
 };
 
