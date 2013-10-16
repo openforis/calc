@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import javax.xml.namespace.QName;
+
 import org.openforis.calc.chain.CalculationStepDao;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
@@ -60,6 +62,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class CollectMetadataImportTask extends Task {
 
+	private static final QName CALC_SAMPLING_UNIT_ANNOTATION = new QName("http://www.openforis.org/calc/1.0/calc", "samplingUnit");
 	private static final String SPECIES_CODE_VAR_NAME = "species_code";
 	private static final String SPECIES_SCIENT_NAME_VAR_NAME = "species_scient_name";
 	private static final String DIMENSION_TABLE_FORMAT = "%s_%s_dim";
@@ -154,6 +157,20 @@ public class CollectMetadataImportTask extends Task {
 	}
 
 	private void applyChangesToEntity(Entity oldEntity, Entity newEntity) {
+		//update entity attributes
+		oldEntity.setCaption(newEntity.getCaption());
+		oldEntity.setDataTable(newEntity.getDataTable());
+		oldEntity.setDescription(newEntity.getDescription());
+		oldEntity.setIdColumn(newEntity.getIdColumn());
+		oldEntity.setLocationColumn(newEntity.getLocationColumn());
+		oldEntity.setName(newEntity.getName());
+		oldEntity.setParentIdColumn(newEntity.getParentIdColumn());
+		oldEntity.setSamplingUnit(newEntity.isSamplingUnit());
+		oldEntity.setSrsColumn(newEntity.getSrsColumn());
+		oldEntity.setUnitOfAnalysis(newEntity.isUnitOfAnalysis());
+		oldEntity.setXColumn(newEntity.getXColumn());
+		oldEntity.setYColumn(newEntity.getYColumn());
+		
 		//remove deleted variables
 		Collection<Variable<?>> variablesToBeRemoved = new HashSet<Variable<?>>();
 		for (Variable<?> oldVariable : oldEntity.getVariables()) {
@@ -257,6 +274,9 @@ public class CollectMetadataImportTask extends Task {
 			entity.setParent( parentEntity );
 			entity.setParentIdColumn(dataTable.getParentKeyColumn().getName());
 		}
+		
+		boolean samplingUnit = Boolean.parseBoolean(nodeDefinition.getAnnotation(CALC_SAMPLING_UNIT_ANNOTATION));
+		entity.setSamplingUnit(samplingUnit);
 		
 		createVariables(entity, dataTable);
 		
