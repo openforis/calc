@@ -100,14 +100,14 @@ public class CollectBackupRecordExtractor implements Closeable {
 		}
 	}
 	
-	private Step extractStep(String zipEntryName) throws Exception {
+	private Step extractStep(String zipEntryName) throws CollectBackupRecordExtractorException {
 		String[] entryNameSplitted = getEntryNameSplitted(zipEntryName);
 		String stepNumStr = entryNameSplitted[0];
 		int stepNumber = Integer.parseInt(stepNumStr);
 		return Step.valueOf(stepNumber);
 	}
 	
-	private String[] getEntryNameSplitted(String zipEntryName) throws Exception {
+	private String[] getEntryNameSplitted(String zipEntryName) throws CollectBackupRecordExtractorException {
 		String entryPathSeparator = Pattern.quote(File.separator);
 		String[] entryNameSplitted = zipEntryName.split(entryPathSeparator);
 		if (entryNameSplitted.length != 2) {
@@ -115,20 +115,36 @@ public class CollectBackupRecordExtractor implements Closeable {
 			entryNameSplitted = zipEntryName.split(entryPathSeparator);
 		}
 		if (entryNameSplitted.length != 2) {
-			throw new Exception("Packaged file format exception: wrong entry name: " + zipEntryName);
+			throw new CollectBackupRecordExtractorException("Packaged file format exception: wrong entry name: " + zipEntryName);
 		}
 		return entryNameSplitted;
 	}
 
-	public long countRecords() {
+	public long countRecords(Step step) throws CollectBackupRecordExtractorException {
 		checkInitialized();
 		int count = 0;
 		ZipEntry entry = nextRecordEntry();
 		while ( entry != null ) {
-			count++;
+			String entryName = entry.getName();
+			Step entryStep = extractStep(entryName);
+			if ( step == null || step == entryStep ) {
+				count++;
+			}
 			entry = nextRecordEntry();
 		}
 		return count;
 	}
 	
+	class CollectBackupRecordExtractorException extends Exception {
+		
+		private static final long serialVersionUID = 1L;
+
+		public CollectBackupRecordExtractorException() {
+		}
+
+		public CollectBackupRecordExtractorException(String message) {
+			super(message);
+		}
+		
+	}
 }
