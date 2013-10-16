@@ -191,7 +191,7 @@ public class CollectMetadataImportTask extends Task {
 		oldVariable.setDescription(newVariable.getDescription());
 		oldVariable.setDimensionTable(newVariable.getDimensionTable());
 		oldVariable.setInputValueColumn(newVariable.getInputValueColumn());
-		oldVariable.setName(newVariable.getName()); /*throws a duplicate key (entity_id, name) exception... even if it's just an updat..e*/
+		oldVariable.setName(newVariable.getName());
 		oldVariable.setOutputValueColumn(newVariable.getOutputValueColumn());
 	}
 

@@ -51,7 +51,7 @@ public class InputTable extends DataTable {
 	}
 
 	private void createUserDefinedVariableFields() {
-		Collection<Variable<?>> userDefinedVariables = entity.getUserDefinedVariables();
+		Collection<Variable<?>> userDefinedVariables = getEntity().getUserDefinedVariables();
 		for (Variable<?> variable : userDefinedVariables) {
 			String name = variable.getInputValueColumn();
 			if ( variable instanceof QuantitativeVariable ) {
