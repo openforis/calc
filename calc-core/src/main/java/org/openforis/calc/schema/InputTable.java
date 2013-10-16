@@ -12,6 +12,7 @@ import org.jooq.DataType;
 import org.jooq.Field;
 import org.jooq.impl.SQLDataType;
 import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.TextVariable;
 import org.openforis.calc.metadata.Variable;
 
@@ -35,6 +36,7 @@ public class InputTable extends DataTable {
 		createQuantityFields(true);
 		createCoordinateFields();
 		createTextFields();
+		createUserDefinedVariableFields();
 	}
 
 	private void createTextFields() {
@@ -46,6 +48,19 @@ public class InputTable extends DataTable {
 			Field<String> fld = createField(name, VARCHAR.length(255), this);
 			textFields.put(var, fld);
 		}
+	}
+
+	private void createUserDefinedVariableFields() {
+		Collection<Variable<?>> userDefinedVariables = entity.getUserDefinedVariables();
+		for (Variable<?> variable : userDefinedVariables) {
+			String name = variable.getInputValueColumn();
+			if ( variable instanceof QuantitativeVariable ) {
+				createQuantityField((QuantitativeVariable) variable, name);
+			} else {
+				//TODO
+			}
+		}
+		
 	}
 
 	@SuppressWarnings("unchecked")

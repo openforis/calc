@@ -43,7 +43,7 @@ public class CollectDataImportTask extends Task {
 		try {
 			recordExtractor = new CollectBackupRecordExtractor(survey, dataFile);
 			recordExtractor.init();
-			totalRecords = recordExtractor.countRecords();
+			totalRecords = recordExtractor.countRecords(step);
 		} catch (Exception e) {
 			throw new RuntimeException("Error calculating total number of records", e);
 		} finally {
