@@ -29,7 +29,7 @@ public class VariableAggregate extends NamedUserObject {
 		}
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "variable_id")
 	private QuantitativeVariable variable;
 

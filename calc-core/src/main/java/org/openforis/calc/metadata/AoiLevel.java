@@ -22,7 +22,7 @@ public class AoiLevel extends NamedUserObject {
 	private static final String DIMENSION_TABLE_FORMAT = "_%s_%s_aoi_dim";
 	private static final String FK_COLUMN_FORMAT = "_%s_%s_id";
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "aoi_hierarchy_id")
 	private AoiHierarchy hierarchy;
 

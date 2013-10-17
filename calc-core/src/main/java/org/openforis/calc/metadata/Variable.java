@@ -40,7 +40,7 @@ public abstract class Variable<T> extends NamedUserObject {
 	@Column(name = "sort_order")
 	private int sortOrder;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "entity_id")
 	@JsonIgnore
 	private Entity entity;
