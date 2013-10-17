@@ -21,12 +21,10 @@ import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.psql.Psql;
 import org.openforis.calc.schema.AbstractTable;
-import org.openforis.collect.model.CollectSurvey;
 import org.openforis.collect.relational.CollectRdbException;
 import org.openforis.collect.relational.RelationalSchemaCreator;
 import org.openforis.collect.relational.liquibase.LiquibaseRelationalSchemaCreator;
 import org.openforis.collect.relational.model.RelationalSchema;
-import org.openforis.collect.relational.model.RelationalSchemaGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 
@@ -68,9 +66,7 @@ public class CollectInputSchemaCreatorTask extends Task {
 			.execute();
 		DataSourceConnectionProvider connectionProvider = (DataSourceConnectionProvider) config.connectionProvider();
 		DataSource dataSource = connectionProvider.dataSource();
-		RelationalSchemaGenerator rdbGenerator = new RelationalSchemaGenerator();
-		CollectSurvey survey = ((CollectJob) getJob()).getSurvey();
-		RelationalSchema schema = rdbGenerator.generateSchema(survey, inputSchemaName);
+		RelationalSchema schema = ((CollectJob) getJob()).createInputRelationalSchema();
 		RelationalSchemaCreator relationalSchemaCreator = new LiquibaseRelationalSchemaCreator();
 		Connection connection = DataSourceUtils.getConnection(dataSource);
 		relationalSchemaCreator.createRelationalSchema(schema, connection);
