@@ -42,7 +42,7 @@ public class InputTable extends DataTable {
 
 		List<TextVariable> vars = getEntity().getTextVariables();
 		for ( TextVariable var : vars ) {
-			String name = var.getName();
+			String name = var.getInputValueColumn();
 			Field<String> fld = createField(name, VARCHAR.length(255), this);
 			textFields.put(var, fld);
 		}

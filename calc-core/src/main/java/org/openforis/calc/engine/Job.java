@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import javax.sql.DataSource;
 
+import org.openforis.calc.schema.InputSchema;
 import org.openforis.calc.schema.OutputSchema;
 import org.openforis.calc.schema.RolapSchema;
 import org.openforis.calc.schema.Schemas;
@@ -188,5 +189,10 @@ public class Job extends Worker implements Iterable<Task> {
 	@JsonIgnore
 	public OutputSchema getOutputSchema() {
 		return schemas.getOutputSchema();
+	}
+	
+	@JsonIgnore
+	public InputSchema getInputSchema() {
+		return schemas.getInputSchema();
 	}
 }

@@ -92,16 +92,21 @@ public class TaskManager {
 		List<Task> tasks = new ArrayList<Task>();
 		List<CalculationStep> steps = chain.getCalculationSteps();
 		for (CalculationStep step : steps) {
-			Operation<?> operation = moduleRegistry.getOperation(step);
-			if ( operation == null ) {
-				throw new InvalidProcessingChainException("Unknown operation in step "+step);
-			}
-			Class<? extends CalculationStepTask> taskType = operation.getTaskType();
-			CalculationStepTask task = createTask(taskType);
-			task.setCalculationStep(step);			
+			CalculationStepTask task = createCalculationStepTask(step);			
 			tasks.add(task);
 		}
 		return tasks;
+	}
+
+	public CalculationStepTask createCalculationStepTask(CalculationStep step) throws InvalidProcessingChainException {
+		Operation<?> operation = moduleRegistry.getOperation(step);
+		if ( operation == null ) {
+			throw new InvalidProcessingChainException("Unknown operation in step "+step);
+		}
+		Class<? extends CalculationStepTask> taskType = operation.getTaskType();
+		CalculationStepTask task = createTask(taskType);
+		task.setCalculationStep(step);
+		return task;
 	}
 
 	/**

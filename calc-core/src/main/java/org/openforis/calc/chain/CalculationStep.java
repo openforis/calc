@@ -6,6 +6,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Type;
 import org.openforis.calc.common.UserObject;
 import org.openforis.calc.engine.ParameterHashMap;
@@ -40,7 +42,8 @@ public class CalculationStep extends UserObject {
 	private int stepNo;
 	
 	@JsonIgnore
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
+	@Fetch(value = FetchMode.SELECT)
 	@JoinColumn(name = "output_variable_id")
 	private Variable<?> outputVariable;
 	
@@ -119,7 +122,7 @@ public class CalculationStep extends UserObject {
 	
 	public void setScript(String script) {
 		this.script = script;
-	}
+	}		
 	
 	@Override
 	public String toString() {
