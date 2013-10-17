@@ -1,6 +1,6 @@
 <!-- ==== Html here === -->
 <div class="page-section">
-	<div class="row">
+	<div class="row" id="calculation-step-edit-container">
 		<div class="col-md-2">
 		</div>
 		<div class="col-md-8">
@@ -38,57 +38,31 @@
 							<div class="col-md-10">
 								
 								<!-- Formula editor -->
-								<div class="row small-text formula-editor">
-									<div class="col-md-12">
-										Input variables
-										<button name="add-input-variable" class="calculation btn btn-info">
-											<i class="icon-plus-sign-alt"></i>
-										</button>
-									</div>
-									<div class="row input-vars">
-									</div>
-								</div>
-								
+<!-- 								<div class="row small-text formula-editor"> -->
+<!-- 									<div class="col-md-12"> -->
+<!-- 										Input variables -->
+<!-- 										<button name="add-input-variable" class="calculation btn btn-info"> -->
+<!-- 											<i class="icon-plus-sign-alt"></i> -->
+<!-- 										</button> -->
+<!-- 									</div> -->
+<!-- 									<div class="row input-vars"> -->
+<!-- 									</div> -->
+<!-- 								</div> -->
+<!-- 								<div class="checkbox col-lg-10"> -->
+<!-- 									<label> <input type="checkbox" name="external-formula"> Run as external process </label> -->
+<!-- 								</div>								 -->
 								<div class="row" style="margin-top: 5px;">
 									<textarea class="form-control" rows="13" name="script"></textarea>
 								</div>
-<!-- 										<span class="help-block">A longer block of help text -->
-<!-- 											that breaks onto a new line and may extend beyond one line.</span> -->
 							</div>
-							
-<!-- 							<div class="checkbox col-lg-10"> -->
-<!-- 								<label> <input type="checkbox" name="external-formula"> Run as external process </label> -->
-<!-- 							</div> -->
-
-
-
-
-<!-- 							<label for="external-formula" class="col-lg-2 control-label">Run as external process</label> -->
-<!-- 							<div class="col-lg-10"> -->
-<!-- 								<input type="checkbox" name="external-formula" /> -->
-<!-- 							</div> -->
-<!-- 						</div> -->
-<!-- 						<div class="col-lg-2"> -->
-<!-- 							<div class="radio"> -->
-<!-- 								<label><input type="radio" name="type" value="formula" /> Formula</label> -->
-<!-- 							</div> -->
-<!-- 						</div> -->
-<!-- 						<div class="col-lg-2"> -->
-<!-- 							<div class="radio">								 -->
-<!-- 								<label><input type="radio" name="type" value="r" /> R</label> -->
-<!-- 							</div>	 -->
-<!-- 						</div> -->
-<!-- 						<div class="col-lg-2"> -->
-<!-- 							<div class="radio">								 -->
-<!-- 								<label><input type="radio" name="type" value="sql" /> SQL</label> -->
-<!-- 							</div> -->
-<!-- 						</div> -->
-<!-- 						<div class="col-lg-4"></div> -->
-						
 					</div>
+					
 					<div class="form-group buttons">
-						<div class="col-md-12" style="text-align: center;">
-							<button type="submit" class="btn btn-default btn-lg">Save</button>
+						<div class="col-md-3 col-md-offset-3" style="text-align: center;">
+							<button type="submit" class="btn btn-default btn-lg" style="width: 50%">Save</button>
+						</div>
+						<div class="col-md-3" style="text-align: center;">
+							<button type="button" name="run-calculcation-step" class="btn btn-default btn-lg" style="width: 50%">Run</button>
 						</div>
 <!-- 						<div class="col-lg-2"> -->
 <!-- 							<button class="btn btn-default cancel btn-lg">Cancel</button> -->
@@ -122,11 +96,22 @@
 		</div>
 <!-- 		</div> -->
 
-
+		
 	</div>
-	
+	<div class="row" id="calculation-step-exec-container" style="height: 0px">
+			<div class="col-md-2">
+			</div>
+			<div class="col-md-8">
+				ciaao!
+			</div>
+			<div class="col-md-2">
+			</div>
+		</div>
 <script>
 $(function(){
+	$calculationStepEditContainer = $("#calculation-step-edit-container");
+	$calculationStepExecContainer = $("#calculation-step-exec-container");
+	
 	$stepForm = $('#step-form');
 	$entitySelect = $stepForm.find("[name='entityId']");
 	$variableSelect = $stepForm.find("[name='variableId']");
@@ -134,10 +119,11 @@ $(function(){
 	$inputVars = $(".input-vars");
 	$inputVar = $(".input-var");
 	
-	
+	$calculationStepExecContainer.hide();
 // 	$inputVars.hide();
 	$inputVar.hide();
 	
+	//load entities into select
 	updateEntities = function() {
 		$entitySelect.empty();
 		$variableSelect.attr("disabled", "disabled");
@@ -156,7 +142,7 @@ $(function(){
 			$entitySelect.val([]);
 		}); 
 	};
-	
+	//load variables into select
 	updateVariables = function() {
 		$variableSelect.attr("disabled", "disabled");
 		$variableSelect.empty();
@@ -191,7 +177,7 @@ $(function(){
 			}); 
 		}
 	};
-	
+	//on save form submit
 	$stepForm.ajaxForm( {
 	    dataType : 'json',
 	    beforeSubmit: function() {
@@ -206,6 +192,7 @@ $(function(){
 	    }
 	});
 	
+	// on submit button click 
 	$stepForm.find("button[type='submit']").click(function(event){
 		event.preventDefault();
 		$stepForm.submit();
@@ -214,7 +201,6 @@ $(function(){
 	$stepForm.find("button[name='add-variable']").click(function(event){
 		event.preventDefault();
 	});
-	
 	
 	// add input variable to the form
 	$stepForm.find("button[name='add-input-variable']").click(function(event){
@@ -241,11 +227,8 @@ $(function(){
 			
 			$varId.attr('name','input-var-id-'+i);
 			$varName.attr('name','input-var-name-'+i);
-			
-// 			console.log($varId.attr('name'));
-// 			console.log($varName.attr('name'));
 		});
-	}; 
+	};
 	
 	deleteInputVariable = function(event){
 		event.preventDefault();
@@ -256,14 +239,37 @@ $(function(){
 			$var.remove();
 			renameInputVariables();
 		}, 300);
-// 		console.log($var);
 	};
 	
 	$entitySelect.change(function(event) {
 		updateVariables();
 	});
 	
+
+	//on run calcuclation button click	
+	$stepForm.find("button[name='run-calculcation-step']").click(function(event){
+		event.preventDefault();
+		var left = $calculationStepEditContainer.offset().left;
+// 		console.log($calculationStepEditContainer.offset());
+// 		$homeSection.animate({left:"-="+$(document).width()}, 1000,'easeInOutExpo');
+// 		$calculationStepEditContainer
+// 			.css({left:left})
+// 			.animate({left:"-="+$(document).width()}, 1000,'easeInOutExpo')
+// 			;
+// 		console.log($calculationStepEditContainer.offset());
+
+// 		$calculationStepEditContainer
+// 			.parent().css('overflow','hidden')
+// 			.animate({width:'0px'}, 700)
+// 			.hide(700)
+// 			;
+// 		$calculationStepExecContainer
+// 			.show()
+// 			.animate({height:$calculationStepExecContainer.parent().height}, 700)
+// 			;
+	});
 	
+	// on load 
 	updateEntities();
 	
 });

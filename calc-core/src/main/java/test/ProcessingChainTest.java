@@ -104,13 +104,13 @@ extends AbstractTransactionalJUnit4SpringContextTests {
 //	@Test
 	public void testChain() throws WorkspaceLockedException, InvalidProcessingChainException {
 		Job job = calculationEngine.runProcessingChain(21);
-		while(!job.isEnded()){
+		while( !job.isEnded() ) {
 			job.waitFor(10000);
 			
 		}
 	}
 
-	@Test
+//	@Test
 	public void testStep() throws InvalidProcessingChainException, WorkspaceLockedException {
 		Workspace workspace = workspaceService.getActiveWorkspace();
 		
@@ -123,7 +123,7 @@ extends AbstractTransactionalJUnit4SpringContextTests {
 		
 		taskManager.startJob(job);
 		job.waitFor(5000);
-		while(job.getStatus() !=Worker.Status.COMPLETED){
+		while(!job.isEnded()){
 			//wait
 		}
 		System.out.println(task.getItemsProcessed());
