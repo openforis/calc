@@ -157,6 +157,10 @@ public abstract class Worker {
 	public long incrementItemsSkipped() {
 		return ++this.itemsSkipped;
 	}
+	
+	public long getItemsRemaining() {
+		return getTotalItems() - (getItemsProcessed() + getItemsSkipped()); 
+	}
 
 	public UUID getId() {
 		return id;
