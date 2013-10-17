@@ -1,6 +1,6 @@
 <!-- ==== Html here === -->
 <div class="page-section">
-	<div class="row" id="calculation-step-edit-container">
+	<div class="row" id="calculation-step-edit-container" style="position: fixed; width: 100%; height: 100%; overflow: auto; left:0">
 		<div class="col-md-2">
 		</div>
 		<div class="col-md-8">
@@ -98,7 +98,7 @@
 
 		
 	</div>
-	<div class="row" id="calculation-step-exec-container" style="height: 0px">
+	<div class="row" id="calculation-step-exec-container" style="position: fixed; width: 100%; height: 100%; overflow: auto;">
 			<div class="col-md-2">
 			</div>
 			<div class="col-md-8">
@@ -109,6 +109,7 @@
 		</div>
 <script>
 $(function(){
+	$calculationStep = null;
 	$calculationStepEditContainer = $("#calculation-step-edit-container");
 	$calculationStepExecContainer = $("#calculation-step-exec-container");
 	
@@ -120,6 +121,7 @@ $(function(){
 	$inputVar = $(".input-var");
 	
 	$calculationStepExecContainer.hide();
+// 	$calculationStepExecContainer.css({left:$(document).width()})
 // 	$inputVars.hide();
 	$inputVar.hide();
 	
@@ -177,25 +179,32 @@ $(function(){
 			}); 
 		}
 	};
+	
+	saveStep = function(callback) {
+		$stepForm.ajaxForm( {
+		    dataType : 'json',
+		    beforeSubmit: function() {
+		        $(this).addClass('loading');
+		    },
+		    success: function ( response ) {
+//	 	    	console.log(response);
+		    	CalcForm.updateErrors($stepForm, response.errors);
+		    	if(callback){callback(response)};
+		    },
+		    error: function (e) {
+		    	alert('Error submitting form');
+		    }
+		});	
+		
+		$stepForm.submit();
+	}
 	//on save form submit
-	$stepForm.ajaxForm( {
-	    dataType : 'json',
-	    beforeSubmit: function() {
-	        $(this).addClass('loading');
-	    },
-	    success: function ( response ) {
-// 	    	console.log(response);
-	    	CalcForm.updateErrors($stepForm, response.errors);
-	    },
-	    error: function (e) {
-	    	alert('Error submitting form');
-	    }
-	});
+	
 	
 	// on submit button click 
 	$stepForm.find("button[type='submit']").click(function(event){
 		event.preventDefault();
-		$stepForm.submit();
+		saveStep();
 	});
 	
 	$stepForm.find("button[name='add-variable']").click(function(event){
@@ -249,24 +258,28 @@ $(function(){
 	//on run calcuclation button click	
 	$stepForm.find("button[name='run-calculcation-step']").click(function(event){
 		event.preventDefault();
-		var left = $calculationStepEditContainer.offset().left;
-// 		console.log($calculationStepEditContainer.offset());
-// 		$homeSection.animate({left:"-="+$(document).width()}, 1000,'easeInOutExpo');
+		if($calculationStep == null){
+			saveStep(
+				function(response){
+					console.log(response);
+					if(status.status!="ERROR"){
+						
+						$calculationStepEditContainer.fadeOut(400);
+						$calculationStepExecContainer.fadeIn(400);
+					}
+				}		
+			);
+		}
+		
+		// animation disabled for now
 // 		$calculationStepEditContainer
-// 			.css({left:left})
-// 			.animate({left:"-="+$(document).width()}, 1000,'easeInOutExpo')
-// 			;
-// 		console.log($calculationStepEditContainer.offset());
-
-// 		$calculationStepEditContainer
-// 			.parent().css('overflow','hidden')
-// 			.animate({width:'0px'}, 700)
-// 			.hide(700)
+//  			.animate({left: parseInt($calculationStepEditContainer.css('left'),10) == 0 ? -$calculationStepEditContainer.outerWidth() : 0 });
 // 			;
 // 		$calculationStepExecContainer
-// 			.show()
-// 			.animate({height:$calculationStepExecContainer.parent().height}, 700)
+// 			.show(400)
+// 			.animate({left:0}, 400)
 // 			;
+		
 	});
 	
 	// on load 
