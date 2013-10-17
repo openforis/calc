@@ -36,7 +36,6 @@ public class AddWeightVariableTask extends Task {
 					weightVar.setName(WEIGHT_VAR_NAME);
 					weightVar.setScale(Scale.RATIO);
 					weightVar.setInputValueColumn(WEIGHT_INPUT_COLUMN_NAME);
-					weightVar.setSortOrder(entity.getVariableNextSortOrder());
 					entity.addVariable(weightVar);
 					changed = true;
 				}

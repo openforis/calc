@@ -106,13 +106,13 @@ extends AbstractTransactionalJUnit4SpringContextTests {
 		}
 	}
 
-	@Test
+//	@Test
 	public void testStep() throws InvalidProcessingChainException, WorkspaceLockedException {
 		Workspace workspace = workspaceService.getActiveWorkspace();
 		
 		CalculationStep step = calculationStepDao.find(1);
 		CustomRTask task = (CustomRTask) taskManager.createCalculationStepTask(step);
-		//task.setMaxItems(1500);
+		task.setMaxItems(1500);
 		
 		Job job = taskManager.createJob(workspace);
 		job.addTask(task);
