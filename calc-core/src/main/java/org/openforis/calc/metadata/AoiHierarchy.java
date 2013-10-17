@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Table(name = "aoi_hierarchy")
 public class AoiHierarchy extends NamedUserObject {
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "workspace_id")
 	@JsonIgnore
 	private Workspace workspace;
