@@ -3,6 +3,7 @@ package org.openforis.calc.metadata;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Stack;
 
@@ -87,7 +88,7 @@ public class Entity extends NamedUserObject {
 	@Column(name = "unit_of_analysis")
 	private boolean unitOfAnalysis;
 
-	@OneToMany(mappedBy = "entity", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "entity", fetch = FetchType.EAGER, cascade = javax.persistence.CascadeType.ALL, orphanRemoval = true)
 	@OrderBy("sortOrder")
 	@Fetch(FetchMode.SUBSELECT) 
 	@Cascade(CascadeType.ALL)
@@ -132,6 +133,7 @@ public class Entity extends NamedUserObject {
 	
 	public void addVariable(Variable<?> variable) {
 		variable.setEntity(this);
+		variable.setSortOrder(getNextVariableSortOrder());
 		variables.add(variable);
 	}
 	
@@ -314,6 +316,19 @@ public class Entity extends NamedUserObject {
 	}
 	
 	@JsonIgnore
+	public Collection<Variable<?>> getUserDefinedVariables() {
+		Collection<Variable<?>> result = new HashSet<Variable<?>>();
+		if ( CollectionUtils.isNotEmpty(variables) ) {
+			for (Variable<?> v: variables) {
+				if ( v.getOriginalId() == null ) {
+					result.add(v);
+				}
+			}
+		}
+		return result;
+	}
+	
+	@JsonIgnore
 	public Collection<Variable<?>> getOverriddenVariables() {
 		return getVariables(new Predicate() {
 			@Override
@@ -343,14 +358,14 @@ public class Entity extends NamedUserObject {
 		this.variables.remove(variable);
 	}
 	
-	public void removeVariables(Collection<Variable<?>> variables) {
-		if ( CollectionUtils.isNotEmpty(variables) && CollectionUtils.isNotEmpty(this.variables) ) {
-			this.variables.removeAll(variables);
+	public void removeVariables(Collection<Variable<?>> vars) {
+		if ( CollectionUtils.isNotEmpty(vars) && CollectionUtils.isNotEmpty(this.variables) ) {
+			this.variables.removeAll(vars);
 		}
 	}
 
 	@JsonIgnore
-	public int getVariableNextSortOrder() {
+	protected int getNextVariableSortOrder() {
 		int result = 0;
 		for ( Variable<?> v: variables ) {
 			result = Math.max(v.getSortOrder(), result);

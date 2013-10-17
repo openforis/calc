@@ -36,11 +36,11 @@ public class CollectTaskService {
 		CollectDataImportJob job = new CollectDataImportJob(workspace, taskManager.getDataSource(), survey);
 		job.setDebugMode(taskManager.isDebugMode());
 
-		CollectInputSchemaCreatorTask schemaCreatorTask = taskManager.createTask(CollectInputSchemaCreatorTask.class);
-		job.addTask(schemaCreatorTask);
-
 		CollectMetadataImportTask importTask = taskManager.createTask(CollectMetadataImportTask.class);
 		job.addTask(importTask);
+
+		CollectInputSchemaCreatorTask schemaCreatorTask = taskManager.createTask(CollectInputSchemaCreatorTask.class);
+		job.addTask(schemaCreatorTask);
 
 		CategoriesImportTask categoriesImportTask = taskManager.createTask(CategoriesImportTask.class);
 		job.addTask(categoriesImportTask);

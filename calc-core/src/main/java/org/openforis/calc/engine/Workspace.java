@@ -3,6 +3,7 @@ package org.openforis.calc.engine;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -21,6 +22,7 @@ import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.common.UserObject;
 import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.Variable;
 
 /**
  * Conceptually, a workspace contains all data, metadata, processing
@@ -52,19 +54,19 @@ public class Workspace extends UserObject {
 	@Column(name = "active")
 	private boolean active;
 
-	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER, cascade = javax.persistence.CascadeType.ALL, orphanRemoval = true)
 	@OrderBy("sortOrder")
 	@Fetch(FetchMode.SUBSELECT)
 	@Cascade(CascadeType.ALL)
 	private List<Entity> entities;
 
-	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER, cascade = javax.persistence.CascadeType.ALL, orphanRemoval = true)
 	@OrderBy("name")
 	@Fetch(FetchMode.SUBSELECT)
 	@Cascade(CascadeType.ALL)
 	private List<AoiHierarchy> aoiHierarchies;
 
-	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER, cascade = javax.persistence.CascadeType.ALL, orphanRemoval = true)
 	@OrderBy("id")
 	@Fetch(FetchMode.SUBSELECT)
 	@Cascade(CascadeType.ALL)
@@ -185,6 +187,13 @@ public class Workspace extends UserObject {
 			return CollectionUtils.select(entities, predicate);
 		}
 	}
+	
+	public void addEntity(Entity entity) {
+		if ( entities == null ) {
+			entities = new ArrayList<Entity>();
+		}
+		entities.add(entity);
+	}
 
 	public void removeEntities(Collection<Entity> entities) {
 		if (CollectionUtils.isEmpty(this.entities) || CollectionUtils.isEmpty(entities)) {
@@ -233,4 +242,15 @@ public class Workspace extends UserObject {
 		return null;
 	}
 
+	public Collection<Variable<?>> getUserDefinedVariables() {
+		Collection<Variable<?>> result = new HashSet<Variable<?>>();
+		if ( CollectionUtils.isNotEmpty(entities) ) {
+			for (Entity entity : entities) {
+				Collection<Variable<?>> variables = entity.getUserDefinedVariables();
+				result.addAll(variables);
+			}
+		}
+		return result;
+	}
+	
 }
