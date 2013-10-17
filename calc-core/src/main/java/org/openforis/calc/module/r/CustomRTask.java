@@ -1,10 +1,8 @@
 package org.openforis.calc.module.r;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -13,10 +11,10 @@ import org.jooq.Field;
 import org.jooq.Query;
 import org.jooq.Record;
 import org.jooq.Result;
-import org.jooq.Row1;
 import org.jooq.SelectQuery;
-import org.jooq.UpdateConditionStep;
+import org.jooq.impl.DSL;
 import org.openforis.calc.engine.CalculationStepTask;
+import org.openforis.calc.engine.DataRecord;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.r.R;
@@ -39,6 +37,8 @@ public final class CustomRTask extends CalculationStepTask {
 	private static final String ID = "id";
 	private static final String VARIABLE_PLACEMARK = "\\$(.+?)\\$";
 	
+	private List<DataRecord> results;
+	
 	@JsonIgnore
 	@Autowired
 	private R r;
@@ -47,8 +47,6 @@ public final class CustomRTask extends CalculationStepTask {
 	private long maxItems;
 	@JsonIgnore
 	private int limit;
-	
-	private Map<String, Object> results; 
 	
 	/**
 	 * semaphore used to avoid not synchronized access to the results;
@@ -67,71 +65,105 @@ public final class CustomRTask extends CalculationStepTask {
 	protected void execute() throws RException {
 		REnvironment rEnvironment = r.newEnvironment();
 		Set<String> variables = extractVariables();
-		InputTable table = getTable();
 		
 		//for output
-		results = new HashMap<String, Object>();
-		Variable<?> outputVariable = getOutputVariable();
-		@SuppressWarnings("unchecked")
-		Field<Double> outputField = (Field<Double>) table.field(outputVariable.getName());
+		results = new ArrayList<DataRecord>();
+		
+		// reset output variable
+		resetOutputValue();
 		
 		//prepare the select statement
-		SelectQuery<Record> selectQuery = psql().selectQuery();
-		selectQuery.addSelect(table.getIdField().as(ID));
-		for (String var : variables) {
-			selectQuery.addSelect(table.field(var));
-		}
-		selectQuery.addFrom(table);
+		SelectQuery<Record> selectQuery = getSelectStatement(variables);
 		
-		
-		
-		
-		long iterations = Math.round( Math.ceil(getTotalItems() / (double)limit) );		
-		long start = System.currentTimeMillis();
-		System.out.println("==== START");
+		long iterations = Math.round( Math.ceil(getTotalItems() / (double)limit) );
 		
 		List<Query> updates = new ArrayList<Query>();
 		for (int i = 0; i < iterations; i++) {
-			System.out.println("==== ITERATION: " + i);
-			
+			//select records for the current iteration
 			int offset = limit * i;
-			selectQuery.addLimit(offset, limit);
+			int numberOfRows =  (int) ((getItemsRemaining() < (offset + limit) ) ? getItemsRemaining() : limit);
+			
+			selectQuery.addLimit(offset, numberOfRows);
 			Result<Record> records = selectQuery.fetch();
 
 			// execute the script for each record
 			for (Record record : records) {
-				String script = getScript();
 				synchronized (_results_semaphore) {
-					Integer idValue = record.getValue(ID, Integer.class);
-					results.put(ID, idValue);
-					for (String var : variables ) {
-						Object variableValue = record.getValue(var);
-						script = script.replaceAll("\\$"+var+"\\$", variableValue.toString());
-//						System.out.println(script);
-						results.put(var, variableValue);						
-					}
-					double result = rEnvironment.evalDouble(script);
-					results.put(outputVariable.getName(), result);
-//					System.out.println(result);
-					incrementItemsProcessed();
-					
-					
-					Query update = psql()
-									.update(table)
-									.set(outputField, result)
-									.where( table.getIdField().eq(idValue) );
+					Query update = executeScript(rEnvironment, variables, record);
 					updates.add(update);
 				}
 			}
 			
-			//execute the updates in batch
+			//execute the sql updates in batch
 			psql()
 				.batch(updates)
 				.execute();
 			//clear batch queries
 			updates.clear();
 		}
-		System.out.println("==== END in " + (System.currentTimeMillis() - start) +"ms. Items processed: " + getItemsProcessed());
+	}
+
+	/**
+	 * Execute the R script,  and returns the update statement for the current record
+	 * @param rEnvironment
+	 * @param variables
+	 * @param table
+	 * @param outputVariable
+	 * @param outputField
+	 * @param record
+	 * @return
+	 * @throws RException
+	 */
+	private Query executeScript(REnvironment rEnvironment, Set<String> variables, Record record) throws RException {
+		InputTable table = getTable();
+		Variable<?> outputVariable = getOutputVariable();
+		Field<Double> outputField = getOutputField();
+		String script = getScript();
+		Integer idValue = record.getValue(ID, Integer.class);
+		
+		DataRecord dataRecord = new DataRecord(idValue);
+		 
+		for (String var : variables ) {
+			Object variableValue = record.getValue(var);
+			script = script.replaceAll("\\$"+var+"\\$", variableValue.toString());
+			dataRecord.addField(var, variableValue);
+		}
+		
+		double result = rEnvironment.evalDouble(script);
+		dataRecord.addField(outputVariable.getName(), result);
+		
+		results.add(dataRecord);
+		incrementItemsProcessed();
+		
+		Query update = psql()
+						.update(table)
+						.set(outputField, result)
+						.where( table.getIdField().eq(idValue) );
+		return update;
+	}
+
+	private SelectQuery<Record> getSelectStatement(Set<String> variables) {
+		InputTable table = getTable();
+		SelectQuery<Record> selectQuery = psql().selectQuery();
+		selectQuery.addSelect(table.getIdField().as(ID));
+		
+		for (String var : variables) {
+			selectQuery.addSelect(table.field(var));
+		}
+		selectQuery.addFrom(table);
+		selectQuery.addOrderBy(table.getIdField());
+		return selectQuery;
+	}
+
+	private void resetOutputValue() {
+		InputTable table = getTable();
+		Field<Double> outputField = getOutputField();
+		
+		Query resetOutput = psql()
+				.update(table)
+				.set(outputField, DSL.val(null, Double.class));
+		
+		resetOutput.execute();
 	}
 	
 	@Override
@@ -148,6 +180,13 @@ public final class CustomRTask extends CalculationStepTask {
 		return maxItems;
 	}
 
+	@SuppressWarnings("unchecked")
+	private Field<Double> getOutputField() {
+		InputTable table = getTable();
+		Variable<?> outputVariable = getOutputVariable();
+		return (Field<Double>) table.field(outputVariable .getName());
+	}
+	
 	private Variable<?> getOutputVariable() {
 		return getCalculationStep().getOutputVariable();
 	}
@@ -190,36 +229,9 @@ public final class CustomRTask extends CalculationStepTask {
 		this.maxItems = max;
 	}
 
-//	public int getLimit() {
-//		return limit;
-//	}
-//	
-//	public void setLimit(int offset) {
-//		this.limit = offset;
-//	}
-	
-	public static void main(String[] args) {
-		CustomRTask r = new CustomRTask();
-		System.out.println(r.getMaxItems());
-		
-		String s = "if($a$ == $b$) / $aaaa$";
-//		String s = "if({a} == {b}) / {c}";
-		Pattern p = Pattern.compile(VARIABLE_PLACEMARK);
-		Matcher m = p.matcher(s);
-		while(m.find()) {
-		    System.out.print("found "+  m.group(1));
-		    System.out.println();
+	public List<DataRecord> getAndResetResults() {
+		synchronized (_results_semaphore) {
+			return results;
 		}
-//		int a = 7345;
-		int a = 1500;
-		int b = 5000;
-		
-		System.out.println( Math.round( Math.ceil((a / (double)b))) );
-		
-//		int i = m.groupCount();
-//		String g = m.group(0);
-//		System.out.println(g);
-//		System.out.println(i);
-//		System.out.println(m);
 	}
 }

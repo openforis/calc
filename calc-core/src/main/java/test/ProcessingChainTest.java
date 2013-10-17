@@ -2,6 +2,8 @@ package test;
 
 //import java.util.List;
 
+import java.util.List;
+
 import org.junit.Test;
 import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.CalculationStepDao;
@@ -11,8 +13,10 @@ import org.openforis.calc.chain.ProcessingChainDao;
 import org.openforis.calc.chain.post.PublishRolapSchemaTask;
 import org.openforis.calc.engine.CalculationEngine;
 import org.openforis.calc.engine.CalculationStepTask;
+import org.openforis.calc.engine.DataRecord;
 import org.openforis.calc.engine.Job;
 import org.openforis.calc.engine.TaskManager;
+import org.openforis.calc.engine.Worker;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceLockedException;
 import org.openforis.calc.engine.WorkspaceService;
@@ -100,7 +104,7 @@ extends AbstractTransactionalJUnit4SpringContextTests {
 //	@Test
 	public void testChain() throws WorkspaceLockedException, InvalidProcessingChainException {
 		Job job = calculationEngine.runProcessingChain(21);
-		while(!job.isEnded()){
+		while( !job.isEnded() ) {
 			job.waitFor(10000);
 			
 		}
@@ -112,12 +116,18 @@ extends AbstractTransactionalJUnit4SpringContextTests {
 		
 		CalculationStep step = calculationStepDao.find(1);
 		CustomRTask task = (CustomRTask) taskManager.createCalculationStepTask(step);
-		task.setMaxItems(1500);
+		task.setMaxItems(18000);
 		
 		Job job = taskManager.createJob(workspace);
 		job.addTask(task);
 		
 		taskManager.startJob(job);
-		job.waitFor(5000);		
+		job.waitFor(5000);
+		while(!job.isEnded()){
+			//wait
+		}
+		System.out.println(task.getItemsProcessed());
+		List<DataRecord> results = task.getAndResetResults();
+		System.out.println(results.size());
 	}
 }
