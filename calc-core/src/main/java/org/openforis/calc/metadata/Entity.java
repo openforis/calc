@@ -35,11 +35,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author G. Miceli
  * @author M. Togna
  */
-/**
- * @author G. Miceli
- * @author M. Togna
- *
- */
 @javax.persistence.Entity
 @Table(name = "entity")
 public class Entity extends NamedUserObject {
