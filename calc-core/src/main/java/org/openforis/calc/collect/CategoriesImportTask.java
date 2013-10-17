@@ -29,8 +29,6 @@ import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.schema.AbstractTable;
-import org.openforis.collect.model.CollectSurvey;
-import org.openforis.collect.relational.CollectRdbException;
 import org.openforis.collect.relational.model.CodeColumn;
 import org.openforis.collect.relational.model.CodeLabelColumn;
 import org.openforis.collect.relational.model.CodeListCodeColumn;
@@ -39,7 +37,6 @@ import org.openforis.collect.relational.model.CodeTable;
 import org.openforis.collect.relational.model.Column;
 import org.openforis.collect.relational.model.DataColumn;
 import org.openforis.collect.relational.model.RelationalSchema;
-import org.openforis.collect.relational.model.RelationalSchemaGenerator;
 import org.openforis.collect.relational.model.Table;
 import org.openforis.idm.metamodel.AttributeDefinition;
 import org.openforis.idm.metamodel.CodeAttributeDefinition;
@@ -79,7 +76,7 @@ public class CategoriesImportTask extends Task {
 	protected void execute() throws Throwable {
 		deleteCategories();
 		
-		generateSchema();
+		inputRelationalSchema = ( (CollectJob) getJob()).createInputRelationalSchema();
 		
 		insertCategories();
 	}
@@ -203,8 +200,8 @@ public class CategoriesImportTask extends Task {
 	private DataColumn getRDBDataColumn(CategoricalVariable<?> v) {
 		Entity entity = v.getEntity();
 		String tableName = entity.getDataTable();
-		Table<?> table = getRDBTable(tableName);
-		Column<?> column = getRDBColumn(table, v.getInputValueColumn());
+		Table<?> table = inputRelationalSchema.getTable(tableName);
+		Column<?> column = table.getColumn(v.getInputValueColumn());
 		if ( column instanceof DataColumn ) {
 			return (DataColumn) column;
 		} else {
@@ -218,28 +215,6 @@ public class CategoriesImportTask extends Task {
 		CodeList codeList = codeAttrDefn.getList();
 		CodeTable codeListTable = inputRelationalSchema.getCodeListTable(codeList, codeAttrDefn.getListLevelIndex());
 		return codeListTable;
-	}
-	
-	//TODO move to RDB Table
-	protected Column<?> getRDBColumn(Table<?> table, String name) {
-		List<Column<?>> columns = table.getColumns();
-		for (Column<?> c : columns) {
-			if ( c.getName().equals(name) ) {
-				return c;
-			}
-		}
-		throw new IllegalArgumentException("Column not found: " + name);
-	}
-
-	//TODO move to RDB schema
-	protected Table<?> getRDBTable(String name) {
-		List<Table<?>> tables = inputRelationalSchema.getTables();
-		for (Table<?> table : tables) {
-			if ( table.getName().equals(name) ) {
-				return table;
-			}
-		}
-		throw new IllegalArgumentException("Table not found: " + name);
 	}
 	
 	protected List<Variable<?>> getVariables() {
@@ -262,17 +237,6 @@ public class CategoriesImportTask extends Task {
 			}
 		}
 		throw new IllegalArgumentException("Column of type " + type.getName() + " not found");
-	}
-
-	private void generateSchema() {
-		Workspace ws = getWorkspace();
-		CollectSurvey survey = ((CollectJob) getJob()).getSurvey();
-		RelationalSchemaGenerator rdbGenerator = new RelationalSchemaGenerator();
-		try {
-			inputRelationalSchema = rdbGenerator.generateSchema(survey, ws.getInputSchema());
-		} catch (CollectRdbException e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 	private static class CollectGenericDataTable extends AbstractTable {

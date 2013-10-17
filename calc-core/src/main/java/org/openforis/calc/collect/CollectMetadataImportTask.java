@@ -29,12 +29,10 @@ import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.Variable.Scale;
 import org.openforis.calc.metadata.VariableDao;
 import org.openforis.collect.model.CollectSurvey;
-import org.openforis.collect.relational.CollectRdbException;
 import org.openforis.collect.relational.model.DataColumn;
 import org.openforis.collect.relational.model.DataTable;
 import org.openforis.collect.relational.model.PrimaryKeyColumn;
 import org.openforis.collect.relational.model.RelationalSchema;
-import org.openforis.collect.relational.model.RelationalSchemaGenerator;
 import org.openforis.idm.metamodel.AttributeDefinition;
 import org.openforis.idm.metamodel.BooleanAttributeDefinition;
 import org.openforis.idm.metamodel.CodeAttributeDefinition;
@@ -47,7 +45,6 @@ import org.openforis.idm.metamodel.NodeDefinition;
 import org.openforis.idm.metamodel.NodeDefinitionVisitor;
 import org.openforis.idm.metamodel.NumberAttributeDefinition;
 import org.openforis.idm.metamodel.Schema;
-import org.openforis.idm.metamodel.Survey;
 import org.openforis.idm.metamodel.TaxonAttributeDefinition;
 import org.openforis.idm.metamodel.TextAttributeDefinition;
 import org.openforis.idm.metamodel.TextAttributeDefinition.Type;
@@ -63,8 +60,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class CollectMetadataImportTask extends Task {
 
 	private static final QName CALC_SAMPLING_UNIT_ANNOTATION = new QName("http://www.openforis.org/calc/1.0/calc", "samplingUnit");
-	private static final String SPECIES_CODE_VAR_NAME = "species_code";
-	private static final String SPECIES_SCIENT_NAME_VAR_NAME = "species_scient_name";
 	private static final String DIMENSION_TABLE_FORMAT = "%s_%s_dim";
 
 	@Autowired
@@ -87,7 +82,6 @@ public class CollectMetadataImportTask extends Task {
 	//transient variables
 	private Map<Integer, Entity> entitiesByEntityDefinitionId;
 	private Set<String> variableNames;
-	private Set<String> outputValueColumnNames;
 
 	@Override
 	protected long countTotalItems() {
@@ -110,7 +104,6 @@ public class CollectMetadataImportTask extends Task {
 	protected void execute() throws Throwable {
 		entitiesByEntityDefinitionId = new HashMap<Integer, Entity>();
 		variableNames = new HashSet<String>();
-		outputValueColumnNames = new HashSet<String>();
 		
 		List<Entity> newEntities = createEntitiesFromSchema();
 
@@ -207,8 +200,9 @@ public class CollectMetadataImportTask extends Task {
 		setDefaultValue(oldVariable, newVariable);
 		oldVariable.setDescription(newVariable.getDescription());
 		oldVariable.setDimensionTable(newVariable.getDimensionTable());
-		oldVariable.setInputValueColumn(newVariable.getInputValueColumn());
-		oldVariable.setName(newVariable.getName());
+		//TODO update variable name and inputValueColumn: handle taxon attribute variables (2 variables per each attribute definition)
+//		oldVariable.setInputValueColumn(newVariable.getInputValueColumn());
+		//oldVariable.setName(newVariable.getName());
 		oldVariable.setOutputValueColumn(newVariable.getOutputValueColumn());
 	}
 
@@ -230,7 +224,7 @@ public class CollectMetadataImportTask extends Task {
 	private List<Entity> createEntitiesFromSchema() throws IdmlParseException {
 		CollectSurvey survey = ((CollectJob) getJob()).getSurvey();
 		
-		final RelationalSchema relationalSchema = generateSchema(survey);
+		final RelationalSchema relationalSchema = ((CollectJob) getJob()).createInputRelationalSchema();
 		
 		Schema schema = survey.getSchema();
 		
@@ -330,9 +324,7 @@ public class CollectMetadataImportTask extends Task {
 					columnNodeDefnNam.equals(TaxonAttributeDefinition.SCIENTIFIC_NAME_FIELD_NAME) ) ) {
 			v = new MultiwayVariable();
 			v.setScale(Scale.NOMINAL);
-			String fieldName = columnNodeDefnNam;
-			String name = fieldName.equals(TaxonAttributeDefinition.CODE_FIELD_NAME ) ? 
-					SPECIES_CODE_VAR_NAME: SPECIES_SCIENT_NAME_VAR_NAME;
+			String name = column.getName();
 			v.setName(generateVariableName(entityName, name));
 			((MultiwayVariable) v).setDegenerateDimension(true);
 		} else if ( attrDefn instanceof TextAttributeDefinition && 
@@ -344,7 +336,6 @@ public class CollectMetadataImportTask extends Task {
 			v.setScale(Scale.TEXT);
 		}
 		if ( v != null ) {
-			v.setInputValueColumn(column.getName());
 			if ( v.getName() == null ) {
 				v.setName(generateVariableName(entityName, column.getName()));
 			}
@@ -352,8 +343,9 @@ public class CollectMetadataImportTask extends Task {
 					v instanceof TextVariable ) ) {
 				v.setDimensionTable(getDimensionTableName(entityName, v.getName()));
 			}
+			v.setInputValueColumn(v.getName());
+			v.setOutputValueColumn(v.getName());
 			v.setOriginalId(attrDefn.getId());
-			v.setOutputValueColumn(generateOutputValueColumnName(entityName, column.getName()));
 			entity.addVariable(v);
 		}
 	}
@@ -443,16 +435,6 @@ public class CollectMetadataImportTask extends Task {
 		}
 	}
 	
-	private RelationalSchema generateSchema(Survey survey) {
-		RelationalSchemaGenerator rdbGenerator = new RelationalSchemaGenerator();
-		try {
-			RelationalSchema schema = rdbGenerator.generateSchema(survey, getWorkspace().getInputSchema());
-			return schema;
-		} catch (CollectRdbException e) {
-			throw new RuntimeException("Unable to generate schema" , e);
-		}
-	}
-	
 	private String generateVariableName(String entityName, String columnName) {
 		String name = columnName;
 		if ( variableNames.contains(name) ) {
@@ -466,22 +448,6 @@ public class CollectMetadataImportTask extends Task {
 			}
 		}
 		variableNames.add(name);
-		return name;
-	}
-	
-	private String generateOutputValueColumnName(String entityName, String columnName) {
-		String name = columnName;
-		if ( outputValueColumnNames.contains(name) ) {
-			//name = ENTITYNAME_COLUMNNAME
-			name = entityName + "_" + name;
-			String baseName = name;
-			int count = 0;
-			while ( outputValueColumnNames.contains(name) ) {
-				//name = ENTITYNAME_COLUMNNAME#
-				name = baseName + (++count);
-			}
-		}
-		outputValueColumnNames.add(name);
 		return name;
 	}
 	

@@ -12,10 +12,8 @@ import org.openforis.collect.model.CollectRecord;
 import org.openforis.collect.model.CollectRecord.Step;
 import org.openforis.collect.model.CollectSurvey;
 import org.openforis.collect.persistence.xml.DataUnmarshaller.ParseRecordResult;
-import org.openforis.collect.relational.CollectRdbException;
 import org.openforis.collect.relational.DatabaseExporter;
 import org.openforis.collect.relational.model.RelationalSchema;
-import org.openforis.collect.relational.model.RelationalSchemaGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -55,7 +53,7 @@ public class CollectDataImportTask extends Task {
 	@Override
 	protected void execute() throws Throwable {
 		
-		RelationalSchema targetSchema = createInputSchema();
+		RelationalSchema targetSchema = ((CollectJob) getJob()).createInputRelationalSchema();
 		
 		DatabaseExporter databaseExporter = new CollectDatabaseExporter(config);
 		databaseExporter.insertReferenceData(targetSchema);
@@ -83,14 +81,6 @@ public class CollectDataImportTask extends Task {
 		}
 	}
 
-	private RelationalSchema createInputSchema() throws CollectRdbException {
-		String inputSchemaName = getWorkspace().getInputSchema();
-		RelationalSchemaGenerator rdbGenerator = new RelationalSchemaGenerator();
-		CollectSurvey survey = ((CollectJob) getJob()).getSurvey();
-		RelationalSchema schema = rdbGenerator.generateSchema(survey, inputSchemaName);
-		return schema;
-	}
-	
 	public File getDataFile() {
 		return dataFile;
 	}
