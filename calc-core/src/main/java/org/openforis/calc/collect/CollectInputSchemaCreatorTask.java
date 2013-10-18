@@ -12,6 +12,7 @@ import org.jooq.Configuration;
 import org.jooq.DataType;
 import org.jooq.Field;
 import org.jooq.Record;
+import org.jooq.Select;
 import org.jooq.SelectQuery;
 import org.jooq.TableField;
 import org.jooq.impl.DataSourceConnectionProvider;
@@ -112,8 +113,22 @@ public class CollectInputSchemaCreatorTask extends Task {
 		}
 		incrementItemsProcessed();
 	}
-
+	
 	private void createView(Entity entity) {
+		Workspace ws = getWorkspace();
+		
+		Schemas schemas = new Schemas(ws);
+		InputSchema inputSchema = schemas.getInputSchema();
+		EntityDataView view = inputSchema.getDataView(entity);
+		Select<?> select = view.getSelect();
+		
+		psql()
+			.createView(ws.getInputSchema(), view.getName())
+			.as(select)
+			.execute();
+	}
+	
+	private void createViewOld(Entity entity) {
 		Workspace ws = getWorkspace();
 		
 		Schemas schemas = new Schemas(ws);

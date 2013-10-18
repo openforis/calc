@@ -230,9 +230,9 @@ $(function(){
 		    success: function ( response ) {
 		    	CalcForm.updateErrors($stepForm, response.errors);
 		    	if(response.status == "ERROR" ) {
-		    		CalcForm.showResultMessage("Error, invalid data",false);
+		    		CalcForm.showResultMessage("There are errors in the form. Please fix them before proceeding.",false);
 		    	} else {
-		    		CalcForm.showResultMessage("Success, the data was processed correctly",true);
+		    		CalcForm.showResultMessage("Calculation step successfully saved.",true);
 		    		
 		    		$calculationStep = response.fields.calculationStep;
 		    		updateCalculationStepUi($calculationStep);
@@ -244,7 +244,7 @@ $(function(){
 		    	CalcForm.enableForm( $stepForm );
 		    },
 		    error: function (e) {
-		    	CalcForm.showResultMessage("Error submitting the form",false );
+		    	CalcForm.showResultMessage("An error occured. Please check the log file.",false );
 		    	CalcForm.enableForm( $stepForm );
 		    }
 		});	
