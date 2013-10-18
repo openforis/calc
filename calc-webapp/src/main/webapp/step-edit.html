@@ -196,7 +196,7 @@ $(function(){
 		    },
 		    success: function ( response ) {
 		    	CalcForm.updateErrors($stepForm, response.errors);
-		    	if(status.status == "ERROR" ) {
+		    	if(response.status == "ERROR" ) {
 		    		CalcForm.showResultMessage("Error, invalid data",false);
 		    	} else {
 		    		CalcForm.showResultMessage("Success, the data was processed correctly",true);
