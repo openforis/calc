@@ -40,7 +40,8 @@ public class OutputTable extends DataTable {
 		createTextFields();
 	}
 
-	private void createTextFields() {
+	@Override
+	protected void createTextFields() {
 		for ( Field<String> inputField : inputTable.getTextFields() ) {
 			createField(inputField.getName(), inputField.getDataType(), this);
 		}

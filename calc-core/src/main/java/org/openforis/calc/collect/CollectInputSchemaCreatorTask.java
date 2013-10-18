@@ -4,6 +4,7 @@
 package org.openforis.calc.collect;
 
 import java.sql.Connection;
+import java.util.List;
 
 import javax.sql.DataSource;
 
@@ -11,6 +12,7 @@ import org.jooq.Configuration;
 import org.jooq.DataType;
 import org.jooq.Field;
 import org.jooq.Record;
+import org.jooq.SelectQuery;
 import org.jooq.TableField;
 import org.jooq.impl.DataSourceConnectionProvider;
 import org.jooq.impl.SchemaImpl;
@@ -21,6 +23,10 @@ import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.psql.Psql;
 import org.openforis.calc.schema.AbstractTable;
+import org.openforis.calc.schema.EntityDataView;
+import org.openforis.calc.schema.InputSchema;
+import org.openforis.calc.schema.InputTable;
+import org.openforis.calc.schema.Schemas;
 import org.openforis.collect.relational.CollectRdbException;
 import org.openforis.collect.relational.RelationalSchemaCreator;
 import org.openforis.collect.relational.liquibase.LiquibaseRelationalSchemaCreator;
@@ -43,12 +49,19 @@ public class CollectInputSchemaCreatorTask extends Task {
 	}
 	
 	@Override
+	protected long countTotalItems() {
+		return 4;
+	}
+	
+	@Override
 	protected void execute() throws Throwable {
 		dropInputSchema();
 		
 		createInputSchema();
 		
 		addUserDefinedVariableColumns();
+		
+		createViews();
 	}
 
 	private void dropInputSchema() {
@@ -57,6 +70,7 @@ public class CollectInputSchemaCreatorTask extends Task {
 			.dropSchemaIfExists(new SchemaImpl(inputSchemaName))
 			.cascade()
 			.execute();
+		incrementItemsProcessed();
 	}
 
 	private RelationalSchema createInputSchema() throws CollectRdbException {
@@ -70,6 +84,7 @@ public class CollectInputSchemaCreatorTask extends Task {
 		RelationalSchemaCreator relationalSchemaCreator = new LiquibaseRelationalSchemaCreator();
 		Connection connection = DataSourceUtils.getConnection(dataSource);
 		relationalSchemaCreator.createRelationalSchema(schema, connection);
+		incrementItemsProcessed();
 		return schema;
 	}
 	
@@ -86,6 +101,68 @@ public class CollectInputSchemaCreatorTask extends Task {
 				.addColumn(field)
 				.execute();
 		}
+		incrementItemsProcessed();
+	}
+
+	private void createViews() {
+		Workspace ws = getWorkspace();
+		List<Entity> entities = ws.getEntities();
+		for (Entity entity : entities) {
+			createView(entity);
+		}
+		incrementItemsProcessed();
+	}
+
+	private void createView(Entity entity) {
+		Workspace ws = getWorkspace();
+		
+		Schemas schemas = new Schemas(ws);
+		InputSchema inputSchema = schemas.getInputSchema();
+		
+		InputTable table = inputSchema.getDataTable(entity);
+		
+		//create inner select
+		SelectQuery<Record> select = psql().selectQuery();
+		select.addFrom(table);
+		select.addSelect(table.fields());
+		
+		//for every ancestor, add join condition and select fields
+		Entity currentEntity = entity;
+		while ( currentEntity.getParent() != null ) {
+			InputTable currentTable = inputSchema.getDataTable(currentEntity);
+			Entity parentEntity = currentEntity.getParent();
+			InputTable parentTable = inputSchema.getDataTable(parentEntity);
+			
+			select.addJoin(parentTable, 
+					currentTable.getParentIdField().eq(parentTable.getIdField()));
+			
+			addUniqueNameFields(select, parentTable.fields());
+			currentEntity = parentEntity;
+		}
+		
+		String viewName = EntityDataView.getViewName(entity);
+		psql()
+			.createView(ws.getInputSchema(), viewName)
+			.as(select)
+			.execute();
+	}
+	
+	private void addUniqueNameFields(SelectQuery<Record> select, Field<?>[] fields) {
+		for (Field<?> field : fields) {
+			Field<?> existingField = getFieldByName(select, field.getName());
+			if ( existingField == null ) {
+				select.addSelect(field);
+			}
+		}
+	}
+
+	private Field<?> getFieldByName(SelectQuery<Record> select, String name) {
+		for (Field<?> field : select.getSelect()) {
+			if ( field.getName().equals(name) ) {
+				return field;
+			}
+		}
+		return null;
 	}
 
 	class InputSchemaTable extends AbstractTable {

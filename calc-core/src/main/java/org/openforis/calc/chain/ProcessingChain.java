@@ -12,6 +12,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Type;
 import org.openforis.calc.common.UserObject;
 import org.openforis.calc.engine.ParameterHashMap;
@@ -36,6 +38,7 @@ public class ProcessingChain extends UserObject {
 	private Workspace workspace;
 	
 	@OneToMany(mappedBy = "processingChain", fetch = FetchType.EAGER)
+	@Fetch(value = FetchMode.SELECT)
 	@OrderBy("stepNo")
 	private List<CalculationStep> steps;
 	

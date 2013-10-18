@@ -38,7 +38,7 @@ public class Category extends UserObject {
 	@Column(name = "original_id")
 	private Integer originalId;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "variable_id")
 	@JsonIgnore
 	private Variable<?> variable;

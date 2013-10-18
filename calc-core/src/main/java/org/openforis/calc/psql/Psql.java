@@ -76,6 +76,10 @@ public final class Psql extends DefaultDSLContext {
 		return new CreateTableStep(this, table);
 	}
 
+	public CreateViewStep createView(String schemaName, String name) {
+		return new CreateViewStep(this, schemaName, name);
+	}
+
 	public Select<?> selectStarFrom(Table<?> table) {		
 		String tableName = table.getName();
 		String schemaName = table.getSchema().getName();

@@ -35,15 +35,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author G. Miceli
  * @author M. Togna
  */
-/**
- * @author G. Miceli
- * @author M. Togna
- *
- */
 @javax.persistence.Entity
 @Table(name = "entity")
 public class Entity extends NamedUserObject {
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "workspace_id")
 	@JsonIgnore
 	private Workspace workspace;
@@ -57,8 +52,9 @@ public class Entity extends NamedUserObject {
 	@Column(name = "parent_id_column")
 	private String parentIdColumn;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "parent_entity_id")
+	@Fetch(FetchMode.SELECT) 
 	private Entity parent;
 	
 	@Column(name = "sort_order")

@@ -4,7 +4,6 @@
 package org.openforis.calc.schema;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.openforis.calc.engine.Workspace;
@@ -23,29 +22,44 @@ public class InputSchema extends RelationalSchema {
 
 	private Map<Entity, InputTable> dataTables;
 	
+	private Map<Entity, EntityDataView> dataViews;
+	
 	public InputSchema(Workspace workspace) {
 		super(workspace.getInputSchema());
 		this.workspace = workspace;
+		
 		initDataTables();
-	}
-	
-	public Workspace getWorkspace() {
-		return workspace;
+		
+		initDataViews();
 	}
 	
 	private void initDataTables() {
 		this.dataTables = new HashMap<Entity, InputTable>();
-		List<Entity> entities = workspace.getEntities();
-		for ( Entity entity : entities ) {
+		for ( Entity entity : workspace.getEntities() ) {
 			InputTable inputTable = new InputTable(entity, this);
 			addTable(inputTable);
 			dataTables.put(entity, inputTable);
 		}
 	}
 
+	private void initDataViews() {
+		this.dataViews = new HashMap<Entity, EntityDataView>();
+		for ( Entity entity : workspace.getEntities() ) {
+			EntityDataView view = new EntityDataView(entity, this);
+			addView(view);
+			dataViews.put(entity, view);
+		}
+	}
+
+	public Workspace getWorkspace() {
+		return workspace;
+	}
 	
 	public InputTable getDataTable(Entity entity) {
 		return dataTables.get(entity);
 	}
 
+	public EntityDataView getDataView(Entity entity) {
+		return dataViews.get(entity);
+	}
 }
