@@ -10,6 +10,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
+import org.apache.commons.lang3.StringUtils;
 import org.openforis.calc.common.Identifiable;
 import org.openforis.calc.common.Reflection;
 import org.springframework.stereotype.Repository;
@@ -74,7 +75,17 @@ public abstract class AbstractJpaDao<T extends Identifiable> {
 	
 	@Transactional
 	public List<T> loadAll() {
-		TypedQuery<T> q = entityManager.createQuery("select a from "+type.getSimpleName()+" a", type);
+		return loadAll(null);
+	}
+	
+	@Transactional
+	public List<T> loadAll(String orderBy) {
+		String select = "select a from "+type.getSimpleName()+" a";
+		if( StringUtils.isNotBlank(orderBy) ){
+			select += " order by " + orderBy;
+					 
+		}
+		TypedQuery<T> q = entityManager.createQuery(select, type);
 		q.setHint("org.hibernate.cacheable", true);
 
 		List<T> list = q.getResultList();

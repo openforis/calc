@@ -3,6 +3,8 @@
  */
 package org.openforis.calc.web.controller;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.openforis.calc.chain.CalculationStep;
@@ -22,6 +24,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import sandbox.CalcTest;
 
 /**
  * @author S. Ricci
@@ -63,7 +67,8 @@ public class CalculationStepController {
 			step.setCaption(form.getName());
 			step.setScript(form.getScript());
 			chain.addCalculationStep(step);
-			calculationStepDao.save(step);
+			
+			step = calculationStepDao.save(step);
 		}
 		return response;
 	}
@@ -73,5 +78,12 @@ public class CalculationStepController {
 	Response validate(@Valid CalculationStepForm form, BindingResult result) {
 		Response response = new Response(result.getAllErrors());
 		return response;
+	}
+	
+
+	@RequestMapping(value = "/load.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	List<CalculationStep> getAll() {
+		return calculationStepDao.loadAll("id");
 	}
 }

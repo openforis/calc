@@ -14,6 +14,10 @@ $backHomeButton = $("#footer button.back");
 
 //current working section
 $section  = null;
+/*
+ * Home page sections 
+*/
+$calculationContainer = $("#calculation");
 
 $page = $("#page");
 $nav = $(".container ul.breadcrumb");
@@ -161,7 +165,8 @@ $(document).ready(function() {
 	    }, 1200,'easeInOutExpo');
 	});
 	
-	$(".section-home button").click(function(event){
+	// event handler for home button click
+	homeButtonClick = function(event){
 		event.preventDefault();
 		
 		target = $(this).attr("href");
@@ -202,7 +207,9 @@ $(document).ready(function() {
 		});
 		
 		
-	});
+	};
+	
+	$(".section-home button").click(homeButtonClick);
 	
 	$backHomeButton.click(function(event){
 		event.preventDefault();
@@ -242,7 +249,32 @@ $(document).ready(function() {
 		positionFooter();
 	});
 	
+	
+	loadCalculationSteps = function() {
+		$.ajax({
+			url:"rest/calculationstep/load.json",
+			dataType:"json"
+		}).done(function(response){
+			$steps = response;
+			//console.log($steps);
+			
+			$button = $calculationContainer.find("#calculation-button").clone();
+			$buttonContainer = $calculationContainer.find('.row2');
+			$.each($steps, function(i,$step){
+				$buttonContainer.append($button);
+				$button.html($step.caption);
+				$button.attr("href","step-edit.html?id="+$step.id);
+				$button.click(homeButtonClick);
+				$button.fadeIn(800);
+			});
+		});
+	};
+	
+	// when page is loaded init function is called
 	init = function() {
+		//load all calculation steps
+		loadCalculationSteps();
+		
 		checkJobStatus();
 		//on load, the footer buttons is positioned to the bottom of the page
 		positionFooter();

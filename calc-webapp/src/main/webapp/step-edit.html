@@ -184,6 +184,7 @@ $(function(){
 		$stepForm.ajaxForm( {
 		    dataType : 'json',
 		    beforeSubmit: function() {
+		    	
 		        $(this).addClass('loading');
 		    },
 		    success: function ( response ) {
@@ -282,8 +283,14 @@ $(function(){
 		
 	});
 	
-	// on load 
-	updateEntities();
+	init = function(){
+		updateEntities();
+		stepId = $.url().param("id");
+		console.log( $.url().attr("path") );
+		console.log(stepId);
+	};
+	// on load
+	init();
 	
 });
 </script>

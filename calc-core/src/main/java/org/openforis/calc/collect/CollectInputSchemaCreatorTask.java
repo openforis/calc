@@ -61,7 +61,7 @@ public class CollectInputSchemaCreatorTask extends Task {
 		
 		addUserDefinedVariableColumns();
 		
-		addViews();
+		createViews();
 	}
 
 	private void dropInputSchema() {
@@ -104,16 +104,16 @@ public class CollectInputSchemaCreatorTask extends Task {
 		incrementItemsProcessed();
 	}
 
-	private void addViews() {
+	private void createViews() {
 		Workspace ws = getWorkspace();
 		List<Entity> entities = ws.getEntities();
 		for (Entity entity : entities) {
-			addView(entity);
+			createView(entity);
 		}
 		incrementItemsProcessed();
 	}
 
-	private void addView(Entity entity) {
+	private void createView(Entity entity) {
 		Workspace ws = getWorkspace();
 		
 		Schemas schemas = new Schemas(ws);

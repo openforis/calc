@@ -20,7 +20,8 @@ import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.r.R;
 import org.openforis.calc.r.REnvironment;
 import org.openforis.calc.r.RException;
-import org.openforis.calc.schema.InputTable;
+import org.openforis.calc.schema.DataTable;
+import org.openforis.calc.schema.EntityDataView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -115,13 +116,13 @@ public final class CustomRTask extends CalculationStepTask {
 	 * @throws RException
 	 */
 	private Query executeScript(REnvironment rEnvironment, Set<String> variables, Record record) throws RException {
-		InputTable table = getTable();
+		DataTable dataTable = getDataTable();
 		Variable<?> outputVariable = getOutputVariable();
 		Field<Double> outputField = getOutputField();
 		String script = getScript();
-		Integer idValue = record.getValue(ID, Integer.class);
+		Integer id = record.getValue(ID, Integer.class);
 		
-		DataRecord dataRecord = new DataRecord(idValue);
+		DataRecord dataRecord = new DataRecord(id);
 		 
 		for (String var : variables ) {
 			Object variableValue = record.getValue(var);
@@ -136,14 +137,14 @@ public final class CustomRTask extends CalculationStepTask {
 		incrementItemsProcessed();
 		
 		Query update = psql()
-						.update(table)
+						.update(dataTable)
 						.set(outputField, result)
-						.where( table.getIdField().eq(idValue) );
+						.where( dataTable.getIdField().eq(id) );
 		return update;
 	}
 
 	private SelectQuery<Record> getSelectStatement(Set<String> variables) {
-		InputTable table = getTable();
+		DataTable table = getDataView();
 		SelectQuery<Record> selectQuery = psql().selectQuery();
 		selectQuery.addSelect(table.getIdField().as(ID));
 		
@@ -156,7 +157,7 @@ public final class CustomRTask extends CalculationStepTask {
 	}
 
 	private void resetOutputValue() {
-		InputTable table = getTable();
+		DataTable table = getDataTable();
 		Field<Double> outputField = getOutputField();
 		
 		Query resetOutput = psql()
@@ -169,7 +170,7 @@ public final class CustomRTask extends CalculationStepTask {
 	@Override
 	protected long countTotalItems() {
 		if( maxItems <= 0 ) {
-			InputTable table = getTable();
+			DataTable table = getDataView();
 			
 			maxItems = psql()
 							.selectCount()
@@ -182,7 +183,7 @@ public final class CustomRTask extends CalculationStepTask {
 
 	@SuppressWarnings("unchecked")
 	private Field<Double> getOutputField() {
-		InputTable table = getTable();
+		DataTable table = getDataView();
 		Variable<?> outputVariable = getOutputVariable();
 		return (Field<Double>) table.field(outputVariable .getName());
 	}
@@ -191,12 +192,23 @@ public final class CustomRTask extends CalculationStepTask {
 		return getCalculationStep().getOutputVariable();
 	}
 
-	private InputTable getTable() {
-		Entity entity = getCalculationStep().getOutputVariable().getEntity();
-		InputTable table = getJob().getInputSchema().getDataTable(entity);
+	private DataTable getDataView() {
+		Entity entity = getEntity();
+		EntityDataView table = getJob().getInputSchema().getDataView(entity);
 		return table;
 	}
 
+	private DataTable getDataTable() {
+		Entity entity = getEntity();
+		DataTable table = getJob().getInputSchema().getDataTable(entity);
+		return table;
+	}
+
+	private Entity getEntity() {
+		Entity entity = getOutputVariable().getEntity();
+		return entity;
+	}
+	
 	private String getScript() {
 		return getCalculationStep().getScript();
 	}
