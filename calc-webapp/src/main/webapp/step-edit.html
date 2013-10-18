@@ -8,7 +8,9 @@
 <!-- 		<div class="well"> -->
 			<form id="step-form" class="form-horizontal" method="POST" action="rest/calculationstep/save.json">
 				<fieldset>
-					<legend>Calculation Step Editor</legend>
+
+					<legend>Calculation Step Editor </legend>
+						
 					<div class="form-group">
 						<label class="col-md-2 control-label">Name</label>
 						<div class="col-md-10">
@@ -182,13 +184,23 @@ $(function(){
 	    dataType : 'json',
 	    beforeSubmit: function() {
 	        $(this).addClass('loading');
+	        CalcForm.disableForm( $stepForm );
 	    },
+	    
 	    success: function ( response ) {
 // 	    	console.log(response);
 	    	CalcForm.updateErrors($stepForm, response.errors);
+	    	if( response.errors.length == 0 ){
+	    		CalcForm.showResultMessage("Success, the data was processed correctly",true);
+	    	}else{
+	    		CalcForm.showResultMessage("Error, invalid data",false);
+	    	}
+	    	
+	    	CalcForm.enableForm( $stepForm );
 	    },
 	    error: function (e) {
-	    	alert('Error submitting form');
+	    	CalcForm.showResultMessage("Error submitting the form",false );
+	    	CalcForm.enableForm( $stepForm );
 	    }
 	});
 	
