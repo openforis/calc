@@ -4,7 +4,9 @@
 package org.openforis.calc.web.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.validation.ObjectError;
 
@@ -21,9 +23,11 @@ public class Response {
 
 	private Status status;
 	private List<ObjectError> errors;
-
+	private Map<String, Object> fields;
+	
 	Response() {
 		this(null);
+		fields = new HashMap<String, Object>();
 	}
 
 	Response(List<ObjectError> errors) {
@@ -52,4 +56,8 @@ public class Response {
 		return status == Status.ERROR;
 	}
 
+	public void addField(String name, Object object){
+		this.fields.put(name, object);
+	}
+	
 }

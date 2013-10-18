@@ -21,11 +21,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import sandbox.CalcTest;
 
 /**
  * @author S. Ricci
@@ -69,6 +68,7 @@ public class CalculationStepController {
 			chain.addCalculationStep(step);
 			
 			step = calculationStepDao.save(step);
+			response.addField("calculationStep", step);
 		}
 		return response;
 	}
@@ -79,11 +79,17 @@ public class CalculationStepController {
 		Response response = new Response(result.getAllErrors());
 		return response;
 	}
-	
 
 	@RequestMapping(value = "/load.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
-	List<CalculationStep> getAll() {
+	List<CalculationStep> loadAll() {
 		return calculationStepDao.loadAll("id");
 	}
+	
+	@RequestMapping(value = "/{stepId}/load.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	CalculationStep load(@PathVariable int stepId) {
+		return calculationStepDao.find(stepId);
+	}
+	
 }

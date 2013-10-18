@@ -180,17 +180,24 @@ $(function(){
 		}
 	};
 	
-	saveStep = function(callback) {
+	// save the calculation step 
+	saveStep = function(succesCallback) {
 		$stepForm.ajaxForm( {
 		    dataType : 'json',
 		    beforeSubmit: function() {
-		    	
+		    	// ???
 		        $(this).addClass('loading');
 		    },
 		    success: function ( response ) {
-//	 	    	console.log(response);
 		    	CalcForm.updateErrors($stepForm, response.errors);
-		    	if(callback){callback(response)};
+		    	if(status.status!="ERROR") {
+		    		$step = response.fields.calculationStep;
+		    		updateCalculationStepUi($step);
+		    		
+			    	if(succesCallback){
+			    		callback(response)
+		    		};
+		    	}
 		    },
 		    error: function (e) {
 		    	alert('Error submitting form');
@@ -262,12 +269,8 @@ $(function(){
 		if($calculationStep == null){
 			saveStep(
 				function(response){
-					console.log(response);
-					if(status.status!="ERROR"){
-						
-						$calculationStepEditContainer.fadeOut(400);
-						$calculationStepExecContainer.fadeIn(400);
-					}
+					$calculationStepEditContainer.fadeOut(400);
+					$calculationStepExecContainer.fadeIn(400);
 				}		
 			);
 		}
@@ -283,11 +286,32 @@ $(function(){
 		
 	});
 	
+	//load calculation step with given stepId
+	loadCalculationStep = function(stepId) {
+		$.ajax({
+			url:"rest/calculationstep/"+stepId+"/load.json",
+			dataType:"json"
+		})
+		.done(function(response){
+			$step = response;
+			updateCalculationStepUi($step);
+		});
+	};
+	
+	updateCalculationStepUi = function($step) {
+		//TODO update all form field with the given step (including hidden step id)
+		console.log(" update form " );
+	};
+	
 	init = function(){
 		updateEntities();
-		stepId = $.url().param("id");
-		console.log( $.url().attr("path") );
-		console.log(stepId);
+		
+		url = this.target;
+		stepId = $.url(url).param("id");
+		if(stepId){
+			loadCalculationStep(stepId);
+		}
+		
 	};
 	// on load
 	init();
