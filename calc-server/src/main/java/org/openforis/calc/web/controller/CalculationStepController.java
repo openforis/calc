@@ -9,13 +9,18 @@ import javax.validation.Valid;
 
 import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.CalculationStepDao;
+import org.openforis.calc.chain.InvalidProcessingChainException;
 import org.openforis.calc.chain.ProcessingChain;
+import org.openforis.calc.engine.Job;
+import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
+import org.openforis.calc.engine.WorkspaceLockedException;
 import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.VariableDao;
 import org.openforis.calc.module.r.CalcRModule;
 import org.openforis.calc.module.r.CustomROperation;
+import org.openforis.calc.module.r.CustomRTask;
 import org.openforis.calc.web.form.CalculationStepForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -28,6 +33,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * @author S. Ricci
+ * @author M. Togna
  * 
  */
 @Controller
@@ -42,6 +48,9 @@ public class CalculationStepController {
 	
 	@Autowired
 	private CalculationStepDao calculationStepDao;
+	
+	@Autowired
+	private TaskManager taskManager;
 	
 	@RequestMapping(value = "/save.json", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
@@ -90,6 +99,23 @@ public class CalculationStepController {
 	public @ResponseBody
 	CalculationStep load(@PathVariable int stepId) {
 		return calculationStepDao.find(stepId);
+	}
+	
+	@RequestMapping(value = "/{stepId}/start.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	Job start(@PathVariable int stepId) throws InvalidProcessingChainException, WorkspaceLockedException {
+		Workspace workspace = workspaceService.getActiveWorkspace();
+		
+		CalculationStep step = calculationStepDao.find(stepId);
+		CustomRTask task = (CustomRTask) taskManager.createCalculationStepTask(step);
+		task.setMaxItems(18000);
+		
+		Job job = taskManager.createJob(workspace );
+		job.addTask(task);
+		
+		taskManager.startJob(job);
+		
+		return job;
 	}
 	
 }
