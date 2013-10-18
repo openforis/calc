@@ -50,6 +50,11 @@ public class CollectInputSchemaCreatorTask extends Task {
 	}
 	
 	@Override
+	protected long countTotalItems() {
+		return 4;
+	}
+	
+	@Override
 	protected void execute() throws Throwable {
 		dropInputSchema();
 		
@@ -66,6 +71,7 @@ public class CollectInputSchemaCreatorTask extends Task {
 			.dropSchemaIfExists(new SchemaImpl(inputSchemaName))
 			.cascade()
 			.execute();
+		incrementItemsProcessed();
 	}
 
 	private RelationalSchema createInputSchema() throws CollectRdbException {
@@ -79,6 +85,7 @@ public class CollectInputSchemaCreatorTask extends Task {
 		RelationalSchemaCreator relationalSchemaCreator = new LiquibaseRelationalSchemaCreator();
 		Connection connection = DataSourceUtils.getConnection(dataSource);
 		relationalSchemaCreator.createRelationalSchema(schema, connection);
+		incrementItemsProcessed();
 		return schema;
 	}
 	
@@ -95,16 +102,16 @@ public class CollectInputSchemaCreatorTask extends Task {
 				.addColumn(field)
 				.execute();
 		}
+		incrementItemsProcessed();
 	}
 
 	private void addViews() {
 		Workspace ws = getWorkspace();
 		List<Entity> entities = ws.getEntities();
 		for (Entity entity : entities) {
-			if ( entity.getParent() != null ) {
-				addView(entity);
-			}
+			addView(entity);
 		}
+		incrementItemsProcessed();
 	}
 
 	private void addView(Entity entity) {
