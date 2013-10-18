@@ -64,6 +64,14 @@ public class CalculationStep extends UserObject {
 		this.parameters = new ParameterHashMap();
 	}
 	
+	public Integer getOutputVariableId() {
+		return outputVariable == null ? null: outputVariable.getId();
+	}
+	
+	public Integer getOutputEntityId() {
+		return outputVariable == null ? null: outputVariable.getEntity().getId();
+	}
+
 	public ProcessingChain getProcessingChain() {
 		return this.processingChain;
 	}

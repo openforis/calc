@@ -7,12 +7,13 @@
 		
 <!-- 		<div class="well"> -->
 			<form id="step-form" class="form-horizontal" method="POST" action="rest/calculationstep/save.json">
+				<input type="hidden" class="form-control" name="id" /> 
 				<fieldset>
 					<legend>Calculation Step Editor</legend>
 					<div class="form-group">
 						<label class="col-md-2 control-label">Name</label>
 						<div class="col-md-10">
-							<input type="text" class="form-control" name="name">
+							<input type="text" class="form-control" name="caption">
 						</div>
 					</div>
 					<div class="form-group">
@@ -126,7 +127,7 @@ $(function(){
 	$inputVar.hide();
 	
 	//load entities into select
-	updateEntities = function() {
+	updateEntities = function(callback) {
 		$entitySelect.empty();
 		$variableSelect.attr("disabled", "disabled");
 		$variableSelect.empty();
@@ -140,12 +141,14 @@ $(function(){
 			$.each(entities, function(i, entity) {
 				 $entitySelect.append($("<option />").val(entity.id).text(entity.name));
 			});
-			//updateVariables();
 			$entitySelect.val([]);
+			if(callback){
+				callback();
+			}
 		}); 
 	};
 	//load variables into select
-	updateVariables = function() {
+	updateVariables = function(callback) {
 		$variableSelect.attr("disabled", "disabled");
 		$variableSelect.empty();
 		
@@ -176,6 +179,9 @@ $(function(){
 				});
 				$variableSelect.removeAttr("disabled");
 				$variableSelect.val([]);
+				if ( callback ) {
+					callback();
+				}
 			}); 
 		}
 	};
@@ -191,11 +197,11 @@ $(function(){
 		    success: function ( response ) {
 		    	CalcForm.updateErrors($stepForm, response.errors);
 		    	if(status.status!="ERROR") {
-		    		$step = response.fields.calculationStep;
-		    		updateCalculationStepUi($step);
+		    		$calculationStep = response.fields.calculationStep;
+		    		updateCalculationStepUi($calculationStep);
 		    		
 			    	if(succesCallback){
-			    		callback(response)
+			    		succesCallback(response)
 		    		};
 		    	}
 		    },
@@ -207,7 +213,6 @@ $(function(){
 		$stepForm.submit();
 	}
 	//on save form submit
-	
 	
 	// on submit button click 
 	$stepForm.find("button[type='submit']").click(function(event){
@@ -299,19 +304,27 @@ $(function(){
 	};
 	
 	updateCalculationStepUi = function($step) {
-		//TODO update all form field with the given step (including hidden step id)
 		console.log(" update form " );
+		
+		$entitySelect.val($step.outputEntityId);
+		
+		updateVariables(function() {
+			$variableSelect.val($step.outputVariableId);
+			
+			CalcForm.setFieldValues($stepForm, $step);
+		});
 	};
 	
 	init = function(){
-		updateEntities();
-		
-		url = this.target;
-		stepId = $.url(url).param("id");
-		if(stepId){
-			loadCalculationStep(stepId);
-		}
-		
+		updateEntities(
+			function(){
+				url = this.target;
+				stepId = $.url(url).param("id");
+				if(stepId) {
+					loadCalculationStep(stepId);
+				}
+			}		
+		);
 	};
 	// on load
 	init();

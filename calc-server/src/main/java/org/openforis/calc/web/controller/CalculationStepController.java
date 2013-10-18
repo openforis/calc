@@ -63,7 +63,7 @@ public class CalculationStepController {
 			step.setModuleName(CalcRModule.MODULE_NAME);
 			step.setModuleVersion(CalcRModule.VERSION_1);
 			step.setOperationName(CustomROperation.NAME);
-			step.setCaption(form.getName());
+			step.setCaption(form.getCaption());
 			step.setScript(form.getScript());
 			chain.addCalculationStep(step);
 			

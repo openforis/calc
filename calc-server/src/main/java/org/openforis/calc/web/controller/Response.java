@@ -27,10 +27,10 @@ public class Response {
 	
 	Response() {
 		this(null);
-		fields = new HashMap<String, Object>();
 	}
 
 	Response(List<ObjectError> errors) {
+		fields = new HashMap<String, Object>();
 		if (errors != null && !errors.isEmpty()) {
 			setStatus(Status.ERROR);
 			this.errors = errors;

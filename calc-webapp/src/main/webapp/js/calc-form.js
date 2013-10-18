@@ -31,7 +31,37 @@ var CalcForm = {
 			title: message,
 			container: 'body'
 		});
+	},
+	setFieldValues: function($form, $data) {
+		$.each($data, function(fieldName, value) {
+			var $inputFields = $('[name='+fieldName+']', $form);
+			if ( $inputFields.length == 1 ) {
+				var inputFieldEl = $inputFields[0];
+				switch(CalcForm.getType(inputFieldEl)) {
+					case "hidden":  
+					case "text" :   
+					case "textarea":  
+						inputFieldEl.value = value;   
+						break;
+				}
+			} else {
+				$inputFields.each(function(i, $inputField) {
+					switch(CalcForm.getType($inputField)) {
+						case "radio" : 
+						case "checkbox":
+							$(this).attr("checked", $(this).attr('value') == value); 
+							break;  
+					}
+				});
+			}
+	    });
+	},
+	getType: function(inputField) {
+		var type = inputField.type;
+		if ( ! type ) {
+			//e.g. textarea element
+			type = inputField.nodeName.toLowerCase();
+		}
+		return type;
 	}
-	
-
 };
