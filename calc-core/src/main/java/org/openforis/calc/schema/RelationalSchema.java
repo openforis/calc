@@ -16,6 +16,7 @@ public abstract class RelationalSchema extends SchemaImpl {
 
 	private static final long serialVersionUID = 1L;
 	private List<Table<?>> tables;
+	private List<Table<?>> views;
 
 	public RelationalSchema(String name) {
 		super(name);
@@ -29,5 +30,13 @@ public abstract class RelationalSchema extends SchemaImpl {
 
 	protected void addTable(Table<?> table) {
 		tables.add(table);
+	}
+	
+	public List<Table<?>> getViews() {
+		return Collections.unmodifiableList(views);
+	}
+
+	protected void addView(Table<?> view) {
+		tables.add(view);
 	}
 }

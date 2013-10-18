@@ -30,6 +30,7 @@ import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.QuantitativeVariable;
+import org.openforis.calc.metadata.TextVariable;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.VariableAggregate;
 import org.openforis.calc.psql.GeodeticCoordinate;
@@ -55,6 +56,7 @@ public abstract class DataTable extends AbstractTable {
 	private Map<QuantitativeVariable, Field<BigDecimal>> quantityFields;
 	private Map<CategoricalVariable<?>, Field<?>> categoryValueFields;
 	private Map<VariableAggregate, Field<BigDecimal>> variableAggregateFields;
+	private Map<TextVariable, Field<String>> textFields;
 	
 	private TableField<Record, Integer> idField;
 	private Field<GeodeticCoordinate> locationField;
@@ -70,6 +72,7 @@ public abstract class DataTable extends AbstractTable {
 		this.quantityFields = new HashMap<QuantitativeVariable, Field<BigDecimal>>();
 		this.categoryValueFields = new HashMap<CategoricalVariable<?>, Field<?>>();
 		this.variableAggregateFields = new HashMap<VariableAggregate, Field<BigDecimal>>();
+		this.textFields = new HashMap<TextVariable, Field<String>>();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -89,6 +92,11 @@ public abstract class DataTable extends AbstractTable {
 	
 	protected void createQuantityFields(boolean input, boolean variableAggregates) {
 		Entity entity = getEntity();
+		createQuantityFields(entity, input, variableAggregates);
+	}
+
+	protected void createQuantityFields(Entity entity, boolean input,
+			boolean variableAggregates) {
 		List<QuantitativeVariable> variables = entity.getQuantitativeVariables();
 		for ( QuantitativeVariable var : variables ) {
 			String valueColumn = input ? var.getInputValueColumn() : var.getOutputValueColumn();
@@ -230,6 +238,20 @@ public abstract class DataTable extends AbstractTable {
 		}
 	}
 	
+	protected void createTextFields() {
+		Entity entity = getEntity();
+		createTextFields(entity);
+	}
+
+	protected void createTextFields(Entity entity) {
+		List<TextVariable> vars = entity.getTextVariables();
+		for ( TextVariable var : vars ) {
+			String name = var.getInputValueColumn();
+			Field<String> fld = createField(name, VARCHAR.length(255), this);
+			textFields.put(var, fld);
+		}
+	}
+
 	public Field<Integer> getParentIdField() {
 		return parentIdField;
 	}
@@ -242,6 +264,10 @@ public abstract class DataTable extends AbstractTable {
 		return Collections.unmodifiableCollection(aoiIdFields.values());
 	}
 	
+	public Collection<Field<String>> getTextFields() {
+		return Collections.unmodifiableCollection(textFields.values());
+	}
+
 	public Field<BigDecimal> getQuantityField(QuantitativeVariable var) {
 		return quantityFields == null ? null : quantityFields.get(var);
 	}
