@@ -187,14 +187,11 @@ $(function(){
 			}); 
 		}
 	};
-	
 	// save the calculation step 
 	saveStep = function(succesCallback) {
 		$stepForm.ajaxForm( {
 		    dataType : 'json',
 		    beforeSubmit: function() {
-		    	// ???
-		        $(this).addClass('loading');
 		        CalcForm.disableForm( $stepForm );
 		    },
 		    success: function ( response ) {
@@ -203,6 +200,7 @@ $(function(){
 		    		CalcForm.showResultMessage("Error, invalid data",false);
 		    	} else {
 		    		CalcForm.showResultMessage("Success, the data was processed correctly",true);
+		    		
 		    		$calculationStep = response.fields.calculationStep;
 		    		updateCalculationStepUi($calculationStep);
 		    		
@@ -220,6 +218,7 @@ $(function(){
 		
 		$stepForm.submit();
 	}
+
 	// on submit button click 
 	$stepForm.find("button[type='submit']").click(function(event){
 		event.preventDefault();
