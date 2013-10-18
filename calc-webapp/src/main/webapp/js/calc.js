@@ -258,9 +258,10 @@ $(document).ready(function() {
 			$steps = response;
 			//console.log($steps);
 			
-			$button = $calculationContainer.find("#calculation-button").clone();
 			$buttonContainer = $calculationContainer.find('.row2');
 			$.each($steps, function(i,$step){
+				$button = $calculationContainer.find(".calculation-button").clone();
+				$button.removeClass("calculation-button");
 				$buttonContainer.append($button);
 				$button.html($step.caption);
 				$button.attr("href","step-edit.html?id="+$step.id);
