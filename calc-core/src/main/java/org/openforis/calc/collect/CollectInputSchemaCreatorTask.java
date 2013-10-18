@@ -23,6 +23,7 @@ import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.psql.Psql;
 import org.openforis.calc.schema.AbstractTable;
+import org.openforis.calc.schema.EntityDataView;
 import org.openforis.calc.schema.InputSchema;
 import org.openforis.calc.schema.InputTable;
 import org.openforis.calc.schema.Schemas;
@@ -39,8 +40,6 @@ import org.springframework.jdbc.datasource.DataSourceUtils;
  */
 public class CollectInputSchemaCreatorTask extends Task {
 
-	private static final String VIEW_SUFFIX = "_view";
-	
 	@Autowired
 	private Configuration config;
 	
@@ -141,7 +140,7 @@ public class CollectInputSchemaCreatorTask extends Task {
 			currentEntity = parentEntity;
 		}
 		
-		String viewName = entity.getDataTable() + VIEW_SUFFIX;
+		String viewName = EntityDataView.getViewName(entity);
 		psql()
 			.createView(ws.getInputSchema(), viewName)
 			.as(select)
