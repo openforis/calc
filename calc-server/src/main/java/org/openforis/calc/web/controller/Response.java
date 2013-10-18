@@ -56,6 +56,10 @@ public class Response {
 		return status == Status.ERROR;
 	}
 
+	public Map<String, Object> getFields() {
+		return fields;
+	}
+	
 	public void addField(String name, Object object){
 		this.fields.put(name, object);
 	}

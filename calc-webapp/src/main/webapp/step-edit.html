@@ -9,7 +9,9 @@
 			<form id="step-form" class="form-horizontal" method="POST" action="rest/calculationstep/save.json">
 				<input type="hidden" class="form-control" name="id" /> 
 				<fieldset>
-					<legend>Calculation Step Editor</legend>
+
+					<legend>Calculation Step Editor </legend>
+						
 					<div class="form-group">
 						<label class="col-md-2 control-label">Name</label>
 						<div class="col-md-10">
@@ -193,10 +195,14 @@ $(function(){
 		    beforeSubmit: function() {
 		    	// ???
 		        $(this).addClass('loading');
+		        CalcForm.disableForm( $stepForm );
 		    },
 		    success: function ( response ) {
 		    	CalcForm.updateErrors($stepForm, response.errors);
-		    	if(status.status!="ERROR") {
+		    	if(status.status == "ERROR" ) {
+		    		CalcForm.showResultMessage("Error, invalid data",false);
+		    	} else {
+		    		CalcForm.showResultMessage("Success, the data was processed correctly",true);
 		    		$calculationStep = response.fields.calculationStep;
 		    		updateCalculationStepUi($calculationStep);
 		    		
@@ -204,16 +210,16 @@ $(function(){
 			    		succesCallback(response)
 		    		};
 		    	}
+		    	CalcForm.enableForm( $stepForm );
 		    },
 		    error: function (e) {
-		    	alert('Error submitting form');
+		    	CalcForm.showResultMessage("Error submitting the form",false );
+		    	CalcForm.enableForm( $stepForm );
 		    }
 		});	
 		
 		$stepForm.submit();
 	}
-	//on save form submit
-	
 	// on submit button click 
 	$stepForm.find("button[type='submit']").click(function(event){
 		event.preventDefault();
@@ -304,8 +310,6 @@ $(function(){
 	};
 	
 	updateCalculationStepUi = function($step) {
-		console.log(" update form " );
-		
 		$entitySelect.val($step.outputEntityId);
 		
 		updateVariables(function() {

@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class VariableTable extends org.jooq.impl.TableImpl<org.jooq.Record> {
 
-	private static final long serialVersionUID = 753267584;
+	private static final long serialVersionUID = 551604106;
 
 	/**
 	 * The singleton instance of <code>calc.variable</code>
@@ -151,7 +151,7 @@ public class VariableTable extends org.jooq.impl.TableImpl<org.jooq.Record> {
 	 */
 	@Override
 	public java.util.List<org.jooq.UniqueKey<org.jooq.Record>> getKeys() {
-		return java.util.Arrays.<org.jooq.UniqueKey<org.jooq.Record>>asList(org.openforis.calc.persistence.jooq.Keys.VARIABLE_PKEY, org.openforis.calc.persistence.jooq.Keys.VARIABLE_NAME_KEY);
+		return java.util.Arrays.<org.jooq.UniqueKey<org.jooq.Record>>asList(org.openforis.calc.persistence.jooq.Keys.VARIABLE_PKEY);
 	}
 
 	/**

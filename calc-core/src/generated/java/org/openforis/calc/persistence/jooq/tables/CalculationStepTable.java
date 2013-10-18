@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CalculationStepTable extends org.jooq.impl.TableImpl<org.jooq.Record> {
 
-	private static final long serialVersionUID = 1820381766;
+	private static final long serialVersionUID = 282499220;
 
 	/**
 	 * The singleton instance of <code>calc.calculation_step</code>
@@ -77,6 +77,11 @@ public class CalculationStepTable extends org.jooq.impl.TableImpl<org.jooq.Recor
 	public final org.jooq.TableField<org.jooq.Record, java.lang.String> DESCRIPTION = createField("description", org.jooq.impl.SQLDataType.VARCHAR.length(1024), this);
 
 	/**
+	 * The column <code>calc.calculation_step.output_variable_id</code>. 
+	 */
+	public final org.jooq.TableField<org.jooq.Record, java.lang.Integer> OUTPUT_VARIABLE_ID = createField("output_variable_id", org.jooq.impl.SQLDataType.INTEGER, this);
+
+	/**
 	 * Create a <code>calc.calculation_step</code> table reference
 	 */
 	public CalculationStepTable() {
@@ -119,7 +124,7 @@ public class CalculationStepTable extends org.jooq.impl.TableImpl<org.jooq.Recor
 	 */
 	@Override
 	public java.util.List<org.jooq.ForeignKey<org.jooq.Record, ?>> getReferences() {
-		return java.util.Arrays.<org.jooq.ForeignKey<org.jooq.Record, ?>>asList(org.openforis.calc.persistence.jooq.Keys.CALCULATION_STEP__CALCULATION_STEP_PROCESSING_CHAIN_FKEY);
+		return java.util.Arrays.<org.jooq.ForeignKey<org.jooq.Record, ?>>asList(org.openforis.calc.persistence.jooq.Keys.CALCULATION_STEP__CALCULATION_STEP_PROCESSING_CHAIN_FKEY, org.openforis.calc.persistence.jooq.Keys.CALCULATION_STEP__CALCULATION_STEP_VARIABLE_FKEY);
 	}
 
 	/**

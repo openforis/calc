@@ -62,7 +62,6 @@ public class Keys {
 	public static final org.jooq.UniqueKey<org.jooq.Record> STRATUM_PKEY = UniqueKeys0.STRATUM_PKEY;
 	public static final org.jooq.UniqueKey<org.jooq.Record> STRATUM_STRATUM_NO_WORKSPACE_ID_KEY = UniqueKeys0.STRATUM_STRATUM_NO_WORKSPACE_ID_KEY;
 	public static final org.jooq.UniqueKey<org.jooq.Record> VARIABLE_PKEY = UniqueKeys0.VARIABLE_PKEY;
-	public static final org.jooq.UniqueKey<org.jooq.Record> VARIABLE_NAME_KEY = UniqueKeys0.VARIABLE_NAME_KEY;
 	public static final org.jooq.UniqueKey<org.jooq.Record> VARIABLE_AGGREGATE_PKEY = UniqueKeys0.VARIABLE_AGGREGATE_PKEY;
 	public static final org.jooq.UniqueKey<org.jooq.Record> WORKSPACE_PKEY = UniqueKeys0.WORKSPACE_PKEY;
 
@@ -75,6 +74,7 @@ public class Keys {
 	public static final org.jooq.ForeignKey<org.jooq.Record, org.jooq.Record> AOI_HIERARCHY__AOI_HIERARCHY_WORKSPACE_FKEY = ForeignKeys0.AOI_HIERARCHY__AOI_HIERARCHY_WORKSPACE_FKEY;
 	public static final org.jooq.ForeignKey<org.jooq.Record, org.jooq.Record> AOI_LEVEL__AOI_LEVEL_HIERARCHY_FKEY = ForeignKeys0.AOI_LEVEL__AOI_LEVEL_HIERARCHY_FKEY;
 	public static final org.jooq.ForeignKey<org.jooq.Record, org.jooq.Record> CALCULATION_STEP__CALCULATION_STEP_PROCESSING_CHAIN_FKEY = ForeignKeys0.CALCULATION_STEP__CALCULATION_STEP_PROCESSING_CHAIN_FKEY;
+	public static final org.jooq.ForeignKey<org.jooq.Record, org.jooq.Record> CALCULATION_STEP__CALCULATION_STEP_VARIABLE_FKEY = ForeignKeys0.CALCULATION_STEP__CALCULATION_STEP_VARIABLE_FKEY;
 	public static final org.jooq.ForeignKey<org.jooq.Record, org.jooq.Record> CATEGORY__CATEGORY_VARIABLE_FKEY = ForeignKeys0.CATEGORY__CATEGORY_VARIABLE_FKEY;
 	public static final org.jooq.ForeignKey<org.jooq.Record, org.jooq.Record> CATEGORY_CATEGORY_GROUP__CATEGORY_GROUP_FKEY = ForeignKeys0.CATEGORY_CATEGORY_GROUP__CATEGORY_GROUP_FKEY;
 	public static final org.jooq.ForeignKey<org.jooq.Record, org.jooq.Record> CATEGORY_CATEGORY_GROUP__GROUP_CATEGORY_FKEY = ForeignKeys0.CATEGORY_CATEGORY_GROUP__GROUP_CATEGORY_FKEY;
@@ -141,7 +141,6 @@ public class Keys {
 		public static final org.jooq.UniqueKey<org.jooq.Record> STRATUM_PKEY = createUniqueKey(org.openforis.calc.persistence.jooq.tables.StratumTable.STRATUM, org.openforis.calc.persistence.jooq.tables.StratumTable.STRATUM.ID);
 		public static final org.jooq.UniqueKey<org.jooq.Record> STRATUM_STRATUM_NO_WORKSPACE_ID_KEY = createUniqueKey(org.openforis.calc.persistence.jooq.tables.StratumTable.STRATUM, org.openforis.calc.persistence.jooq.tables.StratumTable.STRATUM.STRATUM_NO, org.openforis.calc.persistence.jooq.tables.StratumTable.STRATUM.WORKSPACE_ID);
 		public static final org.jooq.UniqueKey<org.jooq.Record> VARIABLE_PKEY = createUniqueKey(org.openforis.calc.persistence.jooq.tables.VariableTable.VARIABLE, org.openforis.calc.persistence.jooq.tables.VariableTable.VARIABLE.ID);
-		public static final org.jooq.UniqueKey<org.jooq.Record> VARIABLE_NAME_KEY = createUniqueKey(org.openforis.calc.persistence.jooq.tables.VariableTable.VARIABLE, org.openforis.calc.persistence.jooq.tables.VariableTable.VARIABLE.ENTITY_ID, org.openforis.calc.persistence.jooq.tables.VariableTable.VARIABLE.NAME);
 		public static final org.jooq.UniqueKey<org.jooq.Record> VARIABLE_AGGREGATE_PKEY = createUniqueKey(org.openforis.calc.persistence.jooq.tables.VariableAggregateTable.VARIABLE_AGGREGATE, org.openforis.calc.persistence.jooq.tables.VariableAggregateTable.VARIABLE_AGGREGATE.ID);
 		public static final org.jooq.UniqueKey<org.jooq.Record> WORKSPACE_PKEY = createUniqueKey(org.openforis.calc.persistence.jooq.tables.WorkspaceTable.WORKSPACE, org.openforis.calc.persistence.jooq.tables.WorkspaceTable.WORKSPACE.ID);
 	}
@@ -152,6 +151,7 @@ public class Keys {
 		public static final org.jooq.ForeignKey<org.jooq.Record, org.jooq.Record> AOI_HIERARCHY__AOI_HIERARCHY_WORKSPACE_FKEY = createForeignKey(org.openforis.calc.persistence.jooq.Keys.WORKSPACE_PKEY, org.openforis.calc.persistence.jooq.tables.AoiHierarchyTable.AOI_HIERARCHY, org.openforis.calc.persistence.jooq.tables.AoiHierarchyTable.AOI_HIERARCHY.WORKSPACE_ID);
 		public static final org.jooq.ForeignKey<org.jooq.Record, org.jooq.Record> AOI_LEVEL__AOI_LEVEL_HIERARCHY_FKEY = createForeignKey(org.openforis.calc.persistence.jooq.Keys.AOI_HIERARCHY_PKEY, org.openforis.calc.persistence.jooq.tables.AoiLevelTable.AOI_LEVEL, org.openforis.calc.persistence.jooq.tables.AoiLevelTable.AOI_LEVEL.AOI_HIERARCHY_ID);
 		public static final org.jooq.ForeignKey<org.jooq.Record, org.jooq.Record> CALCULATION_STEP__CALCULATION_STEP_PROCESSING_CHAIN_FKEY = createForeignKey(org.openforis.calc.persistence.jooq.Keys.PROCESSING_CHAIN_PKEY, org.openforis.calc.persistence.jooq.tables.CalculationStepTable.CALCULATION_STEP, org.openforis.calc.persistence.jooq.tables.CalculationStepTable.CALCULATION_STEP.CHAIN_ID);
+		public static final org.jooq.ForeignKey<org.jooq.Record, org.jooq.Record> CALCULATION_STEP__CALCULATION_STEP_VARIABLE_FKEY = createForeignKey(org.openforis.calc.persistence.jooq.Keys.VARIABLE_PKEY, org.openforis.calc.persistence.jooq.tables.CalculationStepTable.CALCULATION_STEP, org.openforis.calc.persistence.jooq.tables.CalculationStepTable.CALCULATION_STEP.OUTPUT_VARIABLE_ID);
 		public static final org.jooq.ForeignKey<org.jooq.Record, org.jooq.Record> CATEGORY__CATEGORY_VARIABLE_FKEY = createForeignKey(org.openforis.calc.persistence.jooq.Keys.VARIABLE_PKEY, org.openforis.calc.persistence.jooq.tables.CategoryTable.CATEGORY, org.openforis.calc.persistence.jooq.tables.CategoryTable.CATEGORY.VARIABLE_ID);
 		public static final org.jooq.ForeignKey<org.jooq.Record, org.jooq.Record> CATEGORY_CATEGORY_GROUP__CATEGORY_GROUP_FKEY = createForeignKey(org.openforis.calc.persistence.jooq.Keys.GROUP_PKEY, org.openforis.calc.persistence.jooq.tables.CategoryCategoryGroupTable.CATEGORY_CATEGORY_GROUP, org.openforis.calc.persistence.jooq.tables.CategoryCategoryGroupTable.CATEGORY_CATEGORY_GROUP.GROUP_ID);
 		public static final org.jooq.ForeignKey<org.jooq.Record, org.jooq.Record> CATEGORY_CATEGORY_GROUP__GROUP_CATEGORY_FKEY = createForeignKey(org.openforis.calc.persistence.jooq.Keys.CATEGORY_PKEY, org.openforis.calc.persistence.jooq.tables.CategoryCategoryGroupTable.CATEGORY_CATEGORY_GROUP, org.openforis.calc.persistence.jooq.tables.CategoryCategoryGroupTable.CATEGORY_CATEGORY_GROUP.CATEGORY_ID);

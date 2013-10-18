@@ -285,3 +285,13 @@ formula editor
 .buttons {
 	margin-top: 50px;
 }
+
+#messageContainer{
+	z-index : 100;
+	position : absolute;
+	font-size : small;
+	top : 15px;
+	left:0;
+	right:0;
+	text-align: center;
+}

@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class WorkspaceTable extends org.jooq.impl.TableImpl<org.jooq.Record> {
 
-	private static final long serialVersionUID = -213693539;
+	private static final long serialVersionUID = 168185337;
 
 	/**
 	 * The singleton instance of <code>calc.workspace</code>
@@ -60,6 +60,11 @@ public class WorkspaceTable extends org.jooq.impl.TableImpl<org.jooq.Record> {
 	 * The column <code>calc.workspace.description</code>. 
 	 */
 	public final org.jooq.TableField<org.jooq.Record, java.lang.String> DESCRIPTION = createField("description", org.jooq.impl.SQLDataType.VARCHAR.length(1024), this);
+
+	/**
+	 * The column <code>calc.workspace.active</code>. 
+	 */
+	public final org.jooq.TableField<org.jooq.Record, java.lang.Boolean> ACTIVE = createField("active", org.jooq.impl.SQLDataType.BOOLEAN, this);
 
 	/**
 	 * Create a <code>calc.workspace</code> table reference
