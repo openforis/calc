@@ -189,54 +189,35 @@ $(function(){
 		    beforeSubmit: function() {
 		    	// ???
 		        $(this).addClass('loading');
+		        CalcForm.disableForm( $stepForm );
 		    },
 		    success: function ( response ) {
 		    	CalcForm.updateErrors($stepForm, response.errors);
-		    	if(status.status!="ERROR") {
+		    	if(response.status!="ERROR") {
+		    		CalcForm.showResultMessage("Success, the data was processed correctly",true);
+		    	
 		    		$step = response.fields.calculationStep;
 		    		updateCalculationStepUi($step);
 		    		
 			    	if(succesCallback){
 			    		callback(response)
 		    		};
-		    	}
+		    		
+		    	} else{
+	    			CalcForm.showResultMessage("Error, invalid data",false);
+	    		}
+	    		CalcForm.enableForm( $stepForm );
 		    },
 		    error: function (e) {
 		    	alert('Error submitting form');
+		    	CalcForm.enableForm( $stepForm );
 		    }
 		});	
 		
 		$stepForm.submit();
 	}
 	//on save form submit
-<<<<<<< HEAD
-	$stepForm.ajaxForm( {
-	    dataType : 'json',
-	    beforeSubmit: function() {
-	        $(this).addClass('loading');
-	        CalcForm.disableForm( $stepForm );
-	    },
-	    
-	    success: function ( response ) {
-// 	    	console.log(response);
-	    	CalcForm.updateErrors($stepForm, response.errors);
-	    	if( response.errors.length == 0 ){
-	    		CalcForm.showResultMessage("Success, the data was processed correctly",true);
-	    	}else{
-	    		CalcForm.showResultMessage("Error, invalid data",false);
-	    	}
-	    	
-	    	CalcForm.enableForm( $stepForm );
-	    },
-	    error: function (e) {
-	    	CalcForm.showResultMessage("Error submitting the form",false );
-	    	CalcForm.enableForm( $stepForm );
-	    }
-	});
-=======
-	
->>>>>>> branch 'dev' of https://github.com/openforis/calc.git
-	
+
 	// on submit button click 
 	$stepForm.find("button[type='submit']").click(function(event){
 		event.preventDefault();
