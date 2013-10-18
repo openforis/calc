@@ -4,6 +4,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.EntityDao;
+import org.openforis.calc.metadata.QuantitativeVariable;
+import org.openforis.calc.metadata.Variable;
+import org.openforis.calc.metadata.Variable.Scale;
+import org.openforis.calc.metadata.VariableDao;
+import org.openforis.calc.schema.InputSchemaDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,8 +25,17 @@ import org.springframework.transaction.annotation.Transactional;
 public class WorkspaceService {
 
 	@Autowired
-	private WorkspaceDao dao;
+	private WorkspaceDao workspaceDao;
+	
+	@Autowired
+	private EntityDao entityDao;
 
+	@Autowired
+	private VariableDao variableDao;
+	
+	@Autowired
+	private InputSchemaDao inputSchemaDao;
+	
 	@Autowired
 	private ProcessingChainService processingChainService;
 
@@ -31,27 +47,27 @@ public class WorkspaceService {
 
 	@Transactional
 	public Workspace get(int workspaceId) {
-		return dao.find(workspaceId);
+		return workspaceDao.find(workspaceId);
 	}
 
 	@Transactional
 	public Workspace fetchByName(String name) {
-		return dao.fetchByName(name);
+		return workspaceDao.fetchByName(name);
 	}
 
 	@Transactional
 	public Workspace fetchCollectSurveyUri(String uri) {
-		return dao.fetchByCollectSurveyUri(uri);
+		return workspaceDao.fetchByCollectSurveyUri(uri);
 	}
 
 	@Transactional
 	public Workspace save(Workspace workspace) {
-		return dao.save(workspace);
+		return workspaceDao.save(workspace);
 	}
 
 	@Transactional
 	public List<Workspace> loadAll() {
-		return dao.loadAll();
+		return workspaceDao.loadAll();
 	}
 
 	/**
@@ -60,7 +76,7 @@ public class WorkspaceService {
 	 * @return
 	 */
 	public Workspace getActiveWorkspace() {
-		Workspace workspace = dao.fetchActive();
+		Workspace workspace = workspaceDao.fetchActive();
 		return workspace;
 	}
 
@@ -86,7 +102,7 @@ public class WorkspaceService {
 	}
 
 	public Workspace createAndActivate(String name, String uri, String schema) {
-		dao.deactivateAll();
+		workspaceDao.deactivateAll();
 
 		Workspace ws = new Workspace();
 		ws.setActive(true);
@@ -94,16 +110,45 @@ public class WorkspaceService {
 		ws.setInputSchema(schema);
 		ws.setName(name);
 		ws.setCaption(name);
-		dao.save(ws);
+		workspaceDao.save(ws);
 
 		processingChainService.createDefaultProcessingChain(ws);
 
 		return ws;
 	}
+	
+	@Transactional
+	public QuantitativeVariable addNewQuantitativeVariable(Entity entity, String name) {
+		QuantitativeVariable variable = new QuantitativeVariable();
+		variable.setName(name);
+		variable.setInputValueColumn(name);
+		variable.setOutputValueColumn(name);
+		variable.setScale(Scale.RATIO);
+		
+		entity.addVariable(variable);
+
+		variableDao.save(variable);
+		inputSchemaDao.addUserDefinedVariableColumn(variable);
+		inputSchemaDao.createView(entity);
+		
+		return variable;
+	}
+
+	public void addUserDefinedVariableColumns(Workspace ws) {
+		for (Variable<?> v : ws.getUserDefinedVariables()) {
+			if ( v instanceof QuantitativeVariable ) {
+				inputSchemaDao.addUserDefinedVariableColumn((QuantitativeVariable) v);
+			}
+		}
+	}
 
 	public void activate(Workspace ws) {
-		dao.deactivateAll();
+		workspaceDao.deactivateAll();
 		ws.setActive(true);
-		dao.save(ws);
+		workspaceDao.save(ws);
+	}
+	
+	public void createViews(Workspace ws) {
+		inputSchemaDao.createViews(ws);
 	}
 }

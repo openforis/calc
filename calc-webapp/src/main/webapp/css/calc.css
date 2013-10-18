@@ -221,11 +221,11 @@ formula editor
 	height: 80%;
 }
 
-#job-status .modal-title {
-	text-align: center;
+.section-home, .page-section .modal, .modal label {
+	color: #2c3e50;
 }
 
-#job-status .modal-footer {
+.modal-title, .modal-footer {
 	text-align: center;
 }
 	

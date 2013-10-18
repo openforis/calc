@@ -1,9 +1,14 @@
 package org.openforis.calc.web.controller;
 
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import javax.validation.Valid;
 
 import org.openforis.calc.common.NamedUserObject;
 import org.openforis.calc.engine.CollectTaskService;
@@ -13,6 +18,7 @@ import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.Variable;
+import org.openforis.calc.web.form.VariableForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,12 +38,13 @@ public class WorkspaceController {
 
 	@Autowired
 	private WorkspaceService workspaceService;
-
+		
 	@Autowired
 	private TaskManager taskManager;
 
 	@Autowired
 	private CollectTaskService collectTaskManager;
+
 
 	@RequestMapping(value = "/job.json", method = RequestMethod.GET, produces = "application/json")
 	public @ResponseBody
@@ -70,6 +77,17 @@ public class WorkspaceController {
 		return variables;
 	}
 
+	@RequestMapping(value = "/variable/save.json", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	List<Variable<?>> saveVariable(@Valid VariableForm form) {
+		Workspace ws = workspaceService.getActiveWorkspace();
+		Entity entity = ws.getEntityById(form.getEntityId());
+		
+		workspaceService.addNewQuantitativeVariable(entity, form.getName());
+		
+		return entity.getVariables();
+	}
+	
 	private void sortByName(List<? extends NamedUserObject> objects) {
 		Collections.sort(objects, new Comparator<NamedUserObject>() {
 			@Override

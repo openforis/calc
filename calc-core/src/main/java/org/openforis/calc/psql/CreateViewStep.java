@@ -1,6 +1,7 @@
 package org.openforis.calc.psql;
 
 import org.jooq.Select;
+import org.jooq.Table;
 
 
 /**
@@ -10,12 +11,10 @@ import org.jooq.Select;
  */
 public class CreateViewStep extends PsqlPart {
 
-	CreateViewStep(Psql psql, String schemaName, String name) {
+	CreateViewStep(Psql psql, Table<?> view) {
 		super(psql);
 		append("create view ");
-		append(schemaName);
-		append(".");
-		append(name);
+		append(view);
 	}
 
 	public AsStep as(Select<?> select) {

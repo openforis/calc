@@ -76,8 +76,8 @@ public final class Psql extends DefaultDSLContext {
 		return new CreateTableStep(this, table);
 	}
 
-	public CreateViewStep createView(String schemaName, String name) {
-		return new CreateViewStep(this, schemaName, name);
+	public CreateViewStep createView(Table<?> table) {
+		return new CreateViewStep(this, table);
 	}
 
 	public Select<?> selectStarFrom(Table<?> table) {		
@@ -108,6 +108,10 @@ public final class Psql extends DefaultDSLContext {
 
 	public DropTableStep dropTableIfExists(Table<?> table) {
 		return new DropTableStep(this, true, table);
+	}
+
+	public DropViewStep dropViewIfExists(Table<?> table) {
+		return new DropViewStep(this, true, table);
 	}
 
 	public CaseStep decode() {
