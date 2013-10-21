@@ -101,15 +101,27 @@
 
 		
 	</div>
+	
+	<!-- Execution and results  -->
 	<div class="row" id="calculation-step-exec-container" style="position: fixed; width: 100%; height: 100%; overflow: auto;">
-			<div class="col-md-2">
-			</div>
-			<div class="col-md-8">
-				ciaao!
-			</div>
-			<div class="col-md-2">
+		<div class="col-md-2">
+		</div>
+		<div class="col-md-8">
+			<div class="row step-progress" style="padding-top: 20px">
+<!-- 			   		<div class="col-md-1 number"></div> -->
+<!-- 			   		<div class="col-md-2 name"></div> -->
+		   		<div class="col-md-10">
+		   			<div class="progress"> 
+						<div class="progress-bar"></div>
+					</div>
+		   		</div> 
+		   		<div class="col-md-2 percent">
+		   		</div>
 			</div>
 		</div>
+		<div class="col-md-2">
+		</div>
+	</div>
 	
 	<!-- New variable popup -->
 	<div class="modal fade" id="new-variable-modal">
@@ -154,9 +166,12 @@ $(function(){
 // 	$calculationStepExecContainer.css({left:$(document).width()})
 // 	$inputVars.hide();
 	$inputVar.hide();
-	
+
 	$newVariableModal = $('#new-variable-modal');
 	$newVariableForm = $newVariableModal.find('form');
+
+	//div where the progress bar is stored
+	$stepProgress = $(".step-progress"); 
 	
 	//load entities into select
 	loadEntities = function(callback) {
@@ -235,9 +250,8 @@ $(function(){
 		    		
 		    		$calculationStep = response.fields.calculationStep;
 		    		updateCalculationStepUi($calculationStep);
-		    		console.log($calculationStep);
-		    		console.log(response);
-			    	if(succesCallback){
+			    	
+		    		if(succesCallback) {
 			    		succesCallback(response)
 		    		};
 		    	}
@@ -348,40 +362,6 @@ $(function(){
 		loadVariables();
 	});
 
-	//on run calcuclation button click	
-	$stepForm.find("button[name='run-calculcation-step']").click(function(event){
-		event.preventDefault();
-		//first save the step and then it runs
-		saveStep(
-			function(response){
-				//after saving it, it get started
-				stepId = $calculationStep.id;
-				$.ajax({
-					url:"rest/calculationstep/"+stepId+"/run.json",
-					dataType:"json"
-				})
-				.done(function(response){
-					$job = response;
-					console.log($job);
-					$calculationStepEditContainer.fadeOut(400);
-					$calculationStepExecContainer.fadeIn(400);
-				});
-				
-				
-			}		
-		);
-		
-		// animation disabled for now
-// 		$calculationStepEditContainer
-//  			.animate({left: parseInt($calculationStepEditContainer.css('left'),10) == 0 ? -$calculationStepEditContainer.outerWidth() : 0 });
-// 			;
-// 		$calculationStepExecContainer
-// 			.show(400)
-// 			.animate({left:0}, 400)
-// 			;
-		
-	});
-	
 	//load calculation step with given stepId
 	loadCalculationStep = function(stepId) {
 		$.ajax({
@@ -415,6 +395,107 @@ $(function(){
 			}		
 		);
 	};
+	
+	/*** 
+	* ================= 
+	* Run Calculation
+	* =================
+	*/
+	
+	//on run calcuclation button click	
+	$stepForm.find("button[name='run-calculcation-step']").click(function(event){
+		event.preventDefault();
+		//first save the step and then it runs
+		saveStep(
+			function(response){
+				//after saving it, it get started
+				stepId = $calculationStep.id;
+				$.ajax({
+					url:"rest/calculationstep/"+stepId+"/run.json",
+					dataType:"json"
+				})
+				.done(function(response){
+					$job = response;
+					
+					updateCalculationStepStatus($job);
+					$calculationStepEditContainer.fadeOut(400);
+					$calculationStepExecContainer.fadeIn(400);
+				});
+				
+			}		
+		);
+		
+		// animation disabled for now
+// 		$calculationStepEditContainer
+//  			.animate({left: parseInt($calculationStepEditContainer.css('left'),10) == 0 ? -$calculationStepEditContainer.outerWidth() : 0 });
+// 			;
+// 		$calculationStepExecContainer
+// 			.show(400)
+// 			.animate({left:0}, 400)
+// 			;
+		
+	});
+	
+	updateCalculationStepStatus = function($job) {
+		console.log($job);
+		$task = $job.tasks[0];
+// 		$.each($tasks, function(i, $task) {
+			
+// 			$status = $stepProgress .find("#"+$task.id);
+			
+			$progressBar = $stepProgress.find(".progress-bar");		
+			$progressBar.removeClass();
+			$progressBar.addClass("progress-bar");
+			$progressBar.parent().removeClass();
+			$progressBar.parent().addClass("progress");
+			
+			totalItems = $task.totalItems;
+			itemsProcessed = $task.itemsProcessed;
+			percent = (totalItems > 0 ) ?  parseInt(itemsProcessed / totalItems * 100) : -1 ;
+			
+			switch( $task.status ) {
+			case "RUNNING": 
+				$progressBar.addClass("progress-bar-info");
+				if( percent >= 0 ) { 
+					$progressBar.width(percent+"%");
+				} else {
+					$progressBar.parent().addClass("active progress-striped");
+					$progressBar.width("100%");
+				}
+				htmlPercent = (percent >= 0) ? percent + " %" : " -% ";
+				$stepProgress.find(".percent").text(htmlPercent);
+				break;
+			case "COMPLETED": 
+				$progressBar.addClass("progress-bar-success");
+				$progressBar.width("100%");
+				$stepProgress.find(".percent").text("100%");
+				break;
+			default: // nothing for now;
+			}
+			
+			//$modalBody.append($status);
+			
+// 		});
+
+		if( $job.status == "RUNNING" ){
+			setTimeout(function(){
+				stepId = $calculationStep.id;
+				$.ajax({
+					url:"rest/calculationstep/"+stepId+"/job.json",
+					dataType:"json"
+				})
+				.done(function(response){
+					$job = response;
+					updateCalculationStepStatus($job);
+				});
+			}, 500);
+		} 
+// 		else {
+// 			$jobStatus.find(".modal-footer").removeClass("hide");
+// 		}
+		
+	};
+	
 	// on load
 	init();
 	
