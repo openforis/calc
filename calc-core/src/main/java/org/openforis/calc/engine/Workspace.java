@@ -60,7 +60,7 @@ public class Workspace extends UserObject {
 	@Cascade(CascadeType.ALL)
 	private List<Entity> entities;
 
-	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER, cascade = javax.persistence.CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER)
 	@OrderBy("name")
 	@Fetch(FetchMode.SUBSELECT)
 	@Cascade(CascadeType.ALL)
@@ -253,4 +253,17 @@ public class Workspace extends UserObject {
 		return result;
 	}
 	
+	public Variable<?> getVariableByName(String name) {
+		List<Entity> entities = getEntities();
+		for (Entity entity : entities) {
+			Variable<?> v = entity.getVariable(name);
+			if ( v != null ) {
+				return v;
+			}
+		}
+		return null;
+	}
+	
+
+
 }
