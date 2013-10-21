@@ -50,9 +50,12 @@ var CalcForm = {
 		var fieldLabel = CalcForm.getFieldLabel($field);
 		var message = fieldLabel + " " + error.defaultMessage;
 		
+		var $parentModal = $field.closest('.modal');
+		var container = $parentModal.length == 0 ? 'body': $parentModal; 
+		
 		$field.tooltip({
 			title: message,
-			container: 'body',
+			container: container,
 			template: '<div class="tooltip error"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'
 		});
 	},
