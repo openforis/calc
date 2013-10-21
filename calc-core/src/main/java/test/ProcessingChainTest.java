@@ -127,7 +127,7 @@ extends AbstractTransactionalJUnit4SpringContextTests {
 			//wait
 		}
 		System.out.println(task.getItemsProcessed());
-		List<DataRecord> results = task.getAndResetResults();
+		List<DataRecord> results = task.getBufferedResults();
 		System.out.println(results.size());
 	}
 }

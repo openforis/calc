@@ -12,6 +12,7 @@ import org.openforis.calc.chain.CalculationStepDao;
 import org.openforis.calc.chain.InvalidProcessingChainException;
 import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.engine.Job;
+import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceLockedException;
@@ -42,26 +43,26 @@ public class CalculationStepController {
 
 	@Autowired
 	private WorkspaceService workspaceService;
-	
+
 	@Autowired
 	private VariableDao variableDao;
-	
+
 	@Autowired
 	private CalculationStepDao calculationStepDao;
-	
+
 	@Autowired
 	private TaskManager taskManager;
-	
+
 	@RequestMapping(value = "/save.json", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	Response save(@Valid CalculationStepForm form, BindingResult result) {
 		Response response = validate(form, result);
-		if ( ! response.hasErrors() ) {
+		if (!response.hasErrors()) {
 			Workspace ws = workspaceService.getActiveWorkspace();
 			ProcessingChain chain = ws.getDefaultProcessingChain();
 			CalculationStep step;
 			Integer stepId = form.getId();
-			if ( stepId == null ) {
+			if (stepId == null) {
 				step = new CalculationStep();
 				step.setStepNo(chain.getNextStepNo());
 			} else {
@@ -75,13 +76,13 @@ public class CalculationStepController {
 			step.setCaption(form.getCaption());
 			step.setScript(form.getScript());
 			chain.addCalculationStep(step);
-			
+
 			step = calculationStepDao.save(step);
 			response.addField("calculationStep", step);
 		}
 		return response;
 	}
-	
+
 	@RequestMapping(value = "/validate.json", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	Response validate(@Valid CalculationStepForm form, BindingResult result) {
@@ -94,28 +95,70 @@ public class CalculationStepController {
 	List<CalculationStep> loadAll() {
 		return calculationStepDao.loadAll("id");
 	}
-	
+
 	@RequestMapping(value = "/{stepId}/load.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	CalculationStep load(@PathVariable int stepId) {
 		return calculationStepDao.find(stepId);
 	}
-	
+
 	@RequestMapping(value = "/{stepId}/run.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	Job runJob(@PathVariable int stepId) throws InvalidProcessingChainException, WorkspaceLockedException {
 		Workspace workspace = workspaceService.getActiveWorkspace();
-		
+
 		CalculationStep step = calculationStepDao.find(stepId);
 		CustomRTask task = (CustomRTask) taskManager.createCalculationStepTask(step);
-//		task.setMaxItems(18000);
-		
+		// task.setMaxItems(18000);
+
 		Job job = taskManager.createJob(workspace);
 		job.addTask(task);
-		
+
 		taskManager.startJob(job);
-		
+
 		return job;
 	}
-	
+
+	/**
+	 * Returns the job associated with the stepId if present for the current
+	 * workspace
+	 * 
+	 * @param stepId
+	 * @return
+	 * @throws InvalidProcessingChainException
+	 * @throws WorkspaceLockedException
+	 */
+	@RequestMapping(value = "/{stepId}/job.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	Job getJob(@PathVariable int stepId) throws InvalidProcessingChainException, WorkspaceLockedException {
+		Workspace workspace = workspaceService.getActiveWorkspace();
+		Job job = taskManager.getJob(workspace.getId());
+		
+		if (job != null) {
+			List<Task> tasks = job.tasks();
+			if (tasks != null && tasks.size() == 1) {
+				Task t = tasks.get(0);
+				if (t instanceof CustomRTask) {
+					if (((CustomRTask) t).getCalculationStep().getId().equals(stepId)) {
+						return job;
+					}
+				}
+			}
+		}
+		
+		return null;
+
+		// CalculationStep step = calculationStepDao.find(stepId);
+		// CustomRTask task = (CustomRTask)
+		// taskManager.createCalculationStepTask(step);
+		// // task.setMaxItems(18000);
+		//
+		// Job job = taskManager.createJob(workspace);
+		// job.addTask(task);
+		//
+		// taskManager.startJob(job);
+		//
+		// return job;
+	}
+
 }
