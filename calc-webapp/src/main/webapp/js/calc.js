@@ -11,6 +11,10 @@ home = "home.html";
 $footer = $("#footer");
 $footerHomeLinks = $("#footer .links");
 $backHomeButton = $("#footer button.back");
+/**
+ * main html container
+ */
+$container = $("#container");
 
 //current working section
 $section  = null;
@@ -117,41 +121,25 @@ updateJobStatus = function($job) {
 	
 };
 
-//loadPage = function(page) {
-//	$page.hide();
-//	$page.empty();
-//	
-//	$.ajax({
-//		  url: page,
-//		  dataType: "html"
-//	})
-//	.done(function(response) {
-//		if(page == home) {
-//			$nav.hide();
-//		} else {
-//			$nav.fadeIn(500);
-//		}
-//		$page.html(response);
-//		$page.fadeIn(500);
-//		
-//	});
-//	
-//}; 
-
 
 $(document).ready(function() {
 	
 	positionFooter = function() {
-		$footer.animate({top:$(window).height()-200 }, 300);
+		$footer.animate({top:$(window).height()- $footer.height() }, 300);
+	};
+	
+	resizeContainer = function() {
+		containerHeight = $(document).height() - $footer.height();
+		$("#container").css({"height":containerHeight+"px"});
 	};
 	
 	$footer.find(".links button").click(function(event){
 		event.preventDefault();
 		target = $(this).attr("href");
-		
+
 		$('html, body').stop().animate({
 	        scrollTop: $(target).offset().top
-	    }, 1200,'easeInOutExpo');
+	    }, 800);
 	});
 	
 	// event handler for home button click
@@ -233,9 +221,10 @@ $(document).ready(function() {
 		}, 800);
 	});
 	
-	// on resize windows reposition footer
+	// on resize window
 	$( window ).resize(function() {
 		positionFooter();
+		resizeContainer();
 	});
 	
 	// load calculation step into main page
@@ -269,6 +258,8 @@ $(document).ready(function() {
 		checkJobStatus();
 		//on load, the footer buttons is positioned to the bottom of the page
 		positionFooter();
+		
+		resizeContainer();
 	};
 	
 	init();

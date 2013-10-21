@@ -3,6 +3,7 @@
  */
 package org.openforis.calc.schema;
 
+import static org.jooq.impl.SQLDataType.BIGINT;
 import static org.jooq.impl.SQLDataType.BOOLEAN;
 import static org.jooq.impl.SQLDataType.INTEGER;
 import static org.jooq.impl.SQLDataType.VARCHAR;
@@ -58,12 +59,12 @@ public abstract class DataTable extends AbstractTable {
 	private Map<VariableAggregate, Field<BigDecimal>> variableAggregateFields;
 	private Map<TextVariable, Field<String>> textFields;
 	
-	private TableField<Record, Integer> idField;
+	private TableField<Record, Long> idField;
 	private Field<GeodeticCoordinate> locationField;
 	private Field<BigDecimal> xField;
 	private Field<BigDecimal> yField;
 	private Field<String> srsIdField;
-	private Field<Integer> parentIdField;
+	private Field<Long> parentIdField;
 	
 	protected DataTable(Entity entity, String name, Schema schema) {
 		super(name, schema);
@@ -77,7 +78,7 @@ public abstract class DataTable extends AbstractTable {
 
 	@SuppressWarnings("unchecked")
 	protected void createPrimaryKeyField() {
-		this.idField = createField(entity.getIdColumn(), INTEGER, this);
+		this.idField = createField(entity.getIdColumn(), BIGINT, this);
 		this.primaryKey = KeyFactory.newUniqueKey(this, idField);
 	}
 
@@ -149,7 +150,7 @@ public abstract class DataTable extends AbstractTable {
 		}
 	}
 
-	public TableField<Record, Integer> getIdField() {
+	public TableField<Record, Long> getIdField() {
 		return idField;
 	}
 
@@ -234,7 +235,7 @@ public abstract class DataTable extends AbstractTable {
 				throw new NullPointerException("parent_id_column not defined for entity "+entity);
 			}
 		} else {
-			this.parentIdField = createField(parentIdColumn, INTEGER, this);
+			this.parentIdField = createField(parentIdColumn, BIGINT, this);
 		}
 	}
 	
@@ -252,7 +253,7 @@ public abstract class DataTable extends AbstractTable {
 		}
 	}
 
-	public Field<Integer> getParentIdField() {
+	public Field<Long> getParentIdField() {
 		return parentIdField;
 	}
 

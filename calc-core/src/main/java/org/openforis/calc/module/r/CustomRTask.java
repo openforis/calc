@@ -5,13 +5,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
-import java.util.concurrent.SynchronousQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.collections.Buffer;
-import org.apache.commons.collections.BufferUtils;
-import org.apache.commons.collections.buffer.CircularFifoBuffer;
 import org.jooq.Field;
 import org.jooq.Query;
 import org.jooq.Record;
@@ -27,7 +23,6 @@ import org.openforis.calc.r.REnvironment;
 import org.openforis.calc.r.RException;
 import org.openforis.calc.schema.DataTable;
 import org.openforis.calc.schema.EntityDataView;
-import org.openforis.commons.collection.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,12 +36,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 public final class CustomRTask extends CalculationStepTask {
 
-	private static final String ID = "id";
 	private static final String VARIABLE_PLACEMARK = "\\$(.+?)\\$";
-	
-	private  List<DataRecord> results;
-	private SynchronousQueue<DataRecord> resultsQueue;
-	Buffer buffer ; 
+
+	@JsonIgnore
+	private List<DataRecord> results;
+
 	@JsonIgnore
 	@Autowired
 	private R r;
@@ -55,64 +49,55 @@ public final class CustomRTask extends CalculationStepTask {
 	private long maxItems;
 	@JsonIgnore
 	private int limit;
-	
-	/**
-	 * semaphore used to avoid not synchronized access to the results;
-	 */
-	private Object _results_semaphore;
-	
+
 	public CustomRTask() {
 		limit = 5000;
 		maxItems = -1;
-		_results_semaphore = new Object();
 	}
-	
+
 	@Override
 	@Transactional
-	synchronized
-	protected void execute() throws RException, InterruptedException {
+	synchronized protected void execute() throws RException, InterruptedException {
 		REnvironment rEnvironment = r.newEnvironment();
 		Set<String> variables = extractVariables();
-		
-		//for output
+
+		// for output
 		results = new Vector<DataRecord>();
-//		resultsQueue = new SynchronousQueue<DataRecord>(true);
-		buffer = BufferUtils.synchronizedBuffer(new CircularFifoBuffer());
-		
+
 		// reset output variable
 		resetOutputValue();
-		
-		//prepare the select statement
+
+		// prepare the select statement
 		SelectQuery<Record> selectQuery = getSelectStatement(variables);
-		
-		long iterations = Math.round( Math.ceil(getTotalItems() / (double)limit) );
-		
+
+		long iterations = Math.round(Math.ceil(getTotalItems() / (double) limit));
+
 		List<Query> updates = new ArrayList<Query>();
 		for (int i = 0; i < iterations; i++) {
-			//select records for the current iteration
+			// select records for the current iteration
 			int offset = limit * i;
-			int numberOfRows =  (int) ((getItemsRemaining() < (offset + limit) ) ? getItemsRemaining() : limit);
-			
-			selectQuery.addLimit(offset, numberOfRows);
-			Result<Record> records = selectQuery.fetch();
+			int numberOfRows = (int) ((getItemsRemaining() < (offset + limit)) ? getItemsRemaining() : limit);
 
+			selectQuery.addLimit(offset, numberOfRows);
+			System.out.println(selectQuery.toString());
+			Result<Record> records = selectQuery.fetch();
 			// execute the script for each record
 			for (Record record : records) {
 				Query update = executeScript(rEnvironment, variables, record);
 				updates.add(update);
 			}
-			
-			//execute the sql updates in batch
-			psql()
-				.batch(updates)
-				.execute();
-			//clear batch queries
+
+			// execute the sql updates in batch
+			psql().batch(updates).execute();
+			// clear batch queries
 			updates.clear();
 		}
 	}
 
 	/**
-	 * Execute the R script,  and returns the update statement for the current record
+	 * Execute the R script, and returns the update statement for the current
+	 * record
+	 * 
 	 * @param rEnvironment
 	 * @param variables
 	 * @param table
@@ -121,45 +106,39 @@ public final class CustomRTask extends CalculationStepTask {
 	 * @param record
 	 * @return
 	 * @throws RException
-	 * @throws InterruptedException 
+	 * @throws InterruptedException
 	 */
 	private Query executeScript(REnvironment rEnvironment, Set<String> variables, Record record) throws RException, InterruptedException {
 		DataTable dataTable = getDataTable();
 		Variable<?> outputVariable = getOutputVariable();
 		Field<Double> outputField = getOutputField();
 		String script = getScript();
-		Integer id = record.getValue(ID, Integer.class);
-		
+		Long id = record.getValue(dataTable.getIdField().getName(), Long.class);
+
 		DataRecord dataRecord = new DataRecord(id);
-		 
-		for (String var : variables ) {
+
+		for (String var : variables) {
 			Object variableValue = record.getValue(var);
-			script = script.replaceAll("\\$"+var+"\\$", variableValue.toString());
+			script = script.replaceAll("\\$" + var + "\\$", variableValue.toString());
 			dataRecord.addField(var, variableValue);
 		}
-		
+
 		double result = rEnvironment.evalDouble(script);
 		dataRecord.addField(outputVariable.getName(), result);
-//		synchronized (_results_semaphore) {
-			results.add(dataRecord);
-			buffer.add(dataRecord);
-//		}
-//		resultsQueue.put(dataRecord);
-		
+
+		results.add(dataRecord);
+
 		incrementItemsProcessed();
-		
-		Query update = psql()
-						.update(dataTable)
-						.set(outputField, result)
-						.where( dataTable.getIdField().eq(id) );
+
+		Query update = psql().update(dataTable).set(outputField, result).where(dataTable.getIdField().eq(id));
 		return update;
 	}
 
 	private SelectQuery<Record> getSelectStatement(Set<String> variables) {
 		DataTable table = getDataView();
 		SelectQuery<Record> selectQuery = psql().selectQuery();
-		selectQuery.addSelect(table.getIdField().as(ID));
-		
+		selectQuery.addSelect(table.getIdField());
+
 		for (String var : variables) {
 			selectQuery.addSelect(table.field(var));
 		}
@@ -171,24 +150,19 @@ public final class CustomRTask extends CalculationStepTask {
 	private void resetOutputValue() {
 		DataTable table = getDataTable();
 		Field<Double> outputField = getOutputField();
-		
-		Query resetOutput = psql()
-				.update(table)
-				.set(outputField, DSL.val(null, Double.class));
-		
+
+		Query resetOutput = psql().update(table).set(outputField, DSL.val(null, Double.class));
+
 		resetOutput.execute();
 	}
-	
+
 	@Override
 	protected long countTotalItems() {
-		if( maxItems <= 0 ) {
+		if (maxItems <= 0) {
 			DataTable table = getDataView();
-			
-			maxItems = psql()
-							.selectCount()
-							.from(table)
-							.fetchOne(0, Long.class);
-			
+
+			maxItems = psql().selectCount().from(table).fetchOne(0, Long.class);
+
 		}
 		return maxItems;
 	}
@@ -197,9 +171,9 @@ public final class CustomRTask extends CalculationStepTask {
 	private Field<Double> getOutputField() {
 		DataTable table = getDataView();
 		Variable<?> outputVariable = getOutputVariable();
-		return (Field<Double>) table.field(outputVariable .getName());
+		return (Field<Double>) table.field(outputVariable.getName());
 	}
-	
+
 	private Variable<?> getOutputVariable() {
 		return getCalculationStep().getOutputVariable();
 	}
@@ -220,84 +194,65 @@ public final class CustomRTask extends CalculationStepTask {
 		Entity entity = getOutputVariable().getEntity();
 		return entity;
 	}
-	
+
 	private String getScript() {
 		return getCalculationStep().getScript();
 	}
-	
+
 	private Set<String> extractVariables() {
 		Set<String> variables = new HashSet<String>();
 		Pattern p = Pattern.compile(VARIABLE_PLACEMARK);
 		Matcher m = p.matcher(getScript());
-		while(m.find()) {
+		while (m.find()) {
 			String variable = m.group(1);
 			variables.add(variable);
 		}
 		return variables;
 	}
-	
+
 	// not used for now
-	synchronized
-	protected void executeExternalScript() throws RException {
+	synchronized protected void executeExternalScript() throws RException {
 		REnvironment env = r.newEnvironment();
 		String script = getCalculationStep().getScript();
-		log().debug("Custom R: "+script);
+		log().debug("Custom R: " + script);
 		env.eval(script);
 	}
-	
+
 	public long getMaxItems() {
 		return maxItems;
 	}
-	
+
 	public void setMaxItems(long max) {
 		this.maxItems = max;
 	}
-
-//	public List<DataRecord> getResults() {
-//		buffer.
-//		resultsQueue.;
-//	}
 	
 	@JsonIgnore
-	int cnt = 0;
+	public DataRecord getNextResult() {
+		synchronized (results) {
+			if (results.isEmpty()) {
+				return null;
+			}
+			DataRecord record = results.get(0);
+			results.remove(0);
+			return record;
+		}
+	}
 	
+	//TODO remove ? old buffered results
+	@JsonIgnore
 	List<DataRecord> bufferResults = null;
-	
 	public List<DataRecord> getBufferedResults() {
 		return bufferResults;
 	}
-	
-//	@JsonIgnore
+	// @JsonIgnore
 	public void prepareBufferedResults() {
-//		List<DataRecord> buffResults = 	new ArrayList<DataRecord>();
-//		for(int i=0;i<2345;i++){
-//			DataRecord e = new DataRecord(i);
-//			e.addField("aaaa", i);
-//			buffResults.add(e );
-//		}
-//		return buffResults;
-		if(results!=null){
+		if (results != null) {
 			synchronized (results) {
 				bufferResults = new ArrayList<DataRecord>(results);
 				results.clear();
-				int s = bufferResults.size();
-				cnt += s;
-				System.out.println("========================= " + cnt) ;
-//				return buffResults;
-			
+
+			}
 		}
-		}
-//		return null;
-//		if( buffer != null ) {
-////			synchronized (_results_semaphore) {
-//				while(!buffer.isEmpty()){
-//					DataRecord object = (DataRecord) buffer.remove();
-//					buffResults.add(object);
-//				}
-////				results.clear();
-////				return buffResults;
-////			} 
-//		}
-//		return buffResults;
 	}
+
 }

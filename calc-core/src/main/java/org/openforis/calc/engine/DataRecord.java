@@ -14,14 +14,14 @@ import java.util.Map;
  */
 public class DataRecord {
 
-	private int id;
+	private long id;
 	private Map<String, Object> fields;
 
 	public DataRecord() {
 		fields = new HashMap<String, Object>();
 	}
 
-	public DataRecord(int id) {
+	public DataRecord(long id) {
 		this();
 		this.id = id;
 	}
@@ -38,11 +38,11 @@ public class DataRecord {
 		fields.put(field, value);
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 

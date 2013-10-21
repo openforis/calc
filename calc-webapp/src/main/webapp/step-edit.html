@@ -1,6 +1,7 @@
 <!-- ==== Html here === -->
 <div class="page-section">
-	<div class="row" id="calculation-step-edit-container" style="position: fixed; width: 100%; height: 100%; overflow: auto; left:0">
+	<!-- edit form -->
+	<div class="row" id="calculation-step-edit-container" style="width: 100%; height: 100%; overflow: auto; left:0">
 		<div class="col-md-2">
 		</div>
 		<div class="col-md-8">
@@ -103,7 +104,7 @@
 	</div>
 	
 	<!-- Execution and results  -->
-	<div class="row" id="calculation-step-exec-container" style="position: fixed; width: 100%; height: 100%; overflow: auto;">
+	<div class="row" id="calculation-step-exec-container" style="width: 100%; height: 100%; overflow: auto;">
 		<!-- progress bar -->
 		<div class="row">
 			<div class="col-md-2">
@@ -137,7 +138,7 @@
 		</div>
 	</div>
 	
-	<!-- New variable popup -->
+	<!-- add variable popup form -->
 	<div class="modal fade" id="new-variable-modal">
 		<div class="modal-dialog">
 			<div class="modal-content">
@@ -189,6 +190,9 @@ $(function(){
 	
 	$resultsTable = $("#calc-step-results-table");
 	
+	/**
+	* Edit form 
+	*/
 	//load entities into select
 	loadEntities = function(callback) {
 		$entitySelect.empty();
@@ -262,8 +266,6 @@ $(function(){
 		    	if(response.status == "ERROR" ) {
 		    		CalcForm.showResultMessage("There are errors in the form. Please fix them before proceeding.",false);
 		    	} else {
-		    		CalcForm.showResultMessage("Calculation step successfully saved.",true);
-		    		
 		    		$calculationStep = response.fields.calculationStep;
 		    		updateCalculationStepUi($calculationStep);
 			    	
@@ -285,9 +287,14 @@ $(function(){
 	// on submit button click 
 	$stepForm.find("button[type='submit']").click(function(event){
 		event.preventDefault();
-		saveStep();
+		saveStep(function(){
+			CalcForm.showResultMessage("Calculation step successfully saved.",true);
+		});
 	});
 	
+	/**
+	* Add variable
+	*/
 	// open the New Variable popup on Add Variable button click
 	$addVariableButton.click(function(event){
 		event.preventDefault();
@@ -334,6 +341,9 @@ $(function(){
 		$newVariableForm.submit();
 	});
 	
+	/**
+	* Input variable. disabled for now
+	*/
 	// add input variable to the form
 	$stepForm.find("button[name='add-input-variable']").click(function(event){
 		event.preventDefault();
@@ -400,17 +410,6 @@ $(function(){
 		});
 	};
 	
-	init = function(){
-		loadEntities(
-			function(){
-				url = this.target;
-				stepId = $.url(url).param("id");
-				if(stepId) {
-					loadCalculationStep(stepId);
-				}
-			}		
-		);
-	};
 	
 	/*** 
 	* ================= 
@@ -453,8 +452,16 @@ $(function(){
 		
 	});
 	
+	processResultsStarted = false;
+	
 	updateCalculationStepStatus = function($job) {
 // 		console.log($job);
+		//start processing results the first time the status != pending
+		if(!processResultsStarted && $job.status != 'PENDING') {
+			processNextResult($job);
+			
+		}
+		
 		$task = $job.tasks[0];
 			
 		$progressBar = $stepProgress.find(".progress-bar");		
@@ -486,37 +493,13 @@ $(function(){
 			break;
 		default: // nothing for now;
 		}
-		// add results to table
-		console.log($task.bufferedResults);
-		if($task.bufferedResults){
-			$.each($task.bufferedResults,function(i,data){
-				console.log(data);
-				$tbody = $resultsTable.find('tbody');
-				$tr = $("<tr></tr>");
-				$tbody.append($tr);
-// 				$td = $("<td></td>");
-// 				$td.html(i);
-// 				$tr.append($td);
-				$.each(data.fields,function(j,field){
-					$td = $("<td></td>");
-					$td.html(field);
-					$tr.append($td);
-				});
-				
-			});
-		}
 		
-			//$modalBody.append($status);
-			
-// 		});
-
 		if( $job.completed != true ){
 			setTimeout(function(){
 				stepId = $calculationStep.id;
 				$.ajax({
-					url:"rest/calculationstep/"+stepId+"/job.json",
-					dataType:"json",
-					async: false
+					url:"rest/job/"+$job.id+".json",
+					dataType:"json"
 				})
 				.done(function(response){
 					$job = response;
@@ -524,10 +507,70 @@ $(function(){
 				});
 			}, 500);
 		} 
-// 		else {
-// 			$jobStatus.find(".modal-footer").removeClass("hide");
-// 		}
+	};
+	
+	rowNum = 1;
+	processNextResult = function($job) {
 		
+		$.ajax({
+			url:"rest/job/"+$job.id+"/nextResult.json",
+			dataType:"json"
+		})
+		.done(function(response){
+			$data = response;
+			if($data){
+				if(processResultsStarted != true) {
+					processResultsStarted = true;
+					$thead = $resultsTable.find('thead');
+					$tr = $("<tr></tr>");
+					$tr.hide();
+					$thead.append($tr);
+					$th = $("<th></th>");
+					$th.html("Record");
+					$tr.append($th);
+					$.each($data.fields,function(j,field){
+						$th = $("<th></th>");
+						$th.html(j);
+						$tr.append($th);
+					});
+					$tr.fadeIn(100);
+// 					console.log("processResultsStarted now");
+				}
+// 				console.log($data);
+				
+				$tbody = $resultsTable.find('tbody');
+				$tr = $("<tr></tr>");
+				$tr.hide();
+				$tbody.append($tr);
+				$td = $("<td></td>");
+				$td.html((rowNum++));
+				$tr.append($td);
+				$.each($data.fields,function(j,field){
+					$td = $("<td></td>");
+					$td.html(field);
+					$tr.append($td);
+				});
+				$tr.fadeIn(100);
+				setTimeout(function(){
+					processNextResult($job);
+				},200);
+			}
+			//updateCalculationStepStatus($job);
+		});
+	};
+	/**
+	* Init function
+	*/
+	init = function(){
+		loadEntities(
+			function(){
+				url = this.target;
+				stepId = $.url(url).param("id");
+				if(stepId) {
+					loadCalculationStep(stepId);
+				}
+			}		
+		);
 	};
 	
 	// on load

@@ -120,49 +120,6 @@ public class CalculationStepController {
 		return job;
 	}
 
-	/**
-	 * Returns the job associated with the stepId if present for the current
-	 * workspace
-	 * 
-	 * @param stepId
-	 * @return
-	 * @throws InvalidProcessingChainException
-	 * @throws WorkspaceLockedException
-	 */
-	@RequestMapping(value = "/{stepId}/job.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody
-	synchronized
-	Job getJob(@PathVariable int stepId) throws InvalidProcessingChainException, WorkspaceLockedException {
-		Workspace workspace = workspaceService.getActiveWorkspace();
-		Job job = taskManager.getJob(workspace.getId());
-		
-		if (job != null) {
-			List<Task> tasks = job.tasks();
-			if (tasks != null && tasks.size() == 1) {
-				Task t = tasks.get(0);
-				if (t instanceof CustomRTask) {
-					CustomRTask rTask = (CustomRTask) t;
-					if (rTask.getCalculationStep().getId().equals(stepId)) {
-						rTask.prepareBufferedResults();
-						return job;
-					}
-				}
-			}
-		}
-		
-		return null;
-
-		// CalculationStep step = calculationStepDao.find(stepId);
-		// CustomRTask task = (CustomRTask)
-		// taskManager.createCalculationStepTask(step);
-		// // task.setMaxItems(18000);
-		//
-		// Job job = taskManager.createJob(workspace);
-		// job.addTask(task);
-		//
-		// taskManager.startJob(job);
-		//
-		// return job;
-	}
+	
 
 }

@@ -31,9 +31,23 @@ IMPORTANT: When making updates to the database schema, ALWAYS ADD A Liquibase
            when building during Maven's "process-resources" phase.           
            See http://www.liquibase.org/quickstart.html for more details.   
   
-  
-UBUNTU:
+ 
 - Install R:
+Mac Os X:
+	Download (http://cran.r-project.org/bin/macosx/) and install r
+	
+	If using OS X Mountain Lion install X11  (http://support.apple.com/kb/HT5293?viewlocale=en_US&locale=en_US)
+
+	sudo R
+		install.packages("RPostgreSQL")
+	 	install.packages("rJava")
+	
+	set R_HOME environment variable
+		1. add to the file /etc/launchd.con (sudo vi /etc/launchd.conf):
+			setenv R_HOME /Library/Frameworks/R.framework/Resources
+		2. reboot computer
+		
+UBUNTU:
 	Follow the istructions on http://cran.rstudio.com/
 	
 	add repository to sources list: 

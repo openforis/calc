@@ -14,6 +14,13 @@ html, body {
 	box-sizing: border-box;
 	letter-spacing:0.1em;
 }
+
+#container {
+	width: 100%; 
+/* 	position: fixed; */
+/* 	overflow: auto; */
+}
+
 /** Home Sections*/
 .section-home, .page-section {
 	overflow: auto;
@@ -21,7 +28,7 @@ html, body {
 	height: 100%;
 	width: 100%;
 	text-align:center;
-	position:relative;
+	position: relative;
 	color: white;
 	font-size: 1.8em;
 	font-weight: 100;
@@ -133,9 +140,11 @@ button.settings:hover {
   	height: 150px;
 	position: fixed;
 /* 	top: -75px; */
-	z-index: 999;
+/* 	z-index: 999; */
 	width: 100%;
 	background-color: #ecf0f1;
+	margin:0px;
+/* 	top:0px; */
 } 
 #footer div{
 	height: 100%;

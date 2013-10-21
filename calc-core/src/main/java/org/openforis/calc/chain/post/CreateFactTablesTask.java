@@ -127,8 +127,8 @@ public final class CreateFactTablesTask extends Task {
 	
 	private void addJoin(SelectQuery<?> select, OutputTable outputTable) {
 		DataTable parentTable = outputTable.getParentTable();
-		Field<Integer> parentId = outputTable.getParentIdField();
-		TableField<Record, Integer> id = parentTable.getIdField();
+		Field<Long> parentId = outputTable.getParentIdField();
+		TableField<Record, Long> id = parentTable.getIdField();
 		select.addJoin(parentTable, parentId.eq(id));
 	}
 }

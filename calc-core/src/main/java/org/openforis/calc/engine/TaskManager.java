@@ -55,8 +55,11 @@ public class TaskManager {
 
 	private Map<Integer, Job> jobs;
 	
+	private Map<String, Job> jobsById;
+	
 	public TaskManager() {
-		this.jobs = new HashMap<Integer, Job>();
+		jobs = new HashMap<Integer, Job>();
+		jobsById = new HashMap<String, Job>();
 	}
 
 	// TODO move to.. where?
@@ -120,6 +123,7 @@ public class TaskManager {
 		final Workspace ws = job.getWorkspace();
 		final SimpleLock lock = workspaceManager.lock(ws.getId());
 		jobs.put(ws.getId(), job);
+		jobsById.put(job.getId().toString(), job);
 		taskExecutor.execute(new Runnable() {
 			@Override
 			public void run() {
@@ -135,6 +139,12 @@ public class TaskManager {
 	synchronized
 	public Job getJob(int workspaceId) {
 		Job job = jobs.get(workspaceId);
+		return job;
+	}
+	
+	synchronized
+	public Job getJobById(String id) {
+		Job job = jobsById.get(id);
 		return job;
 	}
 	

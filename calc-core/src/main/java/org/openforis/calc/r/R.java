@@ -52,6 +52,7 @@ public class R {
 				this.engine = REngine.engineForClass(JRIEngine.class.getName(), R_PARAMS, new RCallbacks(), true);
 			}
 		} catch (InvocationTargetException e) {
+			e.printStackTrace();
 			throw new RuntimeException(e);
 		} catch (ClassNotFoundException e) {
 			throw new RuntimeException(e);
