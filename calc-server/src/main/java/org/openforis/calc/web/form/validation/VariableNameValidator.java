@@ -6,6 +6,7 @@ package org.openforis.calc.web.form.validation;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
+import org.jooq.tools.StringUtils;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.Variable;
@@ -31,7 +32,7 @@ public class VariableNameValidator implements
 
 	@Override
 	public boolean isValid(String value, ConstraintValidatorContext context) {
-		if ( value == null ) {
+		if ( StringUtils.isEmpty(value) ) {
 			return true;
 		} else {
 			boolean valid = value.matches(VARIABLE_NAME_PATTERN);

@@ -18,7 +18,7 @@ public class VariableForm {
 	private Integer entityId;
 	
 	@NotEmpty 
-	@VariableName(message = "Only lowercase characters, numbers and underscores are allowed.")
+	@VariableName(message = "Variable name must be unique and only lowercase characters, numbers and underscores are allowed")
 	private String name;
 
 	public Integer getEntityId() {
