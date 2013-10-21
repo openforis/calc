@@ -29,8 +29,15 @@ public class InputTable extends DataTable {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected <T> Field<T> createValueField(Variable<?> var, DataType<T> valueType, String valueColumn) {
-		// we don't know the datatype of columns in the input schema...
-		return (Field<T>) super.createValueField(var, SQLDataType.OTHER, valueColumn);
+		DataType<?> sqlType;
+		if ( var.getOriginalId() == null ) {
+			//user defined variable
+			sqlType = valueType;;
+		} else {
+			// we don't know the datatype of columns in the input schema...
+			sqlType = SQLDataType.OTHER;
+		}
+		return (Field<T>) super.createValueField(var, sqlType, valueColumn);
 	}
 
 }

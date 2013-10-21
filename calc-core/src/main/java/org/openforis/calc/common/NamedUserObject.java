@@ -1,5 +1,9 @@
 package org.openforis.calc.common;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
@@ -10,6 +14,15 @@ import javax.persistence.MappedSuperclass;
  */
 @MappedSuperclass
 public abstract class NamedUserObject extends UserObject {
+	
+	public static void sortByName(List<? extends NamedUserObject> objects) {
+		Collections.sort(objects, new Comparator<NamedUserObject>() {
+			@Override
+			public int compare(NamedUserObject o1, NamedUserObject o2) {
+				return o1.getName().compareTo(o2.getName());
+			}
+		});
+	}
 	
 	@Column(name = "name")
 	private String name;

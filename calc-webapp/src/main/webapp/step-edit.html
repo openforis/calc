@@ -120,7 +120,6 @@
 				</div>
 				<div class="modal-body">
 					<form class="form-horizontal" method="POST" action="rest/workspace/variable/save.json">
-						<input type="hidden" class="form-control" name="entityId"></input>
 						<fieldset>
 							<div class="form-group">
 								<label class="col-md-2 control-label">Name</label>
@@ -262,29 +261,36 @@ $(function(){
 	$stepForm.find("button[name='add-variable']").click(function(event){
 		event.preventDefault();
 		var $modal = $('#new-variable-modal').modal({keyboard:false,backdrop:"static"});
+		var $form = $modal.find('form');
+		CalcForm.reset($form);
+		
+		$form.ajaxForm( {
+		    dataType : 'json',
+		    data: {
+		    	entityId: $entitySelect.val()
+		    },
+		    beforeSubmit: function() {
+		        CalcForm.disableForm( $form );
+		    },
+		    success: function ( response ) {
+		    	CalcForm.enableForm( $form );
+		    	CalcForm.updateErrors($form, response.errors);
+		    	if(response.status == "ERROR" ) {
+		    		CalcForm.showResultMessage("Error, invalid data",false);
+		    	} else {
+		    		var variable = response.fields.variable;
+		    		loadVariables(function() {
+		    			$variableSelect.val(variable.id);
+		    		});
+		    		$modal.modal('hide');
+		    	}
+		    },
+		    error: function (e) {
+		    	CalcForm.enableForm( $form );
+		    }
+		});
 		
 		$modal.find('button.save').click(function() {
-			var $form = $modal.find('form');
-			
-			$form.ajaxForm( {
-			    dataType : 'json',
-			    beforeSubmit: function() {
-			        CalcForm.disableForm( $form );
-			    },
-			    success: function ( response ) {
-			    	CalcForm.updateErrors($form, response.errors);
-			    	if(response.status == "ERROR" ) {
-			    		CalcForm.showResultMessage("Error, invalid data",false);
-			    	} else {
-			    		CalcForm.showResultMessage("Success, the data was processed correctly",true);
-			    	}
-			    	CalcForm.enableForm( $form );
-			    },
-			    error: function (e) {
-			    	CalcForm.enableForm( $form );
-			    }
-			});
-			
 			$form.submit();
 		});
 	});

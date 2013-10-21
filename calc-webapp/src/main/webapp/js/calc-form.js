@@ -5,16 +5,16 @@ var CalcForm = {
 		$labelEl = $formGroup.find('.control-label');
 		return $labelEl == null ? "": $labelEl.text();
 	},
-	removeErrors: function (form) {
-		form.find('.form-group').removeClass('has-error');
-		form.find('.form-control').tooltip('destroy');
+	removeErrors: function ($form) {
+		$form.find('.form-group').removeClass('has-error');
+		$form.find('.form-control').tooltip('destroy');
 	},
-	updateErrors: function(form, errors) {
-		CalcForm.removeErrors(form);
+	updateErrors: function($form, errors) {
+		CalcForm.removeErrors($form);
 		
 		$.each(errors, function(i, error) {
 			var fieldName = error.field;
-			var $field = form.find('[name=' + fieldName + ']');
+			var $field = $form.find('[name=' + fieldName + ']');
 			if ( $field != null ) {
 				CalcForm._createErrorTooltip($field, error);
 			}
@@ -72,7 +72,8 @@ var CalcForm = {
 					switch(CalcForm.getType($inputField)) {
 						case "radio" : 
 						case "checkbox":
-							$(this).attr("checked", $(this).attr('value') == value); 
+							var checked = $(this).attr('value') == value;
+							$(this).attr("checked", checked); 
 							break;  
 					}
 				});
@@ -86,5 +87,10 @@ var CalcForm = {
 			type = inputField.nodeName.toLowerCase();
 		}
 		return type;
+	},
+	reset: function($form) {
+		//TODO support other field types: select, radio buttons, checkboxes...
+		$form.find("input[type=text], textarea").val("");
+		CalcForm.removeErrors($form);
 	}
 };

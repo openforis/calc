@@ -4,8 +4,6 @@ package org.openforis.calc.web.controller;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -17,10 +15,12 @@ import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.web.form.VariableForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -46,7 +46,7 @@ public class WorkspaceController {
 	private CollectTaskService collectTaskManager;
 
 
-	@RequestMapping(value = "/job.json", method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = "/job.json", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	Job getJob() {
 		Workspace workspace = workspaceService.getActiveWorkspace();
@@ -58,43 +58,43 @@ public class WorkspaceController {
 		}
 	}
 
-	@RequestMapping(value = "/entities.json", method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = "/entities.json", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	List<Entity> getEntities() {
 		Workspace workspace = workspaceService.getActiveWorkspace();
 		List<Entity> entities = new ArrayList<Entity>(workspace.getEntities());
-		sortByName(entities);
+		NamedUserObject.sortByName(entities);
 		return entities;
 	}
 	
-	@RequestMapping(value = "/entities/{entityId}/variables.json", method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = "/entities/{entityId}/variables.json", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	List<Variable<?>> getVariables(@PathVariable int entityId) {
 		Workspace workspace = workspaceService.getActiveWorkspace();
 		Entity entity = workspace.getEntityById(entityId);
 		List<Variable<?>> variables = new ArrayList<Variable<?>>(entity.getVariables());
-		sortByName(variables);
+		NamedUserObject.sortByName(variables);
 		return variables;
 	}
 
 	@RequestMapping(value = "/variable/save.json", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody
-	List<Variable<?>> saveVariable(@Valid VariableForm form) {
-		Workspace ws = workspaceService.getActiveWorkspace();
-		Entity entity = ws.getEntityById(form.getEntityId());
-		
-		workspaceService.addNewQuantitativeVariable(entity, form.getName());
-		
-		return entity.getVariables();
+	Response saveVariable(@Valid VariableForm form, BindingResult result) {
+		Response response = validate(form, result);
+		if ( ! response.hasErrors() ) {
+			Workspace ws = workspaceService.getActiveWorkspace();
+			Entity entity = ws.getEntityById(form.getEntityId());
+			QuantitativeVariable variable = workspaceService.addNewQuantitativeVariable(entity, form.getName());
+			response.addField("variable", variable);
+		}
+		return response;
 	}
 	
-	private void sortByName(List<? extends NamedUserObject> objects) {
-		Collections.sort(objects, new Comparator<NamedUserObject>() {
-			@Override
-			public int compare(NamedUserObject o1, NamedUserObject o2) {
-				return o1.getName().compareTo(o2.getName());
-			}
-		});
+	@RequestMapping(value = "/variable/validate.json", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	Response validate(@Valid VariableForm form, BindingResult result) {
+		Response response = new Response(result.getAllErrors());
+		return response;
 	}
-
+	
 }
