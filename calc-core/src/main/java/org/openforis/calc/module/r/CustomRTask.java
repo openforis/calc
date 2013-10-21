@@ -241,7 +241,7 @@ public final class CustomRTask extends CalculationStepTask {
 		this.maxItems = max;
 	}
 
-	public List<DataRecord> getAndResetResults() {
+	public List<DataRecord> getBufferedResults() {
 		synchronized (_results_semaphore) {
 			return results;
 		}

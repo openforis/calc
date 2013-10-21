@@ -84,7 +84,8 @@ public class WorkspaceController {
 		if ( ! response.hasErrors() ) {
 			Workspace ws = workspaceService.getActiveWorkspace();
 			Entity entity = ws.getEntityById(form.getEntityId());
-			QuantitativeVariable variable = workspaceService.addNewQuantitativeVariable(entity, form.getName());
+			String variableName = form.getName();
+			QuantitativeVariable variable = workspaceService.saveQuantitativeVariable(entity, variableName);
 			response.addField("variable", variable);
 		}
 		return response;

@@ -117,7 +117,7 @@ public class WorkspaceService {
 		return ws;
 	}
 	
-	public QuantitativeVariable addNewQuantitativeVariable(Entity entity, String name) {
+	public QuantitativeVariable saveQuantitativeVariable(Entity entity, String name) {
 		QuantitativeVariable variable = new QuantitativeVariable();
 		variable.setName(name);
 		variable.setInputValueColumn(name);
@@ -127,6 +127,7 @@ public class WorkspaceService {
 		entity.addVariable(variable);
 
 		variableDao.save(variable);
+		
 		inputSchemaDao.addUserDefinedVariableColumn(variable);
 		inputSchemaDao.createView(entity);
 		

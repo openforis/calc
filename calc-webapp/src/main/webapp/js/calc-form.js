@@ -52,7 +52,8 @@ var CalcForm = {
 		
 		$field.tooltip({
 			title: message,
-			container: 'body'
+			container: 'body',
+			template: '<div class="tooltip error"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'
 		});
 	},
 	setFieldValues: function($form, $data) {

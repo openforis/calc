@@ -119,24 +119,18 @@
 					<form class="form-vertical" method="POST" action="rest/workspace/variable/save.json">
 						<input type="hidden" class="form-control" name="entityId" /> 
 						<fieldset>
-							<div class="form-group">
+							<div class="row form-group">
 								<label class="col-md-4 control-label">Variable name</label>
 								<div class="col-md-6">
 									<input type="text" class="form-control" name="name"></input>
 								</div>
 							</div>
-						</fieldset>
-					</form>
-					<div>
-						<div class="form-group">
-							<div class="col-md-3">
+							<div>
 								<button type="submit" class="btn btn-default save">Save</button>
-							</div>
-							<div class="col-md-3">
 								<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cancel</button>
 							</div>
-						</div>
-					</div>
+						</fieldset>
+					</form>
 				</div>
 			</div><!-- /.modal-content -->
 		</div><!-- /.modal-dialog -->
@@ -151,6 +145,7 @@ $(function(){
 	$stepForm = $('#step-form');
 	$entitySelect = $stepForm.find("[name='entityId']");
 	$variableSelect = $stepForm.find("[name='variableId']");
+	$addVariableButton = $stepForm.find("button[name='add-variable']");
 	
 	$inputVars = $(".input-vars");
 	$inputVar = $(".input-var");
@@ -186,6 +181,7 @@ $(function(){
 	};
 	//load variables into select
 	loadVariables = function(callback) {
+		$addVariableButton.attr("disabled", "disabled");
 		$variableSelect.attr("disabled", "disabled");
 		$variableSelect.empty();
 		
@@ -214,6 +210,7 @@ $(function(){
 					});
 					 
 				});
+				$addVariableButton.removeAttr("disabled");
 				$variableSelect.removeAttr("disabled");
 				$variableSelect.val([]);
 				if ( callback ) {
@@ -238,7 +235,8 @@ $(function(){
 		    		
 		    		$calculationStep = response.fields.calculationStep;
 		    		updateCalculationStepUi($calculationStep);
-		    		
+		    		console.log($calculationStep);
+		    		console.log(response);
 			    	if(succesCallback){
 			    		succesCallback(response)
 		    		};
@@ -261,7 +259,7 @@ $(function(){
 	});
 	
 	// open the New Variable popup on Add Variable button click
-	$stepForm.find("button[name='add-variable']").click(function(event){
+	$addVariableButton.click(function(event){
 		event.preventDefault();
 		
 		CalcForm.reset($newVariableForm);
@@ -345,6 +343,7 @@ $(function(){
 		}, 300);
 	};
 	
+	// load entity variables on entity select change
 	$entitySelect.change(function(event) {
 		loadVariables();
 	});
@@ -352,14 +351,25 @@ $(function(){
 	//on run calcuclation button click	
 	$stepForm.find("button[name='run-calculcation-step']").click(function(event){
 		event.preventDefault();
-		if($calculationStep == null){
-			saveStep(
-				function(response){
+		//first save the step and then it runs
+		saveStep(
+			function(response){
+				//after saving it, it get started
+				stepId = $calculationStep.id;
+				$.ajax({
+					url:"rest/calculationstep/"+stepId+"/run.json",
+					dataType:"json"
+				})
+				.done(function(response){
+					$job = response;
+					console.log($job);
 					$calculationStepEditContainer.fadeOut(400);
 					$calculationStepExecContainer.fadeIn(400);
-				}		
-			);
-		}
+				});
+				
+				
+			}		
+		);
 		
 		// animation disabled for now
 // 		$calculationStepEditContainer
