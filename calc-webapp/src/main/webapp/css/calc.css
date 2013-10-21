@@ -300,3 +300,7 @@ formula editor
 .tooltip.error .tooltip-inner {
 	background: #e74c3c;
 }
+
+.tooltip.top.error .tooltip-arrow {
+  border-top-color: #e74c3c;
+}
