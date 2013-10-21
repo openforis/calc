@@ -115,27 +115,27 @@
 	<div class="modal fade" id="new-variable-modal">
 		<div class="modal-dialog">
 			<div class="modal-content">
-				<div class="modal-header">
-					<h4 class="modal-title">New Attribute</h4>
-				</div>
 				<div class="modal-body">
-					<form class="form-horizontal" method="POST" action="rest/workspace/variable/save.json">
+					<form class="form-vertical" method="POST" action="rest/workspace/variable/save.json">
+						<input type="hidden" class="form-control" name="entityId" /> 
 						<fieldset>
 							<div class="form-group">
-								<label class="col-md-2 control-label">Name</label>
-								<div class="col-md-10">
+								<label class="col-md-4 control-label">Variable name</label>
+								<div class="col-md-6">
 									<input type="text" class="form-control" name="name"></input>
 								</div>
 							</div>
 						</fieldset>
 					</form>
-				</div>
-				<div class="modal-footer">
-					<div class="col-md-3">
-						<button type="submit" class="btn btn-default save">Save</button>
-					</div>
-					<div class="col-md-3">
-						<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cancel</button>
+					<div>
+						<div class="form-group">
+							<div class="col-md-3">
+								<button type="submit" class="btn btn-default save">Save</button>
+							</div>
+							<div class="col-md-3">
+								<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cancel</button>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div><!-- /.modal-content -->
@@ -159,6 +159,9 @@ $(function(){
 // 	$calculationStepExecContainer.css({left:$(document).width()})
 // 	$inputVars.hide();
 	$inputVar.hide();
+	
+	$newVariableModal = $('#new-variable-modal');
+	$newVariableForm = $newVariableModal.find('form');
 	
 	//load entities into select
 	loadEntities = function(callback) {
@@ -257,42 +260,50 @@ $(function(){
 		saveStep();
 	});
 	
-	// opens the New Variable popup
+	// open the New Variable popup on Add Variable button click
 	$stepForm.find("button[name='add-variable']").click(function(event){
 		event.preventDefault();
-		var $modal = $('#new-variable-modal').modal({keyboard:false,backdrop:"static"});
-		var $form = $modal.find('form');
-		CalcForm.reset($form);
 		
-		$form.ajaxForm( {
-		    dataType : 'json',
-		    data: {
-		    	entityId: $entitySelect.val()
-		    },
-		    beforeSubmit: function() {
-		        CalcForm.disableForm( $form );
-		    },
-		    success: function ( response ) {
-		    	CalcForm.enableForm( $form );
-		    	CalcForm.updateErrors($form, response.errors);
-		    	if(response.status == "ERROR" ) {
-		    		CalcForm.showResultMessage("Error, invalid data",false);
-		    	} else {
-		    		var variable = response.fields.variable;
-		    		loadVariables(function() {
-		    			$variableSelect.val(variable.id);
-		    		});
-		    		$modal.modal('hide');
-		    	}
-		    },
-		    error: function (e) {
-		    	CalcForm.enableForm( $form );
-		    }
-		});
+		CalcForm.reset($newVariableForm);
 		
-		$modal.find('button.save').click(function() {
-			$form.submit();
-		});
+		//set entityId hidden field value
+		$newVariableForm.find("[name=entityId]").val($entitySelect.val());
+		
+		$newVariableModal.modal({keyboard:false,backdrop:"static"});
+	});
+
+	// init new variable form
+	$newVariableForm.ajaxForm( {
+	    dataType : 'json',
+	    data: {
+	    	entityId: $entitySelect.val()
+	    },
+	    beforeSubmit: function() {
+	        CalcForm.disableForm( $newVariableForm );
+	    },
+	    success: function ( response ) {
+	    	CalcForm.enableForm( $newVariableForm );
+	    	CalcForm.updateErrors($newVariableForm, response.errors);
+	    	if(response.status == "ERROR" ) {
+	    		CalcForm.showResultMessage("Error, invalid data",false);
+	    	} else {
+	    		var variable = response.fields.variable;
+	    		loadVariables(function() {
+	    			$variableSelect.val(variable.id);
+	    		});
+	    		$newVariableModal.modal('hide');
+	    		$newVariableModal.modal('removeBackdrop');
+	    	}
+	    },
+	    error: function (e) {
+	    	CalcForm.showResultMessage("An error occured. Please check the log file.",false );
+	    	CalcForm.enableForm( $newVariableForm );
+	    }
+	});
+	
+	// submit new variable form on save button click
+	$newVariableModal.find('button.save').click(function() {
+		$newVariableForm.submit();
 	});
 	
 	// add input variable to the form
