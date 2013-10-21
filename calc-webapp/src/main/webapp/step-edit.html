@@ -115,14 +115,14 @@
 	<div class="modal fade" id="new-variable-modal">
 		<div class="modal-dialog">
 			<div class="modal-content">
-				<div class="modal-header">
-					<h4 class="modal-title">New Attribute</h4>
-				</div>
+<!-- 				<div class="modal-header"> -->
+<!-- 					<h4 class="modal-title">New Attribute</h4> -->
+<!-- 				</div> -->
 				<div class="modal-body">
-					<form class="form-horizontal" method="POST" action="rest/workspace/variable/save.json">
+					<form class="form-vertical" method="POST" action="rest/workspace/variable/save.json">
 						<fieldset>
 							<div class="form-group">
-								<label class="col-md-2 control-label">Name</label>
+								<label class="col-md-2 control-label">Variable name</label>
 								<div class="col-md-10">
 									<input type="text" class="form-control" name="name"></input>
 								</div>
@@ -235,7 +235,8 @@ $(function(){
 		    		
 		    		$calculationStep = response.fields.calculationStep;
 		    		updateCalculationStepUi($calculationStep);
-		    		
+		    		console.log($calculationStep);
+		    		console.log(response);
 			    	if(succesCallback){
 			    		succesCallback(response)
 		    		};
@@ -341,14 +342,25 @@ $(function(){
 	//on run calcuclation button click	
 	$stepForm.find("button[name='run-calculcation-step']").click(function(event){
 		event.preventDefault();
-		if($calculationStep == null){
-			saveStep(
-				function(response){
+		//first save the step and then it runs
+		saveStep(
+			function(response){
+				//after saving it, it get started
+				stepId = $calculationStep.id;
+				$.ajax({
+					url:"rest/calculationstep/"+stepId+"/run.json",
+					dataType:"json"
+				})
+				.done(function(response){
+					$job = response;
+					console.log($job);
 					$calculationStepEditContainer.fadeOut(400);
 					$calculationStepExecContainer.fadeIn(400);
-				}		
-			);
-		}
+				});
+				
+				
+			}		
+		);
 		
 		// animation disabled for now
 // 		$calculationStepEditContainer

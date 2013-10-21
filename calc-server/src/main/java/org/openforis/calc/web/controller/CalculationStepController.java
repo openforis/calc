@@ -101,16 +101,16 @@ public class CalculationStepController {
 		return calculationStepDao.find(stepId);
 	}
 	
-	@RequestMapping(value = "/{stepId}/start.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/{stepId}/run.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
-	Job start(@PathVariable int stepId) throws InvalidProcessingChainException, WorkspaceLockedException {
+	Job runJob(@PathVariable int stepId) throws InvalidProcessingChainException, WorkspaceLockedException {
 		Workspace workspace = workspaceService.getActiveWorkspace();
 		
 		CalculationStep step = calculationStepDao.find(stepId);
 		CustomRTask task = (CustomRTask) taskManager.createCalculationStepTask(step);
-		task.setMaxItems(18000);
+//		task.setMaxItems(18000);
 		
-		Job job = taskManager.createJob(workspace );
+		Job job = taskManager.createJob(workspace);
 		job.addTask(task);
 		
 		taskManager.startJob(job);

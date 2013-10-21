@@ -21,6 +21,7 @@ public abstract class RelationalSchema extends SchemaImpl {
 	public RelationalSchema(String name) {
 		super(name);
 		this.tables = new ArrayList<Table<?>>();
+		this.views = new ArrayList<Table<?>>();
 	}
 
 	@Override
@@ -37,6 +38,6 @@ public abstract class RelationalSchema extends SchemaImpl {
 	}
 
 	protected void addView(Table<?> view) {
-		tables.add(view);
+		views.add(view);
 	}
 }

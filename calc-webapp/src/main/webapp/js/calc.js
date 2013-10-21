@@ -140,17 +140,6 @@ updateJobStatus = function($job) {
 
 
 $(document).ready(function() {
-		
-//	$("a").click(function(event) {
-//		event.preventDefault();
-//		
-//		$href = $(this).attr("href");
-//		loadPage($href);
-//	});
-	
-//	loadPage( home );
-	//$("html, body").animate({scrollTop: $("#footer").position().top},1000);
-
 	
 	positionFooter = function() {
 		$footer.animate({top:$(window).height()-200 }, 300);
@@ -249,7 +238,7 @@ $(document).ready(function() {
 		positionFooter();
 	});
 	
-	
+	// load calculation step into main page
 	loadCalculationSteps = function() {
 		$.ajax({
 			url:"rest/calculationstep/load.json",
@@ -262,11 +251,12 @@ $(document).ready(function() {
 			$.each($steps, function(i,$step){
 				$button = $calculationContainer.find(".calculation-button").clone();
 				$button.removeClass("calculation-button");
+				
 				$buttonContainer.append($button);
 				$button.html($step.caption);
 				$button.attr("href","step-edit.html?id="+$step.id);
 				$button.click(homeButtonClick);
-				$button.fadeIn(800);
+				$button.fadeIn(100);
 			});
 		});
 	};
