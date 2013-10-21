@@ -38,12 +38,12 @@ public class InputSchemaDao {
 		Schemas schemas = new Schemas(ws);
 		InputSchema inputSchema = schemas.getInputSchema();
 		EntityDataView view = inputSchema.getDataView(entity);
-		Select<?> select = view.getSelect();
 		
 		new Psql(dataSource)
 			.dropViewIfExists(view)
 			.execute();
 		
+		Select<?> select = view.getSelect();
 		new Psql(dataSource)
 			.createView(view)
 			.as(select)

@@ -30,7 +30,7 @@
 							<select class="form-control" name="variableId" disabled="disabled"></select>
 						</div>
 <!-- 						<div class="no-padding col-md-1"> -->
-							<button name="add-variable" class="calculation btn btn-info col-md-1">
+							<button name="add-variable" class="calculation btn btn-info col-md-1" disabled="disabled">
 								<i class="icon-plus-sign-alt"></i>
 							</button>
 <!-- 						</div> -->
@@ -141,28 +141,22 @@
 	<div class="modal fade" id="new-variable-modal">
 		<div class="modal-dialog">
 			<div class="modal-content">
-<!-- 				<div class="modal-header"> -->
-<!-- 					<h4 class="modal-title">New Attribute</h4> -->
-<!-- 				</div> -->
 				<div class="modal-body">
 					<form class="form-vertical" method="POST" action="rest/workspace/variable/save.json">
+						<input type="hidden" class="form-control" name="entityId" /> 
 						<fieldset>
-							<div class="form-group">
-								<label class="col-md-2 control-label">Variable name</label>
-								<div class="col-md-10">
+							<div class="row form-group">
+								<label class="col-md-4 control-label">Variable name</label>
+								<div class="col-md-6">
 									<input type="text" class="form-control" name="name"></input>
 								</div>
 							</div>
+							<div>
+								<button type="submit" class="btn btn-default save">Save</button>
+								<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cancel</button>
+							</div>
 						</fieldset>
 					</form>
-				</div>
-				<div class="modal-footer">
-					<div class="col-md-3">
-						<button type="submit" class="btn btn-default save">Save</button>
-					</div>
-					<div class="col-md-3">
-						<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cancel</button>
-					</div>
 				</div>
 			</div><!-- /.modal-content -->
 		</div><!-- /.modal-dialog -->
@@ -177,6 +171,7 @@ $(function(){
 	$stepForm = $('#step-form');
 	$entitySelect = $stepForm.find("[name='entityId']");
 	$variableSelect = $stepForm.find("[name='variableId']");
+	$addVariableButton = $stepForm.find("button[name='add-variable']");
 	
 	$inputVars = $(".input-vars");
 	$inputVar = $(".input-var");
@@ -185,7 +180,10 @@ $(function(){
 // 	$calculationStepExecContainer.css({left:$(document).width()})
 // 	$inputVars.hide();
 	$inputVar.hide();
-	
+
+	$newVariableModal = $('#new-variable-modal');
+	$newVariableForm = $newVariableModal.find('form');
+
 	//div where the progress bar is stored
 	$stepProgress = $(".step-progress"); 
 	
@@ -214,6 +212,7 @@ $(function(){
 	};
 	//load variables into select
 	loadVariables = function(callback) {
+		$addVariableButton.attr("disabled", "disabled");
 		$variableSelect.attr("disabled", "disabled");
 		$variableSelect.empty();
 		
@@ -242,6 +241,7 @@ $(function(){
 					});
 					 
 				});
+				$addVariableButton.removeAttr("disabled");
 				$variableSelect.removeAttr("disabled");
 				$variableSelect.val([]);
 				if ( callback ) {
@@ -288,42 +288,50 @@ $(function(){
 		saveStep();
 	});
 	
-	// opens the New Variable popup
-	$stepForm.find("button[name='add-variable']").click(function(event){
+	// open the New Variable popup on Add Variable button click
+	$addVariableButton.click(function(event){
 		event.preventDefault();
-		var $modal = $('#new-variable-modal').modal({keyboard:false,backdrop:"static"});
-		var $form = $modal.find('form');
-		CalcForm.reset($form);
 		
-		$form.ajaxForm( {
-		    dataType : 'json',
-		    data: {
-		    	entityId: $entitySelect.val()
-		    },
-		    beforeSubmit: function() {
-		        CalcForm.disableForm( $form );
-		    },
-		    success: function ( response ) {
-		    	CalcForm.enableForm( $form );
-		    	CalcForm.updateErrors($form, response.errors);
-		    	if(response.status == "ERROR" ) {
-		    		CalcForm.showResultMessage("Error, invalid data",false);
-		    	} else {
-		    		var variable = response.fields.variable;
-		    		loadVariables(function() {
-		    			$variableSelect.val(variable.id);
-		    		});
-		    		$modal.modal('hide');
-		    	}
-		    },
-		    error: function (e) {
-		    	CalcForm.enableForm( $form );
-		    }
-		});
+		CalcForm.reset($newVariableForm);
 		
-		$modal.find('button.save').click(function() {
-			$form.submit();
-		});
+		//set entityId hidden field value
+		$newVariableForm.find("[name=entityId]").val($entitySelect.val());
+		
+		$newVariableModal.modal({keyboard:false,backdrop:"static"});
+	});
+
+	// init new variable form
+	$newVariableForm.ajaxForm( {
+	    dataType : 'json',
+	    data: {
+	    	entityId: $entitySelect.val()
+	    },
+	    beforeSubmit: function() {
+	        CalcForm.disableForm( $newVariableForm );
+	    },
+	    success: function ( response ) {
+	    	CalcForm.enableForm( $newVariableForm );
+	    	CalcForm.updateErrors($newVariableForm, response.errors);
+	    	if(response.status == "ERROR" ) {
+	    		CalcForm.showResultMessage("Error, invalid data",false);
+	    	} else {
+	    		var variable = response.fields.variable;
+	    		loadVariables(function() {
+	    			$variableSelect.val(variable.id);
+	    		});
+	    		$newVariableModal.modal('hide');
+	    		$newVariableModal.modal('removeBackdrop');
+	    	}
+	    },
+	    error: function (e) {
+	    	CalcForm.showResultMessage("An error occured. Please check the log file.",false );
+	    	CalcForm.enableForm( $newVariableForm );
+	    }
+	});
+	
+	// submit new variable form on save button click
+	$newVariableModal.find('button.save').click(function() {
+		$newVariableForm.submit();
 	});
 	
 	// add input variable to the form
@@ -365,6 +373,7 @@ $(function(){
 		}, 300);
 	};
 	
+	// load entity variables on entity select change
 	$entitySelect.change(function(event) {
 		loadVariables();
 	});

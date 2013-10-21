@@ -302,3 +302,12 @@ calc-step page
 	right:0;
 	text-align: center;
 }
+
+/** Tooltip */
+.tooltip.error .tooltip-inner {
+	background: #e74c3c;
+}
+
+.tooltip.top.error .tooltip-arrow {
+  border-top-color: #e74c3c;
+}

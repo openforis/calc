@@ -117,7 +117,6 @@ public class WorkspaceService {
 		return ws;
 	}
 	
-	@Transactional
 	public QuantitativeVariable saveQuantitativeVariable(Entity entity, String name) {
 		QuantitativeVariable variable = new QuantitativeVariable();
 		variable.setName(name);
