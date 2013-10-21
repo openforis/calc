@@ -104,6 +104,7 @@ public class CalculationStepController {
 
 	@RequestMapping(value = "/{stepId}/run.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
+	synchronized
 	Job runJob(@PathVariable int stepId) throws InvalidProcessingChainException, WorkspaceLockedException {
 		Workspace workspace = workspaceService.getActiveWorkspace();
 
@@ -130,6 +131,7 @@ public class CalculationStepController {
 	 */
 	@RequestMapping(value = "/{stepId}/job.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
+	synchronized
 	Job getJob(@PathVariable int stepId) throws InvalidProcessingChainException, WorkspaceLockedException {
 		Workspace workspace = workspaceService.getActiveWorkspace();
 		Job job = taskManager.getJob(workspace.getId());
@@ -139,7 +141,9 @@ public class CalculationStepController {
 			if (tasks != null && tasks.size() == 1) {
 				Task t = tasks.get(0);
 				if (t instanceof CustomRTask) {
-					if (((CustomRTask) t).getCalculationStep().getId().equals(stepId)) {
+					CustomRTask rTask = (CustomRTask) t;
+					if (rTask.getCalculationStep().getId().equals(stepId)) {
+						rTask.prepareBufferedResults();
 						return job;
 					}
 				}

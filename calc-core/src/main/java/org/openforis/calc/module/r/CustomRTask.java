@@ -4,9 +4,14 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Vector;
+import java.util.concurrent.SynchronousQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.collections.Buffer;
+import org.apache.commons.collections.BufferUtils;
+import org.apache.commons.collections.buffer.CircularFifoBuffer;
 import org.jooq.Field;
 import org.jooq.Query;
 import org.jooq.Record;
@@ -22,6 +27,7 @@ import org.openforis.calc.r.REnvironment;
 import org.openforis.calc.r.RException;
 import org.openforis.calc.schema.DataTable;
 import org.openforis.calc.schema.EntityDataView;
+import org.openforis.commons.collection.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,8 +44,9 @@ public final class CustomRTask extends CalculationStepTask {
 	private static final String ID = "id";
 	private static final String VARIABLE_PLACEMARK = "\\$(.+?)\\$";
 	
-	private List<DataRecord> results;
-	
+	private  List<DataRecord> results;
+	private SynchronousQueue<DataRecord> resultsQueue;
+	Buffer buffer ; 
 	@JsonIgnore
 	@Autowired
 	private R r;
@@ -63,12 +70,14 @@ public final class CustomRTask extends CalculationStepTask {
 	@Override
 	@Transactional
 	synchronized
-	protected void execute() throws RException {
+	protected void execute() throws RException, InterruptedException {
 		REnvironment rEnvironment = r.newEnvironment();
 		Set<String> variables = extractVariables();
 		
 		//for output
-		results = new ArrayList<DataRecord>();
+		results = new Vector<DataRecord>();
+//		resultsQueue = new SynchronousQueue<DataRecord>(true);
+		buffer = BufferUtils.synchronizedBuffer(new CircularFifoBuffer());
 		
 		// reset output variable
 		resetOutputValue();
@@ -89,10 +98,8 @@ public final class CustomRTask extends CalculationStepTask {
 
 			// execute the script for each record
 			for (Record record : records) {
-				synchronized (_results_semaphore) {
-					Query update = executeScript(rEnvironment, variables, record);
-					updates.add(update);
-				}
+				Query update = executeScript(rEnvironment, variables, record);
+				updates.add(update);
 			}
 			
 			//execute the sql updates in batch
@@ -114,8 +121,9 @@ public final class CustomRTask extends CalculationStepTask {
 	 * @param record
 	 * @return
 	 * @throws RException
+	 * @throws InterruptedException 
 	 */
-	private Query executeScript(REnvironment rEnvironment, Set<String> variables, Record record) throws RException {
+	private Query executeScript(REnvironment rEnvironment, Set<String> variables, Record record) throws RException, InterruptedException {
 		DataTable dataTable = getDataTable();
 		Variable<?> outputVariable = getOutputVariable();
 		Field<Double> outputField = getOutputField();
@@ -132,8 +140,12 @@ public final class CustomRTask extends CalculationStepTask {
 		
 		double result = rEnvironment.evalDouble(script);
 		dataRecord.addField(outputVariable.getName(), result);
+//		synchronized (_results_semaphore) {
+			results.add(dataRecord);
+			buffer.add(dataRecord);
+//		}
+//		resultsQueue.put(dataRecord);
 		
-		results.add(dataRecord);
 		incrementItemsProcessed();
 		
 		Query update = psql()
@@ -241,9 +253,51 @@ public final class CustomRTask extends CalculationStepTask {
 		this.maxItems = max;
 	}
 
+//	public List<DataRecord> getResults() {
+//		buffer.
+//		resultsQueue.;
+//	}
+	
+	@JsonIgnore
+	int cnt = 0;
+	
+	List<DataRecord> bufferResults = null;
+	
 	public List<DataRecord> getBufferedResults() {
-		synchronized (_results_semaphore) {
-			return results;
+		return bufferResults;
+	}
+	
+//	@JsonIgnore
+	public void prepareBufferedResults() {
+//		List<DataRecord> buffResults = 	new ArrayList<DataRecord>();
+//		for(int i=0;i<2345;i++){
+//			DataRecord e = new DataRecord(i);
+//			e.addField("aaaa", i);
+//			buffResults.add(e );
+//		}
+//		return buffResults;
+		if(results!=null){
+			synchronized (results) {
+				bufferResults = new ArrayList<DataRecord>(results);
+				results.clear();
+				int s = bufferResults.size();
+				cnt += s;
+				System.out.println("========================= " + cnt) ;
+//				return buffResults;
+			
 		}
+		}
+//		return null;
+//		if( buffer != null ) {
+////			synchronized (_results_semaphore) {
+//				while(!buffer.isEmpty()){
+//					DataRecord object = (DataRecord) buffer.remove();
+//					buffResults.add(object);
+//				}
+////				results.clear();
+////				return buffResults;
+////			} 
+//		}
+//		return buffResults;
 	}
 }

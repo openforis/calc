@@ -104,22 +104,36 @@
 	
 	<!-- Execution and results  -->
 	<div class="row" id="calculation-step-exec-container" style="position: fixed; width: 100%; height: 100%; overflow: auto;">
-		<div class="col-md-2">
-		</div>
-		<div class="col-md-8">
-			<div class="row step-progress" style="padding-top: 20px">
-<!-- 			   		<div class="col-md-1 number"></div> -->
-<!-- 			   		<div class="col-md-2 name"></div> -->
-		   		<div class="col-md-10">
-		   			<div class="progress"> 
-						<div class="progress-bar"></div>
-					</div>
-		   		</div> 
-		   		<div class="col-md-2 percent">
-		   		</div>
+		<!-- progress bar -->
+		<div class="row">
+			<div class="col-md-2">
+			</div>
+			<div class="col-md-8">
+				<div class="row step-progress" style="padding-top: 20px">
+	<!-- 			   		<div class="col-md-1 number"></div> -->
+	<!-- 			   		<div class="col-md-2 name"></div> -->
+			   		<div class="col-md-6 col-md-offset-2">
+			   			<div class="progress"> 
+							<div class="progress-bar"></div>
+						</div>
+			   		</div> 
+			   		<div class="col-md-1 percent" style="font-size: 0.3em">
+			   		</div>
+				</div>
+			</div>
+			<div class="col-md-2">
 			</div>
 		</div>
-		<div class="col-md-2">
+		<!-- results table -->
+		<div class="row">
+			<div class="col-md-10 col-md-offset-1">
+				<table class="table data-table" id="calc-step-results-table">
+			        <thead>
+			        </thead>
+			        <tbody>
+			        </tbody>
+		      	</table>
+      		</div>
 		</div>
 	</div>
 	
@@ -174,6 +188,8 @@ $(function(){
 	
 	//div where the progress bar is stored
 	$stepProgress = $(".step-progress"); 
+	
+	$resultsTable = $("#calc-step-results-table");
 	
 	//load entities into select
 	loadEntities = function(callback) {
@@ -403,7 +419,8 @@ $(function(){
 				stepId = $calculationStep.id;
 				$.ajax({
 					url:"rest/calculationstep/"+stepId+"/run.json",
-					dataType:"json"
+					dataType:"json",
+					async: false 
 				})
 				.done(function(response){
 					$job = response;
@@ -428,52 +445,69 @@ $(function(){
 	});
 	
 	updateCalculationStepStatus = function($job) {
-		console.log($job);
+// 		console.log($job);
 		$task = $job.tasks[0];
-// 		$.each($tasks, function(i, $task) {
 			
-// 			$status = $stepProgress .find("#"+$task.id);
-			
-			$progressBar = $stepProgress.find(".progress-bar");		
-			$progressBar.removeClass();
-			$progressBar.addClass("progress-bar");
-			$progressBar.parent().removeClass();
-			$progressBar.parent().addClass("progress");
-			
-			totalItems = $task.totalItems;
-			itemsProcessed = $task.itemsProcessed;
-			percent = (totalItems > 0 ) ?  parseInt(itemsProcessed / totalItems * 100) : -1 ;
-			
-			switch( $task.status ) {
-			case "RUNNING": 
-				$progressBar.addClass("progress-bar-info");
-				if( percent >= 0 ) { 
-					$progressBar.width(percent+"%");
-				} else {
-					$progressBar.parent().addClass("active progress-striped");
-					$progressBar.width("100%");
-				}
-				htmlPercent = (percent >= 0) ? percent + " %" : " -% ";
-				$stepProgress.find(".percent").text(htmlPercent);
-				break;
-			case "COMPLETED": 
-				$progressBar.addClass("progress-bar-success");
+		$progressBar = $stepProgress.find(".progress-bar");		
+		$progressBar.removeClass();
+		$progressBar.addClass("progress-bar");
+		$progressBar.parent().removeClass();
+		$progressBar.parent().addClass("progress");
+		
+		totalItems = $task.totalItems;
+		itemsProcessed = $task.itemsProcessed;
+		percent = (totalItems > 0 ) ?  parseInt(itemsProcessed / totalItems * 100) : -1 ;
+		
+		switch( $task.status ) {
+		case "RUNNING": 
+			$progressBar.addClass("progress-bar-info");
+			if( percent >= 0 ) { 
+				$progressBar.width(percent+"%");
+			} else {
+				$progressBar.parent().addClass("active progress-striped");
 				$progressBar.width("100%");
-				$stepProgress.find(".percent").text("100%");
-				break;
-			default: // nothing for now;
 			}
-			
+			htmlPercent = (percent >= 0) ? percent + " %" : " -% ";
+			$stepProgress.find(".percent").text(htmlPercent);
+			break;
+		case "COMPLETED": 
+			$progressBar.addClass("progress-bar-success");
+			$progressBar.width("100%");
+			$stepProgress.find(".percent").text("100%");
+			break;
+		default: // nothing for now;
+		}
+		// add results to table
+		console.log($task.bufferedResults);
+		if($task.bufferedResults){
+			$.each($task.bufferedResults,function(i,data){
+				console.log(data);
+				$tbody = $resultsTable.find('tbody');
+				$tr = $("<tr></tr>");
+				$tbody.append($tr);
+// 				$td = $("<td></td>");
+// 				$td.html(i);
+// 				$tr.append($td);
+				$.each(data.fields,function(j,field){
+					$td = $("<td></td>");
+					$td.html(field);
+					$tr.append($td);
+				});
+				
+			});
+		}
+		
 			//$modalBody.append($status);
 			
 // 		});
 
-		if( $job.status == "RUNNING" ){
+		if( $job.completed != true ){
 			setTimeout(function(){
 				stepId = $calculationStep.id;
 				$.ajax({
 					url:"rest/calculationstep/"+stepId+"/job.json",
-					dataType:"json"
+					dataType:"json",
+					async: false
 				})
 				.done(function(response){
 					$job = response;
