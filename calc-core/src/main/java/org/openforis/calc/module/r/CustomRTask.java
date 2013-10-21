@@ -60,19 +60,22 @@ public final class CustomRTask extends CalculationStepTask {
 	synchronized protected void execute() throws RException, InterruptedException {
 		REnvironment rEnvironment = r.newEnvironment();
 		Set<String> variables = extractVariables();
-
+		
+		// updates to run in batch
+		List<Query> updates = new ArrayList<Query>();
+		
 		// for output
 		results = new Vector<DataRecord>();
 
 		// reset output variable
-		resetOutputValue();
-
+		Query resetOutput = getResetOutputUpdate();
+		updates.add(resetOutput);
+		
 		// prepare the select statement
 		SelectQuery<Record> selectQuery = getSelectStatement(variables);
 
 		long iterations = Math.round(Math.ceil(getTotalItems() / (double) limit));
 
-		List<Query> updates = new ArrayList<Query>();
 		for (int i = 0; i < iterations; i++) {
 			// select records for the current iteration
 			int offset = limit * i;
@@ -147,13 +150,13 @@ public final class CustomRTask extends CalculationStepTask {
 		return selectQuery;
 	}
 
-	private void resetOutputValue() {
+	private Query getResetOutputUpdate() {
 		DataTable table = getDataTable();
 		Field<Double> outputField = getOutputField();
 
-		Query resetOutput = psql().update(table).set(outputField, DSL.val(null, Double.class));
+		Query update = psql().update(table).set(outputField, DSL.val(null, Double.class));
 
-		resetOutput.execute();
+		return update;
 	}
 
 	@Override

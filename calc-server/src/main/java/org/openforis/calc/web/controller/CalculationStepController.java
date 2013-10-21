@@ -12,7 +12,6 @@ import org.openforis.calc.chain.CalculationStepDao;
 import org.openforis.calc.chain.InvalidProcessingChainException;
 import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.engine.Job;
-import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceLockedException;
@@ -104,8 +103,7 @@ public class CalculationStepController {
 
 	@RequestMapping(value = "/{stepId}/run.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
-	synchronized
-	Job runJob(@PathVariable int stepId) throws InvalidProcessingChainException, WorkspaceLockedException {
+	synchronized Job runJob(@PathVariable int stepId) throws InvalidProcessingChainException, WorkspaceLockedException {
 		Workspace workspace = workspaceService.getActiveWorkspace();
 
 		CalculationStep step = calculationStepDao.find(stepId);
@@ -119,7 +117,5 @@ public class CalculationStepController {
 
 		return job;
 	}
-
-	
 
 }
