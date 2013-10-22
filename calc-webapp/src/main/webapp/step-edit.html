@@ -134,12 +134,12 @@
 			</div>
 		</div>
 		<!-- results table -->
-		<div class="row">
+		<div class="row" >
 			<div class="col-md-10 col-md-offset-1">
 				<table class="table data-table" id="calc-step-results-table">
 			        <thead>
 			        </thead>
-			        <tbody>
+			        <tbody >
 			        </tbody>
 		      	</table>
       		</div>
@@ -432,19 +432,41 @@ $(function(){
 	* Run Calculation
 	* =================
 	*/
+	// it has to be false the first time the script gets executed
+	processResultsStarted = false;
+	rowNum = 1;
+	
 	showResultsContainer = function(){
+		// write step caption as header
+		$calculationStepExecContainer.find(".step-name legend").html($calculationStep.caption);
+		
+		$calculationStepEditContainer.fadeOut(400);
+		$calculationStepExecContainer.fadeIn(400);
+	};
+	
+	resetResultsContainer = function() {
 		//reset progress and results table
 		$progressBar = $stepProgress.find(".progress-bar");		
 		UI.resetProgressBar($progressBar);
 		$resultsTable.find('thead').empty();
 		$resultsTable.find('tbody').empty();
-		// write step cation as header
-		$calculationStepExecContainer.find(".step-name legend").html($calculationStep.caption);
-		$calculationStepEditContainer.fadeOut(400);
-		$calculationStepExecContainer.fadeIn(400);
+		
+		//reset variables used for displaying the results
+		processResultsStarted = false;
+		rowNum = 1;
 	};
 	
 	showEditFormContainer = function(){
+		//reset progress and results table
+		$progressBar = $stepProgress.find(".progress-bar");		
+		UI.resetProgressBar($progressBar);
+		$resultsTable.find('thead').empty();
+		$resultsTable.find('tbody').empty();
+		
+		//reset variables used for displaying the results
+		processResultsStarted = false;
+		rowNum = 1;
+		//resetResultsContainer();
 		$calculationStepExecContainer.fadeOut(400);
 		$calculationStepEditContainer.fadeIn(400);
 	}; 
@@ -479,15 +501,13 @@ $(function(){
 		
 	});
 	
-	processResultsStarted = false;
-	
 	updateCalculationStepStatus = function($job) {
 
 		//start processing results the first time the status != pending
 		if(!processResultsStarted && $job.status != 'PENDING') {
 			setTimeout(function(){
 				processNextResult($job);}
-			, 200);
+			, 100);
 		}
 		
 		$task = $job.tasks[0];
@@ -519,7 +539,7 @@ $(function(){
 		default: // nothing for now;
 		}
 		
-		if( $job.completed != true ){
+		if( $job.completed != true ) {
 			setTimeout(function(){
 				stepId = $calculationStep.id;
 				$.ajax({
@@ -534,7 +554,6 @@ $(function(){
 		} 
 	};
 	
-	rowNum = 1;
 	processNextResult = function($job) {
 		
 		$.ajax({
@@ -553,7 +572,7 @@ $(function(){
 					$th = $("<th></th>");
 					$th.html("Record");
 					$tr.append($th);
-					$.each($data.fields,function(j,field){
+					$.each($data.fields,function(j,field) {
 						$th = $("<th></th>");
 						$th.html(j);
 						$tr.append($th);
@@ -575,7 +594,7 @@ $(function(){
 					$td.html(field);
 					$tr.append($td);
 				});
-				$tr.fadeIn(100);
+				$tr.fadeIn(50);
 				setTimeout(function(){
 					processNextResult($job);
 				},200);
