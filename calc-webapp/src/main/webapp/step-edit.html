@@ -139,7 +139,7 @@
 	</div>
 	
 	<!-- add variable popup form -->
-	<div class="modal fade" id="new-variable-modal">
+	<div class="modal fade" id="add-variable-modal">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-body">
@@ -182,8 +182,8 @@ $(function(){
 // 	$inputVars.hide();
 	$inputVar.hide();
 
-	$newVariableModal = $('#new-variable-modal');
-	$newVariableForm = $newVariableModal.find('form');
+	$addVariableModal = $('#add-variable-modal');
+	$addVariableForm = $addVariableModal.find('form');
 
 	//div where the progress bar is stored
 	$stepProgress = $(".step-progress"); 
@@ -295,30 +295,30 @@ $(function(){
 	/**
 	* Add variable
 	*/
-	// open the New Variable popup on Add Variable button click
+	// open the Add Variable popup on Add Variable button click
 	$addVariableButton.click(function(event){
 		event.preventDefault();
 		
-		CalcForm.reset($newVariableForm);
+		CalcForm.reset($addVariableForm);
 		
 		//set entityId hidden field value
-		$newVariableForm.find("[name=entityId]").val($entitySelect.val());
+		$addVariableForm.find("[name=entityId]").val($entitySelect.val());
 		
-		$newVariableModal.modal({keyboard:false,backdrop:"static"});
+		$addVariableModal.modal({keyboard:false,backdrop:"static"});
 	});
 
 	// init new variable form
-	$newVariableForm.ajaxForm( {
+	$addVariableForm.ajaxForm( {
 	    dataType : 'json',
 	    data: {
 	    	entityId: $entitySelect.val()
 	    },
 	    beforeSubmit: function() {
-	        CalcForm.disableForm( $newVariableForm );
+	        CalcForm.disableForm( $addVariableForm );
 	    },
 	    success: function ( response ) {
-	    	CalcForm.enableForm( $newVariableForm );
-	    	CalcForm.updateErrors($newVariableForm, response.errors);
+	    	CalcForm.enableForm( $addVariableForm );
+	    	CalcForm.updateErrors($addVariableForm, response.errors);
 	    	if(response.status == "ERROR" ) {
 	    		CalcForm.showResultMessage("Error, invalid data",false);
 	    	} else {
@@ -326,19 +326,19 @@ $(function(){
 	    		loadVariables(function() {
 	    			$variableSelect.val(variable.id);
 	    		});
-	    		$newVariableModal.modal('hide');
-	    		$newVariableModal.modal('removeBackdrop');
+	    		$addVariableModal.modal('hide');
+	    		$addVariableModal.modal('removeBackdrop');
 	    	}
 	    },
 	    error: function (e) {
 	    	CalcForm.showResultMessage("An error occured. Please check the log file.",false );
-	    	CalcForm.enableForm( $newVariableForm );
+	    	CalcForm.enableForm( $addVariableForm );
 	    }
 	});
 	
 	// submit new variable form on save button click
-	$newVariableModal.find('button.save').click(function() {
-		$newVariableForm.submit();
+	$addVariableModal.find('button.save').click(function() {
+		$addVariableForm.submit();
 	});
 	
 	/**
