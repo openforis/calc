@@ -275,7 +275,7 @@ $(function(){
 		$stepForm.ajaxForm( {
 		    dataType : 'json',
 		    beforeSubmit: function() {
-		    	UI.Form.disable( $stepForm );
+		    	UI.lock();
 		    },
 		    success: function ( response ) {
 		    	UI.Form.updateErrors($stepForm, response.errors);
@@ -289,11 +289,12 @@ $(function(){
 			    		succesCallback(response)
 		    		};
 		    	}
-		    	UI.Form.enable( $stepForm );
 		    },
 		    error: function (e) {
 		    	UI.Form.showResultMessage("An error occured. Please check the log file.",false );
-		    	UI.Form.enable( $stepForm );
+		    },
+		    complete: function() {
+		    	UI.unlock();
 		    }
 		});	
 		
@@ -330,10 +331,9 @@ $(function(){
 	    	entityId: $entitySelect.val()
 	    },
 	    beforeSubmit: function() {
-	    	UI.Form.disable( $addVariableForm );
+	    	UI.lock();
 	    },
 	    success: function ( response ) {
-	    	UI.Form.enable( $addVariableForm );
 	    	UI.Form.updateErrors($addVariableForm, response.errors);
 	    	if(response.status == "ERROR" ) {
 	    		UI.Form.showResultMessage("Error, invalid data",false);
@@ -348,7 +348,9 @@ $(function(){
 	    },
 	    error: function (e) {
 	    	UI.Form.showResultMessage("An error occured. Please check the log file.",false );
-	    	UI.Form.enable( $addVariableForm );
+	    },
+	    complete: function() {
+	    	UI.unlock();
 	    }
 	});
 	
@@ -423,6 +425,8 @@ $(function(){
 			$variableSelect.val($step.outputVariableId);
 			
 			UI.Form.setFieldValues($stepForm, $step);
+			
+			UI.unlock();
 		});
 	};
 	
@@ -617,13 +621,17 @@ $(function(){
 	/**
 	* Init function
 	*/
-	init = function(){
+	init = function() {
+		UI.lock();
+		
 		loadEntities(
 			function(){
 				url = this.target;
 				stepId = $.url(url).param("id");
 				if(stepId) {
 					loadCalculationStep(stepId);
+				} else {
+					UI.unlock();
 				}
 			}		
 		);
