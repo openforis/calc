@@ -408,11 +408,7 @@ $(function(){
 
 	//load calculation step with given stepId
 	loadCalculationStep = function(stepId) {
-		$.ajax({
-			url:"rest/calculationstep/"+stepId+"/load.json",
-			dataType:"json"
-		})
-		.done(function(response){
+		CalculationStepManager.load(stepId, function(response) {
 			$step = response;
 			updateCalculationStepUi($step);
 		});
@@ -458,15 +454,10 @@ $(function(){
 		event.preventDefault();
 		//first save the step and then it runs
 		saveStep(
-			function(response){
+			function(response) {
 				//after saving it, it get started
 				stepId = $calculationStep.id;
-				$.ajax({
-					url:"rest/calculationstep/"+stepId+"/run.json",
-					dataType:"json",
-					async: false 
-				})
-				.done(function(response){
+				CalculationStepManager.execute(stepId, function(response) {
 					$job = response;
 					
 					updateCalculationStepStatus($job);
@@ -474,8 +465,7 @@ $(function(){
 // 					$calculationStepEditContainer.fadeOut(400);
 // 					$calculationStepExecContainer.fadeIn(400);
 				});
-				
-			}		
+			}
 		);
 		
 		// animation disabled for now
