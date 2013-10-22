@@ -125,7 +125,7 @@ updateJobStatus = function($job) {
 $(document).ready(function() {
 	
 	positionFooter = function() {
-		$footer.animate({top:$(window).height()- $footer.height() }, 300);
+		$footer.animate({top:$(window).height()- $footer.height() }, 10);
 	};
 	
 	resizeContainer = function() {

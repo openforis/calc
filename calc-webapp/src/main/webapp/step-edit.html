@@ -134,15 +134,42 @@
 			</div>
 		</div>
 		<!-- results table -->
-		<div class="row" >
-			<div class="col-md-10 col-md-offset-1">
-				<table class="table data-table" id="calc-step-results-table">
-			        <thead>
-			        </thead>
-			        <tbody >
-			        </tbody>
-		      	</table>
-      		</div>
+		<div class="row data-table">
+			<!-- pagination -->
+			<div class="row">
+				<div class="col-md-1 col-md-offset-11 buttons">
+					<button class="btn default-btn"><i class="icon-angle-left prev"></i></button>
+					<button class="btn default-btn"><i class="icon-angle-right next"></i></button>			
+				</div>
+			</div>
+			<!-- data table -->
+			<div class="row">
+				<div class="col-md-12">
+					<table class="table" id="calc-step-results-table">
+				        <thead>
+				        	<tr>
+				        		<th>1h</th>
+				        		<th>1h</th>
+				        	</tr>
+				        </thead>
+				        <tbody>
+				        	<tr>
+				        		<td>2</td>
+				        		<td>2</td>
+				        	</tr>
+				        	<tr>
+				        		<td>2</td>
+				        		<td>2</td>
+				        	</tr>
+				        	<tr>
+				        		<td>2</td>
+				        		<td>2</td>
+				        	</tr>
+				        </tbody>
+			      	</table>
+	      		</div>
+			</div>
+			
 		</div>
 	</div>
 	
@@ -479,14 +506,18 @@ $(function(){
 			function(response) {
 				//after saving it, it get started
 				stepId = $calculationStep.id;
-				CalculationStepManager.execute(stepId, function(response) {
-					$job = response;
-					
-					updateCalculationStepStatus($job);
-					showResultsContainer();
-// 					$calculationStepEditContainer.fadeOut(400);
-// 					$calculationStepExecContainer.fadeIn(400);
-				});
+
+				showResultsContainer();
+				
+				
+//this is the way to execute 				
+// 				CalculationStepManager.execute(stepId, function(response) {
+// 					$job = response;
+// 					updateCalculationStepStatus($job);
+// 					showResultsContainer();
+// 				});
+
+
 			}
 		);
 		

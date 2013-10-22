@@ -21,6 +21,25 @@ html, body {
 /* 	overflow: auto; */
 }
 
+/*
+* Default button
+*/
+button.default-btn {
+	height:100%;
+	border-radius:0px;
+/* 	width: 70%; */
+	background-color: #ecf0f1;
+	border-color: #ecf0f1;
+	color:#2c3e50;
+/* 	background-color:#b8b8b8; */
+/* 	border-color: #b8b8b8; */
+}
+button.default-btn:hover {
+	background-color:#e6e7e7;
+	border-color: #e6e7e7;
+	color:#2c3e50;
+}
+
 /** Home Sections*/
 .section-home, .page-section {
 	overflow: auto;
@@ -150,7 +169,7 @@ button.settings:hover {
 	margin:0px;
 /* 	top:0px; */
 } 
-#footer-placemark {
+.footer-placeholder {
 	height: 150px;	
 }
 
@@ -192,24 +211,13 @@ button.settings:hover {
 /* 	margin-left: 40px; */
 /* display:block; */
 }
-#footer button.back {
-	height:100%;
-	border-radius:0px;
-	width: 70%;
-	font-size:4em;
-	display:none;	
-	background-color: #ecf0f1;
-	border-color: #ecf0f1;
-	color:#2c3e50;
-/* 	background-color:#b8b8b8; */
-/* 	border-color: #b8b8b8; */
-}
-#footer button.back:hover {
-	background-color:#e6e7e7;
-	border-color: #e6e7e7;
-	color:#2c3e50;
-}
 
+
+#footer button.back {
+	font-size:4em;	
+	display:none;	
+	width: 70%;
+}
 /**
 formula editor
 */
@@ -227,18 +235,34 @@ formula editor
 
 
 /**
-calc-step page
+*  Data visualization
 */
-.data-table {
+.data-table .buttons button {
+	width: 50%;
+/* 	float:right; */
+	margin: 0px;
+	display: table-cell;
+	float:left;
+	border:none;
 /* 	font-size: 0.4em; */
 }
 
-.data-table thead > tr > th {
+.data-table table thead > tr > th {
 	text-align: center;
 /* 	border-bottom: none; */
 /* 	border-top: 1px solid white; */
 	
 } 
+.data-table table tbody > tr > td {
+	text-align: center;
+/* 	border-bottom: none; */
+	border-top: 1px solid #ecf0f1;
+	
+}
+/**
+calc-step page
+*/
+
 
 .progress {
 /* 	height: 30px;	 */
