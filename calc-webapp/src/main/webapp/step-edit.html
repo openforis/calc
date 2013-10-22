@@ -267,12 +267,12 @@ $(function(){
 		$stepForm.ajaxForm( {
 		    dataType : 'json',
 		    beforeSubmit: function() {
-		    	UI.disableForm( $stepForm );
+		    	UI.Form.disable( $stepForm );
 		    },
 		    success: function ( response ) {
-		    	UI.updateErrors($stepForm, response.errors);
+		    	UI.Form.updateErrors($stepForm, response.errors);
 		    	if(response.status == "ERROR" ) {
-		    		UI.showResultMessage("There are errors in the form. Please fix them before proceeding.",false);
+		    		UI.Form.showResultMessage("There are errors in the form. Please fix them before proceeding.",false);
 		    	} else {
 		    		$calculationStep = response.fields.calculationStep;
 		    		updateCalculationStepUi($calculationStep);
@@ -281,11 +281,11 @@ $(function(){
 			    		succesCallback(response)
 		    		};
 		    	}
-		    	UI.enableForm( $stepForm );
+		    	UI.Form.enable( $stepForm );
 		    },
 		    error: function (e) {
-		    	UI.showResultMessage("An error occured. Please check the log file.",false );
-		    	UI.enableForm( $stepForm );
+		    	UI.Form.showResultMessage("An error occured. Please check the log file.",false );
+		    	UI.Form.enable( $stepForm );
 		    }
 		});	
 		
@@ -296,7 +296,7 @@ $(function(){
 	$stepForm.find("button[type='submit']").click(function(event){
 		event.preventDefault();
 		saveStep(function(){
-			UI.showResultMessage("Calculation step successfully saved.",true);
+			UI.Form.showResultMessage("Calculation step successfully saved.",true);
 		});
 	});
 	
@@ -307,7 +307,7 @@ $(function(){
 	$addVariableButton.click(function(event){
 		event.preventDefault();
 		
-		UI.reset($addVariableForm);
+		UI.Form.reset($addVariableForm);
 		
 		//set entityId hidden field value
 		$addVariableForm.find("[name=entityId]").val($entitySelect.val());
@@ -322,13 +322,13 @@ $(function(){
 	    	entityId: $entitySelect.val()
 	    },
 	    beforeSubmit: function() {
-	    	UI.disableForm( $addVariableForm );
+	    	UI.Form.disable( $addVariableForm );
 	    },
 	    success: function ( response ) {
-	    	UI.enableForm( $addVariableForm );
-	    	UI.updateErrors($addVariableForm, response.errors);
+	    	UI.Form.enable( $addVariableForm );
+	    	UI.Form.updateErrors($addVariableForm, response.errors);
 	    	if(response.status == "ERROR" ) {
-	    		UI.showResultMessage("Error, invalid data",false);
+	    		UI.Form.showResultMessage("Error, invalid data",false);
 	    	} else {
 	    		var variable = response.fields.variable;
 	    		loadVariables(function() {
@@ -339,8 +339,8 @@ $(function(){
 	    	}
 	    },
 	    error: function (e) {
-	    	UI.showResultMessage("An error occured. Please check the log file.",false );
-	    	UI.enableForm( $addVariableForm );
+	    	UI.Form.showResultMessage("An error occured. Please check the log file.",false );
+	    	UI.Form.enable( $addVariableForm );
 	    }
 	});
 	
@@ -414,7 +414,7 @@ $(function(){
 		loadVariables(function() {
 			$variableSelect.val($step.outputVariableId);
 			
-			UI.setFieldValues($stepForm, $step);
+			UI.Form.setFieldValues($stepForm, $step);
 		});
 	};
 	
