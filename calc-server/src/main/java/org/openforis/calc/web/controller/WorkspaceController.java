@@ -67,12 +67,12 @@ public class WorkspaceController {
 		return entities;
 	}
 	
-	@RequestMapping(value = "/entities/{entityId}/variables.json", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/entities/{entityId}/qtyvariables.json", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody
-	List<Variable<?>> getVariables(@PathVariable int entityId) {
+	List<Variable<?>> getQuantitativeVariables(@PathVariable int entityId) {
 		Workspace workspace = workspaceService.getActiveWorkspace();
 		Entity entity = workspace.getEntityById(entityId);
-		List<Variable<?>> variables = new ArrayList<Variable<?>>(entity.getVariables());
+		List<Variable<?>> variables = new ArrayList<Variable<?>>(entity.getQuantitativeVariables());
 		NamedUserObject.sortByName(variables);
 		return variables;
 	}

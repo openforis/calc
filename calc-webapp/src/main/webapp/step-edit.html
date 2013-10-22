@@ -226,7 +226,7 @@ $(function(){
 		$selectedEntity = $entitySelect.find(":selected");
 		if ( $selectedEntity != null ) {
 			$.ajax({
-				url: "rest/workspace/entities/" + $selectedEntity.val() + "/variables.json",
+				url: "rest/workspace/entities/" + $selectedEntity.val() + "/qtyvariables.json",
 				dataType: "json"
 			})
 			.done(function(response) {				
