@@ -99,17 +99,23 @@ var UI = {
 			UI.Form.removeErrors($form);
 		}
 	},
-	
 	lock: function() {
 		$uiLockModal = $("#ui-lock-modal");
 		$uiLockModal.modal({keyboard:false, backdrop:"static"});
 		$('body').addClass('locked');
 	},
-	
 	unlock: function() {
 		$uiLockModal.modal('hide');
 		$uiLockModal.modal('removeBackdrop');
 		$('body').removeClass('locked');
+	},
+	
+	//Reset progress bar to its original state
+	resetProgressBar : function($progressBar) {
+		$progressBar.removeClass();
+		$progressBar.addClass("progress-bar");
+		$progressBar.parent().removeClass();
+		$progressBar.parent().addClass("progress");
 	}
 	
 };

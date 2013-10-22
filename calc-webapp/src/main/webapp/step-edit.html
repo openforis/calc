@@ -104,7 +104,15 @@
 	</div>
 	
 	<!-- Execution and results  -->
-	<div class="row" id="calculation-step-exec-container" style="width: 100%; height: 100%; ">
+	<div class="row" id="calculation-step-exec-container" style="width: 100%; height: 100%; padding-top:10px; ">
+		<div class="row">
+			<div class="col-md-2 col-md-offset-5 step-name">
+				<legend></legend>
+			</div>
+			<div class="col-md-1">
+				<button name="edit-step-button" class="calculation btn btn-info" style="text-align: left;"><i class="icon-edit"></i></button>
+			</div>
+		</div>
 		<!-- progress bar -->
 		<div class="row">
 			<div class="col-md-2">
@@ -118,7 +126,7 @@
 							<div class="progress-bar"></div>
 						</div>
 			   		</div> 
-			   		<div class="col-md-1 percent" style="font-size: 0.3em">
+			   		<div class="col-md-1 percent">
 			   		</div>
 				</div>
 			</div>
@@ -165,10 +173,25 @@
 	
 <script>
 $(function(){
+	//current calculation step
 	$calculationStep = null;
+	/**
+	 * main ui components
+	 */
 	$calculationStepEditContainer = $("#calculation-step-edit-container");
 	$calculationStepExecContainer = $("#calculation-step-exec-container");
+	$calculationStepExecContainer.hide();
 	
+	/**
+	 *results ui components
+	 */
+	//div where the progress bar is stored
+	$stepProgress = $(".step-progress"); 
+	$resultsTable = $("#calc-step-results-table");
+	
+	/**
+	 * edit form ui components
+	 */
 	$stepForm = $('#step-form');
 	$entitySelect = $stepForm.find("[name='entityId']");
 	$variableSelect = $stepForm.find("[name='variableId']");
@@ -177,18 +200,11 @@ $(function(){
 	$inputVars = $(".input-vars");
 	$inputVar = $(".input-var");
 	
-	$calculationStepExecContainer.hide();
-// 	$calculationStepExecContainer.css({left:$(document).width()})
 // 	$inputVars.hide();
 	$inputVar.hide();
 
 	$addVariableModal = $('#add-variable-modal');
 	$addVariableForm = $addVariableModal.find('form');
-
-	//div where the progress bar is stored
-	$stepProgress = $(".step-progress"); 
-	
-	$resultsTable = $("#calc-step-results-table");
 	
 	/**
 	* Edit form 
@@ -420,6 +436,22 @@ $(function(){
 	* Run Calculation
 	* =================
 	*/
+	showResultsContainer = function(){
+		//reset progress and results table
+		$progressBar = $stepProgress.find(".progress-bar");		
+		UI.resetProgressBar($progressBar);
+		$resultsTable.find('thead').empty();
+		$resultsTable.find('tbody').empty();
+		// write step cation as header
+		$calculationStepExecContainer.find(".step-name legend").html($calculationStep.caption);
+		$calculationStepEditContainer.fadeOut(400);
+		$calculationStepExecContainer.fadeIn(400);
+	};
+	
+	showEditFormContainer = function(){
+		$calculationStepExecContainer.fadeOut(400);
+		$calculationStepEditContainer.fadeIn(400);
+	}; 
 	
 	//on run calcuclation button click	
 	$stepForm.find("button[name='run-calculcation-step']").click(function(event){
@@ -438,8 +470,9 @@ $(function(){
 					$job = response;
 					
 					updateCalculationStepStatus($job);
-					$calculationStepEditContainer.fadeOut(400);
-					$calculationStepExecContainer.fadeIn(400);
+					showResultsContainer();
+// 					$calculationStepEditContainer.fadeOut(400);
+// 					$calculationStepExecContainer.fadeIn(400);
 				});
 				
 			}		
@@ -459,20 +492,18 @@ $(function(){
 	processResultsStarted = false;
 	
 	updateCalculationStepStatus = function($job) {
-// 		console.log($job);
+
 		//start processing results the first time the status != pending
 		if(!processResultsStarted && $job.status != 'PENDING') {
-			processNextResult($job);
-			
+			setTimeout(function(){
+				processNextResult($job);}
+			, 200);
 		}
 		
 		$task = $job.tasks[0];
 			
 		$progressBar = $stepProgress.find(".progress-bar");		
-		$progressBar.removeClass();
-		$progressBar.addClass("progress-bar");
-		$progressBar.parent().removeClass();
-		$progressBar.parent().addClass("progress");
+		UI.resetProgressBar($progressBar);
 		
 		totalItems = $task.totalItems;
 		itemsProcessed = $task.itemsProcessed;
@@ -562,6 +593,12 @@ $(function(){
 			//updateCalculationStepStatus($job);
 		});
 	};
+	
+	//in results section, click to show edit form
+	$calculationStepExecContainer.find("button[name='edit-step-button']").click(function(event){
+		showEditFormContainer();
+	});
+	
 	/**
 	* Init function
 	*/

@@ -30,7 +30,7 @@ html, body {
 	text-align:center;
 	position: relative;
 	color: white;
-	font-size: 1.8em;
+	font-size: 1.4em;
 	font-weight: 100;
 	margin: 0px;
 /* margin-top: 30px; */
@@ -46,17 +46,21 @@ html, body {
 /* 	width:100%; */
 /* 	height:100%; */
 /* } */
+.page-section{
+	font-size: 0.7em;
+}
 .page-section label , .page-section legend  {
     display: inline-block;
-    margin-bottom: 5px;
+/*     margin-bottom: 5px; */
     font-weight: 100;    
-    color: white;
+    color: white;    
 }
 .page-section legend {
-	font-size: 0.5em;
+/* 	font-size: 0.5em; */
+	border:none;
 }
 .page-section label {
-	font-size: 0.4em;
+/* 	font-size: 0.4em; */
 	padding-top: 8px;
 }
 
@@ -67,11 +71,11 @@ html, body {
 	margin-top:40px;
 }
 .section-home button {
-	font-size:0.5em;
+/* 	font-size:0.5em; */
 	font-weight: 200;
 }
 .page-section form button {
-	font-size:0.5em;
+/* 	font-size:0.5em; */
 	font-weight: 100;
 }
 .calculation {
@@ -95,7 +99,7 @@ html, body {
 button.calculation:hover{
 	background-color: #3e5770;
 	border-color: #3e5770;
-}
+}Record
 button.results:hover {
 	background-color: #6c859f;
 	border-color: #6c859f;
@@ -209,7 +213,7 @@ button.settings:hover {
 /**
 formula editor
 */
-.formula-editor input, .formula-editor select{
+.formula-editor input, .formula-editor select {
 	height: 30px;
 	padding: 2px;
 } 
@@ -226,10 +230,13 @@ formula editor
 calc-step page
 */
 .data-table {
-	font-size: 0.4em;
+/* 	font-size: 0.4em; */
 }
-.data-table th {
+.data-table thead > tr > th {
 	text-align: center;
+/* 	border-bottom: none; */
+/* 	border-top: 1px solid white; */
+	
 } 
 
 .progress {
