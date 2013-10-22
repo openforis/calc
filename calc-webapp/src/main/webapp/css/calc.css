@@ -146,6 +146,10 @@ button.settings:hover {
 	margin:0px;
 /* 	top:0px; */
 } 
+#footer-placemark {
+	height: 150px;	
+}
+
 #footer div{
 	height: 100%;
 }
