@@ -16,6 +16,7 @@ import org.jooq.SelectQuery;
 import org.jooq.impl.DSL;
 import org.openforis.calc.engine.CalculationStepTask;
 import org.openforis.calc.engine.DataRecord;
+import org.openforis.calc.engine.DataRecordVisitor;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.r.R;
@@ -23,6 +24,7 @@ import org.openforis.calc.r.REnvironment;
 import org.openforis.calc.r.RException;
 import org.openforis.calc.schema.DataTable;
 import org.openforis.calc.schema.EntityDataView;
+import org.openforis.calc.schema.EntityDataViewDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,6 +52,9 @@ public final class CustomRTask extends CalculationStepTask {
 	@JsonIgnore
 	private int limit;
 
+	@Autowired
+	private EntityDataViewDao viewDao;
+	
 	public CustomRTask() {
 		limit = 5000;
 		maxItems = -1;
@@ -58,11 +63,11 @@ public final class CustomRTask extends CalculationStepTask {
 	@Override
 	@Transactional
 	synchronized protected void execute() throws RException, InterruptedException {
-		REnvironment rEnvironment = r.newEnvironment();
-		Set<String> variables = extractVariables();
+		final REnvironment rEnvironment = r.newEnvironment();
+		final Set<String> variables = extractVariables();
 		
 		// updates to run in batch
-		List<Query> updates = new ArrayList<Query>();
+		final List<Query> updates = new ArrayList<Query>();
 		
 		// for output
 		results = new Vector<DataRecord>();
@@ -72,7 +77,7 @@ public final class CustomRTask extends CalculationStepTask {
 		updates.add(resetOutput);
 		
 		// prepare the select statement
-		SelectQuery<Record> selectQuery = getSelectStatement(variables);
+//		SelectQuery<Record> selectQuery = getSelectStatement(variables);
 
 		long iterations = Math.round(Math.ceil(getTotalItems() / (double) limit));
 
@@ -81,14 +86,51 @@ public final class CustomRTask extends CalculationStepTask {
 			int offset = limit * i;
 			int numberOfRows = (int) ((getItemsRemaining() < (offset + limit)) ? getItemsRemaining() : limit);
 
-			selectQuery.addLimit(offset, numberOfRows);
-			System.out.println(selectQuery.toString());
-			Result<Record> records = selectQuery.fetch();
+//			List<DataRecord> records = 
+			viewDao.query(new DataRecordVisitor() {
+				@Override
+				public void visit(DataRecord record) {
+					Variable<?> outputVariable = getOutputVariable();
+					Field<Double> outputField = getOutputField();
+					String script = getScript();
+
+					for (String var : variables) {
+						Object value = record.getValue(var);
+						script = script.replaceAll("\\$" + var + "\\$", value.toString());
+//						record.addField(var, value);
+					}
+
+					double result = 0;
+					try {
+						result = rEnvironment.evalDouble(script);
+						record.add(outputVariable.getName(), result);
+					} catch (RException e) {
+						throw new IllegalStateException("Error while evaluating script: " + script);
+					}
+
+					results.add(record);
+
+					incrementItemsProcessed();
+					
+					//update query
+					DataTable dataTable = getDataTable();
+					Long id = (Long) record.getValue(dataTable.getIdField().getName());
+					Query update = psql().update(dataTable).set(outputField, result).where(dataTable.getIdField().eq(id));
+//					return update;
+					updates.add(update);
+					
+				}
+			}, getWorkspace(), offset, numberOfRows, getEntity().getName(), variables.toArray(new String[]{}));
+			
+			
+//			selectQuery.addLimit(offset, numberOfRows);
+//			System.out.println(selectQuery.toString());
+//			Result<Record> records = selectQuery.fetch();
 			// execute the script for each record
-			for (Record record : records) {
-				Query update = executeScript(rEnvironment, variables, record);
-				updates.add(update);
-			}
+//			for (Record record : records) {
+//				Query update = executeScript(rEnvironment, variables, record);
+//				updates.add(update);
+//			}
 
 			// execute the sql updates in batch
 			psql().batch(updates).execute();
@@ -111,44 +153,44 @@ public final class CustomRTask extends CalculationStepTask {
 	 * @throws RException
 	 * @throws InterruptedException
 	 */
-	private Query executeScript(REnvironment rEnvironment, Set<String> variables, Record record) throws RException, InterruptedException {
-		DataTable dataTable = getDataTable();
-		Variable<?> outputVariable = getOutputVariable();
-		Field<Double> outputField = getOutputField();
-		String script = getScript();
-		Long id = record.getValue(dataTable.getIdField().getName(), Long.class);
-
-		DataRecord dataRecord = new DataRecord(id);
-
-		for (String var : variables) {
-			Object variableValue = record.getValue(var);
-			script = script.replaceAll("\\$" + var + "\\$", variableValue.toString());
-			dataRecord.addField(var, variableValue);
-		}
-
-		double result = rEnvironment.evalDouble(script);
-		dataRecord.addField(outputVariable.getName(), result);
-
-		results.add(dataRecord);
-
-		incrementItemsProcessed();
-
-		Query update = psql().update(dataTable).set(outputField, result).where(dataTable.getIdField().eq(id));
-		return update;
-	}
-
-	private SelectQuery<Record> getSelectStatement(Set<String> variables) {
-		DataTable table = getDataView();
-		SelectQuery<Record> selectQuery = psql().selectQuery();
-		selectQuery.addSelect(table.getIdField());
-
-		for (String var : variables) {
-			selectQuery.addSelect(table.field(var));
-		}
-		selectQuery.addFrom(table);
-		selectQuery.addOrderBy(table.getIdField());
-		return selectQuery;
-	}
+//	private Query executeScript(REnvironment rEnvironment, Set<String> variables, Record record) throws RException, InterruptedException {
+//		DataTable dataTable = getDataTable();
+//		Variable<?> outputVariable = getOutputVariable();
+//		Field<Double> outputField = getOutputField();
+//		String script = getScript();
+//		Long id = record.getValue(dataTable.getIdField().getName(), Long.class);
+//
+//		DataRecord dataRecord = new DataRecord(id);
+//
+//		for (String var : variables) {
+//			Object value = record.getValue(var);
+//			script = script.replaceAll("\\$" + var + "\\$", value.toString());
+//			dataRecord.add(var, value);
+//		}
+//
+//		double result = rEnvironment.evalDouble(script);
+//		dataRecord.add(outputVariable.getName(), result);
+//
+//		results.add(dataRecord);
+//
+//		incrementItemsProcessed();
+//
+//		Query update = psql().update(dataTable).set(outputField, result).where(dataTable.getIdField().eq(id));
+//		return update;
+//	}
+//
+//	private SelectQuery<Record> getSelectStatement(Set<String> variables) {
+//		DataTable table = getDataView();
+//		SelectQuery<Record> selectQuery = psql().selectQuery();
+//		selectQuery.addSelect(table.getIdField());
+//
+//		for (String var : variables) {
+//			selectQuery.addSelect(table.field(var));
+//		}
+//		selectQuery.addFrom(table);
+//		selectQuery.addOrderBy(table.getIdField());
+//		return selectQuery;
+//	}
 
 	private Query getResetOutputUpdate() {
 		DataTable table = getDataTable();

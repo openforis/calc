@@ -5,15 +5,12 @@ package org.openforis.calc.schema;
 
 import java.math.BigDecimal;
 
-import javax.sql.DataSource;
-
 import org.jooq.Field;
 import org.jooq.Select;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
-import org.openforis.calc.psql.Psql;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.openforis.calc.persistence.jooq.AbstractJooqDao;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -21,10 +18,7 @@ import org.springframework.stereotype.Repository;
  *
  */
 @Repository
-public class InputSchemaDao {
-
-	@Autowired
-	private DataSource dataSource;
+public class InputSchemaDao extends AbstractJooqDao {
 
 	public void createViews(Workspace ws) {
 		for (Entity entity : ws.getEntities()) {
@@ -39,12 +33,12 @@ public class InputSchemaDao {
 		InputSchema inputSchema = schemas.getInputSchema();
 		EntityDataView view = inputSchema.getDataView(entity);
 		
-		new Psql(dataSource)
+		psql()
 			.dropViewIfExists(view)
 			.execute();
 		
 		Select<?> select = view.getSelect();
-		new Psql(dataSource)
+		psql()
 			.createView(view)
 			.as(select)
 			.execute();
@@ -60,7 +54,7 @@ public class InputSchemaDao {
 
 		Field<BigDecimal> field = table.getQuantityField(v);
 		
-		new Psql(dataSource)
+		psql()
 			.alterTable(table)
 			.addColumn(field)
 			.execute();

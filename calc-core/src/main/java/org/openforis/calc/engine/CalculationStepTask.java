@@ -32,4 +32,10 @@ public abstract class CalculationStepTask extends Task {
 			this.parameters = parameterMap.deepCopy();
 		}
 	}
+	
+	@Override
+	public String getName() {
+		return getCalculationStep().getCaption();
+	}
+	
 }

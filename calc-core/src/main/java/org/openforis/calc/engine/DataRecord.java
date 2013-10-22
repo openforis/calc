@@ -30,11 +30,11 @@ public class DataRecord {
 		return fields;
 	}
 
-	public Object getFieldValue(String field) {
+	public Object getValue(String field) {
 		return fields.get(field);
 	}
 
-	public void addField(String field, Object value) {
+	public void add(String field, Object value) {
 		fields.put(field, value);
 	}
 
