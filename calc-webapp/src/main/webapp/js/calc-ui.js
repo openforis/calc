@@ -99,5 +99,14 @@ var UI = {
 			UI.Form.removeErrors($form);
 		}
 	}
+	,
+	
+	//Reset progress bar to its original state
+	resetProgressBar : function($progressBar) {
+		$progressBar.removeClass();
+		$progressBar.addClass("progress-bar");
+		$progressBar.parent().removeClass();
+		$progressBar.parent().addClass("progress");
+	}
 		
 };

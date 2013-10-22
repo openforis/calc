@@ -213,7 +213,7 @@ button.settings:hover {
 /**
 formula editor
 */
-.formula-editor input, .formula-editor select{
+.formula-editor input, .formula-editor select {
 	height: 30px;
 	padding: 2px;
 } 
@@ -232,8 +232,11 @@ calc-step page
 .data-table {
 /* 	font-size: 0.4em; */
 }
-.data-table th {
+.data-table thead > tr > th {
 	text-align: center;
+/* 	border-bottom: none; */
+/* 	border-top: 1px solid white; */
+	
 } 
 
 .progress {
