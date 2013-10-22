@@ -324,3 +324,14 @@ calc-step page
 .tooltip.top.error .tooltip-arrow {
   border-top-color: #e74c3c;
 }
+
+/** Lock */
+#ui-lock-modal {
+	top: 45%;
+}
+#ui-lock-modal .modal-dialog {
+	width: 300px;
+}
+.locked .modal-backdrop.in {
+	opacity: 0.3;
+}
