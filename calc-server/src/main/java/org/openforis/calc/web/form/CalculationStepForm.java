@@ -4,15 +4,18 @@
 package org.openforis.calc.web.form;
 
 
+
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
+import org.openforis.calc.web.form.validation.CalculationStepContraint;
 
 /**
  * @author S. Ricci
  * @author M. Togna
  * 
  */
+@CalculationStepContraint
 public class CalculationStepForm {
 
 	private Integer id;
@@ -68,5 +71,4 @@ public class CalculationStepForm {
 	public void setScript(String script) {
 		this.script = script;
 	}
-	
 }
