@@ -1,4 +1,4 @@
-var CalcForm = {
+var UI = {
 	
 	getFieldLabel: function($field) {
 		$formGroup = $field.closest('.form-group');
@@ -10,13 +10,13 @@ var CalcForm = {
 		$form.find('.form-control').tooltip('destroy');
 	},
 	updateErrors: function($form, errors) {
-		CalcForm.removeErrors($form);
+		UI.removeErrors($form);
 		
 		$.each(errors, function(i, error) {
 			var fieldName = error.field;
 			var $field = $form.find('[name=' + fieldName + ']');
 			if ( $field != null ) {
-				CalcForm._createErrorTooltip($field, error);
+				UI._createErrorTooltip($field, error);
 			}
 		});
 	},
@@ -47,7 +47,7 @@ var CalcForm = {
 		$formGroup = $field.closest('.form-group');
 		$formGroup.addClass('has-error');
 		
-		var fieldLabel = CalcForm.getFieldLabel($field);
+		var fieldLabel = UI.getFieldLabel($field);
 		var message = fieldLabel + " " + error.defaultMessage;
 		
 		var $parentModal = $field.closest('.modal');
@@ -64,7 +64,7 @@ var CalcForm = {
 			var $inputFields = $('[name='+fieldName+']', $form);
 			if ( $inputFields.length == 1 ) {
 				var inputFieldEl = $inputFields[0];
-				switch(CalcForm.getType(inputFieldEl)) {
+				switch(UI.getType(inputFieldEl)) {
 					case "hidden":  
 					case "text" :   
 					case "textarea":  
@@ -73,7 +73,7 @@ var CalcForm = {
 				}
 			} else {
 				$inputFields.each(function(i, $inputField) {
-					switch(CalcForm.getType($inputField)) {
+					switch(UI.getType($inputField)) {
 						case "radio" : 
 						case "checkbox":
 							var checked = $(this).attr('value') == value;
@@ -95,6 +95,6 @@ var CalcForm = {
 	reset: function($form) {
 		//TODO support other field types: select, radio buttons, checkboxes...
 		$form.find("input[type=text], textarea").val("");
-		CalcForm.removeErrors($form);
+		UI.removeErrors($form);
 	}
 };

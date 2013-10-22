@@ -259,12 +259,12 @@ $(function(){
 		$stepForm.ajaxForm( {
 		    dataType : 'json',
 		    beforeSubmit: function() {
-		        CalcForm.disableForm( $stepForm );
+		    	UI.disableForm( $stepForm );
 		    },
 		    success: function ( response ) {
-		    	CalcForm.updateErrors($stepForm, response.errors);
+		    	UI.updateErrors($stepForm, response.errors);
 		    	if(response.status == "ERROR" ) {
-		    		CalcForm.showResultMessage("There are errors in the form. Please fix them before proceeding.",false);
+		    		UI.showResultMessage("There are errors in the form. Please fix them before proceeding.",false);
 		    	} else {
 		    		$calculationStep = response.fields.calculationStep;
 		    		updateCalculationStepUi($calculationStep);
@@ -273,11 +273,11 @@ $(function(){
 			    		succesCallback(response)
 		    		};
 		    	}
-		    	CalcForm.enableForm( $stepForm );
+		    	UI.enableForm( $stepForm );
 		    },
 		    error: function (e) {
-		    	CalcForm.showResultMessage("An error occured. Please check the log file.",false );
-		    	CalcForm.enableForm( $stepForm );
+		    	UI.showResultMessage("An error occured. Please check the log file.",false );
+		    	UI.enableForm( $stepForm );
 		    }
 		});	
 		
@@ -288,7 +288,7 @@ $(function(){
 	$stepForm.find("button[type='submit']").click(function(event){
 		event.preventDefault();
 		saveStep(function(){
-			CalcForm.showResultMessage("Calculation step successfully saved.",true);
+			UI.showResultMessage("Calculation step successfully saved.",true);
 		});
 	});
 	
@@ -299,7 +299,7 @@ $(function(){
 	$addVariableButton.click(function(event){
 		event.preventDefault();
 		
-		CalcForm.reset($addVariableForm);
+		UI.reset($addVariableForm);
 		
 		//set entityId hidden field value
 		$addVariableForm.find("[name=entityId]").val($entitySelect.val());
@@ -314,13 +314,13 @@ $(function(){
 	    	entityId: $entitySelect.val()
 	    },
 	    beforeSubmit: function() {
-	        CalcForm.disableForm( $addVariableForm );
+	    	UI.disableForm( $addVariableForm );
 	    },
 	    success: function ( response ) {
-	    	CalcForm.enableForm( $addVariableForm );
-	    	CalcForm.updateErrors($addVariableForm, response.errors);
+	    	UI.enableForm( $addVariableForm );
+	    	UI.updateErrors($addVariableForm, response.errors);
 	    	if(response.status == "ERROR" ) {
-	    		CalcForm.showResultMessage("Error, invalid data",false);
+	    		UI.showResultMessage("Error, invalid data",false);
 	    	} else {
 	    		var variable = response.fields.variable;
 	    		loadVariables(function() {
@@ -331,8 +331,8 @@ $(function(){
 	    	}
 	    },
 	    error: function (e) {
-	    	CalcForm.showResultMessage("An error occured. Please check the log file.",false );
-	    	CalcForm.enableForm( $addVariableForm );
+	    	UI.showResultMessage("An error occured. Please check the log file.",false );
+	    	UI.enableForm( $addVariableForm );
 	    }
 	});
 	
@@ -406,7 +406,7 @@ $(function(){
 		loadVariables(function() {
 			$variableSelect.val($step.outputVariableId);
 			
-			CalcForm.setFieldValues($stepForm, $step);
+			UI.setFieldValues($stepForm, $step);
 		});
 	};
 	
