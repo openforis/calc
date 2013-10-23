@@ -44,6 +44,25 @@ var CalculationStepManager = {
 			callback(response);
 		});
 	},
+	save: function($step, successCallback, errorCallback) {
+		UI.lock();
+		$.ajax({
+			url: "rest/calculationstep/save.json",
+			dataType: "json",
+			data: $step,
+			type: "POST"
+		})
+		.done(function(response) {
+			successCallback(response);
+		})
+		.error(function(e) {
+			errorCallback(e);
+		})
+		.complete(function() {
+			UI.unlock();
+		});
+		
+	},
 	/**
 	 * TODO
 	 * 
@@ -81,7 +100,7 @@ var CalculationStepManager = {
 		}
 	},
 	/**
-	 * Private function: create a calculation step element to be added to the home page
+	 * Private function: create a home page calculation step element and add it to the dom
 	 *  
 	 * @param $step
 	 */

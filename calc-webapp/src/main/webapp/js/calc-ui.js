@@ -154,6 +154,42 @@ var UI = {
 			//TODO support other field types: select, radio buttons, checkboxes...
 			$form.find("input[type=text], textarea").val("");
 			UI.Form.removeErrors($form);
+		},
+		/**
+		 * Populate a select using a ajax call to a rest url that returns a list of json items
+		 * 
+		 * @param $select
+		 * @param sourceUrl
+		 * @param valueFieldName
+		 * @param labelFieldName
+		 * @param callback
+		 */
+		populateSelect: function($select, sourceUrl, valueFieldName, labelFieldName, callback) {
+			$select.empty();
+			$select.attr("disabled", "disabled");
+			$variableSelect.val([]);
+
+			$.ajax({
+				url: sourceUrl,
+				dataType: "json"
+			})
+			.done(function(response) {
+				var items = response;
+				$.each(items, function(i, item) {
+					var value = item[valueFieldName];
+					var label = item[labelFieldName];
+					$select.append($("<option />").val(value).text(label));
+				});
+				$select.removeAttr("disabled");
+				$select.val([]);
+				
+				if(callback){
+					callback(response);
+				}
+			})
+			.error(function(e) {
+				//TODO
+			});
 		}
 	},
 	/**
