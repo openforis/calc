@@ -118,7 +118,7 @@ button.default-btn:hover {
 button.calculation:hover{
 	background-color: #3e5770;
 	border-color: #3e5770;
-}Record
+}
 button.results:hover {
 	background-color: #6c859f;
 	border-color: #6c859f;
@@ -131,7 +131,7 @@ button.settings:hover {
 	background-color: #5f6066;
 	border-color: #5f6066;
 }
- .row1 {
+.row1 {
 	height: 40%;
 	width: 100%;
 	margin: 0px;
@@ -156,6 +156,34 @@ button.settings:hover {
 	overflow: visible;
 	border-radius:8px;
 }
+
+/**
+* Calculation
+*/
+#calculation .row2 {
+/* 	margin-left: auto; */
+/* 	margin-right: auto; */
+	text-align: center;
+}
+
+#calculation .btn-home-plus {
+	width: 10em;
+	margin: 1em;
+}
+
+#calculation .calculation-button-container {
+	text-align: left;
+	max-width: 90%;
+	display: inline;
+}
+
+#calculation .calculation-button {
+	display: inline-block;
+	width: 15em;
+	height: 5em;
+	margin: 1em;
+}
+
 /**
 * Footer
 */

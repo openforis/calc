@@ -21,8 +21,6 @@ $section  = null;
 /*
  * Home page sections 
 */
-$calculationContainer = $("#calculation");
-
 $page = $("#page");
 $nav = $(".container ul.breadcrumb");
 $jobStatus = $("#job-status");
@@ -227,33 +225,10 @@ $(document).ready(function() {
 		resizeContainer();
 	});
 	
-	// load calculation step into main page
-	loadCalculationSteps = function() {
-		$.ajax({
-			url:"rest/calculationstep/load.json",
-			dataType:"json"
-		}).done(function(response){
-			$steps = response;
-			//console.log($steps);
-			
-			$buttonContainer = $calculationContainer.find('.row2');
-			$.each($steps, function(i,$step){
-				$button = $calculationContainer.find(".calculation-button").clone();
-				$button.removeClass("calculation-button");
-				
-				$buttonContainer.append($button);
-				$button.html($step.caption);
-				$button.attr("href","step-edit.html?id="+$step.id);
-				$button.click(homeButtonClick);
-				$button.fadeIn(100);
-			});
-		});
-	};
-	
 	// when page is loaded init function is called
 	init = function() {
 		//load all calculation steps
-		loadCalculationSteps();
+		CalculationStepManager.updateHomePage();
 		
 		checkJobStatus();
 		//on load, the footer buttons is positioned to the bottom of the page

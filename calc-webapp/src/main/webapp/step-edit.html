@@ -312,6 +312,8 @@ $(function(){
 		    		$calculationStep = response.fields.calculationStep;
 		    		updateCalculationStepUi($calculationStep);
 			    	
+		    		CalculationStepManager.updateHomePageStepElement($calculationStep);
+			    	
 		    		if(succesCallback) {
 			    		succesCallback(response)
 		    		};
