@@ -99,8 +99,6 @@
 		<div class="col-md-2">
 		</div>
 <!-- 		</div> -->
-
-		
 	</div>
 	
 	<!-- Execution and results  -->
@@ -121,7 +119,7 @@
 				<div class="row step-progress" style="padding-top: 20px">
 	<!-- 			   		<div class="col-md-1 number"></div> -->
 	<!-- 			   		<div class="col-md-2 name"></div> -->
-			   		<div class="col-md-6 col-md-offset-2">
+			   		<div class="col-md-6 col-md-offset-2" style="padding-top:10px;">
 			   			<div class="progress"> 
 							<div class="progress-bar"></div>
 						</div>
@@ -133,44 +131,19 @@
 			<div class="col-md-2">
 			</div>
 		</div>
-		<!-- results table -->
-		<div class="row data-table">
-			<!-- pagination -->
-			<div class="row">
-				<div class="col-md-1 col-md-offset-11 buttons">
-					<button class="btn default-btn"><i class="icon-angle-left prev"></i></button>
-					<button class="btn default-btn"><i class="icon-angle-right next"></i></button>			
-				</div>
+		
+		<!-- results bar -->
+		<div class="row">
+			<div class="col-md-2">
 			</div>
-			<!-- data table -->
-			<div class="row">
-				<div class="col-md-12">
-					<table class="table" id="calc-step-results-table">
-				        <thead>
-				        	<tr>
-				        		<th>1h</th>
-				        		<th>1h</th>
-				        	</tr>
-				        </thead>
-				        <tbody>
-				        	<tr>
-				        		<td>2</td>
-				        		<td>2</td>
-				        	</tr>
-				        	<tr>
-				        		<td>2</td>
-				        		<td>2</td>
-				        	</tr>
-				        	<tr>
-				        		<td>2</td>
-				        		<td>2</td>
-				        	</tr>
-				        </tbody>
-			      	</table>
-	      		</div>
-			</div>
+			<div class="col-md-8" id="calc-step-results">
 			
+				
+			</div>
+			<div class="col-md-2">
+			</div>
 		</div>
+		
 	</div>
 	
 	<!-- add variable popup form -->
@@ -214,7 +187,8 @@ $(function(){
 	 */
 	//div where the progress bar is stored
 	$stepProgress = $(".step-progress"); 
-	$resultsTable = $("#calc-step-results-table");
+	$resultsContainer = $("#calc-step-results");
+	var dataManager = new DataManager($resultsContainer);
 	
 	/**
 	 * edit form ui components
@@ -475,8 +449,10 @@ $(function(){
 		//reset progress and results table
 		$progressBar = $stepProgress.find(".progress-bar");		
 		UI.resetProgressBar($progressBar);
-		$resultsTable.find('thead').empty();
-		$resultsTable.find('tbody').empty();
+		
+		
+// 		$resultsTable.find('thead').empty();
+// 		$resultsTable.find('tbody').empty();
 		
 		//reset variables used for displaying the results
 		processResultsStarted = false;
@@ -487,8 +463,9 @@ $(function(){
 		//reset progress and results table
 		$progressBar = $stepProgress.find(".progress-bar");		
 		UI.resetProgressBar($progressBar);
-		$resultsTable.find('thead').empty();
-		$resultsTable.find('tbody').empty();
+		
+// 		$resultsTable.find('thead').empty();
+// 		$resultsTable.find('tbody').empty();
 		
 		//reset variables used for displaying the results
 		processResultsStarted = false;
@@ -506,16 +483,13 @@ $(function(){
 			function(response) {
 				//after saving it, it get started
 				stepId = $calculationStep.id;
-
-				showResultsContainer();
-				
-				
-//this is the way to execute 				
-// 				CalculationStepManager.execute(stepId, function(response) {
-// 					$job = response;
-// 					updateCalculationStepStatus($job);
-// 					showResultsContainer();
-// 				});
+// 				showResultsContainer();
+// this is the way to execute 				
+				CalculationStepManager.execute(stepId, function(response) {
+					$job = response;
+					updateCalculationStepStatus($job);
+					showResultsContainer();
+				});
 
 
 			}
@@ -535,14 +509,16 @@ $(function(){
 	updateCalculationStepStatus = function($job) {
 
 		//start processing results the first time the status != pending
-		if(!processResultsStarted && $job.status != 'PENDING') {
-			setTimeout(function(){
-				processNextResult($job);}
-			, 100);
+		if(!processResultsStarted) {
+			
+// 			setTimeout(function(){
+// 				processNextResult($job);
+			processResults($job);
+// 			}, 100);
 		}
 		
 		$task = $job.tasks[0];
-			
+
 		$progressBar = $stepProgress.find(".progress-bar");		
 		UI.resetProgressBar($progressBar);
 		
@@ -585,6 +561,25 @@ $(function(){
 		} 
 	};
 	
+	processResults = function($job) {
+// 		dataManager.show(entity, fields);
+		if(processResultsStarted != true) {
+			console.log($job);			
+			if( $job.status != 'PENDING' && $job.tasks[0].itemsProcessed >= 50) {
+				//get entity info and then start showing results
+				$.ajax({
+					url:"rest/data/"+$calculationStep.outputEntityId+"/info.json",
+					dataType:"json"
+				})
+				.done(function(response){
+					dataManager.showTable($job, response.fields.entityName, $calculationStep.variables, response.fields.count);
+					processResultsStarted = true;
+				});
+			}
+			
+		}
+	}
+	
 	processNextResult = function($job) {
 		
 		$.ajax({
@@ -603,7 +598,7 @@ $(function(){
 					$th = $("<th></th>");
 					$th.html("Record");
 					$tr.append($th);
-					$.each($data.fields,function(j,field) {
+					$.each($data.fields, function(j,field) {
 						$th = $("<th></th>");
 						$th.html(j);
 						$tr.append($th);
@@ -657,7 +652,8 @@ $(function(){
 			}		
 		);
 	};
-	
+// 	var d = new DataManager($resultsContainer);
+// 	console.log(d.$tableContainer);
 	// on load
 	init();
 	

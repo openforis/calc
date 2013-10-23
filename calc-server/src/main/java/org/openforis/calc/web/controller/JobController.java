@@ -3,6 +3,8 @@
  */
 package org.openforis.calc.web.controller;
 
+import java.util.List;
+
 import org.openforis.calc.chain.InvalidProcessingChainException;
 import org.openforis.calc.engine.DataRecord;
 import org.openforis.calc.engine.Job;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -45,13 +48,22 @@ public class JobController {
 		return job;
 	}
 
-	@RequestMapping(value = "/{id}/nextResult.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+//	@RequestMapping(value = "/{id}/nextResult.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+//	public @ResponseBody
+//	synchronized DataRecord getNextResult(@PathVariable String id) throws InvalidProcessingChainException, WorkspaceLockedException {
+//		Job job = taskManager.getJobById(id);
+//		CustomRTask task = (CustomRTask) job.tasks().get(0);
+//		DataRecord dataRecord = task.getNextResult();
+//		return dataRecord;
+//	}
+
+	@RequestMapping(value = "/{id}/results.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
-	synchronized DataRecord getNextResult(@PathVariable String id) throws InvalidProcessingChainException, WorkspaceLockedException {
+	synchronized List<DataRecord> getResults(@PathVariable String id, @RequestParam int offset, @RequestParam int numberOfRows) throws InvalidProcessingChainException, WorkspaceLockedException {
 		Job job = taskManager.getJobById(id);
 		CustomRTask task = (CustomRTask) job.tasks().get(0);
-		DataRecord dataRecord = task.getNextResult();
-		return dataRecord;
+		List<DataRecord> results = task.getResults(offset, offset + numberOfRows );
+		return results;
 	}
-
+	
 }

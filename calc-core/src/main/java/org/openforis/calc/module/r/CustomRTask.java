@@ -1,12 +1,9 @@
 package org.openforis.calc.module.r;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.jooq.Field;
 import org.jooq.Query;
@@ -34,8 +31,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author M. Togna
  */
 public final class CustomRTask extends CalculationStepTask {
-
-	private static final String VARIABLE_PLACEMARK = "\\$(.+?)\\$";
 
 	@JsonIgnore
 	private List<DataRecord> results;
@@ -69,7 +64,7 @@ public final class CustomRTask extends CalculationStepTask {
 	@Transactional
 	synchronized protected void execute() throws RException, InterruptedException {
 		rEnvironment = r.newEnvironment();
-		variables = extractVariables();
+		variables = getCalculationStep().getInputVariables();
 		// updates to run in batch
 		updates = new ArrayList<Query>();
 
@@ -216,17 +211,6 @@ public final class CustomRTask extends CalculationStepTask {
 		return getCalculationStep().getScript();
 	}
 
-	private Set<String> extractVariables() {
-		Set<String> variables = new HashSet<String>();
-		Pattern p = Pattern.compile(VARIABLE_PLACEMARK);
-		Matcher m = p.matcher(getScript());
-		while (m.find()) {
-			String variable = m.group(1);
-			variables.add(variable);
-		}
-		return variables;
-	}
-
 	// not used for now
 	synchronized protected void executeExternalScript() throws RException {
 		REnvironment env = r.newEnvironment();
@@ -242,7 +226,23 @@ public final class CustomRTask extends CalculationStepTask {
 	public void setMaxItems(long max) {
 		this.maxItems = max;
 	}
-
+	
+	@JsonIgnore
+	List<DataRecord> bufferResults = null;
+	@JsonIgnore
+	public List<DataRecord> getResults(int from , int to){
+		if (results != null) {
+		synchronized (results) {
+			bufferResults = new ArrayList<DataRecord>();
+			List<DataRecord> subList = results.subList(from, to);
+//			 bufferResults =C ollectionUtils.unmodifiableList(subList);
+			bufferResults.addAll(subList);
+			 return bufferResults;
+		}
+		} 
+		return null;
+	}
+	
 	@JsonIgnore
 	public DataRecord getNextResult() {
 		synchronized (results) {
@@ -256,23 +256,22 @@ public final class CustomRTask extends CalculationStepTask {
 	}
 
 	// TODO remove ? old buffered results
-	@JsonIgnore
-	List<DataRecord> bufferResults = null;
-
-	public List<DataRecord> getBufferedResults() {
-		return bufferResults;
-	}
-
-	// @JsonIgnore
-	public void prepareBufferedResults() {
-		if (results != null) {
-			synchronized (results) {
-				bufferResults = new ArrayList<DataRecord>(results);
-				results.clear();
-
-			}
-		}
-	}
+//	
+//
+//	public List<DataRecord> getBufferedResults() {
+//		return bufferResults;
+//	}
+//
+//	// @JsonIgnore
+//	public void prepareBufferedResults() {
+//		if (results != null) {
+//			synchronized (results) {
+//				bufferResults = new ArrayList<DataRecord>(results);
+//				results.clear();
+//
+//			}
+//		}
+//	}
 
 	private class RTaskVisitor implements DataRecordVisitor {
 

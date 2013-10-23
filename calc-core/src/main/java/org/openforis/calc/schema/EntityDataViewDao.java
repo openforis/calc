@@ -23,6 +23,16 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class EntityDataViewDao extends AbstractJooqDao {
 
+	public long count(Entity entity){
+		EntityDataView view = getDataView(entity.getWorkspace(), entity);
+		Long count = psql().selectCount().from(view).fetchOne(0, Long.class);
+		return count;
+	}
+	
+	public List<DataRecord> query(Workspace workspace, Integer offset, Integer numberOfRows, String entityName, String... fields) {
+		return query(null, workspace, offset, numberOfRows, entityName, fields);
+	}
+	
 	public List<DataRecord> query(DataRecordVisitor visitor, Workspace workspace, Integer offset, Integer numberOfRows, String entityName, String... fields) {
 		if (fields == null || fields.length == 0) {
 			throw new IllegalArgumentException("fields must be specifed");
@@ -30,9 +40,8 @@ public class EntityDataViewDao extends AbstractJooqDao {
 
 		List<DataRecord> records = new ArrayList<DataRecord>();
 
-		Schemas schemas = new Schemas(workspace);
 		Entity entity = workspace.getEntityByName(entityName);
-		EntityDataView view = schemas.getInputSchema().getDataView(entity);
+		EntityDataView view = getDataView(workspace, entity);
 
 		// prepare query
 		SelectQuery<Record> select = psql().selectQuery();
@@ -63,8 +72,15 @@ public class EntityDataViewDao extends AbstractJooqDao {
 			if (visitor != null) {
 				visitor.visit(dataRecord);
 			}
+			records.add(dataRecord);
 		}
 		return records;
+	}
+
+	private EntityDataView getDataView(Workspace workspace, Entity entity) {
+		Schemas schemas = new Schemas(workspace);
+		EntityDataView view = schemas.getInputSchema().getDataView(entity);
+		return view;
 	}
 
 }

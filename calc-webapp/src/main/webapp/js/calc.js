@@ -11,6 +11,8 @@ home = "home.html";
 $footer = $("#footer");
 $footerHomeLinks = $("#footer .links");
 $backHomeButton = $("#footer button.back");
+$dataVisualization = $("#data-visualization");
+
 /**
  * main html container
  */

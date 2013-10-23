@@ -145,6 +145,46 @@
 	</footer>
 	<!--  ==== End Footer ==== -->
 	
+	
+	<!--  ==== data visualization component ==== -->
+	<div class="data-visualization" id="data-visualization">
+		<div class="data-visualization-header-buttons">
+			<div class="col-md-4"></div>
+			<div class="col-md-2 no-padding">
+				<button class="btn default-btn table">Table</button>
+			</div>
+			<div class="col-md-2 no-padding">
+				<button class="btn default-btn">Scatter plot</button>
+			</div>
+		</div>
+		
+		<div class="row data-table">
+			<!-- pagination -->
+			<div class="row">
+				<div class="col-md-3 col-md-offset-8 data-table-pagination">
+<!-- 					1-15 of 34	 -->
+				</div>
+				<div class="col-md-1 data-table-buttons">
+					<button class="btn default-btn"><i class="icon-angle-left prev"></i></button>
+					<button class="btn default-btn"><i class="icon-angle-right next"></i></button>			
+				</div>
+			</div>
+			<!-- data table -->
+			<div class="row">
+				<div class="col-md-12">
+					<table class="table table-results">
+				        <thead>
+				        </thead>
+				        <tbody>
+				        </tbody>
+			      	</table>
+	      		</div>
+			</div>
+		</div>
+		
+		<div class="row scatter-plot">
+		</div>
+	</div>
     <!-- Bootstrap core JavaScript
     ================================================== -->
 	
@@ -163,7 +203,7 @@
 	<script src="./js/calc.js"></script>
 	<script src="./js/calc-ui.js"></script>
 	<script src="./js/calculation-step-manager.js"></script>
-	
+	<script src="./js/data-manager.js"></script>
 		
 </body>
 </html>

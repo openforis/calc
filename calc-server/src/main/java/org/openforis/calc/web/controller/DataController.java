@@ -5,34 +5,18 @@ package org.openforis.calc.web.controller;
 
 import java.util.List;
 
-import javax.validation.Valid;
-
-import org.openforis.calc.chain.CalculationStep;
-import org.openforis.calc.chain.CalculationStepDao;
-import org.openforis.calc.chain.InvalidProcessingChainException;
-import org.openforis.calc.chain.ProcessingChain;
-import org.openforis.calc.engine.Job;
-import org.openforis.calc.engine.TaskManager;
+import org.openforis.calc.engine.DataRecord;
 import org.openforis.calc.engine.Workspace;
-import org.openforis.calc.engine.WorkspaceLockedException;
 import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.Entity;
-import org.openforis.calc.metadata.Variable;
-import org.openforis.calc.metadata.VariableDao;
-import org.openforis.calc.module.r.CalcRModule;
-import org.openforis.calc.module.r.CustomROperation;
-import org.openforis.calc.module.r.CustomRTask;
-import org.openforis.calc.schema.EntityDataView;
-import org.openforis.calc.schema.InputSchema;
-import org.openforis.calc.schema.Schemas;
-import org.openforis.calc.web.form.CalculationStepForm;
+import org.openforis.calc.schema.EntityDataViewDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -46,29 +30,42 @@ public class DataController {
 	@Autowired
 	private WorkspaceService workspaceService;
 
-	@Autowired
-	private VariableDao variableDao;
+//	@Autowired
+//	private VariableDao variableDao;
+//
+//	@Autowired
+//	private CalculationStepDao calculationStepDao;
+//
+//	@Autowired
+//	private TaskManager taskManager;
 
 	@Autowired
-	private CalculationStepDao calculationStepDao;
+	private EntityDataViewDao entityDao;
 
-	@Autowired
-	private TaskManager taskManager;
-
-	
-
-	@RequestMapping(value = "/{entityName}/load.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/{entityName}/query.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
-	void load(@PathVariable String entityName) {
+	List<DataRecord> query(@PathVariable String entityName, @RequestParam String fields, @RequestParam int offset, @RequestParam int numberOfRows) {
 		Workspace workspace = workspaceService.getActiveWorkspace();
-		Entity entity = workspace.getEntityByName(entityName);
-		Schemas schemas = new Schemas(workspace);
-		InputSchema schema = schemas.getInputSchema();
-		EntityDataView dataView = schema.getDataView(entity);
 		
+		List<DataRecord> records = entityDao.query(workspace, offset, numberOfRows, entityName, fields.split(","));
 		
+		return records;
 	}
 
+	@RequestMapping(value = "/{entityId}/info.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	Response info(@PathVariable int entityId) {
+		Workspace workspace = workspaceService.getActiveWorkspace();
+		Entity entity = workspace.getEntityById(entityId);
+		long count = entityDao.count(entity);
+		
+		Response response = new Response();
+		response.addField("entityName", entity.getName());
+		response.addField("entityId", entityId);
+		response.addField("count", count);
+		
+		return response;
+	}
 	
 
 }

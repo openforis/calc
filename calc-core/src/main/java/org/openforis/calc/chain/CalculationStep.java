@@ -1,5 +1,10 @@
 package org.openforis.calc.chain;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.persistence.Column;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -28,6 +33,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @javax.persistence.Entity
 @Table(name = "calculation_step")
 public class CalculationStep extends UserObject {
+	
+	private static final String VARIABLE_PLACEMARK = "\\$(.+?)\\$";
 	
 	@Column(name = "module_name")
 	private String moduleName;
@@ -135,5 +142,23 @@ public class CalculationStep extends UserObject {
 	@Override
 	public String toString() {
 		return String.format("#%d: %s:%s:%s", stepNo, moduleName, operationName, moduleVersion);
+	}
+	
+	public Set<String> getInputVariables() {
+		Set<String> variables = new HashSet<String>();
+		Pattern p = Pattern.compile(VARIABLE_PLACEMARK);
+		Matcher m = p.matcher(getScript());
+		while (m.find()) {
+			String variable = m.group(1);
+			variables.add(variable);
+		}
+		
+		return variables;
+	}
+	
+	public Set<String> getVariables() {
+		Set<String> variables = getInputVariables();
+		variables.add(getOutputVariable().getName());
+		return variables;
 	}
 }

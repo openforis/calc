@@ -9,6 +9,7 @@ html, body {
 	height: 100%;
 	margin: 0px;
 	padding: 0px;
+	font-weight: 200;
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
@@ -237,7 +238,11 @@ formula editor
 /**
 *  Data visualization
 */
-.data-table .buttons button {
+#data-visualization, #data-visualization .scatter-plot {
+	display: none;	
+}
+
+.data-table .data-table-buttons button {
 	width: 50%;
 /* 	float:right; */
 	margin: 0px;
@@ -246,10 +251,17 @@ formula editor
 	border:none;
 /* 	font-size: 0.4em; */
 }
-
+.data-table .data-table-pagination {
+	margin-top: 13px;
+	text-align: right;
+	padding-right: 5px;
+}
 .data-table table thead > tr > th {
 	text-align: center;
-/* 	border-bottom: none; */
+	background-color: #ecf0f1;
+	border-bottom: none;
+	color: #2c3e50;
+	font-weight: 300;
 /* 	border-top: 1px solid white; */
 	
 } 
@@ -258,6 +270,13 @@ formula editor
 /* 	border-bottom: none; */
 	border-top: 1px solid #ecf0f1;
 	
+}
+.data-visualization .data-visualization-header-buttons button {
+	width:100%;	
+/* 	border: 1px solid #2c3e50; */
+}
+.no-padding {
+	padding: 0px;
 }
 /**
 calc-step page
@@ -357,7 +376,9 @@ calc-step page
   border-top-color: #e74c3c;
 }
 
-/** Lock */
+/** 
+* Modal lock component 
+*/
 #ui-lock-modal {
 	top: 45%;
 }
@@ -365,5 +386,5 @@ calc-step page
 	width: 300px;
 }
 .locked .modal-backdrop.in {
-	opacity: 0.3;
+	opacity: 0.1;
 }

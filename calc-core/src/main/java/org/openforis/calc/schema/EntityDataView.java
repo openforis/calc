@@ -33,6 +33,7 @@ public class EntityDataView extends DataTable {
 		createParentIdField();
 		// TODO: coordinates disabled now
 		// createCoordinateFields();
+		createCategoryValueFields(entity, true);
 		createQuantityFields(true);
 		createTextFields();
 		initSelect();
@@ -75,6 +76,15 @@ public class EntityDataView extends DataTable {
 			}
 		}
 		return null;
+	}
+	
+	@Override
+	protected void createCategoryValueFields(Entity entity, boolean input) {
+		Entity currentEntity = getEntity();
+		while (currentEntity != null) {
+			super.createCategoryValueFields(currentEntity, input);
+			currentEntity = currentEntity.getParent();
+		}
 	}
 	
 	@Override
