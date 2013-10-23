@@ -66,7 +66,7 @@
 							<button type="submit" class="btn btn-default btn-lg" style="width: 50%">Save</button>
 						</div>
 						<div class="col-md-3" style="text-align: center;">
-							<button type="button" name="run-calculcation-step" class="btn btn-default btn-lg" style="width: 50%">Run</button>
+							<button type="button" name="run-calculcation-step" class="btn btn-default btn-lg" style="width: 50%">Execute</button>
 						</div>
 <!-- 						<div class="col-lg-2"> -->
 <!-- 							<button class="btn btn-default cancel btn-lg">Cancel</button> -->
@@ -103,7 +103,7 @@
 	
 	<!-- Execution and results  -->
 	<div class="row" id="calculation-step-exec-container" style="width: 100%; height: 100%; padding-top:10px; ">
-		<div class="row">
+		<div class="row" style="height: 8%">
 			<div class="col-md-2 col-md-offset-5 step-name">
 				<legend></legend>
 			</div>
@@ -112,7 +112,7 @@
 			</div>
 		</div>
 		<!-- progress bar -->
-		<div class="row">
+		<div class="row" style="height: 10%">
 			<div class="col-md-2">
 			</div>
 			<div class="col-md-8">
@@ -132,11 +132,11 @@
 			</div>
 		</div>
 		
-		<!-- results bar -->
-		<div class="row">
+		<!-- results -->
+		<div class="row" style="height: 75%">
 			<div class="col-md-2">
 			</div>
-			<div class="col-md-8" id="calc-step-results">
+			<div class="col-md-8" id="calc-step-results" style="height: 100%">
 			
 				
 			</div>
@@ -524,7 +524,7 @@ $(function(){
 	processResults = function($job) {
 // 		dataManager.show(entity, fields);
 		if(processResultsStarted != true) {
-			console.log($job);			
+// 			console.log($job);			
 			if( $job.status != 'PENDING' && $job.tasks[0].itemsProcessed >= 50) {
 				//get entity info and then start showing results
 				$.ajax({
