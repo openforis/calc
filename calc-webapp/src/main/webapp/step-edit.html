@@ -214,13 +214,17 @@ $(function(){
 	loadEntities = function(callback) {
 		$variableSelect.attr("disabled", "disabled");
 		$variableSelect.empty();
-		UI.Form.populateSelect($entitySelect, "rest/workspace/entities.json", "id", "name", callback);
+		$addVariableButton.attr("disabled", "disabled");
+		
+		UI.Form.populateSelect($entitySelect, "rest/workspace/entities.json", "id", "name", function(response) {
+			$variableSelect.removeAttr("disabled");	
+			$addVariableButton.removeAttr("disabled");
+			callback(response);
+		});
 	};
 	
 	//load variables into select
 	loadVariables = function(callback) {
-		$addVariableButton.attr("disabled", "disabled");
-		
 		$inputVarSelects = $stepForm.find(".input-var-id");
 		$inputVarSelects.empty();
 
@@ -231,7 +235,6 @@ $(function(){
 			
 			UI.Form.populateSelect($variableSelect, url, "id", "name", function(response) {
 				//TODO update each input variable select
-				$addVariableButton.removeAttr("disabled");
 				if ( callback ) {
 					callback();
 				}
