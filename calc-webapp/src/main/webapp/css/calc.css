@@ -161,28 +161,17 @@ button.settings:hover {
 /**
 * Calculation
 */
-#calculation .row2 {
-/* 	margin-left: auto; */
-/* 	margin-right: auto; */
-	text-align: center;
-}
-
-#calculation .btn-home-plus {
-	width: 10em;
-	margin: 1em;
-}
-
-#calculation .calculation-button-container {
+#calculation .button-container {
 	text-align: left;
 	max-width: 90%;
-	display: inline;
+	margin: 2% auto 2% auto;
 }
 
-#calculation .calculation-button {
-	display: inline-block;
+#calculation .btn-home-plus, #calculation .calculation-button {
 	width: 15em;
 	height: 5em;
 	margin: 1em;
+	display: inline-block;
 }
 
 /**
