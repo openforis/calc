@@ -146,13 +146,14 @@
 	
 	<!--  ==== data visualization component ==== -->
 	<div class="data-visualization" id="data-visualization">
-		<div class="data-visualization-header-buttons">
+		
+		<div class="row data-visualization-header-buttons">
 			<div class="col-md-4"></div>
 			<div class="col-md-2 no-padding">
-				<button class="btn default-btn table">Table</button>
+				<button class="btn default-btn table-btn">Table</button>
 			</div>
 			<div class="col-md-2 no-padding">
-				<button class="btn default-btn">Scatter plot</button>
+				<button class="btn default-btn scatter-plot-btn">Scatter plot</button>
 			</div>
 		</div>
 		
@@ -181,6 +182,7 @@
 		</div>
 		
 		<div class="row scatter-plot">
+			<div class="row chart"></div>
 		</div>
 	</div>
     <!-- Bootstrap core JavaScript
@@ -193,7 +195,8 @@
 	<script src="./js/bootstrap.min.js"></script>
 	<script src="./js/modal.js"></script>
 	<script src="./js/tooltip.js"></script>
-	
+	<!-- chart jquery plugin -->
+	<script src="js/highcharts.js"></script>
 	<!-- Url parser jqeury plugin -->
 	<script src="./js/purl.js"></script>
 	
@@ -203,6 +206,6 @@
 	<script src="./js/workspace-manager.js"></script>
 	<script src="./js/calculation-step-manager.js"></script>
 	<script src="./js/data-manager.js"></script>
-		
+	<script src="./js/scatter-plot.js"></script>
 </body>
 </html>

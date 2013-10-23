@@ -255,8 +255,9 @@ formula editor
 /**
 *  Data visualization
 */
-#data-visualization, #data-visualization .scatter-plot {
+.data-visualization, .data-visualization .scatter-plot {
 	display: none;	
+	height: 100%;
 }
 
 .data-table .data-table-buttons button {
@@ -292,6 +293,13 @@ formula editor
 	width:100%;	
 /* 	border: 1px solid #2c3e50; */
 }
+.data-visualization .chart {
+	height: 100%;
+	width: 100%;
+	padding-top: 20px;
+}
+
+
 .no-padding {
 	padding: 0px;
 }
