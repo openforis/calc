@@ -78,6 +78,11 @@ var CalculationStepManager = {
 	 * @param callback
 	 */
 	updateHomePage: function(callback) {
+		var $calculationContainer = $("#calculation");
+		var $stepElContainer = $calculationContainer.find('.button-container');
+		var $stepElems = $stepElContainer.find(".calculation-button");
+		$stepElems.remove();
+		
 		CalculationStepManager.loadAll(function(response){
 			var $steps = response;
 			$.each($steps, function(i, $step){
@@ -92,7 +97,7 @@ var CalculationStepManager = {
 	 */
 	updateHomePageStepElement: function($step) {
 		var $calculationContainer = $("#calculation");
-		$el = $calculationContainer.find("#calculation-step-el-" + $step.id);
+		var $el = $calculationContainer.find("#calculation-step-el-" + $step.id);
 		if ( $el.length == 0 ) {
 			CalculationStepManager._addHomePageStepElement($step);
 		} else {
@@ -106,7 +111,8 @@ var CalculationStepManager = {
 	 */
 	_addHomePageStepElement: function($step) {
 		var $calculationContainer = $("#calculation");
-		var $stepElContainer = $calculationContainer.find('.calculation-button-container');
+		
+		//create button from template
 		var $button = $calculationContainer.find(".calculation-button.template").clone();
 		$button.removeClass("template");
 		$button.attr("id", "calculation-step-el-" + $step.id);
@@ -114,6 +120,8 @@ var CalculationStepManager = {
 		$button.attr("href","step-edit.html?id="+$step.id);
 		$button.click(homeButtonClick);
 		$button.fadeIn(100);
+		
+		var $stepElContainer = $calculationContainer.find('.button-container');
 		$stepElContainer.append($button);
 		return $button;
 	}
