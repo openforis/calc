@@ -210,65 +210,11 @@ $(function(){
 	/**
 	* Edit form 
 	*/
-	//load entities into select
-	loadEntities = function(callback) {
-		$variableSelect.attr("disabled", "disabled");
-		$variableSelect.empty();
-		$addVariableButton.attr("disabled", "disabled");
-		
-		UI.Form.populateSelect($entitySelect, "rest/workspace/entities.json", "id", "name", function(response) {
-			$variableSelect.removeAttr("disabled");	
-			$addVariableButton.removeAttr("disabled");
-			callback(response);
-		});
-	};
-	
-	//load variables into select
-	loadVariables = function(callback) {
-		$inputVarSelects = $stepForm.find(".input-var-id");
-		$inputVarSelects.empty();
-
-		$selectedEntity = $entitySelect.find(":selected");
-		if ( $selectedEntity.length == 1 ) {
-			var entityId = $selectedEntity.val();
-			var url = "rest/workspace/entities/" + entityId + "/qtyvariables.json";
-			
-			UI.Form.populateSelect($variableSelect, url, "id", "name", function(response) {
-				//TODO update each input variable select
-				if ( callback ) {
-					callback();
-				}
-			});
-		}
-	};
-	// save the calculation step 
-	saveStep = function(succesCallback) {
-		var $step = $stepForm.serialize();
-		var successCallback = function ( response ) {
-	    	UI.Form.updateErrors($stepForm, response.errors);
-	    	if(response.status == "ERROR" ) {
-	    		UI.Form.showResultMessage("There are errors in the form. Please fix them before proceeding.",false);
-	    	} else {
-	    		$calculationStep = response.fields.calculationStep;
-	    		updateCalculationStepUi($calculationStep);
-		    	
-	    		CalculationStepManager.updateHomePageStepElement($calculationStep);
-		    	
-	    		if(succesCallback) {
-		    		succesCallback(response);
-	    		};
-	    	}
-	    };
-	    var errorCallback = function (e) {
-	    	UI.Form.showResultMessage("An error occured. Please check the log file.",false );
-	    };
-		CalculationStepManager.save($step, successCallback, errorCallback); 
-	}
 
 	// on submit button click 
 	$stepForm.find("button[type='submit']").click(function(event){
 		event.preventDefault();
-		saveStep(function(){
+		CalculationStepManager.save($stepForm, function(){
 			UI.Form.showResultMessage("Calculation step successfully saved.",true);
 		});
 	});
@@ -283,7 +229,8 @@ $(function(){
 		UI.Form.reset($addVariableForm);
 		
 		//set entityId hidden field value
-		$addVariableForm.find("[name=entityId]").val($entitySelect.val());
+		var selectedEntityId = CalculationStepManager.getSelectedEntityId($stepForm);
+		$addVariableForm.find("[name=entityId]").val(selectedEntityId);
 		
 		$addVariableModal.modal({keyboard:false,backdrop:"static"});
 	});
@@ -291,9 +238,6 @@ $(function(){
 	// init new variable form
 	$addVariableForm.ajaxForm( {
 	    dataType : 'json',
-	    data: {
-	    	entityId: $entitySelect.val()
-	    },
 	    beforeSubmit: function() {
 	    	UI.lock();
 	    },
@@ -303,9 +247,9 @@ $(function(){
 	    		UI.Form.showResultMessage("Error, invalid data",false);
 	    	} else {
 	    		var variable = response.fields.variable;
-	    		loadVariables(function() {
-	    			$variableSelect.val(variable.id);
-	    		});
+	    		
+	    		CalculationStepManager.populateVariableSelect($stepForm, variable.id);
+	    		
 	    		$addVariableModal.modal('hide');
 	    		$addVariableModal.modal('removeBackdrop');
 	    	}
@@ -316,11 +260,6 @@ $(function(){
 	    complete: function() {
 	    	UI.unlock();
 	    }
-	});
-	
-	// submit new variable form on save button click
-	$addVariableModal.find('button.save').click(function() {
-		$addVariableForm.submit();
 	});
 	
 	/**
@@ -364,32 +303,6 @@ $(function(){
 			renameInputVariables();
 		}, 300);
 	};
-	
-	// load entity variables on entity select change
-	$entitySelect.change(function(event) {
-		loadVariables();
-	});
-
-	//load calculation step with given stepId
-	loadCalculationStep = function(stepId) {
-		CalculationStepManager.load(stepId, function(response) {
-			var $step = response;
-			updateCalculationStepUi($step);
-		});
-	};
-	
-	updateCalculationStepUi = function($step) {
-		$entitySelect.val($step.outputEntityId);
-		
-		loadVariables(function() {
-			$variableSelect.val($step.outputVariableId);
-			
-			UI.Form.setFieldValues($stepForm, $step);
-			
-			UI.unlock();
-		});
-	};
-	
 	
 	/*** 
 	* ================= 
@@ -442,9 +355,10 @@ $(function(){
 	$stepForm.find("button[name='run-calculcation-step']").click(function(event){
 		event.preventDefault();
 		//first save the step and then it runs
-		saveStep(
+		CalculationStepManager.save($stepForm, 
 			function(response) {
 				//after saving it, it get started
+				$calculationStep = response;
 				stepId = $calculationStep.id;
 // 				showResultsContainer();
 // this is the way to execute 				
@@ -601,19 +515,7 @@ $(function(){
 	* Init function
 	*/
 	init = function() {
-		UI.lock();
-		
-		loadEntities(
-			function(){
-				url = this.target;
-				stepId = $.url(url).param("id");
-				if(stepId) {
-					loadCalculationStep(stepId);
-				} else {
-					UI.unlock();
-				}
-			}		
-		);
+		CalculationStepManager.initForm($stepForm);
 	};
 // 	var d = new DataManager($resultsContainer);
 // 	console.log(d.$tableContainer);
