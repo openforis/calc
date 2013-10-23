@@ -212,94 +212,54 @@ $(function(){
 	*/
 	//load entities into select
 	loadEntities = function(callback) {
-		$entitySelect.empty();
 		$variableSelect.attr("disabled", "disabled");
 		$variableSelect.empty();
-		
-		$.ajax({
-			url: "rest/workspace/entities.json",
-			dataType: "json"
-		})
-		.done(function(response) {
-			var entities = response;
-			$.each(entities, function(i, entity) {
-				 $entitySelect.append($("<option />").val(entity.id).text(entity.name));
-			});
-			$entitySelect.val([]);
-			if(callback){
-				callback();
-			}
-		}); 
+		UI.Form.populateSelect($entitySelect, "rest/workspace/entities.json", "id", "name", callback);
 	};
+	
 	//load variables into select
 	loadVariables = function(callback) {
 		$addVariableButton.attr("disabled", "disabled");
-		$variableSelect.attr("disabled", "disabled");
-		$variableSelect.empty();
 		
 		$inputVarSelects = $stepForm.find(".input-var-id");
 		$inputVarSelects.empty();
-		
+
 		$selectedEntity = $entitySelect.find(":selected");
-		if ( $selectedEntity != null ) {
-			$.ajax({
-				url: "rest/workspace/entities/" + $selectedEntity.val() + "/qtyvariables.json",
-				dataType: "json"
-			})
-			.done(function(response) {				
-				variables = response;
-				
-				$.each(variables, function(i, variable) {
-					
-					$option = $("<option />").val(variable.id).text(variable.name);
-					
-					$variableSelect.append($option);
-					
-					//update each input variable select
-					$.each($inputVarSelects, function(i,select){
-						$(select).append($option.clone());
-						$(select).val([]);
-					});
-					 
-				});
+		if ( $selectedEntity.length == 1 ) {
+			var entityId = $selectedEntity.val();
+			var url = "rest/workspace/entities/" + entityId + "/qtyvariables.json";
+			
+			UI.Form.populateSelect($variableSelect, url, "id", "name", function(response) {
+				//TODO update each input variable select
 				$addVariableButton.removeAttr("disabled");
-				$variableSelect.removeAttr("disabled");
-				$variableSelect.val([]);
 				if ( callback ) {
 					callback();
 				}
-			}); 
+			});
 		}
 	};
 	// save the calculation step 
 	saveStep = function(succesCallback) {
-		$stepForm.ajaxForm( {
-		    dataType : 'json',
-		    beforeSubmit: function() {
-		    	UI.lock();
-		    },
-		    success: function ( response ) {
-		    	UI.Form.updateErrors($stepForm, response.errors);
-		    	if(response.status == "ERROR" ) {
-		    		UI.Form.showResultMessage("There are errors in the form. Please fix them before proceeding.",false);
-		    	} else {
-		    		$calculationStep = response.fields.calculationStep;
-		    		updateCalculationStepUi($calculationStep);
-			    	
-		    		if(succesCallback) {
-			    		succesCallback(response)
-		    		};
-		    	}
-		    },
-		    error: function (e) {
-		    	UI.Form.showResultMessage("An error occured. Please check the log file.",false );
-		    },
-		    complete: function() {
-		    	UI.unlock();
-		    }
-		});	
-		
-		$stepForm.submit();
+		var $step = $stepForm.serialize();
+		var successCallback = function ( response ) {
+	    	UI.Form.updateErrors($stepForm, response.errors);
+	    	if(response.status == "ERROR" ) {
+	    		UI.Form.showResultMessage("There are errors in the form. Please fix them before proceeding.",false);
+	    	} else {
+	    		$calculationStep = response.fields.calculationStep;
+	    		updateCalculationStepUi($calculationStep);
+		    	
+	    		CalculationStepManager.updateHomePageStepElement($calculationStep);
+		    	
+	    		if(succesCallback) {
+		    		succesCallback(response);
+	    		};
+	    	}
+	    };
+	    var errorCallback = function (e) {
+	    	UI.Form.showResultMessage("An error occured. Please check the log file.",false );
+	    };
+		CalculationStepManager.save($step, successCallback, errorCallback); 
 	}
 
 	// on submit button click 
@@ -410,7 +370,7 @@ $(function(){
 	//load calculation step with given stepId
 	loadCalculationStep = function(stepId) {
 		CalculationStepManager.load(stepId, function(response) {
-			$step = response;
+			var $step = response;
 			updateCalculationStepUi($step);
 		});
 	};
