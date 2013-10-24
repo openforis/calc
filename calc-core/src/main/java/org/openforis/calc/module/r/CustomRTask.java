@@ -301,7 +301,7 @@ public final class CustomRTask extends CalculationStepTask {
 
 			// update query
 			DataTable dataTable = getDataTable();
-			Long id = (Long) record.getValue(dataTable.getIdField().getName());
+			Long id = record.getId();
 			Query update = psql().update(dataTable).set(outputField, result).where(dataTable.getIdField().eq(id));
 			// return update;
 			updates.add(update);
