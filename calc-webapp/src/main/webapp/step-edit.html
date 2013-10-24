@@ -188,15 +188,20 @@ $(function(){
 	//div where the progress bar is stored
 	$stepProgress = $(".step-progress"); 
 	$resultsContainer = $("#calc-step-results");
-	var dataManager = null;
+	var dataManager = new DataManager($resultsContainer);
 	
 	/**
 	 * edit form ui components
 	 */
 	$stepForm = $('#step-form');
-	$entitySelect = $stepForm.find("[name='entityId']");
-	$variableSelect = $stepForm.find("[name='variableId']");
 	$addVariableButton = $stepForm.find("button[name='add-variable']");
+	
+	$addVariableModal = $('#add-variable-modal');
+	$addVariableForm = $addVariableModal.find('form');
+	/**
+	* edit form manager
+	*/
+	var calculationStepManager = new CalculationStepManager($stepForm);
 	
 	$inputVars = $(".input-vars");
 	$inputVar = $(".input-var");
@@ -204,24 +209,11 @@ $(function(){
 // 	$inputVars.hide();
 	$inputVar.hide();
 
-	$addVariableModal = $('#add-variable-modal');
-	$addVariableForm = $addVariableModal.find('form');
-	
-	/**
-	* Edit form 
-	*/
-
-	// on submit button click 
-	$stepForm.find("button[type='submit']").click(function(event){
-		event.preventDefault();
-		CalculationStepManager.save($stepForm, function(){
-			UI.Form.showResultMessage("Calculation step successfully saved.",true);
-		});
-	});
-	
 	/**
 	* Add variable
 	*/
+	//TODO move it elsewhere
+	
 	// open the Add Variable popup on Add Variable button click
 	$addVariableButton.click(function(event){
 		event.preventDefault();
@@ -229,7 +221,7 @@ $(function(){
 		UI.Form.reset($addVariableForm);
 		
 		//set entityId hidden field value
-		var selectedEntityId = CalculationStepManager.getSelectedEntityId($stepForm);
+		var selectedEntityId = calculationStepManager.getSelectedEntityId();
 		$addVariableForm.find("[name=entityId]").val(selectedEntityId);
 		
 		$addVariableModal.modal({keyboard:false,backdrop:"static"});
@@ -248,7 +240,7 @@ $(function(){
 	    	} else {
 	    		var variable = response.fields.variable;
 	    		
-	    		CalculationStepManager.populateVariableSelect($stepForm, variable.id);
+	    		calculationStepManager.populateVariableSelect(variable.id);
 	    		
 	    		$addVariableModal.modal('hide');
 	    		$addVariableModal.modal('removeBackdrop');
@@ -355,22 +347,18 @@ $(function(){
 	$stepForm.find("button[name='run-calculcation-step']").click(function(event){
 		event.preventDefault();
 		//first save the step and then it runs
-		CalculationStepManager.save($stepForm, 
-			function(response) {
-				//after saving it, it get started
-				$calculationStep = response;
-				stepId = $calculationStep.id;
-// 				showResultsContainer();
+		calculationStepManager.save(function(response) {
+			//after saving it, it get started
+			$calculationStep = response;
+			stepId = $calculationStep.id;
+// 			showResultsContainer();
 // this is the way to execute 				
-				CalculationStepManager.execute(stepId, function(response) {
-					$job = response;
-					updateCalculationStepStatus($job);
-					showResultsContainer();
-				});
-
-
-			}
-		);
+			calculationStepManager.execute(stepId, function(response) {
+				$job = response;
+				updateCalculationStepStatus($job);
+				showResultsContainer();
+			});
+		});
 		
 		// animation disabled for now
 // 		$calculationStepEditContainer
@@ -512,18 +500,6 @@ $(function(){
 		showEditFormContainer();
 	});
 	
-	/**
-	* Init function
-	*/
-	init = function() {
-		dataManager = new DataManager($resultsContainer);
-		
-		CalculationStepManager.initForm($stepForm);
-	};
-// 	var d = new DataManager($resultsContainer);
-// 	console.log(d.$tableContainer);
-	// on load
-	init();
 	
 });
 </script>

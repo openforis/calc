@@ -25,24 +25,14 @@ function DataManager ($container) {
 	 // scatter plot
 	 this.scatterPlot = new ScatterPlot(this.container.find('.scatter-plot'));
 	 
-	 //events handlers
-	 var $this = this;
-	 this.container.find(".table-btn").click(function(e){
-		 e.preventDefault();
-		 $this.showDataTable();
-	 });
-	 this.container.find(".scatter-plot-btn").click(function(e){ 
-		 e.preventDefault();
-		 $this.showScatterPlot();
-	 });
-	 
+	 this._init();
 };
 
 
 DataManager.prototype = (function(){
 	
 	//private methods
-	function showScatterPlot() {
+	showScatterPlot = function() {
 		this.dataTable.hide();
 		this.scatterPlot.show();
 		
@@ -53,13 +43,13 @@ DataManager.prototype = (function(){
 		}
 	};
 	
-	function showDataTable() {
+	showDataTable = function() {
 		this.dataTable.fadeIn();
 		this.scatterPlot.hide();
 	};
 
 	
-	function reset() {
+	reset = function() {
 		this._(emptyTable)();
 		
 //		this.emptyTable();
@@ -72,7 +62,7 @@ DataManager.prototype = (function(){
 		this.data = null;
 	};
 	
-	function emptyTable() {
+	emptyTable = function() {
 		if(this.offset == 0) {
 			var $thead = this.tableResults.find('thead');
 			$thead.empty();
@@ -83,7 +73,7 @@ DataManager.prototype = (function(){
 	};
 	
 	
-	function showResults(data) {
+	showResults = function(data) {
 		
 		this.data = data;
 		this.container.show();
@@ -134,11 +124,31 @@ DataManager.prototype = (function(){
 		
 	};
 	
+	/**
+	 * Declare event handlers
+	 */
+	initEventHandlers = function() {
+		//events handlers
+		 var $this = this;
+		 this.container.find(".table-btn").click(function(e){
+			 e.preventDefault();
+			 $this._(showDataTable)();
+		 });
+		 
+		 this.container.find(".scatter-plot-btn").click(function(e){ 
+			 e.preventDefault();
+			 $this._(showScatterPlot)();
+		 });
+	};
 	
 	 // prototype
     return {
 
-        constructor:DataManager,
+        constructor : DataManager,
+        
+        _init : function(){
+        	this._(initEventHandlers)();
+        },
         
         //show job results
         showTable : function(job, entity, fields, count) {
