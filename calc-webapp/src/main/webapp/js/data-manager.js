@@ -12,18 +12,19 @@ function DataManager ($container) {
 	 
 	 // ui component
 	 //table
-	 this.offset = 0;
-	 this.rows = 50;
-	 this.max = 0;
-	 this.entity = null;
-	 this.fields = null;
+//	 this.offset = 0;
+//	 this.rows = 50;
+//	 this.max = 0;
+//	 this.entity = null;
+//	 this.fields = null;
+	 
 	 //data table TODO: move to a separate file
-	 this.dataTable = this.container.find(".data-table");
-	 this.dataTablePagination = this.dataTable.find(".data-table-pagination");
-	 this.tableResults = this.dataTable.find(".table-results");
+	 this.dataTable = new DataTable( this.container.find(".data-table") );
+//	 this.dataTablePagination = this.dataTable.find(".data-table-pagination");
+//	 this.tableResults = this.dataTable.find(".table-results");
 	 
 	 // scatter plot
-	 this.scatterPlot = new ScatterPlot(this.container.find('.scatter-plot'));
+	 this.scatterPlot = new ScatterPlot( this.container.find('.scatter-plot') );
 	 
 	 this._init();
 };
@@ -32,27 +33,25 @@ function DataManager ($container) {
 DataManager.prototype = (function(){
 	
 	//private methods
-	showScatterPlot = function() {
+	var showScatterPlot = function() {
 		this.dataTable.hide();
 		this.scatterPlot.show();
 		
 		//refresh scatter plot if 2 vars in output
-		if(this.fields.length==2){
+		if(this.fields.length == 2){
 			this.scatterPlot.setAxes(this.fields[0], this.fields[1]);
 			this.scatterPlot.refresh(this.data);
 		}
 	};
 	
-	showDataTable = function() {
-		this.dataTable.fadeIn();
+	var showDataTable = function() {
+		this.dataTable.show();
 		this.scatterPlot.hide();
 	};
 
 	
-	reset = function() {
+	var reset = function() {
 		this._(emptyTable)();
-		
-//		this.emptyTable();
 		
 		this.offset = 0;
 		this.rows = 50;
@@ -62,72 +61,72 @@ DataManager.prototype = (function(){
 		this.data = null;
 	};
 	
-	emptyTable = function() {
-		if(this.offset == 0) {
-			var $thead = this.tableResults.find('thead');
-			$thead.empty();
-		}
-		var $tbody = this.tableResults.find('tbody');
-		$tbody.empty();
-		
-	};
+//	var emptyTable = function() {
+//		if(this.offset == 0) {
+//			var $thead = this.tableResults.find('thead');
+//			$thead.empty();
+//		}
+//		var $tbody = this.tableResults.find('tbody');
+//		$tbody.empty();
+//		
+//	};
 	
 	
-	showResults = function(data) {
-		
-		this.data = data;
-		this.container.show();
-		//update paging
-		var paging = (this.offset+1) + " - " + (this.offset + data.length) + " of " + this.max;
-		this.dataTablePagination.html( paging );
-		
-		//update table headers
-		if(this.offset == 0) {
-			$thead = this.tableResults.find('thead');
-			var $tr = $("<tr></tr>");
-			$tr.hide();
-			$thead.append($tr);
-			var $th = $("<th></th>");
-			$th.html("Record");
-			$tr.append($th);
-			$.each(this.fields, function(i,field) {
-				$th = $("<th></th>");
-				$th.html(field);
-				$tr.append($th);
-			});
-			$tr.fadeIn(100);
-		}
-		
-		// show items
-		var delay = 0;
-		var rowNum = this.offset + 1;
-		
-		var dataManager = this;
-		$.each(data, function(i,record) {
-			var $tbody = dataManager.tableResults.find('tbody');
-			var $tr = $("<tr></tr>");
-			$tr.hide();
-			$tbody.append($tr);
-			var $td = $("<td></td>");
-			$td.html((rowNum++));
-			$tr.append($td);
-			$.each(record.fields,function(j,field){
-				var $td = $("<td></td>");
-				$td.html(field);
-				$tr.append($td);
-			});
-			setTimeout(function() {
-				$tr.fadeIn(100);
-			}, (delay += 50) );
-		});
-
-		
-	};
+//	var showResults = function(data) {
+//		
+//		this.data = data;
+//		this.container.show();
+//		//update paging
+//		var paging = (this.offset+1) + " - " + (this.offset + data.length) + " of " + this.max;
+//		this.dataTablePagination.html( paging );
+//		
+//		//update table headers
+//		if(this.offset == 0) {
+//			$thead = this.tableResults.find('thead');
+//			var $tr = $("<tr></tr>");
+//			$tr.hide();
+//			$thead.append($tr);
+//			var $th = $("<th></th>");
+//			$th.html("Record");
+//			$tr.append($th);
+//			$.each(this.fields, function(i,field) {
+//				$th = $("<th></th>");
+//				$th.html(field);
+//				$tr.append($th);
+//			});
+//			$tr.fadeIn(100);
+//		}
+//		
+//		// show items
+//		var delay = 0;
+//		var rowNum = this.offset + 1;
+//		
+//		var dataManager = this;
+//		$.each(data, function(i,record) {
+//			var $tbody = dataManager.tableResults.find('tbody');
+//			var $tr = $("<tr></tr>");
+//			$tr.hide();
+//			$tbody.append($tr);
+//			var $td = $("<td></td>");
+//			$td.html((rowNum++));
+//			$tr.append($td);
+//			$.each(record.fields,function(j,field){
+//				var $td = $("<td></td>");
+//				$td.html(field);
+//				$tr.append($td);
+//			});
+//			setTimeout(function() {
+//				$tr.fadeIn(100);
+//			}, (delay += 50) );
+//		});
+//
+//		
+//	};
 	
 	/**
 	 * Declare event handlers
 	 */
-	initEventHandlers = function() {
+	var initEventHandlers = function() {
 		//events handlers
 		 var $this = this;
 		 this.container.find(".table-btn").click(function(e){
@@ -146,31 +145,36 @@ DataManager.prototype = (function(){
 
         constructor : DataManager,
         
-        _init : function(){
+        _init : function() {
         	this._(initEventHandlers)();
         },
         
-        //show job results
-        showTable : function(job, entity, fields, count) {
-        	
-        	this._(reset)();
-        	
-        	this.max = count;
-        	this.fields = fields;
-        	
-        	$.ajax({
-        		url:"rest/job/"+job.id+"/results.json",
-        		dataType:"json",
-        		data:{offset:this.offset, numberOfRows:this.rows},
-        		
-        		success: $.proxy(function(response) {
-//        			this.showResults(response);
-        			this._(showResults)(response);
-        		}, this)
-        		
-        	});
-        	
+        showJobResults : function(job) {
+        	this.container.fadeIn();
+        	this.dataTable.showJobResults(job);
         },
+        
+        //show job results
+//        showTable : function(job, entity, fields, count) {
+//        	console.log(job);
+//        	this._(reset)();
+//        	
+//        	this.max = count;
+//        	this.fields = fields;
+//        	
+//        	$.ajax({
+//        		url:"rest/job/"+job.id+"/results.json",
+//        		dataType:"json",
+//        		data:{offset:this.offset, numberOfRows:this.rows},
+//        		
+//        		success: $.proxy(function(response) {
+////        			this.showResults(response);
+//        			this._(showResults)(response);
+//        		}, this)
+//        		
+//        	});
+//        	
+//        },
         
 		 // define private methods dedicated one
 		_:function(callback) {

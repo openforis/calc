@@ -431,15 +431,17 @@ $(function(){
 		if(processResultsStarted != true) {
 // 			console.log($job);			
 			if( $job.status != 'PENDING' && $job.tasks[0].itemsProcessed >= 50) {
+				dataManager.showJobResults($job);
+				processResultsStarted = true;
 				//get entity info and then start showing results
-				$.ajax({
-					url:"rest/data/"+$calculationStep.outputEntityId+"/info.json",
-					dataType:"json"
-				})
-				.done(function(response){
-					dataManager.showTable($job, response.fields.entityName, $calculationStep.variables, response.fields.count);
-					processResultsStarted = true;
-				});
+// 				$.ajax({
+// 					url:"rest/data/"+$calculationStep.outputEntityId+"/info.json",
+// 					dataType:"json"
+// 				})
+// 				.done(function(response){
+// 					dataManager.showTable($job, response.fields.entityName, $calculationStep.variables, response.fields.count);
+// 					processResultsStarted = true;
+// 				});
 			}
 			
 		}
