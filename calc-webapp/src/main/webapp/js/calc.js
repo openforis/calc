@@ -230,7 +230,7 @@ $(document).ready(function() {
 	// when page is loaded init function is called
 	init = function() {
 		//load all calculation steps
-		CalculationStepManager.updateHomePage();
+		CalculationStepManager.refreshHome();
 		
 		checkJobStatus();
 		//on load, the footer buttons is positioned to the bottom of the page
