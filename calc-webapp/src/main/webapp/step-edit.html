@@ -188,7 +188,7 @@ $(function(){
 	//div where the progress bar is stored
 	$stepProgress = $(".step-progress"); 
 	$resultsContainer = $("#calc-step-results");
-	var dataManager = new DataManager($resultsContainer);
+	var dataManager = null;
 	
 	/**
 	 * edit form ui components
@@ -457,6 +457,7 @@ $(function(){
 		}
 	}
 	
+	// not used
 	processNextResult = function($job) {
 		
 		$.ajax({
@@ -515,6 +516,8 @@ $(function(){
 	* Init function
 	*/
 	init = function() {
+		dataManager = new DataManager($resultsContainer);
+		
 		CalculationStepManager.initForm($stepForm);
 	};
 // 	var d = new DataManager($resultsContainer);
