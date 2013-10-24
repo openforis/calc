@@ -240,7 +240,7 @@ $(function(){
 	    	} else {
 	    		var variable = response.fields.variable;
 	    		
-	    		calculationStepManager.populateVariableSelect(variable.id);
+	    		calculationStepManager.refreshVariableSelect(variable.id);
 	    		
 	    		$addVariableModal.modal('hide');
 	    		$addVariableModal.modal('removeBackdrop');

@@ -26,16 +26,15 @@ CalculationStepManager.prototype = (function() {
 		UI.lock();
 		var $this = this;
 		
-		$this._(initEventHandlers)();
+		$.proxy(initEventHandlers, $this)();
 	
-		//load entities
-		$this._(populateEntitySelect)(function() {
+		$.proxy(refreshEntitySelect, $this)(function() {
 			var url = window.target;
 			var stepId = $.url(url).param("id");
 			if ( stepId ) {
 				CalculationStepManager.load(stepId, function(response) {
 					$this.currentCalculationStep = response;
-					$this._(updateForm)();
+					$.proxy(updateForm, $this)();
 				});
 			} else {
 				UI.unlock();
@@ -51,13 +50,13 @@ CalculationStepManager.prototype = (function() {
 		//entity select change handler
 		var $this = this;
 		$this.$entitySelect.change(function(event) {
-			$this._(populateVariableSelect)();
+			$.proxy(refreshVariableSelect, $this)();
 		});
 		
 		// on submit button click 
 		$this.$form.find("button[type='submit']").click(function(event){
 			event.preventDefault();
-			$this._(save)(function(){
+			$.proxy(save, $this)(function(){
 				UI.Form.showResultMessage("Calculation step successfully saved.",true);
 			});
 		});
@@ -103,7 +102,7 @@ CalculationStepManager.prototype = (function() {
 	    		}
 	    	} else {
 	    		$this.currentCalculationStep = response.fields.calculationStep;
-	    		$this._(updateForm)();
+	    		$.proxy(updateForm, $this)();
 		    	
 	    		CalculationStepManager.refreshHome($this.currentCalculationStep);
 		    	
@@ -135,7 +134,7 @@ CalculationStepManager.prototype = (function() {
 		var $step = $this.currentCalculationStep;
 		$this.$entitySelect.val($step.outputEntityId);
 		
-		$this._(populateVariableSelect)($step.outputVariableId, function() {
+		$.proxy(refreshVariableSelect, $this)($step.outputVariableId, function() {
 			UI.Form.setFieldValues($this.$form, $step);
 	
 			UI.unlock();
@@ -161,7 +160,7 @@ CalculationStepManager.prototype = (function() {
 	 * 
 	 * @param callback
 	 */
-	var populateEntitySelect = function(callback) {
+	var refreshEntitySelect = function(callback) {
 		var $this = this;
 		$this.$variableSelect.empty();
 		
@@ -182,7 +181,7 @@ CalculationStepManager.prototype = (function() {
 	 * @param value Value to select in the select input control
 	 * @param callback
 	 */
-	var populateVariableSelect = function(value, callback) {
+	var refreshVariableSelect = function(value, callback) {
 		var $this = this;
 		$this.$variableSelect.attr("disabled", "disabled");
 		$this.$addVariableButton.attr("disabled", "disabled");
@@ -215,20 +214,10 @@ CalculationStepManager.prototype = (function() {
 		
 		//public methods
 		_init : init,
-		populateVariableSelect : populateVariableSelect,
+		refreshVariableSelect : refreshVariableSelect,
 		getSelectedEntityId : getSelectedEntityId,
 		save : save,
-		execute : execute,
-		
-		// define private methods dedicated one
-		_:function(callback) {
-			// instance referer
-			var self = this;
-			// callback that will be used
-			return function() {
-				return callback.apply(self, arguments);
-			};
-		}
+		execute : execute
 	};
 })();
 
