@@ -37,10 +37,12 @@ DataManager.prototype = (function(){
 		this.dataTable.hide();
 		this.scatterPlot.show();
 		
+		//temp solution
+		
 		//refresh scatter plot if 2 vars in output
-		if(this.fields.length == 2){
-			this.scatterPlot.setAxes(this.fields[0], this.fields[1]);
-			this.scatterPlot.refresh(this.data);
+		if(this.dataTable.fields.length == 2){
+			this.scatterPlot.setAxes(this.dataTable.fields[0], this.dataTable.fields[1]);
+			this.scatterPlot.refresh(this.dataTable.data);
 		}
 	};
 	

@@ -10,6 +10,9 @@ function DataTable($container) {
 	this.dataTablePagination = this.container.find(".data-table-pagination");
 	this.tableResults = this.container.find(".table-results");
 	
+//	this.dataTablePagination.hide();
+//	this.tableResults.hide();
+	
 	/*
 	 * used for table settings
 	 */
@@ -21,9 +24,22 @@ function DataTable($container) {
 	this.fields = null;
 
 	this.job = null;
+	
+	//data currently loaded
+	this.data = null;
 };
 
 DataTable.prototype = (function(){
+	//empty the html table
+	var emptyTable = function() {
+		if(this.offset == 0) {
+			var $thead = this.tableResults.find('thead');
+			$thead.empty();
+		}
+		var $tbody = this.tableResults.find('tbody');
+		$tbody.empty();
+		
+	};
 	
 	//setting the job, table gets reset
 	var setJob = function(job) {
@@ -36,24 +52,14 @@ DataTable.prototype = (function(){
 			this.entity = this.job.tasks[0].calculationStep.outputEntityId;
 			this.fields = this.job.tasks[0].calculationStep.variables;
 			
-			$.proxy( emptyTable, this );
+			$.proxy( emptyTable, this )();
 		}
-	};
-	
-	//empty the html table
-	var emptyTable = function() {
-		if(this.offset == 0) {
-			var $thead = this.tableResults.find('thead');
-			$thead.empty();
-		}
-		var $tbody = this.tableResults.find('tbody');
-		$tbody.empty();
-		
 	};
 	
 	var showResults = function(job) {
-		console.log(job);
-		$.proxy(setJob , this , job);
+		$this = this;
+//		console.log(job);
+		$.proxy(setJob , $this)(job);
 		
     	$.ajax({
     		url:"rest/job/"+job.id+"/results.json",
@@ -63,7 +69,7 @@ DataTable.prototype = (function(){
     		success: $.proxy(function(response) {
 //    			this.showResults(response);
 //    			refresh(response);
-    			$.proxy(refresh , this , response);
+    			$.proxy(refresh , this)(response);
     		}, this)
     		
     	});
@@ -73,7 +79,7 @@ DataTable.prototype = (function(){
 	// refresh html table with data given in input
 	var refresh = function(data) {
 		
-//		this.data = data;
+		this.data = data;
 		this.container.show();
 		//update paging
 		var paging = (this.offset+1) + " - " + (this.offset + data.length) + " of " + this.max;
@@ -81,6 +87,8 @@ DataTable.prototype = (function(){
 		
 		//update table headers
 		if(this.offset == 0) {
+			
+			
 			$thead = this.tableResults.find('thead');
 			var $tr = $("<tr></tr>");
 			$tr.hide();
@@ -136,10 +144,10 @@ DataTable.prototype = (function(){
 		
 		//show job results
         showJobResults : function(job) {
-        	console.log(this);
+//        	console.log(this);
 //        	this._(showJobResults)();
-        	$.proxy(showResults , this , job);
-        	console.log("ok did it call it?");
+        	$.proxy(showResults , this)(job);
+//        	console.log("ok did it call it?");
         }
 //		,
 //		
