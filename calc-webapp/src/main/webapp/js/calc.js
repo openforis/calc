@@ -27,10 +27,19 @@ $page = $("#page");
 $nav = $(".container ul.breadcrumb");
 $jobStatus = $("#job-status");
 $taskStatus = $(".task-status");
+
+/**
+ * Global variables
+ * 
+ * Managers
+ */
+calculationStepManager = null;
+
+
 /**
  * Global functions
  */
-checkJobStatus = function(updateOnly) {
+checkJobStatus = function(onCompleteCallback, updateOnly) {
 	$.ajax({
 		url: "rest/workspace/job.json",
 		dataType: "json"
@@ -39,9 +48,9 @@ checkJobStatus = function(updateOnly) {
 		$job = response;
 		
 		if( updateOnly ){
-			updateJobStatus($job);
+			updateJobStatus($job, onCompleteCallback);
 		} else if ( $job.status == 'RUNNING' ) {
-			createJobStatus($job);				
+			createJobStatus($job, onCompleteCallback);
 		}
 	})
 	.error(function(e) {
@@ -49,7 +58,7 @@ checkJobStatus = function(updateOnly) {
 	}); 
 };
 
-createJobStatus = function($job) {
+createJobStatus = function($job, onCompleteCallback) {
 	$jobStatus.modal({keyboard:false,backdrop:"static"});
 	$jobStatus.find('.modal-title').text($job.name);
 	$modalBody = $jobStatus.find('.modal-body');
@@ -69,11 +78,11 @@ createJobStatus = function($job) {
 		
 		$modalBody.append($status);	
 	});
-	updateJobStatus($job);
+	updateJobStatus($job, onCompleteCallback);
 };
 
 
-updateJobStatus = function($job) {
+updateJobStatus = function($job, onCompleteCallback) {
 	$tasks = $job.tasks;
 	$.each($tasks, function(i, $task) {
 		
@@ -108,17 +117,24 @@ updateJobStatus = function($job) {
 			break;
 		default: // nothing for now;
 		}
-		
-		$modalBody.append($status);
-		
 	});
-
-	if( $job.status == "RUNNING" ){
-		setTimeout(function(){checkJobStatus(true);}, 1000);
-	} else {
+	
+	switch($job.status) {
+	case "PENDING":
+		break;
+	case "RUNNING":
+		setTimeout(function(){
+			checkJobStatus(onCompleteCallback, true);
+		}, 1000);
+		break;
+	case "COMPLETED":
+		if ( onCompleteCallback ) {
+			onCompleteCallback($job);
+		}
+	default:
+		//show footer in all status but PENDING and RUNNING
 		$jobStatus.find(".modal-footer").removeClass("hide");
 	}
-	
 };
 
 
@@ -145,16 +161,17 @@ $(document).ready(function() {
 	// event handler for home button click
 	homeButtonClick = function(event){
 		event.preventDefault();
+		var $button = $(event.target);
 		
-		target = $(this).attr("href");
+		sectionUrl = $button.attr("href");
 		//set the current working section (calculation,results,data or settings)
-		$section = $(this).parents(".section-home");
+		$section = $button.parents(".section-home");
 		//home page section (contains the button links to the external pages)
 		$homeSection = $section.find(".page-section");
 		
 		$.ajax({
-			url:target,
-			dataType:"html"
+			url: sectionUrl,
+			dataType: "html"
 		}).done(function(response){
 			$page = $(response);
 			

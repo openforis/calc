@@ -161,17 +161,27 @@ button.settings:hover {
 /**
 * Calculation
 */
-#calculation .button-container {
+#calculation .steps-container {
 	text-align: left;
 	max-width: 90%;
 	margin: 2% auto 2% auto;
 }
 
-#calculation .btn-home-plus, #calculation .calculation-button {
+#calculation .btn-home-plus, #calculation .step {
 	width: 15em;
-	height: 5em;
+	height: 6em;
 	margin: 1em;
 	display: inline-block;
+}
+
+#calculation .step .calculation-button {
+	width: 100%;
+	height: 5em;
+}
+
+#calculation .step .options.hide {
+	display: block !important;
+	visibility: hidden;
 }
 
 /**

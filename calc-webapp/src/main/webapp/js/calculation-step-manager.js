@@ -29,13 +29,10 @@ CalculationStepManager.prototype = (function() {
 		$.proxy(initEventHandlers, $this)();
 	
 		$.proxy(refreshEntitySelect, $this)(function() {
-			var url = window.target;
+			var url = window.sectionUrl;
 			var stepId = $.url(url).param("id");
 			if ( stepId ) {
-				CalculationStepManager.load(stepId, function(response) {
-					$this.currentCalculationStep = response;
-					$.proxy(updateForm, $this)();
-				});
+				$.proxy(loadStepAndUpdateForm, $this)(stepId);
 			} else {
 				UI.unlock();
 			}
@@ -59,6 +56,14 @@ CalculationStepManager.prototype = (function() {
 			$.proxy(save, $this)(function(){
 				UI.Form.showResultMessage("Calculation step successfully saved.",true);
 			});
+		});
+	};
+	
+	var loadStepAndUpdateForm = function(stepId) {
+		var $this = this;
+		CalculationStepManager.load(stepId, function(response) {
+			$this.currentCalculationStep = response;
+			$.proxy(updateForm, $this)();
 		});
 	};
 	
@@ -253,6 +258,29 @@ CalculationStepManager.load = function(id, callback) {
 };
 
 /**
+ * Delete the calculation step with the specified id
+ * 
+ * @param id
+ * @param callback
+ */
+CalculationStepManager.deleteStep = function(id, callback) {
+	$.ajax({
+		url:"rest/calculationstep/"+id+"/delete.json",
+		dataType:"json"
+	})
+	.success(function(response) {
+		alert('ok');
+	})
+	.done(function(response){
+		if ( callback ) {
+			callback(response);
+		}
+	});
+};
+
+
+
+/**
  * Refresh the home page updating the element related to the specified step or
  * reloading all the step elements
  * 
@@ -274,8 +302,8 @@ CalculationStepManager.refreshHome = function($step, callback) {
 		}
 	} else {
 		//update all steps
-		var $stepElContainer = $calculationContainer.find('.button-container');
-		var $stepElems = $stepElContainer.find(".calculation-button");
+		var $stepElContainer = $calculationContainer.find('.steps-container');
+		var $stepElems = $stepElContainer.find(".step");
 		$stepElems.remove();
 		
 		CalculationStepManager.loadAll(function(response){
@@ -299,15 +327,51 @@ CalculationStepManager._addStepToHome = function($step) {
 	var $calculationContainer = $("#calculation");
 	
 	//create button from template
-	var $button = $calculationContainer.find(".calculation-button.template").clone();
-	$button.removeClass("template");
+	var $stepEl = $calculationContainer.find(".step.template").clone();
+	$stepEl.removeClass("template");
+	
+	var $button = $stepEl.find(".calculation-button");
 	$button.attr("id", "calculation-step-el-" + $step.id);
 	$button.html($step.caption);
 	$button.attr("href","step-edit.html?id="+$step.id);
-	$button.click(homeButtonClick);
-	$button.fadeIn(100);
+	var mouseDownStartDate = null;
+	var timer = null;
+	var LONG_PRESS_DURATION = 1000;
+	$button.mousedown(function(event) {
+		mouseDownStartDate = new Date();
+		timer = window.setTimeout(function() {
+			var $stepOptions = $stepEl.find(".options");
+			$stepOptions.removeClass("hide");
+		}, LONG_PRESS_DURATION);
+	});
+	$button.mouseup(function(event) {
+		var elapsedMillis = mouseDownStartDate == null ? 0: new Date().getTime() - mouseDownStartDate.getTime();
+		if ( elapsedMillis < LONG_PRESS_DURATION ) {
+			if ( timer != null ) {
+				window.clearTimeout(timer);
+			}
+			homeButtonClick(event);
+		}
+	});
+	var $deleteButton = $stepEl.find(".delete");
+	$deleteButton.click(function(event) {
+		if ( confirm("Delete the step '" + $step.caption + "' ?") ) {
+			CalculationStepManager.deleteStep($step.id, function() {
+				CalculationStepManager._removeStepFromHome($step);
+			});
+		}
+	});
 	
-	var $stepElContainer = $calculationContainer.find('.button-container');
-	$stepElContainer.append($button);
+	$stepEl.css("display", "inline-block");
+//	$button.fadeIn(100);
+	
+	var $stepElContainer = $calculationContainer.find('.steps-container');
+	$stepElContainer.append($stepEl);
 	return $button;
+};
+
+CalculationStepManager._removeStepFromHome = function($step) {
+	var $calculationContainer = $("#calculation");
+	var $el = $calculationContainer.find("#calculation-step-el-" + $step.id);
+	$el.remove();
 };
