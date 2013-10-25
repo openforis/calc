@@ -151,7 +151,7 @@
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-body">
-					<form class="form-vertical" method="POST" action="rest/workspace/variable/save.json">
+					<form class="form-vertical" method="POST">
 						<input type="hidden" class="form-control" name="entityId" /> 
 						<fieldset>
 							<div class="row form-group">
@@ -161,7 +161,7 @@
 								</div>
 							</div>
 							<div>
-								<button type="submit" class="btn btn-default save">Save</button>
+								<button type="button" class="btn btn-default save">Save</button>
 								<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cancel</button>
 							</div>
 						</fieldset>
@@ -198,6 +198,8 @@ $(function(){
 	
 	$addVariableModal = $('#add-variable-modal');
 	$addVariableForm = $addVariableModal.find('form');
+	$saveVariableButton = $addVariableModal.find('.save');
+	
 	/**
 	* edit form manager
 	*/
@@ -226,32 +228,34 @@ $(function(){
 		
 		$addVariableModal.modal({keyboard:false,backdrop:"static"});
 	});
-
-	// init new variable form
-	$addVariableForm.ajaxForm( {
-	    dataType : 'json',
-	    beforeSubmit: function() {
-	    	UI.lock();
-	    },
-	    success: function ( response ) {
-	    	UI.Form.updateErrors($addVariableForm, response.errors);
+	
+	/**
+	* Add variable to the selected entity
+	*/
+	$saveVariableButton.click(function(event) {
+		UI.lock();
+		var variable = $addVariableForm.serialize();
+		
+		var successCallback = function(response) {
+			UI.Form.updateErrors($addVariableForm, response.errors);
 	    	if(response.status == "ERROR" ) {
 	    		UI.Form.showResultMessage("Error, invalid data",false);
 	    	} else {
 	    		var variable = response.fields.variable;
 	    		
-	    		calculationStepManager.populateVariableSelect(variable.id);
+	    		calculationStepManager.refreshVariableSelect(variable.id);
 	    		
 	    		$addVariableModal.modal('hide');
 	    		$addVariableModal.modal('removeBackdrop');
 	    	}
-	    },
-	    error: function (e) {
+		};
+		var errorCallback = function (e) {
 	    	UI.Form.showResultMessage("An error occured. Please check the log file.",false );
-	    },
-	    complete: function() {
-	    	UI.unlock();
-	    }
+		};
+		var completeCallback = function() {
+			UI.unlock();
+		}
+		WorkspaceManager.saveVariable(variable, successCallback, errorCallback, completeCallback);
 	});
 	
 	/**
