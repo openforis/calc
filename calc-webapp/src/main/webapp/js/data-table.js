@@ -8,6 +8,7 @@ function DataTable($container) {
 	 */
 	this.container = $container;
 	this.dataTablePagination = this.container.find(".data-table-pagination");
+	this.dataTableButtons = this.container.find(".data-table-buttons");
 	this.tableResults = this.container.find(".table-results");
 	
 //	this.dataTablePagination.hide();
@@ -27,6 +28,11 @@ function DataTable($container) {
 	
 	//data currently loaded
 	this.data = null;
+	
+	
+	//event handlers
+	this.dataTableButtons.find(".next").click( $.proxy(this.nextPage , this) );
+	this.dataTableButtons.find(".prev").click( $.proxy(this.prevPage , this) );
 };
 
 DataTable.prototype = (function(){
@@ -52,25 +58,22 @@ DataTable.prototype = (function(){
 			this.entity = this.job.tasks[0].calculationStep.outputEntityId;
 			this.fields = this.job.tasks[0].calculationStep.variables;
 			
-			$.proxy( emptyTable, this )();
 		}
 	};
 	
-	var showResults = function(job) {
-		$this = this;
-//		console.log(job);
-		$.proxy(setJob , $this)(job);
+	var showResults = function() {
+		var $this = this;
 		
     	$.ajax({
-    		url:"rest/job/"+job.id+"/results.json",
+    		url:"rest/job/"+$this.job.id+"/results.json",
     		dataType:"json",
     		data:{offset:this.offset, numberOfRows:this.rows},
     		
-    		success: $.proxy(function(response) {
+    		success: function(response) {
 //    			this.showResults(response);
 //    			refresh(response);
-    			$.proxy(refresh , this)(response);
-    		}, this)
+    			$.proxy(refresh , $this)(response);
+    		}
     		
     	});
 
@@ -78,6 +81,11 @@ DataTable.prototype = (function(){
 	
 	// refresh html table with data given in input
 	var refresh = function(data) {
+		
+		console.log( "refresh starting from " + this.offset );
+		
+		//empty table before showing results
+		$.proxy( emptyTable, this )();
 		
 		this.data = data;
 		this.container.show();
@@ -87,14 +95,12 @@ DataTable.prototype = (function(){
 		
 		//update table headers
 		if(this.offset == 0) {
-			
-			
 			$thead = this.tableResults.find('thead');
 			var $tr = $("<tr></tr>");
 			$tr.hide();
 			$thead.append($tr);
 			var $th = $("<th></th>");
-			$th.html("Record");
+			$th.html("Row #");
 			$tr.append($th);
 			$.each(this.fields, function(i,field) {
 				$th = $("<th></th>");
@@ -126,7 +132,8 @@ DataTable.prototype = (function(){
 				$tr.fadeIn(100);
 			}, (delay += 50) );
 		});
-
+		
+		//TODO enable/disable prev/next buttons
 		
 	};
 	
@@ -142,23 +149,23 @@ DataTable.prototype = (function(){
 			this.container.hide();
 		},
 		
+		nextPage : function(e) {
+			this.offset = this.offset += this.rows;
+			$.proxy(showResults , this)();
+		},
+		
+		prevPage : function(e) {
+			console.log("prev: TODO");
+//			$.proxy(showResults , this)();
+			this.offset = this.offset -= this.rows;
+			$.proxy(showResults , this)();
+		}, 
+		
 		//show job results
         showJobResults : function(job) {
-//        	console.log(this);
-//        	this._(showJobResults)();
+        	$.proxy(setJob , this)(job);
         	$.proxy(showResults , this)(job);
-//        	console.log("ok did it call it?");
         }
-//		,
-//		
-//		_:function(callback) {
-//			// instance referer
-//			var self = this;
-//			// callback that will be used
-//			return function() {
-//				return callback.apply(self, arguments);
-//			};
-//		}
 	
 	};
 
