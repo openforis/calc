@@ -253,7 +253,9 @@ CalculationStepManager.load = function(id, callback) {
 		dataType:"json"
 	})
 	.done(function(response){
-		callback(response);
+		if ( callback ) {
+			callback(response);
+		}
 	});
 };
 
@@ -265,11 +267,7 @@ CalculationStepManager.load = function(id, callback) {
  */
 CalculationStepManager.deleteStep = function(id, callback) {
 	$.ajax({
-		url:"rest/calculationstep/"+id+"/delete.json",
-		dataType:"json"
-	})
-	.success(function(response) {
-		alert('ok');
+		url:"rest/calculationstep/"+id+"/delete.json"
 	})
 	.done(function(response){
 		if ( callback ) {
@@ -295,7 +293,8 @@ CalculationStepManager.refreshHome = function($step, callback) {
 		if ( $el.length == 0 ) {
 			CalculationStepManager._addStepToHome($step);
 		} else {
-			$el.html($step.caption);
+			var $button = $el.find(".calculation-button");
+			$button.html($step.caption);
 		}
 		if ( callback ) {
 			callback();
@@ -329,9 +328,9 @@ CalculationStepManager._addStepToHome = function($step) {
 	//create button from template
 	var $stepEl = $calculationContainer.find(".step.template").clone();
 	$stepEl.removeClass("template");
+	$stepEl.attr("id", "calculation-step-el-" + $step.id);
 	
 	var $button = $stepEl.find(".calculation-button");
-	$button.attr("id", "calculation-step-el-" + $step.id);
 	$button.html($step.caption);
 	$button.attr("href","step-edit.html?id="+$step.id);
 	var mouseDownStartDate = null;

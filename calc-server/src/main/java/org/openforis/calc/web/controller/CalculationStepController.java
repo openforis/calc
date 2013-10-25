@@ -101,10 +101,9 @@ public class CalculationStepController {
 		return calculationStepDao.find(stepId);
 	}
 	
-	@RequestMapping(value = "/{stepId}/delete.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody String delete(@PathVariable int stepId) {
+	@RequestMapping(value = "/{stepId}/delete.json", method = RequestMethod.GET)
+	public @ResponseBody void delete(@PathVariable int stepId) {
 		calculationStepDao.delete(stepId);
-		return "ok";
 	}
 	
 	@RequestMapping(value = "/{stepId}/run.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

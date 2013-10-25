@@ -21,18 +21,18 @@
 	<script>
 $(function(){
 	
-	$formSection = $('#sync-form-section');
-	$form = $formSection.find("form");
-	$uploadBtn = $form.find("button[name='upload-btn']"); 
-	$file = $form.find("input[name='file']");
+	var $formSection = $('#sync-form-section');
+	var $form = $formSection.find("form");
+	var $uploadBtn = $form.find("button[name='upload-btn']"); 
+	var $file = $form.find("input[name='file']");
 	
-	$progressSection = $("#sync-progress-section");
-	$progressBar = $progressSection.find(".progress-bar");
-	$progressPercent = $progressSection.find(".percent");
+	var $progressSection = $("#sync-progress-section");
+	var $progressBar = $progressSection.find(".progress-bar");
+	var $progressPercent = $progressSection.find(".percent");
 	
 	$progressSection.hide();
 	
-	resetForm = function() {
+	var resetForm = function() {
 		$progressSection.hide();
 		$formSection.show();
 		
@@ -59,7 +59,9 @@ $(function(){
 			$progressSection.hide();
 	    	$formSection.show();
 			
-	    	checkJobStatus();
+	    	checkJobStatus(function() {
+	    		CalculationStepManager.refreshHome();
+	    	});
 	    },
 	    error: function (e) {
 	    	alert('Error uploading file');
