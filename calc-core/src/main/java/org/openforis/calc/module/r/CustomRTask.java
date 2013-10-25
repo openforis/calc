@@ -234,6 +234,10 @@ public final class CustomRTask extends CalculationStepTask {
 		if (results != null) {
 		synchronized (results) {
 			bufferResults = new ArrayList<DataRecord>();
+			if( from + (to - from) > results.size() ) {
+				to = results.size();
+			}
+			
 			List<DataRecord> subList = results.subList(from, to);
 //			 bufferResults =C ollectionUtils.unmodifiableList(subList);
 			bufferResults.addAll(subList);
