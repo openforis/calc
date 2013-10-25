@@ -50,6 +50,9 @@ public class EntityDataViewDao extends AbstractJooqDao {
 		for (String field : fields) {
 			select.addSelect(view.field(field));
 		}
+		// add order by id -- important?!
+		select.addOrderBy( view.getIdField() );
+		
 		// add offset to query
 		if (offset != null && numberOfRows != null) {
 			select.addLimit(offset, numberOfRows);

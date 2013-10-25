@@ -153,6 +153,7 @@ DataManager.prototype = (function(){
         
         showJobResults : function(job) {
         	this.container.fadeIn();
+        	$.proxy(showDataTable , this) ();
         	this.dataTable.showJobResults(job);
         },
         
