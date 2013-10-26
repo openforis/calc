@@ -40,6 +40,7 @@ DataTable.prototype = (function(){
 	//start the process of showing job results
 	var start = function(job) {
 		if( job ) {
+			console.log(job);
 			this.job = job;
 			
 			// reset count and data
@@ -105,7 +106,7 @@ DataTable.prototype = (function(){
 		}
 	};
 	
-	// update html table with data given in input
+	// update html table with data given as parameter
 	var updateData = function(data) {
 		//set the data
 		this.data = data;

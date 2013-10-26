@@ -170,12 +170,13 @@ public final class CustomRTask extends CalculationStepTask {
 
 	@Override
 	protected long countTotalItems() {
-		if (maxItems <= 0) {
-			DataTable table = getDataView();
-
-			maxItems = psql().selectCount().from(table).fetchOne(0, Long.class);
-
+//		DataTable table = getDataView();
+		long count = this.viewDao.count(getEntity());
+//				psql().selectCount().from(table).fetchOne(0, Long.class);
+		if ( maxItems <= 0 ||  maxItems > count ) {
+			maxItems = count;
 		}
+		
 		return maxItems;
 	}
 

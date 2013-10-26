@@ -52,20 +52,20 @@ public class DataController {
 		return records;
 	}
 
-	@RequestMapping(value = "/{entityId}/info.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody
-	Response info(@PathVariable int entityId) {
-		Workspace workspace = workspaceService.getActiveWorkspace();
-		Entity entity = workspace.getEntityById(entityId);
-		long count = entityDao.count(entity);
-		
-		Response response = new Response();
-		response.addField("entityName", entity.getName());
-		response.addField("entityId", entityId);
-		response.addField("count", count);
-		
-		return response;
-	}
+//	@RequestMapping(value = "/{entityId}/info.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+//	public @ResponseBody
+//	Response info(@PathVariable int entityId) {
+//		Workspace workspace = workspaceService.getActiveWorkspace();
+//		Entity entity = workspace.getEntityById(entityId);
+//		long count = entityDao.count(entity);
+//		
+//		Response response = new Response();
+//		response.addField("entityName", entity.getName());
+//		response.addField("entityId", entityId);
+//		response.addField("count", count);
+//		
+//		return response;
+//	}
 	
 
 }

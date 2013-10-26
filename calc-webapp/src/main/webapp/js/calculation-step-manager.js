@@ -73,11 +73,18 @@ CalculationStepManager.prototype = (function() {
 	 * @param id
 	 * @param callback
 	 */
-	var execute = function(id, callback) {
+	var execute = function(id, totalItems, callback) {
+		var params = {};
+		if( !isNaN(totalItems) ){ 
+			params.totalItems = totalItems; 
+		}
+
 		$.ajax({
 			url:"rest/calculationstep/"+id+"/run.json",
 			dataType:"json",
-			async: false 
+			data: params
+//			,
+//			async: false 
 		})
 		.done(function(response){
 			callback(response);

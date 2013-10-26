@@ -29,6 +29,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -106,15 +107,25 @@ public class CalculationStepController {
 		calculationStepDao.delete(stepId);
 	}
 	
+	/**
+	 * Execute a job for the given calculation step id
+	 * @param stepId
+	 * @param totalItems
+	 * @return
+	 * @throws InvalidProcessingChainException
+	 * @throws WorkspaceLockedException
+	 */
 	@RequestMapping(value = "/{stepId}/run.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
-	synchronized Job runJob(@PathVariable int stepId) throws InvalidProcessingChainException, WorkspaceLockedException {
+	synchronized Job executeJob(@PathVariable int stepId, @RequestParam(required=false) Integer totalItems) throws InvalidProcessingChainException, WorkspaceLockedException {
 		Workspace workspace = workspaceService.getActiveWorkspace();
 
 		CalculationStep step = calculationStepDao.find(stepId);
 		CustomRTask task = (CustomRTask) taskManager.createCalculationStepTask(step);
-		// task.setMaxItems(18000);
-
+		if(totalItems != null && totalItems > 0) {
+			task.setMaxItems(totalItems);
+		}
+		
 		Job job = taskManager.createJob(workspace);
 		job.addTask(task);
 

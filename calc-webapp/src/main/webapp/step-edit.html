@@ -1,12 +1,29 @@
 <!-- ==== Html here === -->
 <div class="page-section">
+	<!--  Nav bar -->
+<!-- 	<div class="row"> -->
+<!-- 		<div class="navbar navbar-default"> -->
+<!-- 			<div class="container"> -->
+<!-- 				<div class=""> -->
+<!-- 					<ul class="nav navbar-nav"> -->
+<!-- 						<li class="active"> -->
+<!-- 							<a href="./Bootswatch  Flatly_files/Bootswatch  Flatly.html">Active</a> -->
+<!-- 						</li> -->
+<!-- 						<li> -->
+<!-- 							<a href="./Bootswatch  Flatly_files/Bootswatch  Flatly.html">Link</a> -->
+<!-- 						</li> -->
+<!-- 					</ul> -->
+<!-- 				</div> -->
+<!-- 			</div> -->
+<!-- 		</div> -->
+<!-- 	</div> -->
+	
 	<!-- edit form -->
 	<div class="row" id="calculation-step-edit-container" style="width: 100%; height: 100%; left:0">
 		<div class="col-md-2">
 		</div>
 		<div class="col-md-8">
 		
-<!-- 		<div class="well"> -->
 			<form id="step-form" class="form-horizontal" method="POST" action="rest/calculationstep/save.json">
 				<input type="hidden" class="form-control" name="id" /> 
 				<fieldset>
@@ -14,7 +31,7 @@
 					<legend>Calculation Step Editor </legend>
 						
 					<div class="form-group">
-						<label class="col-md-2 control-label">Name</label>
+						<label class="col-md-2 control-label">Caption</label>
 						<div class="col-md-10">
 							<input type="text" class="form-control" name="caption">
 						</div>
@@ -62,11 +79,19 @@
 					</div>
 					
 					<div class="form-group buttons">
-						<div class="col-md-3 col-md-offset-3" style="text-align: center;">
+						<div class="col-md-2 col-md-offset-5" style="text-align: center;">
 							<button type="submit" class="btn btn-default btn-lg" style="width: 50%">Save</button>
 						</div>
-						<div class="col-md-3" style="text-align: center;">
-							<button type="button" name="run-calculcation-step" class="btn btn-default btn-lg" style="width: 50%">Execute</button>
+						<div class="col-md-2"></div>
+						<div class="col-md-3" style="text-align: right; padding-top: 9px">
+<!-- 							<button type="button" name="run-calculcation-step" class="btn btn-default btn-lg" style="width: 50%">Execute</button> -->
+							<div class="input-group">
+<!-- 								<span class="input-group-addon">$</span>  -->
+								<input type="text" class="form-control no-border" name="totalItems" placeholder="Number of records">
+								<span class="input-group-btn">
+									<button class="btn btn-default" name="run-calculcation-step" type="button">Execute</button>
+								</span>
+							</div>
 						</div>
 <!-- 						<div class="col-lg-2"> -->
 <!-- 							<button class="btn btn-default cancel btn-lg">Cancel</button> -->
@@ -154,16 +179,22 @@
 					<form class="form-vertical" method="POST">
 						<input type="hidden" class="form-control" name="entityId" /> 
 						<fieldset>
-							<div class="row form-group">
-								<label class="col-md-4 control-label">Variable name</label>
-								<div class="col-md-6">
+							<label class="col-md-12 control-label">Name</label>
+<!-- 							<div class="row form-group"> -->
+							<div class="row" style="margin-top: 10px">
+								<div class="col-md-8 col-md-offset-2">
 									<input type="text" class="form-control" name="name"></input>
 								</div>
 							</div>
-							<div>
-								<button type="button" class="btn btn-default save">Save</button>
-								<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cancel</button>
-							</div>
+<!-- 							</div> -->
+							<div class="row" style="margin-top: 25px">
+								<div class="col-md-3 col-md-offset-3">
+									<button type="button" class="btn btn-default save" style="width:100%">Save</button>
+								</div>
+								<div class="col-md-3">
+									<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true" style="width:100%">Cancel</button>
+								</div>
+							</div>					
 						</fieldset>
 					</form>
 				</div>
@@ -201,7 +232,7 @@ $(function(){
 	$saveVariableButton = $addVariableModal.find('.save');
 	
 	/**
-	* edit form manager
+	* step manager
 	*/
 	var calculationStepManager = new CalculationStepManager($stepForm);
 	
@@ -277,7 +308,6 @@ $(function(){
 		$var.fadeIn();
 		
 	});
-	
 	renameInputVariables = function() {
 		vars = $inputVars.find('.input-var');
 		$.each(vars, function(i, div) {
@@ -288,7 +318,6 @@ $(function(){
 			$varName.attr('name','input-var-name-'+i);
 		});
 	};
-	
 	deleteInputVariable = function(event){
 		event.preventDefault();
 		$var = $(this).parents('.input-var');
@@ -350,14 +379,16 @@ $(function(){
 	//on run calcuclation button click	
 	$stepForm.find("button[name='run-calculcation-step']").click(function(event){
 		event.preventDefault();
-		//first save the step and then it runs
+		//first save the step and then it gets executed
 		calculationStepManager.save(function(response) {
-			//after saving it, it get started
+			
 			$calculationStep = response;
 			stepId = $calculationStep.id;
-// 			showResultsContainer();
-// this is the way to execute 				
-			calculationStepManager.execute(stepId, function(response) {
+			
+			var totalItems = parseInt( $stepForm.find("input[name='totalItems']").val() );
+			calculationStepManager.execute(stepId, totalItems, function(response) {
+				console.log("response on exec");
+				console.log(response);
 				$job = response;
 				updateCalculationStepStatus($job);
 				showResultsContainer();
@@ -427,14 +458,15 @@ $(function(){
 					updateCalculationStepStatus($job);
 				});
 			}, 500);
-		} 
+		}
 	};
 	
 	processResults = function($job) {
 // 		dataManager.show(entity, fields);
 		if(processResultsStarted != true) {
 // 			console.log($job);			
-			if( $job.status != 'PENDING' && $job.tasks[0].itemsProcessed >= 50) {
+			if( $job.status != 'PENDING' ) {
+							//&& $job.tasks[0].itemsProcessed >= 50
 				dataManager.showJobResults($job);
 				processResultsStarted = true;
 				//get entity info and then start showing results

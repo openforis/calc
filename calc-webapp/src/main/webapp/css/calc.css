@@ -157,7 +157,27 @@ button.settings:hover {
 	overflow: visible;
 	border-radius:8px;
 }
-
+/**
+* Default nav bar
+*/
+.navbar-default {
+	background-color: transparent;
+	border-color: #496d7e;
+}
+.navbar-default .navbar-nav > li {
+	width: 300px;;
+}
+.navbar-default .navbar-nav > li > a:hover,
+.navbar-default .navbar-nav > li > a:focus {
+  color: #496d7e;
+/*   background-color: transparent; */
+}
+.navbar-default .navbar-nav > .active > a,
+.navbar-default .navbar-nav > .active > a:hover,
+.navbar-default .navbar-nav > .active > a:focus {
+/*   color: #ffffff; */
+  background-color: #496d7e;
+}
 /**
 * Calculation
 */
@@ -312,6 +332,12 @@ formula editor
 
 .no-padding {
 	padding: 0px;
+}
+.no-border-radius {
+	border-radius : 0;	
+}
+.no-border {
+	border:none;
 }
 /**
 calc-step page
