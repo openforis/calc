@@ -27,3 +27,16 @@ UI.resetProgressBar = function($progressBar) {
 	$progressBar.parent().removeClass();
 	$progressBar.parent().addClass("progress");
 };
+
+/**
+* Disable a component like buttons
+*/
+UI.disable = function(component) {
+	component.prop('disabled', true);
+};
+/**
+* Enable a component like buttons
+*/
+UI.enable = function(component) {
+	component.prop('disabled', false);
+};

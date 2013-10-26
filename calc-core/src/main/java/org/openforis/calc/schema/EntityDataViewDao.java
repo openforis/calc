@@ -29,18 +29,17 @@ public class EntityDataViewDao extends AbstractJooqDao {
 		return count;
 	}
 	
-	public List<DataRecord> query(Workspace workspace, Integer offset, Integer numberOfRows, String entityName, String... fields) {
-		return query(null, workspace, offset, numberOfRows, entityName, fields);
+	public List<DataRecord> query(Workspace workspace, Integer offset, Integer numberOfRows, Entity entity, String... fields) {
+		return query(null, workspace, offset, numberOfRows, entity, fields);
 	}
 	
-	public List<DataRecord> query(DataRecordVisitor visitor, Workspace workspace, Integer offset, Integer numberOfRows, String entityName, String... fields) {
+	public List<DataRecord> query(DataRecordVisitor visitor, Workspace workspace, Integer offset, Integer numberOfRows, Entity entity, String... fields) {
 		if (fields == null || fields.length == 0) {
 			throw new IllegalArgumentException("fields must be specifed");
 		}
 
 		List<DataRecord> records = new ArrayList<DataRecord>();
 
-		Entity entity = workspace.getEntityByName(entityName);
 		EntityDataView view = getDataView(workspace, entity);
 
 		// prepare query

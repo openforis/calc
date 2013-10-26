@@ -45,11 +45,11 @@ UI.Form.updateErrors = function($form, errors) {
  * @param message
  * @param isSuccess
  */
-UI.Form.showResultMessage = function(message, isSuccess){
+UI.Form.showResultMessage = function(message, success){
 	// Add div if not defined
 	var feedbackDiv = $("#messageContainer");
 	
-	if( isSuccess == true){
+	if( success == true){
 		feedbackDiv.addClass("alert-success");		
 		feedbackDiv.removeClass("alert-danger");
 	}else{
@@ -69,7 +69,8 @@ UI.Form.showResultMessage = function(message, isSuccess){
  * @param form
  */
 UI.Form.disable = function(form){
-	form.find('input, textarea, button, select').prop('disabled', true);
+	UI.enable( form.find('input, textarea, button, select') );
+//	.prop('disabled', true);
 };
 
 /**
@@ -78,7 +79,7 @@ UI.Form.disable = function(form){
  * @param form
  */
 UI.Form.enable = function(form){
-	form.find('input, textarea, button, select').prop('disabled',false);
+	UI.disable( form.find('input, textarea, button, select') );
 };
 
 /**

@@ -9,6 +9,7 @@ function DataManager($container) {
 	this.container.hide();
 	$container.append(this.container);
 
+	this.job = null;
 	this.data = null;
 
 	/**
@@ -17,6 +18,9 @@ function DataManager($container) {
 	this.dataTable = new DataTable(this.container.find(".data-table"));
 	this.scatterPlot = new ScatterPlot(this.container.find('.scatter-plot'));
 
+	this.dataTableBtn 	=	this.container.find(".table-btn");
+	this.scatterPlotBtn =	this.container.find('.scatter-plot-btn');
+	
 	this._init();
 };
 
@@ -29,10 +33,10 @@ DataManager.prototype = (function() {
 
 		// temp solution
 		// refresh scatter plot if 2 vars in output
-		if (this.dataTable.variables.length == 2) {
-			this.scatterPlot.setAxes( this.dataTable.variables[0], this.dataTable.variables[1] );
-			this.scatterPlot.refresh( this.dataTable.data );
-		}
+//		if (this.dataTable.variables.length == 2) {
+//			this.scatterPlot.setAxes( this.dataTable.variables[0], this.dataTable.variables[1] );
+//			this.scatterPlot.refresh( this.dataTable.data );
+//		}
 	};
 	
 	// shows the data table
@@ -40,20 +44,44 @@ DataManager.prototype = (function() {
 		this.scatterPlot.hide();
 		this.dataTable.show();
 	};
+	
+	//start the process of showing results
+	var start = function(job) {
+		this.job = job;
+		
+		this.container.fadeIn();
+		// show data table to ui
+		$.proxy(showDataTable, this)();
+		//set job to scatter plot
+		this.scatterPlot.setJob(job);
+		// update data table with job data
+		this.dataTable.showJobResults(job);
+	};
 
-
+	updateJob = function(job){
+		this.job = job;
+		this.scatterPlot.updateJob(job);
+		
+		//disable/enable buttons if job completed
+		if(job.status=="COMPLETED"){
+			UI.enable( this.scatterPlotBtn );
+		} else {
+			UI.disable( this.scatterPlotBtn );
+		}
+	};
+	
 	/**
 	 * Declare event handlers
 	 */
 	var initEventHandlers = function() {
 		// events handlers
 		var $this = this;
-		this.container.find(".table-btn").click(function(e) {
+		this.dataTableBtn.click(function(e) {
 			e.preventDefault();
 			$.proxy(showDataTable , $this)();
 		});
 
-		this.container.find(".scatter-plot-btn").click(function(e) {
+		this.scatterPlotBtn.click(function(e) {
 			e.preventDefault();
 			$.proxy(showScatterPlot , $this)();
 		});
@@ -68,11 +96,11 @@ DataManager.prototype = (function() {
 		},
 
 		showJobResults : function(job) {
-			this.container.fadeIn();
-			// show data table to ui
-			$.proxy(showDataTable, this)();
-			// update data table with job data
-			this.dataTable.showJobResults(job);
+			$.proxy( start , this )(job);
+		},
+		
+		updateJob : function(job){
+			this.job = job;
 		}
 	};
 

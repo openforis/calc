@@ -160,10 +160,10 @@
 		<div class="row data-visualization-header-buttons">
 			<div class="col-md-4"></div>
 			<div class="col-md-2 no-padding">
-				<button class="btn default-btn table-btn">Table</button>
+				<button class="btn blue-btn table-btn">Table</button>
 			</div>
 			<div class="col-md-2 no-padding">
-				<button class="btn default-btn scatter-plot-btn">Scatter plot</button>
+				<button class="btn blue-btn scatter-plot-btn">Scatter plot</button>
 			</div>
 		</div>
 		
@@ -171,7 +171,6 @@
 			<!-- pagination -->
 			<div class="row">
 				<div class="col-md-3 col-md-offset-8 data-table-pagination">
-<!-- 					1-15 of 34	 -->
 				</div>
 				<div class="col-md-1 data-table-buttons no-padding">
 					<button class="btn default-btn prev"><i class="icon-angle-left"></i></button>
@@ -192,6 +191,13 @@
 		</div>
 		
 		<div class="row scatter-plot">
+			<div class="row options">
+				<span>x:</span>
+				<select name="x"></select>
+				<span>y:</span>
+				<select name="y"></select>
+				<button name="refresh" class="btn no-background"><i class="icon-refresh"></i></button>
+			</div>
 			<div class="row chart"></div>
 		</div>
 	</div>

@@ -59,9 +59,12 @@ public class JobController {
 
 	@RequestMapping(value = "/{id}/results.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
-	synchronized List<DataRecord> getResults(@PathVariable String id, @RequestParam int offset, @RequestParam int numberOfRows) throws InvalidProcessingChainException, WorkspaceLockedException {
+	synchronized List<DataRecord> getResults(@PathVariable String id, @RequestParam int offset, @RequestParam(required = false) Integer numberOfRows) throws InvalidProcessingChainException, WorkspaceLockedException {
 		Job job = taskManager.getJobById(id);
 		CustomRTask task = (CustomRTask) job.tasks().get(0);
+		if(numberOfRows == null){
+			numberOfRows = (int) task.getItemsProcessed();
+		}
 		List<DataRecord> results = task.getResults(offset, offset + numberOfRows );
 		return results;
 	}

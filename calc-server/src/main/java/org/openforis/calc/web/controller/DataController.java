@@ -41,16 +41,32 @@ public class DataController {
 
 	@Autowired
 	private EntityDataViewDao entityDao;
-
-	@RequestMapping(value = "/{entityName}/query.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	
+	@RequestMapping(value = "/{entityId}/query.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
-	List<DataRecord> query(@PathVariable String entityName, @RequestParam String fields, @RequestParam int offset, @RequestParam int numberOfRows) {
+	List<DataRecord> query(@PathVariable int entityId, @RequestParam String fields, @RequestParam int offset, @RequestParam(required=false) Integer numberOfRows) {
 		Workspace workspace = workspaceService.getActiveWorkspace();
+		Entity entity = workspace.getEntityById(entityId);
 		
-		List<DataRecord> records = entityDao.query(workspace, offset, numberOfRows, entityName, fields.split(","));
+		//set limit to 5000 for the query
+		if(numberOfRows==null) {
+			numberOfRows = 5000;
+		}
+		
+		List<DataRecord> records = entityDao.query(workspace, offset, numberOfRows, entity, fields.split(","));
 		
 		return records;
 	}
+	
+//	@RequestMapping(value = "/{entityName}/query.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+//	public @ResponseBody
+//	List<DataRecord> query(@PathVariable String entityName, @RequestParam String fields, @RequestParam int offset, @RequestParam int numberOfRows) {
+//		Workspace workspace = workspaceService.getActiveWorkspace();
+//		
+//		List<DataRecord> records = entityDao.query(workspace, offset, numberOfRows, entityName, fields.split(","));
+//		
+//		return records;
+//	}
 
 //	@RequestMapping(value = "/{entityId}/info.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 //	public @ResponseBody

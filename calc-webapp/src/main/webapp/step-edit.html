@@ -129,33 +129,50 @@
 	<!-- Execution and results  -->
 	<div class="row" id="calculation-step-exec-container" style="width: 100%; height: 100%; padding-top:10px; ">
 		<div class="row" >
-			<div class="col-md-2 col-md-offset-5 step-name">
+			<div class="col-md-1 col-md-offset-3" style="text-align: right;">
+				<button name="edit-step-button" class="calculation btn btn-info" ><i class="icon-edit"></i></button>
+			</div>
+			<div class="col-md-2 step-name">
 				<legend></legend>
 			</div>
-			<div class="col-md-1">
-				<button name="edit-step-button" class="calculation btn btn-info" style="text-align: left;"><i class="icon-edit"></i></button>
-			</div>
-		</div>
-		<!-- progress bar -->
-		<div class="row" >
-			<div class="col-md-2">
-			</div>
-			<div class="col-md-8">
-				<div class="row step-progress" style="padding-top: 20px">
-	<!-- 			   		<div class="col-md-1 number"></div> -->
-	<!-- 			   		<div class="col-md-2 name"></div> -->
-			   		<div class="col-md-6 col-md-offset-2" style="padding-top:10px;">
-			   			<div class="progress"> 
-							<div class="progress-bar"></div>
-						</div>
-			   		</div> 
-			   		<div class="col-md-1 percent">
-			   		</div>
+			<div class="col-md-2 step-progress" style="padding-top: 15px;">
+				<div class="progress"> 
+					<div class="progress-bar"></div>
 				</div>
 			</div>
-			<div class="col-md-2">
+			<div class="col-md-1" style="padding-top: 8px;">
+				<div class="col-md-1 percent"></div>
 			</div>
+<!-- 			<div class="col-md-5"> -->
+<!-- 				<div class="row step-progress" style="padding-top: 20px"> -->
+<!-- 			   		<div class="col-md-6 col-md-offset-2" style="padding-top:10px;"> -->
+<!-- 			   			<div class="progress">  -->
+<!-- 							<div class="progress-bar"></div> -->
+<!-- 						</div> -->
+<!-- 			   		</div>  -->
+<!-- 			   		<div class="col-md-1 percent"> -->
+<!-- 			   		</div> -->
+<!-- 				</div> -->
+<!-- 			</div> -->
 		</div>
+		<!-- progress bar -->
+<!-- 		<div class="row" > -->
+<!-- 			<div class="col-md-2"> -->
+<!-- 			</div> -->
+<!-- 			<div class="col-md-8"> -->
+<!-- 				<div class="row step-progress" style="padding-top: 20px"> -->
+<!-- 			   		<div class="col-md-6 col-md-offset-2" style="padding-top:10px;"> -->
+<!-- 			   			<div class="progress">  -->
+<!-- 							<div class="progress-bar"></div> -->
+<!-- 						</div> -->
+<!-- 			   		</div>  -->
+<!-- 			   		<div class="col-md-1 percent"> -->
+<!-- 			   		</div> -->
+<!-- 				</div> -->
+<!-- 			</div> -->
+<!-- 			<div class="col-md-2"> -->
+<!-- 			</div> -->
+<!-- 		</div> -->
 		
 		<!-- results -->
 		<div class="row" style="height: 70%">
@@ -338,7 +355,7 @@ $(function(){
 	processResultsStarted = false;
 	rowNum = 1;
 	
-	showResultsContainer = function(){
+	showResultsContainer = function() {
 		// write step caption as header
 		$calculationStepExecContainer.find(".step-name legend").html($calculationStep.caption);
 		
@@ -387,8 +404,8 @@ $(function(){
 			
 			var totalItems = parseInt( $stepForm.find("input[name='totalItems']").val() );
 			calculationStepManager.execute(stepId, totalItems, function(response) {
-				console.log("response on exec");
-				console.log(response);
+// 				console.log("response on exec");
+// 				console.log(response);
 				$job = response;
 				updateCalculationStepStatus($job);
 				showResultsContainer();
@@ -410,21 +427,19 @@ $(function(){
 
 		//start processing results the first time the status != pending
 		if(!processResultsStarted) {
-			
-// 			setTimeout(function(){
-// 				processNextResult($job);
 			processResults($job);
-// 			}, 100);
 		}
+		//update data manager job
+		dataManager.updateJob($job);
 		
-		$task = $job.tasks[0];
+		var $task = $job.tasks[0];
 
-		$progressBar = $stepProgress.find(".progress-bar");		
+		var $progressBar = $stepProgress.find(".progress-bar");		
 		UI.resetProgressBar($progressBar);
 		
-		totalItems = $task.totalItems;
-		itemsProcessed = $task.itemsProcessed;
-		percent = (totalItems > 0 ) ?  parseInt(itemsProcessed / totalItems * 100) : -1 ;
+		var totalItems = $task.totalItems;
+		var itemsProcessed = $task.itemsProcessed;
+		var percent = (totalItems > 0 ) ?  parseInt(itemsProcessed / totalItems * 100) : -1 ;
 		
 		switch( $task.status ) {
 		case "RUNNING": 
@@ -435,20 +450,21 @@ $(function(){
 				$progressBar.parent().addClass("active progress-striped");
 				$progressBar.width("100%");
 			}
-			htmlPercent = (percent >= 0) ? percent + " %" : " -% ";
-			$stepProgress.find(".percent").text(htmlPercent);
+			var htmlPercent = (percent >= 0) ? percent + " %" : " -% ";
+			$calculationStepExecContainer.find(".percent").text(htmlPercent);
 			break;
 		case "COMPLETED": 
 			$progressBar.addClass("progress-bar-success");
 			$progressBar.width("100%");
-			$stepProgress.find(".percent").text("100%");
+			$calculationStepExecContainer.find(".percent").text("100%");
 			break;
 		default: // nothing for now;
 		}
 		
+		//if job not completed, it gets reloaded from server
 		if( $job.completed != true ) {
 			setTimeout(function(){
-				stepId = $calculationStep.id;
+				//var stepId = $calculationStep.id;
 				$.ajax({
 					url:"rest/job/"+$job.id+".json",
 					dataType:"json"
@@ -462,77 +478,16 @@ $(function(){
 	};
 	
 	processResults = function($job) {
-// 		dataManager.show(entity, fields);
 		if(processResultsStarted != true) {
-// 			console.log($job);			
 			if( $job.status != 'PENDING' ) {
 							//&& $job.tasks[0].itemsProcessed >= 50
 				dataManager.showJobResults($job);
 				processResultsStarted = true;
-				//get entity info and then start showing results
-// 				$.ajax({
-// 					url:"rest/data/"+$calculationStep.outputEntityId+"/info.json",
-// 					dataType:"json"
-// 				})
-// 				.done(function(response){
-// 					dataManager.showTable($job, response.fields.entityName, $calculationStep.variables, response.fields.count);
-// 					processResultsStarted = true;
-// 				});
+
 			}
 			
 		}
 	}
-	
-	// not used
-	processNextResult = function($job) {
-		
-		$.ajax({
-			url:"rest/job/"+$job.id+"/nextResult.json",
-			dataType:"json"
-		})
-		.done(function(response){
-			$data = response;
-			if($data){
-				if(processResultsStarted != true) {
-					processResultsStarted = true;
-					$thead = $resultsTable.find('thead');
-					$tr = $("<tr></tr>");
-					$tr.hide();
-					$thead.append($tr);
-					$th = $("<th></th>");
-					$th.html("Record");
-					$tr.append($th);
-					$.each($data.fields, function(j,field) {
-						$th = $("<th></th>");
-						$th.html(j);
-						$tr.append($th);
-					});
-					$tr.fadeIn(100);
-// 					console.log("processResultsStarted now");
-				}
-// 				console.log($data);
-				
-				$tbody = $resultsTable.find('tbody');
-				$tr = $("<tr></tr>");
-				$tr.hide();
-				$tbody.append($tr);
-				$td = $("<td></td>");
-				$td.html((rowNum++));
-				$tr.append($td);
-				$.each($data.fields,function(j,field){
-					$td = $("<td></td>");
-					$td.html(field);
-					$tr.append($td);
-				});
-				$tr.fadeIn(50);
-				setTimeout(function(){
-					processNextResult($job);
-				},200);
-			}
-			//updateCalculationStepStatus($job);
-		});
-	};
-	
 	//in results section, click to show edit form
 	$calculationStepExecContainer.find("button[name='edit-step-button']").click(function(event){
 		showEditFormContainer();

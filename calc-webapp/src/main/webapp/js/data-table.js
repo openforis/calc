@@ -40,7 +40,7 @@ DataTable.prototype = (function(){
 	//start the process of showing job results
 	var start = function(job) {
 		if( job ) {
-			console.log(job);
+//			console.log(job);
 			this.job = job;
 			
 			// reset count and data
@@ -95,14 +95,18 @@ DataTable.prototype = (function(){
 	// disable / enable prev/next buttons
 	var updateButtons = function(){
 		if(this.offset == 0){
-			this.prevButton.prop('disabled', true);
+			UI.disable(this.prevButton);
+//			this.prevButton.prop('disabled', true);
 		} else {
-			this.prevButton.prop('disabled', false);
+			UI.enable(this.prevButton);
+//			this.prevButton.prop('disabled', false);
 		}
 		if( (this.offset+this.rows) >= this.totalItems){
-			this.nextButton.prop('disabled', true);
+			UI.disable(this.nextButton);
+//			this.nextButton.prop('disabled', true);
 		} else {
-			this.nextButton.prop('disabled', false);
+			UI.enable(this.nextButton);
+//			this.nextButton.prop('disabled', false);
 		}
 	};
 	

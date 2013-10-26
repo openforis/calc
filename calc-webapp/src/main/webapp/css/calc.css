@@ -22,8 +22,9 @@ html, body {
 /* 	overflow: auto; */
 }
 
+
 /*
-* Default button
+* Buttons
 */
 button.default-btn {
 	height:100%;
@@ -35,12 +36,44 @@ button.default-btn {
 /* 	background-color:#b8b8b8; */
 /* 	border-color: #b8b8b8; */
 }
-button.default-btn:hover {
+button.default-btn:hover,
+button.default-btn:focus
+ {
 	background-color:#e6e7e7;
 	border-color: #e6e7e7;
 	color:#2c3e50;
 }
 
+button.blue-btn ,
+button.blue-btn:focus {
+	height:100%;
+	border-radius:0px;
+/* 	width: 70%; */
+	background-color: #496d7e;
+	border-color: #496d7e;
+	color:#e6e7e7;
+/* 	background-color:#b8b8b8; */
+/* 	border-color: #b8b8b8; */
+}
+button.blue-btn:hover {
+	color:#e6e7e7;
+	background-color: #36525f;
+	border-color: #36525f;
+	
+}
+
+button.no-background ,
+button.no-background:focus {
+	color: white;
+	background: transparent;
+	border: none;
+	padding: 8px;
+}
+button.no-background:hover {
+	color: white;
+	background-color: #36525f;
+	border: none;
+}
 /** Home Sections*/
 .section-home, .page-section {
 	overflow: auto;
@@ -327,6 +360,9 @@ formula editor
 	height: 100%;
 	width: 100%;
 	padding-top: 20px;
+}
+.data-visualization .scatter-plot {
+	padding-top : 15px;
 }
 
 

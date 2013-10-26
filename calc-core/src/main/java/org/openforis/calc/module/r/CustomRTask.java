@@ -86,7 +86,7 @@ public final class CustomRTask extends CalculationStepTask {
 			int numberOfRows = (int) ((getItemsRemaining() < (offset + limit)) ? getItemsRemaining() : limit);
 
 			// List<DataRecord> records =
-			viewDao.query(this.new RTaskVisitor(), getWorkspace(), offset, numberOfRows, getEntity().getName(), variables.toArray(new String[] {}));
+			viewDao.query(this.new RTaskVisitor(), getWorkspace(), offset, numberOfRows, getEntity(), variables.toArray(new String[] {}));
 
 			// selectQuery.addLimit(offset, numberOfRows);
 			// System.out.println(selectQuery.toString());
@@ -170,13 +170,13 @@ public final class CustomRTask extends CalculationStepTask {
 
 	@Override
 	protected long countTotalItems() {
-//		DataTable table = getDataView();
+		// DataTable table = getDataView();
 		long count = this.viewDao.count(getEntity());
-//				psql().selectCount().from(table).fetchOne(0, Long.class);
-		if ( maxItems <= 0 ||  maxItems > count ) {
+		// psql().selectCount().from(table).fetchOne(0, Long.class);
+		if (maxItems <= 0 || maxItems > count) {
 			maxItems = count;
 		}
-		
+
 		return maxItems;
 	}
 
@@ -227,27 +227,30 @@ public final class CustomRTask extends CalculationStepTask {
 	public void setMaxItems(long max) {
 		this.maxItems = max;
 	}
-	
+
 	@JsonIgnore
 	List<DataRecord> bufferResults = null;
+
 	@JsonIgnore
-	public List<DataRecord> getResults(int from , int to){
+	public List<DataRecord> getResults(int from, int to) {
 		if (results != null) {
-		synchronized (results) {
-			bufferResults = new ArrayList<DataRecord>();
-			if( from + (to - from) > results.size() ) {
-				to = results.size();
+			synchronized (results) {
+				if (this.getItemsProcessed() < to) {
+					to = (int) this.getItemsProcessed();
+				} else if (from + (to - from) > results.size()) {
+					to = results.size();
+				}
+
+				List<DataRecord> subList = results.subList(from, to);
+				// bufferResults =C ollectionUtils.unmodifiableList(subList);
+				bufferResults = new ArrayList<DataRecord>();
+				bufferResults.addAll(subList);
+				return bufferResults;
 			}
-			
-			List<DataRecord> subList = results.subList(from, to);
-//			 bufferResults =C ollectionUtils.unmodifiableList(subList);
-			bufferResults.addAll(subList);
-			 return bufferResults;
 		}
-		} 
 		return null;
 	}
-	
+
 	@JsonIgnore
 	public DataRecord getNextResult() {
 		synchronized (results) {
@@ -261,22 +264,22 @@ public final class CustomRTask extends CalculationStepTask {
 	}
 
 	// TODO remove ? old buffered results
-//	
-//
-//	public List<DataRecord> getBufferedResults() {
-//		return bufferResults;
-//	}
-//
-//	// @JsonIgnore
-//	public void prepareBufferedResults() {
-//		if (results != null) {
-//			synchronized (results) {
-//				bufferResults = new ArrayList<DataRecord>(results);
-//				results.clear();
-//
-//			}
-//		}
-//	}
+	//
+	//
+	// public List<DataRecord> getBufferedResults() {
+	// return bufferResults;
+	// }
+	//
+	// // @JsonIgnore
+	// public void prepareBufferedResults() {
+	// if (results != null) {
+	// synchronized (results) {
+	// bufferResults = new ArrayList<DataRecord>(results);
+	// results.clear();
+	//
+	// }
+	// }
+	// }
 
 	private class RTaskVisitor implements DataRecordVisitor {
 

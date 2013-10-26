@@ -3,14 +3,52 @@
  */
 
 function ScatterPlot(container) {
-	
+	// ui container
 	this.container = container;
+	// options section
+	this.optionsSection = this.container.find('.options');
+	this.xOption = this.optionsSection.find('[name=x]');
+	this.yOption = this.optionsSection.find('[name=y]');
+	this.refreshBtn = this.optionsSection.find('[name=refresh]');
+	//chart
+	this.chart = this.container.find(".chart");
+	
+	
+	this.job = null;
+	this.entityId = null;
+	this.variables = [];
 	
 	this.xVariable = null,
-	
 	this.yVariable = null,
+	this.offset = 0;
+//	this.started = false;
 	
-//	console.log(this.container.html());
+	//event handlers
+	this.xOption.change( $.proxy(
+			function(e) {
+					e.preventDefault();
+					this.xVariable = this.xOption.val();
+				} 
+			, this ));
+	this.yOption.change( $.proxy(
+			function(e){
+					e.preventDefault();
+					this.yVariable = this.yOption.val();
+				} 
+			, this ));
+	this.refreshBtn.click( $.proxy(
+			function(e){
+				if( this.xVariable == null || this.yVariable == null ){
+					UI.Form.showResultMessage( "x and y must be set", false );
+				} else {
+					this.refresh();
+				}
+//				console.log(this);
+			} 
+		, this ));
+			
+	
+	
 	this.chartinfo = {
 		    chart: {
 		    	type: 'scatter',
@@ -103,38 +141,110 @@ function ScatterPlot(container) {
 	
 };
 
-ScatterPlot.prototype.show = function() {
-	this.container.fadeIn();
-};
-
-ScatterPlot.prototype.hide = function(){
-	this.container.hide();
-};
-
-ScatterPlot.prototype.setXAxis = function(xAxis) {
-	this.xVariable = xAxis;
-	this.chartinfo.xAxis.title.text = xAxis;
-};
-
-ScatterPlot.prototype.setYAxis = function(yAxis) {
-	this.yVariable = yAxis;
-	this.chartinfo.yAxis.title.text = yAxis;
-};
-ScatterPlot.prototype.setAxes = function(xAxis, yAxis) {
-	this.setXAxis(xAxis);
-	this.setYAxis(yAxis);
-};
-
-ScatterPlot.prototype.refresh = function(data) {
-	var chartData = [];
-	$.each(data,function(i,record){
-		var seriesItem = [] ; 
-		$.each(this.fields, function(i,field) {
-			seriesItem.push(field);
-		});
-		chartData.push(seriesItem);
-	});
+ScatterPlot.prototype = (function(){
+	var updateJob = function(job) {
+		if( this.job.id == job.id ){
+			this.job = job;
+		}
+	};
 	
-	this.chartinfo.series[0].data = chartData;
-	$(this.container.find(".chart")).highcharts(this.chartinfo);
-};
+	var setJob = function(job) {
+		var $this = this;
+		
+		$this.job = job;
+		//reset instance variables 
+		$this.xVariable = null,
+		$this.yVariable = null,
+		$this.offset = 0;
+//		$this.started = false;
+		
+		$this.entityId = $this.job.tasks[0].calculationStep.outputEntityId;
+		this.chart.series[0].remove(true);
+		
+		WorkspaceManager.loadQuantitativeVariables($this.entityId, function(response) {
+			$this.variables = response;
+			UI.Form.populateSelect($this.xOption, $this.variables, 'name','name');
+			UI.Form.populateSelect($this.yOption, $this.variables, 'name','name');
+		});
+//		console.log($this);
+	};
+	
+	var refresh = function() {
+		$this = this;
+		
+		if( this.xVariable != null && this.yVariable != null ) {
+			
+			//start getting data for the job
+			$.ajax({
+				url:"rest/data/"+$this.entityId+"/query.json",
+				dataType:"json",
+				data:{offset:$this.offset, fields:[$this.xVariable,this.yVariable].join()},
+				
+				success: $.proxy( function(response) {
+					var $this = this;
+//					$this.started = true;
+					var data = response;
+					
+					// show chart
+					console.log('result from server')
+//					console.log(data);
+					
+					var chartData = [];
+					$.each(data,function(i,record){
+						console.log(record);
+						var seriesItem = [] ;
+//						console.log(record)
+						$.each(record.fields, function(i,field) {
+							console.log(field);
+							seriesItem.push(field);
+						});
+						chartData.push(seriesItem);
+					});
+//					console.log(chartData);
+					this.chartinfo.series[0].data = chartData;
+					this.chart.highcharts(this.chartinfo);
+				} , this)
+				
+			});	
+		}
+		
+	};
+	
+	return {
+		constructor : ScatterPlot,
+		
+		setJob : setJob,
+		
+		updateJob : updateJob,
+		
+		show : function() {
+			if ( this.offset == 0 ) {
+				this.refresh();
+			}
+			this.container.fadeIn();
+		},
+		
+		hide : function(){
+			this.container.hide();
+		},
+		
+		refresh : refresh
+//		
+//		setXAxis : function(xAxis) {
+//			this.xVariable = xAxis;
+//			this.chartinfo.xAxis.title.text = xAxis;
+//		},
+//		
+//		setYAxis : function(yAxis) {
+//			this.yVariable = yAxis;
+//			this.chartinfo.yAxis.title.text = yAxis;
+//		},
+//		
+//		setAxes : function(xAxis, yAxis) {
+//			this.setXAxis(xAxis);
+//			this.setYAxis(yAxis);
+//		}
+
+		
+	};
+})();
