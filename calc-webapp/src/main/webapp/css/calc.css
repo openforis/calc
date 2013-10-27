@@ -379,6 +379,13 @@ formula editor
 calc-step page
 */
 
+.step-edit-exec-option {
+/* 	border-top: 1px solid #496d7e; */
+}
+.step-edit-exec-option .options {
+	text-align: left;
+	padding-top: 10px;
+}
 
 .progress {
 /* 	height: 30px;	 */

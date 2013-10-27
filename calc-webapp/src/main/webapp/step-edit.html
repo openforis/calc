@@ -79,22 +79,44 @@
 					</div>
 					
 					<div class="form-group buttons">
-						<div class="col-md-2 col-md-offset-5" style="text-align: center;">
+					
+						<div class="col-md-3 col-md-offset-3" style="text-align: center;">
 							<button type="submit" class="btn btn-default btn-lg" style="width: 50%">Save</button>
 						</div>
-						<div class="col-md-2"></div>
-						<div class="col-md-3" style="text-align: right; padding-top: 9px">
-<!-- 							<button type="button" name="run-calculcation-step" class="btn btn-default btn-lg" style="width: 50%">Execute</button> -->
-							<div class="input-group">
-<!-- 								<span class="input-group-addon">$</span>  -->
+						<div class="col-md-6 step-edit-exec-option">
+							<div class="col-md-6">
+								<button type="button" name="run-calculcation-step" class="btn btn-default btn-lg" style="width: 50%">Execute</button>
+								<button type="button" name="exec-options" class="btn no-background options-btn"><i class="icon-cog"></i></button>
+								
+							</div>
+							<div class="col-md-6 options">
 								<input type="text" class="form-control no-border" name="totalItems" placeholder="Number of records">
-								<span class="input-group-btn">
-									<button class="btn btn-default" name="run-calculcation-step" type="button">Execute</button>
-								</span>
 							</div>
 						</div>
-<!-- 						<div class="col-lg-2"> -->
-<!-- 							<button class="btn btn-default cancel btn-lg">Cancel</button> -->
+						
+						
+						
+<!-- 						<div class="col-md-3" style="text-align: center;"> -->
+<!-- 							<button type="button" name="run-calculcation-step" class="btn btn-default btn-lg" style="width: 50%">Execute</button> -->
+<!-- 						</div> -->
+						<!-- exec options -->
+<!-- 						<div class="col-md-3" style="text-align: left; padding-top: 5px;"> -->
+<!-- 							<input type="text" class="form-control no-border" name="totalItems" placeholder="Number of records"> -->
+<!-- 						</div> -->
+						
+						
+						
+<!-- 						<div class="col-md-2 col-md-offset-5" style="text-align: center;"> -->
+<!-- 							<button type="submit" class="btn btn-default btn-lg" style="width: 50%">Save</button> -->
+<!-- 						</div> -->
+<!-- 						<div class="col-md-2"></div> -->
+<!-- 						<div class="col-md-3" style="text-align: right; padding-top: 9px"> -->
+<!-- 							<div class="input-group"> -->
+<!-- 								<input type="text" class="form-control no-border" name="totalItems" placeholder="Number of records"> -->
+<!-- 								<span class="input-group-btn"> -->
+<!-- 									<button class="btn btn-default" name="run-calculcation-step" type="button">Execute</button> -->
+<!-- 								</span> -->
+<!-- 							</div> -->
 <!-- 						</div> -->
 					</div>
 				</fieldset>
@@ -128,6 +150,7 @@
 	
 	<!-- Execution and results  -->
 	<div class="row" id="calculation-step-exec-container" style="width: 100%; height: 100%; padding-top:10px; ">
+		<!-- step information section -->
 		<div class="row" >
 			<div class="col-md-1 col-md-offset-3" style="text-align: right;">
 				<button name="edit-step-button" class="calculation btn btn-info" ><i class="icon-edit"></i></button>
@@ -135,6 +158,7 @@
 			<div class="col-md-2 step-name">
 				<legend></legend>
 			</div>
+			<!-- progress bar -->
 			<div class="col-md-2 step-progress" style="padding-top: 15px;">
 				<div class="progress"> 
 					<div class="progress-bar"></div>
@@ -143,44 +167,13 @@
 			<div class="col-md-1" style="padding-top: 8px;">
 				<div class="col-md-1 percent"></div>
 			</div>
-<!-- 			<div class="col-md-5"> -->
-<!-- 				<div class="row step-progress" style="padding-top: 20px"> -->
-<!-- 			   		<div class="col-md-6 col-md-offset-2" style="padding-top:10px;"> -->
-<!-- 			   			<div class="progress">  -->
-<!-- 							<div class="progress-bar"></div> -->
-<!-- 						</div> -->
-<!-- 			   		</div>  -->
-<!-- 			   		<div class="col-md-1 percent"> -->
-<!-- 			   		</div> -->
-<!-- 				</div> -->
-<!-- 			</div> -->
 		</div>
-		<!-- progress bar -->
-<!-- 		<div class="row" > -->
-<!-- 			<div class="col-md-2"> -->
-<!-- 			</div> -->
-<!-- 			<div class="col-md-8"> -->
-<!-- 				<div class="row step-progress" style="padding-top: 20px"> -->
-<!-- 			   		<div class="col-md-6 col-md-offset-2" style="padding-top:10px;"> -->
-<!-- 			   			<div class="progress">  -->
-<!-- 							<div class="progress-bar"></div> -->
-<!-- 						</div> -->
-<!-- 			   		</div>  -->
-<!-- 			   		<div class="col-md-1 percent"> -->
-<!-- 			   		</div> -->
-<!-- 				</div> -->
-<!-- 			</div> -->
-<!-- 			<div class="col-md-2"> -->
-<!-- 			</div> -->
-<!-- 		</div> -->
 		
-		<!-- results -->
+		<!-- results section -->
 		<div class="row" style="height: 70%">
 			<div class="col-md-2">
 			</div>
 			<div class="col-md-8" id="calc-step-results" style="height: 100%">
-			
-				
 			</div>
 			<div class="col-md-2">
 			</div>
@@ -229,7 +222,12 @@ $(function(){
 	$calculationStepEditContainer = $("#calculation-step-edit-container");
 	$calculationStepExecContainer = $("#calculation-step-exec-container");
 	$calculationStepExecContainer.hide();
-	
+	//exec options ui components
+	var execOptionsBtn = $calculationStepEditContainer.find(".step-edit-exec-option button[name=exec-options]");
+	var execOptions = $calculationStepEditContainer.find(".step-edit-exec-option .options");
+	var execOptionsWidth = -1;
+	execOptions.hide();
+//		execOptions.css({width:"0px"});
 	/**
 	 *results ui components
 	 */
@@ -488,6 +486,27 @@ $(function(){
 			
 		}
 	}
+	
+	//exec options click
+	execOptionsBtn.click(function(e){
+		if(execOptionsWidth < 0){
+			execOptionsWidth = execOptions.width();
+		}
+		
+		//only shows for now
+		if(execOptions.is(":visible")) {
+// 			execOptions.animate({width:'0px'}, 200,'easeInOutExpo');
+// 			execOptions.fadeOut(100);
+			
+			
+// 			setTimeout(function(){execOptions.hide()}, 500);
+		} else {
+			execOptions.css({width:"0px"});
+			execOptions.show();
+			execOptions.animate({width:execOptionsWidth+'px'}, 600,'easeOutExpo');
+		}
+	});
+	
 	//in results section, click to show edit form
 	$calculationStepExecContainer.find("button[name='edit-step-button']").click(function(event){
 		showEditFormContainer();

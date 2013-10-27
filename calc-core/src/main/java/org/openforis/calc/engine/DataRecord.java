@@ -3,7 +3,7 @@
  */
 package org.openforis.calc.engine;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -18,7 +18,7 @@ public class DataRecord {
 	private Map<String, Object> fields;
 
 	public DataRecord() {
-		fields = new HashMap<String, Object>();
+		fields = new LinkedHashMap<String, Object>();
 	}
 
 	public DataRecord(long id) {

@@ -10,9 +10,9 @@ function ScatterPlot(container) {
 	this.xOption = this.optionsSection.find('[name=x]');
 	this.yOption = this.optionsSection.find('[name=y]');
 	this.refreshBtn = this.optionsSection.find('[name=refresh]');
-	//chart
-	this.chart = this.container.find(".chart");
-	
+	//chart container
+	this.chartContainer = this.container.find(".chart");
+	this.chart = null;
 	
 	this.job = null;
 	this.entityId = null;
@@ -24,6 +24,7 @@ function ScatterPlot(container) {
 //	this.started = false;
 	
 	//event handlers
+	//change x and y variables
 	this.xOption.change( $.proxy(
 			function(e) {
 					e.preventDefault();
@@ -36,6 +37,7 @@ function ScatterPlot(container) {
 					this.yVariable = this.yOption.val();
 				} 
 			, this ));
+	//refresh chart button
 	this.refreshBtn.click( $.proxy(
 			function(e){
 				if( this.xVariable == null || this.yVariable == null ){
@@ -48,14 +50,14 @@ function ScatterPlot(container) {
 		, this ));
 			
 	
-	
 	this.chartinfo = {
 		    chart: {
+		    	renderTo: this.chartContainer.attr("id"),
 		    	type: 'scatter',
                 zoomType: 'xy',
                 borderWidth: 0,
                 borderRadius: 0,
-                backgroundColor: null	
+                backgroundColor: null,
 		    },
 		    credits: {
 		    	enabled:false
@@ -156,10 +158,11 @@ ScatterPlot.prototype = (function(){
 		$this.xVariable = null,
 		$this.yVariable = null,
 		$this.offset = 0;
-//		$this.started = false;
 		
 		$this.entityId = $this.job.tasks[0].calculationStep.outputEntityId;
-		this.chart.series[0].remove(true);
+		if(this.chart){
+			this.chart.destroy();
+		}
 		
 		WorkspaceManager.loadQuantitativeVariables($this.entityId, function(response) {
 			$this.variables = response;
@@ -185,24 +188,30 @@ ScatterPlot.prototype = (function(){
 //					$this.started = true;
 					var data = response;
 					
-					// show chart
-					console.log('result from server')
+//					console.log('result from server')
 //					console.log(data);
 					
+					// prepare chart data
 					var chartData = [];
 					$.each(data,function(i,record){
-						console.log(record);
+//						console.log(record);
 						var seriesItem = [] ;
 //						console.log(record)
 						$.each(record.fields, function(i,field) {
-							console.log(field);
+//							console.log(field);
 							seriesItem.push(field);
 						});
 						chartData.push(seriesItem);
 					});
+					
+					// show chart
+					
 //					console.log(chartData);
 					this.chartinfo.series[0].data = chartData;
-					this.chart.highcharts(this.chartinfo);
+					this.chart = new Highcharts.Chart(this.chartinfo);
+//					this.chart = this.chartContainer.highcharts(this.chartinfo);
+//					console.log( this.chart.redraw() );
+					
 				} , this)
 				
 			});	
