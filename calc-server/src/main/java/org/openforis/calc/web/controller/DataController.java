@@ -44,7 +44,7 @@ public class DataController {
 	
 	@RequestMapping(value = "/{entityId}/query.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
-	List<DataRecord> query(@PathVariable int entityId, @RequestParam String fields, @RequestParam int offset, @RequestParam(required=false) Integer numberOfRows) {
+	List<DataRecord> query(@PathVariable int entityId, @RequestParam String fields, @RequestParam int offset, @RequestParam(required=false) Integer numberOfRows, @RequestParam(required=false) Boolean excludeNull) {
 		Workspace workspace = workspaceService.getActiveWorkspace();
 		Entity entity = workspace.getEntityById(entityId);
 		
@@ -52,8 +52,11 @@ public class DataController {
 		if(numberOfRows==null) {
 			numberOfRows = 5000;
 		}
+		if(excludeNull == null){
+			excludeNull = false;
+		}
 		
-		List<DataRecord> records = entityDao.query(workspace, offset, numberOfRows, entity, fields.split(","));
+		List<DataRecord> records = entityDao.query(workspace, offset, numberOfRows, entity, excludeNull, fields.split(","));
 		
 		return records;
 	}

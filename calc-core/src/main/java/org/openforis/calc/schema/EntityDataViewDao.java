@@ -6,6 +6,7 @@ package org.openforis.calc.schema;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.SelectQuery;
@@ -30,10 +31,17 @@ public class EntityDataViewDao extends AbstractJooqDao {
 	}
 	
 	public List<DataRecord> query(Workspace workspace, Integer offset, Integer numberOfRows, Entity entity, String... fields) {
-		return query(null, workspace, offset, numberOfRows, entity, fields);
+		return query(null, workspace, offset, numberOfRows, entity, false, fields);
 	}
 	
-	public List<DataRecord> query(DataRecordVisitor visitor, Workspace workspace, Integer offset, Integer numberOfRows, Entity entity, String... fields) {
+	public List<DataRecord> query(Workspace workspace, Integer offset, Integer numberOfRows, Entity entity, boolean excludeNull, String... fields) {
+		return query(null, workspace, offset, numberOfRows, entity, excludeNull, fields);
+	}
+	public List<DataRecord> query(DataRecordVisitor visitor, Workspace workspace, Integer offset, Integer numberOfRows, Entity entity, String... fields){
+		return query(visitor, workspace, offset, numberOfRows, entity, false, fields);
+	}
+	
+	public List<DataRecord> query(DataRecordVisitor visitor, Workspace workspace, Integer offset, Integer numberOfRows, Entity entity, boolean excludeNull, String... fields) {
 		if (fields == null || fields.length == 0) {
 			throw new IllegalArgumentException("fields must be specifed");
 		}
@@ -47,7 +55,11 @@ public class EntityDataViewDao extends AbstractJooqDao {
 		select.addFrom(view);
 		select.addSelect(view.getIdField());
 		for (String field : fields) {
-			select.addSelect(view.field(field));
+			Field<?> f = view.field(field);
+			select.addSelect(f);
+			if(excludeNull){
+				select.addConditions(f.isNotNull());
+			}
 		}
 		// add order by id -- important?!
 		select.addOrderBy( view.getIdField() );
@@ -60,6 +72,7 @@ public class EntityDataViewDao extends AbstractJooqDao {
 		} else if (offset != null && numberOfRows == null) {
 			select.addLimit(offset);
 		}
+		
 		// execute the query
 		Result<Record> result = select.fetch();
 

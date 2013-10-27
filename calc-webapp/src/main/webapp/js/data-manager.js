@@ -61,6 +61,7 @@ DataManager.prototype = (function() {
 	updateJob = function(job){
 		this.job = job;
 		this.scatterPlot.updateJob(job);
+		this.dataTable.updateJob(job);
 		
 		//disable/enable buttons if job completed
 		if(job.status=="COMPLETED"){

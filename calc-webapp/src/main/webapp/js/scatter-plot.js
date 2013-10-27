@@ -45,7 +45,6 @@ function ScatterPlot(container) {
 				} else {
 					this.refresh();
 				}
-//				console.log(this);
 			} 
 		, this ));
 			
@@ -154,21 +153,40 @@ ScatterPlot.prototype = (function(){
 		var $this = this;
 		
 		$this.job = job;
+
+		//reset chart
+		if(this.offset != 0) {
+//			console.log("reset chart from set job");
+//			console.log ($("#"+this.chartContainer.attr("id")).attr("id") );
+			this.chart.destroy();
+		}
 		//reset instance variables 
 		$this.xVariable = null,
 		$this.yVariable = null,
 		$this.offset = 0;
 		
 		$this.entityId = $this.job.tasks[0].calculationStep.outputEntityId;
-		if(this.chart){
-			this.chart.destroy();
-		}
 		
 		WorkspaceManager.loadQuantitativeVariables($this.entityId, function(response) {
 			$this.variables = response;
 			UI.Form.populateSelect($this.xOption, $this.variables, 'name','name');
 			UI.Form.populateSelect($this.yOption, $this.variables, 'name','name');
 		});
+		
+		//set vars
+		var vars = $this.job.tasks[0].calculationStep.variables;
+//		console.log(vars.length);
+		if(vars.length == 2) {
+			$this.xVariable = vars[0];
+			$this.yVariable = vars[1];
+			
+			//TODO also select the option to the relative select ?
+			
+//			console.log("this.variable:");
+//			console.log($this.xVariable);
+//			UI.Form.setValue( $this.xOption, $this.xVariable );
+//			console.log(this);
+		}
 //		console.log($this);
 	};
 	
@@ -177,19 +195,29 @@ ScatterPlot.prototype = (function(){
 		
 		if( this.xVariable != null && this.yVariable != null ) {
 			
+			//reset chart ?!
+			if(this.offset != 0) {
+//				console.log("reset chart from refresh");
+//				console.log ($("#"+this.chartContainer.attr("id")).attr("id") );
+				this.chart.destroy();
+				this.offset = 0;
+			}
+			
+			var vars = [$this.xVariable, $this.yVariable];
+//			console.log(vars);
 			//start getting data for the job
 			$.ajax({
 				url:"rest/data/"+$this.entityId+"/query.json",
 				dataType:"json",
-				data:{offset:$this.offset, fields:[$this.xVariable,this.yVariable].join()},
+				data:{	offset:$this.offset, 
+						fields:vars.join(), 
+						excludeNull:true
+					},
 				
 				success: $.proxy( function(response) {
-					var $this = this;
-//					$this.started = true;
+
+//					console.log(response);
 					var data = response;
-					
-//					console.log('result from server')
-//					console.log(data);
 					
 					// prepare chart data
 					var chartData = [];
@@ -208,6 +236,9 @@ ScatterPlot.prototype = (function(){
 					
 //					console.log(chartData);
 					this.chartinfo.series[0].data = chartData;
+					//update offset
+					this.offset = chartData.length;
+
 					this.chart = new Highcharts.Chart(this.chartinfo);
 //					this.chart = this.chartContainer.highcharts(this.chartinfo);
 //					console.log( this.chart.redraw() );

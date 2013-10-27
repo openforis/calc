@@ -164,6 +164,10 @@ UI.Form.reset = function($form) {
 	UI.Form.removeErrors($form);
 };
 
+UI.Form.setValue = function(element,item){
+	element.val(item);
+};
+
 /**
  * Populate a select using a list of items
  * Option value is set according to the specified valueFieldName and 

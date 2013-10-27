@@ -37,6 +37,13 @@ function DataTable($container) {
 };
 
 DataTable.prototype = (function(){
+	
+	var updateJob = function(job) {
+		if( this.job.id == job.id ){
+			this.job = job;
+		}
+	};
+	
 	//start the process of showing job results
 	var start = function(job) {
 		if( job ) {
@@ -170,7 +177,9 @@ DataTable.prototype = (function(){
 		//show job results
         showJobResults : function(job) {
         	$.proxy(start , this)(job);
-        }
+        },
+        
+        updateJob : updateJob
 	
 	};
 
