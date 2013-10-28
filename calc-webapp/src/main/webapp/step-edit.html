@@ -210,6 +210,13 @@
 	
 <script>
 $(function(){
+// 	yepnope.injectJs("js/scatter-plot.js", function () {
+// 		  console.log("scatter loaded!");
+// 	});
+// 	if(window.Highcharts){
+// 	    window.Highcharts = null;
+// 	}
+	
 	//current calculation step
 	$calculationStep = null;
 	/**
@@ -400,7 +407,7 @@ $(function(){
 			calculationStepManager.execute(stepId, totalItems, function(response) {
 // 				console.log("response on exec");
 // 				console.log(response);
-				$job = response;
+				var $job = response;
 				updateCalculationStepStatus($job);
 				showResultsContainer();
 			});
@@ -423,8 +430,8 @@ $(function(){
 		if(!processResultsStarted) {
 			processResults($job);
 		}
-		//update data manager job
-		dataManager.updateJob($job);
+// 		//update data manager job
+// 		dataManager.updateJob($job);
 		
 		var $task = $job.tasks[0];
 
@@ -446,11 +453,17 @@ $(function(){
 			}
 			var htmlPercent = (percent >= 0) ? percent + " %" : " -% ";
 			$calculationStepExecContainer.find(".percent").text(htmlPercent);
+			
+			//update data manager job
+			dataManager.updateJob($job);
 			break;
 		case "COMPLETED": 
 			$progressBar.addClass("progress-bar-success");
 			$progressBar.width("100%");
 			$calculationStepExecContainer.find(".percent").text("100%");
+			
+			//update data manager job
+			dataManager.updateJob($job);
 			break;
 		default: // nothing for now;
 		}

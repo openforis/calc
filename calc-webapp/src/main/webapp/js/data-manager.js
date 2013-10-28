@@ -58,7 +58,7 @@ DataManager.prototype = (function() {
 		this.dataTable.showJobResults(job);
 	};
 
-	updateJob = function(job){
+	var updateJob = function(job){
 		this.job = job;
 		this.scatterPlot.updateJob(job);
 		this.dataTable.updateJob(job);
@@ -100,9 +100,7 @@ DataManager.prototype = (function() {
 			$.proxy( start , this )(job);
 		},
 		
-		updateJob : function(job){
-			this.job = job;
-		}
+		updateJob : updateJob
 	};
 
 })();

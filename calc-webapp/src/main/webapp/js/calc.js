@@ -158,7 +158,7 @@ $(document).ready(function() {
 	        scrollTop: $(target).offset().top
 	    }, 800);
 	});
-	
+	var pages = [];
 	// event handler for home button click
 	homeButtonClick = function(event){
 		event.preventDefault();
@@ -169,12 +169,18 @@ $(document).ready(function() {
 		$section = $button.parents(".section-home");
 		//home page section (contains the button links to the external pages)
 		$homeSection = $section.find(".page-section");
-		
+		console.log("Before loading!");
+		console.log(window.Highcharts);
+//	 	if(window.Highcharts){
+//	 		var $c = window.Highcharts;
+//	 		window.Highcharts = null;
+//	 	}
 		$.ajax({
 			url: sectionUrl,
-			dataType: "html"
+			dataType: "html",
+			data:{"r":Math.random()}
 		}).done(function(response){
-			$page = $(response);
+			var $page = $(response);
 			
 			//hide loaded page
 			$page.hide();
@@ -198,6 +204,9 @@ $(document).ready(function() {
 				$page.show();
 				//show the back home button
 				$backHomeButton.fadeIn(500);
+				
+//				window.Highcharts = $c;
+				
 			},500);
 		});
 		
