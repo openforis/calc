@@ -542,3 +542,23 @@ calc-step page
 /**
 * End of Typeahead
 */
+
+/**
+* Combobox
+*/
+.combobox-container {
+	width: 100%;
+}
+.combobox-container .dropdown-toggle {
+	height: 43px !important;
+	float: left;
+	display: inline-block;
+}
+.combobox-container .form-control {
+	width: 95%;
+	float: left;
+	display: inline-block;
+}
+.combobox-container .typeahead {
+	height: 15em;
+}

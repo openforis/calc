@@ -7,7 +7,9 @@ function CalculationStepManager($form) {
 	
 	this.$form = $form;
 	this.$entitySelect = $form.find("[name='entityId']");
+	this.$entityCombobox = null; //inted by initEntityCombobox function
 	this.$variableSelect = $form.find("[name='variableId']");
+	this.$variableCombobox = null; //inted by initVariableCombobox function
 	this.$addVariableButton = $form.find("[name=add-variable]");
 	
 	this.currentCalculationStep = null;
@@ -26,6 +28,8 @@ CalculationStepManager.prototype = (function() {
 		UI.lock();
 		var $this = this;
 		
+		$.proxy(initEntityCombobox, $this)();
+		$.proxy(initVariableCombobox, $this)();
 		$.proxy(initEventHandlers, $this)();
 	
 		$.proxy(refreshEntitySelect, $this)(function() {
@@ -37,7 +41,24 @@ CalculationStepManager.prototype = (function() {
 				UI.unlock();
 			}
 		});
-		
+	};
+	
+	/**
+	 * Init the entity autocomplete combobox
+	 */
+	var initEntityCombobox = function() {
+		var $this = this;
+		var $el = $this.$entitySelect.combobox();
+		$this.$entityCombobox = $el.data('combobox');
+	};
+	
+	/**
+	 * Init the variable autocomplete combobox
+	 */
+	var initVariableCombobox = function() {
+		var $this = this;
+		var $el = $this.$variableSelect.combobox();
+		$this.$variableCombobox = $el.data('combobox');
 	};
 	
 	/**
@@ -144,7 +165,9 @@ CalculationStepManager.prototype = (function() {
 	var updateForm = function(callback) {
 		var $this = this;
 		var $step = $this.currentCalculationStep;
-		$this.$entitySelect.val($step.outputEntityId);
+		
+		$this.$entityCombobox.$source.val($step.outputEntityId);
+		$this.$entityCombobox.refresh();
 		
 		$.proxy(refreshVariableSelect, $this)($step.outputVariableId, function() {
 			UI.Form.setFieldValues($this.$form, $step);
@@ -178,7 +201,8 @@ CalculationStepManager.prototype = (function() {
 		
 		WorkspaceManager.loadEntities(function(response) {
 			var entities = response;
-			UI.Form.populateSelect($this.$entitySelect, entities, "id", "name");
+			UI.Form.populateSelect($this.$entityCombobox.$source, entities, "id", "name");
+			$this.$entityCombobox.refresh();
 			if ( callback ) {
 				callback(response);
 			}
@@ -195,18 +219,26 @@ CalculationStepManager.prototype = (function() {
 	 */
 	var refreshVariableSelect = function(value, callback) {
 		var $this = this;
-		$this.$variableSelect.attr("disabled", "disabled");
-		$this.$addVariableButton.attr("disabled", "disabled");
+
+		$this.$variableCombobox.reset();
+		$this.$variableCombobox.disable();
+		
+		UI.Form.disableField($this.$addVariableButton);
 		
 		var entityId = $this.getSelectedEntityId($this.$form);
 		if ( entityId ) {
 			WorkspaceManager.loadQuantitativeVariables(entityId, function(response) {
 				var variables = response;
+				var comboboxSource = $this.$variableCombobox.$source;
 				
-				UI.Form.populateSelect($this.$variableSelect, variables, "id", "name");
+				UI.Form.populateSelect(comboboxSource, variables, "id", "name");
 				
-				$this.$variableSelect.removeAttr("disabled");
-				$this.$addVariableButton.removeAttr("disabled");
+				comboboxSource.val(value);
+				$this.$variableCombobox.refresh();
+				
+				$this.$variableCombobox.enable();
+
+				UI.Form.enableField($this.$addVariableButton);
 				
 				if ( value ) {
 					$this.$variableSelect.val(value);

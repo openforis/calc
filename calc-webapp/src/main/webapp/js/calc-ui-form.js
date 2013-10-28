@@ -34,6 +34,9 @@ UI.Form.updateErrors = function($form, errors) {
 		var fieldName = error.field;
 		var $field = $form.find('[name=' + fieldName + ']');
 		if ( $field != null ) {
+			var $formGroup = $field.closest('.form-group');
+			$formGroup.addClass('has-error');
+
 			UI.Form.createErrorTooltip($field, error);
 		}
 	});
@@ -74,6 +77,20 @@ UI.Form.disable = function(form){
 };
 
 /**
+ * Disable an input field
+ */
+UI.Form.disableField = function(field) {
+	field.attr("disabled", "disabled");
+};
+
+/**
+ * Enable an input field
+ */
+UI.Form.enableField = function(field) {
+	field.removeAttr("disabled");
+};
+
+/**
  * Enable all input fields in a form
  * 
  * @param form
@@ -89,16 +106,16 @@ UI.Form.enable = function(form){
  * @param error
  */
 UI.Form.createErrorTooltip = function($field, error) {
-	$formGroup = $field.closest('.form-group');
-	$formGroup.addClass('has-error');
-	
 	var fieldLabel = UI.Form.getFieldLabel($field);
 	var message = fieldLabel + " " + error.defaultMessage;
 	
 	var $parentModal = $field.closest('.modal');
 	var container = $parentModal.length == 0 ? 'body': $parentModal; 
 	
-	$field.tooltip({
+	var inputType = UI.Form.getInputType($field);
+	var $targetField = inputType == 'hidden' ? $targetField = $field.siblings('.form-control'): $field;
+	
+	$targetField.tooltip({
 		title: message,
 		container: container,
 		template: '<div class="tooltip error"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'
@@ -145,6 +162,15 @@ UI.Form.setFieldValues = function($form, $data) {
  * @returns
  */
 UI.Form.getInputType = function(inputField) {
+	if ( inputField instanceof jQuery ) {
+		if ( inputField.length == 1 ) {
+			var field = inputField.get(0);
+			return UI.Form.getInputType(field);
+		} else {
+			//no single input field found
+			return null;
+		}
+	}
 	var type = inputField.type;
 	if ( ! type ) {
 		//e.g. textarea element
