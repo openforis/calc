@@ -300,8 +300,7 @@ CalculationStepManager.refreshHome = function($step, callback) {
 		if ( $el.length == 0 ) {
 			CalculationStepManager._addStepToHome($step);
 		} else {
-			var $button = $el.find(".calculation-button");
-			$button.html($step.caption);
+			$el.text($step.caption);
 		}
 		if ( callback ) {
 			callback();
@@ -333,13 +332,17 @@ CalculationStepManager._addStepToHome = function($step) {
 	var $calculationContainer = $("#calculation");
 	
 	//create button from template
-	var $stepEl = $calculationContainer.find(".step.template").clone();
+	var $stepEl = $calculationContainer.find(".calculation-button.template").clone();
 	$stepEl.removeClass("template");
 	$stepEl.attr("id", "calculation-step-el-" + $step.id);
 	
-	var $button = $stepEl.find(".calculation-button");
-	$button.html($step.caption);
-	$button.attr("href","step-edit.html?id="+$step.id);
+	$stepEl.text($step.caption);
+	$stepEl.attr("href","step-edit.html?id="+$step.id);
+	
+	$stepEl.click(function(event) {
+		homeButtonClick(event);
+	});
+	/*
 	var mouseDownStartDate = null;
 	var timer = null;
 	var LONG_PRESS_DURATION = 1000;
@@ -367,13 +370,12 @@ CalculationStepManager._addStepToHome = function($step) {
 			});
 		}
 	});
-	
+	*/
 	$stepEl.css("display", "inline-block");
-//	$button.fadeIn(100);
 	
 	var $stepElContainer = $calculationContainer.find('.steps-container');
 	$stepElContainer.append($stepEl);
-	return $button;
+	return $stepEl;
 };
 
 CalculationStepManager._removeStepFromHome = function($step) {

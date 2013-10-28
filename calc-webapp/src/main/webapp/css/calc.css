@@ -220,21 +220,11 @@ button.settings:hover {
 	margin: 2% auto 2% auto;
 }
 
-#calculation .btn-home-plus, #calculation .step {
+#calculation .btn-home-plus, #calculation .calculation-button {
 	width: 15em;
 	height: 6em;
 	margin: 1em;
 	display: inline-block;
-}
-
-#calculation .step .calculation-button {
-	width: 100%;
-	height: 5em;
-}
-
-#calculation .step .options.hide {
-	display: block !important;
-	visibility: hidden;
 }
 
 /**
