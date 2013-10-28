@@ -184,7 +184,8 @@ $(document).ready(function() {
 			
 			//hide loaded page
 			$page.hide();
-
+console.log($("#scatter-plot").html());
+console.log(window);
 			/**
 			 * hide home and shows loaded page
 			 */
