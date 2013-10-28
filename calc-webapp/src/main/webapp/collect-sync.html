@@ -31,9 +31,10 @@ $(function(){
 	$progressSection.hide();
 	
 	var resetForm = function() {
+		$file.val("");
 		$progressSection.hide();
 		$formSection.show();
-		
+
 		$progressPercent.html("0%");
 		$progressBar.width(0);
 	};
@@ -54,15 +55,14 @@ $(function(){
 	    	$progressPercent.html(percentVal);
 	    },
 	    success: function ( json ) {
-			$progressSection.hide();
-	    	$formSection.show();
-			
 	    	checkJobStatus(function() {
 	    		CalculationStepManager.refreshHome();
 	    	});
 	    },
 	    error: function (e) {
 	    	alert('Error uploading file');
+	    },
+	    complete: function() {
 	    	resetForm();
 	    }
 	});	
