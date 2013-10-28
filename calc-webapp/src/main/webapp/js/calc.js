@@ -61,7 +61,8 @@ checkJobStatus = function(onCompleteCallback, updateOnly) {
 createJobStatus = function($job, onCompleteCallback) {
 	$jobStatus.modal({keyboard:false,backdrop:"static"});
 	$jobStatus.find('.modal-title').text($job.name);
-	$modalBody = $jobStatus.find('.modal-body');
+	$jobStatus.find(".modal-footer").addClass("hide");
+	var $modalBody = $jobStatus.find('.modal-body');
 	$modalBody.empty();
 	
 	$tasks = $job.tasks;
