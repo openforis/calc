@@ -1,168 +1,373 @@
-<project
-	xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
+		<groupId>org.openforis.calc</groupId>
 		<artifactId>calc</artifactId>
-		<groupId>org.openforis</groupId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>1.0-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
 
 	<artifactId>calc-core</artifactId>
+	<packaging>jar</packaging>
+	<name>Open Foris Calc Core</name>
+	
+	<properties>
+		<mondrian-source-files-dir>${project.build.directory}/generated-sources/mondrian</mondrian-source-files-dir>
+		<jooq-codegen.target.directory>src/generated/java</jooq-codegen.target.directory>
+		<jooq-codegen.target.package>org.openforis.calc.persistence.jooq</jooq-codegen.target.package>
+	</properties>
+	
+	<build>
+		<plugins>
+			<!-- Read dev properties -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>properties-maven-plugin</artifactId>
+				<version>1.0-alpha-2</version>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>read-project-properties</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<files>
+						<file>${basedir}/src/main/resources/dev.properties</file>
+					</files>
+					<quiet>true</quiet>
+				</configuration>
+			</plugin>
+				
+			<plugin>
+		
+				<!-- Specify the maven code generator plugin -->
+				<groupId>org.jooq</groupId>
+				<artifactId>jooq-codegen-maven</artifactId>
+				<version>${jooq.version}</version>
+				<dependencies>
+					<dependency>
+						<groupId>postgresql</groupId>
+						<artifactId>postgresql</artifactId>
+						<version>${postgres-driver.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.openforis.build-tools</groupId>
+						<artifactId>jooq-codegen</artifactId>
+						<version>1.0-SNAPSHOT</version>
+					</dependency>
+				</dependencies>
+		
+				<!-- Specify the plugin configuration -->
+				<configuration>
+		
+					<!-- JDBC connection parameters -->
+					<jdbc>
+						<driver>${calc.jdbc.driver}</driver>
+						<url>${calc.jdbc.url}</url>
+						<user>${calc.jdbc.username}</user>
+						<password>${calc.jdbc.password}</password>
+					</jdbc>
+		
+					<!-- Generator parameters -->
+					<generator>
+						<name>org.jooq.util.DefaultGenerator</name>
+						<strategy>
+							<name>org.openforis.jooq.codegen.CustomGeneratorStrategy</name>
+						</strategy>
+						<database>
+							<name>org.jooq.util.postgres.PostgresDatabase</name>
+							<includes>.*</includes>
+							<excludes></excludes>
+							<inputSchema>calc</inputSchema>
+						</database>
+						<generate>
+							<relations>true</relations>
+							<records>false</records>
+							<deprecated>false</deprecated>
+						</generate>
+						<target>
+							<packageName>${jooq-codegen.target.package}</packageName>
+							<directory>${jooq-codegen.target.directory}</directory>
+						</target>
+					</generator>
+				</configuration>
+			</plugin>
+
+			<!-- Generate java file from mondrian xsd using jaxb2 maven plugin  -->
+			<plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jaxb2-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>xjc</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>xjc</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <packageName>org.openforis.calc.mondrian</packageName> 
+                   	<outputDirectory>${mondrian-source-files-dir}</outputDirectory>
+                   	<schemaFiles>mondrian.xsd</schemaFiles>
+                </configuration>
+            </plugin>
+            
+			<!-- Add generated sources to build path -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+						<id>add-integration-test-sources</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>add-test-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>src/it/java</source>
+							</sources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>add-integration-test-resources</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>add-test-resource</goal>
+						</goals>
+						<configuration>
+							<resources>
+								<resource>
+									<directory>src/it/resources</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>add-generated-sources</id>
+						<phase>process-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>${mondrian-source-files-dir}</source>
+								<source>${jooq-codegen.target.directory}</source>
+							</sources>							
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			
+		</plugins>
+		
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>2.0.2</version>
+					<configuration>
+						<source>1.6</source>
+						<target>1.6</target>
+						<encoding>${project.build.sourceEncoding}</encoding>
+					</configuration>
+				</plugin>
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.codehaus.mojo</groupId>
+										<artifactId>properties-maven-plugin</artifactId>
+										<versionRange>[1.0-alpha-2,)</versionRange>
+										<goals>
+											<goal>read-project-properties</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+						                <groupId>org.codehaus.mojo</groupId>
+						                <artifactId>jaxb2-maven-plugin</artifactId>
+						                <versionRange>[1.5,)</versionRange>			
+										<goals>
+											<goal>xjc</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
 
 	<dependencies>
+		<!-- Open Foris  -->
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.10</version>
-			<scope>test</scope>
-		</dependency>
-		
-		<!-- Apache Commons -->
-		<dependency>
-			<groupId>commons-lang</groupId>
-			<artifactId>commons-lang</artifactId>
-			<version>2.6</version>
+			<groupId>org.openforis.collect</groupId>
+			<artifactId>collect-core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>commons-io</groupId>
+			<groupId>org.openforis.collect</groupId>
+			<artifactId>collect-rdb</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.openforis.commons</groupId>
+			<artifactId>commons-collections</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.openforis.commons</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>2.3</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-dbcp</groupId>
-			<artifactId>commons-dbcp</artifactId>
-			<version>1.4</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-exec</artifactId>
-			<version>1.1</version>
 		</dependency>
 		
-		<!-- Java Persistence api -->
+		<!--  Spring  -->
 		<dependency>
-			<groupId>org.hibernate.javax.persistence</groupId>
-			<artifactId>hibernate-jpa-2.0-api</artifactId>
-			<version>1.0.0.Final</version>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-orm</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>javax.transaction</groupId>
-			<artifactId>jta</artifactId>
-			<version>1.1</version>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
 		</dependency>
-		
-		<!-- Db -->
-		<dependency>
-			<groupId>commons-dbcp</groupId>
-			<artifactId>commons-dbcp</artifactId>
-			<version>1.4</version>
-		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-entitymanager</artifactId>
-			<version>3.2.0.ga</version>
-		</dependency>
-<!-- 		<dependency> -->
-<!-- 			<groupId>postgresql</groupId> -->
-<!-- 			<artifactId>postgresql</artifactId> -->
-<!-- 			<version>9.1-901-1.jdbc4</version> -->
-<!-- 		</dependency> -->
-		
-		<!-- Spring  -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
-			<exclusions>
-				<exclusion>
-					<artifactId>commons-logging</artifactId>
-					<groupId>commons-logging</groupId>
-				</exclusion>
-			</exclusions>
+		</dependency>
+	
+		<!-- Jackson JSON Mapper -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-tx</artifactId>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-web</artifactId>
-			<exclusions>
-				<exclusion>
-					<artifactId>spring-expression</artifactId>
-					<groupId>org.springframework</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>spring-jdbc</artifactId>
-					<groupId>org.springframework</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-hibernate3</artifactId>
-			<version>2.0.8</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-jpa</artifactId>
-			<version>2.0.8</version>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
 		</dependency>
 		
-		<!-- Pentaho Kettle -->
+		<!-- Database -->
 		<dependency>
-			<groupId>pentaho-kettle</groupId>
-			<artifactId>kettle-core</artifactId>
+			<groupId>postgresql</groupId>
+			<artifactId>postgresql</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>pentaho-kettle</groupId>
-			<artifactId>kettle-db</artifactId>
+			<groupId>org.xerial</groupId>
+			<artifactId>sqlite-jdbc</artifactId>
+		</dependency>		
+		<dependency>
+			<groupId>org.postgis</groupId>
+			<artifactId>postgis-jdbc</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>pentaho-kettle</groupId>
-			<artifactId>kettle-engine</artifactId>
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>pentaho-kettle</groupId>
-			<artifactId>kettle-gpload-plugin</artifactId>
+			<groupId>org.jooq</groupId>
+			<artifactId>jooq</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>commons-vfs</groupId>
-			<artifactId>commons-vfs</artifactId>
-			<version>1.0</version>
+			<groupId>javax.annotation</groupId>
+			<artifactId>jsr250-api</artifactId>
+		</dependency>
+		
+		<!-- Hibernate -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-ehcache</artifactId>
+		</dependency>
+		
+		<!-- DDL utils -->
+		<dependency>
+			<groupId>org.apache.ddlutils</groupId>
+			<artifactId>ddlutils</artifactId>
+		</dependency>
+		
+		<!--  JSON -->		
+		<dependency>
+			<groupId>com.googlecode.json-simple</groupId>
+			<artifactId>json-simple</artifactId>
+		</dependency>
+		
+		<!-- Jaxb -->
+		<dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+        </dependency>
+        
+		<!-- RJava -->
+		<dependency>
+		  <groupId>net.rforge.rjava</groupId>
+		  <artifactId>jriengine</artifactId>
+		</dependency>
+		<dependency>
+		  <groupId>net.rforge.rjava</groupId>
+		  <artifactId>rengine</artifactId>
+		</dependency>
+
+		<!-- Logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
-			<version>1.2.14</version>
 		</dependency>
-		<!-- R -->
+		
+		<!-- Testing -->
 		<dependency>
-			<groupId>org.rosuda</groupId>
-			<artifactId>rEngine</artifactId>
-			<version>0.1</version>
-			<type>jar</type>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.rosuda</groupId>
-			<artifactId>rServeEngine</artifactId>
-			<version>0.1</version>
-			<type>jar</type>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.renjin</groupId>
-			<artifactId>renjin-core</artifactId>
-			<version>0.6.4-SNAPSHOT</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>asm</artifactId>
-					<groupId>asm</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-	</dependencies>
 
+		
+		<!-- Derby -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.apache.derby</groupId> -->
+<!-- 			<artifactId>derby</artifactId> -->
+<!-- 			<version>10.10.1.1</version> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.apache.derby</groupId> -->
+<!-- 			<artifactId>derbytools</artifactId> -->
+<!-- 			<version>10.10.1.1</version> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.apache.derby</groupId> -->
+<!-- 			<artifactId>derbyclient</artifactId> -->
+<!-- 			<version>10.10.1.1</version> -->
+<!-- 		</dependency> -->
+	</dependencies>
 </project>

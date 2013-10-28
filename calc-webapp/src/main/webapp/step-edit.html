@@ -1,0 +1,518 @@
+<!-- ==== Html here === -->
+<div class="page-section">
+	<!--  Nav bar -->
+<!-- 	<div class="row"> -->
+<!-- 		<div class="navbar navbar-default"> -->
+<!-- 			<div class="container"> -->
+<!-- 				<div class=""> -->
+<!-- 					<ul class="nav navbar-nav"> -->
+<!-- 						<li class="active"> -->
+<!-- 							<a href="./Bootswatch  Flatly_files/Bootswatch  Flatly.html">Active</a> -->
+<!-- 						</li> -->
+<!-- 						<li> -->
+<!-- 							<a href="./Bootswatch  Flatly_files/Bootswatch  Flatly.html">Link</a> -->
+<!-- 						</li> -->
+<!-- 					</ul> -->
+<!-- 				</div> -->
+<!-- 			</div> -->
+<!-- 		</div> -->
+<!-- 	</div> -->
+	
+	<!-- edit form -->
+	<div class="row" id="calculation-step-edit-container" style="width: 100%; height: 100%; left:0">
+		<div class="col-md-2">
+		</div>
+		<div class="col-md-8">
+		
+			<form id="step-form" class="form-horizontal" method="POST" action="rest/calculationstep/save.json">
+				<input type="hidden" class="form-control" name="id" /> 
+				<fieldset>
+
+					<legend>Calculation Step Editor </legend>
+						
+					<div class="form-group">
+						<label class="col-md-2 control-label">Caption</label>
+						<div class="col-md-10">
+							<input type="text" class="form-control" name="caption">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 control-label">Entity</label>
+						<div class="col-md-10">
+							<select class="form-control" name="entityId"></select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="select-variable" class="col-md-2 control-label">Output Variable</label>
+						<div class="col-md-9">
+							<select class="form-control" name="variableId" disabled="disabled"></select>
+						</div>
+<!-- 						<div class="no-padding col-md-1"> -->
+							<button name="add-variable" class="calculation btn btn-info col-md-1" disabled="disabled">
+								<i class="icon-plus-sign-alt"></i>
+							</button>
+<!-- 						</div> -->
+					</div>
+					<div class="form-group">
+<!-- 						<div class="row"> -->
+							<label class="col-md-2 control-label">Script</label>
+							<div class="col-md-10">
+								
+								<!-- Formula editor -->
+<!-- 								<div class="row small-text formula-editor"> -->
+<!-- 									<div class="col-md-12"> -->
+<!-- 										Input variables -->
+<!-- 										<button name="add-input-variable" class="calculation btn btn-info"> -->
+<!-- 											<i class="icon-plus-sign-alt"></i> -->
+<!-- 										</button> -->
+<!-- 									</div> -->
+<!-- 									<div class="row input-vars"> -->
+<!-- 									</div> -->
+<!-- 								</div> -->
+<!-- 								<div class="checkbox col-lg-10"> -->
+<!-- 									<label> <input type="checkbox" name="external-formula"> Run as external process </label> -->
+<!-- 								</div>								 -->
+								<div class="row" style="margin-top: 5px;">
+									<textarea class="form-control" rows="13" name="script"></textarea>
+								</div>
+							</div>
+					</div>
+					
+					<div class="form-group buttons">
+					
+						<div class="col-md-3 col-md-offset-3" style="text-align: center;">
+							<button type="submit" class="btn btn-default btn-lg" style="width: 50%">Save</button>
+						</div>
+						<div class="col-md-6 step-edit-exec-option">
+							<div class="col-md-6">
+								<button type="button" name="run-calculcation-step" class="btn btn-default btn-lg" style="width: 50%">Execute</button>
+								<button type="button" name="exec-options" class="btn no-background options-btn"><i class="icon-cog"></i></button>
+								
+							</div>
+							<div class="col-md-6 options">
+								<input type="text" class="form-control no-border" name="totalItems" placeholder="Number of records">
+							</div>
+						</div>
+						
+						
+						
+<!-- 						<div class="col-md-3" style="text-align: center;"> -->
+<!-- 							<button type="button" name="run-calculcation-step" class="btn btn-default btn-lg" style="width: 50%">Execute</button> -->
+<!-- 						</div> -->
+						<!-- exec options -->
+<!-- 						<div class="col-md-3" style="text-align: left; padding-top: 5px;"> -->
+<!-- 							<input type="text" class="form-control no-border" name="totalItems" placeholder="Number of records"> -->
+<!-- 						</div> -->
+						
+						
+						
+<!-- 						<div class="col-md-2 col-md-offset-5" style="text-align: center;"> -->
+<!-- 							<button type="submit" class="btn btn-default btn-lg" style="width: 50%">Save</button> -->
+<!-- 						</div> -->
+<!-- 						<div class="col-md-2"></div> -->
+<!-- 						<div class="col-md-3" style="text-align: right; padding-top: 9px"> -->
+<!-- 							<div class="input-group"> -->
+<!-- 								<input type="text" class="form-control no-border" name="totalItems" placeholder="Number of records"> -->
+<!-- 								<span class="input-group-btn"> -->
+<!-- 									<button class="btn btn-default" name="run-calculcation-step" type="button">Execute</button> -->
+<!-- 								</span> -->
+<!-- 							</div> -->
+<!-- 						</div> -->
+					</div>
+				</fieldset>
+				
+				<!-- Input variable fields. //hidden by default -->
+				<div class="row input-var">
+					<div class="col-md-2">
+						Name
+					</div>
+					<div class="col-md-2">
+						<input type="text" class="form-control input-var-name" name="input-var-name" >
+					</div>
+					<div class="col-md-2">
+						Variable
+					</div>
+					<div class="col-md-4">
+						<select class="form-control input-var-id" name="input-var-id"></select>
+					</div>
+					<div class="col-md-2">
+						<button name="delete-input-var" class="calculation btn btn-info">
+							<i class="icon-minus-sign-alt"></i>
+						</button>
+					</div>
+				</div>
+			</form>
+		</div>
+		<div class="col-md-2">
+		</div>
+<!-- 		</div> -->
+	</div>
+	
+	<!-- Execution and results  -->
+	<div class="row" id="calculation-step-exec-container" style="width: 100%; height: 100%; padding-top:10px; ">
+		<!-- step information section -->
+		<div class="row" >
+			<div class="col-md-1 col-md-offset-3" style="text-align: right;">
+				<button name="edit-step-button" class="calculation btn btn-info" ><i class="icon-edit"></i></button>
+			</div>
+			<div class="col-md-2 step-name">
+				<legend></legend>
+			</div>
+			<!-- progress bar -->
+			<div class="col-md-2 step-progress" style="padding-top: 15px;">
+				<div class="progress"> 
+					<div class="progress-bar"></div>
+				</div>
+			</div>
+			<div class="col-md-1" style="padding-top: 8px;">
+				<div class="col-md-1 percent"></div>
+			</div>
+		</div>
+		
+		<!-- results section -->
+		<div class="row" style="height: 70%">
+			<div class="col-md-2">
+			</div>
+			<div class="col-md-8" id="calc-step-results" style="height: 100%">
+			</div>
+			<div class="col-md-2">
+			</div>
+		</div>
+		
+	</div>
+	
+	<!-- add variable popup form -->
+	<div class="modal fade" id="add-variable-modal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-body">
+					<form class="form-vertical" method="POST">
+						<input type="hidden" class="form-control" name="entityId" /> 
+						<fieldset>
+							<label class="col-md-12 control-label">Name</label>
+<!-- 							<div class="row form-group"> -->
+							<div class="row" style="margin-top: 10px">
+								<div class="col-md-8 col-md-offset-2">
+									<input type="text" class="form-control" name="name"></input>
+								</div>
+							</div>
+<!-- 							</div> -->
+							<div class="row" style="margin-top: 25px">
+								<div class="col-md-3 col-md-offset-3">
+									<button type="button" class="btn btn-default save" style="width:100%">Save</button>
+								</div>
+								<div class="col-md-3">
+									<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true" style="width:100%">Cancel</button>
+								</div>
+							</div>					
+						</fieldset>
+					</form>
+				</div>
+			</div><!-- /.modal-content -->
+		</div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+	
+<script>
+$(function(){
+	//current calculation step
+	$calculationStep = null;
+	/**
+	 * main ui components
+	 */
+	$calculationStepEditContainer = $("#calculation-step-edit-container");
+	$calculationStepExecContainer = $("#calculation-step-exec-container");
+	$calculationStepExecContainer.hide();
+	//exec options ui components
+	var execOptionsBtn = $calculationStepEditContainer.find(".step-edit-exec-option button[name=exec-options]");
+	var execOptions = $calculationStepEditContainer.find(".step-edit-exec-option .options");
+	var execOptionsWidth = -1;
+	execOptions.hide();
+//		execOptions.css({width:"0px"});
+	/**
+	 *results ui components
+	 */
+	//div where the progress bar is stored
+	$stepProgress = $(".step-progress"); 
+	$resultsContainer = $("#calc-step-results");
+	var dataManager = new DataManager($resultsContainer);
+	
+	/**
+	 * edit form ui components
+	 */
+	$stepForm = $('#step-form');
+	$addVariableButton = $stepForm.find("button[name='add-variable']");
+	
+	$addVariableModal = $('#add-variable-modal');
+	$addVariableForm = $addVariableModal.find('form');
+	$saveVariableButton = $addVariableModal.find('.save');
+	
+	/**
+	* step manager
+	*/
+	var calculationStepManager = new CalculationStepManager($stepForm);
+	
+	$inputVars = $(".input-vars");
+	$inputVar = $(".input-var");
+	
+// 	$inputVars.hide();
+	$inputVar.hide();
+
+	/**
+	* Add variable
+	*/
+	//TODO move it elsewhere
+	
+	// open the Add Variable popup on Add Variable button click
+	$addVariableButton.click(function(event){
+		event.preventDefault();
+		
+		UI.Form.reset($addVariableForm);
+		
+		//set entityId hidden field value
+		var selectedEntityId = calculationStepManager.getSelectedEntityId();
+		$addVariableForm.find("[name=entityId]").val(selectedEntityId);
+		
+		$addVariableModal.modal({keyboard:false,backdrop:"static"});
+	});
+	
+	/**
+	* Add variable to the selected entity
+	*/
+	$saveVariableButton.click(function(event) {
+		UI.lock();
+		var variable = $addVariableForm.serialize();
+		
+		var successCallback = function(response) {
+			UI.Form.updateErrors($addVariableForm, response.errors);
+	    	if(response.status == "ERROR" ) {
+	    		UI.Form.showResultMessage("Error, invalid data",false);
+	    	} else {
+	    		var variable = response.fields.variable;
+	    		
+	    		calculationStepManager.refreshVariableSelect(variable.id);
+	    		
+	    		$addVariableModal.modal('hide');
+	    		$addVariableModal.modal('removeBackdrop');
+	    	}
+		};
+		var errorCallback = function (e) {
+	    	UI.Form.showResultMessage("An error occured. Please check the log file.",false );
+		};
+		var completeCallback = function() {
+			UI.unlock();
+		}
+		WorkspaceManager.saveVariable(variable, successCallback, errorCallback, completeCallback);
+	});
+	
+	/**
+	* Input variable. disabled for now
+	*/
+	// add input variable to the form
+	$stepForm.find("button[name='add-input-variable']").click(function(event){
+		event.preventDefault();
+	
+		$var = $inputVar.clone();
+		$inputVars.append($var);
+		//bind delete button click			
+		$var.find("[name='delete-input-var']").click(deleteInputVariable);
+		//remove selection of variable from select
+		select = $var.find(".input-var-id");
+		select.val([]);
+		// input-var-name,  input-var
+		renameInputVariables();
+		$var.fadeIn();
+		
+	});
+	renameInputVariables = function() {
+		vars = $inputVars.find('.input-var');
+		$.each(vars, function(i, div) {
+			$varId = $(div).find('.input-var-name');
+			$varName = $(div).find('.input-var-id');
+			
+			$varId.attr('name','input-var-id-'+i);
+			$varName.attr('name','input-var-name-'+i);
+		});
+	};
+	deleteInputVariable = function(event){
+		event.preventDefault();
+		$var = $(this).parents('.input-var');
+		$var.fadeOut(200);
+		setTimeout(function(){
+			
+			$var.remove();
+			renameInputVariables();
+		}, 300);
+	};
+	
+	/*** 
+	* ================= 
+	* Run Calculation
+	* =================
+	*/
+	// it has to be false the first time the script gets executed
+	processResultsStarted = false;
+	rowNum = 1;
+	
+	showResultsContainer = function() {
+		// write step caption as header
+		$calculationStepExecContainer.find(".step-name legend").html($calculationStep.caption);
+		
+		$calculationStepEditContainer.fadeOut(400);
+		$calculationStepExecContainer.fadeIn(400);
+	};
+	
+	resetResultsContainer = function() {
+		//reset progress and results table
+		$progressBar = $stepProgress.find(".progress-bar");		
+		UI.resetProgressBar($progressBar);
+		
+		
+// 		$resultsTable.find('thead').empty();
+// 		$resultsTable.find('tbody').empty();
+		
+		//reset variables used for displaying the results
+		processResultsStarted = false;
+		rowNum = 1;
+	};
+	
+	showEditFormContainer = function(){
+		//reset progress and results table
+		$progressBar = $stepProgress.find(".progress-bar");		
+		UI.resetProgressBar($progressBar);
+		
+// 		$resultsTable.find('thead').empty();
+// 		$resultsTable.find('tbody').empty();
+		
+		//reset variables used for displaying the results
+		processResultsStarted = false;
+		rowNum = 1;
+		//resetResultsContainer();
+		$calculationStepExecContainer.fadeOut(400);
+		$calculationStepEditContainer.fadeIn(400);
+	}; 
+	
+	//on run calcuclation button click	
+	$stepForm.find("button[name='run-calculcation-step']").click(function(event){
+		event.preventDefault();
+		//first save the step and then it gets executed
+		calculationStepManager.save(function(response) {
+			
+			$calculationStep = response;
+			stepId = $calculationStep.id;
+			
+			var totalItems = parseInt( $stepForm.find("input[name='totalItems']").val() );
+			calculationStepManager.execute(stepId, totalItems, function(response) {
+// 				console.log("response on exec");
+// 				console.log(response);
+				$job = response;
+				updateCalculationStepStatus($job);
+				showResultsContainer();
+			});
+		});
+		
+		// animation disabled for now
+// 		$calculationStepEditContainer
+//  			.animate({left: parseInt($calculationStepEditContainer.css('left'),10) == 0 ? -$calculationStepEditContainer.outerWidth() : 0 });
+// 			;
+// 		$calculationStepExecContainer
+// 			.show(400)
+// 			.animate({left:0}, 400)
+// 			;
+		
+	});
+	
+	updateCalculationStepStatus = function($job) {
+
+		//start processing results the first time the status != pending
+		if(!processResultsStarted) {
+			processResults($job);
+		}
+		//update data manager job
+		dataManager.updateJob($job);
+		
+		var $task = $job.tasks[0];
+
+		var $progressBar = $stepProgress.find(".progress-bar");		
+		UI.resetProgressBar($progressBar);
+		
+		var totalItems = $task.totalItems;
+		var itemsProcessed = $task.itemsProcessed;
+		var percent = (totalItems > 0 ) ?  parseInt(itemsProcessed / totalItems * 100) : -1 ;
+		
+		switch( $task.status ) {
+		case "RUNNING": 
+			$progressBar.addClass("progress-bar-info");
+			if( percent >= 0 ) { 
+				$progressBar.width(percent+"%");
+			} else {
+				$progressBar.parent().addClass("active progress-striped");
+				$progressBar.width("100%");
+			}
+			var htmlPercent = (percent >= 0) ? percent + " %" : " -% ";
+			$calculationStepExecContainer.find(".percent").text(htmlPercent);
+			break;
+		case "COMPLETED": 
+			$progressBar.addClass("progress-bar-success");
+			$progressBar.width("100%");
+			$calculationStepExecContainer.find(".percent").text("100%");
+			break;
+		default: // nothing for now;
+		}
+		
+		//if job not completed, it gets reloaded from server
+		if( $job.completed != true ) {
+			setTimeout(function(){
+				//var stepId = $calculationStep.id;
+				$.ajax({
+					url:"rest/job/"+$job.id+".json",
+					dataType:"json"
+				})
+				.done(function(response){
+					$job = response;
+					updateCalculationStepStatus($job);
+				});
+			}, 500);
+		}
+	};
+	
+	processResults = function($job) {
+		if(processResultsStarted != true) {
+			if( $job.status != 'PENDING' ) {
+							//&& $job.tasks[0].itemsProcessed >= 50
+				dataManager.showJobResults($job);
+				processResultsStarted = true;
+
+			}
+			
+		}
+	}
+	
+	//exec options click
+	execOptionsBtn.click(function(e){
+		if(execOptionsWidth < 0){
+			execOptionsWidth = execOptions.width();
+		}
+		
+		//only shows for now
+		if(execOptions.is(":visible")) {
+// 			execOptions.animate({width:'0px'}, 200,'easeInOutExpo');
+// 			execOptions.fadeOut(100);
+			
+			
+// 			setTimeout(function(){execOptions.hide()}, 500);
+		} else {
+			execOptions.css({width:"0px"});
+			execOptions.show();
+			execOptions.animate({width:execOptionsWidth+'px'}, 600,'easeOutExpo');
+		}
+	});
+	
+	//in results section, click to show edit form
+	$calculationStepExecContainer.find("button[name='edit-step-button']").click(function(event){
+		showEditFormContainer();
+	});
+	
+	
+});
+</script>
+</div>

@@ -1,0 +1,494 @@
+/**
+* Custom calc style
+* @author Mino Togna
+*/
+
+@CHARSET "UTF-8";
+html, body {
+	width: 100%;
+	height: 100%;
+	margin: 0px;
+	padding: 0px;
+	font-weight: 200;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	letter-spacing:0.1em;
+}
+
+#container {
+	width: 100%; 
+/* 	position: fixed; */
+/* 	overflow: auto; */
+}
+
+
+/*
+* Buttons
+*/
+button.default-btn {
+	height:100%;
+	border-radius:0px;
+/* 	width: 70%; */
+	background-color: #ecf0f1;
+	border-color: #ecf0f1;
+	color:#2c3e50;
+/* 	background-color:#b8b8b8; */
+/* 	border-color: #b8b8b8; */
+}
+button.default-btn:hover,
+button.default-btn:focus
+ {
+	background-color:#e6e7e7;
+	border-color: #e6e7e7;
+	color:#2c3e50;
+}
+
+button.blue-btn ,
+button.blue-btn:focus {
+	height:100%;
+	border-radius:0px;
+/* 	width: 70%; */
+	background-color: #496d7e;
+	border-color: #496d7e;
+	color:#e6e7e7;
+/* 	background-color:#b8b8b8; */
+/* 	border-color: #b8b8b8; */
+}
+button.blue-btn:hover {
+	color:#e6e7e7;
+	background-color: #36525f;
+	border-color: #36525f;
+	
+}
+
+button.no-background ,
+button.no-background:focus {
+	color: white;
+	background: transparent;
+	border: none;
+	padding: 8px;
+}
+button.no-background:hover {
+	color: white;
+	background-color: #36525f;
+	border: none;
+}
+/** Home Sections*/
+.section-home, .page-section {
+	overflow: auto;
+/* 	height: auto; */
+	height: 100%;
+	width: 100%;
+	text-align:center;
+	position: relative;
+	color: white;
+	font-size: 1.4em;
+	font-weight: 100;
+	margin: 0px;
+/* margin-top: 30px; */
+/* text-align: center; */
+}
+/* .section-home button, .page-section button{ */
+/* 	font-size: 1.6em; */
+/* } */
+/* .page-section { */
+/* 	position:absolute; */
+/* 	top:0px; */
+/* 	left:0px; */
+/* 	width:100%; */
+/* 	height:100%; */
+/* } */
+.page-section{
+	font-size: 0.7em;
+}
+.page-section label , .page-section legend  {
+    display: inline-block;
+/*     margin-bottom: 5px; */
+    font-weight: 100;    
+    color: white;    
+}
+.page-section legend {
+/* 	font-size: 0.5em; */
+	border:none;
+}
+.page-section label {
+/* 	font-size: 0.4em; */
+	padding-top: 8px;
+}
+
+.page-section .radio {
+    
+}
+.page-section .form-group {
+	margin-top:40px;
+}
+.section-home button {
+/* 	font-size:0.5em; */
+	font-weight: 200;
+}
+.page-section form button {
+/* 	font-size:0.5em; */
+	font-weight: 100;
+}
+.calculation {
+	background-color: #2c3e50;
+	border-color: #2c3e50;
+}
+.results {
+	background-color: #4d6b89;
+	border-color: #4d6b89;
+}
+.data {
+	background-color: #502c43;
+	border-color: #502c43;
+}
+.settings {
+	background-color: #44454d;
+	border-color: #44454d;
+}
+
+/** Home buttons */
+button.calculation:hover{
+	background-color: #3e5770;
+	border-color: #3e5770;
+}
+button.results:hover {
+	background-color: #6c859f;
+	border-color: #6c859f;
+}
+button.data:hover {
+	background-color: #6e455f;
+	border-color: #6e455f;
+}
+button.settings:hover {
+	background-color: #5f6066;
+	border-color: #5f6066;
+}
+.row1 {
+	height: 40%;
+	width: 100%;
+	margin: 0px;
+}
+.row2 {
+	height: 20%;
+	width: 100%;
+	margin: 0px;
+}
+.row3 {
+	height: 40%;
+	width: 100%;
+	margin: 0px;
+}
+
+.btn-home, .btn-home-plus {
+	height:100%;
+	width: 15%;
+/* 	font-size: 1.7em; */
+/* 	font-weight: 200; */
+/* 	line-height: 2em; */
+	overflow: visible;
+	border-radius:8px;
+}
+/**
+* Default nav bar
+*/
+.navbar-default {
+	background-color: transparent;
+	border-color: #496d7e;
+}
+.navbar-default .navbar-nav > li {
+	width: 300px;;
+}
+.navbar-default .navbar-nav > li > a:hover,
+.navbar-default .navbar-nav > li > a:focus {
+  color: #496d7e;
+/*   background-color: transparent; */
+}
+.navbar-default .navbar-nav > .active > a,
+.navbar-default .navbar-nav > .active > a:hover,
+.navbar-default .navbar-nav > .active > a:focus {
+/*   color: #ffffff; */
+  background-color: #496d7e;
+}
+/**
+* Calculation
+*/
+#calculation .steps-container {
+	text-align: left;
+	max-width: 90%;
+	margin: 2% auto 2% auto;
+}
+
+#calculation .btn-home-plus, #calculation .step {
+	width: 15em;
+	height: 6em;
+	margin: 1em;
+	display: inline-block;
+}
+
+#calculation .step .calculation-button {
+	width: 100%;
+	height: 5em;
+}
+
+#calculation .step .options.hide {
+	display: block !important;
+	visibility: hidden;
+}
+
+/**
+* Footer
+*/
+#footer {
+  	height: 150px;
+	position: fixed;
+/* 	top: -75px; */
+/* 	z-index: 999; */
+	width: 100%;
+	background-color: #ecf0f1;
+	margin:0px;
+/* 	top:0px; */
+} 
+.footer-placeholder {
+	height: 150px;	
+}
+
+#footer div{
+	height: 100%;
+}
+#footer .links {
+	margin-top:40px;
+	text-align:center;
+	width:100%;
+}
+#footer .links  button {
+	height:50%;
+	width: 18%;
+	font-size:1.5em;
+	font-weight: 100;
+/* 	font-size: 1.7em; */
+/* 	font-weight: 200; */
+/* 	line-height: 2em; */
+/* 	overflow: visible; */
+/* 	border-radius:8px; */
+/* 	font-size: 0.8em; */
+}
+#footer .logo {
+	font-size: 1.8em;
+	font-weight: 100;
+	margin-top: 30px;
+	text-align:center;
+/* 	display:block; */
+	
+}
+#footer .logo img {
+/* 	position:absolute; */
+/* 	top: 10px; */
+/* 	left: 85px; */
+/* display:inline-block; */
+}
+#footer .logo div {
+/* 	margin-left: 40px; */
+/* display:block; */
+}
+
+
+#footer button.back {
+	font-size:4em;	
+	display:none;	
+	width: 70%;
+}
+/**
+formula editor
+*/
+.formula-editor input, .formula-editor select {
+	height: 30px;
+	padding: 2px;
+} 
+.formula-editor .input-var {
+	font-size: 0.8em;
+}
+
+.small-text {
+	font-size: 0.4em;
+}
+
+
+/**
+*  Data visualization
+*/
+.data-visualization, .data-visualization .scatter-plot {
+	display: none;	
+	height: 100%;
+}
+
+.data-table .data-table-buttons button {
+	width: 50%;
+/* 	float:right; */
+	margin: 0px;
+	display: table-cell;
+	float:left;
+	border:none;
+/* 	font-size: 0.4em; */
+}
+.data-table .data-table-pagination {
+	margin-top: 13px;
+	text-align: right;
+	padding-right: 5px;
+}
+.data-table table thead > tr > th {
+	text-align: center;
+	background-color: #ecf0f1;
+	border-bottom: none;
+	color: #2c3e50;
+	font-weight: 300;
+/* 	border-top: 1px solid white; */
+	
+} 
+.data-table table tbody > tr > td {
+	text-align: center;
+/* 	border-bottom: none; */
+	border-top: 1px solid #ecf0f1;
+	
+}
+.data-visualization .data-visualization-header-buttons button {
+	width:100%;	
+/* 	border: 1px solid #2c3e50; */
+}
+.data-visualization .chart {
+	height: 100%;
+	width: 100%;
+	padding-top: 20px;
+}
+.data-visualization .scatter-plot {
+	padding-top : 15px;
+}
+
+
+.no-padding {
+	padding: 0px;
+}
+.no-border-radius {
+	border-radius : 0;	
+}
+.no-border {
+	border:none;
+}
+/**
+calc-step page
+*/
+
+.step-edit-exec-option {
+/* 	border-top: 1px solid #496d7e; */
+}
+.step-edit-exec-option .options {
+	text-align: left;
+	padding-top: 10px;
+}
+
+.progress {
+/* 	height: 30px;	 */
+}
+
+#job-status .modal-dialog {
+	width: 65%;	
+	height: 80%;
+}
+
+.section-home, .page-section .modal, .modal label {
+	color: #2c3e50;
+}
+
+.modal-title, .modal-footer {
+	text-align: center;
+}
+	
+.container ul.breadcrumb {
+	margin-top : 1em;
+	display: none;
+}
+
+.task-status {
+	padding: 5px 0px;
+	border-bottom: 1px solid #ecf0f1;
+}
+
+#page {	
+	margin-top : 2.5em;
+/* 	padding-top: 20px; */
+	height: 90%;
+}
+
+.row-section {
+	max-height: 500px;
+/* 	height: 1000px; */
+/* 	position: relative; */
+}
+.row-section .menu {
+/* 	border-right: #95a5a6 dashed 1px; */
+}
+.row-section .links-container {
+	border-bottom: #95a5a6 dashed 1px;
+	border-left: #95a5a6 dashed 1px;
+}
+.settings-menu {
+	padding: 1.3em;
+	border-radius: 5px; 
+}
+.settings-menu a {
+	color: white;
+	font-size: 1.2em; 
+}
+
+.home-label-link {
+	width: 8em;
+	height: 8em;
+	margin: 20px;
+	padding: 20px;
+	display:  inline-block;
+	text-align: center;
+	vertical-align: middle;
+	word-break: break-all;
+  	word-wrap: break-word;
+  	font-size: 1.0em;
+  	font-weight: 300;
+}
+
+/** Form */
+
+.buttons {
+	margin-top: 50px;
+}
+
+#messageContainer{
+	z-index : 100;
+	position : absolute;
+	font-size : small;
+	top : 15px;
+	left:0;
+	right:0;
+	text-align: center;
+}
+
+/** Tooltip */
+.tooltip.error .tooltip-inner {
+	background: #e74c3c;
+}
+
+.tooltip.top.error .tooltip-arrow {
+  border-top-color: #e74c3c;
+}
+
+/** 
+* Modal lock component 
+*/
+#ui-lock-modal {
+	top: 45%;
+}
+#ui-lock-modal .modal-dialog {
+	width: 300px;
+}
+.locked .modal-backdrop.in {
+	opacity: 0.1;
+}

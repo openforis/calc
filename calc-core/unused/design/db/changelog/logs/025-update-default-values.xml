@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    
+    <changeSet id="25" author="G. Miceli">
+    	<sql>
+			update calc.variable set default_value = null;
+			
+			update calc.variable set default_value = 'A' 
+			where name='subplot' and entity_id='5264';
+			
+			update calc.variable set default_value = 'A' 
+			where name in ('catchment', 'erosion', 'grazing', 'ownership_type') and entity_id='5264';
+			
+			update calc.variable set default_value = '100' 
+			where name='share' and entity_id='5264';
+			
+			update "calc"."variable" 
+			set "scale" = 'ORDINAL', "default_value" = '1', "dimension_table" = '', "degenerate_dimension" = true 
+			where id = 20466;
+        </sql>
+    </changeSet>
+</databaseChangeLog>

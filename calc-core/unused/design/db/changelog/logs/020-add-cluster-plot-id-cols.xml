@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    
+    <changeSet id="20" author="G. Miceli">
+    	<sql>
+			alter table
+			    calc.entity add COLUMN cluster_variable_id integer;
+			alter table
+			    calc.entity add COLUMN plot_variable_id integer;
+			alter table
+			    calc.entity add constraint entity_cluster_variable_fkey foreign key
+			    (cluster_variable_id) references calcdev.calc.variable (id)
+				on delete cascade
+				on update cascade;
+			alter table
+			    calc.entity add constraint entity_plot_variable_fkey foreign key (plot_variable_id)
+			    references calcdev.calc.variable (id)
+				on delete cascade
+				on update cascade;
+	    	update calc.entity
+				set cluster_variable_id = 20669, plot_variable_id = 20575
+				where id = 5264;
+        </sql>
+    </changeSet>
+</databaseChangeLog>

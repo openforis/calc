@@ -1,0 +1,55 @@
+<!-- ====== Settings section ==== -->
+<div class="row row-section">
+	<div class="col-xs-12 col-md-1 menu">
+		<span class="label label-default settings-menu">
+			Settings
+		</span>
+	</div>
+	<div class="col-xs-12 col-md-11 links-container">
+		<div class="label label-success home-label-link" href="sampling-design.html">Sampling<br/>Design</div>					
+	</div>
+</div>
+
+<!-- ====== Data section ==== -->
+<div class="row row-section">
+	<div class="col-xs-12 col-md-1 menu">
+		<span class="label label-default settings-menu">Data</span>
+	</div>
+	<div class="col-xs-12 col-md-11 links-container">
+		<div class="label label-success home-label-link" href="collect-sync.html">Collect<br/>Sync</div>					
+	</div>
+</div>
+
+<!-- ====== Calculation section ==== -->
+<div class="row row-section">
+	<div class="col-xs-12 col-md-1 menu">
+		<span class="label label-default settings-menu">Calculation</span>
+	</div>
+<!-- 	<div class="col-xs-12 col-md-11 links-container"> -->
+<!-- 		<div class="label label-success home-label-link" href="synccollect.html">Tree<br/>Height</div>					 -->
+<!-- 	</div> -->
+	<div class="col-xs-12 col-md-11 links-container">
+		<div class="label label-success home-label-link" href="step-edit.html"><i class="icon-plus-sign-alt icon-5" style="font-size:3em"></i></div>					
+	</div>	
+</div>
+
+<!-- ====== Results section ==== -->
+<div class="row row-section">
+	<div class="col-xs-12 col-md-1 menu">
+		<span class="label label-default settings-menu">Results</span>
+	</div>
+	<div class="col-xs-12 col-md-11 links-container">
+		<div class="label label-success home-label-link" href="synccollect.html">Bo</div>					
+	</div>
+</div>
+
+<script>
+$(document).ready(function(){
+	$(".row-section .links-container div").bind("click", function(event) {
+		event.preventDefault();
+		
+		$href = $(this).attr("href");
+		loadPage($href);
+	});
+});
+</script>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    
+    <changeSet id="20" author="G. Miceli">
+    	<sql>
+    		alter table calc.hierarchy_level rename to category_level;
+
+    		alter table calc.hierarchy rename to category_hierarchy;
+
+			alter table calc.category_group rename to category_category_group;
+			
+			alter table calc.group rename to category_group;
+			
+			alter table calc.category_level add column name varchar(255) not null;
+			
+			alter table calc.category_hierarchy add column name varchar(255) not null;
+        </sql>
+    </changeSet>
+</databaseChangeLog>

@@ -6,14 +6,15 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
+		<groupId>org.openforis.calc</groupId>
 		<artifactId>calc</artifactId>
-		<groupId>org.openforis</groupId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>1.0-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
 
 	<artifactId>calc-webapp</artifactId>
 	<packaging>war</packaging>
+	<name>Open Foris Calc Web Application</name>
 
 	<build>
 		<finalName>calc</finalName>
@@ -21,14 +22,15 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.openforis</groupId>
-			<artifactId>calc-web</artifactId>
-			<exclusions>
-				<exclusion>
-					<artifactId>servlet-api</artifactId>
-					<groupId>javax.servlet</groupId>
-				</exclusion>
-			</exclusions>
+			<groupId>org.openforis.calc</groupId>
+			<artifactId>calc-server</artifactId>
 		</dependency>
+		
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+			<version>1.3</version>
+		</dependency>
+		
 	</dependencies>
 </project>

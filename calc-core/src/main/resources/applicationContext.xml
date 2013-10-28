@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans 
+	xmlns="http://www.springframework.org/schema/beans" 
+	xmlns:security="http://www.springframework.org/schema/security" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" 
+	xmlns:p="http://www.springframework.org/schema/p" 
+	xmlns:util="http://www.springframework.org/schema/util"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="
+    http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/security
+    http://www.springframework.org/schema/security/spring-security-3.0.4.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context-3.0.xsd
+    http://www.springframework.org/schema/util
+    http://www.springframework.org/schema/util/spring-util-3.0.xsd
+    http://www.springframework.org/schema/task
+    http://www.springframework.org/schema/task/spring-task-3.0.xsd
+    http://www.springframework.org/schema/tx 
+    http://www.springframework.org/schema/tx/spring-tx-3.0.xsd"
+	default-lazy-init="true">
+
+	<!-- Tell Spring to scan our packages for annotations -->
+	<context:annotation-config />
+	<context:component-scan base-package="org.openforis.calc" />
+	
+	<context:property-placeholder location="classpath:dev.properties" />
+	
+<!-- 	<task:executor id="taskExecutor" pool-size="10"/> -->
+	
+	<bean id="taskExecutor" class="org.springframework.core.task.SimpleAsyncTaskExecutor">
+		<property name="concurrencyLimit" value="10"/>
+	</bean>
+	
+	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"> 
+	    <property name="persistenceUnitName" value="calcPersistenceUnit" />
+	    <property name="dataSource" ref="dataSource" />
+	    <property name="jpaVendorAdapter"> 
+	        <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"> 
+	            <property name="databasePlatform" value="org.hibernate.dialect.PostgreSQLDialect" /> 
+	            <property name="showSql" value="true" /> 
+	            <property name="generateDdl" value="false" />
+	        </bean> 
+	    </property>
+		<property name="jpaProperties">
+			<props>
+				<prop key="hibernate.default_schema">calc</prop>
+				
+				<prop key="hibernate.cache.use_second_level_cache">true</prop>
+				<prop key="hibernate.cache.use_query_cache">true</prop>
+				<prop key="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory</prop>
+
+<!-- 				<prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop> -->
+<!-- 				<prop key="hibernate.sql.syntax_pgs">true</prop> -->
+			</props>
+		</property>	   
+		
+	</bean>
+	
+	  <bean id="log4jInitializer" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="staticMethod">
+			<value>org.springframework.util.Log4jConfigurer.initLogging</value>
+		</property>
+		<property name="arguments">
+			<list>
+				<value>classpath:log4j.properties</value>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- OF Collect / Idm -->
+	<bean id="expressionFactory" class="org.openforis.idm.model.expression.ExpressionFactory"/>
+
+	<bean id="validator" class="org.openforis.idm.metamodel.validation.Validator" />
+
+    <bean id="codeListManager" 			class="org.openforis.collect.manager.CodeListManager" />
+	<bean id="codeListService"	 		class="org.openforis.collect.service.CollectCodeListService" />
+
+	<bean id="collectSurveyContext" class="org.openforis.collect.model.CollectSurveyContext">
+		<constructor-arg ref="expressionFactory" />
+		<constructor-arg ref="validator" />
+		<property name="codeListService" ref="codeListService" />
+	</bean>
+	
+    <bean id="idmlBinder" class="org.openforis.collect.persistence.xml.CollectSurveyIdmlBinder">
+    	<constructor-arg ref="collectSurveyContext"/>
+    </bean>
+	<!-- END Of OF Collect bean definitions -->
+
+	
+	<!-- Database -->
+	<bean id="dataSource" destroy-method="close" class="org.apache.commons.dbcp.BasicDataSource">
+    	<property name="driverClassName" value="${calc.jdbc.driver}"/>
+    	<property name="url" value="${calc.jdbc.url}"/>
+    	<property name="username" value="${calc.jdbc.username}"/>
+    	<property name="password" value="${calc.jdbc.password}"/>
+		<property name="maxActive" value="10"/> 
+    	<property name="minIdle" value="5"/>     	
+	</bean>
+		
+<!--     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager"> -->
+<!--     	<property name="dataSource" ref="dataSource"/> -->
+<!--     </bean> -->
+    
+    <bean class="org.springframework.orm.jpa.JpaTransactionManager" id="transactionManager">
+    	<property name="entityManagerFactory" ref="entityManagerFactory"/>
+	</bean>
+    
+    <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
+    
+    <bean id="transactionAwareDataSource"
+        class="org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy">
+        <constructor-arg ref="dataSource" />
+    </bean>
+    
+    <!-- Bridging Spring JDBC data sources to jOOQ's ConnectionProvider -->
+    <bean class="org.jooq.impl.DataSourceConnectionProvider" name="connectionProvider">
+        <constructor-arg ref="transactionAwareDataSource" />
+    </bean>
+
+    <bean id="dsl" class="org.jooq.impl.DefaultDSLContext">
+        <constructor-arg ref="config" />
+    </bean>
+
+    <bean class="org.openforis.calc.persistence.jooq.DialectAwareJooqConfiguration" name="config">
+        <constructor-arg ref="connectionProvider" />
+    </bean>
+    
+</beans>

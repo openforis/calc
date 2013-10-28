@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    
+    <changeSet id="18" author="G. Miceli">
+    	<sql>
+	    	alter table calc.variable
+			rename column value_column to input_value_column;
+			
+			alter table calc.variable
+			add column output_value_column varchar(255);
+			
+			update calc.variable
+			set output_value_column = input_value_column;
+			
+			with tmp as (
+			select v.id, e.name || '_' || v.output_value_column as newname
+			from calc.variable v
+			join calc.entity e on e.id = v.entity_id
+			where v.output_value_column in (
+			    select v2.output_value_column
+			    from calc.variable v2
+			    group by v2.output_value_column
+			    having count(v2.output_value_column) > 1
+			))
+			update calc.variable v
+			set output_value_column = tmp.newname
+			from tmp
+			where v.id = tmp.id;
+			
+			alter table calc.variable
+			rename column category_id_column to input_category_id_column;
+			
+			alter table calc.variable
+			add column output_category_id_column varchar(255);
+			
+			update calc.variable
+			set output_category_id_column = input_category_id_column;
+			
+			with tmp as (
+			select v.id, e.name || '_' || v.output_category_id_column as newname
+			from calc.variable v
+			join calc.entity e on e.id = v.entity_id
+			where v.output_category_id_column in (
+			    select v2.output_category_id_column
+			    from calc.variable v2
+			    group by v2.output_category_id_column
+			    having count(v2.output_category_id_column) > 1
+			))
+			update calc.variable v
+			set output_category_id_column = tmp.newname
+			from tmp
+			where v.id = tmp.id;
+        </sql>
+    </changeSet>
+</databaseChangeLog>

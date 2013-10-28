@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    
+    <changeSet id="11" author="G. Miceli">
+    	<sql>
+			alter table
+			    calc.entity add COLUMN sampling_unit boolean;
+			
+			update calc.entity
+			    set sampling_unit = (id=5264);
+			
+			alter table
+			    calc.entity alter column sampling_unit set not null,
+			                alter column sampling_unit set default false;
+			                
+             alter table
+    			calc.entity drop column unit_no_column;
+       	</sql>
+    </changeSet>
+</databaseChangeLog>
