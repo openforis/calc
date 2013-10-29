@@ -97,11 +97,14 @@
 
   , select: function () {
       var val = this.$menu.find('.active').attr('data-value');
-      this.$element.val(this.updater(val)).trigger('change');
-      this.$target.val(this.map[val]).trigger('change');
-      this.$source.val(this.map[val]).trigger('change');
+      var label = this.updater(val);
+      this.$element.val(label);
+      var value = this.map[val];
+      this.$target.val(value);
+      this.$source.val(value);
       this.$container.addClass('combobox-selected');
       this.selected = true;
+      this.triggerChange();
       return this.hide();
     }
 
@@ -391,10 +394,10 @@
 		  this.hide();
 	  }
 	  this.clearTarget();
-	  this.triggerChange();
 	  this.clearElement();
 	  this.$source.empty();
 	  this.source = null;
+	  this.triggerChange();
   }
   
   /**
@@ -411,6 +414,15 @@
   , enable: function() {
 	  this.$element.removeAttr("disabled");
 	  this.$button.removeAttr("disabled");
+  }
+  
+  , selectValue: function(value) {
+	  this.$source.val(value);
+	  this.$target.val(value);
+	  var label = this.$source.find("option:selected").text();
+	  this.$element.val(label);
+	  this.$container.addClass('combobox-selected');
+      this.selected = true;
   }
   /**
    * End of OpenForis methods
