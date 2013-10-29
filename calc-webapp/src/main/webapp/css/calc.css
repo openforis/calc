@@ -456,7 +456,7 @@ calc-step page
 
 #messageContainer{
 	z-index : 1100;
-	position : absolute;
+	position : fixed;
 	font-size : small;
 	top : 15px;
 	left:0;

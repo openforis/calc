@@ -187,6 +187,8 @@ ScatterPlot.prototype = (function(){
 			$this.yVariable = vars[1];
 			
 			//TODO also select the option to the relative select ?
+			$this.xCombobox.selectValue($this.xVariable);
+			$this.yCombobox.selectValue($this.yVariable);
 		}
 	};
 	
@@ -239,6 +241,8 @@ ScatterPlot.prototype = (function(){
 					//update offset
 					this.offset = chartData.length;
 					
+					this.chartinfo.xAxis.title.text = this.xVariable;
+					this.chartinfo.yAxis.title.text = this.yVariable;
 					
 					this.chart = new Highcharts.Chart(this.chartinfo);
 					
