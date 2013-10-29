@@ -313,6 +313,10 @@ formula editor
 	height: 100%;
 }
 
+.data-visualization, .data-visualization .scatter-plot .btn.refresh {
+	padding: 0px;
+}
+
 .data-table .data-table-buttons button {
 	width: 50%;
 /* 	float:right; */
@@ -548,17 +552,57 @@ calc-step page
 */
 .combobox-container {
 	width: 100%;
+	padding-bottom: 0px;
+	margin: 0px;
 }
-.combobox-container .dropdown-toggle {
-	height: 43px !important;
+.combobox-container .form-control, .combobox-container .dropdown-toggle {
 	float: left;
 	display: inline-block;
 }
 .combobox-container .form-control {
 	width: 95%;
-	float: left;
-	display: inline-block;
+}
+.combobox-container .dropdown-toggle {
+	height: 43px !important;
 }
 .combobox-container .typeahead {
 	height: 15em;
 }
+
+/**
+* Form
+*/
+.inline > .form-group {
+	display: inline-block;
+}
+.form-horizontal .form-group > .combobox-container {
+	display: inline-block;
+	width: auto;
+}
+.form-group-small > .combobox-container .dropdown-toggle {
+	height: 27px !important;
+}
+.form-group-small > .combobox-container > .typeahead {
+	width: auto;
+	padding: 2px 4px;
+}
+.form-group-small > .combobox-container > .typeahead li a {
+	padding: 2px;
+}
+.page-section .form-small .form-group {
+	margin-top: 0px;
+	margin-bottom: 0px;
+	margin-right: 0px;
+	margin-left: 0px;
+}
+.form-group-small > .control-label {
+	padding-top: 0px;
+	margin-top: auto;
+	margin-bottom: auto;
+}
+.form-group-small > .form-control, .form-group-small > .combobox-container .form-control {
+	width: auto;
+	height: auto;
+	padding: 1px;
+}
+

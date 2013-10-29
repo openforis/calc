@@ -8,7 +8,11 @@ function ScatterPlot(container) {
 	// options section
 	this.optionsSection = this.container.find('.options');
 	this.xOption = this.optionsSection.find('[name=x]');
+	this.xCombobox = this.xOption.combobox().data('combobox');
+	
 	this.yOption = this.optionsSection.find('[name=y]');
+	this.yCombobox = this.yOption.combobox().data('combobox');
+	
 	this.refreshBtn = this.optionsSection.find('[name=refresh]');
 	//chart container
 	this.chartContainer = this.container.find(".chart");
@@ -169,8 +173,12 @@ ScatterPlot.prototype = (function(){
 		
 		WorkspaceManager.loadQuantitativeVariables($this.entityId, function(response) {
 			$this.variables = response;
+			
 			UI.Form.populateSelect($this.xOption, $this.variables, 'name','name');
+			$this.xCombobox.refresh();
+			
 			UI.Form.populateSelect($this.yOption, $this.variables, 'name','name');
+			$this.yCombobox.refresh();
 		});
 		
 		//set vars
