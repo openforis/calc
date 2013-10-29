@@ -359,7 +359,6 @@ formula editor
 	padding-top : 15px;
 }
 
-
 .no-padding {
 	padding: 0px;
 }
@@ -494,7 +493,7 @@ calc-step page
 	width: 100%;
 	height: 100%;
 }
-.typeahead,.tt-query,.tt-hint {
+.typeahead, .tt-query, .tt-hint {
 	width: 100%;
 	height: 100%;
 	padding: 8px 12px;
@@ -542,6 +541,11 @@ calc-step page
 }
 .tt-suggestion p {
 	margin: 0;
+}
+.dropdown-menu > .active > a, 
+.dropdown-menu > .active > a:hover, 
+.dropdown-menu > .active > a:focus {
+	background-color: #496d7e;
 }
 /**
 * End of Typeahead
