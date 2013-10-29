@@ -43,27 +43,22 @@ UI.Form.updateErrors = function($form, errors) {
 };
 
 /**
+ * DEPRECATED. Use UI.showError or UI.showSuccess
+ * Left here for back compatibility
+ * 
  * Show a success or failure message in a popup window
  * 
  * @param message
  * @param isSuccess
+ *  
  */
 UI.Form.showResultMessage = function(message, success){
 	// Add div if not defined
-	var feedbackDiv = $("#messageContainer");
-	
-	if( success == true){
-		feedbackDiv.addClass("alert-success");		
-		feedbackDiv.removeClass("alert-danger");
-	}else{
-		feedbackDiv.addClass("alert-danger");		
-		feedbackDiv.removeClass("alert-success");
+	if( success == true ) {
+		UI.showSuccess(message, true);
+	} else {
+		UI.showError(message, true);
 	}
-	
-	feedbackDiv.find("span").html( message );
-	
-	// fade out
-	feedbackDiv.fadeIn( 400 ).delay( 2000 ).fadeOut( 800 );
 };	
 
 /**

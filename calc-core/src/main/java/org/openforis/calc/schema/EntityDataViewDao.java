@@ -57,7 +57,7 @@ public class EntityDataViewDao extends AbstractJooqDao {
 		for (String field : fields) {
 			Field<?> f = view.field(field);
 			select.addSelect(f);
-			if(excludeNull){
+			if(excludeNull) {
 				select.addConditions(f.isNotNull());
 			}
 		}

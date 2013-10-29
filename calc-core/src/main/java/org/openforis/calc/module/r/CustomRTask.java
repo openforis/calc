@@ -8,6 +8,7 @@ import java.util.Vector;
 import org.jooq.Field;
 import org.jooq.Query;
 import org.jooq.impl.DSL;
+import org.openforis.calc.engine.CalculationException;
 import org.openforis.calc.engine.CalculationStepTask;
 import org.openforis.calc.engine.DataRecord;
 import org.openforis.calc.engine.DataRecordVisitor;
@@ -291,6 +292,9 @@ public final class CustomRTask extends CalculationStepTask {
 
 			for (String var : variables) {
 				Object value = record.getValue(var);
+				if(value == null) {
+					throw new CalculationException("Variable " + var +" for record id "+ record.getId()+ " has null value. Make sure you are running the calculation for variables that have non null values.");
+				}
 				script = script.replaceAll("\\$" + var + "\\$", value.toString());
 				// record.addField(var, value);
 			}

@@ -1,5 +1,52 @@
-function UI() {};
+function UI() {
+	
+	
+};
 
+
+UI.messageContainer = $("#messageContainer");
+UI.messageContainerClosBtn = UI.messageContainer.find(".close");
+
+UI.messageContainerClosBtn.click(function(e){	
+	UI.messageContainer.fadeOut( 800 );
+});
+
+/**
+ * Shows application error message
+ */
+UI.showError = function(message, hide){
+	// Add div if not defined
+	
+	UI.messageContainer.removeClass("alert-success");
+	UI.messageContainer.addClass("alert-danger");		
+	
+	UI.messageContainer.find("span").html( message );
+	
+	UI.messageContainer.fadeIn( 400 );
+	
+	// fade out after 2 seconds
+	if(hide == true) {
+		UI.messageContainer.delay( 2000 ).fadeOut( 800 );
+	}
+};	
+/**
+ * Shows application success  message
+ */
+UI.showSuccess = function(message, hide){
+	// Add div if not defined
+	
+	UI.messageContainer.removeClass("alert-danger");		
+	UI.messageContainer.addClass("alert-success");
+	
+	UI.messageContainer.find("span").html( message );
+	
+	UI.messageContainer.fadeIn( 400 );
+	
+	// fade out after 2 seconds
+	if(hide == true) {
+		UI.messageContainer.delay( 2000 ).fadeOut( 800 );
+	}
+};	
 /**
  * Shows a modal with static backdrop to avoid user interaction
  */
