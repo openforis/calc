@@ -166,8 +166,7 @@ CalculationStepManager.prototype = (function() {
 		var $this = this;
 		var $step = $this.currentCalculationStep;
 		
-		$this.$entityCombobox.$source.val($step.outputEntityId);
-		$this.$entityCombobox.refresh();
+		$this.$entityCombobox.selectValue($step.outputEntityId);
 		
 		$.proxy(refreshVariableSelect, $this)($step.outputVariableId, function() {
 			UI.Form.setFieldValues($this.$form, $step);
