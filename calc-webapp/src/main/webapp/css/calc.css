@@ -610,3 +610,15 @@ calc-step page
 	padding: 1px;
 }
 
+::-webkit-input-placeholder { /* WebKit browsers */
+    color:    #496d7e;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color:    #496d7e;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color:    #496d7e;
+}
+:-ms-input-placeholder { /* Internet Explorer 10+ */
+    color:    #496d7e;
+}

@@ -63,7 +63,7 @@ DataTable.prototype = (function(){
 			//this is a temporary fix. job logic should be moved to a level up.
 			var task = this.job.tasks[0];
 			if(task.itemsProcessed == 0) {
-				//we wait one second so that job can process some items
+				// wait one second so that job can process some items
 				setTimeout(function(e){
 					$.proxy(refresh, $this)();
 				}, 1000);

@@ -66,12 +66,20 @@ function ScatterPlot(container) {
 		    	enabled:false
 	    	},
 		    title: {
-		        text: ''
+		        text: '',
+		        style: {
+		        	color: '#496d7e',
+		        	font: '1.2em Trebuchet MS, Verdana, sans-serif'
+		        }
 		    },
 		    xAxis: {
                 title: {
                     enabled: true,
-                    text: ''
+                    text: '',
+    		        style: {
+    		        	color: '#496d7e',
+    		        	font: '1.4em Trebuchet MS, Verdana, sans-serif'
+    		        }
                 },
                 lineWidth: 1,
                 lineColor: "#ecf0f1",
@@ -80,7 +88,7 @@ function ScatterPlot(container) {
                 labels: {
                     style: {
                        color: '#ecf0f1',
-                       font: '11px Trebuchet MS, Verdana, sans-serif'
+                       font: '0.9em Trebuchet MS, Verdana, sans-serif'
                     }
                  }
 //                startOnTick: true,
@@ -89,7 +97,11 @@ function ScatterPlot(container) {
             },
             yAxis: {
                 title: {
-                    text: ''
+                    text: '',
+    		        style: {
+    		        	color: '#496d7e',
+    		        	font: '1.4em Trebuchet MS, Verdana, sans-serif'
+    		        }
                 }
             ,
 //                lineWidth: 1,
@@ -98,7 +110,7 @@ function ScatterPlot(container) {
             	labels: {
                     style: {
                        color: '#ecf0f1',
-                       font: '11px Trebuchet MS, Verdana, sans-serif'
+                       font: '0.9em Trebuchet MS, Verdana, sans-serif'
                     }
                  }
             },
@@ -139,7 +151,7 @@ function ScatterPlot(container) {
             },
             series: [{
                 name: '',
-                color: 'rgba(119, 152, 191, .5)',
+                color: 'rgba(108, 159, 183, .5)',
                 data: []
             }]
 		};
@@ -217,9 +229,14 @@ ScatterPlot.prototype = (function(){
 					},
 				
 				success: $.proxy( function(response) {
+					var $this = this;
+					var data = response;
+					this.chartinfo.xAxis.title.text = this.xVariable;
+					this.chartinfo.yAxis.title.text = this.yVariable;
+					
+					this.chart = new Highcharts.Chart(this.chartinfo);
 
 //					console.log(response);
-					var data = response;
 					
 					// prepare chart data
 					var chartData = [];
@@ -231,20 +248,24 @@ ScatterPlot.prototype = (function(){
 //							console.log(field);
 							seriesItem.push(field);
 						});
-						chartData.push(seriesItem);
+						var shift = ($this.chart.series.data) ? $this.chart.series.data.length > 20 : 0;
+						var t = 50;
+//						setTimeout(function(){
+							$this.chart.series[0].addPoint(seriesItem, false);							
+//						}, (t++));   
+						if($this.chart.series[0].data.length % 500 ==0){
+							$this.chart.redraw();
+						}
+//						chartData.push(seriesItem);
 					});
+					$this.chart.redraw();
 					
+					this.offset = chartData.length;
 					// show chart
 					
 //					console.log(chartData);
-					this.chartinfo.series[0].data = chartData;
+//					this.chartinfo.series[0].data = chartData;
 					//update offset
-					this.offset = chartData.length;
-					
-					this.chartinfo.xAxis.title.text = this.xVariable;
-					this.chartinfo.yAxis.title.text = this.yVariable;
-					
-					this.chart = new Highcharts.Chart(this.chartinfo);
 					
 //					this.chart = this.chartContainer.highcharts(this.chartinfo);
 //					console.log( this.chart.redraw() );
