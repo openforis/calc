@@ -157,7 +157,6 @@ ScatterPlot.prototype = (function(){
 		var $this = this;
 		
 		$this.job = job;
-		console.log(this);
 		//reset chart
 		if(this.offset != 0) {
 //			console.log("reset chart from set job");
@@ -240,10 +239,9 @@ ScatterPlot.prototype = (function(){
 					//update offset
 					this.offset = chartData.length;
 					
-					if(this.chart){
-						console.log("WHHHY Im here?1");
-					}
+					
 					this.chart = new Highcharts.Chart(this.chartinfo);
+					
 //					this.chart = this.chartContainer.highcharts(this.chartinfo);
 //					console.log( this.chart.redraw() );
 					

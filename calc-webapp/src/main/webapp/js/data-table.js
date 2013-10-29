@@ -47,6 +47,7 @@ DataTable.prototype = (function(){
 	//start the process of showing job results
 	var start = function(job) {
 		if( job ) {
+			var $this = this;
 //			console.log(job);
 			this.job = job;
 			
@@ -57,8 +58,21 @@ DataTable.prototype = (function(){
 			this.variables = this.job.tasks[0].calculationStep.variables;
 			//update table headers
 			$.proxy(updateHeaders, this)();
+			
 			//update table with data loaded 
-			$.proxy(refresh, this)();
+			//this is a temporary fix. job logic should be moved to a level up.
+			var task = this.job.tasks[0];
+			if(task.itemsProcessed == 0) {
+				//we wait one second so that job can process some items
+				setTimeout(function(e){
+					$.proxy(refresh, $this)();
+				}, 1000);
+			} else {
+				$.proxy(refresh, this)();
+			}
+//			console.log($job);
+//			console.log($job.tasks[0]);
+			
 		}
 	};
 	

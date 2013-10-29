@@ -158,34 +158,31 @@ $(document).ready(function() {
 	        scrollTop: $(target).offset().top
 	    }, 800);
 	});
-	var pages = [];
+
 	// event handler for home button click
 	homeButtonClick = function(event){
 		event.preventDefault();
-		var $button = $(event.target);
+		var $button = $(event.currentTarget);
 		
 		sectionUrl = $button.attr("href");
 		//set the current working section (calculation,results,data or settings)
 		$section = $button.parents(".section-home");
 		//home page section (contains the button links to the external pages)
 		$homeSection = $section.find(".page-section");
-		console.log("Before loading!");
-		console.log(window.Highcharts);
-//	 	if(window.Highcharts){
-//	 		var $c = window.Highcharts;
-//	 		window.Highcharts = null;
-//	 	}
+		if(!sectionUrl) {
+			var msg = " Calc error. Section url is undefinded";		
+			throw msg;
+		}
 		$.ajax({
 			url: sectionUrl,
-			dataType: "html",
-			data:{"r":Math.random()}
+			dataType: "html"
+//				,
+//			data:{"r":Math.random()}
 		}).done(function(response){
 			var $page = $(response);
 			
 			//hide loaded page
 			$page.hide();
-console.log($("#scatter-plot").html());
-console.log(window);
 			/**
 			 * hide home and shows loaded page
 			 */
@@ -205,9 +202,6 @@ console.log(window);
 				$page.show();
 				//show the back home button
 				$backHomeButton.fadeIn(500);
-				
-//				window.Highcharts = $c;
-				
 			},500);
 		});
 		
@@ -219,8 +213,8 @@ console.log(window);
 	$backHomeButton.click(function(event){
 		event.preventDefault();
 		
-		$btnSection = $section.find(".page-section:nth-child(1)");
-		$extSection = $section.find(".page-section:nth-child(2)");
+		var $btnSection = $section.find(".page-section:nth-child(1)");
+		var $extSection = $section.find(".page-section:nth-child(2)");
 		
 		//fade out loaded content and back button
 		$extSection.fadeOut(500);

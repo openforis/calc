@@ -109,7 +109,7 @@ CalculationStepManager.prototype = (function() {
 		})
 		.done(function(response){
 			callback(response);
-		});
+		}).error(function(){console.log("error!!! on exec")});
 	};
 	
 	/**
