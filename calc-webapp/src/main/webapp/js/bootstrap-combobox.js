@@ -132,6 +132,7 @@
   , hide: function () {
       this.$menu.hide();
       this.shown = false;
+      this.$element.focus();
       return this;
     }
 
