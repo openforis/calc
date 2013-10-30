@@ -48,7 +48,7 @@
 							<select class="form-control" name="variableId" disabled="disabled"></select>
 						</div>
 <!-- 						<div class="no-padding col-md-1"> -->
-							<button name="add-variable" class="calculation btn btn-info col-md-1" disabled="disabled">
+							<button name="add-variable" type="button" class="calculation btn btn-info col-md-1" disabled="disabled">
 								<i class="icon-plus-sign-alt"></i>
 							</button>
 <!-- 						</div> -->
@@ -243,11 +243,11 @@ $(function(){
 	 * edit form ui components
 	 */
 	$stepForm = $('#step-form');
-	$addVariableButton = $stepForm.find("button[name='add-variable']");
+	var $addVariableButton = $stepForm.find("button[name='add-variable']");
 	
-	$addVariableModal = $('#add-variable-modal');
-	$addVariableForm = $addVariableModal.find('form');
-	$saveVariableButton = $addVariableModal.find('.save');
+	var $addVariableModal = $('#add-variable-modal');
+	var $addVariableForm = $addVariableModal.find('form');
+	var $saveVariableButton = $addVariableModal.find('.save');
 	
 	/**
 	* step manager
@@ -275,13 +275,20 @@ $(function(){
 		var selectedEntityId = calculationStepManager.getSelectedEntityId();
 		$addVariableForm.find("[name=entityId]").val(selectedEntityId);
 		
-		$addVariableModal.modal({keyboard:false,backdrop:"static"});
+ 		$addVariableModal.modal({keyboard: true, backdrop: "static"});
+ 		UI.Form.setFocus($addVariableForm);
 	});
 	
 	/**
 	* Add variable to the selected entity
 	*/
 	$saveVariableButton.click(function(event) {
+		event.preventDefault();
+		$addVariableForm.submit();
+	});
+	
+	$addVariableForm.submit(function(event) {
+		event.preventDefault();
 		UI.lock();
 		var variable = $addVariableForm.serialize();
 		

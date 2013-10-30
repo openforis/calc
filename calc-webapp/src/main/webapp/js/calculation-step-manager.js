@@ -65,8 +65,13 @@ CalculationStepManager.prototype = (function() {
 	 * Init input fields event listeners
 	 */
 	var initEventHandlers = function() {
-		//entity select change handler
 		var $this = this;
+		
+		$this.$form.submit(function(event) {
+			event.preventDefault();
+		});
+		
+		//entity select change handler
 		$this.$entitySelect.change(function(event) {
 			$.proxy(refreshVariableSelect, $this)();
 		});
