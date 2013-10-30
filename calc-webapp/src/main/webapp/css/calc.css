@@ -453,7 +453,6 @@ calc-step page
 .buttons {
 	margin-top: 50px;
 }
-
 #messageContainer{
 	z-index : 1100;
 	position : fixed;
@@ -462,6 +461,28 @@ calc-step page
 	left:0;
 	right:0;
 	text-align: center;
+}
+.inline > .form-group {
+	display: inline-block;
+}
+.page-section .form-small .form-group {
+	margin-top: 0px;
+	margin-bottom: 0px;
+	margin-right: 0px;
+	margin-left: 0px;
+}
+.form-group-small {
+	position: relative;
+}
+.form-group-small > .control-label {
+	padding-top: 0px;
+	margin-top: auto;
+	margin-bottom: auto;
+}
+.form-group-small > .form-control {
+	width: auto;
+	height: auto;
+	padding: 1px;
 }
 
 /** Tooltip */
@@ -484,130 +505,6 @@ calc-step page
 }
 .locked .modal-backdrop.in {
 	opacity: 0.1;
-}
-
-/**
-* Typeahead (autocomplete)
-*/
-.twitter-typeahead {
-	width: 100%;
-	height: 100%;
-}
-.typeahead, .tt-query, .tt-hint {
-	width: 100%;
-	height: 100%;
-	padding: 8px 12px;
-	border: 2px solid #ccc;
-	-webkit-border-radius: 8px;
-	-moz-border-radius: 8px;
-	border-radius: 8px;
-	outline: none;
-	text-align: left;
-}
-.tt-query {
-	-webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-	-moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-	box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-}
-.tt-hint {
-	color: #AAA;
-}
-.tt-suggestion {
-	color: #2c3e50;
-}
-.tt-dropdown-menu {
-	text-align: left;
-	width: 422px;
-	margin-top: 12px;
-	padding: 8px 0;
-	background-color: #fff;
-	border: 1px solid #ccc;
-	border: 1px solid rgba(0, 0, 0, 0.2);
-	-webkit-border-radius: 8px;
-	-moz-border-radius: 8px;
-	border-radius: 8px;
-	-webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
-	-moz-box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
-	box-shadow: 0 5px 10px rgba(0, 0, 0, .2);
-}
-.tt-suggestion {
-	padding: 3px 20px;
-	font-size: 1.2em;
-	line-height: 24px;
-}
-.tt-suggestion.tt-is-under-cursor {
-	color: #fff;
-	background-color: #0097cf;
-}
-.tt-suggestion p {
-	margin: 0;
-}
-.dropdown-menu > .active > a, 
-.dropdown-menu > .active > a:hover, 
-.dropdown-menu > .active > a:focus {
-	background-color: #496d7e;
-}
-/**
-* End of Typeahead
-*/
-
-/**
-* Combobox
-*/
-.combobox-container {
-	width: 100%;
-	padding-bottom: 0px;
-	margin: 0px;
-}
-.combobox-container .form-control, .combobox-container .dropdown-toggle {
-	float: left;
-	display: inline-block;
-}
-.combobox-container .form-control {
-	width: 95%;
-}
-.combobox-container .dropdown-toggle {
-	height: 43px !important;
-}
-.combobox-container .typeahead {
-	height: 15em;
-}
-
-/**
-* Form
-*/
-.inline > .form-group {
-	display: inline-block;
-}
-.form-horizontal .form-group > .combobox-container {
-	display: inline-block;
-	width: auto;
-}
-.form-group-small > .combobox-container .dropdown-toggle {
-	height: 27px !important;
-}
-.form-group-small > .combobox-container > .typeahead {
-	width: auto;
-	padding: 2px 4px;
-}
-.form-group-small > .combobox-container > .typeahead li a {
-	padding: 2px;
-}
-.page-section .form-small .form-group {
-	margin-top: 0px;
-	margin-bottom: 0px;
-	margin-right: 0px;
-	margin-left: 0px;
-}
-.form-group-small > .control-label {
-	padding-top: 0px;
-	margin-top: auto;
-	margin-bottom: auto;
-}
-.form-group-small > .form-control, .form-group-small > .combobox-container .form-control {
-	width: auto;
-	height: auto;
-	padding: 1px;
 }
 
 ::-webkit-input-placeholder { /* WebKit browsers */

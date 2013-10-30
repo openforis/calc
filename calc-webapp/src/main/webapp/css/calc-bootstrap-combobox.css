@@ -1,0 +1,68 @@
+.combobox-container {
+	width: 100%;
+	padding-bottom: 0px;
+	margin: 0px;
+}
+.combobox-container .typeahead {
+	height: 15em;
+	width: 100%;
+	padding: 0px;
+	border-radius: 4px;
+}
+ul.typeahead li {
+	color: #2c3e50;
+	font-size: 0.65em;
+	line-height: 24px;
+}
+.typeahead.dropdown-menu, .tt-dropdown-menu {
+	text-align: left;
+}
+.combobox-container .form-control, .combobox-container .dropdown-toggle {
+	float: left;
+	display: inline-block;
+}
+.combobox-container .form-control {
+	width: 100%;
+}
+.combobox-container .dropdown-toggle {
+	background: transparent;
+	border: 0px none;
+	position: absolute;
+	height: 90% !important;
+	right: 20px;
+	top: 2px;
+	z-index: 10;
+}
+.combobox-container .dropdown-menu > .active > a, 
+.combobox-container .dropdown-menu > .active > a:hover, 
+.combobox-container .dropdown-menu > .active > a:focus {
+	background-color: #496d7e;
+}
+
+/**
+* Inside form-small and form-group-small elements style
+*/
+.form-group-small > .combobox-container > .typeahead {
+	width: 100%;
+}
+.form-group-small > .combobox-container > ul.typeahead li {
+	font-size: 0.6em;
+}
+.form-group-small > .combobox-container > .typeahead li a {
+	padding: 2px;
+}
+.form-horizontal .form-group > .combobox-container {
+	display: inline-block;
+	width: auto;
+}
+.form-group-small > .combobox-container .dropdown-toggle {
+	font-size: 0.9em;
+	width: 23px;
+	right: 0px;
+	top: 0px;
+}
+ .form-group-small > .combobox-container .form-control {
+	width: auto;
+	height: auto;
+	padding: 1px;
+}
