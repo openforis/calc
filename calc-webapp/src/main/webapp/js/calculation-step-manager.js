@@ -11,8 +11,10 @@ function CalculationStepManager($form) {
 	this.$variableSelect = $form.find("[name='variableId']");
 	this.$variableCombobox = null; //inted by initVariableCombobox function
 	this.$addVariableButton = $form.find("[name=add-variable]");
-	
 	this.currentCalculationStep = null;
+
+	//R script component manager
+	this.$RScript = null;
 	
 	this._init();
 }
@@ -41,6 +43,9 @@ CalculationStepManager.prototype = (function() {
 				UI.unlock();
 			}
 		});
+		
+		var rScriptField = this.$form.find("[name=script]");
+		$this.$RScript = new RScript(rScriptField);
 	};
 	
 	/**

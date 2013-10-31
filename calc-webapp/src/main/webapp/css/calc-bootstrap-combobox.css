@@ -14,9 +14,6 @@ ul.typeahead li {
 	font-size: 0.65em;
 	line-height: 24px;
 }
-.typeahead.dropdown-menu, .tt-dropdown-menu {
-	text-align: left;
-}
 .combobox-container .form-control, .combobox-container .dropdown-toggle {
 	float: left;
 	display: inline-block;
@@ -32,11 +29,6 @@ ul.typeahead li {
 	right: 20px;
 	top: 2px;
 	z-index: 10;
-}
-.combobox-container .dropdown-menu > .active > a, 
-.combobox-container .dropdown-menu > .active > a:hover, 
-.combobox-container .dropdown-menu > .active > a:focus {
-	background-color: #496d7e;
 }
 
 /**

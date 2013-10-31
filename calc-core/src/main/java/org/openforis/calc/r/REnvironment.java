@@ -42,4 +42,13 @@ public class REnvironment {
 		}
 	}
 
+	public String[] evalStrings(String expr) throws RException {
+		try {
+			return r.eval(expr, env, true).asStrings();
+		} catch (REXPMismatchException e) {
+			throw new RException(e);
+		}
+	}
+	
+
 }
