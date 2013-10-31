@@ -132,6 +132,7 @@
   , hide: function () {
       this.$menu.hide();
       this.shown = false;
+      this.$element.focus();
       return this;
     }
 
@@ -319,6 +320,10 @@
   , keyup: function (e) {
       switch(e.keyCode) {
         case 40: // down arrow
+        	if ( !(this.selected || this.shown) ) {
+        		this.toggle();
+        	}
+        	break;
         case 39: // right arrow
         case 38: // up arrow
         case 37: // left arrow

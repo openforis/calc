@@ -212,3 +212,11 @@ UI.Form.populateSelect = function($select, items, valueFieldName, labelFieldName
 	$select.removeAttr("disabled");
 	$select.val([]);
 };
+
+/**
+ * Sets the focus on the first input field in the specified form
+ */
+UI.Form.setFocus = function($form) {
+	var $firstField = $form.find("*:input[type!=hidden]:first");
+	$firstField.focus();
+};
