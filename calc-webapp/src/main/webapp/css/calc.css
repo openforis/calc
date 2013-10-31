@@ -368,6 +368,9 @@ formula editor
 .no-border {
 	border:none;
 }
+.no-margin {
+	margin: 0px;
+}
 /**
 calc-step page
 */
