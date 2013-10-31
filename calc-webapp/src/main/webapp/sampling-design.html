@@ -1,12 +1,23 @@
-<!-- ==== Html here === -->
-<div class="row">
-sampling design
-</div>
+<div class="page-section">
 
-<script>
-$(document).ready(function(){
-	
-	// Javascript here
-	
-});
-</script>
+<!-- 	<div class="row no-margin"  style="padding-top: 20px;"> -->
+		<div class="col-md-8 col-md-offset-2" style="text-align: left; padding-top: 20px;" id="sampling-design">
+			<div class="row col-md-12">
+				Sampling Unit
+			</div>
+			<div class="row col-md-12">
+				<input type="text" />
+			</div>
+<!-- 		</div> -->
+	</div>	
+	<script>
+	$(function(){
+		
+		var manager = new SamplingDesignManager( $("sampling-design") );
+// 		manager.init();
+		
+		// Javascript here
+		
+	});
+	</script>
+</div>
