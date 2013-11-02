@@ -40,27 +40,33 @@ public abstract class Variable<T> extends NamedUserObject {
 	@Column(name = "sort_order")
 	private int sortOrder;
 
+	@JsonIgnore
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "entity_id")
-	@JsonIgnore
 	private Entity entity;
 
+	@JsonIgnore	
 	@Enumerated(EnumType.STRING)
 	@Column(name = "scale")
 	private Scale scale;
 
+	@JsonIgnore	
 	@Column(name = "input_value_column")
 	private String inputValueColumn;
 
+	@JsonIgnore	
 	@Column(name = "output_value_column")
 	private String outputValueColumn;
 
+	@JsonIgnore	
 	@Column(name = "dimension_table")
 	private String dimensionTable;
 
+	@JsonIgnore	
 	@Column(name = "override")
 	private boolean override;
 	
+	@JsonIgnore	
 	@Column(name = "original_id")
 	private Integer originalId;
 
@@ -114,6 +120,7 @@ public abstract class Variable<T> extends NamedUserObject {
 		this.dimensionTable = dimensionTable;
 	}
 
+	@JsonIgnore
 	public boolean isInput() {
 		return inputValueColumn != null;
 	}

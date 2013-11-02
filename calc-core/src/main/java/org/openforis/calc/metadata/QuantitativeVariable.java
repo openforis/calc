@@ -12,6 +12,9 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 /**
  * A variable which may take on a single numeric value.
  * 
@@ -22,9 +25,11 @@ import org.hibernate.annotations.CascadeType;
 @DiscriminatorValue("Q")
 public class QuantitativeVariable extends Variable<BigDecimal> {
 
+	@JsonIgnore
 	@Column(name = "default_value")
 	private BigDecimal defaultValue;
 
+	@JsonIgnore
 	@Transient //TODO map to column
 	private transient Unit<?> unit; 
 
@@ -35,7 +40,8 @@ public class QuantitativeVariable extends Variable<BigDecimal> {
 	public void setUnit(Unit<?> unit) {
 		this.unit = unit;
 	}
-
+	
+	@JsonIgnore
 	public Unit<?> getUnit() {
 		return this.unit;
 	}
@@ -69,6 +75,30 @@ public class QuantitativeVariable extends Variable<BigDecimal> {
 	@Override
 	public void setDefaultValue(BigDecimal defaultValue) {
 		this.defaultValue = defaultValue;
+	}
+	
+	public VariableAggregate getAggregate(String aggType) {
+		for ( VariableAggregate agg : getAggregates() ) {
+			if( agg.getAggregateType().equalsIgnoreCase(aggType) ) { 
+				return agg;
+			}
+		}
+		return null;
+	}
+	
+	public boolean hasAggregate(String aggType) {
+		VariableAggregate aggregate = getAggregate(aggType);
+		return aggregate != null;
+	}
+	
+	/**
+	 * Returns the list of available aggregates for the variable
+	 * @return
+	 */
+	@JsonInclude
+	public VariableAggregate.AGGREGATE_TYPE[] getAggregateTypes() {
+		VariableAggregate.AGGREGATE_TYPE[] aggTypes = { VariableAggregate.AGGREGATE_TYPE.SUM, VariableAggregate.AGGREGATE_TYPE.MAX , VariableAggregate.AGGREGATE_TYPE.MIN, VariableAggregate.AGGREGATE_TYPE.MEAN , VariableAggregate.AGGREGATE_TYPE.STDDEV };
+		return aggTypes;
 	}
 	
 }

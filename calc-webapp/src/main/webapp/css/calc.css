@@ -74,6 +74,32 @@ button.no-background:hover {
 	background-color: #36525f;
 	border: none;
 }
+/** Option-btn default style for not selected*/
+button.option-btn {
+	background-color: #888889;
+/* 	border: 1px solid #838596; */
+	border-radius: 1px; 
+	color : white;
+}
+button.option-btn:hover {
+	color: white;
+	background-color: #758677;
+/* 	border: 1px solid #7c977f; */
+	border-radius: 1px; 
+}
+button.option-btn-selected {
+	background-color: #758677;
+/* 	border: 1px solid #838596; */
+	border-radius: 1px; 
+	color : white;
+}
+button.option-btn-selected:hover {
+	background-color: #888889;
+	color: white;
+/* 	border: 1px solid #7c977f; */
+	border-radius: 1px; 
+}
+
 /** Home Sections*/
 .section-home, .page-section {
 	overflow: auto;
@@ -451,6 +477,7 @@ calc-step page
   	font-weight: 300;
 }
 
+
 /** Form */
 
 .buttons {
@@ -510,18 +537,6 @@ calc-step page
 	opacity: 0.1;
 }
 
-::-webkit-input-placeholder { /* WebKit browsers */
-    color:    #496d7e;
-}
-:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
-    color:    #496d7e;
-}
-::-moz-placeholder { /* Mozilla Firefox 19+ */
-    color:    #496d7e;
-}
-:-ms-input-placeholder { /* Internet Explorer 10+ */
-    color:    #496d7e;
-}
 
 /**
 * Dropdown
@@ -575,4 +590,35 @@ ul.scroll-menu {
 
 .context-dropdown .dropdown-menu {
 	height: 15em;
+}
+
+
+/**
+**
+** Sampling design section
+**
+**/
+
+#sampling-design .sampling-unit-section button ,
+#sampling-design .sampling-unit-section .variable .name {
+/* #sampling-design .sampling-unit-section .entities button,  */
+/* #sampling-design .sampling-unit-section .variables button { */
+	width: 100%;
+	margin-bottom : 1px;
+	padding-top: 20px;
+	padding-bottom: 20px;
+}
+#sampling-design .sampling-unit-section .variables, 
+#sampling-design .sampling-unit-section .variable {
+	margin-left: 3px;
+}
+
+#sampling-design .sampling-unit-section .variable .name ,
+#sampling-design .sampling-unit-section .variable .aggregates {
+	text-align: center;
+}
+
+#sampling-design .sampling-unit-section .variable .aggregates button  {
+	width: 50%;
+	margin-bottom : 1px;
 }

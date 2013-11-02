@@ -16,6 +16,7 @@ import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
+import org.openforis.calc.metadata.SamplingDesign;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.web.form.VariableForm;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -45,19 +47,49 @@ public class WorkspaceController {
 	@Autowired
 	private CollectTaskService collectTaskManager;
 
-
+	@RequestMapping(value = "/active.json", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	Workspace getActiveWorkspace() {
+		Workspace workspace = workspaceService.getActiveWorkspace();
+		return workspace;
+	}
+	
+	//TODO change rest call /active/job.json
 	@RequestMapping(value = "/job.json", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	Job getJob() {
 		Workspace workspace = workspaceService.getActiveWorkspace();
 		if( workspace == null ){
 			return null;
-		} else { 
+		} else {
 			Job job = taskManager.getJob(workspace.getId());
 			return job;
 		}
 	}
 
+	/**
+	 * Set the sampling unit to the workspace
+	 * @return
+	 */
+	@RequestMapping(value = "/active/samplingDesign/samplingUnit/{entityId}.json", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	Workspace activeWorkspaceSetSamplingUnit(@PathVariable int entityId) {
+		Workspace workspace = workspaceService.setActiveWorkspaceSamplingUnit(entityId);
+		return workspace;
+	}
+	
+	@RequestMapping(value = "/active/entity/{entityId}/variable/{variableId}/aggregates/{agg}.json", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	QuantitativeVariable activeWorkspaceCreateVariableAggregate(@PathVariable int entityId, @PathVariable int variableId, @PathVariable String agg ) {
+		Workspace workspace = getActiveWorkspace();
+		Entity entity = workspace.getEntityById(entityId);
+		QuantitativeVariable variable = entity.getQtyVariableById(variableId);
+		variable = workspaceService.createVariableAggregate(variable, agg);
+		return variable;
+	}
+	
+	
+	@Deprecated
 	@RequestMapping(value = "/entities.json", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	List<Entity> getEntities() {
@@ -67,6 +99,8 @@ public class WorkspaceController {
 		return entities;
 	}
 	
+	
+	@Deprecated
 	@RequestMapping(value = "/entities/{entityId}/qtyvariables.json", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	List<Variable<?>> getQuantitativeVariables(@PathVariable int entityId) {

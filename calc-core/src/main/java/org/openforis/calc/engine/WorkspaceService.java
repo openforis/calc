@@ -7,8 +7,11 @@ import java.util.Map;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.EntityDao;
 import org.openforis.calc.metadata.QuantitativeVariable;
+import org.openforis.calc.metadata.SamplingDesign;
 import org.openforis.calc.metadata.Variable;
+import org.openforis.calc.metadata.VariableAggregateDao;
 import org.openforis.calc.metadata.Variable.Scale;
+import org.openforis.calc.metadata.VariableAggregate;
 import org.openforis.calc.metadata.VariableDao;
 import org.openforis.calc.schema.InputSchemaDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,11 +37,17 @@ public class WorkspaceService {
 	private VariableDao variableDao;
 	
 	@Autowired
+	private VariableAggregateDao variableAggregateDao;
+	
+	@Autowired
 	private InputSchemaDao inputSchemaDao;
 	
 	@Autowired
 	private ProcessingChainService processingChainService;
 
+	@Autowired
+	private SamplingDesignDao samplingDesignDao;
+	
 	private Map<Integer, SimpleLock> locks;
 
 	public WorkspaceService() {
@@ -150,5 +159,37 @@ public class WorkspaceService {
 	
 	public void createViews(Workspace ws) {
 		inputSchemaDao.createViews(ws);
+	}
+
+	@Transactional
+	public Workspace setActiveWorkspaceSamplingUnit(int entityId) {
+		Workspace workspace = getActiveWorkspace();
+		SamplingDesign samplingDesign = workspace.getSamplingDesign();
+		if(samplingDesign == null){
+			samplingDesign = new SamplingDesign();
+			samplingDesignDao.save(samplingDesign);
+			workspace.setSamplingDesign(samplingDesign);
+		}
+		Entity samplingUnit = workspace.getEntityById(entityId);
+		samplingDesign.setSamplingUnit(samplingUnit );
+		workspace = workspaceDao.save(workspace);
+		return workspace;
+	}
+
+	@Transactional
+	public QuantitativeVariable createVariableAggregate(QuantitativeVariable variable, String agg) {
+		if( !variable.hasAggregate(agg) ) {
+			if( VariableAggregate.AGGREGATE_TYPE.isValid(agg) ) {
+				VariableAggregate varAgg = new VariableAggregate();
+				varAgg.setVariable(variable);
+				varAgg.setAggregateType(agg);
+				varAgg.setAggregateFormula("");
+				variableAggregateDao.save(varAgg);
+			} else {
+				throw new IllegalArgumentException("Invalild aggregate type: " + agg);
+			}
+		}
+		variable = (QuantitativeVariable) variableDao.find(variable.getId());
+		return variable;
 	}
 }

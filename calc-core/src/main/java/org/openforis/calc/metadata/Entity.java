@@ -26,6 +26,7 @@ import org.openforis.calc.common.NamedUserObject;
 import org.openforis.calc.engine.Workspace;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * Provides metadata about a particular unit of observation, calculation or
@@ -43,71 +44,85 @@ public class Entity extends NamedUserObject {
 	@JsonIgnore
 	private Workspace workspace;
 
+	@JsonIgnore
 	@Column(name = "data_table")
 	private String dataTable;
 
+	@JsonIgnore
 	@Column(name = "id_column")
 	private String idColumn;
 
+	@JsonIgnore
 	@Column(name = "parent_id_column")
 	private String parentIdColumn;
 	
+	@JsonIgnore
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "parent_entity_id")
 	@Fetch(FetchMode.SELECT) 
 	private Entity parent;
 	
+	@JsonIgnore
 	@Column(name = "sort_order")
 	private int sortOrder;
 	
+	@JsonIgnore
 	@Column(name = "input")
 	private boolean input;
 	
+	@JsonIgnore
 	@Column(name = "override")
 	private boolean override;
 	
+	@JsonIgnore
 	@Column(name = "x_column")
 	private String xColumn;
 	
+	@JsonIgnore
 	@Column(name = "y_column")
 	private String yColumn;
 	
+	@JsonIgnore
 	@Column(name = "srs_column")
 	private String srsColumn;
 	
+	@JsonIgnore
 	@Column(name = "location_column")
 	private String locationColumn;
 	
+	@JsonIgnore
 	@Column(name = "sampling_unit")
 	private boolean samplingUnit;
 	
+	@JsonIgnore
 	@Column(name = "unit_of_analysis")
 	private boolean unitOfAnalysis;
 
+	@JsonIgnore
 	@OneToMany(mappedBy = "entity", fetch = FetchType.EAGER, cascade = javax.persistence.CascadeType.ALL, orphanRemoval = true)
 	@OrderBy("sortOrder")
 	@Fetch(FetchMode.SUBSELECT) 
 	@Cascade(CascadeType.ALL)
-	@JsonIgnore
 	private List<Variable<?>> variables = new ArrayList<Variable<?>>();
 
+	@JsonIgnore
 	@OneToMany(mappedBy = "parent", fetch = FetchType.EAGER)
 	@OrderBy("sortOrder")
 	@Fetch(FetchMode.SUBSELECT) 
 	@Cascade(CascadeType.ALL)
-	@JsonIgnore
 	private List<Entity> children = new ArrayList<Entity>();
 
+	@JsonIgnore
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "cluster_variable_id")
-	@JsonIgnore
 	private Variable<?> clusterVariable;
 
+	@JsonIgnore
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "unit_no_variable_id")
-	@JsonIgnore
 	private Variable<?> unitNoVariable;
-	
+
+	@JsonIgnore
 	@Column(name = "original_id")
 	private Integer originalId;
 
@@ -227,6 +242,7 @@ public class Entity extends NamedUserObject {
 		this.xColumn = xColumn;
 	}
 
+	@JsonIgnore	
 	public String getXColumn() {
 		return xColumn;
 	}
@@ -235,6 +251,7 @@ public class Entity extends NamedUserObject {
 		this.yColumn = yColumn;
 	}
 	
+	@JsonIgnore	
 	public String getYColumn() {
 		return yColumn;
 	}
@@ -255,6 +272,7 @@ public class Entity extends NamedUserObject {
 		this.locationColumn = locationColumn;
 	}
 
+	@JsonIgnore	
 	public boolean isGeoreferenced() {
 		return ((xColumn != null && yColumn != null) || locationColumn != null);
 	}
@@ -295,18 +313,18 @@ public class Entity extends NamedUserObject {
 		this.unitOfAnalysis = unitOfAnalysis;
 	}
 
-	@JsonIgnore
+//	@JsonIgnore
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public List<CategoricalVariable<?>> getCategoricalVariables() {
 		return Collections.unmodifiableList(selectInstancesOf((List)variables, CategoricalVariable.class));
 	}
 
-	@JsonIgnore
+//	@JsonIgnore
 	public List<QuantitativeVariable> getQuantitativeVariables() {
 		return Collections.unmodifiableList(selectInstancesOf(variables, QuantitativeVariable.class));
 	}
 
-	@JsonIgnore
+//	@JsonIgnore
 	public List<TextVariable> getTextVariables() {
 		return Collections.unmodifiableList(selectInstancesOf(variables, TextVariable.class));
 	}
@@ -398,6 +416,15 @@ public class Entity extends NamedUserObject {
 	
 	public void setOriginalId(Integer originalId) {
 		this.originalId = originalId;
+	}
+	
+	@JsonInclude
+	public Integer getParentId(){
+		if(parent == null){
+			return null;
+		} else {
+			return parent.getId();
+		}
 	}
 
 	@Override
@@ -507,6 +534,16 @@ public class Entity extends NamedUserObject {
 		} else if (!yColumn.equals(other.yColumn))
 			return false;
 		return true;
+	}
+
+	@JsonIgnore
+	public QuantitativeVariable getQtyVariableById(int variableId) {
+		for (QuantitativeVariable variable : getQuantitativeVariables()) {
+			if(variable.getId().equals(variableId)){
+				return variable;
+			}
+		}
+		return null;
 	}
 
 }

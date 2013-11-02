@@ -9,6 +9,8 @@ import javax.persistence.Table;
 import org.apache.commons.lang3.StringUtils;
 import org.openforis.calc.common.NamedUserObject;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * 
  * @author M. Togna
@@ -27,18 +29,31 @@ public class VariableAggregate extends NamedUserObject {
 		public String toString() {
 			return super.toString().toLowerCase();
 		}
+
+		public static boolean isValid(String agg) {
+			agg = agg.toLowerCase();
+			for( AGGREGATE_TYPE aggType : AGGREGATE_TYPE.values()) {
+				if( aggType.equals(agg) ) {
+					return true;
+				}
+			}
+			return false;
+		}
 	}
 
+	@JsonIgnore
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "variable_id")
 	private QuantitativeVariable variable;
 
+	@JsonIgnore
 	@Column(name = "aggregate_column")
 	private String aggregateColumn;
 
 	@Column(name = "aggregate_type")
 	private String aggregateType;
 
+	@JsonIgnore
 	@Column(name = "aggregate_formula")
 	private String aggregateFormula;
 

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+	<changeSet author="mino togna" id="005-create-sampling-design">
+	
+		<sql>
+			CREATE TABLE
+			    calc.sampling_design
+			    (
+			        id SERIAL NOT NULL,
+			        sampling_unit_id INTEGER,
+			        CONSTRAINT pkey PRIMARY KEY (id),
+			        CONSTRAINT sampling_design_sampling_unit_fkey FOREIGN KEY (sampling_unit_id) REFERENCES
+			        entity (id)
+			    );
+			    
+			    ALTER TABLE
+    				calc.workspace ADD COLUMN sampling_design_id INTEGER;
+    				
+				ALTER TABLE
+				    calc.workspace ADD CONSTRAINT sampling_design_sampling_unit_fkey FOREIGN KEY
+				    (sampling_design_id) REFERENCES calc.calc.entity (id);
+		</sql>
+	
+	</changeSet>
+
+</databaseChangeLog>

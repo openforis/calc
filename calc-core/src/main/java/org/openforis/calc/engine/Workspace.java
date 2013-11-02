@@ -8,6 +8,8 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
@@ -22,7 +24,10 @@ import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.common.UserObject;
 import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.SamplingDesign;
 import org.openforis.calc.metadata.Variable;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * Conceptually, a workspace contains all data, metadata, processing
@@ -42,12 +47,15 @@ public class Workspace extends UserObject {
 	@Column(name = "name")
 	private String name;
 
+	@JsonIgnore
 	@Column(name = "collect_survey_uri")
 	private String collectSurveyUri;
-
+	
+	@JsonIgnore
 	@Column(name = "input_schema")
 	private String inputSchema;
 
+	@JsonIgnore
 	@Column(name = "output_schema")
 	private String outputSchema;
 
@@ -60,18 +68,24 @@ public class Workspace extends UserObject {
 	@Cascade(CascadeType.ALL)
 	private List<Entity> entities;
 
+	@JsonIgnore
 	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER)
 	@OrderBy("name")
 	@Fetch(FetchMode.SUBSELECT)
 	@Cascade(CascadeType.ALL)
 	private List<AoiHierarchy> aoiHierarchies;
 
+	@JsonIgnore
 	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER, cascade = javax.persistence.CascadeType.ALL, orphanRemoval = true)
 	@OrderBy("id")
 	@Fetch(FetchMode.SUBSELECT)
 	@Cascade(CascadeType.ALL)
 	private List<ProcessingChain> processingChains;
 
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "sampling_design_id")
+	private SamplingDesign samplingDesign;
+	
 	public Workspace() {
 		this.processingChains = new ArrayList<ProcessingChain>();
 	}
@@ -136,12 +150,21 @@ public class Workspace extends UserObject {
 		this.active = active;
 	}
 
+	public SamplingDesign getSamplingDesign() {
+		return samplingDesign;
+	}
+	
+	public void setSamplingDesign(SamplingDesign samplingDesign) {
+		this.samplingDesign = samplingDesign;
+	}
+	
 	public void addProcessingChain(ProcessingChain chain) {
 		chain.setWorkspace(this);
 
 		processingChains.add(chain);
 	}
 
+	@JsonIgnore	
 	public ProcessingChain getDefaultProcessingChain() {
 		for (ProcessingChain chain : processingChains) {
 			if (chain.getCaption().equals(DEFAULT_CHAIN_CAPTION)) {
@@ -159,7 +182,8 @@ public class Workspace extends UserObject {
 		}
 		return null;
 	}
-
+	
+	@JsonIgnore	
 	public Collection<Entity> getRootEntities() {
 		return getEntities(new Predicate() {
 			@Override
@@ -168,7 +192,8 @@ public class Workspace extends UserObject {
 			}
 		});
 	}
-
+	
+	@JsonIgnore	
 	public Collection<Entity> getNotOverriddenEntities() {
 		return getEntities(new Predicate() {
 			@Override
@@ -187,9 +212,9 @@ public class Workspace extends UserObject {
 			return CollectionUtils.select(entities, predicate);
 		}
 	}
-	
+
 	public void addEntity(Entity entity) {
-		if ( entities == null ) {
+		if (entities == null) {
 			entities = new ArrayList<Entity>();
 		}
 		entities.add(entity);
@@ -241,10 +266,11 @@ public class Workspace extends UserObject {
 		}
 		return null;
 	}
-
+	
+	@JsonIgnore	
 	public Collection<Variable<?>> getUserDefinedVariables() {
 		Collection<Variable<?>> result = new HashSet<Variable<?>>();
-		if ( CollectionUtils.isNotEmpty(entities) ) {
+		if (CollectionUtils.isNotEmpty(entities)) {
 			for (Entity entity : entities) {
 				Collection<Variable<?>> variables = entity.getUserDefinedVariables();
 				result.addAll(variables);
@@ -252,18 +278,16 @@ public class Workspace extends UserObject {
 		}
 		return result;
 	}
-	
+
 	public Variable<?> getVariableByName(String name) {
 		List<Entity> entities = getEntities();
 		for (Entity entity : entities) {
 			Variable<?> v = entity.getVariable(name);
-			if ( v != null ) {
+			if (v != null) {
 				return v;
 			}
 		}
 		return null;
 	}
-	
-
 
 }

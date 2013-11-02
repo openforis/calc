@@ -3,20 +3,32 @@
 <!-- 	<div class="row no-margin"  style="padding-top: 20px;"> -->
 		<div class="col-md-8 col-md-offset-2" style="text-align: left; padding-top: 20px;" id="sampling-design">
 			<div class="row col-md-12">
-				Sampling Unit
+				<div class="form-group">
+						<label class="col-md-2 control-label">Sampling Unit</label>
+						<div class="col-md-10">
+<!-- 							<input type="text" class="form-control" name="sampling-unit"> -->
+							<select class="form-control" name="sampling-unit"></select>
+						</div>
+					</div>
 			</div>
-			<div class="row col-md-12">
-				<input type="text" />
+			<div class="row sampling-unit-section" style="padding-top: 50px;">
+				<div class="col-md-2 no-padding entities">
+<!-- 					<button type="button" class="btn default-btn">Tree</button> -->
+<!-- 					<button type="button" class="btn default-btn">Fuck</button> -->
+				</div>
+				<div class="col-md-2 no-padding variables">
+				</div>
+				<div class="col-md-2 no-padding variable">
+				</div>
+				<div class="col-md-2 no-padding variable-agg">
+				</div>
 			</div>
 <!-- 		</div> -->
 	</div>	
 	<script>
-	$(function(){
-		
-		var manager = new SamplingDesignManager( $("sampling-design") );
-// 		manager.init();
-		
-		// Javascript here
+	$(function() {
+
+		var manager = new SamplingDesignManager( $("#sampling-design") );
 		
 	});
 	</script>

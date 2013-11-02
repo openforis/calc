@@ -15,11 +15,8 @@ import javax.persistence.MappedSuperclass;
  * @author M. Togna
  */
 @MappedSuperclass
-public abstract class UserObject implements Identifiable {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
-	private Integer id;
+public abstract class UserObject extends Identifiable {
+	
 	
 	@Column(name = "caption")
 	private String caption;
@@ -44,18 +41,8 @@ public abstract class UserObject implements Identifiable {
 	}
 
 	@Override
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	@Override
-	public Integer getId() {
-		return this.id;
-	}
-	
-	@Override
 	public String toString() {
-		return String.format("\"%s\" [%s]", caption, id);
+		return String.format("\"%s\" [%s]", caption, getId());
 	}
 
 	@Override
@@ -65,7 +52,7 @@ public abstract class UserObject implements Identifiable {
 		result = prime * result + ((caption == null) ? 0 : caption.hashCode());
 		result = prime * result
 				+ ((description == null) ? 0 : description.hashCode());
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
 		return result;
 	}
 
@@ -88,10 +75,10 @@ public abstract class UserObject implements Identifiable {
 				return false;
 		} else if (!description.equals(other.description))
 			return false;
-		if (id == null) {
-			if (other.id != null)
+		if (getId() == null) {
+			if (other.getId() != null)
 				return false;
-		} else if (!id.equals(other.id))
+		} else if (!getId().equals(other.getId()))
 			return false;
 		return true;
 	}
