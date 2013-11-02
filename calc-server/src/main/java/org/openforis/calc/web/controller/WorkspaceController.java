@@ -88,6 +88,15 @@ public class WorkspaceController {
 		return variable;
 	}
 	
+	@RequestMapping(value = "/active/entity/{entityId}/variable/{variableId}/aggregates/{agg}.json", method = RequestMethod.DELETE, produces = APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	QuantitativeVariable activeWorkspaceDeleteVariableAggregate(@PathVariable int entityId, @PathVariable int variableId, @PathVariable String agg ) {
+		Workspace workspace = getActiveWorkspace();
+		Entity entity = workspace.getEntityById(entityId);
+		QuantitativeVariable variable = entity.getQtyVariableById(variableId);
+		variable = workspaceService.deleteVariableAggregate(variable, agg);
+		return variable;
+	}
 	
 	@Deprecated
 	@RequestMapping(value = "/entities.json", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)

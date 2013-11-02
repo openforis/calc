@@ -65,6 +65,10 @@ SamplingDesignManager.prototype = (function(){
 			
 		}) , this );
 	};
+
+	/**
+	 * Handler for samplingUnit comobo change event
+	 */
 	var samplingUnitChange = function(entity) {
 		var $this = this;
 		if(entity) {
@@ -75,7 +79,10 @@ SamplingDesignManager.prototype = (function(){
 			});
 		}
 	};
-	
+
+	/**
+	 * update sampling unit ui
+	 */
 	var samplingUnitUpdate = function(entity) {
 		var $this = this;
 		if(entity) {
@@ -89,7 +96,10 @@ SamplingDesignManager.prototype = (function(){
 //			});
 		}
 	};
-	
+
+	/**
+	 * update entities section
+	 */
 	var entitiesUpdate = function(entities) {
 		var $this = this;
 		//empty entity and variable sections
@@ -131,7 +141,10 @@ SamplingDesignManager.prototype = (function(){
 		});
 	};
 	
-	var variablesUpdate = function(vars){
+	/**
+	 * update variables section
+	 */
+	var variablesUpdate = function(vars) {
 		var $this = this;
 		var x = 80;
 		$.each(vars, function(i, variable) {
@@ -159,12 +172,14 @@ SamplingDesignManager.prototype = (function(){
 		});
 	};
 	
+	/**
+	 * update variable section 
+	 */
 	var variableUpdate = function(variableId) {
 		var $this = this;
 		$this.workspaceManager.activeWorkspace( $.proxy(function(ws) {
 			
 			var variable = ws.getQuantitativeVariableById($this.currentEntity.id, variableId);
-			console.log(variable);
 			$this.variableSection.hide();
 			
 			//update variable section header
@@ -180,50 +195,33 @@ SamplingDesignManager.prototype = (function(){
 			$this.variableSection.fadeIn();
 		} , $this) );
 	};
-	
+
+	/**
+	 * update variable aggregates section
+	 */
 	var variableAggregatesUpdate = function(variable, section) {
 		var $this = this;
 		
 		//aggregates section ui
 		var aggsSection = $('<div class="aggregates"></div');
-//		aggsSection.hide();
 		section.append(aggsSection);
 		
 		//iterates over the aggregate types allowed for the variable and add a checkbox 
 		var x = 80;
 		var aggs = variable.aggregateTypes;
 		$.each(aggs , function(i,agg) {
-			//get the variable aggregate for the variable
-			var varAgg = null;
-			$.each(variable.aggregates, function(i,vAgg) {
-				if(vAgg.aggregateType == agg){
-					varAgg = vAgg;
-					return;
-				}
-			});
-			
 			var row = $('<div class="row no-margin"></div>');
 			aggsSection.append(row);
-			//create button
+
+			// get button for variable aggregate
 			var btn = $.proxy(getAggregateButton, $this)(variable, agg);
-//			var btnClass = (varAgg) ? "option-btn-selected" : "option-btn";
-//			var btn = $('<button type="button" class="btn '+btnClass+'"></button>');
-//			btn.hide();
-//			btn.html(agg);
-//			
-//			btn.click(function(e) {
-//				console.log(varAgg);
-//				console.log(variable);
-//				$this.workspaceManager.activeWorkspaceCreateVariableAggregate($this.currentEntity, variable, agg, function(variable) {
-//					console.log( variable );
-//				});
-//			});
-			
 			row.append(btn);
+			
+			//show button
 			setTimeout(function(){
 				btn.fadeIn();
 			}, x);
-			x+=15;
+			x += 25;
 			
 //			var div = $('<div class="checkbox"></div>');
 //			aggsSection.append(div);
@@ -236,6 +234,9 @@ SamplingDesignManager.prototype = (function(){
 		});
 	};
 	
+	/**
+	 * returns the button for the variable aggregate
+	 */
 	var getAggregateButton = function(variable , agg) {
 		var $this = this;
 		
@@ -253,9 +254,6 @@ SamplingDesignManager.prototype = (function(){
 			
 			if(varAgg) { 
 				//click to delete the aggregate for the variable
-//				console.log("Implement delete variable aggregate");
-//				console.log(varAgg);
-//				console.log(variable);
 				$this.workspaceManager.activeWorkspaceDeleteVariableAggregate($this.currentEntity, variable, agg, function(variableUpdate) {
 					//after creation replace button
 					var btnUpdate = $.proxy(getAggregateButton, $this)(variableUpdate, agg);
@@ -280,6 +278,9 @@ SamplingDesignManager.prototype = (function(){
 		return btn;
 	};
 	
+	/**
+	 * Utility method to extract the variable aggregate for the given agg name passed as parameter
+	 */
 	var getVariableAggregate = function(variable , agg) {
 		var varAgg = null;
 		$.each(variable.aggregates, function(i, vAgg) {

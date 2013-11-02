@@ -192,4 +192,17 @@ public class WorkspaceService {
 		variable = (QuantitativeVariable) variableDao.find(variable.getId());
 		return variable;
 	}
+
+	@Transactional
+	public QuantitativeVariable deleteVariableAggregate(QuantitativeVariable variable, String agg) {
+		VariableAggregate aggregate = variable.getAggregate(agg);
+		if(aggregate != null) {
+			variable.deleteAggregate(agg);
+			variableDao.save(variable);
+			variableAggregateDao.delete(aggregate.getId());
+		}
+		variable = (QuantitativeVariable) variableDao.find(variable.getId());
+		return variable;
+	}
+	
 }

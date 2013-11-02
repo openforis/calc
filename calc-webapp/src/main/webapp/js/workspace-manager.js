@@ -24,8 +24,6 @@ WorkspaceManager.prototype = (function(){
 				url:"rest/workspace/active.json",
 				dataType:"json"
 			}).done(function(response) {
-//				$this._activeWorkspace = new Workspace( response );
-//				success($this._activeWorkspace);
 				$.proxy(setActiveWorkspace, $this)( response, success );
 			});
 		}
@@ -49,18 +47,25 @@ WorkspaceManager.prototype = (function(){
 	};
 	
 	var activeWorkspaceCreateVariableAggregate = function(entity, variable, agg, success){
+		$.proxy(activeWorkspaceUpdateVariableAggregate, this)(entity, variable, agg, "POST", success);
+	};
+	
+	var activeWorkspaceDeleteVariableAggregate = function(entity, variable, agg, success){
+		$.proxy(activeWorkspaceUpdateVariableAggregate, this)(entity, variable, agg, "DELETE", success);
+	};
+	
+	var activeWorkspaceUpdateVariableAggregate = function(entity, variable, agg, method, success){
 		var $this = this;
 		$this.activeWorkspace(function(ws){
 			
 			$.ajax({
 				url:"rest/workspace/active/entity/"+entity.id+"/variable/"+variable.id+"/aggregates/"+agg+".json",
 				dataType:"json",
-				method:"POST"
+				method: method
 			}).done(function(response){
 				
 				$this.activeWorkspace(function(ws){
 					var variableToUpdate = response;
-//					console.log(response);
 
 					// replace old qty variable with the new one
 					var ent = ws.getEntityById(entity.id);
@@ -74,7 +79,6 @@ WorkspaceManager.prototype = (function(){
 					}
 				});
 				
-//				$.proxy(setActiveWorkspace, $this)( response, success );
 			});
 			
 		});
@@ -100,6 +104,8 @@ WorkspaceManager.prototype = (function(){
 		activeWorkspaceSetSamplingUnit : activeWorkspaceSetSamplingUnit
 		,
 		activeWorkspaceCreateVariableAggregate : activeWorkspaceCreateVariableAggregate
+		,
+		activeWorkspaceDeleteVariableAggregate : activeWorkspaceDeleteVariableAggregate
 	};
 	
 })();

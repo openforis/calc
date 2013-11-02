@@ -91,6 +91,13 @@ public class QuantitativeVariable extends Variable<BigDecimal> {
 		return aggregate != null;
 	}
 	
+	public void deleteAggregate(String agg) {
+		if(this.hasAggregate(agg)){
+			VariableAggregate aggregate = getAggregate(agg);
+			getAggregates().remove(aggregate);
+		}
+	}
+	
 	/**
 	 * Returns the list of available aggregates for the variable
 	 * @return
@@ -100,5 +107,6 @@ public class QuantitativeVariable extends Variable<BigDecimal> {
 		VariableAggregate.AGGREGATE_TYPE[] aggTypes = { VariableAggregate.AGGREGATE_TYPE.SUM, VariableAggregate.AGGREGATE_TYPE.MAX , VariableAggregate.AGGREGATE_TYPE.MIN, VariableAggregate.AGGREGATE_TYPE.MEAN , VariableAggregate.AGGREGATE_TYPE.STDDEV };
 		return aggTypes;
 	}
+
 	
 }
