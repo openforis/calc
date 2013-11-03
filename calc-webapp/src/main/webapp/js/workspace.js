@@ -61,6 +61,23 @@ Workspace.prototype = (function(){
 		return entities;
 	};
 	
+	/**
+	 * Replace the passed variable for the given entity with id as argument
+	 */
+	replaceVariable = function(entityId , variable) {
+		var entity = this.getEntityById(entityId);
+		var vars = entity.quantitativeVariables;
+		
+		$.each(vars, function(i, variableToReplace){
+			if( variableToReplace.id.toString() == variable.id.toString() ){
+				entity.quantitativeVariables[i] = variable;
+				return false;
+			}
+		});
+		
+		return variable;
+	};
+	
 	return {
 		constructor : Workspace
 		,
@@ -69,6 +86,8 @@ Workspace.prototype = (function(){
 		getAggregableEntities : getAggregableEntities
 		,
 		getQuantitativeVariableById : getQuantitativeVariableById
+		,
+		replaceVariable : replaceVariable
 	};
 	
 })();

@@ -536,6 +536,11 @@ public class Entity extends NamedUserObject {
 		return true;
 	}
 
+	/**
+	 * Returns a quantity variable with the id passed as argument.
+	 * @param variableId
+	 * @return
+	 */
 	@JsonIgnore
 	public QuantitativeVariable getQtyVariableById(int variableId) {
 		for (QuantitativeVariable variable : getQuantitativeVariables()) {
@@ -546,5 +551,16 @@ public class Entity extends NamedUserObject {
 		return null;
 	}
 
+	@JsonIgnore
+	public QuantitativeVariable getQtyVariablePerHaById(int variableId) {
+		for (QuantitativeVariable variable : getQuantitativeVariables()) {
+			QuantitativeVariable variablePerHa = variable.getVariablePerHa();
+			if(variablePerHa != null && variablePerHa.getId().equals(variableId)) {
+				return variablePerHa;
+			}
+		}
+		return null;
+	}
+	
 }
 

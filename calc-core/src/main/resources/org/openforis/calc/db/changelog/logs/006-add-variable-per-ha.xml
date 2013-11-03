@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+	<changeSet author="mino togna" id="006-add-variable-per-ha">
+	
+		<sql>
+			ALTER TABLE
+    			calc.variable ADD COLUMN variable_per_ha_id INTEGER;
+    			
+			ALTER TABLE
+			    calc.variable ALTER COLUMN entity_id DROP NOT NULL;
+			    
+			ALTER TABLE
+			    calc.variable ADD CONSTRAINT variable_variable_per_ha_fkey FOREIGN KEY (variable_per_ha_id
+			    ) REFERENCES calc.variable (id);
+			    
+		</sql>
+	
+	</changeSet>
+
+</databaseChangeLog>

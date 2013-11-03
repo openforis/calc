@@ -6,11 +6,14 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.openforis.commons.collection.CollectionUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -37,6 +40,24 @@ public class QuantitativeVariable extends Variable<BigDecimal> {
 	@Cascade(CascadeType.ALL)
 	private List<VariableAggregate> aggregates;
 
+	//variable_per_ha_id
+	@OneToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "variable_per_ha_id")
+	private QuantitativeVariable variablePerHa;
+	
+	@JsonIgnore
+	@OneToOne(mappedBy = "variablePerHa")
+//	@JoinColumn(name = "variable_per_ha_id")
+	private QuantitativeVariable sourceVariable;
+	
+	public QuantitativeVariable getSourceVariable() {
+		return sourceVariable;
+	}
+	
+	public void setSourceVariable(QuantitativeVariable parentVariable) {
+		this.sourceVariable = parentVariable;
+	}
+	
 	public void setUnit(Unit<?> unit) {
 		this.unit = unit;
 	}
@@ -60,7 +81,7 @@ public class QuantitativeVariable extends Variable<BigDecimal> {
 	}
 
 	public List<VariableAggregate> getAggregates() {
-		return aggregates;
+		return CollectionUtils.unmodifiableList( aggregates );
 	}
 
 	public void setAggregates(List<VariableAggregate> aggregates) {
@@ -75,6 +96,14 @@ public class QuantitativeVariable extends Variable<BigDecimal> {
 	@Override
 	public void setDefaultValue(BigDecimal defaultValue) {
 		this.defaultValue = defaultValue;
+	}
+	
+	public QuantitativeVariable getVariablePerHa() {
+		return variablePerHa;
+	}
+	
+	public void setVariablePerHa(QuantitativeVariable variablePerHa) {
+		this.variablePerHa = variablePerHa;
 	}
 	
 	public VariableAggregate getAggregate(String aggType) {
@@ -94,7 +123,7 @@ public class QuantitativeVariable extends Variable<BigDecimal> {
 	public void deleteAggregate(String agg) {
 		if(this.hasAggregate(agg)){
 			VariableAggregate aggregate = getAggregate(agg);
-			getAggregates().remove(aggregate);
+			this.aggregates.remove(aggregate);
 		}
 	}
 	

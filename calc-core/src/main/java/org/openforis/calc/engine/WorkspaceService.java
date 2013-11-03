@@ -9,9 +9,9 @@ import org.openforis.calc.metadata.EntityDao;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.SamplingDesign;
 import org.openforis.calc.metadata.Variable;
-import org.openforis.calc.metadata.VariableAggregateDao;
 import org.openforis.calc.metadata.Variable.Scale;
 import org.openforis.calc.metadata.VariableAggregate;
+import org.openforis.calc.metadata.VariableAggregateDao;
 import org.openforis.calc.metadata.VariableDao;
 import org.openforis.calc.schema.InputSchemaDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,25 +29,25 @@ public class WorkspaceService {
 
 	@Autowired
 	private WorkspaceDao workspaceDao;
-	
+
 	@Autowired
 	private EntityDao entityDao;
 
 	@Autowired
 	private VariableDao variableDao;
-	
+
 	@Autowired
 	private VariableAggregateDao variableAggregateDao;
-	
+
 	@Autowired
 	private InputSchemaDao inputSchemaDao;
-	
+
 	@Autowired
 	private ProcessingChainService processingChainService;
 
 	@Autowired
 	private SamplingDesignDao samplingDesignDao;
-	
+
 	private Map<Integer, SimpleLock> locks;
 
 	public WorkspaceService() {
@@ -125,27 +125,27 @@ public class WorkspaceService {
 
 		return ws;
 	}
-	
+
 	public QuantitativeVariable saveQuantitativeVariable(Entity entity, String name) {
 		QuantitativeVariable variable = new QuantitativeVariable();
 		variable.setName(name);
 		variable.setInputValueColumn(name);
 		variable.setOutputValueColumn(name);
 		variable.setScale(Scale.RATIO);
-		
+
 		entity.addVariable(variable);
 
 		variableDao.save(variable);
-		
+
 		inputSchemaDao.addUserDefinedVariableColumn(variable);
 		inputSchemaDao.createView(entity);
-		
+
 		return variable;
 	}
 
 	public void addUserDefinedVariableColumns(Workspace ws) {
 		for (Variable<?> v : ws.getUserDefinedVariables()) {
-			if ( v instanceof QuantitativeVariable ) {
+			if (v instanceof QuantitativeVariable) {
 				inputSchemaDao.addUserDefinedVariableColumn((QuantitativeVariable) v);
 			}
 		}
@@ -156,7 +156,7 @@ public class WorkspaceService {
 		ws.setActive(true);
 		workspaceDao.save(ws);
 	}
-	
+
 	public void createViews(Workspace ws) {
 		inputSchemaDao.createViews(ws);
 	}
@@ -165,21 +165,33 @@ public class WorkspaceService {
 	public Workspace setActiveWorkspaceSamplingUnit(int entityId) {
 		Workspace workspace = getActiveWorkspace();
 		SamplingDesign samplingDesign = workspace.getSamplingDesign();
-		if(samplingDesign == null){
+		if (samplingDesign == null) {
 			samplingDesign = new SamplingDesign();
 			samplingDesignDao.save(samplingDesign);
 			workspace.setSamplingDesign(samplingDesign);
 		}
 		Entity samplingUnit = workspace.getEntityById(entityId);
-		samplingDesign.setSamplingUnit(samplingUnit );
+		samplingDesign.setSamplingUnit(samplingUnit);
 		workspace = workspaceDao.save(workspace);
 		return workspace;
 	}
 
 	@Transactional
-	public QuantitativeVariable createVariableAggregate(QuantitativeVariable variable, String agg) {
-		if( !variable.hasAggregate(agg) ) {
-			if( VariableAggregate.AGGREGATE_TYPE.isValid(agg) ) {
+	public QuantitativeVariable createVariableAggregate(Workspace workspace, int entityId, int variableId, String agg) {
+		Entity entity = workspace.getEntityById(entityId);
+		QuantitativeVariable variable = entity.getQtyVariableById(variableId);
+		
+		int variableReturnId = 0;
+		//the variable id passed is a variable-per-ha linked to another variable
+		if(variable == null) {
+			variable = entity.getQtyVariablePerHaById(variableId);
+			variableReturnId = variable.getSourceVariable().getId();
+		} else {
+			variableReturnId = variable.getId();
+		}
+		
+		if (!variable.hasAggregate(agg)) {
+			if (VariableAggregate.AGGREGATE_TYPE.isValid(agg)) {
 				VariableAggregate varAgg = new VariableAggregate();
 				varAgg.setVariable(variable);
 				varAgg.setAggregateType(agg);
@@ -189,20 +201,63 @@ public class WorkspaceService {
 				throw new IllegalArgumentException("Invalild aggregate type: " + agg);
 			}
 		}
-		variable = (QuantitativeVariable) variableDao.find(variable.getId());
+		variable = (QuantitativeVariable) variableDao.find(variableReturnId);
 		return variable;
 	}
-
+	
 	@Transactional
-	public QuantitativeVariable deleteVariableAggregate(QuantitativeVariable variable, String agg) {
+	public QuantitativeVariable deleteVariableAggregate(Workspace workspace, int entityId, int variableId, String agg) {
+		Entity entity = workspace.getEntityById(entityId);
+		QuantitativeVariable variable = entity.getQtyVariableById(variableId);
+		
+		int variableReturnId = 0;
+		//the variable id passed is a variable-per-ha linked to another variable
+		if(variable == null) {
+			variable = entity.getQtyVariablePerHaById(variableId);
+			variableReturnId = variable.getSourceVariable().getId();
+		} else {
+			variableReturnId = variable.getId();
+		}
+		
 		VariableAggregate aggregate = variable.getAggregate(agg);
-		if(aggregate != null) {
+		if (aggregate != null) {
 			variable.deleteAggregate(agg);
 			variableDao.save(variable);
 			variableAggregateDao.delete(aggregate.getId());
 		}
-		variable = (QuantitativeVariable) variableDao.find(variable.getId());
+		
+		variable = (QuantitativeVariable) variableDao.find(variableReturnId);
 		return variable;
 	}
-	
+
+	@Transactional
+	public QuantitativeVariable addVariablePerHa(QuantitativeVariable variable) {
+		QuantitativeVariable variablePerHa = variable.getVariablePerHa();
+
+		if (variablePerHa == null) {
+			variablePerHa = new QuantitativeVariable();
+			variablePerHa.setName(variable.getName() + "_per_ha");
+			variablePerHa.setScale(Scale.RATIO);
+			variableDao.save(variablePerHa);
+			
+			variable.setVariablePerHa(variablePerHa);
+			variable = (QuantitativeVariable) variableDao.save(variable);
+		}
+
+		return variable;
+	}
+
+	@Transactional
+	public QuantitativeVariable deleteVariablePerHa(QuantitativeVariable variable) {
+		QuantitativeVariable variablePerHa = variable.getVariablePerHa();
+
+		if (variablePerHa != null) {
+			variable.setVariablePerHa(null);
+			variableDao.delete(variablePerHa.getId());
+			variable = (QuantitativeVariable) variableDao.save(variable);
+		}
+
+		return variable;
+	}
+
 }

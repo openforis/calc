@@ -66,21 +66,44 @@ WorkspaceManager.prototype = (function(){
 				
 				$this.activeWorkspace(function(ws){
 					var variableToUpdate = response;
-
 					// replace old qty variable with the new one
-					var ent = ws.getEntityById(entity.id);
-					var vars = ent.quantitativeVariables;
-					for(var i in vars){
-						var variableToReplace = vars[i];
-						if( variableToReplace.id.toString() == variableToUpdate.id.toString() ){
-							ent.quantitativeVariables[i] = variableToUpdate;
-							success(variableToUpdate);
-						}
-					}
+					variableToUpdate = ws.replaceVariable(entity.id, variableToUpdate);
+					success(variableToUpdate);
 				});
 				
 			});
 			
+		});
+	};
+	
+	var activeWorkspaceAddVariablePerHa = function(entityId, variableId, success){
+		$.proxy(activeWorkspaceUpdateVariablePerHa, this)(entityId, variableId, success, "POST");
+	};
+	
+	var activeWorkspaceDeleteVariablePerHa = function(entityId, variableId, success){
+		$.proxy(activeWorkspaceUpdateVariablePerHa, this)(entityId, variableId, success, "DELETE");
+	};
+	
+	var activeWorkspaceUpdateVariablePerHa = function(entityId, variableId, success, method) {
+		var $this = this;
+		
+		$this.activeWorkspace(function(ws){
+			var variable = ws.getQuantitativeVariableById(entityId, variableId);
+			
+			$.ajax({
+				url:"rest/workspace/active/entity/"+entityId+"/variable/"+variable.id+"/variable-per-ha.json",
+				dataType:"json",
+				method: method
+			}).done(function(response){
+				
+				$this.activeWorkspace(function(ws) {
+					var variableToUpdate = response;
+					// replace old qty variable with the new one
+					variableToUpdate = ws.replaceVariable(entityId, variableToUpdate);
+					success(variableToUpdate);
+				});
+				
+			});
 		});
 	};
 	
@@ -106,6 +129,10 @@ WorkspaceManager.prototype = (function(){
 		activeWorkspaceCreateVariableAggregate : activeWorkspaceCreateVariableAggregate
 		,
 		activeWorkspaceDeleteVariableAggregate : activeWorkspaceDeleteVariableAggregate
+		,
+		activeWorkspaceAddVariablePerHa : activeWorkspaceAddVariablePerHa
+		,
+		activeWorkspaceDeleteVariablePerHa : activeWorkspaceDeleteVariablePerHa
 	};
 	
 })();
@@ -118,7 +145,19 @@ WorkspaceManager.getInstance = function() {
 	}
 	return _workspaceManager;
 };
+
+
+
+
+
+
+
+
+
+
+
 /**
+ * DEPRECATED
  * Load all the entities from the active workspace and call the callback function
  * 
  * @param callback
@@ -134,6 +173,7 @@ WorkspaceManager.loadEntities = function(callback) {
 };
 
 /**
+ * DEPRECATED
  * Load all the quantitative variables of the specified entity and call the callback function
  * 
  * @param entityId
@@ -148,6 +188,14 @@ WorkspaceManager.loadQuantitativeVariables = function(entityId, callback) {
 		callback(response);
 	});
 };
+
+/**
+ * DEPRECATED
+ * @param variable
+ * @param success
+ * @param error
+ * @param complete
+ */
 
 WorkspaceManager.saveVariable = function(variable, success, error, complete) {
 	$.ajax({

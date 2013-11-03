@@ -16,7 +16,6 @@ import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
-import org.openforis.calc.metadata.SamplingDesign;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.web.form.VariableForm;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -82,9 +80,7 @@ public class WorkspaceController {
 	public @ResponseBody
 	QuantitativeVariable activeWorkspaceCreateVariableAggregate(@PathVariable int entityId, @PathVariable int variableId, @PathVariable String agg ) {
 		Workspace workspace = getActiveWorkspace();
-		Entity entity = workspace.getEntityById(entityId);
-		QuantitativeVariable variable = entity.getQtyVariableById(variableId);
-		variable = workspaceService.createVariableAggregate(variable, agg);
+		QuantitativeVariable variable = workspaceService.createVariableAggregate(workspace, entityId, variableId, agg);
 		return variable;
 	}
 	
@@ -92,11 +88,30 @@ public class WorkspaceController {
 	public @ResponseBody
 	QuantitativeVariable activeWorkspaceDeleteVariableAggregate(@PathVariable int entityId, @PathVariable int variableId, @PathVariable String agg ) {
 		Workspace workspace = getActiveWorkspace();
-		Entity entity = workspace.getEntityById(entityId);
-		QuantitativeVariable variable = entity.getQtyVariableById(variableId);
-		variable = workspaceService.deleteVariableAggregate(variable, agg);
+		QuantitativeVariable variable = workspaceService.deleteVariableAggregate(workspace, entityId, variableId, agg);
 		return variable;
 	}
+			  //rest/workspace/active/entity/"+entityId+"/variable/"+variable.id+"/variable-per-ha.json
+	@RequestMapping(value = "/active/entity/{entityId}/variable/{variableId}/variable-per-ha", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	QuantitativeVariable activeWorkspaceAddVariablePerHa(@PathVariable int entityId, @PathVariable int variableId) {
+		Workspace workspace = getActiveWorkspace();
+		Entity entity = workspace.getEntityById(entityId);
+		QuantitativeVariable variable = entity.getQtyVariableById(variableId);
+		variable = workspaceService.addVariablePerHa(variable);
+		return variable;
+	}
+	
+	@RequestMapping(value = "/active/entity/{entityId}/variable/{variableId}/variable-per-ha", method = RequestMethod.DELETE, produces = APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	QuantitativeVariable activeWorkspaceDeleteVariablePerHa(@PathVariable int entityId, @PathVariable int variableId) {
+		Workspace workspace = getActiveWorkspace();
+		Entity entity = workspace.getEntityById(entityId);
+		QuantitativeVariable variable = entity.getQtyVariableById(variableId);
+		variable = workspaceService.deleteVariablePerHa(variable);
+		return variable;
+	}
+	
 	
 	@Deprecated
 	@RequestMapping(value = "/entities.json", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
@@ -120,6 +135,7 @@ public class WorkspaceController {
 		return variables;
 	}
 
+	@Deprecated
 	@RequestMapping(value = "/variable/save.json", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	Response saveVariable(@Valid VariableForm form, BindingResult result) {
@@ -134,6 +150,7 @@ public class WorkspaceController {
 		return response;
 	}
 	
+	//TODO Where is this used??
 	@RequestMapping(value = "/variable/validate.json", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	Response validate(@Valid VariableForm form, BindingResult result) {

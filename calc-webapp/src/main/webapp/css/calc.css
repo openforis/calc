@@ -613,12 +613,15 @@ ul.scroll-menu {
 	margin-left: 3px;
 }
 
-#sampling-design .sampling-unit-section .variable .name ,
-#sampling-design .sampling-unit-section .variable .aggregates {
+#sampling-design .sampling-unit-section div {
 	text-align: center;
 }
 
-#sampling-design .sampling-unit-section .variable .aggregates button  {
+#sampling-design .sampling-unit-section .aggregates button  {
 	width: 50%;
 	margin-bottom : 1px;
+}
+#sampling-design .sampling-unit-section .variable-per-ha button.header-btn  {
+	border-radius: 5px;
+	width: 90%;
 }

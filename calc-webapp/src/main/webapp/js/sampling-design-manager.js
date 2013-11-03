@@ -11,10 +11,12 @@ SamplingDesignManager = function(container) {
 	this.samplingUnitSelect = this.container.find('[name=sampling-unit]');
 	this.samplingUnitCombo = this.samplingUnitSelect.combobox().data('combobox');
 	
+	//sampling unit UI elements
 	this.samplingUnitSection = this.container.find(".sampling-unit-section");
 	this.entitiesSection = this.samplingUnitSection.find(".entities");
 	this.variablesSection = this.samplingUnitSection.find(".variables");
 	this.variableSection = this.samplingUnitSection.find(".variable");
+	this.variablePerHaSection = this.samplingUnitSection.find(".variable-per-ha");
 	
 	this.workspaceManager = null; 
 	//WorkspaceManager.getInstance();
@@ -53,7 +55,7 @@ SamplingDesignManager.prototype = (function(){
 				}
 			}
 			/**
-			 * event handlers
+			 * bind events
 			 */
 			//when sampling unit changes, save it and shows entities
 			$this.samplingUnitSelect.change( function(e){
@@ -73,7 +75,7 @@ SamplingDesignManager.prototype = (function(){
 		var $this = this;
 		if(entity) {
 			UI.lock();
-			$this.workspaceManager.activeWorkspaceSetSamplingUnit( entity, function(ws){
+			$this.workspaceManager.activeWorkspaceSetSamplingUnit( entity, function(ws) {
 				UI.unlock();
 				$.proxy(samplingUnitUpdate , $this)(entity);
 			});
@@ -106,6 +108,8 @@ SamplingDesignManager.prototype = (function(){
 		$this.entitiesSection.empty();
 		$this.variablesSection.empty();
 		$this.variableSection.empty();
+		$this.variablePerHaSection.empty();
+		
 		//
 		//show  entities
 		//
@@ -122,6 +126,7 @@ SamplingDesignManager.prototype = (function(){
 				//empty variables section
 				$this.variablesSection.empty();
 				$this.variableSection.empty();
+				$this.variablePerHaSection.empty();
 				
 				//set current entity
 				$this.currentEntity = entity;
@@ -158,6 +163,7 @@ SamplingDesignManager.prototype = (function(){
 				
 				//empty variable section
 				$this.variableSection.empty();
+				$this.variablePerHaSection.empty();
 				
 				// update variable section
 				$.proxy(variableUpdate , $this)(variable.id);
@@ -179,23 +185,92 @@ SamplingDesignManager.prototype = (function(){
 		var $this = this;
 		$this.workspaceManager.activeWorkspace( $.proxy(function(ws) {
 			
+			//empty variable-per-ha section
+			$this.variablePerHaSection.empty();
+			
 			var variable = ws.getQuantitativeVariableById($this.currentEntity.id, variableId);
-			$this.variableSection.hide();
+//			$this.variableSection.hide();
 			
 			//update variable section header
 			var name = $('<div class="name">Varaible name</div>');
 //		var name = $('<button type="button" class="btn default-btn" disabled></button>');
 			name.html(variable.name);
+			name.hide();
 			$this.variableSection.append(name);
+			name.fadeIn();
 			
 			//update aggregates section
 			$.proxy(variableAggregatesUpdate , $this)(variable, $this.variableSection);
+			//update variable-per-ha section
+			$.proxy(variablePerHaUpdate , $this)(variableId);
 			
-			//show variable section
-			$this.variableSection.fadeIn();
+		} , $this) );
+	};
+	
+	/**
+	 * update variable-per-ha section 
+	 */
+	var variablePerHaUpdate = function(variableId) {
+		var $this = this;
+		$this.workspaceManager.activeWorkspace( $.proxy(function(ws) {
+			var variable = ws.getQuantitativeVariableById($this.currentEntity.id, variableId);
+			var variablePerHa = variable.variablePerHa;
+
+			//append btn to add/remove variable-per-ha
+			var headerBtn = $.proxy(getVariablePerHaHeaderBtn, $this)(variable);
+			$this.variablePerHaSection.append(headerBtn);
+			
+			//if variable-per-ha is set, it updates the aggregates section
+			if(variablePerHa){
+				$.proxy(variableAggregatesUpdate , $this)(variable.variablePerHa, $this.variablePerHaSection);
+			} 
+			
 		} , $this) );
 	};
 
+	var getVariablePerHaHeaderBtn = function(variable) {
+		var $this = this;
+		
+		var variablePerHa = variable.variablePerHa;
+		
+		var cssClass = (variablePerHa) ? "option-btn-selected" : "option-btn";
+		var btn = $('<button type="button" class="btn '+cssClass+' header-btn"></button>');
+		btn.html(variable.name + " / per ha");
+		
+		btn.click(function(e) {
+			var enabledElements = $(document).find(":enabled");
+			UI.disable(enabledElements);
+			
+			
+			var afterClick = function(variable, updateAggregates) {
+				//replace btn
+				var btnUpdate = $.proxy(getVariablePerHaHeaderBtn, $this)(variable);
+				btn.replaceWith(btnUpdate);
+				//remove aggregates section
+				var aggregatesSection = $this.variablePerHaSection.find('.aggregates');
+				aggregatesSection.remove();
+
+				if(updateAggregates == true){
+					$.proxy(variableAggregatesUpdate , $this)(variable.variablePerHa, $this.variablePerHaSection);
+				}
+				
+				UI.enable(enabledElements);
+			};
+			
+			if(variablePerHa) {
+				$this.workspaceManager.activeWorkspaceDeleteVariablePerHa($this.currentEntity.id, variable.id, function(variable){
+					afterClick(variable);
+				});
+			} else {
+				$this.workspaceManager.activeWorkspaceAddVariablePerHa($this.currentEntity.id, variable.id, function(variable){
+					afterClick(variable, true);
+				});
+			}
+		});
+		
+		return btn;
+	};
+	
 	/**
 	 * update variable aggregates section
 	 */
@@ -206,15 +281,17 @@ SamplingDesignManager.prototype = (function(){
 		var aggsSection = $('<div class="aggregates"></div');
 		section.append(aggsSection);
 		
-		//iterates over the aggregate types allowed for the variable and add a checkbox 
+		//iterates over the aggregate types allowed for the variable and add a button 
 		var x = 80;
 		var aggs = variable.aggregateTypes;
 		$.each(aggs , function(i,agg) {
 			var row = $('<div class="row no-margin"></div>');
 			aggsSection.append(row);
 
+			
+			var perHa = section.hasClass('variable-per-ha') ? true : false;
 			// get button for variable aggregate
-			var btn = $.proxy(getAggregateButton, $this)(variable, agg);
+			var btn = $.proxy(getAggregateButton, $this)(variable, agg, perHa);
 			row.append(btn);
 			
 			//show button
@@ -236,41 +313,48 @@ SamplingDesignManager.prototype = (function(){
 	
 	/**
 	 * returns the button for the variable aggregate
+	 * @param perHa if updating the per-ha variable aggregates section 
 	 */
-	var getAggregateButton = function(variable , agg) {
+	var getAggregateButton = function(variable , agg, perHa) {
 		var $this = this;
 		
 		var varAgg = $.proxy(getVariableAggregate , $this)(variable , agg);
 		var btnClass = (varAgg) ? "option-btn-selected" : "option-btn";
 		var btn = $('<button type="button" class="btn '+btnClass+'"></button>');
-		btn.hide();
 		btn.html(agg);
-		
+		btn.hide();
+
 		//bind click event
 		btn.click(function(e) {
 			//disable enbabled elements
 			var enabledElements = $(document).find(":enabled");
 			UI.disable(enabledElements);
 			
+			var updateBtn = function(variableUpdate) {
+				//after update replace button
+				var btnUpdate = $.proxy(getAggregateButton, $this)(variableUpdate, agg, perHa);
+				btnUpdate.show();
+				//replace old button
+				btn.replaceWith( btnUpdate );
+				//re enable elements
+				UI.enable(enabledElements);
+			};
+			
 			if(varAgg) { 
 				//click to delete the aggregate for the variable
 				$this.workspaceManager.activeWorkspaceDeleteVariableAggregate($this.currentEntity, variable, agg, function(variableUpdate) {
-					//after creation replace button
-					var btnUpdate = $.proxy(getAggregateButton, $this)(variableUpdate, agg);
-					btnUpdate.show();
-					btn.replaceWith( btnUpdate );
-					//re enable elements
-					UI.enable(enabledElements);
+					if(perHa == true) {
+						variableUpdate = variableUpdate.variablePerHa;
+					}
+					updateBtn(variableUpdate);
 				});
-			} else {	
+			} else {
 				//click to create the aggregate for the variable
 				$this.workspaceManager.activeWorkspaceCreateVariableAggregate($this.currentEntity, variable, agg, function(variableUpdate) {
-					//after creation replace button
-					var btnUpdate = $.proxy(getAggregateButton, $this)(variableUpdate, agg);
-					btnUpdate.show();
-					btn.replaceWith( btnUpdate );
-					//re enable elements
-					UI.enable(enabledElements);
+					if(perHa == true) {
+						variableUpdate = variableUpdate.variablePerHa;
+					}
+					updateBtn(variableUpdate);
 				});
 			}
 		});
@@ -279,7 +363,7 @@ SamplingDesignManager.prototype = (function(){
 	};
 	
 	/**
-	 * Utility method to extract the variable aggregate for the given agg name passed as parameter
+	 * Utility method to extract the variable aggregate for the agg name for the variable (passed as parameters)
 	 */
 	var getVariableAggregate = function(variable , agg) {
 		var varAgg = null;
