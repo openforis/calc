@@ -220,3 +220,12 @@ UI.Form.setFocus = function($form) {
 	var $firstField = $form.find("*:input[type!=hidden]:first");
 	$firstField.focus();
 };
+
+UI.Form.toJSON = function($form) {
+	var array = $form.serializeArray();
+	var result = {};
+    jQuery.each(array, function() {
+    	result[this.name] = this.value || '';
+    });
+    return result;
+};

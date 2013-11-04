@@ -13,6 +13,7 @@ import org.openforis.calc.metadata.Variable.Scale;
 import org.openforis.calc.metadata.VariableAggregate;
 import org.openforis.calc.metadata.VariableAggregateDao;
 import org.openforis.calc.metadata.VariableDao;
+import org.openforis.calc.schema.EntityDataViewDao;
 import org.openforis.calc.schema.InputSchemaDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,9 @@ public class WorkspaceService {
 	@Autowired
 	private EntityDao entityDao;
 
+	@Autowired
+	private EntityDataViewDao entityDataViewDao;
+	
 	@Autowired
 	private VariableDao variableDao;
 
@@ -126,21 +130,47 @@ public class WorkspaceService {
 		return ws;
 	}
 
-	public QuantitativeVariable saveQuantitativeVariable(Entity entity, String name) {
-		QuantitativeVariable variable = new QuantitativeVariable();
-		variable.setName(name);
-		variable.setInputValueColumn(name);
-		variable.setOutputValueColumn(name);
-		variable.setScale(Scale.RATIO);
+	public QuantitativeVariable addQuantitativeVariable(Entity entity, String name) {
+		QuantitativeVariable variable = createQuantitativeVariable(name);
 
 		entity.addVariable(variable);
 
 		variableDao.save(variable);
 
-		inputSchemaDao.addUserDefinedVariableColumn(variable);
-		inputSchemaDao.createView(entity);
+		addVariableColumn(variable);
+		updateEntityView(variable);
 
 		return variable;
+	}
+
+	private QuantitativeVariable createQuantitativeVariable(String name) {
+		QuantitativeVariable variable = new QuantitativeVariable();
+		variable.setName(name);
+		variable.setInputValueColumn(name);
+		variable.setOutputValueColumn(name);
+		variable.setScale(Scale.RATIO);
+		return variable;
+	}
+
+	private void addVariableColumn(QuantitativeVariable variable){
+		inputSchemaDao.addUserDefinedVariableColumn(variable);
+	}
+
+	private void dropVariableColumn(QuantitativeVariable variable){
+		inputSchemaDao.dropUserDefinedVariableColumn(variable);
+	}
+	
+	private void updateEntityView(QuantitativeVariable variable) {
+		
+		Entity entity = variable.getEntity();
+		if (entity == null) {
+			QuantitativeVariable sourceVariable = variable.getSourceVariable();
+			if(sourceVariable == null){
+				throw new IllegalStateException("Unable to find entity to update for variable " + variable.getName());
+			}
+			entity = sourceVariable.getEntity();
+		}
+		entityDataViewDao.createOrUpdateView(entity);
 	}
 
 	public void addUserDefinedVariableColumns(Workspace ws) {
@@ -158,7 +188,9 @@ public class WorkspaceService {
 	}
 
 	public void createViews(Workspace ws) {
-		inputSchemaDao.createViews(ws);
+		for (Entity entity : ws.getEntities()) {
+			entityDataViewDao.createOrUpdateView(entity);
+		}
 	}
 
 	@Transactional
@@ -167,11 +199,13 @@ public class WorkspaceService {
 		SamplingDesign samplingDesign = workspace.getSamplingDesign();
 		if (samplingDesign == null) {
 			samplingDesign = new SamplingDesign();
-			samplingDesignDao.save(samplingDesign);
-			workspace.setSamplingDesign(samplingDesign);
-		}
+		} 
+		
 		Entity samplingUnit = workspace.getEntityById(entityId);
 		samplingDesign.setSamplingUnit(samplingUnit);
+		samplingDesignDao.save(samplingDesign);
+		workspace.setSamplingDesign(samplingDesign);
+		
 		workspace = workspaceDao.save(workspace);
 		return workspace;
 	}
@@ -202,6 +236,9 @@ public class WorkspaceService {
 			}
 		}
 		variable = (QuantitativeVariable) variableDao.find(variableReturnId);
+		
+		updateEntityView(variable);
+		
 		return variable;
 	}
 	
@@ -227,6 +264,9 @@ public class WorkspaceService {
 		}
 		
 		variable = (QuantitativeVariable) variableDao.find(variableReturnId);
+		
+		updateEntityView(variable);
+		
 		return variable;
 	}
 
@@ -235,13 +275,18 @@ public class WorkspaceService {
 		QuantitativeVariable variablePerHa = variable.getVariablePerHa();
 
 		if (variablePerHa == null) {
-			variablePerHa = new QuantitativeVariable();
-			variablePerHa.setName(variable.getName() + "_per_ha");
-			variablePerHa.setScale(Scale.RATIO);
-			variableDao.save(variablePerHa);
+			
+			String name = variable.getName() + "_per_ha";
+			variablePerHa = createQuantitativeVariable(name);
+			variablePerHa.setSourceVariable(variable);
 			
 			variable.setVariablePerHa(variablePerHa);
+			
+			variableDao.save(variablePerHa);			
 			variable = (QuantitativeVariable) variableDao.save(variable);
+			
+			addVariableColumn(variablePerHa);
+			updateEntityView(variablePerHa);
 		}
 
 		return variable;
@@ -252,9 +297,13 @@ public class WorkspaceService {
 		QuantitativeVariable variablePerHa = variable.getVariablePerHa();
 
 		if (variablePerHa != null) {
+			dropVariableColumn(variablePerHa);
+			
 			variable.setVariablePerHa(null);
 			variableDao.delete(variablePerHa.getId());
 			variable = (QuantitativeVariable) variableDao.save(variable);
+			
+			updateEntityView(variablePerHa);
 		}
 
 		return variable;

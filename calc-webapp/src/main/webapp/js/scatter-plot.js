@@ -157,6 +157,7 @@ function ScatterPlot(container) {
             }]
 		};
 	
+	this.workspaceManager = WorkspaceManager.getInstance();
 };
 
 ScatterPlot.prototype = (function(){
@@ -183,8 +184,9 @@ ScatterPlot.prototype = (function(){
 		
 		$this.entityId = $this.job.tasks[0].calculationStep.outputEntityId;
 		
-		WorkspaceManager.loadQuantitativeVariables($this.entityId, function(response) {
-			$this.variables = response;
+		$this.workspaceManager.activeWorkspace(function(ws) {
+			var entity = ws.getEntityById($this.entityId);
+			$this.variables = entity.quantitativeVariables;
 			
 			UI.Form.populateSelect($this.xOption, $this.variables, 'name','name');
 			$this.xCombobox.refresh();

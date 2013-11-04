@@ -9,6 +9,7 @@ import java.util.List;
 import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Result;
+import org.jooq.Select;
 import org.jooq.SelectQuery;
 import org.openforis.calc.engine.DataRecord;
 import org.openforis.calc.engine.DataRecordVisitor;
@@ -24,6 +25,24 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class EntityDataViewDao extends AbstractJooqDao {
 
+	public void createOrUpdateView(Entity entity) {
+		Workspace ws = entity.getWorkspace();
+		
+		Schemas schemas = new Schemas(ws);
+		InputSchema inputSchema = schemas.getInputSchema();
+		EntityDataView view = inputSchema.getDataView(entity);
+		
+		psql()
+			.dropViewIfExists(view)
+			.execute();
+		
+		Select<?> select = view.getSelect();
+		psql()
+			.createView(view)
+			.as(select)
+			.execute();
+	}
+	
 	public long count(Entity entity){
 		EntityDataView view = getDataView(entity.getWorkspace(), entity);
 		Long count = psql().selectCount().from(view).fetchOne(0, Long.class);

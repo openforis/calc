@@ -64,12 +64,12 @@ WorkspaceManager.prototype = (function(){
 				method: method
 			}).done(function(response){
 				
-				$this.activeWorkspace(function(ws){
+//				$this.activeWorkspace(function(ws){
 					var variableToUpdate = response;
-					// replace old qty variable with the new one
+				// replace old qty variable with the new one
 					variableToUpdate = ws.replaceVariable(entity.id, variableToUpdate);
 					success(variableToUpdate);
-				});
+//				});
 				
 			});
 			
@@ -107,6 +107,36 @@ WorkspaceManager.prototype = (function(){
 		});
 	};
 	
+	var activeWorkspaceAddQuantitativeVariable = function(variable, success, error, complete) {
+		var $this = this;
+		
+		$.ajax({
+			url:  "rest/workspace/active/entity/" + variable.entityId + "/variable/quantitative.json",
+			dataType: "json",
+			type: "POST",
+			data: variable
+		})
+		.done(function(response) {
+			var newVariable = response.variable;
+			$this.activeWorkspace(function(ws) {
+				ws.addQuantitativeVariable(variable.entityId, newVariable);
+			});
+			if ( success ) {
+				success(response);
+			}
+		})
+		.error(function(e) {
+			if ( error ) {
+				error(e);
+			}
+		})
+		.complete(function() {
+			if ( complete ) {
+				complete();
+			}
+		});
+	};
+	
 	/**
 	 * Private function to
 	 * Set the active workspace and calls the callback function if present
@@ -133,6 +163,8 @@ WorkspaceManager.prototype = (function(){
 		activeWorkspaceAddVariablePerHa : activeWorkspaceAddVariablePerHa
 		,
 		activeWorkspaceDeleteVariablePerHa : activeWorkspaceDeleteVariablePerHa
+		,
+		activeWorkspaceAddQuantitativeVariable : activeWorkspaceAddQuantitativeVariable
 	};
 	
 })();
@@ -146,77 +178,3 @@ WorkspaceManager.getInstance = function() {
 	return _workspaceManager;
 };
 
-
-
-
-
-
-
-
-
-
-
-/**
- * DEPRECATED
- * Load all the entities from the active workspace and call the callback function
- * 
- * @param callback
- */
-WorkspaceManager.loadEntities = function(callback) {
-	$.ajax({
-		url: "rest/workspace/entities.json",
-		dataType: "json"
-	})
-	.done(function(response) {
-		callback(response);
-	});
-};
-
-/**
- * DEPRECATED
- * Load all the quantitative variables of the specified entity and call the callback function
- * 
- * @param entityId
- * @param callback
- */
-WorkspaceManager.loadQuantitativeVariables = function(entityId, callback) {
-	$.ajax({
-		url: "rest/workspace/entities/" + entityId + "/qtyvariables.json",
-		dataType: "json"
-	})
-	.done(function(response) {
-		callback(response);
-	});
-};
-
-/**
- * DEPRECATED
- * @param variable
- * @param success
- * @param error
- * @param complete
- */
-
-WorkspaceManager.saveVariable = function(variable, success, error, complete) {
-	$.ajax({
-		url: "rest/workspace/variable/save.json",
-		dataType: "json",
-		type: "POST",
-		data: variable
-	})
-	.done(function(response) {
-		if ( success ) {
-			success(response);
-		}
-	})
-	.error(function(e) {
-		if ( error ) {
-			error(e);
-		}
-	})
-	.complete(function() {
-		if ( complete ) {
-			complete();
-		}
-	});
-};
