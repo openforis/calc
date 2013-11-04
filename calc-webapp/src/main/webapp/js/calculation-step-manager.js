@@ -240,7 +240,7 @@ CalculationStepManager.prototype = (function() {
 		$this.$variableCombobox.reset();
 		$this.$variableCombobox.disable();
 		
-		UI.Form.disableField($this.$addVariableButton);
+		UI.disable($this.$addVariableButton);
 		
 		var entityId = $this.getSelectedEntityId($this.$form);
 		if ( entityId ) {
@@ -256,7 +256,7 @@ CalculationStepManager.prototype = (function() {
 				
 				$this.$variableCombobox.enable();
 
-				UI.Form.enableField($this.$addVariableButton);
+				UI.enable($this.$addVariableButton);
 				
 				if ( value ) {
 					$this.$variableSelect.val(value);
