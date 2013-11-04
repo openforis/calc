@@ -19,6 +19,9 @@ function RScript($inputField) {
 	
 	this.dropdownOpen = false;
 	
+	//used to get the list of variables; set by outside
+	this.selectedEntity = null;
+	
 	this._init();
 }
 
@@ -84,7 +87,10 @@ RScript.prototype = (function() {
 		} else if ( $this.dropdownOpen ) {
 			if ( event.keyCode == 40 ) { //arrow down pressed
 				$.proxy(focusOnFirstDropdownItem, $this)();
-			} else if (! $.proxy(isFunctionNameCharacter, $this)(event.keyCode) ) {
+			} else if (! (
+					$.proxy(isFunctionNameCharacter, $this)(event.keyCode) ||
+						event.keyCode == 8 //backspace 
+					)) {
 				$.proxy(closeDropdown, $this)();
 			}
 		}
@@ -97,7 +103,10 @@ RScript.prototype = (function() {
 	var inputKeyUpHandler = function(event) {
 		var $this = this;
 		var keyCode = event.keyCode;
-		if ( $this.dropdownOpen && $.proxy(isFunctionNameCharacter, $this)(keyCode) ) {
+		if ( $this.dropdownOpen && 
+				($.proxy(isFunctionNameCharacter, $this)(keyCode) ||
+					keyCode == 8 //backspace
+				)) {	
 			$.proxy(askForAutocomplete, $this)();
 		}
 	};
@@ -125,13 +134,15 @@ RScript.prototype = (function() {
 		var script = $this.$inputField.val();
 		var caret = $this.$inputField.caret();
 		var search = StringUtils.getLastWord(script, ' ', caret);
+		$this.lastSearch = search;
+
+		var variables = $.proxy(filterVariables, $this)();
+		var functions = $.proxy(filterRFunctions, $this)();
 		
-		var functions = $.proxy(filterRFunctions, $this)(search);
-		
-		if ( functions.length > 0 ) {
+		if ( variables.length > 0 || functions.length > 0 ) {
 			//TODO if unique result found, add it to the script ??
 			//show dropdown
-			$.proxy(populateDropdown, $this)(functions);
+			$.proxy(populateDropdown, $this)(variables, functions);
 			$.proxy(showDropdown, $this)();
 		} else if ($this.dropdownOpen ) {
 			$.proxy(closeDropdown, $this)();
@@ -142,9 +153,9 @@ RScript.prototype = (function() {
 	 * Filters the R functions and returns only the ones 
 	 * starting with the specified value
 	 */
-	var filterRFunctions = function(startsWith) {
+	var filterRFunctions = function() {
 		var $this = this;
-		$this.lastSearch = startsWith;
+		var startsWith = $this.lastSearch;
 		var result = new Array();
 		$.each($this.rFunctions, function(index, funct) {
 			if ( StringUtils.startsWith(funct, startsWith) ) {
@@ -154,22 +165,45 @@ RScript.prototype = (function() {
 		return result;
 	};
 	
+	var filterVariables = function() {
+		var $this = this;
+		var startsWith = $this.lastSearch;
+		var result = new Array();
+		if ( $this.selectedEntity != null ) {
+			var variables = $this.selectedEntity.quantitativeVariables; 
+			$.each(variables, function(index, variable) {
+				var variableName = variable.name;
+				if ( StringUtils.startsWith(variableName, startsWith) ||
+						StringUtils.startsWith("$" + variableName, startsWith)) {
+					result.push("$" + variableName + "$");
+				}
+			});
+		}
+		return result;
+	};
+	
 	/**
 	 * Populates the dropdown with the specified list of string values
 	 */
-	var populateDropdown = function(functions) {
+	var populateDropdown = function(variables, functions) {
 		var $this = this;
 		var $menu = $this.$dropdown.find('.dropdown-menu');
 		$menu.empty();
 		var itemTemplate = '<li class="dropdown"><a role="menuitem" tabindex="-1" href="#"></a></li>';
-		$.each(functions, function(index, f) {
-			var item = $(itemTemplate);
-			var anchor = item.find('a');
-			anchor.text(f);
+		var dividerTemplate = '<li role="presentation" class="divider"></li>';
+		var items = variables.concat(functions);
+		$.each(items, function(index, item) {
+			if ( index > 0 && index == variables.length ) {
+				var separatorEl = $(dividerTemplate);
+				$menu.append(separatorEl);
+			}
+			var itemEl = $(itemTemplate);
+			var anchor = itemEl.find('a');
+			anchor.text(item);
 			anchor.click(function(e) {
 				$.proxy(dialogItemClickHandler, $this)(e);
 			});
-			$menu.append(item);
+			$menu.append(itemEl);
 		});
 	};
 	
