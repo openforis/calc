@@ -297,7 +297,7 @@ $(function(){
 		var successCallback = function(response) {
 			UI.Form.updateErrors($addVariableForm, response.errors);
 	    	if(response.status == "ERROR" ) {
-	    		UI.Form.showResultMessage("Error, invalid data",false);
+	    		UI.Form.showResultMessage("Error, invalid data", false);
 	    	} else {
 	    		var variable = response.fields.variable;
 	    		

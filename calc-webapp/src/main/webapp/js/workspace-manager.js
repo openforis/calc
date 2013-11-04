@@ -117,10 +117,12 @@ WorkspaceManager.prototype = (function(){
 			data: variable
 		})
 		.done(function(response) {
-			var newVariable = response.variable;
-			$this.activeWorkspace(function(ws) {
-				ws.addQuantitativeVariable(variable.entityId, newVariable);
-			});
+			var newVariable = response.fields.variable;
+			if ( response.status == 'OK' ) {
+				$this.activeWorkspace(function(ws) {
+					ws.addQuantitativeVariable(variable.entityId, newVariable);
+				});
+			}
 			if ( success ) {
 				success(response);
 			}
