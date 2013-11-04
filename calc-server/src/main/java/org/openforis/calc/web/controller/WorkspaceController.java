@@ -112,7 +112,6 @@ public class WorkspaceController {
 		return variable;
 	}
 	
-	
 	@Deprecated
 	@RequestMapping(value = "/entities.json", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody
@@ -122,7 +121,6 @@ public class WorkspaceController {
 		NamedUserObject.sortByName(entities);
 		return entities;
 	}
-	
 	
 	@Deprecated
 	@RequestMapping(value = "/entities/{entityId}/qtyvariables.json", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)

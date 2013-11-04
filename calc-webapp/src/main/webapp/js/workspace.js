@@ -64,7 +64,7 @@ Workspace.prototype = (function(){
 	/**
 	 * Replace the passed variable for the given entity with id as argument
 	 */
-	replaceVariable = function(entityId , variable) {
+	var replaceVariable = function(entityId , variable) {
 		var entity = this.getEntityById(entityId);
 		var vars = entity.quantitativeVariables;
 		
