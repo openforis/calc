@@ -409,16 +409,16 @@
    * Disable element and button 
    */
   , disable: function() {
-	  this.$element.attr("disabled", "disabled");
-	  this.$button.attr("disabled", "disabled");
+	  this.$element.prop('disabled', true);
+	  this.$button.attr('disabled', "disabled");
   }
   
   /**
    * Enable element and button
    */
   , enable: function() {
-	  this.$element.removeAttr("disabled");
-	  this.$button.removeAttr("disabled");
+	  this.$element.prop('disabled', false);
+	  this.$button.removeAttr('disabled');
   }
   
   , selectValue: function(value) {

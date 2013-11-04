@@ -81,6 +81,9 @@ CalculationStepManager.prototype = (function() {
 		//entity select change handler
 		$this.$entitySelect.change(function(event) {
 			$.proxy(refreshVariableSelect, $this)();
+			$.proxy(getSelectedEntity, $this)(function(entity) {
+				$this.$RScript.selectedEntity = entity;
+			});
 		});
 		
 		// on submit button click 
@@ -97,6 +100,9 @@ CalculationStepManager.prototype = (function() {
 		CalculationStepManager.load(stepId, function(response) {
 			$this.currentCalculationStep = response;
 			$.proxy(updateForm, $this)();
+			$.proxy(getSelectedEntity, $this)(function(entity) {
+				$this.$RScript.selectedEntity = entity;
+			});
 		});
 	};
 	
@@ -205,6 +211,20 @@ CalculationStepManager.prototype = (function() {
 		return entityId;
 	};
 	
+	var getSelectedEntity = function(callback) {
+		var $this = this;
+		var entityId = $this.getSelectedEntityId();
+		if ( entityId ) {
+			$this.workspaceManager.activeWorkspace(function(ws) {
+				var entity = ws.getEntityById(entityId);
+				callback(entity);
+			});
+		} else {
+			callback(null);
+		}
+
+	};
+	
 	/**
 	 * Populate the "entity" select
 	 * 
@@ -240,7 +260,7 @@ CalculationStepManager.prototype = (function() {
 		$this.$variableCombobox.reset();
 		$this.$variableCombobox.disable();
 		
-		UI.Form.disableField($this.$addVariableButton);
+		UI.disable($this.$addVariableButton);
 		
 		var entityId = $this.getSelectedEntityId($this.$form);
 		if ( entityId ) {
@@ -256,7 +276,7 @@ CalculationStepManager.prototype = (function() {
 				
 				$this.$variableCombobox.enable();
 
-				UI.Form.enableField($this.$addVariableButton);
+				UI.enable($this.$addVariableButton);
 				
 				if ( value ) {
 					$this.$variableSelect.val(value);
@@ -278,6 +298,7 @@ CalculationStepManager.prototype = (function() {
 		_init : init,
 		refreshVariableSelect : refreshVariableSelect,
 		getSelectedEntityId : getSelectedEntityId,
+		getSelectedEntity : getSelectedEntity,
 		save : save,
 		execute : execute
 	};

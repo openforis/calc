@@ -72,20 +72,6 @@ UI.Form.disable = function(form){
 };
 
 /**
- * Disable an input field
- */
-UI.Form.disableField = function(field) {
-	field.attr("disabled", "disabled");
-};
-
-/**
- * Enable an input field
- */
-UI.Form.enableField = function(field) {
-	field.removeAttr("disabled");
-};
-
-/**
  * Enable all input fields in a form
  * 
  * @param form
