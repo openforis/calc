@@ -129,7 +129,7 @@ RScript.prototype = (function() {
 		var functions = $.proxy(filterRFunctions, $this)(search);
 		
 		if ( functions.length > 0 ) {
-			//TODO if unique result found, add id to the script ??
+			//TODO if unique result found, add it to the script ??
 			//show dropdown
 			$.proxy(populateDropdown, $this)(functions);
 			$.proxy(showDropdown, $this)();

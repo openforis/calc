@@ -126,7 +126,7 @@ public class WorkspaceService {
 		return ws;
 	}
 
-	public QuantitativeVariable saveQuantitativeVariable(Entity entity, String name) {
+	public QuantitativeVariable addQuantitativeVariable(Entity entity, String name) {
 		QuantitativeVariable variable = new QuantitativeVariable();
 		variable.setName(name);
 		variable.setInputValueColumn(name);

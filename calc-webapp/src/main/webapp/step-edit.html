@@ -254,6 +254,8 @@ $(function(){
 	*/
 	var calculationStepManager = new CalculationStepManager($stepForm);
 	
+	var workspaceManager = WorkspaceManager.getInstance();
+	
 	$inputVars = $(".input-vars");
 	$inputVar = $(".input-var");
 	
@@ -290,7 +292,7 @@ $(function(){
 	$addVariableForm.submit(function(event) {
 		event.preventDefault();
 		UI.lock();
-		var variable = $addVariableForm.serialize();
+		var variable = UI.Form.toJSON($addVariableForm);
 		
 		var successCallback = function(response) {
 			UI.Form.updateErrors($addVariableForm, response.errors);
@@ -311,7 +313,7 @@ $(function(){
 		var completeCallback = function() {
 			UI.unlock();
 		}
-		WorkspaceManager.saveVariable(variable, successCallback, errorCallback, completeCallback);
+		workspaceManager.activeWorkspaceAddQuantitativeVariable(variable, successCallback, errorCallback, completeCallback);
 	});
 	
 	/**

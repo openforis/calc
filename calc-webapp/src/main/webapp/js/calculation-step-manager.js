@@ -13,6 +13,8 @@ function CalculationStepManager($form) {
 	this.$addVariableButton = $form.find("[name=add-variable]");
 	this.currentCalculationStep = null;
 
+	this.workspaceManager = WorkspaceManager.getInstance();
+	
 	//R script component manager
 	this.$RScript = null;
 	
@@ -212,12 +214,14 @@ CalculationStepManager.prototype = (function() {
 		var $this = this;
 		$this.$variableSelect.empty();
 		
-		WorkspaceManager.loadEntities(function(response) {
-			var entities = response;
+		$this.workspaceManager.activeWorkspace(function(ws) {
+			var entities = ws.entities;
+			
 			UI.Form.populateSelect($this.$entityCombobox.$source, entities, "id", "name");
 			$this.$entityCombobox.refresh();
+			
 			if ( callback ) {
-				callback(response);
+				callback(ws);
 			}
 		});
 	};
@@ -240,8 +244,9 @@ CalculationStepManager.prototype = (function() {
 		
 		var entityId = $this.getSelectedEntityId($this.$form);
 		if ( entityId ) {
-			WorkspaceManager.loadQuantitativeVariables(entityId, function(response) {
-				var variables = response;
+			$this.workspaceManager.activeWorkspace(function(ws) {
+				var entity = ws.getEntityById(entityId);
+				var variables = entity.quantitativeVariables;
 				var comboboxSource = $this.$variableCombobox.$source;
 				
 				UI.Form.populateSelect(comboboxSource, variables, "id", "name");
