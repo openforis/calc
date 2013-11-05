@@ -63,14 +63,10 @@ WorkspaceManager.prototype = (function(){
 				dataType:"json",
 				method: method
 			}).done(function(response){
-				
-//				$this.activeWorkspace(function(ws){
-					var variableToUpdate = response;
+				var variableToUpdate = response;
 				// replace old qty variable with the new one
-					variableToUpdate = ws.replaceVariable(entity.id, variableToUpdate);
-					success(variableToUpdate);
-//				});
-				
+				variableToUpdate = entity.replaceVariable(variableToUpdate);
+				success(variableToUpdate);
 			});
 			
 		});
@@ -88,10 +84,11 @@ WorkspaceManager.prototype = (function(){
 		var $this = this;
 		
 		$this.activeWorkspace(function(ws){
-			var variable = ws.getQuantitativeVariableById(entityId, variableId);
+			var entity = ws.getEntityById(entityId);
+			var variable = entity.getQuantitativeVariableById(variableId);
 			
 			$.ajax({
-				url:"rest/workspace/active/entity/"+entityId+"/variable/"+variable.id+"/variable-per-ha.json",
+				url:"rest/workspace/active/entity/"+entityId+"/variable/"+variableId+"/variable-per-ha.json",
 				dataType:"json",
 				method: method
 			}).done(function(response){
@@ -99,7 +96,7 @@ WorkspaceManager.prototype = (function(){
 				$this.activeWorkspace(function(ws) {
 					var variableToUpdate = response;
 					// replace old qty variable with the new one
-					variableToUpdate = ws.replaceVariable(entityId, variableToUpdate);
+					variableToUpdate = entity.replaceVariable(variableToUpdate);
 					success(variableToUpdate);
 				});
 				
@@ -117,10 +114,11 @@ WorkspaceManager.prototype = (function(){
 			data: variable
 		})
 		.done(function(response) {
-			var newVariable = response.fields.variable;
 			if ( response.status == 'OK' ) {
 				$this.activeWorkspace(function(ws) {
-					ws.addQuantitativeVariable(variable.entityId, newVariable);
+					var newVariable = response.fields.variable;
+					var entity = ws.getEntityById(variable.entityId);
+					entity.addQuantitativeVariable(newVariable);
 				});
 			}
 			if ( success ) {

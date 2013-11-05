@@ -188,7 +188,7 @@ SamplingDesignManager.prototype = (function(){
 			//empty variable-per-ha section
 			$this.variablePerHaSection.empty();
 			
-			var variable = ws.getQuantitativeVariableById($this.currentEntity.id, variableId);
+			var variable = $this.currentEntity.getQuantitativeVariableById(variableId);
 //			$this.variableSection.hide();
 			
 			//update variable section header
@@ -213,7 +213,7 @@ SamplingDesignManager.prototype = (function(){
 	var variablePerHaUpdate = function(variableId) {
 		var $this = this;
 		$this.workspaceManager.activeWorkspace( $.proxy(function(ws) {
-			var variable = ws.getQuantitativeVariableById($this.currentEntity.id, variableId);
+			var variable = $this.currentEntity.getQuantitativeVariableById(variableId);
 			var variablePerHa = variable.variablePerHa;
 
 			//append btn to add/remove variable-per-ha
