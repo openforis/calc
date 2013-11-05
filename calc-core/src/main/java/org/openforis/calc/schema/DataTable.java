@@ -100,13 +100,23 @@ public abstract class DataTable extends AbstractTable {
 			boolean variableAggregates) {
 		List<QuantitativeVariable> variables = entity.getQuantitativeVariables();
 		for ( QuantitativeVariable var : variables ) {
-			String valueColumn = input ? var.getInputValueColumn() : var.getOutputValueColumn();
-			if ( StringUtils.isNotBlank(valueColumn) ) {
-				createQuantityField(var, valueColumn);
-			}
-			if( variableAggregates ) {
-				createVariableAggregateFields(var);
-			}
+			createQuantityField(var, input, variableAggregates);
+		}
+	}
+
+	private void createQuantityField(QuantitativeVariable var, boolean input, boolean variableAggregates) {
+		String valueColumn = input ? var.getInputValueColumn() : var.getOutputValueColumn();
+		if ( StringUtils.isNotBlank(valueColumn) ) {
+			createQuantityField(var, valueColumn);
+		}
+		if( variableAggregates ) {
+			createVariableAggregateFields(var);
+		}
+		
+		// create columns also for the variable-per-ha if present
+		QuantitativeVariable variablePerHa = var.getVariablePerHa();
+		if( variablePerHa != null ){
+			createQuantityField(variablePerHa, input, variableAggregates);
 		}
 	}
 

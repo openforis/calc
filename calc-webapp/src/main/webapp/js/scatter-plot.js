@@ -41,6 +41,7 @@ function ScatterPlot(container) {
 					this.yVariable = this.yOption.val();
 				} 
 			, this ));
+	
 	//refresh chart button
 	this.refreshBtn.click( $.proxy(
 			function(e){
@@ -174,7 +175,7 @@ ScatterPlot.prototype = (function(){
 		if(this.offset != 0) {
 //			console.log("reset chart from set job");
 //			console.log ($("#"+this.chartContainer.attr("id")).attr("id") );
-//			this.chart.destroy();
+			this.chart.destroy();
 		}
 		//reset instance variables 
 		$this.xVariable = null,
