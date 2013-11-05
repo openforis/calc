@@ -6,11 +6,13 @@
 Workspace = function(object) {
 	var $this = this;
 	
-	//set workspace properties
-	$.each(object, function(property, value) {
-		$this[property] = value;
-	});
+	$.extend(this, object);
 	
+	//replace json entity objects with custom Entity objects
+	$.each($this.entities, function(i, entity) {
+		var newEntity = new Entity(entity);
+		$this.entities[i] = newEntity;
+	});
 };
 
 Workspace.prototype = (function(){
@@ -31,24 +33,6 @@ Workspace.prototype = (function(){
 	};
 	
 	/**
-	 * Returns the quantitative variable with id variableId associated with entity with id entityId (if there is)
-	 */
-	var getQuantitativeVariableById = function(entityId, variableId) {
-		var $this = this;
-		var entity = $this.getEntityById(entityId);
-
-		if( entity && variableId ) {
-			var vars = entity.quantitativeVariables;
-			for(var i in vars) {
-				var variable = vars[i];
-				if( variable.id.toString() == variableId.toString() ) {
-					return variable;
-				}
-			}
-		}
-	};
-	
-	/**
 	 * Returns the entities that contains at least one aggregable measure (quantitative var) children of the entity passed as parameter
 	 */
 	var getAggregableEntities = function(entity) {
@@ -61,43 +45,12 @@ Workspace.prototype = (function(){
 		return entities;
 	};
 	
-	/**
-	 * Replace the passed variable for the given entity with id as argument
-	 */
-	var replaceVariable = function(entityId , variable) {
-		var entity = this.getEntityById(entityId);
-		var vars = entity.quantitativeVariables;
-		
-		$.each(vars, function(i, variableToReplace){
-			if( variableToReplace.id.toString() == variable.id.toString() ){
-				entity.quantitativeVariables[i] = variable;
-				return false;
-			}
-		});
-		
-		return variable;
-	};
-	
-	/**
-	 * Adds the passed variable to the entity with the specified id
-	 */
-	var addQuantitativeVariable = function(entityId, variable) {
-		var entity = this.getEntityById(entityId);
-		entity.quantitativeVariables.push(variable);
-	};
-	
 	return {
 		constructor : Workspace
 		,
 		getEntityById : getEntityById
 		,
 		getAggregableEntities : getAggregableEntities
-		,
-		getQuantitativeVariableById : getQuantitativeVariableById
-		,
-		replaceVariable : replaceVariable
-		,
-		addQuantitativeVariable : addQuantitativeVariable
 	};
 	
 })();
