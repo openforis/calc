@@ -2,8 +2,12 @@
 * Entity model object
 * @author S. Ricci
 */
-Entity = function(object) {
+Entity = function(workspace, object) {
 	$.extend(this, object);
+	
+	this.workspace = workspace;
+	
+	this.parent = this.parentId ? workspace.getEntityById(this.parentId) : null;
 };
 
 Entity.prototype = (function(){
@@ -43,6 +47,30 @@ Entity.prototype = (function(){
 		this.quantitativeVariables.push(variable);
 	};
 	
+	/**
+	 * Returns all variables
+	 */
+	var getVariables = function() {
+		var result = this.categoricalVariables
+						.concat(this.quantitativeVariables)
+						.concat(this.textVariables);
+		return result;
+	};
+	
+	/**
+	 * Returns all the variables up to the root entity
+	 */
+	var getAncestorsVariables = function() {
+		var currentParent = this.parent;
+		var result = $.proxy(getVariables, this)();
+		while ( currentParent != null ) {
+			var parentVariables = currentParent.getVariables();
+			result = parentVariables.concat(result);
+			currentParent = currentParent.parent;
+		};
+		return result;
+	};
+	
 	return {
 		constructor : Entity
 		,
@@ -51,6 +79,10 @@ Entity.prototype = (function(){
 		replaceVariable : replaceVariable
 		,
 		addQuantitativeVariable : addQuantitativeVariable
+		,
+		getVariables : getVariables
+		,
+		getAncestorsVariables : getAncestorsVariables
 	};
 	
 })();

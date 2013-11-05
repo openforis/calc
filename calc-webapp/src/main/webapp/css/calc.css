@@ -541,12 +541,20 @@ calc-step page
 /**
 * Dropdown
 */
-.dropdown-menu > .active > a, 
-.dropdown-menu > .active > a:hover, 
-.dropdown-menu > .active > a:focus,
-.dropdown-menu > li > a:hover,
-.dropdown-menu > li > a:focus {
+.dropdown-menu > .active > a { 
 	background-color: #496d7e;
+}
+.dropdown-menu > .active > a:hover {
+	background-color: #2D4358;
+}
+.dropdown-menu > .active > a:focus {
+	background-color: #538CA7;
+}
+.dropdown-menu > li > a:hover {
+	background-color: #547A9E;
+}
+.dropdown-menu > li > a:focus {
+	background-color: #4D6B88;
 }
 .dropdown-menu {
 	text-align: left;
@@ -566,18 +574,6 @@ ul.scroll-menu {
     height: auto;
     max-height: 500px;
     margin: 0;
-    border-left: none;
-    border-right: none;
-    -webkit-border-radius: 0 !important;
-    -moz-border-radius: 0 !important;
-    -ms-border-radius: 0 !important;
-    -o-border-radius: 0 !important;
-    border-radius: 0 !important;
-    -webkit-box-shadow: none;
-    -moz-box-shadow: none;
-    -ms-box-shadow: none;
-    -o-box-shadow: none;
-    box-shadow: none;
 }
 
 /**

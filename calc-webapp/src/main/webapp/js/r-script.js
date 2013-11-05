@@ -170,7 +170,7 @@ RScript.prototype = (function() {
 		var startsWith = $this.lastSearch;
 		var result = new Array();
 		if ( $this.selectedEntity != null ) {
-			var variables = $this.selectedEntity.quantitativeVariables; 
+			var variables = $this.selectedEntity.getAncestorsVariables(); 
 			$.each(variables, function(index, variable) {
 				var variableName = variable.name;
 				if ( StringUtils.startsWith(variableName, startsWith) ||
@@ -179,6 +179,7 @@ RScript.prototype = (function() {
 				}
 			});
 		}
+		result.sort();
 		return result;
 	};
 	

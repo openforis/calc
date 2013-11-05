@@ -10,7 +10,7 @@ Workspace = function(object) {
 	
 	//replace json entity objects with custom Entity objects
 	$.each($this.entities, function(i, entity) {
-		var newEntity = new Entity(entity);
+		var newEntity = new Entity($this, entity);
 		$this.entities[i] = newEntity;
 	});
 };
