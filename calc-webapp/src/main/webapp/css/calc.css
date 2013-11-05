@@ -541,20 +541,14 @@ calc-step page
 /**
 * Dropdown
 */
-.dropdown-menu > .active > a { 
+.dropdown-menu > .active > a,
+.dropdown-menu > .active > a:hover,
+.dropdown-menu > .active > a:focus {
 	background-color: #496d7e;
 }
-.dropdown-menu > .active > a:hover {
-	background-color: #2D4358;
-}
-.dropdown-menu > .active > a:focus {
-	background-color: #538CA7;
-}
-.dropdown-menu > li > a:hover {
-	background-color: #547A9E;
-}
+.dropdown-menu > li > a:hover,
 .dropdown-menu > li > a:focus {
-	background-color: #4D6B88;
+	background-color: #538CA7;
 }
 .dropdown-menu {
 	text-align: left;
