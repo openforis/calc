@@ -17,9 +17,9 @@ getTrees <- function( ) {
   trees <- 
     dbGetQuery( conn=con , statement=                  
                   "select 
-                    p.cluster_id,
-                    p.plot_id,
-                    t.tree_id, 
+                    p._cluster_id,
+                    p._plot_id,
+                    t._tree_id, 
                     t.total_height, 
                     t.dbh, 
                     t.species, 
@@ -33,7 +33,7 @@ getTrees <- function( ) {
                   join 
                     _plot p 
                   on 
-                    t.plot_id = p.plot_id"
+                    t._plot_id = p._plot_id"
   );
   return (trees);
 }
@@ -43,7 +43,7 @@ getDeadwoods <- function( ) {
     dbGetQuery( conn=con , statement=
                   "
                   select
-                    d.dead_wood_id,
+                    d._dead_wood_id,
                     d.diameter1,
                     d.diameter2,
                     d.length,
@@ -56,7 +56,7 @@ getDeadwoods <- function( ) {
                     naforma1.dead_wood d
                   join
                     naforma1._plot p
-                    on d.plot_id = p.plot_id
+                    on d._plot_id = p._plot_id
                 "
     );
   return (trees);
@@ -88,7 +88,7 @@ estimateTreeHeightLM <- function( trees ) {
   
   data$D <- data$dbh;
   data$H <- data$total_height;
-  data$clustID <- data$cluster_id;
+  data$clustID <- data$"_cluster_id";
   
   #data$clustID <- 1000 * data$clusx + data$clusy
   #data$clustID <- data$id
@@ -99,11 +99,11 @@ estimateTreeHeightLM <- function( trees ) {
   data$H[data$H < 1.35] <- NA;
   
   # use models calibrated for plots
-  im1 <- ImputeHeights(data$D,data$H,data$plot_id,makeplot=FALSE,varf=FALSE);
+  im1 <- ImputeHeights(data$D,data$H,data$"_plot_id",makeplot=FALSE,varf=FALSE);
   # use models calibrated for clusters
   im2 <- ImputeHeights(data$D,data$H,data$clustID,makeplot=FALSE,varf=FALSE);
   # use fixed part of the model only
-  im3 <- ImputeHeights(data$D,data$H,data$plot_id,makeplot=FALSE,varf=FALSE,level=0);
+  im3 <- ImputeHeights(data$D,data$H,data$"_plot_id",makeplot=FALSE,varf=FALSE,level=0);
   
   # By default, use predictions from a model having plot-level random effects
   # If plot-effects are not known (no trees per plot, i.e. predType==2), 
@@ -328,13 +328,15 @@ estimateTreeBoleVolume <- function( data ) {
 
 estimateTreeBasalArea <- function( data ){
   #10000 *
-  data$basal_area <- with(data,  pi * (0.01*dbh/2)^2 / inclusion_area)
+  data$basal_area <- with(data,  pi * (0.01*dbh/2)^2 / inclusion_area);
+  
+  return (data);
 }
 
 openConnection <- function() {  
   driver <- dbDriver('PostgreSQL');
   
-  con <- dbConnect(driver, user="calc", dbname="calc", host="exlpropforis1.ext.fao.org", password="calc123", port=54321)
+  con <- dbConnect(driver, user="calc", dbname="naforma-201311", host="exlpropforis1.ext.fao.org", password="calc123", port=54321)
   
   dbSendQuery(conn=con, statement= "SET search_path TO naforma1");
   
@@ -354,7 +356,7 @@ con <- openConnection();
 # Get Trees
 trees <- getTrees();
 trees <- subset( trees, !is.na(trees$dbh) );
-trees[is.na(trees$vegetation_type),]$vegetation_type <- 0;
+#trees[is.na(trees$vegetation_type),]$vegetation_type <- 0;
 
 
 #================================== 
@@ -386,7 +388,7 @@ trees <- estimateTreeBasalArea( trees );
 
 # Get deadwoods
 deadWoods <- getDeadwoods( );
-deadWoods[is.na(deadWoods$vegetation_type),]$vegetation_type <- 0;
+#deadWoods[is.na(deadWoods$vegetation_type),]$vegetation_type <- 0;
 
 #==================================
 # 6. deadwood volume
@@ -410,9 +412,20 @@ deadWoods$carbon <- with(deadWoods, carbonCf * (aboveground_biomass + belowgroun
 deadWoods <- estimateDeadWoodInclusionArea( deadWoods );
 
 #==================================
+# Convert IDs to character strings results
+# numeric value in R itself is just a double precision
+# floating point number having 53 significant bits, which is shorter than 64 bits.
+
+#names(trees)
+trees$"_cluster_id" <- as.character(trees$"_cluster_id");
+trees$"_plot_id" <- as.character(trees$"_plot_id");
+trees$"_tree_id" <- as.character(trees$"_tree_id");
+
+
+#==================================
 # save results
-treeRes <-  trees[ , c('tree_id', 'est_height','est_height_prediction_type', 'inclusion_area', 'volume','aboveground_biomass', 'belowground_biomass', 'carbon','basal_area') ];
-deadwoodRes <- deadWoods[, c('dead_wood_id','volume','aboveground_biomass','belowground_biomass', 'carbon','inclusion_area')];
+treeRes <-  trees[ , c('_tree_id', 'est_height','est_height_prediction_type', 'inclusion_area', 'volume','aboveground_biomass', 'belowground_biomass', 'carbon','basal_area') ];
+deadwoodRes <- deadWoods[, c('_dead_wood_id','volume','aboveground_biomass','belowground_biomass', 'carbon','inclusion_area')];
 
 dbRemoveTable(con, "_tree_results");
 dbRemoveTable(con, "_dead_wood_results");
@@ -451,20 +464,22 @@ dbSendQuery(
         r.aboveground_biomass,
         r.belowground_biomass,
         r.carbon,
+        r.basal_area,
         1 as est_cnt
         from
           tree t
         join
           _plot p 
         on 
-          p.plot_id = t.plot_id  
+          p._plot_id = t._plot_id  
         join
           _tree_results r 
         on 
-          t.tree_id = r.tree_id
+          t._tree_id = r._tree_id::bigint
       
     " 
 );
+
 dbRemoveTable(con, "_tree_results");
 
 
@@ -484,7 +499,7 @@ dbSendQuery(
         dead_wood t
       join
         _dead_wood_results r 
-      on t.dead_wood_id = r.dead_wood_id" 
+      on t._dead_wood_id = r._dead_wood_id::bigint" 
 );
 dbRemoveTable(con, "_dead_wood_results");
 

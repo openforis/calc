@@ -22,28 +22,28 @@ set accessibility = '0'
 where 
         accessibility != '0'
     and
-        exists (select tree_id from tree t where t.plot_id = _plot.plot_id);
+        exists (select _tree_id from tree t where t._plot_id = _plot._plot_id);
 
 update _plot
 set accessibility = '0'
 where 
         accessibility != '0'
     and
-        exists (select stump_id from stump s where s.plot_id = _plot.plot_id);
+        exists (select _stump_id from stump s where s._plot_id = _plot._plot_id);
 
 update _plot
 set accessibility = '0'
 where 
         accessibility != '0'
     and
-        exists (select dead_wood_id from dead_wood dw where dw.plot_id = _plot.plot_id);
+        exists (select _dead_wood_id from dead_wood dw where dw._plot_id = _plot._plot_id);
 
 update _plot
 set accessibility = '0'
 where 
         accessibility != '0'
     and
-        exists (select bamboo_id from bamboo b where b.plot_id = _plot.plot_id);
+        exists (select _bamboo_id from bamboo b where b._plot_id = _plot._plot_id);
 
 -- CLEAN: Set default direction and distance
 update _plot
@@ -80,7 +80,7 @@ ADD COLUMN measurement VARCHAR(255);
 UPDATE _plot
 SET cluster = c.id, measurement = c.measurement
 FROM cluster c
-WHERE c.cluster_id = _plot.cluster_id;
+WHERE c._cluster_id = _plot._cluster_id;
 
 -- CLEAN: Set default subplot code to 'A'
 update _plot
@@ -260,7 +260,7 @@ add column protection_status varchar(255);
 
 with pa as (
 select
-    p.plot_id, pa.desig_eng
+    p._plot_id, pa.desig_eng
 from 
     naforma1._plot p
 inner join
@@ -271,7 +271,7 @@ on
 update _plot
 set protection_status = pa.desig_eng
 from pa
-where _plot.plot_id = pa.plot_id;
+where _plot._plot_id = pa._plot_id;
 
 update _plot
 set protection_status = 'Unprotected Area'

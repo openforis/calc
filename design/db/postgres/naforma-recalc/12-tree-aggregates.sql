@@ -1,5 +1,14 @@
 SET search_path TO naforma1, public;
 
+alter table
+	"_plot" add primary key ("_plot_id")
+;
+	
+alter table
+	"_tree" add constraint "_tree_plot_fk" foreign key ("_plot_id") references
+	"_plot" ("_plot_id")
+;
+
 drop table if exists naforma1._plot_tree_agg;
 
 create table naforma1._plot_tree_agg
@@ -11,7 +20,7 @@ select
     p.zone_id,
     p.country_id,
     p.cluster,
-    t.plot_id,    
+    t._plot_id,    
     t.dbh_class,    
     t.health,
     t.origin,
@@ -43,7 +52,7 @@ from
     naforma1._tree t
 join
     naforma1._plot p
-    on t.plot_id = p.plot_id
+    on t._plot_id = p._plot_id
 where
      p.accessibility = '0' and p.measurement = 'P'
 group by
@@ -53,7 +62,7 @@ group by
     p.zone_id,
     p.country_id,
     p.cluster,
-    t.plot_id,
+    t._plot_id,
     t.dbh_class,    
     t.health,
     t.origin,
