@@ -15,29 +15,29 @@ INSERT INTO _growing_stock_tree_code (id, code, label) VALUES (2, 1, 'Growing St
 DROP TABLE if exists "naforma1_dims"._dbh_class;
 CREATE TABLE "naforma1_dims"._dbh_class (code CHARACTER VARYING(254), label CHARACTER VARYING(254), parent_code CHARACTER VARYING(254), parent_label CHARACTER VARYING(254));
 
-INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('1', '0cm - 4.9cm', '1', '0cm - 9.9cm');
-INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('2', '5cm - 9.9cm', '1', '0cm - 9.9cm');
-INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('3', '10cm - 14.9cm', '2', '10cm - 19.9cm');
-INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('4', '15cm - 19.9cm', '2', '10cm - 19.9cm');
-INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('5', '20cm - 24.9cm', '3', '20cm - 29.9cm');
-INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('6', '25cm - 29.9cm', '3', '20cm - 29.9cm');
-INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('7', '30cm - 34.9cm', '4', '30cm - 39.9cm');
-INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('8', '35cm - 39.9cm', '4', '30cm - 39.9cm');
-INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('9', '40cm - 45.9cm', '5', '40cm - 49.9cm');
-INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('10', '45cm - 49.9cm', '5', '40cm - 49.9cm');
-INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('11', '50cm - 55.9cm', '6', '50cm - 59.9cm');
-INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('12', '55cm - 59.9cm', '6', '50cm - 59.9cm');
-INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('13', '60cm - 65.9cm', '7', '60cm - 69.9cm');
-INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('14', '65cm - 69.9cm', '7', '60cm - 69.9cm');
-INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('15', '70cm - 75.9cm', '8', '70cm - 79.9cm');
-INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('16', '75cm - 79.9cm', '8', '70cm - 79.9cm');
-INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('17', '80cm - 85.9cm', '9', '80cm - 89.9cm');
-INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('18', '85cm - 89.9cm', '9', '80cm - 89.9cm');
-INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('19', '90cm - 95.9cm', '10', '90cm - 99.9cm');
-INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('20', '95cm - 99.9cm', '10', '90cm - 99.9cm');
-INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('21', '>= 100cm', '11', '>= 100cm');
-INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('-1', 'No Data', '-1', 'No Data');
 
+INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('1', '01. (0cm - 4.9cm)', '1', '01. (0cm - 9.9cm)');
+INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('2', '02. (5cm - 9.9cm)', '1', '01. (0cm - 9.9cm)');
+INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('3', '03. (10cm - 14.9cm)', '2', '02. (10cm - 19.9cm)');
+INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('4', '04. (15cm - 19.9cm)', '2', '02. (10cm - 19.9cm)');
+INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('5', '05. (20cm - 24.9cm)', '3', '03. (20cm - 29.9cm)');
+INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('6', '06. (25cm - 29.9cm)', '3', '03. (20cm - 29.9cm)');
+INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('7', '07. (30cm - 34.9cm)', '4', '04. (30cm - 39.9cm)');
+INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('8', '08. (35cm - 39.9cm)', '4', '04. (30cm - 39.9cm)');
+INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('9', '09. (40cm - 44.9cm)', '5', '05. (40cm - 49.9cm)');
+INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('10', '10. (45cm - 49.9cm)', '5', '05. (40cm - 49.9cm)');
+INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('11', '11. (50cm - 54.9cm)', '6', '06. (50cm - 59.9cm)');
+INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('12', '12. (55cm - 59.9cm)', '6', '06. (50cm - 59.9cm)');
+INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('13', '13. (60cm - 64.9cm)', '7', '07. (60cm - 69.9cm)');
+INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('14', '14. (65cm - 69.9cm)', '7', '07. (60cm - 69.9cm)');
+INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('15', '15. (70cm - 74.9cm)', '8', '08. (70cm - 79.9cm)');
+INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('16', '16. (75cm - 79.9cm)', '8', '08. (70cm - 79.9cm)');
+INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('17', '17. (80cm - 84.9cm)', '9', '09. (80cm - 89.9cm)');
+INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('18', '18. (85cm - 89.9cm)', '9', '09. (80cm - 89.9cm)');
+INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('19', '19. (90cm - 94.9cm)', '10', '10. (90cm - 99.9cm)');
+INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('20', '20. (95cm - 99.9cm)', '10', '10. (90cm - 99.9cm)');
+INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('21', '21. (>= 100cm)', '11', '11. (>= 100cm)');
+INSERT INTO "naforma1_dims"._dbh_class (code, label, parent_code, parent_label) VALUES ('-1', 'No Data', '-1', 'No Data');
 
 
 
