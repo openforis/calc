@@ -85,13 +85,35 @@ RScript.prototype = (function() {
 		if ( event.ctrlKey && event.keyCode == 32) { //ctrl + spacebar pressed
 			$.proxy(askForAutocomplete, $this)();
 		} else if ( $this.dropdownOpen ) {
-			if ( event.keyCode == 40 ) { //arrow down pressed
-				$.proxy(focusOnFirstDropdownItem, $this)();
-			} else if (! (
+			switch ( event.keyCode ) {
+			case 9: //tab key pressed
+				event.preventDefault();
+				event.stopPropagation();
+				$.proxy(activateSiblingItem, $this)();
+				break;
+			case 13: //enter key pressed
+				event.preventDefault();
+				event.stopPropagation();
+				$.proxy(selectActiveItem, $this)();
+				break;
+			case 38: //arrow up pressed
+				event.preventDefault();
+				event.stopPropagation();
+				$.proxy(activateSiblingItem, $this)(true);
+				break;
+			case 40: //arrow down pressed
+				//$.proxy(focusOnFirstDropdownItem, $this)();
+				event.preventDefault();
+				event.stopPropagation();
+				$.proxy(activateSiblingItem, $this)();
+				break;
+			default:
+				if (! (
 					$.proxy(isFunctionNameCharacter, $this)(event.keyCode) ||
 						event.keyCode == 8 //backspace 
 					)) {
-				$.proxy(closeDropdown, $this)();
+					$.proxy(closeDropdown, $this)();
+				}
 			}
 		}
 	};
@@ -112,11 +134,37 @@ RScript.prototype = (function() {
 	};
 	
 	/**
-	* Returns true if the specified keyCode corresponds to: 
-	* - alphanumeric character
-	* - dot symbol (.)
-	* - dollar symbol ($)
-	*/
+	 * Selects the next (or previous) item in the autocomplete dropdown, relative to the selected one.
+	 * 
+	 * @param previous If true, select the previous sibling item, otherwise selects the next one
+	 * 
+	 */
+	var activateSiblingItem = function(previous) {
+		var $this = this;
+		var dropdown = $this.$dropdown;
+		var active = dropdown.find('.active').removeClass('active');
+		var newActive = previous ? active.prev() : active.next();
+
+		if (newActive.length == 0) {
+			newActive = $(dropdown.find('li')[0]);
+		}
+		newActive.addClass('active');
+	};
+
+	var selectActiveItem = function() {
+		var $this = this;
+		var dropdown = $this.$dropdown;
+		var active = dropdown.find('.active');
+		if ( active.length > 0 ) {
+			var anchor = active.find('a');
+			anchor.click();
+		}
+	};
+	
+	/**
+	 * Returns true if the specified keyCode corresponds to: - alphanumeric
+	 * character - dot symbol (.) - dollar symbol ($)
+	 */
 	var isFunctionNameCharacter = function(keyCode) {
 		return keyCode >= 48 && keyCode <= 90 || //alphanumeric (0-9a-z)
 			 keyCode == 190 || // . (dot)
@@ -202,7 +250,7 @@ RScript.prototype = (function() {
 			var anchor = itemEl.find('a');
 			anchor.text(item);
 			anchor.click(function(e) {
-				$.proxy(dialogItemClickHandler, $this)(e);
+				$.proxy(dialogItemClickHandler, $this)(item);
 			});
 			$menu.append(itemEl);
 		});
@@ -259,24 +307,22 @@ RScript.prototype = (function() {
 	/**
 	 * Manages the click on an item in the dropdown
 	 */
-	var dialogItemClickHandler = function(e) {
+	var dialogItemClickHandler = function(item) {
 		var $this = this;
-		var anchor = e.currentTarget;
-		var funct = anchor.text;
-		$.proxy(addFunctionToScript, $this)(funct);
+		$.proxy(addItemToScript, $this)(item);
 	};
 	
 	/**
 	 * Adds the specified function to the text in the input field
 	 */
-	var addFunctionToScript = function(funct) {
+	var addItemToScript = function(item) {
 		var $this = this;
 		var $field = $this.$inputField;
 		var oldText = $field.val();
 		var caret = $field.caret();
 		var lastSearchLength = $this.lastSearch.length;
 		var textToInsertStartIndex = caret - lastSearchLength;
-		var textToInsert = funct + " ";
+		var textToInsert = item + " ";
 		if (textToInsertStartIndex > 0 && lastSearchLength == 0 ) {
 			textToInsert = " " + textToInsert;
 		}
