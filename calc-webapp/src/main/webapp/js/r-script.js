@@ -8,8 +8,8 @@
 function RScript($inputField) {
 	this.$inputField = $inputField;
 	
-	//dropdown component (to be initialized)
-	this.$dropdown = null;
+	//dropdown menu component (to be initialized)
+	this.$menu = null;
 	
 	//transient variable, stores the last search word used for script content assist dialog
 	this.lastSearch = null;
@@ -18,6 +18,7 @@ function RScript($inputField) {
 	this.rFunctions = null;
 	
 	this.dropdownOpen = false;
+	this.mouseOverItem = false;
 	
 	//used to get the list of variables; set by outside
 	this.selectedEntity = null;
@@ -42,13 +43,12 @@ RScript.prototype = (function() {
 		
 		$.proxy(initDropdown, $this)();
 		
-		$this.$inputField.keydown(function(event) {
-			$.proxy(inputKeyDownHandler, $this)(event);
-		});
-		$this.$inputField.keyup(function(event) {
-			$.proxy(inputKeyUpHandler, $this)(event);
-		});
-		
+		$this.$inputField
+			.keydown($.proxy(inputKeyDownHandler, $this))
+			.keyup($.proxy(inputKeyUpHandler, $this))
+			.blur($.proxy(inputBlurHandler, $this))
+			.click($.proxy(inputClickHandler, $this))
+		;
 	};
 	
 	/**
@@ -57,20 +57,8 @@ RScript.prototype = (function() {
 	var initDropdown = function() {
 		var $this = this;
 		
-		$this.$dropdown = $(
-				'<div class="dropdown context-dropdown">' + 
-					'<a class="dropdown-toggle" role="button" data-toggle="dropdown" data-target="#"></a>' +
-					'<ul class="dropdown-menu context-menu scroll-menu" role="menu"></ul>' +
-				'</div>');
-		$this.$inputField.parent().append($this.$dropdown);
-
-		var $toggle = $this.$dropdown.find('.dropdown-toggle');
-		$toggle.dropdown();
-
-		//set focus on input field when the dropdown is closed
-		$this.$dropdown.on('hide.bs.dropdown', function () {
-			$.proxy(dropdownCloseHandler, $this)();
-		});
+		$this.$menu = $('<ul class="dropdown-menu context-menu scroll-menu" role="menu"></ul>');
+		$this.$menu.appendTo('body');
 	};
 	
 	/**
@@ -133,28 +121,53 @@ RScript.prototype = (function() {
 		}
 	};
 	
-	/**
-	 * Selects the next (or previous) item in the autocomplete dropdown, relative to the selected one.
+	var inputBlurHandler = function(event) {
+		var $this = this;
+		if ( ! $this.mouseOverItem && $this.dropdownOpen) {
+			setTimeout(function () {
+				$.proxy(closeDropdown, $this)();
+			}, 200);
+		}
+	};
+	
+	var inputClickHandler = function(event) {
+		$.proxy(inputBlurHandler, this)(event);
+	};
+	
+	var itemMouseEnterHandler = function(e) {
+		this.mouseOverItem = true;
+		this.$menu.find('.active').removeClass('active');
+		$(e.currentTarget).addClass('active');
+	};
+
+	var itemMouseLeaveHandler = function(e) {
+		this.mouseOverItem = false;
+	};
+
+    /**
+	 * Selects the next (or previous) item in the autocomplete dropdown,
+	 * relative to the selected one.
 	 * 
-	 * @param previous If true, select the previous sibling item, otherwise selects the next one
+	 * @param previous
+	 *            If true, select the previous sibling item, otherwise selects
+	 *            the next one
 	 * 
 	 */
 	var activateSiblingItem = function(previous) {
 		var $this = this;
-		var dropdown = $this.$dropdown;
-		var active = dropdown.find('.active').removeClass('active');
+		var menu = $this.$menu;
+		var active = menu.find('.active').removeClass('active');
 		var newActive = previous ? active.prev() : active.next();
 
 		if (newActive.length == 0) {
-			newActive = $(dropdown.find('li')[0]);
+			newActive = $(menu.find('li')[0]);
 		}
 		newActive.addClass('active');
 	};
 
 	var selectActiveItem = function() {
 		var $this = this;
-		var dropdown = $this.$dropdown;
-		var active = dropdown.find('.active');
+		var active = $this.$menu.find('.active');
 		if ( active.length > 0 ) {
 			var anchor = active.find('a');
 			anchor.click();
@@ -236,23 +249,27 @@ RScript.prototype = (function() {
 	 */
 	var populateDropdown = function(variables, functions) {
 		var $this = this;
-		var $menu = $this.$dropdown.find('.dropdown-menu');
-		$menu.empty();
+		$this.$menu.empty();
 		var itemTemplate = '<li class="dropdown"><a role="menuitem" tabindex="-1" href="#"></a></li>';
 		var dividerTemplate = '<li role="presentation" class="divider"></li>';
 		var items = variables.concat(functions);
 		$.each(items, function(index, item) {
 			if ( index > 0 && index == variables.length ) {
 				var separatorEl = $(dividerTemplate);
-				$menu.append(separatorEl);
+				$this.$menu.append(separatorEl);
 			}
 			var itemEl = $(itemTemplate);
 			var anchor = itemEl.find('a');
 			anchor.text(item);
-			anchor.click(function(e) {
-				$.proxy(dialogItemClickHandler, $this)(item);
-			});
-			$menu.append(itemEl);
+			
+			//event handlers
+			anchor.click($.proxy(dialogItemClickHandler, $this, item));
+			
+			itemEl
+				.mouseenter($.proxy(itemMouseEnterHandler, $this))
+				.mouseleave($.proxy(itemMouseLeaveHandler, $this));
+			
+			$this.$menu.append(itemEl);
 		});
 	};
 	
@@ -265,13 +282,12 @@ RScript.prototype = (function() {
 		var caretPos = $this.$inputField.caretpixelpos();
 		var dialogPosLeft = caretPos.left;
 		var dialogPosTop = caretPos.top - 10;
-
-		$this.$dropdown.css("left", dialogPosLeft);
-		$this.$dropdown.css("top", dialogPosTop);
+		
+		$this.$menu.css("left", dialogPosLeft);
+		$this.$menu.css("top", dialogPosTop);
 		
 		if ( ! $this.dropdownOpen ) {
-			var $toggle = $this.$dropdown.find('.dropdown-toggle');
-			$toggle.click();
+			$this.$menu.show();
 			$this.dropdownOpen = true;
 		}
 	};
@@ -281,8 +297,8 @@ RScript.prototype = (function() {
 	 */
 	var closeDropdown = function() {
 		var $this = this;
-		var $toggle = $this.$dropdown.find('.dropdown-toggle');
-		$toggle.click();
+		$this.$menu.hide();
+		$this.dropdownOpen = false;
 	};
 	
 	/**
@@ -290,7 +306,6 @@ RScript.prototype = (function() {
 	 */
 	var focusOnFirstDropdownItem = function() {
 		var $this = this;
-		var $menu = $this.$dropdown.find('.dropdown-menu');
 		//set focus on first item
 		$menu.find('a:first').focus();
 	};
@@ -310,6 +325,7 @@ RScript.prototype = (function() {
 	var dialogItemClickHandler = function(item) {
 		var $this = this;
 		$.proxy(addItemToScript, $this)(item);
+		$.proxy(closeDropdown, $this)();
 	};
 	
 	/**
