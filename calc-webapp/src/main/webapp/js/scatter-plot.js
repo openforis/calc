@@ -6,14 +6,12 @@ function ScatterPlot(container) {
 	// ui container
 	this.container = container;
 	// options section
-	this.optionsSection = this.container.find('.options');
-	this.xOption = this.optionsSection.find('[name=x]');
-	this.xCombobox = this.xOption.combobox().data('combobox');
+	var optionsSection = this.container.find('.options');
 	
-	this.yOption = this.optionsSection.find('[name=y]');
-	this.yCombobox = this.yOption.combobox().data('combobox');
+	this.xCombo = optionsSection.find('[name=x]').combobox();
+	this.yCombo = optionsSection.find('[name=y]').combobox();
 	
-	this.refreshBtn = this.optionsSection.find('[name=refresh]');
+	this.refreshBtn = optionsSection.find('[name=refresh]');
 	//chart container
 	this.chartContainer = this.container.find(".chart");
 	this.chart = null;
@@ -29,16 +27,16 @@ function ScatterPlot(container) {
 	
 	//event handlers
 	//change x and y variables
-	this.xOption.change( $.proxy(
+	this.xCombo.change( $.proxy(
 			function(e) {
 					e.preventDefault();
-					this.xVariable = this.xOption.val();
+					this.xVariable = this.xCombo.val();
 				} 
 			, this ));
-	this.yOption.change( $.proxy(
+	this.yCombo.change( $.proxy(
 			function(e){
 					e.preventDefault();
-					this.yVariable = this.yOption.val();
+					this.yVariable = this.yCombo.val();
 				} 
 			, this ));
 	
@@ -188,11 +186,8 @@ ScatterPlot.prototype = (function(){
 			var entity = ws.getEntityById($this.entityId);
 			$this.variables = entity.quantitativeVariables;
 			
-			UI.Form.populateSelect($this.xOption, $this.variables, 'name','name');
-			$this.xCombobox.refresh();
-			
-			UI.Form.populateSelect($this.yOption, $this.variables, 'name','name');
-			$this.yCombobox.refresh();
+			$this.xCombo.data($this.variables, 'name', 'name');
+			$this.yCombo.data($this.variables, 'name', 'name');
 		});
 		
 		//set vars
@@ -201,9 +196,8 @@ ScatterPlot.prototype = (function(){
 			$this.xVariable = vars[0];
 			$this.yVariable = vars[1];
 			
-			//TODO also select the option to the relative select ?
-			$this.xCombobox.selectValue($this.xVariable);
-			$this.yCombobox.selectValue($this.yVariable);
+			$this.xCombo.val($this.xVariable);
+			$this.yCombo.val($this.yVariable);
 		}
 	};
 	

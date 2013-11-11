@@ -16,6 +16,48 @@
  * limitations under the License.
  * ============================================================ */
 
+/**
+ * Example usage:
+ * 
+	<select name="test" id="test">
+		<option value="1">Option 1</option>
+		<option value="2">Option 2</option>
+		<option value="3">Option 3</option>
+		<option value="4">Option 4</option>
+		<option value="5">Option 5</option>
+	</select>
+	
+	<script>
+		$(function() {
+			var dataSet = {
+				  items: [
+				          {id: '1a', label: 'Option 1a'},
+				          {id: '2a', label: 'Option 2a'},
+				          {id: '3a', label: 'Option 3a'},
+				          {id: '4a', label: 'Option 4a'}
+				  ]
+				, valueKey: 'id'
+				, labelKey: 'label'
+			}
+			$('#test').combobox(dataSet);
+			
+			//or just this:
+			$('#test').combobox().data(
+					[
+			          {id: '1a', label: 'Option 1a'},
+			          {id: '2a', label: 'Option 2a'},
+			          {id: '3a', label: 'Option 3a'},
+			          {id: '4a', label: 'Option 4a'}
+			  		], 'id', 'label');
+			
+			//set value in combobox
+			$('#test').combobox().val('1a');
+			
+			//get selected value in combobox
+			var value = $('#test').combobox().val();
+		});
+	</script>
+ */
 !function( $ ) {
 
  "use strict";
@@ -44,8 +86,31 @@
   Combobox.prototype = {
 
     constructor: Combobox
-
-  , setup: function () {
+    ,
+    initialize: function(options) {
+    	var $this = this;
+    	if ( options.hasOwnProperty('items') ) {
+    		$this.data(options.items, options.valueKey, options.labelKey);
+    	}
+    }
+  	,
+  	data: function(items, valueKey, labelKey) {
+    	var $this = this;
+		$this.reset();
+		UI.Form.populateSelect($this.$source, items, valueKey, labelKey);
+		$this.refresh();
+    }
+  	,
+  	/**
+  	 * Add change event handler to source select element
+  	 * @param handler
+  	 */
+  	change: function(handler) {
+  		var $this = this;
+  		$this.$source.change(handler);
+  	}
+  	,
+  	setup: function () {
       var combobox = $(this.options.template);
       this.$source.before(combobox);
       this.$source.hide();
@@ -388,7 +453,7 @@
     }
   
   /**
-   * Start of OpenForis methods
+   * Start of OpenForis custom methods
    */
   
   /**
@@ -421,13 +486,19 @@
 	  this.$button.removeAttr('disabled');
   }
   
-  , selectValue: function(value) {
-	  this.$source.val(value);
-	  this.$target.val(value);
-	  var label = this.$source.find("option:selected").text();
-	  this.$element.val(label);
-	  this.$container.addClass('combobox-selected');
-      this.selected = true;
+  , val: function(value) {
+	  if ( value ) {
+		  //set value
+		  this.$source.val(value);
+		  this.$target.val(value);
+		  var label = this.$source.find("option:selected").text();
+		  this.$element.val(label);
+		  this.$container.addClass('combobox-selected');
+	      this.selected = true;
+	  } else {
+		  //get value
+		  return this.$source.val();
+	  }
   }
   /**
    * End of OpenForis methods
@@ -437,16 +508,26 @@
 
   /* COMBOBOX PLUGIN DEFINITION
    * =========================== */
-
-  $.fn.combobox = function ( option ) {
-    return this.each(function () {
-      var $this = $(this)
-        , data = $this.data('combobox')
-        , options = typeof option == 'object' && option;
-      if(!data) {$this.data('combobox', (data = new Combobox(this, options)));}
-      if (typeof option == 'string') {data[option]();}
-    });
-  };
+	  $.fn.combobox = function(option) {
+		var args = arguments;
+		var $this = $(this);
+		var data = $this.data('combobox');
+		var hasOptions = typeof option == 'object' && option;
+		if (!data) {
+			data = new Combobox(this, hasOptions);
+			$this.data('combobox', data);
+		}
+		if (option) {
+			if (typeof option == 'string') {
+				var method = option;
+				var methodParams = $(args).toArray().slice(1);
+				$.proxy(data[method], $this, methodParams)();
+			} else {
+				data.initialize(option);
+			}
+		}
+		return data;
+	};
 
   $.fn.combobox.defaults = {
   template: '<div class="combobox-container"><input type="hidden" /><input type="text" autocomplete="off" /><span class="add-on btn dropdown-toggle" data-dropdown="dropdown"><span class="caret"/><span class="combobox-clear"><i class="icon-remove"/></span></span></div>'

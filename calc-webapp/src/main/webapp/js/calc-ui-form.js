@@ -177,22 +177,22 @@ UI.Form.setValue = function(element,item){
 
 /**
  * Populate a select using a list of items
- * Option value is set according to the specified valueFieldName and 
- * option text content is set according to the specified labelFieldName
+ * Option value is set according to the specified valueKey and 
+ * option text content is set according to the specified labelKey
  * 
  * @param $select
  * @param items
- * @param valueFieldName
- * @param labelFieldName
+ * @param valueKey (optional, default value will be item.toString())
+ * @param labelKey (optional, default is valueKey, if specified)
  * @param callback
  */
-UI.Form.populateSelect = function($select, items, valueFieldName, labelFieldName) {
+UI.Form.populateSelect = function($select, items, valueKey, labelKey) {
 	$select.empty();
 	$select.attr("disabled", "disabled");
 
 	$.each(items, function(i, item) {
-		var value = item[valueFieldName];
-		var label = item[labelFieldName];
+		var value = item.hasOwnProperty(valueKey) ? item[valueKey]: item;
+		var label = item.hasOwnProperty(labelKey) ? item[labelKey]: value;
 		$select.append($("<option />").val(value).text(label));
 	});
 	$select.removeAttr("disabled");

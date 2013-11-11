@@ -7,9 +7,7 @@ SamplingDesignManager = function(container) {
 	
 	this.container = container;
 	
-	//sampling desing select/combo. WTF!
-	this.samplingUnitSelect = this.container.find('[name=sampling-unit]');
-	this.samplingUnitCombo = this.samplingUnitSelect.combobox().data('combobox');
+	this.samplingUnitCombo =  this.container.find('[name=sampling-unit]').combobox();
 	
 	//sampling unit UI elements
 	this.samplingUnitSection = this.container.find(".sampling-unit-section");
@@ -37,11 +35,8 @@ SamplingDesignManager.prototype = (function(){
 		//get the active workspace
 		$this.workspaceManager.activeWorkspace( $.proxy(function(ws) {
 			
-			//refresh sampling design select. 
-			//TODO Ask Stefano why to use the combo box always two objects are used. wouldn't make more sense having one object to wrap or a better incapsulation anyway???
-			UI.Form.populateSelect($this.samplingUnitSelect, ws.entities, 'id','name');
-			$this.samplingUnitCombo.refresh();
-			
+			//refresh sampling design select.
+			$this.samplingUnitCombo.data(ws.entities, 'id','name');
 			
 			//if sampling design is defined for active workspace update ui
 			if(ws.samplingDesign){
@@ -49,8 +44,8 @@ SamplingDesignManager.prototype = (function(){
 				if(sd.samplingUnitId){
 					var entity = ws.getEntityById(sd.samplingUnitId);
 					if(entity){
-						$this.samplingUnitCombo.selectValue(entity.id);
-						$.proxy(samplingUnitUpdate , $this)(entity);
+						$this.samplingUnitCombo.val(entity.id);
+						$.proxy(samplingUnitUpdate, $this)(entity);
 					}
 				}
 			}
@@ -58,8 +53,8 @@ SamplingDesignManager.prototype = (function(){
 			 * bind events
 			 */
 			//when sampling unit changes, save it and shows entities
-			$this.samplingUnitSelect.change( function(e){
-				var entityId = $this.samplingUnitSelect.val();
+			$this.samplingUnitCombo.change( function(e){
+				var entityId = $this.samplingUnitCombo.val();
 				var entity = ws.getEntityById(entityId);
 				$.proxy(samplingUnitChange , $this)(entity);
 				
@@ -77,7 +72,7 @@ SamplingDesignManager.prototype = (function(){
 			UI.lock();
 			$this.workspaceManager.activeWorkspaceSetSamplingUnit( entity, function(ws) {
 				UI.unlock();
-				$.proxy(samplingUnitUpdate , $this)(entity);
+				$.proxy(samplingUnitUpdate, $this)(entity);
 			});
 		}
 	};

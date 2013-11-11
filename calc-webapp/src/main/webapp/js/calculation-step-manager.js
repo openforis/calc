@@ -6,15 +6,14 @@
 function CalculationStepManager($form) {
 	
 	this.$form = $form;
-	this.$entitySelect = $form.find("[name='entityId']");
-	this.$entityCombobox = null; //inted by initEntityCombobox function
-	this.$variableSelect = $form.find("[name='variableId']");
-	this.$variableCombobox = null; //inted by initVariableCombobox function
+	this.$entityCombo = $form.find("[name='entityId']").combobox();
+	this.$variableCombo = $form.find("[name='variableId']").combobox();
 	this.$addVariableButton = $form.find("[name=add-variable]");
 	this.currentCalculationStep = null;
 
 	this.workspaceManager = WorkspaceManager.getInstance();
 	
+	//initialized in the init method
 	//R script component manager
 	this.$RScript = null;
 	
@@ -32,8 +31,9 @@ CalculationStepManager.prototype = (function() {
 		UI.lock();
 		var $this = this;
 		
-		$.proxy(initEntityCombobox, $this)();
-		$.proxy(initVariableCombobox, $this)();
+		var rScriptField = this.$form.find("[name=script]");
+		$this.$RScript = new RScript(rScriptField);
+
 		$.proxy(initEventHandlers, $this)();
 	
 		$.proxy(refreshEntitySelect, $this)(function() {
@@ -46,26 +46,6 @@ CalculationStepManager.prototype = (function() {
 			}
 		});
 		
-		var rScriptField = this.$form.find("[name=script]");
-		$this.$RScript = new RScript(rScriptField);
-	};
-	
-	/**
-	 * Init the entity autocomplete combobox
-	 */
-	var initEntityCombobox = function() {
-		var $this = this;
-		var $el = $this.$entitySelect.combobox();
-		$this.$entityCombobox = $el.data('combobox');
-	};
-	
-	/**
-	 * Init the variable autocomplete combobox
-	 */
-	var initVariableCombobox = function() {
-		var $this = this;
-		var $el = $this.$variableSelect.combobox();
-		$this.$variableCombobox = $el.data('combobox');
 	};
 	
 	/**
@@ -79,7 +59,7 @@ CalculationStepManager.prototype = (function() {
 		});
 		
 		//entity select change handler
-		$this.$entitySelect.change(function(event) {
+		$this.$entityCombo.change(function(event) {
 			$.proxy(refreshVariableSelect, $this)();
 			$.proxy(getSelectedEntity, $this)(function(entity) {
 				$this.$RScript.selectedEntity = entity;
@@ -188,7 +168,7 @@ CalculationStepManager.prototype = (function() {
 		var $this = this;
 		var $step = $this.currentCalculationStep;
 		
-		$this.$entityCombobox.selectValue($step.outputEntityId);
+		$this.$entityCombo.val($step.outputEntityId);
 		
 		$.proxy(refreshVariableSelect, $this)($step.outputVariableId, function() {
 			UI.Form.setFieldValues($this.$form, $step);
@@ -207,7 +187,7 @@ CalculationStepManager.prototype = (function() {
 	 * @returns
 	 */
 	var getSelectedEntityId = function() {
-		var entityId = this.$entitySelect.val();
+		var entityId = this.$entityCombo.val();
 		return entityId;
 	};
 	
@@ -232,13 +212,12 @@ CalculationStepManager.prototype = (function() {
 	 */
 	var refreshEntitySelect = function(callback) {
 		var $this = this;
-		$this.$variableSelect.empty();
+		$this.$variableCombo.reset();
 		
 		$this.workspaceManager.activeWorkspace(function(ws) {
 			var entities = ws.entities;
 			
-			UI.Form.populateSelect($this.$entityCombobox.$source, entities, "id", "name");
-			$this.$entityCombobox.refresh();
+			$this.$entityCombo.data(entities, "id", "name");
 			
 			if ( callback ) {
 				callback(ws);
@@ -257,8 +236,8 @@ CalculationStepManager.prototype = (function() {
 	var refreshVariableSelect = function(value, callback) {
 		var $this = this;
 
-		$this.$variableCombobox.reset();
-		$this.$variableCombobox.disable();
+		$this.$variableCombo.reset();
+		$this.$variableCombo.disable();
 		
 		UI.disable($this.$addVariableButton);
 		
@@ -267,26 +246,22 @@ CalculationStepManager.prototype = (function() {
 			$this.workspaceManager.activeWorkspace(function(ws) {
 				var entity = ws.getEntityById(entityId);
 				var variables = entity.quantitativeVariables;
-				var comboboxSource = $this.$variableCombobox.$source;
 				
-				UI.Form.populateSelect(comboboxSource, variables, "id", "name");
-				
-				comboboxSource.val(value);
-				$this.$variableCombobox.refresh();
-				
-				$this.$variableCombobox.enable();
+				$this.$variableCombo.data(variables, "id", "name");
+				$this.$variableCombo.val(value);
+				$this.$variableCombo.enable();
 
 				UI.enable($this.$addVariableButton);
 				
 				if ( value ) {
-					$this.$variableSelect.val(value);
+					$this.$variableCombo.val(value);
 				}
 				if ( callback ) {
 					callback();
 				}
 			});
 		} else {
-			$this.$variableSelect.empty();
+			$this.$variableCombo.reset();
 		}
 	};
 	
