@@ -8,7 +8,7 @@
 	
 		<sql>
 		alter table
-			calc.calc.workspace add COLUMN active boolean not null;
+			calc.workspace add COLUMN active boolean not null;
 		</sql>
 	
 	</changeSet>

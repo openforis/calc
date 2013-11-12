@@ -22,7 +22,7 @@
     				
 				ALTER TABLE
 				    calc.workspace ADD CONSTRAINT sampling_design_sampling_unit_fkey FOREIGN KEY
-				    (sampling_design_id) REFERENCES calc.calc.entity (id);
+				    (sampling_design_id) REFERENCES calc.entity (id);
 		</sql>
 	
 	</changeSet>
