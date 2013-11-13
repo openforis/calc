@@ -70,6 +70,7 @@ UBUNTU
 
 	Set enviroment variable  (e.g. sudo gedit /etc/environment)
 		R_HOME=/usr/lib/R
+		(if using x64 os: R_HOME=/usr/lib64/R)
 	
 	
 - Install R required packages:
@@ -96,4 +97,26 @@ UBUNTU
 			
 			- run javareconf
 				sudo R CMD javareconf
-			
+
+==============
+Linux RedHat 6
+==============
+	(64bit)
+	sudo rpm -Uvh http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+	(32 bit)
+	sudo rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
+	
+	sudo yum update
+	sudo yum install R
+	
+	- in case of missing required packages error (texinfo, texinfo-tex):
+	
+		sudo yum install texinfo
+	
+		sudo rpm -Uvh http://mirror.centos.org/centos/6/os/x86_64/Packages/texinfo-tex-4.13a-8.el6.x86_64.rpm
+		
+		sudo yum install R
+	
+	- continue installing required R libraries (see Ubuntu instructions but skip installing libpq-dev)
+	
+	Set enviroment variable (see above)
