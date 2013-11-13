@@ -26,35 +26,26 @@
 	
 	<import resource="classpath*:/applicationContext.xml" />
 	
+    <!-- ===================================== -->
+	<!-- Data Source -->
+	<!-- ===================================== -->
+	<bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="java:comp/env/jdbc/calcDs" />
+		<property name="resourceRef" value="true" />
+	</bean>
+	
 	<context:component-scan base-package="org.openforis.calc" />
 	<context:annotation-config />
 
 	<mvc:annotation-driven />
 
 	<context:property-placeholder location="classpath:dev.properties" />
+
 <!-- Resolves view names to protected .jsp resources within the /WEB-INF/views directory -->
 	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<property name="prefix" value="jsp"/>
 		<property name="suffix" value=".jsp"/>
 	</bean>
-	<!-- Declare a view resolver -->
-<!-- 	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver" -->
-<!--     	 p:prefix="/WEB-INF/jsp/" p:suffix=".jsp" /> -->
-	
-<!-- 	<bean id="dataSource" destroy-method="close" class="org.apache.commons.dbcp.BasicDataSource"  > -->
-<!--     	<property name="driverClassName" value="${calc.jdbc.driver}"/> -->
-<!--     	<property name="url" value="${calc.jdbc.url}"/> -->
-<!--     	<property name="username" value="${calc.jdbc.username}"/> -->
-<!--     	<property name="password" value="${calc.jdbc.password}"/> -->
-<!-- 		<property name="maxActive" value="10"/>  -->
-<!--     	<property name="minIdle" value="5"/>     	 -->
-<!-- 	</bean> -->
-		
-<!--     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager"> -->
-<!--     	<property name="dataSource" ref="dataSource"/> -->
-<!--     </bean> -->
-    
-<!--     <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true" /> -->
 
 	<bean id="multipartResolver"
 		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
