@@ -56,3 +56,23 @@ StringUtils.startsWith = function (str, value, caseSensitive) {
 	var result = str.indexOf(value) == 0;
 	return result;
 };
+
+/**
+ * Encodes a string into HTML
+ * 
+ * @param text
+ * @returns
+ */
+StringUtils.encodeHtml = function (text) {
+	return $('<div/>').text(text).html();
+};
+
+/**
+ * Decodes a encoded HTML string
+ * 
+ * @param text
+ * @returns
+ */
+StringUtils.decodeHtml = function (html) {
+	return $('<div/>').html(html).text();
+};

@@ -1,3 +1,11 @@
+/**
+ * Basic autocomplete dropdown menu.
+ * 
+ * It can be associated to a textarea or to an input with type "text".
+ * 
+ * Only public methods will be visible to subclasses.
+ * 
+ */
 function Autocomplete($inputField) {
 	this.$inputField = $inputField;
 	
@@ -5,7 +13,7 @@ function Autocomplete($inputField) {
 	this.$menu = null;
 	
 	//transient variable, stores the last search word used for script content assist dialog
-	this.lastSearch = null;
+	this.query = null;
 	
 	this.dropdownOpen = false;
 	this.mouseOverItem = false;
@@ -55,6 +63,10 @@ Autocomplete.prototype = (function() {
 			$.proxy(askForAutocomplete, $this)();
 		} else if ( $this.dropdownOpen ) {
 			switch ( event.keyCode ) {
+			case 16: //shift key
+			case 20: //caps lock
+				//do nothing
+				break;
 			case 9: //tab key pressed
 				event.preventDefault();
 				event.stopPropagation();
@@ -71,14 +83,13 @@ Autocomplete.prototype = (function() {
 				$.proxy(activateSiblingItem, $this)(true);
 				break;
 			case 40: //arrow down pressed
-				//$.proxy(focusOnFirstDropdownItem, $this)();
 				event.preventDefault();
 				event.stopPropagation();
 				$.proxy(activateSiblingItem, $this)();
 				break;
 			default:
 				if (! (
-					$.proxy(isAllowedCharacter, $this)(event.keyCode) ||
+					$.proxy(isQueryCharacter, $this)(event.keyCode) ||
 						event.keyCode == 8 //backspace 
 					)) {
 					$.proxy(closeDropdown, $this)();
@@ -95,7 +106,7 @@ Autocomplete.prototype = (function() {
 		var $this = this;
 		var keyCode = event.keyCode;
 		if ( $this.dropdownOpen && 
-				($.proxy(isAllowedCharacter, $this)(keyCode) ||
+				($.proxy(isQueryCharacter, $this)(keyCode) ||
 					keyCode == 8 //backspace
 				)) {	
 			$.proxy(askForAutocomplete, $this)();
@@ -159,7 +170,7 @@ Autocomplete.prototype = (function() {
 	 * Returns true if the specified keyCode corresponds to: - alphanumeric
 	 * character - dot symbol (.) - dollar symbol ($)
 	 */
-	var isAllowedCharacter = function(keyCode) {
+	var isQueryCharacter = function(keyCode) {
 		return keyCode >= 48 && keyCode <= 90 || //alphanumeric (0-9a-z)
 			 keyCode == 190 || // . (dot)
 			 keyCode == 36 // $ (dollar);
@@ -173,7 +184,7 @@ Autocomplete.prototype = (function() {
 	var askForAutocomplete = function() {
 		var $this = this;
 		
-		$this.lastSearch = $this.calculateLastSearch();
+		$this.query = $this.calculateQuery();
 
 		var resultGroups = $this.lookupResultGroups();
 		
@@ -182,15 +193,26 @@ Autocomplete.prototype = (function() {
 			//show dropdown
 			$.proxy(populateDropdown, $this)(resultGroups);
 			$.proxy(showDropdown, $this)();
+			$.proxy(activateSiblingItem, $this)();
 		} else if ($this.dropdownOpen ) {
 			$.proxy(closeDropdown, $this)();
 		}
 	};
 	
-	var calculateLastSearch = function() {
+	/**
+	 * 
+	 * Extracts the query val from the input field
+	 * 
+	 */
+	var calculateQuery = function() {
 		return this.$inputField.val();
 	};
 
+	/**
+	 * Searches for results.
+	 * 
+	 * @return Array of groups of items 
+	 */
 	var lookupResultGroups = function() {
 		return [];
 	};
@@ -205,26 +227,25 @@ Autocomplete.prototype = (function() {
 		var itemTemplate = '<li class="dropdown"><a role="menuitem" tabindex="-1" href="#"></a></li>';
 		var dividerTemplate = '<li role="presentation" class="divider"></li>';
 		$.each(itemGroups, function(groupIndex, group) {
-			if ( groupIndex > 0 ) {
+			if ( groupIndex > 0 && $this.$menu.size() > 0 ) {
 				var separatorEl = $(dividerTemplate);
 				$this.$menu.append(separatorEl);
 			}
-			var items = group;
-			$.each(items, function(index, item) {
-				
+			$.each(group, function(index, item) {
 				var itemEl = $(itemTemplate);
 				var anchor = itemEl.find('a');
-				anchor.text(item);
+				var itemHtml = $.proxy(highlightMatch, $this)(item);
+				anchor.html(itemHtml);
 				
 				//event handlers
 				anchor.click(function(e) {
-					$this.itemClickHandler(item);
+					$this.itemSelectedHandler(item);
 					$.proxy(closeDropdown, $this)();
 				});
 				
 				itemEl
-				.mouseenter($.proxy(itemMouseEnterHandler, $this))
-				.mouseleave($.proxy(itemMouseLeaveHandler, $this));
+					.mouseenter($.proxy(itemMouseEnterHandler, $this))
+					.mouseleave($.proxy(itemMouseLeaveHandler, $this));
 				
 				$this.$menu.append(itemEl);
 			});
@@ -260,15 +281,6 @@ Autocomplete.prototype = (function() {
 	};
 	
 	/**
-	 * Sets the focus on the first item in the dropdown
-	 */
-	var focusOnFirstDropdownItem = function() {
-		var $this = this;
-		//set focus on first item
-		$menu.find('a:first').focus();
-	};
-	
-	/**
 	 * Called when the dropdown is closed
 	 */
 	var dropdownCloseHandler = function() {
@@ -280,21 +292,36 @@ Autocomplete.prototype = (function() {
 	/**
 	 * Manages the click on an item in the dropdown
 	 */
-	var itemClickHandler = function(item) {
+	var itemSelectedHandler = function(item) {
 	};
-	
-	//prototype
+
+	/**
+	 * Highlights the part of an item matching the query string
+	 * by wrapping the matching part with a "strong" tag.
+	 */
+	var highlightMatch = function(item) {
+		var query = this.query;
+		if ( StringUtils.startsWith(item, query ) ) {
+			var lastPart = item.substring(query.length);
+			var result = '<strong>' + query + '</strong>' + StringUtils.encodeHtml(lastPart);
+			return result;
+		} else {
+			return StringUtils.encodeHtml(item);
+		}
+	};
+
+	// prototype
 	return {
 		constructor : Autocomplete,
 		
 		//public methods
 		_init : init
 		,
-		calculateLastSearch : calculateLastSearch
+		calculateQuery : calculateQuery
 		,
 		lookupResultGroups : lookupResultGroups
 		,
-		itemClickHandler : itemClickHandler
+		itemSelectedHandler : itemSelectedHandler
 	};
 	
 })();

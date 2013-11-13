@@ -1,7 +1,8 @@
 /**
  * 
  * R script component
- * It can be associated to a textarea or to an input with type "text".
+ * Extends Calc Autocomplete component 
+ * 
  * It manages the interactions with a content assist dialog, searching in all R base library functions
  * 
  */
@@ -36,7 +37,7 @@ RScript.prototype = (function() {
 	/**
 	 * Overrides superclass method
 	 */
-	var calculateLastSearch = function() {
+	var calculateQuery = function() {
 		var $this = this;
 		var script = $this.$inputField.val();
 		var caret = $this.$inputField.caret();
@@ -64,18 +65,18 @@ RScript.prototype = (function() {
 	/**
 	 * Overrides superclass method
 	 */
-	var itemClickHandler = function(item) {
+	var itemSelectedHandler = function(item) {
 		var $this = this;
 		$.proxy(addItemToScript, $this)(item);
 	};
 	
 	/**
 	 * Filters the R functions and returns only the ones 
-	 * starting with the specified value
+	 * starting with the query string
 	 */
 	var filterRFunctions = function() {
 		var $this = this;
-		var startsWith = $this.lastSearch;
+		var startsWith = $this.query;
 		var result = new Array();
 		$.each($this.rFunctions, function(index, funct) {
 			if ( StringUtils.startsWith(funct, startsWith) ) {
@@ -85,9 +86,13 @@ RScript.prototype = (function() {
 		return result;
 	};
 	
+	/**
+	 * Filters the entity variables and 
+	 * returns the ones starting with the query string
+	 */
 	var filterVariables = function() {
 		var $this = this;
-		var startsWith = $this.lastSearch;
+		var startsWith = $this.query;
 		var result = new Array();
 		if ( $this.selectedEntity != null ) {
 			var variables = $this.selectedEntity.getAncestorsVariables(); 
@@ -111,14 +116,13 @@ RScript.prototype = (function() {
 		var $field = $this.$inputField;
 		var oldText = $field.val();
 		var caret = $field.caret();
-		var lastSearchLength = $this.lastSearch.length;
-		var textToInsertStartIndex = caret - lastSearchLength;
+		var queryLength = $this.query.length;
+		var textToInsertStartIndex = caret - queryLength;
 		var textToInsert = item + " ";
-		if (textToInsertStartIndex > 0 && lastSearchLength == 0 ) {
+		if (textToInsertStartIndex > 0 && queryLength == 0 ) {
 			textToInsert = " " + textToInsert;
 		}
 		var newText = StringUtils.replaceText(oldText, textToInsert, textToInsertStartIndex, caret);
-		
 		$field.val(newText);
 		$field.caret(textToInsertStartIndex + textToInsert.length);
 	};
@@ -149,11 +153,11 @@ RScript.prototype = (function() {
 	var superInit = proto._init;
 	proto._init = init;
 	
-	proto.calculateLastSearch = calculateLastSearch;
+	proto.calculateQuery = calculateQuery;
 	
 	proto.lookupResultGroups = lookupResultGroups;
 	
-	proto.itemClickHandler = itemClickHandler;
+	proto.itemSelectedHandler = itemSelectedHandler;
 	
 	return proto;
 })();
