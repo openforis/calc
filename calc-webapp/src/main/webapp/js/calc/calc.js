@@ -33,8 +33,7 @@ $taskStatus = $(".task-status");
  * 
  * Managers
  */
-calculationStepManager = null;
-
+homeCalculationManager = null;
 
 /**
  * Global functions
@@ -251,8 +250,10 @@ $(document).ready(function() {
 	
 	// when page is loaded init function is called
 	init = function() {
+		homeCalculationManager = new HomeCalculationManager();
+		
 		//load all calculation steps
-		CalculationStepManager.refreshHome();
+		homeCalculationManager.refreshHome();
 		
 		checkJobStatus();
 		//on load, the footer buttons is positioned to the bottom of the page

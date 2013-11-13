@@ -249,11 +249,9 @@ $(function(){
 	var $addVariableForm = $addVariableModal.find('form');
 	var $saveVariableButton = $addVariableModal.find('.save');
 	
-	/**
-	* step manager
-	*/
-	var calculationStepManager = new CalculationStepManager($stepForm);
+	var calculationStepPresenter = new CalculationStepPresenter($stepForm);
 	
+	var calculationStepManager = CalculationStepManager.getInstance();
 	var workspaceManager = WorkspaceManager.getInstance();
 	
 	$inputVars = $(".input-vars");
@@ -274,7 +272,7 @@ $(function(){
 		UI.Form.reset($addVariableForm);
 		
 		//set entityId hidden field value
-		var selectedEntityId = calculationStepManager.getSelectedEntityId();
+		var selectedEntityId = calculationStepPresenter.getSelectedEntityId();
 		$addVariableForm.find("[name=entityId]").val(selectedEntityId);
 		
  		$addVariableModal.modal({keyboard: true, backdrop: "static"});
@@ -301,7 +299,7 @@ $(function(){
 	    	} else {
 	    		var variable = response.fields.variable;
 	    		
-	    		calculationStepManager.refreshVariableSelect(variable.id);
+	    		calculationStepPresenter.refreshVariableSelect(variable.id);
 	    		
 	    		$addVariableModal.modal('hide');
 	    		$addVariableModal.modal('removeBackdrop');
@@ -407,7 +405,7 @@ $(function(){
 	$stepForm.find("button[name='run-calculcation-step']").click(function(event){
 		event.preventDefault();
 		//first save the step and then it gets executed
-		calculationStepManager.save(function(response) {
+		calculationStepPresenter.save(function(response) {
 			
 			$calculationStep = response;
 			stepId = $calculationStep.id;
