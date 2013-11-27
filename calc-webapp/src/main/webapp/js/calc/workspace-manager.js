@@ -34,9 +34,9 @@ WorkspaceManager.prototype = (function(){
 	var activeWorkspaceSetSamplingUnit = function(entity, success){
 		var $this = this;
 		$this.activeWorkspace(function(ws){
-			
+			var entityId = (entity) ? entity.id : -1;
 			$.ajax({
-				url:"rest/workspace/active/samplingDesign/samplingUnit/"+entity.id+".json",
+				url:"rest/workspace/active/samplingDesign/samplingUnit/"+entityId+".json",
 				dataType:"json",
 				method:"POST"
 			}).done(function(response){

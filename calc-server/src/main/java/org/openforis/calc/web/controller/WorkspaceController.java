@@ -66,7 +66,7 @@ public class WorkspaceController {
 	 */
 	@RequestMapping(value = "/active/samplingDesign/samplingUnit/{entityId}.json", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody
-	Workspace activeWorkspaceSetSamplingUnit(@PathVariable int entityId) {
+	Workspace activeWorkspaceSetSamplingUnit(@PathVariable Integer entityId) {
 		Workspace workspace = workspaceService.setActiveWorkspaceSamplingUnit(entityId);
 		return workspace;
 	}

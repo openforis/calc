@@ -194,7 +194,7 @@ public class WorkspaceService {
 	}
 
 	@Transactional
-	public Workspace setActiveWorkspaceSamplingUnit(int entityId) {
+	public Workspace setActiveWorkspaceSamplingUnit(Integer entityId) {
 		Workspace workspace = getActiveWorkspace();
 		SamplingDesign samplingDesign = workspace.getSamplingDesign();
 		if (samplingDesign == null) {

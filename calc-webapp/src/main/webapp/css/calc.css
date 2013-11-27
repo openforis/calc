@@ -585,7 +585,7 @@ ul.scroll-menu {
 **/
 
 #sampling-design .sampling-unit-section button ,
-#sampling-design .sampling-unit-section .variable .name {
+#sampling-design  .name {
 /* #sampling-design .sampling-unit-section .entities button,  */
 /* #sampling-design .sampling-unit-section .variables button { */
 	width: 100%;
@@ -603,10 +603,10 @@ ul.scroll-menu {
 }
 
 #sampling-design .sampling-unit-section .aggregates button  {
-	width: 50%;
+	width: 60%;
 	margin-bottom : 1px;
 }
 #sampling-design .sampling-unit-section .variable-per-ha button.header-btn  {
 	border-radius: 5px;
-	width: 90%;
+	width: 100%;
 }

@@ -68,13 +68,14 @@ SamplingDesignManager.prototype = (function(){
 	 */
 	var samplingUnitChange = function(entity) {
 		var $this = this;
-		if(entity) {
+		$.proxy(clearAllSections , $this)();
+//		if(entity) {
 			UI.lock();
 			$this.workspaceManager.activeWorkspaceSetSamplingUnit( entity, function(ws) {
 				UI.unlock();
 				$.proxy(samplingUnitUpdate, $this)(entity);
 			});
-		}
+//		}
 	};
 
 	/**
@@ -82,6 +83,7 @@ SamplingDesignManager.prototype = (function(){
 	 */
 	var samplingUnitUpdate = function(entity) {
 		var $this = this;
+		
 		if(entity) {
 			$this.workspaceManager.activeWorkspace( $.proxy(function(ws) {
 				
@@ -89,22 +91,29 @@ SamplingDesignManager.prototype = (function(){
 				$.proxy(entitiesUpdate , this)(entities);
 				
 			} , $this) ); 
-				
-//			});
 		}
 	};
 
+	var clearAllSections = function() {
+		var $this = this;
+		$this.entitiesSection.empty();
+		$this.variablesSection.empty();
+		$this.variableSection.empty();
+		$this.variablePerHaSection.empty();
+	};
 	/**
 	 * update entities section
 	 */
 	var entitiesUpdate = function(entities) {
 		var $this = this;
 		//empty entity and variable sections
-		$this.entitiesSection.empty();
-		$this.variablesSection.empty();
-		$this.variableSection.empty();
-		$this.variablePerHaSection.empty();
+//		$this.entitiesSection.empty();
+//		$this.variablesSection.empty();
+//		$this.variableSection.empty();
+//		$this.variablePerHaSection.empty();
 		
+		//add header to entities section 
+		$this.entitiesSection.append( $('<div class="name">Entity</div>') );
 		//
 		//show  entities
 		//
@@ -125,9 +134,8 @@ SamplingDesignManager.prototype = (function(){
 				
 				//set current entity
 				$this.currentEntity = entity;
-				//
+
 				//show variables
-				//
 				$.proxy(variablesUpdate , $this)(entity.quantitativeVariables);
 				
 			});
@@ -146,6 +154,9 @@ SamplingDesignManager.prototype = (function(){
 	 */
 	var variablesUpdate = function(vars) {
 		var $this = this;
+		//add header
+		$this.variablesSection.append( $('<div class="name">Variable</div>') );
+		
 		var x = 80;
 		$.each(vars, function(i, variable) {
 			var btn = $('<button type="button" class="btn default-btn"></button>');
@@ -187,8 +198,7 @@ SamplingDesignManager.prototype = (function(){
 //			$this.variableSection.hide();
 			
 			//update variable section header
-			var name = $('<div class="name">Varaible name</div>');
-//		var name = $('<button type="button" class="btn default-btn" disabled></button>');
+			var name = $('<div class="name"></div>');
 			name.html(variable.name);
 			name.hide();
 			$this.variableSection.append(name);
