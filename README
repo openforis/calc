@@ -120,3 +120,40 @@ Linux RedHat 6
 	- continue installing required R libraries (see Ubuntu instructions but skip installing libpq-dev)
 	
 	Set enviroment variable (see above)
+
+
+============================================================================
+ 				JNDI database resource configuration
+============================================================================
+
+==============
+Tomcat 7
+==============
+	
+	- If using a standalone Tomcat installation, define the same resource in a file calc.xml inside tomcat/conf/Catalina/localhost:
+		
+		<!-- calc.xml file -->
+		
+		<?xml version="1.0" encoding="UTF-8"?>
+		
+		<Context path="/calc" reloadable="false">
+			
+			<Resource 
+			   name="jdbc/calcDs" 
+			   auth="Container"
+			   type="javax.sql.DataSource"
+			   factory="org.apache.commons.dbcp.BasicDataSourceFactory"
+			   driverClassName="org.postgresql.Driver"
+			   url="jdbc:postgresql://localhost:5432/calc"
+			   username="calc"
+			   password="calc"
+			   initialSize="5"
+			   maxActive="20"
+			   maxIdle="5" />
+			   
+		</Context>
+		
+		<!-- end of calc.xml file -->
+	
+	- If Tomcat server uses Eclipse metadata, define the JNDI resource in the context.xml file of the relative server.
+	
