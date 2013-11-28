@@ -66,7 +66,7 @@ UI.unlock = function() {
 };
 
 /**
- * Reset progress bar to its original state
+ * Reset a progress bar to its original state
  */
 UI.resetProgressBar = function($progressBar) {
 	$progressBar.removeClass();
@@ -75,6 +75,22 @@ UI.resetProgressBar = function($progressBar) {
 	$progressBar.parent().addClass("progress");
 };
 
+UI._enabledElements = null;
+/**
+ * Disable all enabled elements and keep a reference to them
+ */
+UI.disableAll = function() {
+	UI._enabledElements = $(document).find(":enabled");
+	UI.disable(UI._enabledElements);	
+};
+/**
+ * Enable all ui elements that were previously enabled but now disabled after calling disableAll 
+ */
+UI.enableAll = function() {
+	if(UI._enabledElements){
+		UI.enable(UI._enabledElements);
+	}
+};
 /**
 * Disable a component like buttons
 */

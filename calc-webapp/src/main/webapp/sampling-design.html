@@ -1,39 +1,39 @@
 <div class="page-section">
 
-<!-- 	<div class="row no-margin"  style="padding-top: 20px;"> -->
-		<div class="col-md-8 col-md-offset-2" style="text-align: left; padding-top: 20px;" id="sampling-design">
-			<div class="row col-md-12">
-				<div class="form-group">
-						<label class="col-md-2 control-label">Sampling Unit</label>
-						<div class="col-md-4">
-<!-- 							<input type="text" class="form-control" name="sampling-unit"> -->
-							<select class="form-control" name="sampling-unit"></select>
-						</div>
+	<div class="col-md-8 col-md-offset-2" style="text-align: left; padding-top: 20px;" id="sampling-design">
+		<div class="row col-md-12">
+			<div class="form-group">
+					<label class="col-md-2 control-label">Sampling Unit</label>
+					<div class="col-md-4">
+						<select class="form-control" name="sampling-unit"></select>
 					</div>
+				</div>
+		</div>
+		<div class="row sampling-unit-section" style="padding-top: 50px;">
+			<div class="col-md-2 no-padding entities">
 			</div>
-			<div class="row sampling-unit-section" style="padding-top: 50px;">
-				<div class="col-md-2 no-padding entities">
+			
+			<div class="col-md-9 no-padding aggregate-settings-section">
+				
+				<!-- inclusion area settings -->
+				<div class="row no-margin plot-area-section">
+					<div class="col-md-2">Plot area: </div>
+					<div class="col-md-10" style="text-align: left"><input type="text" name="plot-area" class="form-control"> </div>
 				</div>
 				
-				<div class="col-md-9 no-padding" class="aggregate-settings-section">
-					<!-- inclusion area settings -->
-					<div class="row no-margin" class="plot-area-section">
-						<div class="col-md-2">Plot area: </div>
-						<div class="col-md-10" style="text-align: left"><input type="text" name="plot-area" class="form-control"> </div>
+				<!-- variable aggregates section -->
+				<div class="row no-margin" style="padding-top: 30px;">
+					<div class="col-md-2 no-padding variables">
 					</div>
-					<!-- variable aggregates section -->
-					<div class="row no-margin" style="padding-top: 30px;">
-						<div class="col-md-2 no-padding variables">
-						</div>
-						<div class="col-md-2 no-padding variable">
-						</div>
-						<div class="col-md-2 no-padding variable-per-ha">
-						</div>
+					<div class="col-md-2 no-padding variable">
+					</div>
+					<div class="col-md-2 no-padding variable-per-ha">
 					</div>
 				</div>
+				
 			</div>
-<!-- 		</div> -->
-		</div>	
+		</div>
+	</div>	
 	<script>
 	$(function() {
 

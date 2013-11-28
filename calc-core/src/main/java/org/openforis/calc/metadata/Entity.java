@@ -126,6 +126,9 @@ public class Entity extends NamedUserObject {
 	@Column(name = "original_id")
 	private Integer originalId;
 
+	@Column(name = "plot_area_script")
+	private String plotAreaScript;
+	
 	public Workspace getWorkspace() {
 		return this.workspace;
 	}
@@ -313,6 +316,14 @@ public class Entity extends NamedUserObject {
 		this.unitOfAnalysis = unitOfAnalysis;
 	}
 
+	public String getPlotAreaScript() {
+		return plotAreaScript;
+	}
+	
+	public void setPlotAreaScript(String plotAreaScript) {
+		this.plotAreaScript = plotAreaScript;
+	}
+	
 //	@JsonIgnore
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public List<CategoricalVariable<?>> getCategoricalVariables() {

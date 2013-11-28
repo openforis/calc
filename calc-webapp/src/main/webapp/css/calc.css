@@ -611,7 +611,10 @@ ul.scroll-menu {
 	width: 100%;
 }
 #sampling-design .aggregate-settings-section {
-	margin-left: 20px; 
+	margin-left: 40px; 
 	padding: 20px; 
-	border-left: 1px solid #ecf0f1;
+/* 	border-left: 1px solid #ecf0f1; */
+}
+#sampling-design .plot-area-section {
+	display: none;
 }

@@ -18,6 +18,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -121,5 +122,14 @@ public class WorkspaceController {
 		}
 		return response;
 	}
-
+	
+	//rest/workspace/active/entity/"+entityId+"/plot-area.json
+	@RequestMapping(value = "/active/entity/{entityId}/plot-area.json", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	Entity activeWorkspaceSetEntityPlotAreaScript(@PathVariable int entityId, @RequestParam(required=false, value="plot-area-script") String plotAreaScript) {
+		Workspace workspace = getActiveWorkspace();
+		Entity entity = workspace.getEntityById(entityId);
+		entity = workspaceService.setEntityPlotAreaScript(entity, plotAreaScript);
+		return entity;
+	}
 }

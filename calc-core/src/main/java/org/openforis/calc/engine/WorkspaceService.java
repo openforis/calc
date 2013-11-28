@@ -309,4 +309,17 @@ public class WorkspaceService {
 		return variable;
 	}
 
+	/**
+	 * Set plot area script for the given entity and returns it
+	 * @param entity
+	 * @param plotAreaScript
+	 * @return
+	 */
+	@Transactional
+	public Entity setEntityPlotAreaScript(Entity entity, String plotAreaScript) {
+		entity.setPlotAreaScript(plotAreaScript);
+		Entity updEntity = entityDao.save(entity);
+		return updEntity;
+	}
+
 }

@@ -12,15 +12,17 @@ SamplingDesignManager = function(container) {
 	//sampling unit UI elements
 	this.samplingUnitSection = this.container.find(".sampling-unit-section");
 	this.entitiesSection = this.samplingUnitSection.find(".entities");
+	
 	// aggregate settings ui sections (each entity has their own aggregate settings)
 	this.aggregateSettingsSection = this.samplingUnitSection.find(".aggregate-settings-section");
+	this.plotAreaSection = this.samplingUnitSection.find(".plot-area-section");
 	this.variablesSection = this.samplingUnitSection.find(".variables");
 	this.variableSection = this.samplingUnitSection.find(".variable");
 	this.variablePerHaSection = this.samplingUnitSection.find(".variable-per-ha");
 	
 	// r script
-	var rScriptField = this.samplingUnitSection.find("[name=plot-area]");
-	this.rScript = new RScript(rScriptField);
+	this.rScriptInput = this.samplingUnitSection.find("[name=plot-area]");
+	this.rScript = new RScript(this.rScriptInput);
 	
 	// ws manager
 	this.workspaceManager = null; 
@@ -49,7 +51,7 @@ SamplingDesignManager.prototype = (function(){
 					var entity = ws.getEntityById(sd.samplingUnitId);
 					if(entity){
 						$this.samplingUnitCombo.val(entity.id);
-						$.proxy(samplingUnitUpdate, $this)(entity);
+						$.proxy(samplingUnitUpdate, $this)(entity.id);
 					}
 				}
 			}
@@ -61,9 +63,20 @@ SamplingDesignManager.prototype = (function(){
 			//when sampling unit changes, save it and shows entities
 			$this.samplingUnitCombo.change( function(e){
 				var entityId = $this.samplingUnitCombo.val();
-				var entity = ws.getEntityById(entityId);
-				$.proxy(samplingUnitChange , $this)(entity);
+//				var entity = ws.getEntityById(entityId);
+				$.proxy(samplingUnitChange , $this)(entityId);
 				
+			});
+			
+			//bind event for focus out of plot area script input
+			$this.rScriptInput.focusout( function(e){
+				UI.disableAll();
+				var entityId = $this.currentEntity.id;
+				$this.workspaceManager.activeWorkspaceSetEntityPlotArea(entityId, $this.rScriptInput.val(), function(ws) {
+					$this.currentEntity = ws.getEntityById(entityId);
+					//succesfully updated
+					UI.enableAll();
+				});
 			});
 			
 		}) , this );
@@ -72,35 +85,38 @@ SamplingDesignManager.prototype = (function(){
 	/**
 	 * Handler for samplingUnit comobo change event
 	 */
-	var samplingUnitChange = function(entity) {
+	var samplingUnitChange = function(entityId) {
 		var $this = this;
-		$.proxy(clearAllSections , $this)();
-//		if(entity) {
-			UI.lock();
+		$.proxy(emptyAllSections , $this)();
+		
+		UI.lock();
+		$this.workspaceManager.activeWorkspace(function(ws){
+			var entity = ws.getEntityById(entityId);
+			
 			$this.workspaceManager.activeWorkspaceSetSamplingUnit( entity, function(ws) {
 				UI.unlock();
-				$.proxy(samplingUnitUpdate, $this)(entity);
+				$.proxy(samplingUnitUpdate, $this)(entityId);
 			});
-//		}
+		});
 	};
 
 	/**
 	 * update sampling unit ui
 	 */
-	var samplingUnitUpdate = function(entity) {
+	var samplingUnitUpdate = function(entityId) {
 		var $this = this;
 		
-		if(entity) {
+		if(entityId) {
 			$this.workspaceManager.activeWorkspace( $.proxy(function(ws) {
 				
-				var entities  = ws.getAggregableEntities(entity);
+				var entities  = ws.getAggregableEntities(entityId);
 				$.proxy(entitiesUpdate , this)(entities);
 				
 			} , $this) ); 
 		}
 	};
 
-	var clearAllSections = function() {
+	var emptyAllSections = function() {
 		var $this = this;
 		$this.entitiesSection.empty();
 		$this.variablesSection.empty();
@@ -126,37 +142,45 @@ SamplingDesignManager.prototype = (function(){
 		//show  entities
 		//
 		var t = 80;
-		$.each(entities, function(i, entity){
-			var btn = $('<button type="button" class="btn default-btn"></button>');
-			btn.hide();
-			btn.html(entity.name);
-			btn.click( function(e) {
-				//disable current entity button
-				UI.enable( $this.entitiesSection.find("button") );
-				UI.disable( $(e.currentTarget) );
+		$.each(entities, function(i, ent) {
+				var btn = $('<button type="button" class="btn default-btn"></button>');
+				btn.hide();
+				btn.html(ent.name);
 				
-				//empty variables section
-				$this.variablesSection.empty();
-				$this.variableSection.empty();
-				$this.variablePerHaSection.empty();
+				btn.click( function(e) {
+					$this.workspaceManager.activeWorkspace(function(ws){
+						var entity = ws.getEntityById(ent.id);
+						//disable current entity button
+						UI.enable( $this.entitiesSection.find("button") );
+						UI.disable( $(e.currentTarget) );
+						
+						//empty variables section
+						$this.variablesSection.empty();
+						$this.variableSection.empty();
+						$this.variablePerHaSection.empty();
+						
+						//set current entity
+						$this.currentEntity = entity;
+						//update rScript with current entity
+						$this.rScript.entity = entity;
+						$this.rScriptInput.val( entity.plotAreaScript );
+						//show plot area section
+						$this.plotAreaSection.show();
+						
+						//show variables
+						$.proxy(variablesUpdate , $this)(entity.quantitativeVariables);
+					
+					});
+				});
 				
-				//set current entity
-				$this.currentEntity = entity;
-				//update rScript with current entity
-				$this.rScript.entity = entity;
+				$this.entitiesSection.append(btn);
 				
-				//show variables
-				$.proxy(variablesUpdate , $this)(entity.quantitativeVariables);
+				setTimeout(function(){
+					btn.fadeIn();
+				},t);
 				
+				t+=15;
 			});
-			$this.entitiesSection.append(btn);
-			
-			setTimeout(function(){
-				btn.fadeIn();
-			},t);
-			
-			t+=15;
-		});
 	};
 	
 	/**
@@ -222,69 +246,7 @@ SamplingDesignManager.prototype = (function(){
 		} , $this) );
 	};
 	
-	/**
-	 * update variable-per-ha section 
-	 */
-	var variablePerHaUpdate = function(variableId) {
-		var $this = this;
-		$this.workspaceManager.activeWorkspace( $.proxy(function(ws) {
-			var variable = $this.currentEntity.getQuantitativeVariableById(variableId);
-			var variablePerHa = variable.variablePerHa;
-
-			//append btn to add/remove variable-per-ha
-			var headerBtn = $.proxy(getVariablePerHaHeaderBtn, $this)(variable);
-			$this.variablePerHaSection.append(headerBtn);
-			
-			//if variable-per-ha is set, it updates the aggregates section
-			if(variablePerHa){
-				$.proxy(variableAggregatesUpdate , $this)(variable.variablePerHa, $this.variablePerHaSection);
-			} 
-			
-		} , $this) );
-	};
-
-	var getVariablePerHaHeaderBtn = function(variable) {
-		var $this = this;
-		
-		var variablePerHa = variable.variablePerHa;
-		
-		var cssClass = (variablePerHa) ? "option-btn-selected" : "option-btn";
-		var btn = $('<button type="button" class="btn '+cssClass+' header-btn"></button>');
-		btn.html(variable.name + " / per ha");
-		
-		btn.click(function(e) {
-			var enabledElements = $(document).find(":enabled");
-			UI.disable(enabledElements);
-			
-			
-			var afterClick = function(variable, updateAggregates) {
-				//replace btn
-				var btnUpdate = $.proxy(getVariablePerHaHeaderBtn, $this)(variable);
-				btn.replaceWith(btnUpdate);
-				//remove aggregates section
-				var aggregatesSection = $this.variablePerHaSection.find('.aggregates');
-				aggregatesSection.remove();
-
-				if(updateAggregates == true){
-					$.proxy(variableAggregatesUpdate , $this)(variable.variablePerHa, $this.variablePerHaSection);
-				}
-				
-				UI.enable(enabledElements);
-			};
-			
-			if(variablePerHa) {
-				$this.workspaceManager.activeWorkspaceDeleteVariablePerHa($this.currentEntity.id, variable.id, function(variable){
-					afterClick(variable);
-				});
-			} else {
-				$this.workspaceManager.activeWorkspaceAddVariablePerHa($this.currentEntity.id, variable.id, function(variable){
-					afterClick(variable, true);
-				});
-			}
-		});
-		
-		return btn;
-	};
+	
 	
 	/**
 	 * update variable aggregates section
@@ -342,8 +304,7 @@ SamplingDesignManager.prototype = (function(){
 		//bind click event
 		btn.click(function(e) {
 			//disable enbabled elements
-			var enabledElements = $(document).find(":enabled");
-			UI.disable(enabledElements);
+			UI.disableAll();
 			
 			var updateBtn = function(variableUpdate) {
 				//after update replace button
@@ -352,7 +313,7 @@ SamplingDesignManager.prototype = (function(){
 				//replace old button
 				btn.replaceWith( btnUpdate );
 				//re enable elements
-				UI.enable(enabledElements);
+				UI.enableAll();
 			};
 			
 			if(varAgg) { 
@@ -370,6 +331,68 @@ SamplingDesignManager.prototype = (function(){
 						variableUpdate = variableUpdate.variablePerHa;
 					}
 					updateBtn(variableUpdate);
+				});
+			}
+		});
+		
+		return btn;
+	};
+	
+	/**
+	 * update variable-per-ha section 
+	 */
+	var variablePerHaUpdate = function(variableId) {
+		var $this = this;
+		$this.workspaceManager.activeWorkspace( $.proxy(function(ws) {
+			var variable = $this.currentEntity.getQuantitativeVariableById(variableId);
+			var variablePerHa = variable.variablePerHa;
+
+			//append btn to add/remove variable-per-ha
+			var headerBtn = $.proxy(getVariablePerHaHeaderBtn, $this)(variable);
+			$this.variablePerHaSection.append(headerBtn);
+			
+			//if variable-per-ha is set, it updates the aggregates section
+			if(variablePerHa) {
+				$.proxy(variableAggregatesUpdate , $this)(variable.variablePerHa, $this.variablePerHaSection);
+			}
+			
+		} , $this) );
+	};
+
+	var getVariablePerHaHeaderBtn = function(variable) {
+		var $this = this;
+		
+		var variablePerHa = variable.variablePerHa;
+		
+		var cssClass = (variablePerHa) ? "option-btn-selected" : "option-btn";
+		var btn = $('<button type="button" class="btn '+cssClass+' header-btn"></button>');
+		btn.html(variable.name + " / per ha");
+		
+		btn.click(function(e) {
+			UI.disableAll();
+			
+			var afterClick = function(variable, updateAggregates) {
+				//replace btn
+				var btnUpdate = $.proxy(getVariablePerHaHeaderBtn, $this)(variable);
+				btn.replaceWith(btnUpdate);
+				//remove aggregates section
+				var aggregatesSection = $this.variablePerHaSection.find('.aggregates');
+				aggregatesSection.remove();
+
+				if(updateAggregates == true) {
+					$.proxy(variableAggregatesUpdate , $this)(variable.variablePerHa, $this.variablePerHaSection);
+				}
+				
+				UI.enableAll();
+			};
+			
+			if(variablePerHa) {
+				$this.workspaceManager.activeWorkspaceDeleteVariablePerHa($this.currentEntity.id, variable.id, function(variable){
+					afterClick(variable);
+				});
+			} else {
+				$this.workspaceManager.activeWorkspaceAddVariablePerHa($this.currentEntity.id, variable.id, function(variable){
+					afterClick(variable, true);
 				});
 			}
 		});

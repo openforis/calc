@@ -45,15 +45,22 @@ WorkspaceManager.prototype = (function(){
 			
 		});
 	};
-	
+	/**
+	 * Add a variable aggregate associated for the given variable of given entity
+	 * TODO USE IDS not objects
+	 */
 	var activeWorkspaceCreateVariableAggregate = function(entity, variable, agg, success){
 		$.proxy(activeWorkspaceUpdateVariableAggregate, this)(entity, variable, agg, "POST", success);
 	};
-	
+	/**
+	 * delete a variable aggregate associated for the given variable of given entity
+	 */
 	var activeWorkspaceDeleteVariableAggregate = function(entity, variable, agg, success){
 		$.proxy(activeWorkspaceUpdateVariableAggregate, this)(entity, variable, agg, "DELETE", success);
 	};
-	
+	/**
+	 * private: add or delete a variable aggregate associated for the given variable of given entity
+	 */
 	var activeWorkspaceUpdateVariableAggregate = function(entity, variable, agg, method, success){
 		var $this = this;
 		$this.activeWorkspace(function(ws){
@@ -72,14 +79,22 @@ WorkspaceManager.prototype = (function(){
 		});
 	};
 	
+	/**
+	 * Add a new Variable per Ha associated with given variable of given entity
+	 */
 	var activeWorkspaceAddVariablePerHa = function(entityId, variableId, success){
 		$.proxy(activeWorkspaceUpdateVariablePerHa, this)(entityId, variableId, success, "POST");
 	};
 	
+	/**
+	 * Delete a variable per Ha associated with given variable of given entity
+	 */
 	var activeWorkspaceDeleteVariablePerHa = function(entityId, variableId, success){
 		$.proxy(activeWorkspaceUpdateVariablePerHa, this)(entityId, variableId, success, "DELETE");
 	};
-	
+	/**
+	 * private. Delete or add variable per Ha associated with given variable of given entity
+	 */
 	var activeWorkspaceUpdateVariablePerHa = function(entityId, variableId, success, method) {
 		var $this = this;
 		
@@ -138,6 +153,28 @@ WorkspaceManager.prototype = (function(){
 	};
 	
 	/**
+	 * Set for given entity the plot area
+	 */
+	var activeWorkspaceSetEntityPlotArea = function(entityId, plotArea, success){
+		var $this = this;
+		$this.activeWorkspace(function(ws){
+			
+			$.ajax({
+				url : "rest/workspace/active/entity/"+entityId+"/plot-area.json",
+				dataType : "json",
+				method : "POST",
+				data : { 'plot-area-script':plotArea }
+			}).done(function(response){
+				// update entity to workspace
+				var entity = new Entity(ws, response);
+				ws.updateEntity(entity);
+				success(ws);
+			});
+			
+		});
+	};
+	
+	/**
 	 * Private function to
 	 * Set the active workspace and calls the callback function if present
 	 */
@@ -165,6 +202,8 @@ WorkspaceManager.prototype = (function(){
 		activeWorkspaceDeleteVariablePerHa : activeWorkspaceDeleteVariablePerHa
 		,
 		activeWorkspaceAddQuantitativeVariable : activeWorkspaceAddQuantitativeVariable
+		,
+		activeWorkspaceSetEntityPlotArea : activeWorkspaceSetEntityPlotArea
 	};
 	
 })();
