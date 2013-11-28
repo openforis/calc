@@ -63,7 +63,7 @@ CalculationStepPresenter.prototype = (function() {
 		$this.$entityCombo.change(function(event) {
 			$.proxy(refreshVariableSelect, $this)();
 			$.proxy(getSelectedEntity, $this)(function(entity) {
-				$this.$RScript.selectedEntity = entity;
+				$this.$RScript.entity = entity;
 			});
 		});
 		
@@ -82,7 +82,7 @@ CalculationStepPresenter.prototype = (function() {
 			$this.currentCalculationStep = response;
 			$.proxy(updateForm, $this)();
 			$.proxy(getSelectedEntity, $this)(function(entity) {
-				$this.$RScript.selectedEntity = entity;
+				$this.$RScript.entity = entity;
 			});
 		});
 	};

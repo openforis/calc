@@ -14,7 +14,7 @@ function RScript($inputField) {
 	this.rFunctions = null;
 	
 	//used to get the list of variables; set by outside
-	this.selectedEntity = null;
+	this.entity = null;
 }
 
 RScript.prototype = (function() {
@@ -94,8 +94,8 @@ RScript.prototype = (function() {
 		var $this = this;
 		var startsWith = $this.query;
 		var result = new Array();
-		if ( $this.selectedEntity != null ) {
-			var variables = $this.selectedEntity.getAncestorsVariables(); 
+		if ( $this.entity != null ) {
+			var variables = $this.entity.getAncestorsVariables(); 
 			$.each(variables, function(index, variable) {
 				var variableName = variable.name;
 				if ( StringUtils.startsWith(variableName, startsWith) ||

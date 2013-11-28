@@ -210,33 +210,29 @@
 	
 <script>
 $(function(){
-// 	yepnope.injectJs("js/scatter-plot.js", function () {
-// 		  console.log("scatter loaded!");
-// 	});
-// 	if(window.Highcharts){
-// 	    window.Highcharts = null;
-// 	}
-	
 	//current calculation step
 	$calculationStep = null;
+
 	/**
 	 * main ui components
 	 */
 	$calculationStepEditContainer = $("#calculation-step-edit-container");
 	$calculationStepExecContainer = $("#calculation-step-exec-container");
 	$calculationStepExecContainer.hide();
+	
 	//exec options ui components
 	var execOptionsBtn = $calculationStepEditContainer.find(".step-edit-exec-option button[name=exec-options]");
 	var execOptions = $calculationStepEditContainer.find(".step-edit-exec-option .options");
 	var execOptionsWidth = -1;
 	execOptions.hide();
-//		execOptions.css({width:"0px"});
+
 	/**
 	 *results ui components
 	 */
 	//div where the progress bar is stored
 	$stepProgress = $(".step-progress"); 
 	$resultsContainer = $("#calc-step-results");
+
 	var dataManager = new DataManager($resultsContainer);
 	
 	/**
@@ -528,7 +524,7 @@ $(function(){
 			}
 			
 		}
-	}
+	};
 	
 	//exec options click
 	execOptionsBtn.click(function(e){

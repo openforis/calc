@@ -12,18 +12,22 @@ SamplingDesignManager = function(container) {
 	//sampling unit UI elements
 	this.samplingUnitSection = this.container.find(".sampling-unit-section");
 	this.entitiesSection = this.samplingUnitSection.find(".entities");
+	// aggregate settings ui sections (each entity has their own aggregate settings)
+	this.aggregateSettingsSection = this.samplingUnitSection.find(".aggregate-settings-section");
 	this.variablesSection = this.samplingUnitSection.find(".variables");
 	this.variableSection = this.samplingUnitSection.find(".variable");
 	this.variablePerHaSection = this.samplingUnitSection.find(".variable-per-ha");
 	
-	this.workspaceManager = null; 
-	//WorkspaceManager.getInstance();
+	// r script
+	var rScriptField = this.samplingUnitSection.find("[name=plot-area]");
+	this.rScript = new RScript(rScriptField);
 	
+	// ws manager
+	this.workspaceManager = null; 
+	// WorkspaceManager.getInstance();
 	
 	//init page
 	this._init();
-	
-	
 };
 
 SamplingDesignManager.prototype = (function(){
@@ -49,6 +53,8 @@ SamplingDesignManager.prototype = (function(){
 					}
 				}
 			}
+			
+			
 			/**
 			 * bind events
 			 */
@@ -100,7 +106,9 @@ SamplingDesignManager.prototype = (function(){
 		$this.variablesSection.empty();
 		$this.variableSection.empty();
 		$this.variablePerHaSection.empty();
+		$this.aggregateSettingsSection.hide();
 	};
+	
 	/**
 	 * update entities section
 	 */
@@ -125,7 +133,7 @@ SamplingDesignManager.prototype = (function(){
 			btn.click( function(e) {
 				//disable current entity button
 				UI.enable( $this.entitiesSection.find("button") );
-				UI.disable($(e.currentTarget));
+				UI.disable( $(e.currentTarget) );
 				
 				//empty variables section
 				$this.variablesSection.empty();
@@ -134,7 +142,9 @@ SamplingDesignManager.prototype = (function(){
 				
 				//set current entity
 				$this.currentEntity = entity;
-
+				//update rScript with current entity
+				$this.rScript.entity = entity;
+				
 				//show variables
 				$.proxy(variablesUpdate , $this)(entity.quantitativeVariables);
 				
