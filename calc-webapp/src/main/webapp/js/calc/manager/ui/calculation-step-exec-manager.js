@@ -39,8 +39,9 @@ CalculationStepExecManager.prototype = (function() {
 			$this.jobManager.executeCalculationStep(
 					$this.calculationStep.id, 
 					//on complete show results
-					function() {
-						console.log("job finished")
+					function(job) {
+						console.log("job finished");
+						console.log(job);
 					}
 					, true
 			);

@@ -1,5 +1,5 @@
 /**
- * Manager operations with job
+ * Manager for job operations
  * @author Mino Togna
  */
 
@@ -14,16 +14,11 @@ JobManager.prototype = (function(){
 	 */
 	var executeCalculationStep = function(stepId, success, hideModalStatusOnComplete){
 		var $this = this;
-		console.log("executeCalculationStep");
-		
 		$.ajax({
 			url : $this.contextPath + "/step/"+stepId+"/execute.json",
 			dataType:"json"
 		}).done(function(response) {
-			console.log("job executed");
-			console.log(response);
 			checkJobStatus(success, false, hideModalStatusOnComplete);
-//			$.proxy(setActiveWorkspace, $this)( response, success );
 		});
 	};
 	
