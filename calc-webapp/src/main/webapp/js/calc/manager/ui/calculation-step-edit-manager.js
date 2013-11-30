@@ -3,7 +3,7 @@
  * Manages the editing of the CalculationStep
  *  
  */
-function CalculationStepPresenter($form) {
+function CalculationStepEditManager($form) {
 	
 	this.$form = $form;
 	this.$entityCombo = $form.find("[name='entityId']").combobox();
@@ -21,7 +21,7 @@ function CalculationStepPresenter($form) {
 	this._init();
 }
 
-CalculationStepPresenter.prototype = (function() {
+CalculationStepEditManager.prototype = (function() {
 	
 	/**
 	 * Initialize the event handlers and populate the form with initial data
@@ -71,7 +71,7 @@ CalculationStepPresenter.prototype = (function() {
 		$this.$form.find("button[type='submit']").click(function(event){
 			event.preventDefault();
 			$.proxy(save, $this)(function(){
-				UI.Form.showResultMessage("Calculation step successfully saved.",true);
+				UI.showSuccess("Calculation step successfully saved.",true);
 			});
 		});
 	};
@@ -238,7 +238,7 @@ CalculationStepPresenter.prototype = (function() {
 	
 	//prototype
 	return {
-		constructor : CalculationStepPresenter,
+		constructor : CalculationStepEditManager,
 		
 		//public methods
 		_init : init,

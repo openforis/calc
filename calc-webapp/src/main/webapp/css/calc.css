@@ -579,6 +579,24 @@ ul.scroll-menu {
 
 
 /**
+*
+* Header button group
+*/
+.header-button-group {
+	height: 4em;
+}
+.header-button-group > div {
+	height: 100%;
+	text-align: center;
+}
+.header-button-group button {
+	width: 99%;
+	height: 100%;
+}
+
+
+
+/**
 **
 ** Sampling design section
 **

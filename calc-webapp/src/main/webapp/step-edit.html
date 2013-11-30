@@ -1,21 +1,14 @@
 <!-- ==== Html here === -->
 <div class="page-section">
 	<!--  Nav bar -->
-	<div class="row">
-		<div class="navbar navbar-default">
-			<div class="container">
-				<div class="">
-					<ul class="nav navbar-nav">
-						<li class="active">
-							<a href="active">Active</a>
-						</li>
-						<li>
-							<a href="link">Link</a>
-						</li>
-					</ul>
-				</div>
-			</div>
+	<div class="row no-margin-no-padding header-button-group">
+		<div class="col-md-2 col-md-offset-4 no-padding">
+			<button class="btn blue-btn" >Edit</button>
 		</div>
+		<div class="col-md-2 no-padding">
+			<button class="btn blue-btn" >Test/Execute</button>
+		</div>
+		<div class="col-md-2"></div>
 	</div>
 	
 	<!-- edit form -->
@@ -79,48 +72,38 @@
 					</div>
 					
 					<div class="form-group buttons">
-					
-						<div class="col-md-3 col-md-offset-3" style="text-align: center;">
-							<button type="submit" class="btn btn-default btn-lg" style="width: 50%">Save</button>
+						<div class="col-md-2 col-md-offset-5" style="text-align: center;">
+							<button type="submit" class="btn btn-default btn-lg" style="width: 100%">Save</button>
 						</div>
-						<div class="col-md-6 step-edit-exec-option">
-							<div class="col-md-6">
-								<button type="button" name="run-calculcation-step" class="btn btn-default btn-lg" style="width: 50%">Execute</button>
-								<button type="button" name="exec-options" class="btn no-background options-btn"><i class="icon-cog"></i></button>
-								
-							</div>
-							<div class="col-md-6 options">
-								<input type="text" class="form-control no-border" name="totalItems" placeholder="Number of records">
-							</div>
-						</div>
-						
-						
-						
-<!-- 						<div class="col-md-3" style="text-align: center;"> -->
-<!-- 							<button type="button" name="run-calculcation-step" class="btn btn-default btn-lg" style="width: 50%">Execute</button> -->
-<!-- 						</div> -->
-						<!-- exec options -->
-<!-- 						<div class="col-md-3" style="text-align: left; padding-top: 5px;"> -->
-<!-- 							<input type="text" class="form-control no-border" name="totalItems" placeholder="Number of records"> -->
-<!-- 						</div> -->
-						
-						
-						
-<!-- 						<div class="col-md-2 col-md-offset-5" style="text-align: center;"> -->
-<!-- 							<button type="submit" class="btn btn-default btn-lg" style="width: 50%">Save</button> -->
-<!-- 						</div> -->
-<!-- 						<div class="col-md-2"></div> -->
-<!-- 						<div class="col-md-3" style="text-align: right; padding-top: 9px"> -->
-<!-- 							<div class="input-group"> -->
+<!-- 						<div class="col-md-6 step-edit-exec-option"> -->
+<!-- 							<div class="col-md-6"> -->
+<!-- 								<button type="button" name="run-calculcation-step" class="btn btn-default btn-lg" style="width: 50%">Execute</button> -->
+<!-- 								<button type="button" name="exec-options" class="btn no-background options-btn"><i class="icon-cog"></i></button> -->
+<!-- 							</div> -->
+<!-- 							<div class="col-md-6 options"> -->
 <!-- 								<input type="text" class="form-control no-border" name="totalItems" placeholder="Number of records"> -->
-<!-- 								<span class="input-group-btn"> -->
-<!-- 									<button class="btn btn-default" name="run-calculcation-step" type="button">Execute</button> -->
-<!-- 								</span> -->
 <!-- 							</div> -->
 <!-- 						</div> -->
 					</div>
+					
+					<!-- Old buttons to save and execute.  -->
+<!-- 					<div class="form-group buttons"> -->
+<!-- 						<div class="col-md-3 col-md-offset-3" style="text-align: center;"> -->
+<!-- 							<button type="submit" class="btn btn-default btn-lg" style="width: 50%">Save</button> -->
+<!-- 						</div> -->
+<!-- 						<div class="col-md-6 step-edit-exec-option"> -->
+<!-- 							<div class="col-md-6"> -->
+<!-- 								<button type="button" name="run-calculcation-step" class="btn btn-default btn-lg" style="width: 50%">Execute</button> -->
+<!-- 								<button type="button" name="exec-options" class="btn no-background options-btn"><i class="icon-cog"></i></button> -->
+<!-- 							</div> -->
+<!-- 							<div class="col-md-6 options"> -->
+<!-- 								<input type="text" class="form-control no-border" name="totalItems" placeholder="Number of records"> -->
+<!-- 							</div> -->
+<!-- 						</div> -->
+<!-- 					</div> -->
 				</fieldset>
 				
+				<!-- // NOT USED NOW -->
 				<!-- Input variable fields. //hidden by default -->
 				<div class="row input-var">
 					<div class="col-md-2">
@@ -141,6 +124,8 @@
 						</button>
 					</div>
 				</div>
+				
+				
 			</form>
 		</div>
 		<div class="col-md-2">
@@ -245,7 +230,7 @@ $(function(){
 	var $addVariableForm = $addVariableModal.find('form');
 	var $saveVariableButton = $addVariableModal.find('.save');
 	
-	var calculationStepPresenter = new CalculationStepPresenter($stepForm);
+	var calculationStepEditManager = new CalculationStepEditManager($stepForm);
 	
 	var calculationStepManager = CalculationStepManager.getInstance();
 	var workspaceManager = WorkspaceManager.getInstance();
@@ -268,7 +253,7 @@ $(function(){
 		UI.Form.reset($addVariableForm);
 		
 		//set entityId hidden field value
-		var selectedEntityId = calculationStepPresenter.getSelectedEntityId();
+		var selectedEntityId = calculationStepEditManager.getSelectedEntityId();
 		$addVariableForm.find("[name=entityId]").val(selectedEntityId);
 		
  		$addVariableModal.modal({keyboard: true, backdrop: "static"});
@@ -295,7 +280,7 @@ $(function(){
 	    	} else {
 	    		var variable = response.fields.variable;
 	    		
-	    		calculationStepPresenter.refreshVariableSelect(variable.id);
+	    		calculationStepEditManager.refreshVariableSelect(variable.id);
 	    		
 	    		$addVariableModal.modal('hide');
 	    		$addVariableModal.modal('removeBackdrop');
@@ -397,19 +382,21 @@ $(function(){
 		$calculationStepEditContainer.fadeIn(400);
 	}; 
 	
+	
+	
 	//on run calcuclation button click	
 	$stepForm.find("button[name='run-calculcation-step']").click(function(event){
 		event.preventDefault();
 		//first save the step and then it gets executed
-		calculationStepPresenter.save(function(response) {
+		calculationStepEditManager.save(function(response) {
 			
 			$calculationStep = response;
 			stepId = $calculationStep.id;
 			
 			var totalItems = parseInt( $stepForm.find("input[name='totalItems']").val() );
 			calculationStepManager.execute(stepId, totalItems, function(response) {
-// 				console.log("response on exec");
-// 				console.log(response);
+				console.log("response on exec");
+				console.log(response);
 				var $job = response;
 				updateCalculationStepStatus($job);
 				showResultsContainer();

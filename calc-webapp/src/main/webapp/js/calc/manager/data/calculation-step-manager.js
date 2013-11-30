@@ -104,7 +104,7 @@ CalculationStepManager.prototype = (function() {
 	 * @param id
 	 * @param callback
 	 */
-	var deleteStep = function(id, callback) {
+	var remove = function(id, callback) {
 		$.ajax({
 			url: BASE_URL + "/"+id+"/delete.json"
 		})
@@ -128,7 +128,7 @@ CalculationStepManager.prototype = (function() {
 		,
 		execute : execute
 		,
-		deleteStep : deleteStep
+		remove : remove
 	};
 })();
 
