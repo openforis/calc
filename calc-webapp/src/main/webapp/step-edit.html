@@ -1,12 +1,14 @@
 <!-- ==== Html here === -->
-<div class="page-section">
-	<!--  Nav bar -->
+<div class="page-section" id="step-edit-page">
+
+
+	<!--  Header button bar  -->
 	<div class="row no-margin-no-padding header-button-group">
 		<div class="col-md-2 col-md-offset-4 no-padding">
-			<button class="btn blue-btn" >Edit</button>
+			<button class="btn blue-btn" name="show-edit-btn" >Edit</button>
 		</div>
 		<div class="col-md-2 no-padding">
-			<button class="btn blue-btn" >Test/Execute</button>
+			<button class="btn blue-btn" name="show-exec-btn">Test/Execute</button>
 		</div>
 		<div class="col-md-2"></div>
 	</div>
@@ -196,15 +198,43 @@
 <script>
 $(function(){
 	//current calculation step
-	$calculationStep = null;
-
+	var $calculationStep = null;
+	
+	//main ui component
+	var stepEdit = $("#step-edit-page");
+	
 	/**
-	 * main ui components
+	 * ui components : edit, exec , results
 	 */
-	$calculationStepEditContainer = $("#calculation-step-edit-container");
-	$calculationStepExecContainer = $("#calculation-step-exec-container");
+	var $calculationStepEditContainer = stepEdit.find("#calculation-step-edit-container");
+	var $calculationStepExecContainer = stepEdit.find("#calculation-step-exec-container");
 	$calculationStepExecContainer.hide();
 	
+	/**
+	* Header buttons
+	*/
+	var showEditBtn = stepEdit.find("button[name=show-edit-btn]");
+	var showExecBtn = stepEdit.find("button[name=show-exec-btn]");
+	
+	/**
+	* Event handlers for header buttons
+	*/
+	showEditBtn.click(function(e){
+		e.preventDefault();
+		
+		$calculationStepExecContainer.fadeOut(400);
+		$calculationStepEditContainer.fadeIn(400);
+	});
+	
+	showExecBtn.click(function(e){
+		e.preventDefault();
+		
+		$calculationStepEditContainer.fadeOut(400);
+		$calculationStepExecContainer.fadeIn(400);
+	});
+	
+	
+	// this will not be used anymore
 	//exec options ui components
 	var execOptionsBtn = $calculationStepEditContainer.find(".step-edit-exec-option button[name=exec-options]");
 	var execOptions = $calculationStepEditContainer.find(".step-edit-exec-option .options");
@@ -235,105 +265,9 @@ $(function(){
 	var calculationStepManager = CalculationStepManager.getInstance();
 	var workspaceManager = WorkspaceManager.getInstance();
 	
-	$inputVars = $(".input-vars");
-	$inputVar = $(".input-var");
 	
-// 	$inputVars.hide();
-	$inputVar.hide();
-
-	/**
-	* Add variable
-	*/
-	//TODO move it elsewhere
 	
-	// open the Add Variable popup on Add Variable button click
-	$addVariableButton.click(function(event){
-		event.preventDefault();
-		
-		UI.Form.reset($addVariableForm);
-		
-		//set entityId hidden field value
-		var selectedEntityId = calculationStepEditManager.getSelectedEntityId();
-		$addVariableForm.find("[name=entityId]").val(selectedEntityId);
-		
- 		$addVariableModal.modal({keyboard: true, backdrop: "static"});
- 		UI.Form.setFocus($addVariableForm);
-	});
 	
-	/**
-	* Add variable to the selected entity
-	*/
-	$saveVariableButton.click(function(event) {
-		event.preventDefault();
-		$addVariableForm.submit();
-	});
-	
-	$addVariableForm.submit(function(event) {
-		event.preventDefault();
-		UI.lock();
-		var variable = UI.Form.toJSON($addVariableForm);
-		
-		var successCallback = function(response) {
-			UI.Form.updateErrors($addVariableForm, response.errors);
-	    	if(response.status == "ERROR" ) {
-	    		UI.Form.showResultMessage("Error, invalid data", false);
-	    	} else {
-	    		var variable = response.fields.variable;
-	    		
-	    		calculationStepEditManager.refreshVariableSelect(variable.id);
-	    		
-	    		$addVariableModal.modal('hide');
-	    		$addVariableModal.modal('removeBackdrop');
-	    	}
-		};
-		var errorCallback = function (e) {
-	    	UI.Form.showResultMessage("An error occured. Please check the log file.",false );
-		};
-		var completeCallback = function() {
-			UI.unlock();
-		}
-		workspaceManager.activeWorkspaceAddQuantitativeVariable(variable, successCallback, errorCallback, completeCallback);
-	});
-	
-	/**
-	* Input variable. disabled for now
-	*/
-	// add input variable to the form
-	$stepForm.find("button[name='add-input-variable']").click(function(event){
-		event.preventDefault();
-	
-		$var = $inputVar.clone();
-		$inputVars.append($var);
-		//bind delete button click			
-		$var.find("[name='delete-input-var']").click(deleteInputVariable);
-		//remove selection of variable from select
-		select = $var.find(".input-var-id");
-		select.val([]);
-		// input-var-name,  input-var
-		renameInputVariables();
-		$var.fadeIn();
-		
-	});
-	renameInputVariables = function() {
-		vars = $inputVars.find('.input-var');
-		$.each(vars, function(i, div) {
-			$varId = $(div).find('.input-var-name');
-			$varName = $(div).find('.input-var-id');
-			
-			$varId.attr('name','input-var-id-'+i);
-			$varName.attr('name','input-var-name-'+i);
-		});
-	};
-	deleteInputVariable = function(event){
-		event.preventDefault();
-		$var = $(this).parents('.input-var');
-		$var.fadeOut(200);
-		setTimeout(function(){
-			
-			$var.remove();
-			renameInputVariables();
-		}, 300);
-	};
 	
 	/*** 
 	* ================= 
@@ -344,6 +278,7 @@ $(function(){
 	processResultsStarted = false;
 	rowNum = 1;
 	
+	//DEPRECATED
 	showResultsContainer = function() {
 		// write step caption as header
 		$calculationStepExecContainer.find(".step-name legend").html($calculationStep.caption);
@@ -366,6 +301,7 @@ $(function(){
 		rowNum = 1;
 	};
 	
+	//DEPRECATED
 	showEditFormContainer = function(){
 		//reset progress and results table
 		$progressBar = $stepProgress.find(".progress-bar");		
@@ -532,10 +468,118 @@ $(function(){
 	});
 	
 	//in results section, click to show edit form
-	$calculationStepExecContainer.find("button[name='edit-step-button']").click(function(event){
-		showEditFormContainer();
+// 	$calculationStepExecContainer.find("button[name='edit-step-button']").click(function(event){
+// 		showEditFormContainer();
+// 	});
+	
+	
+	
+	
+	
+	
+	
+	// ============================== Input variable code. not used now, but left here now for convenience 
+	
+	/**
+	* Input variables. not used now
+	*/ 
+	$inputVars = $(".input-vars");
+	$inputVar = $(".input-var");
+	$inputVar.hide();
+
+	/**
+	* Add variable
+	*/
+	//TODO move it elsewhere
+	
+	// open the Add Variable popup on Add Variable button click
+	$addVariableButton.click(function(event){
+		event.preventDefault();
+		
+		UI.Form.reset($addVariableForm);
+		
+		//set entityId hidden field value
+		var selectedEntityId = calculationStepEditManager.getSelectedEntityId();
+		$addVariableForm.find("[name=entityId]").val(selectedEntityId);
+		
+ 		$addVariableModal.modal({keyboard: true, backdrop: "static"});
+ 		UI.Form.setFocus($addVariableForm);
 	});
 	
+	/**
+	* Add variable to the selected entity
+	*/
+	$saveVariableButton.click(function(event) {
+		event.preventDefault();
+		$addVariableForm.submit();
+	});
+	
+	$addVariableForm.submit(function(event) {
+		event.preventDefault();
+		UI.lock();
+		var variable = UI.Form.toJSON($addVariableForm);
+		
+		var successCallback = function(response) {
+			UI.Form.updateErrors($addVariableForm, response.errors);
+	    	if(response.status == "ERROR" ) {
+	    		UI.Form.showResultMessage("Error, invalid data", false);
+	    	} else {
+	    		var variable = response.fields.variable;
+	    		
+	    		calculationStepEditManager.refreshVariableSelect(variable.id);
+	    		
+	    		$addVariableModal.modal('hide');
+	    		$addVariableModal.modal('removeBackdrop');
+	    	}
+		};
+		var errorCallback = function (e) {
+	    	UI.Form.showResultMessage("An error occured. Please check the log file.",false );
+		};
+		var completeCallback = function() {
+			UI.unlock();
+		}
+		workspaceManager.activeWorkspaceAddQuantitativeVariable(variable, successCallback, errorCallback, completeCallback);
+	});
+	
+	/**
+	* Input variable. not used now
+	*/
+	// add input variable to the form
+	$stepForm.find("button[name='add-input-variable']").click(function(event){
+		event.preventDefault();
+	
+		$var = $inputVar.clone();
+		$inputVars.append($var);
+		//bind delete button click			
+		$var.find("[name='delete-input-var']").click(deleteInputVariable);
+		//remove selection of variable from select
+		select = $var.find(".input-var-id");
+		select.val([]);
+		// input-var-name,  input-var
+		renameInputVariables();
+		$var.fadeIn();
+		
+	});
+	renameInputVariables = function() {
+		vars = $inputVars.find('.input-var');
+		$.each(vars, function(i, div) {
+			$varId = $(div).find('.input-var-name');
+			$varName = $(div).find('.input-var-id');
+			
+			$varId.attr('name','input-var-id-'+i);
+			$varName.attr('name','input-var-name-'+i);
+		});
+	};
+	deleteInputVariable = function(event){
+		event.preventDefault();
+		$var = $(this).parents('.input-var');
+		$var.fadeOut(200);
+		setTimeout(function(){
+			
+			$var.remove();
+			renameInputVariables();
+		}, 300);
+	};
 	
 });
 </script>
