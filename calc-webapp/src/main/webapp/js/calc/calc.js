@@ -38,18 +38,18 @@ homeCalculationManager = null;
 /**
  * Global functions
  */
-checkJobStatus = function(onCompleteCallback, updateOnly) {
+checkJobStatus = function(onCompleteCallback, updateOnly, hideOnComplete) {
 	$.ajax({
 		url: "rest/workspace/job.json",
 		dataType: "json"
 	})
 	.done(function(response) {
-		$job = response;
+		var $job = response;
 		
-		if( updateOnly ){
-			updateJobStatus($job, onCompleteCallback);
+		if( updateOnly && updateOnly == true ){
+			updateJobStatus($job, onCompleteCallback, hideOnComplete);
 		} else if ( $job.status == 'RUNNING' ) {
-			createJobStatus($job, onCompleteCallback);
+			createJobStatus($job, onCompleteCallback, hideOnComplete);
 		}
 	})
 	.error(function(e) {
@@ -57,7 +57,7 @@ checkJobStatus = function(onCompleteCallback, updateOnly) {
 	}); 
 };
 
-createJobStatus = function($job, onCompleteCallback) {
+createJobStatus = function($job, onCompleteCallback, hideOnComplete) {
 	$jobStatus.modal({keyboard:false,backdrop:"static"});
 	$jobStatus.find('.modal-title').text($job.name);
 	$jobStatus.find(".modal-footer").addClass("hide");
@@ -78,11 +78,11 @@ createJobStatus = function($job, onCompleteCallback) {
 		
 		$modalBody.append($status);	
 	});
-	updateJobStatus($job, onCompleteCallback);
+	updateJobStatus($job, onCompleteCallback, hideOnComplete);
 };
 
 
-updateJobStatus = function($job, onCompleteCallback) {
+updateJobStatus = function($job, onCompleteCallback, hideOnComplete) {
 	$tasks = $job.tasks;
 	$.each($tasks, function(i, $task) {
 		
@@ -124,12 +124,15 @@ updateJobStatus = function($job, onCompleteCallback) {
 		break;
 	case "RUNNING":
 		setTimeout(function(){
-			checkJobStatus(onCompleteCallback, true);
+			checkJobStatus(onCompleteCallback, true, hideOnComplete);
 		}, 1000);
 		break;
 	case "COMPLETED":
 		if ( onCompleteCallback ) {
 			onCompleteCallback($job);
+		}
+		if(hideOnComplete && hideOnComplete == true) {
+			$jobStatus.modal("hide");
 		}
 	default:
 		//show footer in all status but PENDING and RUNNING

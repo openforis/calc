@@ -401,13 +401,6 @@ formula editor
 calc-step page
 */
 
-.step-edit-exec-option {
-/* 	border-top: 1px solid #496d7e; */
-}
-.step-edit-exec-option .options {
-	text-align: left;
-	padding-top: 10px;
-}
 
 .progress {
 /* 	height: 30px;	 */
@@ -635,4 +628,39 @@ ul.scroll-menu {
 }
 #sampling-design .plot-area-section {
 	display: none;
+}
+
+
+
+
+
+
+/**
+**
+** step-edit page
+**
+**/
+#step-edit-page #calculation-step-exec-container .header {
+	height: 10%;
+}
+#step-edit-page #calculation-step-exec-container .test {
+	height: 65%;
+	padding-bottom : 5em;
+	padding-top : 5em;
+}
+#step-edit-page #calculation-step-exec-container .test .progress-bar-section {
+		display: none;
+}
+
+#step-edit-page #calculation-step-exec-container .exec {
+	height: 25%;
+	border-top: 1px solid #496d7e;
+	padding-top : 5em;	
+}
+.step-edit-exec-option {
+/* 	border-top: 1px solid #496d7e; */
+}
+.step-edit-exec-option .options {
+	text-align: left;
+	padding-top: 10px;
 }

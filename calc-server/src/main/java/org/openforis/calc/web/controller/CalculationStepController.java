@@ -115,6 +115,7 @@ public class CalculationStepController {
 	 * @throws InvalidProcessingChainException
 	 * @throws WorkspaceLockedException
 	 */
+	@Deprecated
 	@RequestMapping(value = "/{stepId}/run.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	synchronized Job executeJob(@PathVariable int stepId, @RequestParam(required=false) Integer totalItems) throws InvalidProcessingChainException, WorkspaceLockedException {

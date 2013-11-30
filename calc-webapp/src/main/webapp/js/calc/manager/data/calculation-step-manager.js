@@ -71,6 +71,7 @@ CalculationStepManager.prototype = (function() {
 	};
 	
 	/**
+	 * DEPRECATED
 	 * Execute the calculation step with the specified id and call the callback function 
 	 * 
 	 * @param id

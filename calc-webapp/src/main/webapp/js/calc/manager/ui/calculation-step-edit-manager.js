@@ -3,12 +3,13 @@
  * Manages the editing of the CalculationStep
  *  
  */
-function CalculationStepEditManager($form) {
-	
-	this.$form = $form;
-	this.$entityCombo = $form.find("[name='entityId']").combobox();
-	this.$variableCombo = $form.find("[name='variableId']").combobox();
-	this.$addVariableButton = $form.find("[name=add-variable]");
+function CalculationStepEditManager(container) {
+	this.container = container;
+	this.$form = this.container.find('#step-form');
+//	this.$form = $form;
+	this.$entityCombo = this.$form.find("[name='entityId']").combobox();
+	this.$variableCombo = this.$form.find("[name='variableId']").combobox();
+	this.$addVariableButton = this.$form.find("[name=add-variable]");
 	this.currentCalculationStep = null;
 
 	this.calculationStepManager = CalculationStepManager.getInstance();
@@ -71,9 +72,16 @@ CalculationStepEditManager.prototype = (function() {
 		$this.$form.find("button[type='submit']").click(function(event){
 			event.preventDefault();
 			$.proxy(save, $this)(function(){
-				UI.showSuccess("Calculation step successfully saved.",true);
+				
+				UI.showSuccess("Saved!",true);
 			});
 		});
+		
+		// set changed to true to keep track if form is changed
+		$this.$form.find(":input").change(function() {
+			$this.$form.data('changed', true);
+		});
+		
 	};
 	
 	var loadStepAndUpdateForm = function(stepId) {
@@ -84,6 +92,8 @@ CalculationStepEditManager.prototype = (function() {
 			$.proxy(getSelectedEntity, $this)(function(entity) {
 				$this.$RScript.entity = entity;
 			});
+			//reset changed state 
+			$this.$form.data('changed', false);
 		});
 	};
 	
@@ -125,9 +135,23 @@ CalculationStepEditManager.prototype = (function() {
 			},
 			//complete
 			function() {
+				//reset changed state
+				$this.$form.data('changed', false);
 				UI.unlock();
 			}
 		);
+	};
+	
+	/**
+	 * Save the calculation step form only if it has changed, else calls the callback synchronously
+	 */
+	var saveIfChanged = function(success) {
+		if( this.$form.data('changed') ) {
+			$.proxy(save,this)(success);
+		} else {
+			success(this.currentCalculationStep);
+		}
+		
 	};
 	
 	/**
@@ -245,6 +269,7 @@ CalculationStepEditManager.prototype = (function() {
 		refreshVariableSelect : refreshVariableSelect,
 		getSelectedEntityId : getSelectedEntityId,
 		getSelectedEntity : getSelectedEntity,
-		save : save
+		save : save,
+		saveIfChanged : saveIfChanged
 	};
 })();

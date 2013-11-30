@@ -138,26 +138,45 @@
 	<!-- Execution and results  -->
 	<div class="row" id="calculation-step-exec-container" style="width: 100%; height: 100%; padding-top:10px; ">
 		<!-- step information section -->
-		<div class="row" >
-			<div class="col-md-1 col-md-offset-3" style="text-align: right;">
-				<button name="edit-step-button" class="calculation btn btn-info" ><i class="icon-edit"></i></button>
-			</div>
-			<div class="col-md-2 step-name">
-				<legend></legend>
-			</div>
+		<div class="row header">
+<!-- 			<div class="col-md-1 col-md-offset-3" style="text-align: right;"> -->
+<!-- 				<button name="edit-step-button" class="calculation btn btn-info" ><i class="icon-edit"></i></button> -->
+<!-- 			</div> -->
+<!-- 			<div class="col-md-12 header"> -->
+<!-- 				<legend></legend> -->
+<!-- 			</div> -->
+			
+		</div>
+		
+		<!-- Test section to implement -->
+		<div class="row test" >
+			<!-- TODO implement. (old progress bar below) -->
 			<!-- progress bar -->
-			<div class="col-md-2 step-progress" style="padding-top: 15px;">
-				<div class="progress"> 
-					<div class="progress-bar"></div>
+			<div class="row progress-bar-section" >
+				<div class="col-md-2 col-md-offset-4 step-progress" style="padding-top: 15px;">
+					<div class="progress"> 
+						<div class="progress-bar"></div>
+					</div>
+				</div>
+				<div class="col-md-1" style="padding-top: 8px;">
+					<div class="col-md-1 percent"></div>
 				</div>
 			</div>
-			<div class="col-md-1" style="padding-top: 8px;">
-				<div class="col-md-1 percent"></div>
+			<div class="row">
+				<div class="col-md-2 col-md-offset-5" style="text-align: center;">
+					<button type="button" class="btn btn-default btn-lg" name="test-btn" style="width: 100%">Test</button>
+				</div>
+			</div>
+		</div>
+		
+		<div class="row exec" >
+			<div class="col-md-2 col-md-offset-5" style="text-align: center;">
+				<button type="button" class="btn btn-default btn-lg" name="exec-btn" style="width: 100%">Execute</button>
 			</div>
 		</div>
 		
 		<!-- results section -->
-		<div class="row" style="height: 70%">
+		<div class="row results" style="height: 70%; display: none">
 			<div class="col-md-2">
 			</div>
 			<div class="col-md-8" id="calc-step-results" style="height: 100%">
@@ -208,8 +227,21 @@ $(function(){
 	 */
 	var $calculationStepEditContainer = stepEdit.find("#calculation-step-edit-container");
 	var $calculationStepExecContainer = stepEdit.find("#calculation-step-exec-container");
-	$calculationStepExecContainer.hide();
 	
+	//TODO managers here. pass containers to managers and not form. add methods show and hide?
+	/**
+	* ui managers 
+	*/
+	var calculationStepEditManager = new CalculationStepEditManager($calculationStepEditContainer);	
+	var calculationStepExecManager = new CalculationStepExecManager($calculationStepExecContainer);
+	calculationStepExecManager.hide();
+	
+	//TODO check what to do with these managers
+	var $resultsContainer = $("#calc-step-results");
+	var dataManager = new DataManager($resultsContainer);
+	var calculationStepManager = CalculationStepManager.getInstance();
+	var workspaceManager = WorkspaceManager.getInstance();
+
 	/**
 	* Header buttons
 	*/
@@ -219,22 +251,35 @@ $(function(){
 	/**
 	* Event handlers for header buttons
 	*/
+	/*
+	*/
 	showEditBtn.click(function(e){
 		e.preventDefault();
 		
-		$calculationStepExecContainer.fadeOut(400);
+// 		$calculationStepExecContainer.fadeOut(400);
+		calculationStepExecManager.hide();
 		$calculationStepEditContainer.fadeIn(400);
 	});
 	
+	/**
+	* Show exec section
+	*/
 	showExecBtn.click(function(e){
 		e.preventDefault();
-		
-		$calculationStepEditContainer.fadeOut(400);
-		$calculationStepExecContainer.fadeIn(400);
+		if(calculationStepEditManager.currentCalculationStep){
+			// first save the calculation step if it has changed
+			calculationStepEditManager.saveIfChanged(function(response) {
+				var calculationStep = response;
+				$calculationStepEditContainer.hide();
+				calculationStepExecManager.show(calculationStep);
+			});
+		} else {
+			UI.showError("You must create a calculation step before trying to execute it", true);
+		}
 	});
 	
 	
-	// this will not be used anymore
+	// TODO remove: exec options moved to test section
 	//exec options ui components
 	var execOptionsBtn = $calculationStepEditContainer.find(".step-edit-exec-option button[name=exec-options]");
 	var execOptions = $calculationStepEditContainer.find(".step-edit-exec-option .options");
@@ -242,28 +287,26 @@ $(function(){
 	execOptions.hide();
 
 	/**
-	 *results ui components
+	 * TODO move to result/exec? manager
+	 * results ui components
 	 */
 	//div where the progress bar is stored
 	$stepProgress = $(".step-progress"); 
-	$resultsContainer = $("#calc-step-results");
+	
 
-	var dataManager = new DataManager($resultsContainer);
 	
 	/**
+	 * TODO add variable section has to be moved to edit-manager
 	 * edit form ui components
 	 */
-	$stepForm = $('#step-form');
+	var $stepForm = $('#step-form');
 	var $addVariableButton = $stepForm.find("button[name='add-variable']");
-	
 	var $addVariableModal = $('#add-variable-modal');
 	var $addVariableForm = $addVariableModal.find('form');
 	var $saveVariableButton = $addVariableModal.find('.save');
+
 	
-	var calculationStepEditManager = new CalculationStepEditManager($stepForm);
 	
-	var calculationStepManager = CalculationStepManager.getInstance();
-	var workspaceManager = WorkspaceManager.getInstance();
 	
 	
 	
@@ -319,7 +362,7 @@ $(function(){
 	}; 
 	
 	
-	
+	// DEPRECATED
 	//on run calcuclation button click	
 	$stepForm.find("button[name='run-calculcation-step']").click(function(event){
 		event.preventDefault();
@@ -449,6 +492,7 @@ $(function(){
 		}
 	};
 	
+	//TODO to be removed
 	//exec options click
 	execOptionsBtn.click(function(e){
 		if(execOptionsWidth < 0){
@@ -466,11 +510,6 @@ $(function(){
 			execOptions.animate({width:execOptionsWidth+'px'}, 600,'easeOutExpo');
 		}
 	});
-	
-	//in results section, click to show edit form
-// 	$calculationStepExecContainer.find("button[name='edit-step-button']").click(function(event){
-// 		showEditFormContainer();
-// 	});
 	
 	
 	
