@@ -19,6 +19,13 @@ function CalculationStepEditManager(container) {
 	//R script component manager
 	this.$RScript = null;
 	
+	// add variable ui elements
+	this.$addVariableButton = this.$form.find("button[name='add-variable']");
+	this.$addVariableModal = $('#add-variable-modal');
+	this.$addVariableForm = this.$addVariableModal.find('form');
+	this.$saveVariableButton = this.$addVariableModal.find('.save');
+	
+	
 	this._init();
 }
 
@@ -77,9 +84,55 @@ CalculationStepEditManager.prototype = (function() {
 			});
 		});
 		
-		// set changed to true to keep track if form is changed
+		// at input change, it keeps track that the form has changed
 		$this.$form.find(":input").change(function() {
 			$this.$form.data('changed', true);
+		});
+		
+		//add variable button click
+		$this.$addVariableButton.click(function(event){
+			event.preventDefault();
+			
+			UI.Form.reset($this.$addVariableForm);
+			
+			//set entityId hidden field value
+			var selectedEntityId = $this.getSelectedEntityId();
+			$this.$addVariableForm.find("[name=entityId]").val(selectedEntityId);
+			
+			$this.$addVariableModal.modal({keyboard: true, backdrop: "static"});
+	 		UI.Form.setFocus($this.$addVariableForm);
+		});
+		
+		// add variable form: on save button click, it submits the form
+		$this.$saveVariableButton.click(function(event) {
+			event.preventDefault();
+			$this.$addVariableForm.submit();
+		});
+		//submits the add variable form
+		$this.$addVariableForm.submit(function(event) {
+			event.preventDefault();
+			UI.lock();
+			var variable = UI.Form.toJSON($this.$addVariableForm);
+			
+			var successCallback = function(response) {
+				UI.Form.updateErrors($this.$addVariableForm, response.errors);
+		    	if(response.status == "ERROR" ) {
+		    		UI.Form.showResultMessage("Error, invalid data", false);
+		    	} else {
+		    		var variable = response.fields.variable;
+		    		$this.refreshVariableSelect(variable.id);
+		    		
+		    		$this.$addVariableModal.modal('hide');
+		    		$this.$addVariableModal.modal('removeBackdrop');
+		    	}
+			};
+			var errorCallback = function (e) {
+		    	UI.Form.showResultMessage("An error occured. Please check the log file.",false );
+			};
+			var completeCallback = function() {
+				UI.unlock();
+			}
+			$this.workspaceManager.activeWorkspaceAddQuantitativeVariable(variable, successCallback, errorCallback, completeCallback);
 		});
 		
 	};

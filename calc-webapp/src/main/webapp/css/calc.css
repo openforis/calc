@@ -207,7 +207,8 @@ button.settings:hover {
 	margin: 0px;
 }
 
-.btn-home, .btn-home-plus {
+/* .btn-home, .btn-home-plus { */
+.btn-home {
 	height:100%;
 	width: 15%;
 /* 	font-size: 1.7em; */
@@ -246,7 +247,8 @@ button.settings:hover {
 	margin: 2% auto 2% auto;
 }
 
-#calculation .btn-home-plus, #calculation .calculation-button {
+/* #calculation .btn-home-plus, #calculation .calculation-button { */
+ #calculation .calculation-button {
 	width: 15em;
 	height: 6em;
 	margin: 1em;
@@ -663,4 +665,41 @@ ul.scroll-menu {
 .step-edit-exec-option .options {
 	text-align: left;
 	padding-top: 10px;
+}
+
+
+
+/**
+**
+** button-bar
+**
+**/
+.button-bar {
+	width: 30em ; 
+	float:left; 
+	border:1px solid #2c3e50; 
+	display: block;
+/* 	background-color: #496d7e; */
+/* 	border-color: #496d7e; */
+	
+/* 	background-color: #36525f; */
+/* 	border-color: #36525f; */
+}
+.button-bar-inner {
+	background-color: #496d7e;
+	position: fixed; 
+	width: 15em ;
+	font-size: 2em;
+}
+.button-bar-inner button,
+.button-bar-inner button:focus {
+	width: 100%;
+	background-color: #496d7e;
+	border-color: #496d7e;
+	color: #FFF;
+	border-radius: 0;
+}
+.button-bar-inner button:hover {
+	background-color: #36525f;
+	border-color: #36525f;
 }

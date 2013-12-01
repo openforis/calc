@@ -210,7 +210,7 @@ $(document).ready(function() {
 		
 	};
 	
-	$(".section-home button").click(homeButtonClick);
+	$(".section-home button.btn-home, .section-home button.btn-home-plus").click(homeButtonClick);
 	
 	$backHomeButton.click(function(event){
 		event.preventDefault();

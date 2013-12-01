@@ -295,16 +295,6 @@ $(function(){
 	
 
 	
-	/**
-	 * TODO add variable section has to be moved to edit-manager
-	 * edit form ui components
-	 */
-	var $stepForm = $('#step-form');
-	var $addVariableButton = $stepForm.find("button[name='add-variable']");
-	var $addVariableModal = $('#add-variable-modal');
-	var $addVariableForm = $addVariableModal.find('form');
-	var $saveVariableButton = $addVariableModal.find('.save');
-
 	
 	
 	
@@ -526,59 +516,6 @@ $(function(){
 	$inputVar = $(".input-var");
 	$inputVar.hide();
 
-	/**
-	* Add variable
-	*/
-	//TODO move it elsewhere
-	
-	// open the Add Variable popup on Add Variable button click
-	$addVariableButton.click(function(event){
-		event.preventDefault();
-		
-		UI.Form.reset($addVariableForm);
-		
-		//set entityId hidden field value
-		var selectedEntityId = calculationStepEditManager.getSelectedEntityId();
-		$addVariableForm.find("[name=entityId]").val(selectedEntityId);
-		
- 		$addVariableModal.modal({keyboard: true, backdrop: "static"});
- 		UI.Form.setFocus($addVariableForm);
-	});
-	
-	/**
-	* Add variable to the selected entity
-	*/
-	$saveVariableButton.click(function(event) {
-		event.preventDefault();
-		$addVariableForm.submit();
-	});
-	
-	$addVariableForm.submit(function(event) {
-		event.preventDefault();
-		UI.lock();
-		var variable = UI.Form.toJSON($addVariableForm);
-		
-		var successCallback = function(response) {
-			UI.Form.updateErrors($addVariableForm, response.errors);
-	    	if(response.status == "ERROR" ) {
-	    		UI.Form.showResultMessage("Error, invalid data", false);
-	    	} else {
-	    		var variable = response.fields.variable;
-	    		
-	    		calculationStepEditManager.refreshVariableSelect(variable.id);
-	    		
-	    		$addVariableModal.modal('hide');
-	    		$addVariableModal.modal('removeBackdrop');
-	    	}
-		};
-		var errorCallback = function (e) {
-	    	UI.Form.showResultMessage("An error occured. Please check the log file.",false );
-		};
-		var completeCallback = function() {
-			UI.unlock();
-		}
-		workspaceManager.activeWorkspaceAddQuantitativeVariable(variable, successCallback, errorCallback, completeCallback);
-	});
 	
 	/**
 	* Input variable. not used now
