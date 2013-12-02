@@ -48,9 +48,28 @@ checkJobStatus = function(onCompleteCallback, updateOnly, hideOnComplete) {
 		
 		if( updateOnly && updateOnly == true ){
 			updateJobStatus($job, onCompleteCallback, hideOnComplete);
-		} else if ( $job.status == 'RUNNING' ) {
-			createJobStatus($job, onCompleteCallback, hideOnComplete);
+		} else {
+			switch($job.status) {
+			case "PENDING":
+//				// if pending, recheck status in 500 ms	
+				setTimeout(function(){
+					checkJobStatus(onCompleteCallback, updateOnly, hideOnComplete);
+				}, 100);
+				break;
+			case "RUNNING":
+				createJobStatus($job, onCompleteCallback, hideOnComplete);
+				break;
+			case "COMPLETED":
+				if ( onCompleteCallback ) {
+					onCompleteCallback($job);
+				}
+				if(hideOnComplete && hideOnComplete == true) {
+					$jobStatus.modal("hide");
+				}
+			default:
+			}
 		}
+		
 	})
 	.error(function(e) {
 //		console.log(e);
@@ -121,6 +140,10 @@ updateJobStatus = function($job, onCompleteCallback, hideOnComplete) {
 	
 	switch($job.status) {
 	case "PENDING":
+//		console.log("PENDING");
+//		setTimeout(function(){
+//			checkJobStatus(onCompleteCallback, false, hideOnComplete);
+//		}, 1000);
 		break;
 	case "RUNNING":
 		setTimeout(function(){

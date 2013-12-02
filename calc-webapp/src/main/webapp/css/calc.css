@@ -251,7 +251,7 @@ button.settings:hover {
  #calculation .calculation-button {
 	width: 15em;
 	height: 6em;
-	margin: 1em;
+	margin: 0 1em 1em 1em;
 	display: inline-block;
 }
 
@@ -675,7 +675,7 @@ ul.scroll-menu {
 **
 **/
 .button-bar {
-	width: 30em ; 
+	width: 20em ; 
 	float:left; 
 	border:1px solid #2c3e50; 
 	display: block;
@@ -688,18 +688,22 @@ ul.scroll-menu {
 .button-bar-inner {
 	background-color: #496d7e;
 	position: fixed; 
-	width: 15em ;
-	font-size: 2em;
+	width: 20em ;
+/* 	font-size: 2em; */
 }
-.button-bar-inner button,
-.button-bar-inner button:focus {
+.button-bar button,
+.button-bar button:focus {
 	width: 100%;
 	background-color: #496d7e;
 	border-color: #496d7e;
 	color: #FFF;
 	border-radius: 0;
+	height: 6em;
 }
-.button-bar-inner button:hover {
+.button-bar button:hover {
 	background-color: #36525f;
 	border-color: #36525f;
+}
+.button-bar button i{
+	font-size: 2em;
 }

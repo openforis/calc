@@ -55,7 +55,7 @@ public final class CustomRTask extends CalculationStepTask {
 	private Set<String> variables;
 	@JsonIgnore
 	private List<Query> updates;
-
+	
 	public CustomRTask() {
 		limit = 5000;
 		maxItems = -1;
@@ -63,7 +63,22 @@ public final class CustomRTask extends CalculationStepTask {
 
 	@Override
 	@Transactional
-	synchronized protected void execute() throws RException, InterruptedException {
+	synchronized 
+	protected void execute() throws InterruptedException {
+		CalculationStepRScriptConverter scriptConverter = new CalculationStepRScriptConverter(getWorkspace());
+		String rScript = scriptConverter.toRScript(getCalculationStep().getOutputVariable().getEntity(), getCalculationStep());
+		try {
+			rEnvironment = r.newEnvironment();
+			rEnvironment.eval(rScript);
+		} catch (Exception e) {
+			throw new CalculationException("R error while evaluating script", e);
+		}
+//		System.out.println(rScript);
+	}
+	
+//	@Override
+	@Transactional
+	synchronized protected void old_execute() throws RException, InterruptedException {
 		rEnvironment = r.newEnvironment();
 		variables = getCalculationStep().getInputVariables();
 		// updates to run in batch

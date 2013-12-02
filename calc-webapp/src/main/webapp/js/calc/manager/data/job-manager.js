@@ -18,7 +18,13 @@ JobManager.prototype = (function(){
 			url : $this.contextPath + "/step/"+stepId+"/execute.json",
 			dataType:"json"
 		}).done(function(response) {
+//			console.log("job manager job executed");
+//			console.log(response);
 			checkJobStatus(success, false, hideModalStatusOnComplete);
+		})
+		.error(function(e){
+			console.log("error!!! on exec");
+			console.log(e);
 		});
 	};
 	

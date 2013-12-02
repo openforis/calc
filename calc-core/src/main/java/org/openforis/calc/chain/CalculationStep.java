@@ -34,7 +34,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @Table(name = "calculation_step")
 public class CalculationStep extends UserObject {
 	
-	private static final String VARIABLE_PLACEMARK = "\\$(.+?)\\$";
+	public static final String VARIABLE_PATTERN = "\\$(.+?)\\$";
 	
 	@Column(name = "module_name")
 	private String moduleName;
@@ -146,13 +146,12 @@ public class CalculationStep extends UserObject {
 	
 	public Set<String> getInputVariables() {
 		Set<String> variables = new HashSet<String>();
-		Pattern p = Pattern.compile(VARIABLE_PLACEMARK);
+		Pattern p = Pattern.compile(VARIABLE_PATTERN);
 		Matcher m = p.matcher(getScript());
 		while (m.find()) {
 			String variable = m.group(1);
 			variables.add(variable);
 		}
-		
 		return variables;
 	}
 	

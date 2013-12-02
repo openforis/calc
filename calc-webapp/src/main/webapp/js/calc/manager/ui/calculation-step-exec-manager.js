@@ -36,12 +36,15 @@ CalculationStepExecManager.prototype = (function() {
 		 */
 		//execute step
 		this.execButton.click(function(e) {
+			UI.disableAll();
 			$this.jobManager.executeCalculationStep(
 					$this.calculationStep.id, 
 					//on complete show results
 					function(job) {
+						//TODO complete
 						console.log("job finished");
 						console.log(job);
+						UI.enableAll();
 					}
 					, true
 			);

@@ -39,6 +39,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @javax.persistence.Entity
 @Table(name = "entity")
 public class Entity extends NamedUserObject {
+	
+	private static final String TABLE_NAME_FORMAT = "_%s_results";
+	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "workspace_id")
 	@JsonIgnore
@@ -322,6 +325,10 @@ public class Entity extends NamedUserObject {
 	
 	public void setPlotAreaScript(String plotAreaScript) {
 		this.plotAreaScript = plotAreaScript;
+	}
+	
+	public String getResultsTable() {
+		return String.format(TABLE_NAME_FORMAT, getName());
 	}
 	
 //	@JsonIgnore
