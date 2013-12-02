@@ -1,7 +1,6 @@
 <!-- ==== Html here === -->
 <div class="page-section" id="step-edit-page">
 
-
 	<!--  Header button bar  -->
 	<div class="row no-margin-no-padding header-button-group">
 		<div class="col-md-2 col-md-offset-4 no-padding">
@@ -135,7 +134,7 @@
 <!-- 		</div> -->
 	</div>
 	
-	<!-- Execution and results  -->
+	<!-- Execution  -->
 	<div class="row" id="calculation-step-exec-container" style="width: 100%; height: 100%; padding-top:10px; ">
 		<!-- step information section -->
 		<div class="row header">
@@ -187,6 +186,20 @@
 		
 	</div>
 	
+	<!-- Results section -->
+	<div class="row" id="calculation-step-results-container" style="width: 100%; height: 100%; padding-top:10px; ">
+		<!-- step information section -->
+		<div class="row" style="height: 100%;">
+			<div class="col-md-2">
+			</div>
+			<div class="col-md-8 results-container" style="height: 100%">
+			</div>
+			<div class="col-md-2">
+			</div>
+		</div>
+	</div>
+	
+	
 	<!-- add variable popup form -->
 	<div class="modal fade" id="add-variable-modal">
 		<div class="modal-dialog">
@@ -227,6 +240,7 @@ $(function(){
 	 */
 	var $calculationStepEditContainer = stepEdit.find("#calculation-step-edit-container");
 	var $calculationStepExecContainer = stepEdit.find("#calculation-step-exec-container");
+	var $calculationStepResultsContainer = stepEdit.find("#calculation-step-results-container");
 	
 	//TODO to be removed from here	
 	var $stepForm = $calculationStepEditContainer.find('#step-form');
@@ -235,12 +249,14 @@ $(function(){
 	* ui managers 
 	*/
 	var calculationStepEditManager = new CalculationStepEditManager($calculationStepEditContainer);	
-	var calculationStepExecManager = new CalculationStepExecManager($calculationStepExecContainer);
+	var calculationStepResultsManager = new CalculationStepResultsManager($calculationStepResultsContainer);
+	console.log(calculationStepResultsManager);
+	var calculationStepExecManager = new CalculationStepExecManager($calculationStepExecContainer, calculationStepResultsManager);
 	calculationStepExecManager.hide();
 	
 	//TODO check what to do with these managers
 	var $resultsContainer = $("#calc-step-results");
-	var dataManager = new DataManager($resultsContainer);
+	var dataManager = new DataVisualisationManager($resultsContainer);
 	var calculationStepManager = CalculationStepManager.getInstance();
 	var workspaceManager = WorkspaceManager.getInstance();
 
@@ -260,6 +276,7 @@ $(function(){
 		
 // 		$calculationStepExecContainer.fadeOut(400);
 		calculationStepExecManager.hide();
+		calculationStepResultsManager.hide();
 		$calculationStepEditContainer.fadeIn(400);
 	});
 	
@@ -273,6 +290,7 @@ $(function(){
 			calculationStepEditManager.saveIfChanged(function(response) {
 				var calculationStep = response;
 				$calculationStepEditContainer.hide();
+				calculationStepResultsManager.hide();
 				calculationStepExecManager.show(calculationStep);
 			});
 		} else {

@@ -5,9 +5,11 @@
  * @author Mino Togna
  *  
  */
-function CalculationStepExecManager(container) {
+function CalculationStepExecManager(container, calculationStepResultsManager) {
 	// main ui container
 	this.container = container;
+	// results container to show after job execution
+	this.calculationStepResultsManager = calculationStepResultsManager;
 	// header
 	this.header = this.container.find(".header");
 	//exec btn
@@ -25,26 +27,29 @@ function CalculationStepExecManager(container) {
 CalculationStepExecManager.prototype = (function() {
 	
 	/**
-	 *  
+	 *  init function
 	 * @param callback
 	 */
-	var init = function(callback) {
+	var init = function() {
 		var $this = this;
 		
 		/*
 		 * event handlers
 		 */
-		//execute step
+		//start step execution on click
 		this.execButton.click(function(e) {
 			UI.disableAll();
 			$this.jobManager.executeCalculationStep(
 					$this.calculationStep.id, 
 					//on complete show results
 					function(job) {
-						//TODO complete
-						console.log("job finished");
-						console.log(job);
+//						console.log("job finished");
+//						console.log(job);
 						UI.enableAll();
+						
+						// once completed show results section
+						$this.hide();
+						$this.calculationStepResultsManager.show();
 					}
 					, true
 			);
