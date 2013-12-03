@@ -522,16 +522,21 @@ calc-step page
 /** 
 * Modal lock component 
 */
-#ui-lock-modal {
-	top: 45%;
-}
 #ui-lock-modal .modal-dialog {
+	height: 100%;
 	width: 300px;
 }
-.locked .modal-backdrop.in {
-	opacity: 0.1;
+
+#ui-lock-modal .progress {
+	position: absolute;
+	top: 45%;
+	width: 100%;
 }
 
+.locked .modal-backdrop.in {
+	opacity: 0.1;
+	z-index: 1070;
+}
 
 /**
 * Dropdown
