@@ -9,6 +9,7 @@ import javax.validation.Valid;
 
 import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.CalculationStepDao;
+import org.openforis.calc.chain.CalculationStepService;
 import org.openforis.calc.chain.InvalidProcessingChainException;
 import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.engine.Job;
@@ -44,6 +45,9 @@ public class CalculationStepController {
 	@Autowired
 	private WorkspaceService workspaceService;
 
+	@Autowired
+	private CalculationStepService calculationStepService;
+	
 	@Autowired
 	private VariableDao variableDao;
 
@@ -104,7 +108,7 @@ public class CalculationStepController {
 	
 	@RequestMapping(value = "/{stepId}/delete.json", method = RequestMethod.GET)
 	public @ResponseBody void delete(@PathVariable int stepId) {
-		calculationStepDao.delete(stepId);
+		calculationStepService.delete(stepId);
 	}
 	
 	/**

@@ -161,7 +161,11 @@ public class WorkspaceService {
 	}
 	
 	private void updateEntityView(QuantitativeVariable variable) {
-		
+		Entity entity = getEntity(variable);
+		entityDataViewDao.createOrUpdateView(entity);
+	}
+
+	private Entity getEntity(QuantitativeVariable variable) {
 		Entity entity = variable.getEntity();
 		if (entity == null) {
 			QuantitativeVariable sourceVariable = variable.getSourceVariable();
@@ -170,7 +174,7 @@ public class WorkspaceService {
 			}
 			entity = sourceVariable.getEntity();
 		}
-		entityDataViewDao.createOrUpdateView(entity);
+		return entity;
 	}
 
 	public void addUserDefinedVariableColumns(Workspace ws) {
@@ -294,6 +298,11 @@ public class WorkspaceService {
 
 	@Transactional
 	public QuantitativeVariable deleteVariablePerHa(QuantitativeVariable variable) {
+		return deleteVariablePerHa(variable, true);
+	}
+
+	@Transactional
+	public QuantitativeVariable deleteVariablePerHa(QuantitativeVariable variable, boolean updateEntityView) {
 		QuantitativeVariable variablePerHa = variable.getVariablePerHa();
 
 		if (variablePerHa != null) {
@@ -303,12 +312,33 @@ public class WorkspaceService {
 			variableDao.delete(variablePerHa.getId());
 			variable = (QuantitativeVariable) variableDao.save(variable);
 			
-			updateEntityView(variablePerHa);
+			if ( updateEntityView ) {
+				updateEntityView(variable);
+			}
 		}
 
 		return variable;
 	}
+	
+	@Transactional
+	public void deleteVariable(QuantitativeVariable variable, boolean updateEntityView) {
+		QuantitativeVariable variablePerHa = variable.getVariablePerHa();
+		if ( variablePerHa != null ) {
+			deleteVariablePerHa(variable, false);
+		}
+		dropVariableColumn(variable);
+		
+		Entity entity = getEntity(variable);
+		
+		variableDao.delete(variable.getId());
 
+		entity.removeVariable(variable);
+		
+		if ( updateEntityView ) {
+			updateEntityView(variable);
+		}
+	}
+	
 	/**
 	 * Set plot area script for the given entity and returns it
 	 * @param entity

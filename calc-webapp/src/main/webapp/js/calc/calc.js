@@ -276,10 +276,10 @@ $(document).ready(function() {
 	
 	// when page is loaded init function is called
 	init = function() {
-		homeCalculationManager = new HomeCalculationManager();
+		homeCalculationManager = new HomeCalculationManager($("#calculation"));
 		
 		//load all calculation steps
-		homeCalculationManager.refreshHome();
+		homeCalculationManager.updateCalculationStepButtons();
 		
 		checkJobStatus();
 		//on load, the footer buttons is positioned to the bottom of the page

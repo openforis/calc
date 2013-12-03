@@ -175,7 +175,7 @@ button.option-btn-selected:hover {
 }
 
 /** Home buttons */
-button.calculation:hover{
+button.calculation:hover {
 	background-color: #3e5770;
 	border-color: #3e5770;
 }
@@ -253,7 +253,18 @@ button.settings:hover {
 	height: 6em;
 	margin: 0 1em 1em 1em;
 	display: inline-block;
+	float: left;
 }
+
+#calculation .calculation-button.ui-draggable-dragging {
+	opacity: 0.4;
+}
+
+#calculation button.highlight {
+	color: yellow;
+}
+
+
 
 /**
 * Footer
@@ -705,10 +716,31 @@ ul.scroll-menu {
 	border-radius: 0;
 	height: 6em;
 }
-.button-bar button:hover {
+.button-bar button:hover, .button-bar button.blue-btn-hover {
 	background-color: #36525f;
 	border-color: #36525f;
 }
 .button-bar button i{
 	font-size: 2em;
+}
+
+/**
+* Dialog
+*/
+.dialog {
+	background: white;
+	padding: 5px 10px 5px 10px;
+}
+
+.dialog .content {
+	text-align: center;
+	padding: 10px;
+}
+	
+.dialog .footer {
+	text-align: center;
+}
+
+.dialog .footer button {
+	margin: 5px;
 }

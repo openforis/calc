@@ -38,8 +38,7 @@
 	 	<div class="section-home calculation" id="calculation">
 	 		<div class="page-section">
 	 			
-		  		<div class="steps-container">
-		  		
+	 			<div class="steps-container"> 
 		  			<div class="button-bar">
 		  				<div class="button-bar-inner">
 			 				<div class="row no-margin" >
@@ -49,19 +48,22 @@
 					 				</button>
 				 				</div>
 				 				<div class="col-md-6 no-padding">
-				 					<button type="button" class="btn">
+				 					<button type="button" class="btn delete" disabled="disabled">
 					 					<i class="fa-trash-o icon-5"></i>
 					 				</button>
 				 				</div>
 			 				</div>
 		  				</div>
 		 			</div>
+		 			<div class="step-buttons-container sortable">
+	  				</div>
+		 			<button type="button" class="btn btn-default btn-home calculation-button template"
+			  		 	style="display: none"></button>
+		 			</div>
+	 			
 <!-- 		 			<button type="button" class="btn btn-default calculation btn-home-plus" href="step-edit.html"> -->
 <!-- 	 					<i class="icon-plus-sign-alt icon-5" style="font-size:3em"></i> -->
 <!-- 	 				</button> -->
-		  		</div>
-		  		<button type="button" class="btn btn-default btn-home calculation-button template"
-		  		 	style="display: none"></button>
 		  		<!-- 
 		  		<div class="step template" style="display: none">
 	 				<button type="button" class="btn default-btn btn-home calculation-button"></button>
@@ -236,17 +238,24 @@
 			<div class="row chart" id="scatter-plot"></div>
 		</div>
 	</div>
-	
-	
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
+
+	<!-- ===================================================== -->
+    <!-- =============== JavaScript Libraries ================ -->
+    <!-- ===================================================== -->
 	
 	<!-- JQuery -->
 	<script src="./js/jquery/jquery.min.js"></script>
 <!-- 	<script src="./js/jquery/jquery.js"></script> -->
 	<script src="./js/jquery/plugin/jquery.form.min.js"></script>	
 	<script src="./js/jquery/plugin/jquery.easing.js"></script>	
-	<script src="./js/jquery/plugin/jquery-ui-effects.js"></script>
+	<script src="./js/jquery/plugin/jquery-ui/jquery.ui.core.min.js"></script>
+	<script src="./js/jquery/plugin/jquery-ui/jquery.ui.widget.min.js"></script>
+	<script src="./js/jquery/plugin/jquery-ui/jquery.ui.mouse.min.js"></script>
+	<script src="./js/jquery/plugin/jquery-ui/jquery.ui.button.min.js"></script>
+	<script src="./js/jquery/plugin/jquery-ui/jquery.ui.effect.min.js"></script>
+	<script src="./js/jquery/plugin/jquery-ui/jquery.ui.draggable.min.js"></script>
+	<script src="./js/jquery/plugin/jquery-ui/jquery.ui.droppable.min.js"></script>
+	<script src="./js/jquery/plugin/jquery-ui/jquery.ui.sortable.min.js"></script>
 	<!-- Url parser jqeury plugin -->
 	<script src="./js/jquery/plugin/purl.js"></script>
 	<script src="./js/jquery/plugin/jquery.caret.js"></script>
@@ -292,7 +301,6 @@
 	<script src="./js/calc/manager/ui/calculation-step-edit-manager.js"></script>
 	<script src="./js/calc/manager/ui/calculation-step-exec-manager.js"></script>
 	<script src="./js/calc/manager/ui/calculation-step-results-manager.js"></script>
-	
 	
 	<!-- sampling design  -->
 	<script src="./js/calc/manager/ui/sampling-design-manager.js"></script>
