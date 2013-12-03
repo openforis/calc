@@ -63,7 +63,7 @@ public class Workspace extends UserObject {
 	private boolean active;
 
 	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER, cascade = javax.persistence.CascadeType.ALL, orphanRemoval = true)
-	@OrderBy("sortOrder")
+	@OrderBy("name")
 	@Fetch(FetchMode.SUBSELECT)
 	@Cascade(CascadeType.ALL)
 	private List<Entity> entities;
