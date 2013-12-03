@@ -117,7 +117,9 @@ CalculationStepEditManager.prototype = (function() {
 			var successCallback = function(response) {
 				UI.Form.updateErrors($this.$addVariableForm, response.errors);
 		    	if(response.status == "ERROR" ) {
-		    		UI.Form.showResultMessage("Error, invalid data", false);
+		    		var errors = response.errors;
+		    		var errorMessage = UI.Form.getFormErrorMessage($this.$addVariableForm, errors);
+		    		UI.Form.showResultMessage(errorMessage, false);
 		    	} else {
 		    		var variable = response.fields.variable;
 		    		$this.refreshVariableSelect(variable.id);

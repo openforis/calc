@@ -18,11 +18,11 @@ import javax.validation.Payload;
  */
 @Target({TYPE, ANNOTATION_TYPE})
 @Retention(RUNTIME)
-@Constraint(validatedBy = VariableValidator.class)
+@Constraint(validatedBy = VariableUniquenessValidator.class)
 @Documented
-public @interface VariableConstraint {
+public @interface VariableUniquenessConstraint {
 
-	String message() default "{VariableConstraint}";
+	String message() default "Variable already exists";
 	
 	Class<?>[] groups() default {};
 

@@ -35,11 +35,46 @@ UI.Form.updateErrors = function($form, errors) {
 		var $field = $form.find('[name=' + fieldName + ']');
 		if ( $field != null ) {
 			var $formGroup = $field.closest('.form-group');
-			$formGroup.addClass('has-error');
-
-			UI.Form.createErrorTooltip($field, error);
+			if ( ! $formGroup.hasClass('has-error') ) {
+				$formGroup.addClass('has-error');
+	
+				UI.Form.createErrorTooltip($field, error);
+			}
 		}
 	});
+};
+
+/**
+ * Returns the message associated to the error with the specified field name.
+ * If field name is not specified, than the generic form error message is returned.
+ */
+UI.Form.getFieldErrorMessage = function(errors, field) {
+	for (var i=0; i < errors.length; i++) {
+		var error = errors[i];
+		if ( ! field && ! error.field || field == error.field) {
+			return error.defaultMessage;
+		}
+	}
+	return null;
+};
+
+/**
+ * Returns the error message associated to the error with no field name specified
+ * or the one associated to the first error.
+ */
+UI.Form.getFormErrorMessage = function($form, errors) {
+	var genericErrorMessage = UI.Form.getFieldErrorMessage(errors);
+	if ( genericErrorMessage != null ) {
+		errorMessage = genericErrorMessage;
+	} else {
+		var firstError = errors[0];
+		var fieldName = firstError.field;
+		var fieldErrorMessage = firstError.defaultMessage;
+		var field = $form.find("[name='" + fieldName + "']");
+		var fieldLabel = UI.Form.getFieldLabel(field);
+		errorMessage =  fieldLabel + " " + fieldErrorMessage;
+	}
+	return errorMessage;
 };
 
 /**

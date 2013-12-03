@@ -17,16 +17,17 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author S. Ricci
  *
  */
-public class VariableValidator implements ConstraintValidator<VariableConstraint, VariableForm> {
+public class VariableUniquenessValidator implements ConstraintValidator<VariableUniquenessConstraint, VariableForm> {
 
 	private static final String NAME_FIELD_NAME = "name";
+	
 	private static final String UNIQUE_NAME_MESSAGE = "must be unique";
 	
 	@Autowired
 	private WorkspaceService workspaceService;
 	
 	@Override
-	public void initialize(VariableConstraint constraintAnnotation) {
+	public void initialize(VariableUniquenessConstraint constraintAnnotation) {
 	}
 
 	@Override
@@ -34,13 +35,15 @@ public class VariableValidator implements ConstraintValidator<VariableConstraint
 			ConstraintValidatorContext context) {
 		boolean unique = isNameUnique(value.getId(), value.getName());
 		if ( ! unique ) {
-			((ConstraintValidatorContextImpl)context).buildConstraintViolationWithTemplate(UNIQUE_NAME_MESSAGE)
+			ConstraintValidatorContextImpl validatorContext = (ConstraintValidatorContextImpl)context;
+			
+			validatorContext.buildConstraintViolationWithTemplate(UNIQUE_NAME_MESSAGE)
 				.addPropertyNode(NAME_FIELD_NAME)
 				.addConstraintViolation();
 		}
 		return unique;
 	}
-
+	
 	private boolean isNameUnique(Integer id, String name) {
 		Workspace ws = workspaceService.getActiveWorkspace();
 		Variable<?> v = ws.getVariableByName(name);
