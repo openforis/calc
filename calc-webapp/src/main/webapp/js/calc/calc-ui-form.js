@@ -78,25 +78,6 @@ UI.Form.getFormErrorMessage = function($form, errors) {
 };
 
 /**
- * DEPRECATED. Use UI.showError or UI.showSuccess
- * Left here for back compatibility
- * 
- * Show a success or failure message in a popup window
- * 
- * @param message
- * @param isSuccess
- *  
- */
-UI.Form.showResultMessage = function(message, success){
-	// Add div if not defined
-	if( success == true ) {
-		UI.showSuccess(message, true);
-	} else {
-		UI.showError(message, true);
-	}
-};	
-
-/**
  * Disable all input fields in a form
  * 
  * @param form

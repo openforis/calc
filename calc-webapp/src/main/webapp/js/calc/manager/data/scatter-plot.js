@@ -44,7 +44,7 @@ function ScatterPlot(container) {
 	this.refreshBtn.click( $.proxy(
 			function(e){
 				if( this.xVariable == null || this.yVariable == null ){
-					UI.Form.showResultMessage( "x and y must be set", false );
+					UI.showError( "x and y must be set", true );
 				} else {
 					this.refresh();
 				}

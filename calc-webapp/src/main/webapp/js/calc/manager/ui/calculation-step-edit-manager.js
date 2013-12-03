@@ -119,7 +119,7 @@ CalculationStepEditManager.prototype = (function() {
 		    	if(response.status == "ERROR" ) {
 		    		var errors = response.errors;
 		    		var errorMessage = UI.Form.getFormErrorMessage($this.$addVariableForm, errors);
-		    		UI.Form.showResultMessage(errorMessage, false);
+		    		UI.showError(errorMessage, true);
 		    	} else {
 		    		var variable = response.fields.variable;
 		    		$this.refreshVariableSelect(variable.id);
@@ -129,7 +129,7 @@ CalculationStepEditManager.prototype = (function() {
 		    	}
 			};
 			var errorCallback = function (e) {
-		    	UI.Form.showResultMessage("An error occured. Please check the log file.",false );
+		    	UI.showError("An error occured. Please check the log file.", false);
 			};
 			var completeCallback = function() {
 				UI.unlock();
@@ -164,7 +164,7 @@ CalculationStepEditManager.prototype = (function() {
 			function(response) {
 		    	UI.Form.updateErrors($this.$form, response.errors);
 		    	if(response.status == "ERROR" ) {
-		    		UI.Form.showResultMessage("There are errors in the form. Please fix them before proceeding.",false);
+		    		UI.showError("There are errors in the form. Please fix them before proceeding.", true);
 		    		
 		    		if ( errorCallback ) {
 		    			errorCallback();
@@ -182,7 +182,7 @@ CalculationStepEditManager.prototype = (function() {
 			},
 			//error
 			function(e) {
-		    	UI.Form.showResultMessage("An error occured. Please check the log file.",false );
+		    	UI.showError("An error occured. Please check the log file.", false);
 		
 				if ( errorCallback ) {
 					errorCallback(e);
