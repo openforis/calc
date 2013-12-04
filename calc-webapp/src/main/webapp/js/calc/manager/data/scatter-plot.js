@@ -13,6 +13,7 @@ function ScatterPlot(container) {
 	this.refreshBtn = optionsSection.find('[name=refresh]');
 	//chart container
 	this.chartContainer = this.container.find(".chart");
+//	this.chartContainer = this.container.find(".chart").replaceWith( $("<div id='ssss'></div") );
 	this.chartContainer.attr('id','scatter-plot-chart');
 	this.chart = null;
 	
@@ -195,7 +196,7 @@ ScatterPlot.prototype = (function(){
 	// reset chart
 	var resetChart = function(){
 		if( this.chart ){
-//			this.chart.destroy();
+			this.chart.destroy();
 			this.chart = null;
 		}
 	};
@@ -212,8 +213,10 @@ ScatterPlot.prototype = (function(){
 			this.yVariable = yVar;
 			this.xCombo.val(xVar);
 			this.yCombo.val(yVar);
-			//this.refresh();
-			$.proxy(start, this)();
+			
+//			this.start();
+//			this.refresh();
+			$.proxy(refresh, this)();
 		}
 	};
 	
@@ -357,7 +360,7 @@ ScatterPlot.prototype = (function(){
 //			console.log(vars);
 			//start getting data for the job
 			$.ajax({
-				url:"rest/data/"+$this.entityId+"/query.json",
+				url:"rest/data/entity/"+$this.dataProvider.entityId+"/query.json",
 				dataType:"json",
 				data:{	offset:$this.offset, 
 						fields:vars.join(), 
