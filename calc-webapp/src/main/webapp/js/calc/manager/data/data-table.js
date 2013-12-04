@@ -121,7 +121,7 @@ DataTable.prototype = (function(){
 		UI.disableAll();
 		var $this = this;
 		// get next data
-		this.dataProvider.data( $this.offset , $this.rows , false , function(response) {			
+		this.dataProvider.data( $this.offset , $this.rows , false , null, function(response) {			
 			$.proxy(updateTbody , $this)(response);
 			// and enable ui
 			UI.enableAll();

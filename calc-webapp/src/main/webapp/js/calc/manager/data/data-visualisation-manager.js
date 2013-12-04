@@ -49,6 +49,7 @@ DataVisualisationManager.prototype = (function() {
 
 		// set data provider
 		this.dataTable.setDataProvider(dataProvider);
+		this.scatterPlot.setDataProvider(dataProvider);
 		
 		// by default shows data table
 		$.proxy(showDataTable , this)();
