@@ -43,13 +43,17 @@ CalculationStepExecManager.prototype = (function() {
 					$this.calculationStep.id, 
 					//on complete show results
 					function(job) {
-//						console.log("job finished");
-//						console.log(job);
 						UI.enableAll();
+						
+						// instanciate data provider
+						var entityId = $this.calculationStep.outputEntityId;
+						var variables  = $this.calculationStep.variables;
+						var dataProvider = new DataViewProvider(entityId , variables);
 						
 						// once completed show results section
 						$this.hide();
-						$this.calculationStepResultsManager.show();
+						// show results. TODO reset results 
+						$this.calculationStepResultsManager.show(dataProvider);
 					}
 					, true
 			);

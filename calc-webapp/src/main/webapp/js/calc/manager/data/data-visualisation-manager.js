@@ -6,7 +6,7 @@
 function DataVisualisationManager($container) {
 	//init container
 	this.container = $dataVisualization.clone();
-	this.container.hide();
+//	this.container.hide();
 	$container.append(this.container);
 
 	this.job = null;
@@ -44,8 +44,11 @@ DataVisualisationManager.prototype = (function() {
 	// show
 	var show = function(dataProvider) {
 		this.dataProvider = dataProvider;
-		
-		this.container.fadeIn(400);
+		// in case it's still hidden
+		this.container.show();
+
+		// set data provider
+		this.dataTable.setDataProvider(dataProvider);
 		
 		// by default shows data table
 		$.proxy(showDataTable , this)();
@@ -64,55 +67,13 @@ DataVisualisationManager.prototype = (function() {
 	};
 	
 	
-	
-	
-	
-	
-	
-	// DEPRECATED
-	//start the process of showing results
-	var start = function(job) {
-		this.job = job;
-		
-		this.container.fadeIn();
-		// show data table to ui
-		$.proxy(showDataTable, this)();
-		//set job to scatter plot
-		this.scatterPlot.setJob(job);
-		// update data table with job data
-		this.dataTable.showJobResults(job);
-	};
-	// DEPRECATED
-	var updateJob = function(job) {
-		this.job = job;
-		this.scatterPlot.updateJob(job);
-		this.dataTable.updateJob(job);
-		
-		//disable/enable buttons if job completed
-		if(job.status=="COMPLETED"){
-			UI.enable( this.scatterPlotBtn );
-		} else {
-			UI.disable( this.scatterPlotBtn );
-		}
-	};
-	
 	return {
 
 		constructor : DataVisualisationManager,
 		
 		_init : init,
 		
-		show : show,
-		
-		
-		
-		
-		// DEPRECATED
-		showJobResults : function(job) {
-			$.proxy( start , this )(job);
-		},
-		
-		updateJob : updateJob
+		show : show
 	};
 
 })();

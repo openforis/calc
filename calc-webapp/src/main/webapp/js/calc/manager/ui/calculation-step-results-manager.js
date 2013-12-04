@@ -22,15 +22,14 @@ CalculationStepResultsManager.prototype = (function() {
 	 * @param callback
 	 */
 	var init = function() {
-		var $this = this;
-		
+//		var $this = this;
 		/*
 		 * event handlers
 		 */
 	};
 	
 	/**
-	 * show exec section
+	 * show results section and set the data provider to the data visualization manager
 	 */
 	var show = function(dataProvider) {
 		//show main container
@@ -48,7 +47,6 @@ CalculationStepResultsManager.prototype = (function() {
 		
 		//public methods
 		_init : init,
-		
 		//show / hide 
 		show : show
 		,

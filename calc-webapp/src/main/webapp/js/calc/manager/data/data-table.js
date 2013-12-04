@@ -1,5 +1,5 @@
 /**
- * Data table for showing job results
+ * Data table
  * 
  * @author Mino Togna
  */
@@ -10,134 +10,144 @@ function DataTable($container) {
 	 */
 	this.container = $container;
 	this.dataTablePagination = this.container.find(".data-table-pagination");
-	this.dataTableButtons = this.container.find(".data-table-buttons");
-	this.tableResults = this.container.find(".table-results");
-	this.nextButton = this.dataTableButtons.find(".next");
-	this.prevButton = this.dataTableButtons.find(".prev");
 
+	// table results
+	this.table = this.container.find(".table-results");
+	this.thead = this.table.find('thead');
+	this.tbody = this.table.find('tbody');
+	
+	// pagination buttons
+	this.nextButton = this.container.find(".data-table-buttons .next");
+	this.prevButton = this.container.find(".data-table-buttons .prev");
+
+	
+	// data provider
+	this.dataProvider = null;
+	
 	/*
 	 * used for table settings
 	 */
-	this.rows = 50;
+	this.rows = 50; // max number of rows
+	this.offset = 0; // starting point for querying
+	this.totalItems = -1; // total items to process
 	
-	this.offset = 0;
-	this.totalItems = 0;
-	this.entity = null;
-	this.variables = null;
-
-	// the job to show the results
-	this.job = null;
-	
-	//data currently loaded
-	this.data = null;
-	
-	//event handlers
-	this.nextButton.click( $.proxy(this._nextPage , this) );
-	this.prevButton.click( $.proxy(this._prevPage , this) );
+	this._init();
 };
 
 DataTable.prototype = (function(){
 	
-	var updateJob = function(job) {
-		if( this.job.id == job.id ){
-			this.job = job;
+	// init function
+	var init = function() {
+		var $this = this;
+		
+		//event handlers
+		this.nextButton.click(function(e){
+			e.preventDefault();
+			$this.offset = $this.offset += $this.rows;
+			$.proxy(updateData , $this)();
+		});
+		this.prevButton.click(function(e){
+			e.preventDefault();
+			$this.offset = $this.offset -= $this.rows;
+			$.proxy(updateData , $this)();
+		});
+	
+	};
+	
+	// set data provider and reset data table
+	var setDataProvider = function(dataProvider) {
+		this.dataProvider = dataProvider;
+		$.proxy(reset, this)();
+	};
+	
+	// private function that reset the data-table to its original state 
+	var reset = function() {
+		// reset counters
+		this.offset = 0;
+		this.totalItems = -1;
+		
+		//reset table results
+		this.thead.empty();
+		this.tbody.empty();
+	};
+	
+	// hide
+	var hide = function() {
+		this.container.hide();
+	};
+	
+	// show
+	var show =  function() {
+		this.container.fadeIn();
+		// in case it's still empty, gets the data
+		if( this.totalItems < 0 ) {
+			$.proxy(start, this)();
 		}
 	};
 	
-	//start the process of showing job results
-	var start = function(job) {
-		if( job ) {
-			var $this = this;
-//			console.log(job);
-			this.job = job;
+	// private function that starts showing the data
+	var start = function() {
+		var $this = this;
+
+		// count total items 
+		this.dataProvider.count(function(cnt){
+			// set total items
+			$this.totalItems = cnt;
 			
-			// reset count and data
-			this.offset = 0;
-			this.totalItems = this.job.tasks[0].totalItems;
-			this.entity = this.job.tasks[0].calculationStep.outputEntityId;
-			this.variables = this.job.tasks[0].calculationStep.variables;
-			//update table headers
-			$.proxy(updateHeaders, this)();
-			
-			//update table with data loaded 
-			//this is a temporary fix. job logic should be moved to a level up.
-			var task = this.job.tasks[0];
-			if(task.itemsProcessed == 0) {
-				// wait one second so that job can process some items
-				setTimeout(function(e){
-					$.proxy(refresh, $this)();
-				}, 1000);
-			} else {
-				$.proxy(refresh, this)();
-			}
-//			console.log($job);
-//			console.log($job.tasks[0]);
-			
-		}
+			//update table headers and data
+			$.proxy(updateHeaders, $this)();
+			$.proxy(updateData, $this)();
+		});
 	};
 	
 	//update table headers
 	var updateHeaders = function() {
-		$thead = this.tableResults.find('thead');
-		// empty first
-		$thead.empty();
-		
-		var $tr = $("<tr></tr>");
-		$tr.hide();
-		$thead.append($tr);
-		var $th = $("<th></th>");
-		$th.html("Row #");
-		$tr.append($th);
-		$.each(this.variables, function(i,field) {
-			$th = $("<th></th>");
-			$th.html(field);
-			$tr.append($th);
+		var tr = $("<tr></tr>");
+		tr.hide();
+		this.thead.append(tr);
+		var th = $("<th></th>");
+		th.html("Row #");
+		tr.append(th);
+		$.each(this.dataProvider.variables, function(i,field) {
+			var th = $("<th></th>");
+			th.html(field);
+			tr.append(th);
 		});
-		$tr.fadeIn(100);
+		tr.fadeIn(100);
 	};
 	
-	//refresh the table by getting data from the server
-	var refresh = function() {
+	//refresh the table by getting data from the current offset
+	var updateData = function() {
+		UI.disableAll();
 		var $this = this;
-    	$.ajax({
-    		url:"rest/job/"+$this.job.id+"/results.json",
-    		dataType:"json",
-    		data:{offset:this.offset, numberOfRows:this.rows},
-    		
-    		success: function(response) {
-    			$.proxy(updateButtons , $this)();
-    			$.proxy(updateData , $this)(response);
-    		}
-    		
-    	});
-
+		// get next data
+		this.dataProvider.data( $this.offset , $this.rows , false , function(response) {			
+			$.proxy(updateTbody , $this)(response);
+			// and enable ui
+			UI.enableAll();
+			$.proxy(updateButtons , $this)();
+		});
 	};
 	
 	// disable / enable prev/next buttons
 	var updateButtons = function(){
 		if(this.offset == 0){
 			UI.disable(this.prevButton);
-//			this.prevButton.prop('disabled', true);
 		} else {
 			UI.enable(this.prevButton);
-//			this.prevButton.prop('disabled', false);
 		}
 		if( (this.offset+this.rows) >= this.totalItems){
 			UI.disable(this.nextButton);
-//			this.nextButton.prop('disabled', true);
 		} else {
 			UI.enable(this.nextButton);
-//			this.nextButton.prop('disabled', false);
 		}
 	};
 	
 	// update html table with data given as parameter
-	var updateData = function(data) {
-		//set the data
-		this.data = data;
+	var updateTbody = function(data) {
+		var $this = this;
 		//empty table before showing results
-		var $tbody = this.tableResults.find('tbody');
-		$tbody.empty();
+		this.tbody.empty();
 		
 		//update paging text
 		var paging = (this.offset+1) + " - " + (this.offset + data.length) + " of " + this.totalItems;
@@ -150,11 +160,14 @@ DataTable.prototype = (function(){
 		$.each(data, function(i,record) {
 			var $tr = $("<tr></tr>");
 			$tr.hide();
-			$tbody.append($tr);
+			$this.tbody.append($tr);
 			var $td = $("<td></td>");
 			$td.html((rowNum++));
 			$tr.append($td);
-			$.each(record.fields,function(j,field){
+			
+			var variables = $this.dataProvider.variables;
+			$.each(variables, function(j,variable){
+				var field = record.fields[variable];
 				var $td = $("<td></td>");
 				$td.html(field);
 				$tr.append($td);
@@ -170,31 +183,13 @@ DataTable.prototype = (function(){
 		
 		constructor : DataTable,
 		
-		show : function() {
-			this.container.fadeIn();
-		},
+		_init : init,
+		
+		show : show ,
 
-		hide : function(){
-			this.container.hide();
-		},
-		// handlers for next and prev buttons
-		_nextPage : function(e) {
-			this.offset = this.offset += this.rows;
-			$.proxy(refresh , this)();
-		},
+		hide : hide ,
 		
-		_prevPage : function(e) {
-			this.offset = this.offset -= this.rows;
-			$.proxy(refresh , this)();
-		}, 
-		
-		//show job results
-        showJobResults : function(job) {
-        	$.proxy(start , this)(job);
-        },
-        
-        updateJob : updateJob
-	
+		setDataProvider : setDataProvider
 	};
 
 })();

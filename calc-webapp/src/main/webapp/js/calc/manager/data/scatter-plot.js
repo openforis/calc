@@ -5,6 +5,9 @@
 function ScatterPlot(container) {
 	// ui container
 	this.container = container;
+	
+	
+	
 	// options section
 	var optionsSection = this.container.find('.options');
 	
@@ -293,22 +296,6 @@ ScatterPlot.prototype = (function(){
 		},
 		
 		refresh : refresh
-//		
-//		setXAxis : function(xAxis) {
-//			this.xVariable = xAxis;
-//			this.chartinfo.xAxis.title.text = xAxis;
-//		},
-//		
-//		setYAxis : function(yAxis) {
-//			this.yVariable = yAxis;
-//			this.chartinfo.yAxis.title.text = yAxis;
-//		},
-//		
-//		setAxes : function(xAxis, yAxis) {
-//			this.setXAxis(xAxis);
-//			this.setYAxis(yAxis);
-//		}
-
 		
 	};
 })();
