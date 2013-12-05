@@ -32,8 +32,15 @@ DataViewProvider.prototype = (function() {
 	 * query the server to get the data
 	 */
 	var data = function(offset , numberOfItems , excludeNulls, variables, success) {
+		// prepare request parameters
 		var vars = (variables)?variables:this.variables;
-		var params = { offset:offset, numberOfRows:numberOfItems, fields:vars.join(','), excludeNulls:excludeNulls};
+		var params = { offset:offset, fields:vars.join(',') };
+		if(numberOfItems) {
+			parmas.numberOfRows = numberOfItems;
+		}
+		if(excludeNulls){
+			parmas.excludeNulls = excludeNulls;
+		}
 		
 		$.ajax({
 			url : this.contextPath + this.entityId + "/query.json" ,

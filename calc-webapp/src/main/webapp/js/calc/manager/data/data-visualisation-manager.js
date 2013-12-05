@@ -6,6 +6,7 @@
 function DataVisualisationManager($container) {
 	//init container
 	this.container = $dataVisualization.clone();
+	this.container.attr("id","fuckthebuttons");
 //	this.container.hide();
 	$container.append(this.container);
 

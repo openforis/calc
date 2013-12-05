@@ -253,6 +253,12 @@ $(function(){
 	
 	var calculationStepExecManager = new CalculationStepExecManager($calculationStepExecContainer, calculationStepResultsManager);
 	calculationStepExecManager.hide();
+	
+	//TODO check what to do with these managers
+	var $resultsContainer = $("#calc-step-results");
+	var dataManager = new DataVisualisationManager($resultsContainer);
+	var calculationStepManager = CalculationStepManager.getInstance();
+	var workspaceManager = WorkspaceManager.getInstance();
 
 	/**
 	* Header buttons
@@ -293,9 +299,6 @@ $(function(){
 	});
 	
 	
-	
-	
-	
 	// TODO remove: exec options moved to test section
 	//exec options ui components
 	var execOptionsBtn = $calculationStepEditContainer.find(".step-edit-exec-option button[name=exec-options]");
@@ -313,6 +316,12 @@ $(function(){
 
 	
 	
+	
+	
+	
+	
+	
+	
 	/*** 
 	* ================= 
 	* Run Calculation
@@ -323,9 +332,147 @@ $(function(){
 	rowNum = 1;
 	
 	//DEPRECATED
+	showResultsContainer = function() {
+		// write step caption as header
+		$calculationStepExecContainer.find(".step-name legend").html($calculationStep.caption);
+		
+		$calculationStepEditContainer.fadeOut(400);
+		$calculationStepExecContainer.fadeIn(400);
+	};
+	
+	resetResultsContainer = function() {
+		//reset progress and results table
+		$progressBar = $stepProgress.find(".progress-bar");		
+		UI.resetProgressBar($progressBar);
+		
+		
+// 		$resultsTable.find('thead').empty();
+// 		$resultsTable.find('tbody').empty();
+		
+		//reset variables used for displaying the results
+		processResultsStarted = false;
+		rowNum = 1;
+	};
+	
+	//DEPRECATED
+	showEditFormContainer = function(){
+		//reset progress and results table
+		$progressBar = $stepProgress.find(".progress-bar");		
+		UI.resetProgressBar($progressBar);
+		
+// 		$resultsTable.find('thead').empty();
+// 		$resultsTable.find('tbody').empty();
+		
+		//reset variables used for displaying the results
+		processResultsStarted = false;
+		rowNum = 1;
+		//resetResultsContainer();
+		$calculationStepExecContainer.fadeOut(400);
+		$calculationStepEditContainer.fadeIn(400);
+	}; 
 	
 	
+	// DEPRECATED
+	//on run calcuclation button click	
+	$stepForm.find("button[name='run-calculcation-step']").click(function(event){
+		event.preventDefault();
+		//first save the step and then it gets executed
+		calculationStepEditManager.save(function(response) {
+			
+			$calculationStep = response;
+			stepId = $calculationStep.id;
+			
+			var totalItems = parseInt( $stepForm.find("input[name='totalItems']").val() );
+			calculationStepManager.execute(stepId, totalItems, function(response) {
+				console.log("response on exec");
+				console.log(response);
+				var $job = response;
+				updateCalculationStepStatus($job);
+				showResultsContainer();
+			});
+		});
+		
+		// animation disabled for now
+// 		$calculationStepEditContainer
+//  			.animate({left: parseInt($calculationStepEditContainer.css('left'),10) == 0 ? -$calculationStepEditContainer.outerWidth() : 0 });
+// 			;
+// 		$calculationStepExecContainer
+// 			.show(400)
+// 			.animate({left:0}, 400)
+// 			;
+		
+	});
 	
+	updateCalculationStepStatus = function($job) {
+
+		//start processing results the first time the status != pending
+		if(!processResultsStarted) {
+			processResults($job);
+		}
+// 		//update data manager job
+// 		dataManager.updateJob($job);
+// 		console.log($job);
+		var $task = $job.tasks[0];
+
+		var $progressBar = $stepProgress.find(".progress-bar");		
+		UI.resetProgressBar($progressBar);
+		
+		var totalItems = $task.totalItems;
+		var itemsProcessed = $task.itemsProcessed;
+		var percent = (totalItems > 0 ) ?  parseInt(itemsProcessed / totalItems * 100) : -1 ;
+		
+		switch( $task.status ) {
+		case "PENDING":
+			//refresh job
+			refreshJob($job);
+			break;
+		case "RUNNING": 
+			$progressBar.addClass("progress-bar-info");
+			if( percent >= 0 ) { 
+				$progressBar.width(percent+"%");
+			} else {
+				$progressBar.parent().addClass("active progress-striped");
+				$progressBar.width("100%");
+			}
+			var htmlPercent = (percent >= 0) ? percent + " %" : " -% ";
+			$calculationStepExecContainer.find(".percent").text(htmlPercent);
+			
+			//update data manager job
+			dataManager.updateJob($job);
+			
+			//if job not completed, it gets reloaded from server
+// 			if( $job.completed != true ) {
+			// refresh job
+			refreshJob($job);
+// 			setTimeout(function(){
+// 				//var stepId = $calculationStep.id;
+// 				$.ajax({
+// 					url:"rest/job/"+$job.id+".json",
+// 					dataType:"json"
+// 				})
+// 				.done(function(response){
+// 					var job = response;
+// 					updateCalculationStepStatus(job);
+// 				});
+// 			}, 500);
+// 			}
+			break;
+		case "COMPLETED": 
+			$progressBar.addClass("progress-bar-success");
+			$progressBar.width("100%");
+			$calculationStepExecContainer.find(".percent").text("100%");
+			
+			//update data manager job
+			dataManager.updateJob($job);
+			break;
+		case "FAILED":
+// 			console.log($job);
+			UI.showError($job.lastException.message, false);
+			break;
+		default: // nothing for now;
+		}
+		
+	};
 	
 	var refreshJob = function($job){
 		setTimeout(function(){
@@ -339,6 +486,18 @@ $(function(){
 				updateCalculationStepStatus(job);
 			});
 		}, 500);
+	};
+	
+	var processResults = function($job) {
+		if(processResultsStarted != true) {
+			if( $job.status != 'PENDING' && $job.status != "FAILED" ) {
+
+				dataManager.showJobResults($job);
+				processResultsStarted = true;
+
+			}
+			
+		}
 	};
 	
 	//TODO to be removed

@@ -46,7 +46,7 @@ public class DataController {
 	
 	@RequestMapping(value = "/entity/{entityId}/query.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
-	List<DataRecord> query(@PathVariable int entityId, @RequestParam String fields, @RequestParam int offset, @RequestParam(required=false) Integer numberOfRows, @RequestParam(required=false) Boolean excludeNull) {
+	List<DataRecord> query(@PathVariable int entityId, @RequestParam String fields, @RequestParam int offset, @RequestParam(value = "numberOfRows" , required=false) Integer numberOfRows, @RequestParam(required=false) Boolean excludeNull) {
 		Workspace workspace = workspaceService.getActiveWorkspace();
 		Entity entity = workspace.getEntityById(entityId);
 		
