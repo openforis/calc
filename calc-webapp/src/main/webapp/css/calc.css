@@ -1,6 +1,7 @@
 /**
 * Custom calc style
 * @author Mino Togna
+* @author Stefano Ricci
 */
 
 @CHARSET "UTF-8";
@@ -246,18 +247,21 @@ button.settings:hover {
 	max-width: 90%;
 	margin: 2% auto 2% auto;
 }
-
 /* #calculation .btn-home-plus, #calculation .calculation-button { */
  #calculation .calculation-button {
 	width: 15em;
 	height: 6em;
 	margin: 0 1em 1em 1em;
-	display: inline-block;
-	float: left;
 }
 
-#calculation .calculation-button.ui-draggable-dragging {
-	opacity: 0.4;
+#calculation li.calculation-button button {
+	width: 100%;
+}
+
+#calculation .steps-container li.ui-state-highlight {
+	width: 15em;
+	height: 6em;
+	border: 2px solid white;
 }
 
 #calculation button.highlight {
@@ -744,4 +748,17 @@ ul.scroll-menu {
 
 .dialog .footer button {
 	margin: 5px;
+}
+
+/**
+* Sortable
+*/
+ul.ui-sortable {
+	list-style-type: none;
+}
+ul.ui-sortable li {
+	float: left;
+}
+.ui-sortable-helper {
+	opacity: 0.4;
 }

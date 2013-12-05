@@ -36,6 +36,22 @@ HomeCalculationManager.prototype = (function() {
 		$this.workspaceManager = WorkspaceManager.getInstance();
 
 		$.proxy(initDroppableOnDeleteButton, $this)();
+		
+		$this.stepBtnsContainer.sortable({
+			cancel: false,
+			placeholder: "ui-state-highlight",
+			start: function(event, ui) {
+				$.proxy(setDraggingViewState, $this)(ui.item);
+			},
+			stop: function(event, ui) {
+				var stepBtn = ui.item;
+				if ( stepBtn.hasClass("ui-draggable-drop") ) {
+					//dropping, don't forget to re-enable all fields at the end...
+				} else {
+					$.proxy(setDefaultViewState, $this)();
+				}
+			}
+		});
 	};
 	
 	/**
@@ -46,20 +62,20 @@ HomeCalculationManager.prototype = (function() {
 		$this.deleteBtn.droppable({
 			accept : ".calculation-button",
 			over : function(event, ui) {
-				$(this).addClass("highlight");
+				$this.deleteBtn.addClass("highlight");
 			},
 			out : function(event, ui) {
-				$(this).removeClass("highlight");
+				$this.deleteBtn.removeClass("highlight");
 			},
 			drop : function(event, ui) {
-				var $stepBtn = $(ui.draggable);
-				var step = $stepBtn.data("calculationStep");
-
-				$stepBtn.addClass("ui-draggable-drop");
+				var stepBtn = ui.draggable;
+				var step = stepBtn.data("calculationStep");
+				stepBtn.addClass("ui-draggable-drop");
+				$.proxy(hideStepButton, $this)(step);
 
 				$.proxy(showDeleteConfirm, $this)(step);
 
-				$(this).removeClass("highlight");
+				$this.deleteBtn.removeClass("highlight");
 			}
 		});
 	};
@@ -130,17 +146,42 @@ HomeCalculationManager.prototype = (function() {
 	 */
 	var showDeleteConfirm = function(step) {
 		var $this = this;
+		
 		var position = $this.deleteBtn.offset();
-
-		UI.showConfirm("Delete '" + step.caption + "'?", $.proxy(performDelete, $this, step), function() {
+		
+		var onOk = $.proxy(performDelete, $this, step);
+		
+		var onCancel = function() {
 			// restore the step button in the old position
 			var stepButton = $.proxy(getStepButton, $this)(step);
 			stepButton.removeClass("ui-draggable-drop");
 			$.proxy(showStepButton, $this)(step);
-			UI.enableAll();
-		}, position);
+			$.proxy(setDefaultViewState, $this)();
+		};
+		UI.showConfirm("Delete '" + step.caption + "'?",  onOk, onCancel, position);
 	};
 
+	/**
+	 * Set the view to the default state
+	 * (enables all fields but the delete button)
+	 */
+	var setDefaultViewState = function() {
+		UI.enableAll();
+		UI.disable(this.deleteBtn);
+		this.deleteBtn.removeClass("blue-btn-hover");
+	};
+	
+	/**
+	 * Set the view to the "dragging" state
+	 * (disable all fields but the delete button and the dragged step item)
+	 */
+	var setDraggingViewState = function(draggedItem) {
+		UI.disableAll();
+		UI.enable(draggedItem);
+		UI.enable(this.deleteBtn);
+		this.deleteBtn.addClass("blue-btn-hover");
+	};
+	
 	/**
 	 * Executes the delete of the specified CalculationStep
 	 */
@@ -174,15 +215,13 @@ HomeCalculationManager.prototype = (function() {
 		$stepBtn.data("calculationStep", step);
 		$stepBtn.attr("id", "calculation-step-button-" + step.id);
 
-		$stepBtn.text(step.caption);
+		$stepBtn.find("button").text(step.caption);
 		$stepBtn.attr("href", "step-edit.html?id=" + step.id);
 
 		$stepBtn.click($.proxy(calculationStepButtonClickHandler, $this));
 
-		$stepBtn.css("display", "block");
-
 		$this.stepBtnsContainer.append($stepBtn);
-
+		/*
 		$stepBtn.draggable({
 			revert : "invalid",
 			cancel : false,
@@ -205,6 +244,7 @@ HomeCalculationManager.prototype = (function() {
 				UI.disable($this.deleteBtn);
 			}
 		});
+		*/
 		return $stepBtn;
 	};
 	
@@ -213,7 +253,7 @@ HomeCalculationManager.prototype = (function() {
 	 */
 	var calculationStepButtonClickHandler = function(event) {
 		var button = $(event.currentTarget);
-		if (!(button.hasClass("ui-draggable-dragging") || 
+		if (!(button.hasClass("ui-sortable-helper") || 
 				button.hasClass("ui-draggable-drop"))) {
 			homeButtonClick(event);
 		}
