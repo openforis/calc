@@ -228,62 +228,36 @@
 	</div><!-- /.modal -->
 	
 <script>
-$(function(){
-	//current calculation step
-	var $calculationStep = null;
-	
-	//main ui component
+$(function() {
+	// step edit page
 	var stepEdit = $("#step-edit-page");
 	
-	/**
-	 * ui components : edit, exec , results
-	 */
-	var $calculationStepEditContainer = stepEdit.find("#calculation-step-edit-container");
-	var $calculationStepExecContainer = stepEdit.find("#calculation-step-exec-container");
-	var $calculationStepResultsContainer = stepEdit.find("#calculation-step-results-container");
-	
-	//TODO to be removed from here	
-	var $stepForm = $calculationStepEditContainer.find('#step-form');
-	//TODO managers here. pass containers to managers and not form. add methods show and hide?
-	/**
-	* ui managers 
-	*/
-	var calculationStepEditManager = new CalculationStepEditManager($calculationStepEditContainer);	
-	var calculationStepResultsManager = new CalculationStepResultsManager($calculationStepResultsContainer);
-	
-	var calculationStepExecManager = new CalculationStepExecManager($calculationStepExecContainer, calculationStepResultsManager);
+	// ui managers 
+	var calculationStepEditManager = new CalculationStepEditManager( stepEdit.find("#calculation-step-edit-container") );	
+	var calculationStepResultsManager = new CalculationStepResultsManager( stepEdit.find("#calculation-step-results-container") );
+	var calculationStepExecManager = new CalculationStepExecManager( stepEdit.find("#calculation-step-exec-container") , calculationStepResultsManager );
 	calculationStepExecManager.hide();
 
-	/**
-	* Header buttons
-	*/
+	// header buttons
 	var showEditBtn = stepEdit.find("button[name=show-edit-btn]");
 	var showExecBtn = stepEdit.find("button[name=show-exec-btn]");
-	
-	/**
-	* Event handlers for header buttons
-	*/
-	/*
-	*/
+	// show edit section
 	showEditBtn.click(function(e){
 		e.preventDefault();
 		
-// 		$calculationStepExecContainer.fadeOut(400);
 		calculationStepExecManager.hide();
 		calculationStepResultsManager.hide();
-		$calculationStepEditContainer.fadeIn(400);
+		calculationStepEditManager.show();
 	});
 	
-	/**
-	* Show exec section
-	*/
+	// 	Show exec section
 	showExecBtn.click(function(e){
 		e.preventDefault();
 		if(calculationStepEditManager.currentCalculationStep){
 			// first save the calculation step if it has changed
 			calculationStepEditManager.saveIfChanged(function(response) {
 				var calculationStep = response;
-				$calculationStepEditContainer.hide();
+				calculationStepEditManager.hide();
 				calculationStepResultsManager.hide();
 				calculationStepExecManager.show(calculationStep);
 			});
@@ -296,83 +270,14 @@ $(function(){
 	
 	
 	
-	// TODO remove: exec options moved to test section
-	//exec options ui components
-	var execOptionsBtn = $calculationStepEditContainer.find(".step-edit-exec-option button[name=exec-options]");
-	var execOptions = $calculationStepEditContainer.find(".step-edit-exec-option .options");
-	var execOptionsWidth = -1;
-	execOptions.hide();
-
-	/**
-	 * TODO move to result/exec? manager
-	 * results ui components
-	 */
-	//div where the progress bar is stored
-	$stepProgress = $(".step-progress"); 
-	
-
-	
-	
-	/*** 
-	* ================= 
-	* Run Calculation
-	* =================
-	*/
-	// it has to be false the first time the script gets executed
-	processResultsStarted = false;
-	rowNum = 1;
-	
-	//DEPRECATED
-	
-	
-	
-	
-	var refreshJob = function($job){
-		setTimeout(function(){
-			//var stepId = $calculationStep.id;
-			$.ajax({
-				url:"rest/job/"+$job.id+".json",
-				dataType:"json"
-			})
-			.done(function(response){
-				var job = response;
-				updateCalculationStepStatus(job);
-			});
-		}, 500);
-	};
-	
-	//TODO to be removed
-	//exec options click
-	execOptionsBtn.click(function(e){
-		if(execOptionsWidth < 0){
-			execOptionsWidth = execOptions.width();
-		}
-		
-		//only shows for now
-		if(execOptions.is(":visible")) {
-// 			execOptions.animate({width:'0px'}, 200,'easeInOutExpo');
-// 			execOptions.fadeOut(100);
-// 			setTimeout(function(){execOptions.hide()}, 500);
-		} else {
-			execOptions.css({width:"0px"});
-			execOptions.show();
-			execOptions.animate({width:execOptionsWidth+'px'}, 600,'easeOutExpo');
-		}
-	});
-	
-	
-	
-	
-	
-	
-	
 	// ============================== Input variable code. not used now, but left here now for convenience 
 	
 	/**
 	* Input variables. not used now
 	*/ 
-	$inputVars = $(".input-vars");
-	$inputVar = $(".input-var");
+	var $stepForm = stepEdit.find('#step-form');
+	var $inputVars = $(".input-vars");
+	var	$inputVar = $(".input-var");
 	$inputVar.hide();
 
 	

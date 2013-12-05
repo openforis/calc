@@ -196,6 +196,7 @@ public class CalculationStepRScriptConverter {
 		appendNewLine();
 		// remove Inf numbers from results
 		sb.append( "is.na(results[ , unlist(lapply(results, is.numeric))] ) <-  results[ , unlist(lapply(results, is.numeric))] == Inf;" );
+		appendNewLine();
 		
 		// 6. remove results table
 		String resultsTable = entity.getResultsTable();
@@ -212,6 +213,20 @@ public class CalculationStepRScriptConverter {
 		appendNewLine();
 
 		// 8. for each output field, update table with results joining with results table
+		// cast id datatype from varchar to bigint
+		StringBuilder alter = new StringBuilder();
+		alter.append(" alter table ");
+		alter.append(resultsTable);
+		alter.append(" alter column ");
+		alter.append(primaryKey);
+		alter.append(" type bigint using ");
+		alter.append(primaryKey);
+		alter.append("::bigint; ");
+		sb.append("dbSendQuery(conn=con, statement=\"");
+		sb.append(alter.toString());
+		sb.append("\");");
+		appendNewLine();
+		
 		//TODO implement updateFrom with Psql
 		StringBuilder update = new StringBuilder();
 		update.append("update ");
@@ -236,7 +251,7 @@ public class CalculationStepRScriptConverter {
 		update.append(" r ");
 		update.append("where r.");
 		update.append(primaryKey);
-		update.append("::integer = d.");
+		update.append(" = d.");
 		update.append(primaryKey);
 		sb.append("dbSendQuery(conn=con, statement=\"");
 		sb.append(update.toString());

@@ -218,19 +218,29 @@
 		</div>
 		
 		<div class="row scatter-plot">
-			<div class="options form-horizontal form-small">
-				<div class="inline">
-					<div class="form-group form-group-small">
+			<div class="options row no-margin">
+				<div class="col-md-1 col-md-offset-1">
 						<label class="control-label">X</label>
-						<select class="form-control" name="x"></select>
+				</div>
+				<div class="col-md-2">
+					<select class="form-control" name="x"></select>
+				</div>
+				<div class="col-md-1">
+					<label class="control-label">Y</label>
+				</div>
+				<div class="col-md-2">
+					<select class="form-control" name="y"></select>
+				</div>
+				<div class="col-md-1">
+					<button name="refresh" class="btn no-background refresh"><i class="icon-refresh"></i></button>
+				</div>
+				<div class="col-md-2 col-md-offset-1"> 
+					<div class="progress">
+						<div class="progress-bar"></div>
 					</div>
-					<div class="form-group form-group-small">
-						<label class="control-label">Y</label>
-						<select class="form-control" name="y"></select>
-					</div>
-					<div class="form-group form-group-small">
-						<button name="refresh" class="btn no-background refresh"><i class="icon-refresh"></i></button>
-					</div>
+				</div>
+				<div class="col-md-1">
+					<div class="percent"></div>
 				</div>
 			</div>
 			<div class="row chart"></div>
@@ -274,6 +284,9 @@
 	<script src="./js/calc/calc-ui-form.js"></script>
 	<script src="./js/calc/calc-autocomplete.js"></script>
 	<script src="./js/calc/r-script.js"></script>
+	<!-- ui components -->
+	<script src="./js/calc/ui/progress-bar.js"></script>
+	
 
 	<!-- model objects -->
 	<script src="./js/calc/model/workspace.js"></script>
@@ -293,9 +306,6 @@
 	<script src="./js/calc/manager/ui/calculation-step-edit-manager.js"></script>
 	<script src="./js/calc/manager/ui/calculation-step-exec-manager.js"></script>
 	<script src="./js/calc/manager/ui/calculation-step-results-manager.js"></script>
-	
-	
-	<!-- sampling design  -->
 	<script src="./js/calc/manager/ui/sampling-design-manager.js"></script>
 	
 </body>

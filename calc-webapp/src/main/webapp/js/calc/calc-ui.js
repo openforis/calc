@@ -67,6 +67,7 @@ UI.unlock = function() {
 
 /**
  * Reset a progress bar to its original state
+ * DEPRECATED: use ProgressBar object
  */
 UI.resetProgressBar = function($progressBar) {
 	$progressBar.removeClass();

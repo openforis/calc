@@ -1,7 +1,7 @@
 /**
  * 
  * Manages the editing of the CalculationStep
- *  
+ *  @author S. Ricci
  */
 function CalculationStepEditManager(container) {
 	this.container = container;
@@ -314,7 +314,12 @@ CalculationStepEditManager.prototype = (function() {
 			$this.$variableCombo.reset();
 		}
 	};
-	
+	var show = function(){
+		this.container.fadeIn(400);
+	};
+	var hide = function(){
+		this.container.hide();
+	};
 	//prototype
 	return {
 		constructor : CalculationStepEditManager,
@@ -325,6 +330,9 @@ CalculationStepEditManager.prototype = (function() {
 		getSelectedEntityId : getSelectedEntityId,
 		getSelectedEntity : getSelectedEntity,
 		save : save,
-		saveIfChanged : saveIfChanged
+		saveIfChanged : saveIfChanged,
+		// show / hide
+		show : show,
+		hide : hide
 	};
 })();

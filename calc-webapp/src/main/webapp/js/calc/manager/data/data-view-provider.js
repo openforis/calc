@@ -36,10 +36,10 @@ DataViewProvider.prototype = (function() {
 		var vars = (variables)?variables:this.variables;
 		var params = { offset:offset, fields:vars.join(',') };
 		if(numberOfItems) {
-			parmas.numberOfRows = numberOfItems;
+			params.numberOfRows = numberOfItems;
 		}
 		if(excludeNulls){
-			parmas.excludeNulls = excludeNulls;
+			params.excludeNulls = excludeNulls;
 		}
 		
 		$.ajax({

@@ -11,6 +11,10 @@ function ScatterPlot(container) {
 	this.xCombo = optionsSection.find('[name=x]').combobox();
 	this.yCombo = optionsSection.find('[name=y]').combobox();	
 	this.refreshBtn = optionsSection.find('[name=refresh]');
+	
+	// progress for data loading
+	this.progressBar = new ProgressBar( optionsSection.find(".progress") , optionsSection.find(".percent") );
+	
 	//chart container
 	this.chartContainer = this.container.find(".chart");
 //	this.chartContainer = this.container.find(".chart").replaceWith( $("<div id='ssss'></div") );
@@ -157,9 +161,7 @@ ScatterPlot.prototype = (function(){
 			if( $this.xVariable == null || $this.yVariable == null ){
 				UI.showError( "x and y must be set", true );
 			} else {
-				//TODO
-				console.log("implement refresh btn");
-//				$this.refresh();
+				$.proxy(start , $this)();
 			}
 		});
 	};
@@ -207,8 +209,8 @@ ScatterPlot.prototype = (function(){
 	var show = function() {
 		this.container.fadeIn();
 
-		// if it hasn't started yet and there are 2 variables to show, then it starts automatically getting data
-		if ( this.totalItems < 0 && this.dataProvider.variables.length == 2 ) {
+		// if it hasn't started yet and there are 2 variables to show, then it starts
+		if ( this.dataProvider.variables.length == 2 && this.totalItems < 0) {
 			// update combo boxes
 			var xVar = this.dataProvider.variables[0];
 			var yVar = this.dataProvider.variables[1];
@@ -217,9 +219,6 @@ ScatterPlot.prototype = (function(){
 			this.xCombo.val(xVar);
 			this.yCombo.val(yVar);
 			
-//			this.start();
-//			this.refresh();
-//			$.proxy(refresh, this)();
 			$.proxy(start, this)();
 		}
 	};
@@ -239,206 +238,55 @@ ScatterPlot.prototype = (function(){
 			// set total items
 			$this.totalItems = cnt;
 			
-			// create the chart and update it
+			// create the chart
+			$this.chartinfo.xAxis.title.text = this.xVariable;
+			$this.chartinfo.yAxis.title.text = this.yVariable;
 			$this.chart = new Highcharts.Chart($this.chartinfo);
-//			console.log($this);
-			$.proxy(updateChartData, $this)();
+			// reset progress bar
+			$this.progressBar.reset();
+			// starts getting data next data
+			$.proxy(getNextData, $this)();
 		});
 	};
 	
-	// update the chart starting from current offset
-	var updateChartData = function(){
+	// get next available data from data provider and add them to the chart
+	var getNextData = function() {
 		var $this = this;
 		if( this.xVariable != null && this.yVariable != null ) {
 //			console.log("upd chart");
 //			console.log(this);
 			var vars = [this.xVariable, this.yVariable];
 			this.dataProvider.data( $this.offset , null , null , vars, function(response) {
-				$.proxy(addData, $this)(response);
+				$.proxy(addPoints, $this)(response);
+
+				//get next data if not all data have been loaded
+				if( $this.offset < $this.totalItems ){
+					$.proxy(getNextData, $this)();
+				}
 			});
 		}
 	};
-
-	var addData = function(response) {
-		var $this = this;
-		var data = response;
-		this.chartinfo.xAxis.title.text = this.xVariable;
-		this.chartinfo.yAxis.title.text = this.yVariable;
-		
-//		this.chart = new Highcharts.Chart(this.chartinfo);
-
-		console.log(this.chart);
-		
-		// prepare chart data
-		var chartData = [];
-		$.each(data,function(i,record){
-//			console.log(record);
-			var seriesItem = [] ;
-//			console.log(record)
-			$.each(record.fields, function(i,field) {
-//				console.log(field);
-				seriesItem.push(field);
-			});
-			var shift = ($this.chart.series.data) ? $this.chart.series.data.length > 20 : 0;
-			var t = 50;
-//			setTimeout(function(){
-				$this.chart.series[0].addPoint(seriesItem, false);							
-//			}, (t++));   
-			if($this.chart.series[0].data.length % 500 ==0){
-				$this.chart.redraw();
-			}
-//			chartData.push(seriesItem);
-		});
-		$this.chart.redraw();
-		
-		$this.offset = chartData.length;
-		// show chart
-		
-//		console.log(chartData);
-//		this.chartinfo.series[0].data = chartData;
-		//update offset
-		
-//		this.chart = this.chartContainer.highcharts(this.chartinfo);
-//		console.log( this.chart.redraw() );
-		
-	};
 	
-	// add data passed as argument to the chart
-	var addDataNew = function(data){
+	// add points to the chart
+	var addPoints = function(data){
 		var $this = this;
-		$this.chartinfo.xAxis.title.text = this.xVariable;
-		$this.chartinfo.yAxis.title.text = this.yVariable;
-//		$this.chart = new Highcharts.Chart($this.chartinfo);
 		
 		// prepare chart data
-		var chartData = [];
 		$.each(data,function(i,record){
-//				console.log(record);
 			var seriesItem = [ record.fields[$this.xVariable] , record.fields[$this.yVariable] ] ;
-//				console.log(record)
-//			seriesItem.push( [record.fields[$this.xVariable] , record.fields[$this.yVariable]] );
-//			$.each(record.fields, function(i,field) {
-//					console.log(field);
-//				seriesItem.push(field);
-//			});
-			var shift = ($this.chart.series.data) ? $this.chart.series.data.length > 20 : 0;
+//			var shift = ($this.chart.series.data) ? $this.chart.series.data.length > 20 : 0;
 			$this.chart.series[0].addPoint(seriesItem, false);
 			
-			
-			
-//			var t = 50;
-//				setTimeout(function(){
-				
-//				}, (t++));   
-			if($this.chart.series[0].data.length % 1000 == 0) {
+			if($this.chart.series[0].data.length % 400 == 0) {
 				$this.chart.redraw();
 			}
-//				chartData.push(seriesItem);
 		});
-		console.log("redraw");
+		// redraw chart
 		$this.chart.redraw();
-		
+		// update offset
 		$this.offset = $this.chart.series[0].data.length;
-		console.log($this);
-		// show chart
-		
-//			console.log(chartData);
-//			this.chartinfo.series[0].data = chartData;
-		//update offset
-		
-//			this.chart = this.chartContainer.highcharts(this.chartinfo);
-//			console.log( this.chart.redraw() );
-			
-	};
-	
-	
-	var refresh = function() {
-		var $this = this;
-		
-		if( this.xVariable != null && this.yVariable != null ) {
-			
-			//reset chart ?!
-			if(this.offset != 0) {
-//				console.log("reset chart from refresh");
-//				console.log ($("#"+this.chartContainer.attr("id")).attr("id") );
-//				this.chart.destroy();
-				this.offset = 0;
-			}
-			
-			var vars = [$this.xVariable, $this.yVariable];
-//			console.log(vars);
-			//start getting data for the job
-			$.ajax({
-				url:"rest/data/entity/"+$this.dataProvider.entityId+"/query.json",
-				dataType:"json",
-				data:{	offset:$this.offset, 
-						fields:vars.join(), 
-						excludeNull:true
-					},
-				
-				success: 
-//					$.proxy( 
-						
-				function(response) {
-//					var $this = this;
-					console.log($this);
-					var data = response;
-					$this.chartinfo.xAxis.title.text = $this.xVariable;
-					$this.chartinfo.yAxis.title.text = $this.yVariable;
-					
-//					$this.chart = new Highcharts.Chart(this.chartinfo);
-
-//					console.log(response);
-					
-					// prepare chart data
-					var chartData = [];
-					$.each(data,function(i,record){
-//						console.log(record);
-						var seriesItem = [] ;
-//						console.log(record)
-						$.each(record.fields, function(i,field) {
-//							console.log(field);
-							seriesItem.push(field);
-						});
-//						var shift = ($this.chart.series.data) ? $this.chart.series.data.length > 20 : 0;
-//						var t = 50;
-						
-						
-						
-						
-//						setTimeout(function(){
-//						}, (t++));
-						
-//						$this.chart.series[0].addPoint(seriesItem, false);
-						
-//						if($this.chart.series[0].data.length % 500 ==0){
-//							$this.chart.redraw();
-//						}
-						
-						chartData.push(seriesItem);
-					});
-					
-					$this.chartinfo.series[0].data = chartData;					
-//					$this.chartContainer.highcharts($this.chartinfo);
-					$this.chart = new Highcharts.Chart($this.chartinfo);
-					
-					$this.chart.redraw();
-					$this.offset = chartData.length;
-					// show chart
-					
-//					console.log(chartData);
-//					this.chartinfo.series[0].data = chartData;
-					//update offset
-					
-
-//					console.log( this.chart.redraw() );
-					
-				} 
-				
-//				, this)
-				
-			});	
-		}
+		// update progress
+		$this.progressBar.update($this.offset , $this.totalItems);
 		
 	};
 	
@@ -447,14 +295,11 @@ ScatterPlot.prototype = (function(){
 		
 		_init : init,
 		
-//		setJob : setJob,
 		setDataProvider : setDataProvider,
 		
 		show : show ,
 		
 		hide : hide
-		
-//		refresh : refresh
 		
 	};
 })();

@@ -8,25 +8,12 @@
 function CalculationStepResultsManager(container) {
 	// main ui container
 	this.container = container;
-	// results containter
-	this.resultsContainer = this.container.find('.results-container');
-	
-	// data visualisation manager
-	this.dataManager = new DataVisualisationManager(this.resultsContainer);
+	// results container for data visualisation manager
+	var resultsContainer = this.container.find('.results-container');
+	this.dataManager = new DataVisualisationManager(resultsContainer);
 };
 
 CalculationStepResultsManager.prototype = (function() {
-	
-	/**
-	 *  init function
-	 * @param callback
-	 */
-	var init = function() {
-//		var $this = this;
-		/*
-		 * event handlers
-		 */
-	};
 	
 	/**
 	 * show results section and set the data provider to the data visualization manager
@@ -43,10 +30,8 @@ CalculationStepResultsManager.prototype = (function() {
 	
 	//prototype
 	return {
-		constructor : CalculationStepResultsManager,
-		
-		//public methods
-		_init : init,
+		constructor : CalculationStepResultsManager
+		,	
 		//show / hide 
 		show : show
 		,

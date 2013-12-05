@@ -28,7 +28,6 @@ CalculationStepExecManager.prototype = (function() {
 	
 	/**
 	 *  init function
-	 * @param callback
 	 */
 	var init = function() {
 		var $this = this;
@@ -50,9 +49,8 @@ CalculationStepExecManager.prototype = (function() {
 						var variables  = $this.calculationStep.variables;
 						var dataProvider = new DataViewProvider(entityId , variables);
 						
-						// once completed show results section
+						// once completed hide this and shows results section
 						$this.hide();
-						// show results. TODO reset results 
 						$this.calculationStepResultsManager.show(dataProvider);
 					}
 					, true
