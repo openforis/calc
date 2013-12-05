@@ -107,8 +107,11 @@ public class CalculationStepController {
 	}
 	
 	@RequestMapping(value = "/{stepId}/delete.json", method = RequestMethod.GET)
-	public @ResponseBody void delete(@PathVariable int stepId) {
-		calculationStepService.delete(stepId);
+	public @ResponseBody Response delete(@PathVariable int stepId) {
+		Response response = new Response();
+		Integer variableId = calculationStepService.delete(stepId);
+		response.addField("deletedVariable", variableId);
+		return response;
 	}
 	
 	/**

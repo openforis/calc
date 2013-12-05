@@ -27,17 +27,28 @@ public class CalculationStepService {
 	@Autowired
 	private WorkspaceService workspaceService;
 	
+	/**
+	 * Delete the step with given stepId 
+	 * Returns the output variable id if it has been removed because it's used only by the deleted calculation step
+	 *   
+	 * @param stepId
+	 */
 	@Transactional
-	public void delete(int stepId) {
+	public Integer delete(int stepId) {
 		CalculationStep step = calculationStepDao.find(stepId);
+		Integer deletedVariable = null;
 		if ( step != null ) {
 			Variable<?> outputVariable = step.getOutputVariable();
-			int variableId = outputVariable.getId();
-			if ( ! calculationStepDao.isVariableUsedInMultipleCalculationSteps(variableId) ) {
-				deleteOutputVariable(variableId);
+			if ( outputVariable.isUserDefined() ) {
+				int variableId = outputVariable.getId();
+				if ( calculationStepDao.countOutputVariableSteps(variableId) == 1) {
+					deletedVariable = variableId;
+					deleteOutputVariable(variableId);
+				}
 			}
 			calculationStepDao.delete(stepId);
 		}
+		return deletedVariable;
 	}
 
 	private void deleteOutputVariable(int variableId) {

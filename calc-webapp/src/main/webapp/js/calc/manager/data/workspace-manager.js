@@ -20,21 +20,13 @@ WorkspaceManager.prototype = (function(){
 		if($this._activeWorkspace) {
 			success($this._activeWorkspace);
 		} else {
-			$.proxy(refreshActiveWorkspace, $this)( success );
+			$.ajax({
+				url:"rest/workspace/active.json",
+				dataType:"json"
+			}).done(function(response) {
+				$.proxy(setActiveWorkspace, $this)( response, success );
+			});
 		}
-	};
-	
-	/**
-	 * Loads the active workspace from the server and update the _activeWorkspace instance variable
-	 */
-	var refreshActiveWorkspace = function(success) {
-		$this = this;
-		$.ajax({
-			url:"rest/workspace/active.json",
-			dataType:"json"
-		}).done(function(response) {
-			$.proxy(setActiveWorkspace, $this)( response, success );
-		});
 	};
 	
 	/**
@@ -199,8 +191,6 @@ WorkspaceManager.prototype = (function(){
 		constructor : WorkspaceManager
 		,
 		activeWorkspace : activeWorkspace
-		,
-		refreshActiveWorkspace : refreshActiveWorkspace
 		,
 		activeWorkspaceSetSamplingUnit : activeWorkspaceSetSamplingUnit
 		,

@@ -8,19 +8,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 
- * @author G. Miceli
- * @author M. Togna
  * @author S. Ricci
  */
 @Repository
 public class CalculationStepDao extends AbstractJpaDao<CalculationStep> {
 
 	@Transactional
-	public boolean isVariableUsedInMultipleCalculationSteps(int variableId) {
-		Query query = getEntityManager().createQuery("select count(*) from CalculationStep where outputVariable.id = " + variableId);
+	public int countOutputVariableSteps(int variableId) {
+		Query query = getEntityManager().createQuery( "select count(*) from CalculationStep where outputVariable.id = " + variableId );
 		Object result = query.getSingleResult();
 		int count = ( (Long) result).intValue();
-		return count > 1;
+		return count;
 	}
 	
 }

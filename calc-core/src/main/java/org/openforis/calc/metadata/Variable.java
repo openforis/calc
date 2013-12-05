@@ -141,6 +141,10 @@ public abstract class Variable<T> extends NamedUserObject {
 		this.originalId = originalId;
 	}
 	
+	public boolean isUserDefined() {
+		return originalId == null;
+	}
+	
 	public abstract T getDefaultValue();
 
 	public abstract void setDefaultValue(T defaultValue);

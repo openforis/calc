@@ -3,13 +3,6 @@
  * 
  * @author S. Ricci
  */
-/**
- * Refresh the home page updating the element related to the specified step or
- * reloading all the step elements
- * 
- * @param callback
- * @param $step
- */
 function HomeCalculationManager(container) {
 	this.container = container;
 	
@@ -45,6 +38,9 @@ HomeCalculationManager.prototype = (function() {
 		$.proxy(initDroppableOnDeleteButton, $this)();
 	};
 	
+	/**
+	 * Inits the droppable plugin on the delete button
+	 */
 	var initDroppableOnDeleteButton = function() {
 		var $this = this;
 		$this.deleteBtn.droppable({
@@ -71,20 +67,20 @@ HomeCalculationManager.prototype = (function() {
 	/**
 	 * Updates a calculation step button associated to the specified CalculationStep
 	 */
-	var updateCalculationStepButton = function($step, callback) {
+	var updateCalculationStepButton = function(step, callback) {
 		var $this = this;
 
-		var $button = $.proxy(getStepButton, $this)($step);
+		var $button = $.proxy(getStepButton, $this)(step);
 		if ($button.length == 0) {
-			$.proxy(addCalculationStepButton, $this)($step);
+			$.proxy(addCalculationStepButton, $this)(step);
 		} else {
-			$button.data("calculationStep", $step);
-			$button.text($step.caption);
+			$button.data("calculationStep", step);
+			$button.text(step.caption);
 		}
 		if (callback) {
 			callback();
 		}
-	}
+	};
 	
 	/**
 	 * Updates all calculation step buttons
@@ -153,17 +149,21 @@ HomeCalculationManager.prototype = (function() {
 		$this.calculationStepManager.remove(step.id,
 			function(response) {
 				$.proxy(removeCalculationStepButton, $this)(step);
-				$this.workspaceManager.refreshActiveWorkspace(function() {
-					UI.enableAll();
-				});
+				var deletedVariableId = response.fields.deletedVariable;
+				if ( deletedVariableId ) {
+					//update active workspace object, remove deleted variable
+					$this.workspaceManager.activeWorkspace(function(workspace) {
+						var entity = workspace.getEntityById(step.outputEntityId);
+						entity.deleteVariable(deletedVariableId);
+					});
+				}
+				UI.enableAll();
 		});
 	};
 	
 	/**
 	 * Creates a home page calculation step button and add it
 	 * to the calculation home page section
-	 * 
-	 * @param $step
 	 */
 	var addCalculationStepButton = function(step) {
 		var $this = this;

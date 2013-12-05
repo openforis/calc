@@ -730,6 +730,7 @@ ul.scroll-menu {
 .dialog {
 	background: white;
 	padding: 5px 10px 5px 10px;
+	max-width: 400px;
 }
 
 .dialog .content {
