@@ -89,10 +89,8 @@ Entity.prototype = (function(){
 	 */
 	var deleteVariable = function(id) {
 		var v = this.getVariableById(id);
-		if ( v != null ) {
-			var index = this.quantitativeVariables.indexOf(v);
-			this.quantitativeVariables.splice(index, 1);
-		}
+		var index = this.quantitativeVariables.indexOf(v);
+		this.quantitativeVariables.splice(index, 1);
 	};
 	
 	return {

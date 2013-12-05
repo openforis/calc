@@ -37,16 +37,14 @@ public class CalculationStepService {
 	public Integer delete(int stepId) {
 		CalculationStep step = calculationStepDao.find(stepId);
 		Integer deletedVariable = null;
-		if ( step != null ) {
-			Variable<?> outputVariable = step.getOutputVariable();
-			if ( outputVariable.isUserDefined() ) {
-				int variableId = outputVariable.getId();
-				if ( calculationStepDao.countOutputVariableSteps(variableId) == 1) {
-					deletedVariable = variableId;
-					deleteOutputVariable(variableId);
-				}
+		Variable<?> outputVariable = step.getOutputVariable();
+		calculationStepDao.delete(stepId);
+		if ( outputVariable.isUserDefined() ) {
+			int variableId = outputVariable.getId();
+			if ( calculationStepDao.countOutputVariableSteps(variableId) == 0) {
+				deletedVariable = variableId;
+				deleteOutputVariable(variableId);
 			}
-			calculationStepDao.delete(stepId);
 		}
 		return deletedVariable;
 	}
