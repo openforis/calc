@@ -11,9 +11,7 @@ import org.jooq.Configuration;
 import org.jooq.impl.DataSourceConnectionProvider;
 import org.jooq.impl.SchemaImpl;
 import org.openforis.calc.engine.Task;
-import org.openforis.calc.engine.WorkspaceDao;
 import org.openforis.calc.engine.WorkspaceService;
-import org.openforis.calc.metadata.EntityDao;
 import org.openforis.collect.relational.CollectRdbException;
 import org.openforis.collect.relational.RelationalSchemaCreator;
 import org.openforis.collect.relational.liquibase.LiquibaseRelationalSchemaCreator;
@@ -30,12 +28,6 @@ public class CollectInputSchemaCreatorTask extends Task {
 	@Autowired
 	private Configuration config;
 	
-	@Autowired
-	private EntityDao entityDao;
-	
-	@Autowired
-	private WorkspaceDao workspaceDao;
-
 	@Autowired
 	private WorkspaceService workspaceService;
 	
