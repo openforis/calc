@@ -5,6 +5,7 @@
  * 
  * It manages the interactions with a content assist dialog, searching in all R base library functions
  * 
+ * @author S. Ricci
  */
 function RScript($inputField) {
 	

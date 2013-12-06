@@ -5,6 +5,7 @@
  * 
  * Only public methods will be visible to subclasses.
  * 
+ * @author S. Ricci
  */
 function Autocomplete($inputField) {
 	this.$inputField = $inputField;
