@@ -181,6 +181,21 @@ public class WorkspaceService {
 		}
 	}
 
+	/**
+	 * Creates a column in the input schema entity table for each variable per ha defined
+	 */
+	@Transactional
+	public void addVariablePerHaColumns(Workspace ws) {
+		for (Entity entity : ws.getEntities()) {
+			for (QuantitativeVariable v : entity.getQuantitativeVariables()) {
+				QuantitativeVariable variablePerHa = v.getVariablePerHa();
+				if ( variablePerHa != null ) {
+					inputSchemaDao.addUserDefinedVariableColumn(variablePerHa);
+				}
+			}
+		}
+	}
+	
 	public void activate(Workspace ws) {
 		workspaceDao.deactivateAll();
 		ws.setActive(true);

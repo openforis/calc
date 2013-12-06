@@ -46,7 +46,7 @@ public class CollectInputSchemaCreatorTask extends Task {
 	
 	@Override
 	protected long countTotalItems() {
-		return 4;
+		return 5;
 	}
 	
 	@Override
@@ -56,6 +56,8 @@ public class CollectInputSchemaCreatorTask extends Task {
 		createInputSchema();
 		
 		addUserDefinedVariableColumns();
+		
+		addVariablePerHaColumns();
 		
 		createViews();
 	}
@@ -86,6 +88,11 @@ public class CollectInputSchemaCreatorTask extends Task {
 	
 	private void addUserDefinedVariableColumns() {
 		workspaceService.addUserDefinedVariableColumns(getWorkspace());
+		incrementItemsProcessed();
+	}
+
+	private void addVariablePerHaColumns() {
+		workspaceService.addVariablePerHaColumns(getWorkspace());
 		incrementItemsProcessed();
 	}
 
