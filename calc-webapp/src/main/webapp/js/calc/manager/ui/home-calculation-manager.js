@@ -39,7 +39,8 @@ HomeCalculationManager.prototype = (function() {
 		
 		$this.stepBtnsContainer.sortable({
 			cancel: false,
-			placeholder: "ui-state-highlight",
+			placeholder: "calculation-step-placeholder",
+			revert: true,
 			start: function(event, ui) {
 				$.proxy(setDraggingViewState, $this)(ui.item);
 			},
@@ -47,9 +48,18 @@ HomeCalculationManager.prototype = (function() {
 				var stepBtn = ui.item;
 				if ( stepBtn.hasClass("ui-draggable-drop") ) {
 					//dropping, don't forget to re-enable all fields at the end...
+				} else if ( stepBtn.hasClass("ui-sortable-updating") ) {
+					//updating sort order in the server
 				} else {
 					$.proxy(setDefaultViewState, $this)();
 				}
+			},
+			update: function(event, ui) {
+				var stepBtn = ui.item;
+				var newStepNo = stepBtn.index() + 1; 
+				var step = stepBtn.data("calculationStep");
+				stepBtn.addClass("ui-sortable-updating");
+				$.proxy(updateStepNumber, $this)(step, newStepNo);
 			}
 		});
 	};
@@ -178,6 +188,7 @@ HomeCalculationManager.prototype = (function() {
 	var setDraggingViewState = function(draggedItem) {
 		UI.disableAll();
 		UI.enable(draggedItem);
+		UI.enable(draggedItem.find("button"));
 		UI.enable(this.deleteBtn);
 		this.deleteBtn.addClass("blue-btn-hover");
 	};
@@ -202,6 +213,20 @@ HomeCalculationManager.prototype = (function() {
 		});
 	};
 	
+	var updateStepNumber = function(step, stepNo) {
+		var $this = this;
+		var stepButton = $.proxy(getStepButton, $this)(step);
+		UI.disable(stepButton);
+		UI.disable(stepButton.find("button"));
+		$this.calculationStepManager.updateStepNumber(step.id, stepNo, 
+			function(response) {
+				var stepBtn = $.proxy(getStepButton, $this)(step);
+				stepBtn.removeClass("ui-sortable-updating");
+				$.proxy(setDefaultViewState, $this)();
+			}
+		);
+	};
+	
 	/**
 	 * Creates a home page calculation step button and add it
 	 * to the calculation home page section
@@ -221,30 +246,7 @@ HomeCalculationManager.prototype = (function() {
 		$stepBtn.click($.proxy(calculationStepButtonClickHandler, $this));
 
 		$this.stepBtnsContainer.append($stepBtn);
-		/*
-		$stepBtn.draggable({
-			revert : "invalid",
-			cancel : false,
-			helper : "clone",
-			start : function(event, ui) {
-				$.proxy(hideStepButton, $this)(step);
-				UI.disableAll();
-				UI.enable(ui.helper);
-				UI.enable($this.deleteBtn);
-				$this.deleteBtn.addClass("blue-btn-hover");
-			},
-			stop : function(event, ui) {
-				if (!$(this).hasClass("ui-draggable-drop")) {
-					$.proxy(showStepButton, $this)(step);
-					UI.enableAll();
-				} else {
-					// dropping: don't forget to re-enable all fields
-				}
-				$this.deleteBtn.removeClass("blue-btn-hover");
-				UI.disable($this.deleteBtn);
-			}
-		});
-		*/
+
 		return $stepBtn;
 	};
 	

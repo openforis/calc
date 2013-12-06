@@ -97,7 +97,7 @@ public class CalculationStepController {
 	@RequestMapping(value = "/load.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	List<CalculationStep> loadAll() {
-		return calculationStepDao.loadAll("id");
+		return calculationStepDao.loadAll("stepNo");
 	}
 
 	@RequestMapping(value = "/{stepId}/load.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -106,11 +106,18 @@ public class CalculationStepController {
 		return calculationStepDao.find(stepId);
 	}
 	
-	@RequestMapping(value = "/{stepId}/delete.json", method = RequestMethod.GET)
+	@RequestMapping(value = "/{stepId}/delete.json", method = RequestMethod.POST)
 	public @ResponseBody Response delete(@PathVariable int stepId) {
 		Response response = new Response();
 		Integer variableId = calculationStepService.delete(stepId);
 		response.addField("deletedVariable", variableId);
+		return response;
+	}
+	
+	@RequestMapping(value = "/{stepId}/stepno/{stepNo}.json", method = RequestMethod.POST)
+	public @ResponseBody Response updateStepNo(@PathVariable int stepId, @PathVariable int stepNo) {
+		Response response = new Response();
+		calculationStepService.updateStepNumber(stepId, stepNo);
 		return response;
 	}
 	

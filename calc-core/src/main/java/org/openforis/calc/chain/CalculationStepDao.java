@@ -20,5 +20,17 @@ public class CalculationStepDao extends AbstractJpaDao<CalculationStep> {
 		int count = ( (Long) result).intValue();
 		return count;
 	}
+
+	@Transactional
+	public void decrementFollowingStepNumbers(Integer chainId, int stepNo) {
+		String query = String.format("update CalculationStep set stepNo = stepNo - 1 where processingChain.id = %d and stepNo > %d", chainId, stepNo);
+		getEntityManager().createQuery(query).executeUpdate();
+	}
+	
+	@Transactional
+	public void incrementFollowingStepNumbers(Integer chainId, int stepNo) {
+		String query = String.format("update CalculationStep set stepNo = stepNo + 1 where processingChain.id = %d and stepNo >= %d", chainId, stepNo);
+		getEntityManager().createQuery(query).executeUpdate();
+	}
 	
 }

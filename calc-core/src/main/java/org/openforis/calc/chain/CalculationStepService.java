@@ -39,6 +39,8 @@ public class CalculationStepService {
 		Integer deletedVariable = null;
 		Variable<?> outputVariable = step.getOutputVariable();
 		calculationStepDao.delete(stepId);
+		Integer chainId = step.getProcessingChain().getId();
+		calculationStepDao.decrementFollowingStepNumbers(chainId, step.getStepNo());
 		if ( outputVariable.isUserDefined() ) {
 			int variableId = outputVariable.getId();
 			if ( calculationStepDao.countOutputVariableSteps(variableId) == 0) {
@@ -58,6 +60,18 @@ public class CalculationStepService {
 					variable.getClass().getName());
 			throw new IllegalArgumentException(errorMessage);
 		}
+	}
+
+	@Transactional
+	public void updateStepNumber(int stepId, int stepNo) {
+		CalculationStep step = calculationStepDao.find(stepId);
+		ProcessingChain processingChain = step.getProcessingChain();
+		Integer chainId = processingChain.getId();
+		int oldStepNo = step.getStepNo();
+		calculationStepDao.decrementFollowingStepNumbers(chainId, oldStepNo);
+		calculationStepDao.incrementFollowingStepNumbers(chainId, stepNo);
+		step.setStepNo(stepNo);
+		calculationStepDao.update(step);
 	}
 
 }

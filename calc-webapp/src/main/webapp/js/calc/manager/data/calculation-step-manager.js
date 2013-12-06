@@ -7,17 +7,14 @@ function CalculationStepManager() {
 
 CalculationStepManager.prototype = (function() {
 
-	var BASE_URL = "rest/calculationstep";
+	var contextPath = "rest/calculationstep";
 	
 	/**
-	 * Load all the calculation steps associated to the default processing chain in the active workspace
-	 * and call the specified callback function
-	 *  
-	 * @param callback
+	 * Load all the calculation steps for the active workspace
 	 */
 	var loadAll = function(callback) {
 		$.ajax({
-			url: BASE_URL + "/load.json",
+			url: contextPath + "/load.json",
 			dataType:"json"
 		}).done(function(response){
 			callback(response);
@@ -26,13 +23,10 @@ CalculationStepManager.prototype = (function() {
 	
 	/**
 	 * Load the calculation step with the specified id and call the callback function
-	 * 
-	 * @param id
-	 * @param callback
 	 */
 	var load = function(id, callback) {
 		$.ajax({
-			url: BASE_URL + "/"+id+"/load.json",
+			url: contextPath + "/"+id+"/load.json",
 			dataType:"json"
 		})
 		.done(function(response){
@@ -47,7 +41,7 @@ CalculationStepManager.prototype = (function() {
 	 */
 	var save = function($step, successCallback, errorCallback, completeCallback) {
 		$.ajax({
-			url: BASE_URL + "/save.json",
+			url: contextPath + "/save.json",
 			dataType: "json",
 			data: $step,
 			type: "POST"
@@ -70,44 +64,31 @@ CalculationStepManager.prototype = (function() {
 		
 	};
 	
-	/**
-	 * DEPRECATED
-	 * Execute the calculation step with the specified id and call the callback function 
-	 * 
-	 * @param id
-	 * @param callback
-	 */
-	var execute = function(id, totalItems, callback) {
-		var params = {};
-		if( !isNaN(totalItems) ){ 
-			params.totalItems = totalItems; 
-		}
-
-		$.ajax({
-			url: BASE_URL + "/"+id+"/run.json",
-			dataType:"json",
-			data: params
-//			,
-//			async: false 
-		})
-		.done(function(response){
-			callback(response);
-		});
-//		.error(function(e){
-//			console.log("error!!! on exec");
-//			console.log(e);
-//		});
-	};
 	
 	/**
 	 * Delete the calculation step with the specified id
-	 * 
-	 * @param id
-	 * @param callback
 	 */
 	var remove = function(id, callback) {
 		$.ajax({
-			url: BASE_URL + "/"+id+"/delete.json"
+			url: contextPath + "/"+id+"/delete.json",
+			dataType:"json",
+			type: "POST"
+		})
+		.done(function(response){
+			if ( callback ) {
+				callback(response);
+			}
+		});
+	};
+	
+	/**
+	 * Updates the calculation step sortOrder with the specified one
+	 */
+	var updateStepNumber = function(id, stepNo, callback) {
+		$.ajax({
+			url: contextPath + "/"+id+"/stepno/" + stepNo + ".json",
+			dataType:"json",
+			type: "POST"
 		})
 		.done(function(response){
 			if ( callback ) {
@@ -127,13 +108,13 @@ CalculationStepManager.prototype = (function() {
 		,
 		save : save
 		,
-		execute : execute
-		,
 		remove : remove
+		,
+		updateStepNumber: updateStepNumber
 	};
 })();
 
-//singleton instance of workspace manager
+//singleton instance
 var _calculationStepManager = null;
 CalculationStepManager.getInstance = function() { 
 	if(!_calculationStepManager){

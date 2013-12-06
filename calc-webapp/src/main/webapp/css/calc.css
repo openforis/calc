@@ -248,7 +248,8 @@ button.settings:hover {
 	margin: 2% auto 2% auto;
 }
 /* #calculation .btn-home-plus, #calculation .calculation-button { */
- #calculation .calculation-button {
+ #calculation .calculation-button, 
+ 	#calculation .calculation-step-placeholder {
 	width: 15em;
 	height: 6em;
 	margin: 0 1em 1em 1em;
@@ -258,10 +259,8 @@ button.settings:hover {
 	width: 100%;
 }
 
-#calculation .steps-container li.ui-state-highlight {
-	width: 15em;
-	height: 6em;
-	border: 2px solid white;
+#calculation .calculation-step-placeholder {
+	border: 2px dotted white;
 }
 
 #calculation button.highlight {
