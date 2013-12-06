@@ -260,7 +260,8 @@ button.settings:hover {
 }
 
 #calculation .calculation-step-placeholder {
-	border: 2px dotted white;
+	border: 1px dashed #95a5a6;
+	border-radius: 8px;
 }
 
 #calculation button.highlight {
