@@ -86,12 +86,12 @@ public class ProcessingChain extends UserObject {
 	}
 	
 	public int getNextStepNo() {
-		int result = 1;
+		int result = 0;
 		for (CalculationStep calculationStep : getCalculationSteps()) {
 			int stepNo = calculationStep.getStepNo();
 			result = Math.max(result, stepNo);
 		}
-		return result;
+		return result + 1;
 	}
 
 

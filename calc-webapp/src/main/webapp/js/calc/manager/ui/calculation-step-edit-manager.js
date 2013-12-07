@@ -173,7 +173,7 @@ CalculationStepEditManager.prototype = (function() {
 		    		$this.currentCalculationStep = response.fields.calculationStep;
 		    		$.proxy(updateForm, $this)();
 			    	
-		    		homeCalculationManager.refreshHome($this.currentCalculationStep);
+		    		homeCalculationManager.updateCalculationStepButton($this.currentCalculationStep);
 			    	
 		    		if(successCallback) {
 			    		successCallback($this.currentCalculationStep);

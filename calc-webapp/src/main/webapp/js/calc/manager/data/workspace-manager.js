@@ -28,6 +28,7 @@ WorkspaceManager.prototype = (function(){
 			});
 		}
 	};
+	
 	/**
 	 * Set the sampling unit to the workspace
 	 */

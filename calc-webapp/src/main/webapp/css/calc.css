@@ -1,6 +1,7 @@
 /**
 * Custom calc style
 * @author Mino Togna
+* @author Stefano Ricci
 */
 
 @CHARSET "UTF-8";
@@ -175,7 +176,7 @@ button.option-btn-selected:hover {
 }
 
 /** Home buttons */
-button.calculation:hover{
+button.calculation:hover {
 	background-color: #3e5770;
 	border-color: #3e5770;
 }
@@ -246,14 +247,28 @@ button.settings:hover {
 	max-width: 90%;
 	margin: 2% auto 2% auto;
 }
-
 /* #calculation .btn-home-plus, #calculation .calculation-button { */
- #calculation .calculation-button {
+ #calculation .calculation-button, 
+ 	#calculation .calculation-step-placeholder {
 	width: 15em;
 	height: 6em;
 	margin: 0 1em 1em 1em;
-	display: inline-block;
 }
+
+#calculation li.calculation-button button {
+	width: 100%;
+}
+
+#calculation .calculation-step-placeholder {
+	border: 1px dashed #95a5a6;
+	border-radius: 8px;
+}
+
+#calculation button.highlight {
+	color: yellow;
+}
+
+
 
 /**
 * Footer
@@ -705,10 +720,45 @@ ul.scroll-menu {
 	border-radius: 0;
 	height: 6em;
 }
-.button-bar button:hover {
+.button-bar button:hover, .button-bar button.blue-btn-hover {
 	background-color: #36525f;
 	border-color: #36525f;
 }
 .button-bar button i{
 	font-size: 2em;
+}
+
+/**
+* Dialog
+*/
+.dialog {
+	background: white;
+	padding: 5px 10px 5px 10px;
+	max-width: 400px;
+}
+
+.dialog .content {
+	text-align: center;
+	padding: 10px;
+}
+	
+.dialog .footer {
+	text-align: center;
+}
+
+.dialog .footer button {
+	margin: 5px;
+}
+
+/**
+* Sortable
+*/
+ul.ui-sortable {
+	list-style-type: none;
+}
+ul.ui-sortable li {
+	float: left;
+}
+.ui-sortable-helper {
+	opacity: 0.4;
 }

@@ -71,6 +71,28 @@ Entity.prototype = (function(){
 		return result;
 	};
 	
+	/**
+	 * Returns the quantitative variable with the given id
+	 */
+	var getVariableById = function(id) {
+		for (var i=0; i < this.quantitativeVariables.length; i++) {
+			var variable = this.quantitativeVariables[i];
+			if ( variable.id == id ) {
+				return variable;
+			}
+		}
+		return null;
+	};
+	
+	/**
+	 * Deletes the quantitative variable with the given id
+	 */
+	var deleteVariable = function(id) {
+		var v = this.getVariableById(id);
+		var index = this.quantitativeVariables.indexOf(v);
+		this.quantitativeVariables.splice(index, 1);
+	};
+	
 	return {
 		constructor : Entity
 		,
@@ -83,6 +105,10 @@ Entity.prototype = (function(){
 		getVariables : getVariables
 		,
 		getAncestorsVariables : getAncestorsVariables
+		,
+		getVariableById : getVariableById
+		,
+		deleteVariable : deleteVariable
 	};
 	
 })();

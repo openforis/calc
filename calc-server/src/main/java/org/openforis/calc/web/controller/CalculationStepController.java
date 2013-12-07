@@ -9,6 +9,7 @@ import javax.validation.Valid;
 
 import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.CalculationStepDao;
+import org.openforis.calc.chain.CalculationStepService;
 import org.openforis.calc.chain.InvalidProcessingChainException;
 import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.engine.Job;
@@ -44,6 +45,9 @@ public class CalculationStepController {
 	@Autowired
 	private WorkspaceService workspaceService;
 
+	@Autowired
+	private CalculationStepService calculationStepService;
+	
 	@Autowired
 	private VariableDao variableDao;
 
@@ -93,7 +97,7 @@ public class CalculationStepController {
 	@RequestMapping(value = "/load.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	List<CalculationStep> loadAll() {
-		return calculationStepDao.loadAll("id");
+		return calculationStepDao.loadAll("stepNo");
 	}
 
 	@RequestMapping(value = "/{stepId}/load.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -102,9 +106,19 @@ public class CalculationStepController {
 		return calculationStepDao.find(stepId);
 	}
 	
-	@RequestMapping(value = "/{stepId}/delete.json", method = RequestMethod.GET)
-	public @ResponseBody void delete(@PathVariable int stepId) {
-		calculationStepDao.delete(stepId);
+	@RequestMapping(value = "/{stepId}/delete.json", method = RequestMethod.POST)
+	public @ResponseBody Response delete(@PathVariable int stepId) {
+		Response response = new Response();
+		Integer variableId = calculationStepService.delete(stepId);
+		response.addField("deletedVariable", variableId);
+		return response;
+	}
+	
+	@RequestMapping(value = "/{stepId}/stepno/{stepNo}.json", method = RequestMethod.POST)
+	public @ResponseBody Response updateStepNo(@PathVariable int stepId, @PathVariable int stepNo) {
+		Response response = new Response();
+		calculationStepService.updateStepNumber(stepId, stepNo);
+		return response;
 	}
 	
 	/**
