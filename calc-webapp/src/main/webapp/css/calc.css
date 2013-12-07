@@ -242,20 +242,20 @@ button.settings:hover {
 /**
 * Calculation
 */
-#calculation .steps-container {
+#calculation .calculation-steps-outer-container {
 	text-align: left;
 	max-width: 90%;
 	margin: 2% auto 2% auto;
 }
-/* #calculation .btn-home-plus, #calculation .calculation-button { */
- #calculation .calculation-button, 
+/* #calculation .btn-home-plus, #calculation .calculation-step { */
+ #calculation .calculation-step, 
  	#calculation .calculation-step-placeholder {
 	width: 15em;
 	height: 6em;
 	margin: 0 1em 1em 1em;
 }
 
-#calculation li.calculation-button button {
+#calculation li.calculation-step button {
 	width: 100%;
 }
 

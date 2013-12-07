@@ -279,7 +279,7 @@ $(document).ready(function() {
 		homeCalculationManager = new HomeCalculationManager($("#calculation"));
 		
 		//load all calculation steps
-		homeCalculationManager.updateCalculationStepButtons();
+		homeCalculationManager.updateSteps();
 		
 		checkJobStatus();
 		//on load, the footer buttons is positioned to the bottom of the page

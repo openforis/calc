@@ -56,7 +56,7 @@ $(function(){
 	    },
 	    success: function ( json ) {
 	    	checkJobStatus(function() {
-	    		homeCalculationManager.updateCalculationStepButtons();
+	    		homeCalculationManager.updateSteps();
 	    	});
 	    },
 	    error: function (e) {

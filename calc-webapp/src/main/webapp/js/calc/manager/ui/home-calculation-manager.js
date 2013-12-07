@@ -7,9 +7,9 @@ function HomeCalculationManager(container) {
 	this.container = container;
 	
 	//init ui elements
-	this.stepsContainer = this.container.find('.step-buttons-container');
+	this.stepsContainer = this.container.find('.calculation-steps-container');
 	this.deleteBtn = this.container.find(".delete");
-	this.calculationStepBtnTemplate = this.container.find(".calculation-button.template");
+	this.calculationStepBtnTemplate = this.container.find(".calculation-step.template");
 	
 	//init managers
 	this.calculationStepManager = CalculationStepManager.getInstance();
@@ -28,7 +28,7 @@ HomeCalculationManager.prototype = (function() {
 		
 		// set delete button as droppable
 		$this.deleteBtn.droppable({
-			accept : ".calculation-button",
+			accept : ".calculation-step",
 			over : function(event, ui) {
 				$this.deleteBtn.addClass("highlight");
 			},
@@ -55,8 +55,10 @@ HomeCalculationManager.prototype = (function() {
 		var element = ui.draggable;
 		var step = element.data("calculationStep");
 		element.addClass("ui-draggable-drop");
-		// temporarly hide button from ui (waiting for confirmation)
+		// temporarly hide step element from ui (waiting for confirmation)
 		element.invisible();
+		// hide sortable placeholder
+		this.container.find(".calculation-step-placeholder").invisible();
 		// and show confirm dialog
 		$.proxy(showDeleteConfirm, this)(step);
 
@@ -97,14 +99,14 @@ HomeCalculationManager.prototype = (function() {
 	};
 	
 	/**
-	 * Updates a calculation step button associated to the specified CalculationStep
+	 * Updates a calculation step element associated to the specified CalculationStep
 	 */
-	var updateCalculationStepButton = function(step, callback) {
+	var updateStep = function(step, callback) {
 		var $this = this;
 
 		var element = $.proxy(getStepElement, $this)(step);
 		if (element.length == 0) {
-			$.proxy(addCalculationStepButton, $this)(step);
+			$.proxy(addStepElement, $this)(step);
 		} else {
 			element.data("calculationStep", step);
 			element.text(step.caption);
@@ -115,17 +117,17 @@ HomeCalculationManager.prototype = (function() {
 	};
 	
 	/**
-	 * Updates all calculation step buttons
+	 * Updates all calculation step elements
 	 */
-	var updateCalculationStepButtons = function(callback) {
+	var updateSteps = function(callback) {
 		var $this = this;
-		var stepElements = $this.stepsContainer.find(".calculation-button");
+		var stepElements = $this.stepsContainer.find(".calculation-step");
 		stepElements.remove();
 
 		$this.calculationStepManager.loadAll(function(response) {
 			var $steps = response;
 			$.each($steps, function(i, $step) {
-				$.proxy(addCalculationStepButton, $this)($step);
+				$.proxy(addStepElement, $this)($step);
 			});
 			if (callback) {
 				callback();
@@ -134,11 +136,11 @@ HomeCalculationManager.prototype = (function() {
 	};
 	
 	/**
-	 * Returns the button associated to the specified CalculationStep
+	 * Returns the element associated to the specified CalculationStep
 	 */
 	var getStepElement = function(step) {
-		var button = this.container.find("#calculation-step-" + step.id);
-		return button;
+		var element = this.container.find("#calculation-step-" + step.id);
+		return element;
 	};
 
 	/**
@@ -152,10 +154,8 @@ HomeCalculationManager.prototype = (function() {
 		var onOk = $.proxy(deleteStep, $this, step);
 		
 		var onCancel = function() {
-			// restore the step button in the old position
+			//restore step element original position
 			var stepElement = $.proxy(getStepElement, $this)(step);
-
-			//restore step button original position
 			var originalIndex = stepElement.data("originalIndex");
 			var replacedBy = stepElement.parent().children()[originalIndex];
 			stepElement.insertAfter(replacedBy);
@@ -220,10 +220,10 @@ HomeCalculationManager.prototype = (function() {
 	};
 	
 	/**
-	 * Creates a home page calculation step button and add it
+	 * Creates a home page calculation step element and add it
 	 * to the calculation home page section
 	 */
-	var addCalculationStepButton = function(step) {
+	var addStepElement = function(step) {
 		var $this = this;
 
 		var element = $this.calculationStepBtnTemplate.clone();
@@ -243,7 +243,7 @@ HomeCalculationManager.prototype = (function() {
 	};
 	
 	/**
-	 * Calculation step button click handler
+	 * Calculation step element click handler
 	 */
 	var stepClickHandler = function(event) {
 		var element = $(event.currentTarget);
@@ -259,8 +259,8 @@ HomeCalculationManager.prototype = (function() {
 		// public methods
 		_init : init
 		,
-		updateCalculationStepButton : updateCalculationStepButton
+		updateStep : updateStep
 		,
-		updateCalculationStepButtons : updateCalculationStepButtons
+		updateSteps : updateSteps
 	};
 })();
