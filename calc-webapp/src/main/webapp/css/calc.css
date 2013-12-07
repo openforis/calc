@@ -734,7 +734,14 @@ ul.scroll-menu {
 .dialog {
 	background: white;
 	padding: 5px 10px 5px 10px;
-	max-width: 400px;
+/* 	max-width: 400px; */
+	min-height: 10em;
+	min-width: 20em;
+	padding-top: 1.4em;
+	border-radius: 8px;
+	-webkit-box-shadow: 8px 8px 7px 2px rgba(149,165,166,0.68);
+	-moz-box-shadow: 8px 8px 7px 2px rgba(149,165,166,0.68);
+	box-shadow: 8px 8px 7px 2px rgba(149,165,166,0.68);
 }
 
 .dialog .content {
@@ -748,6 +755,7 @@ ul.scroll-menu {
 
 .dialog .footer button {
 	margin: 5px;
+	width: 35%;
 }
 
 /**
