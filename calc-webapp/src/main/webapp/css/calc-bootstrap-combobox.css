@@ -32,28 +32,28 @@ ul.typeahead li {
 }
 
 /**
-* Inside form-small and form-group-small elements style
+* Inside .form-small and .form-group.small elements style
 */
-.form-group-small > .combobox-container > .typeahead {
+.form-group.small > .combobox-container > .typeahead {
 	width: 100%;
 }
-.form-group-small > .combobox-container > ul.typeahead li {
+.form-group.small > .combobox-container > ul.typeahead li {
 	font-size: 0.6em;
 }
-.form-group-small > .combobox-container > .typeahead li a {
+.form-group.small > .combobox-container > .typeahead li a {
 	padding: 2px;
 }
 .form-horizontal .form-group > .combobox-container {
 	display: inline-block;
 	width: auto;
 }
-.form-group-small > .combobox-container .dropdown-toggle {
+.form-group.small > .combobox-container .dropdown-toggle {
 	font-size: 0.9em;
 	width: 23px;
 	right: 0px;
 	top: 0px;
 }
- .form-group-small > .combobox-container .form-control {
+ .form-group.small > .combobox-container .form-control {
 	width: auto;
 	height: auto;
 	padding: 1px;

@@ -3,6 +3,8 @@
  */
 package org.openforis.calc.web.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.openforis.calc.chain.CalculationStep;
@@ -19,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -102,6 +105,32 @@ public class JobController {
 		taskManager.startJob(job);
 
 		return job;
+	}
+
+	/**
+	 * Execute a job for the given calculation step id
+	 * 
+	 * @param stepId
+	 * @return
+	 * @throws InvalidProcessingChainException
+	 * @throws WorkspaceLockedException
+	 */
+	@RequestMapping(value = "/step/{stepId}/test.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	synchronized Job testCalculationStep(@PathVariable int stepId, @RequestBody HashMap<String, String> parameters) throws InvalidProcessingChainException, WorkspaceLockedException {
+		Workspace workspace = workspaceService.getActiveWorkspace();
+		/*
+		CalculationStep step = calculationStepDao.find(stepId);
+		CustomRTask task = (CustomRTask) taskManager.createCalculationStepTask(step);
+
+		Job job = taskManager.createJob(workspace);
+		job.addTask(task);
+
+		taskManager.startJob(job);
+
+		return job;
+		*/
+		return null;
 	}
 
 }

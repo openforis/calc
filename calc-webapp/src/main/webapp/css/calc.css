@@ -505,21 +505,19 @@ calc-step page
 .inline > .form-group {
 	display: inline-block;
 }
-.page-section .form-small .form-group {
+.page-section .form-small .form-group, .form-group.small {
 	margin-top: 0px;
 	margin-bottom: 0px;
 	margin-right: 0px;
 	margin-left: 0px;
-}
-.form-group-small {
 	position: relative;
 }
-.form-group-small > .control-label {
+.form-group.small > .control-label {
 	padding-top: 0px;
 	margin-top: auto;
 	margin-bottom: auto;
 }
-.form-group-small > .form-control {
+.form-group.small > .form-control {
 	width: auto;
 	height: auto;
 	padding: 1px;
@@ -687,7 +685,9 @@ ul.scroll-menu {
 	padding-top: 10px;
 }
 
-
+#calculation-step-exec-container .test-input-var {
+	padding-bottom: 0.5em;
+}
 
 /**
 **
@@ -761,4 +761,11 @@ ul.ui-sortable li {
 }
 .ui-sortable-helper {
 	opacity: 0.4;
+}
+
+/**
+* Numeric input fields
+*/
+.numeric {
+	text-align: right;
 }
