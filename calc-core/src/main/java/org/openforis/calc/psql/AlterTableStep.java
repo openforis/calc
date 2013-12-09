@@ -1,6 +1,7 @@
 package org.openforis.calc.psql;
 
 import org.apache.commons.lang.StringUtils;
+import org.jooq.DataType;
 import org.jooq.Field;
 import org.jooq.Table;
 import org.jooq.UniqueKey;
@@ -9,6 +10,7 @@ import org.jooq.UniqueKey;
  * 
  * @author G. Miceli
  * @author M. Togna
+ * @author S. Ricci
  * 
  */
 public class AlterTableStep extends ExecutablePsqlPart {
@@ -29,6 +31,10 @@ public class AlterTableStep extends ExecutablePsqlPart {
 
 	public AddColumnStep addColumn(Field<?> field, boolean nullable) {
 		return new AddColumnStep(field, nullable);
+	}
+
+	public AlterColumnStep alterColumn(Field<?> field) {
+		return new AlterColumnStep(field);
 	}
 
 	public DropColumnStep dropColumn(Field<?> field) {
@@ -60,7 +66,28 @@ public class AlterTableStep extends ExecutablePsqlPart {
 			}
 		}
 	}
-
+	
+	public class AlterColumnStep extends ExecutablePsqlPart {
+		
+		AlterColumnStep(Field<?> field) {
+			super(AlterTableStep.this);
+			append("alter column ");
+			append(field.getName());
+		}
+		
+		public AlterColumnStep type(DataType<?> dataType) {
+			append(" type ");
+			append(dataType.getTypeName());
+			return this;
+		}
+		
+		public AlterColumnStep using(String expression) {
+			append(" using ");
+			append(expression);
+			return this;
+		}
+	}
+	
 	public class DropColumnStep extends ExecutablePsqlPart {
 		DropColumnStep(Field<?> field, boolean cascade) {
 			super(AlterTableStep.this);
