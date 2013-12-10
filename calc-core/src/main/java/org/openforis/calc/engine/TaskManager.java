@@ -68,11 +68,24 @@ public class TaskManager {
 		return "true".equals(mode);
 	}
 	
+	
 	/**
 	 * Create a job with write-access to the calc schema. Used for updating
 	 * metadata (e.g. importing sampling design, variables)  
 	 */
-	public Job createJob(Workspace workspace){
+	public CalcJob createCalcJob(Workspace workspace) {
+		CalcJob job = new CalcJob(workspace, dataSource, this.beanFactory);
+		((AutowireCapableBeanFactory)beanFactory).autowireBean(job);
+//		job.setDebugMode(isDebugMode());
+//		job.setSchemas(new Schemas(workspace));
+		return job;
+	}
+	
+	/**
+	 * Create a job with write-access to the calc schema. Used for updating
+	 * metadata (e.g. importing sampling design, variables)  
+	 */
+	public Job createJob(Workspace workspace) {
 		Job job = new Job(workspace, dataSource);
 		job.setDebugMode(isDebugMode());
 		job.setSchemas(new Schemas(workspace));

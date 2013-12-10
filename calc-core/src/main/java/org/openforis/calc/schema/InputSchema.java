@@ -21,6 +21,7 @@ public class InputSchema extends RelationalSchema {
 	private Workspace workspace;
 
 	private Map<Integer, InputTable> dataTables;
+//	private Map<Integer, ResultTable> resultTables;
 	
 	private Map<Integer, EntityDataView> dataViews;
 	
@@ -29,6 +30,7 @@ public class InputSchema extends RelationalSchema {
 		this.workspace = workspace;
 		
 		initDataTables();
+//		initResultTables();
 		
 		initDataViews();
 	}
@@ -42,6 +44,15 @@ public class InputSchema extends RelationalSchema {
 		}
 	}
 
+//	private void initResultTables() {
+//		this.resultTables = new HashMap<Integer, ResultTable>();
+//		for ( Entity entity : workspace.getEntities() ) {
+//			ResultTable table = new ResultTable(entity, this);
+//			addTable(table);
+//			resultTables.put(entity.getId(), table);
+//		}
+//	}
+	
 	private void initDataViews() {
 		this.dataViews = new HashMap<Integer, EntityDataView>();
 		for ( Entity entity : workspace.getEntities() ) {
@@ -57,6 +68,11 @@ public class InputSchema extends RelationalSchema {
 	
 	public InputTable getDataTable(Entity entity) {
 		return dataTables.get(entity.getId());
+	}
+	
+	public ResultTable getResultTable(Entity entity) {
+		ResultTable table = new ResultTable(entity, this);
+		return table;
 	}
 
 	public EntityDataView getDataView(Entity entity) {

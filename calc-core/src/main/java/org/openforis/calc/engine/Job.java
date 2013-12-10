@@ -59,7 +59,7 @@ public class Job extends Worker implements Iterable<Task> {
 	 * Initializes each contained task in order. Called after all tasks have been added 
 	 * (i.e. not in constructor!)
 	 */
-	public final void init() {
+	public void init() {
 		super.init();
 		log().debug("Initializing");
 		for (Worker task : tasks) {
@@ -76,15 +76,6 @@ public class Job extends Worker implements Iterable<Task> {
 		return total;
 	}
 	
-//	@Override
-//	protected final long countTotalItems() {
-//		long totalItems = 0;
-//		for (Task task : tasks) {
-//			totalItems += task.getTotalItems();
-//		}
-//		return totalItems;
-//	}
-
 	@Override
 	public synchronized void run() {
 		log().debug("Starting job");
@@ -126,8 +117,7 @@ public class Job extends Worker implements Iterable<Task> {
 		tasks.add(task);
 	}
 
-
-	public void addTasks(List<Task> tasks) {
+	public void addTasks(List<? extends Task> tasks) {
 		for (Task task : tasks) {
 			addTask(task);
 		}

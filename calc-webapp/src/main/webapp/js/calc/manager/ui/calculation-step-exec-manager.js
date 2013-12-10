@@ -40,11 +40,11 @@ CalculationStepExecManager.prototype = (function() {
 			UI.disableAll();
 			$this.jobManager.executeCalculationStep(
 					$this.calculationStep.id, 
-					//on complete show results
+					// on complete show results
 					function(job) {
 						UI.enableAll();
 						
-						// instanciate data provider
+						// create instance of data provider
 						var entityId = $this.calculationStep.outputEntityId;
 						var variables  = $this.calculationStep.variables;
 						var dataProvider = new DataViewProvider(entityId , variables);
@@ -72,6 +72,19 @@ CalculationStepExecManager.prototype = (function() {
 		
 		//show main container
 		this.container.fadeIn(400);
+		
+		
+		// test
+		var entityId = this.calculationStep.outputEntityId;
+		var variables  = this.calculationStep.variables;
+		var dataProvider = new DataViewProvider(entityId , variables);
+		var start = $.now();
+		console.log("Start : " + start);
+		dataProvider.data( 0 , 100000 , null , null, function(response) {
+//			console.log("finished");
+			var end = ( $.now() - start ) /1000;
+			console.log("End : " + end + " seconds");
+		} );
 	};
 	
 	var hide = function () {
