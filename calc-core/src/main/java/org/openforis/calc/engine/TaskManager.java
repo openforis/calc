@@ -13,6 +13,7 @@ import org.openforis.calc.chain.InvalidProcessingChainException;
 import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.module.ModuleRegistry;
 import org.openforis.calc.module.Operation;
+import org.openforis.calc.module.r.CustomROperation;
 import org.openforis.calc.schema.Schemas;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -112,6 +113,20 @@ public class TaskManager {
 		return task;
 	}
 
+	public CalculationStepTestTask createCalculationStepTestTask(CalculationStep step) throws InvalidProcessingChainException {
+		Operation<?> operation = moduleRegistry.getOperation(step);
+		if ( operation == null) {
+			throw new InvalidProcessingChainException("Unknown operation in step " + step);
+		}
+		if ( ! (operation instanceof CustomROperation) ) {
+			throw new InvalidProcessingChainException(String.format("Unexpected operation type (%s) in step %s. Expected %s" + 
+					operation.getName(), step.toString(), CustomROperation.class.getName()));
+		}
+		CalculationStepTestTask task = createTask(CalculationStepTestTask.class);
+		task.setCalculationStep(step);
+		return task;
+	}
+	
 	/**
 	 * Executes a job in the background
 	 * 
@@ -161,4 +176,5 @@ public class TaskManager {
 	protected DataSource getDataSource() {
 		return dataSource;
 	}
+
 }

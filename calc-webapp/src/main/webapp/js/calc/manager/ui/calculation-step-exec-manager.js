@@ -72,22 +72,27 @@ CalculationStepExecManager.prototype = (function() {
 		//validate parameters and starts the execution of the test
 		this.testButton.click(function(e) {
 			if ( $.proxy(validateTestForm, $this)() ) {
-				//TODO
-				var parameters = $.proxy(extractVariablesParameters, $this)();
-				var dataObj = {variables_parameters: parameters};
-				var dataStr = JSON.stringify(dataObj);
-				$.ajax({
-					url : "rest/job/step/"+$this.calculationStep.id+"/test.json",
-					data: dataStr,
-					dataType:"json"
-				}).done(function(response) {
-					console.log(response);
-				})
-				.error(function(e){
-					console.log("error!!! on test");
-					console.log(e);
-				});
-				
+				UI.disableAll();
+				var variablesParameters = $.proxy(extractVariablesParameters, $this)();
+				var parameters = {variables: variablesParameters};
+				$this.jobManager.testCalculationStep(
+					$this.calculationStep.id,
+					parameters,
+					//on complete show results
+					function(job) {
+						UI.enableAll();
+						
+						// instanciate data provider
+						var entityId = $this.calculationStep.outputEntityId;
+						var variables  = $this.calculationStep.variables;
+						var dataProvider = new DataTestViewProvider(entityId, variables);
+						
+						// once completed hide this and shows results section
+						$this.hide();
+						$this.calculationStepResultsManager.show(dataProvider);
+					}
+					, true
+				);
 			}
 		});
 	};
@@ -136,10 +141,10 @@ CalculationStepExecManager.prototype = (function() {
 	};
 	
 	var extractVariablesParameters = function() {
-		var result = new Array();
+		var result = {};
 		$.each(this.testVariableParametersByName, function(variableName, variableParametersRow) {
 			var params = variableParametersRow.extractParameters();
-			result.push(params);
+			result[variableName] = params;
 		});
 		return result;
 	};
@@ -264,8 +269,8 @@ CalculationStepExcecutionVariableRow.prototype = (function() {
 	};
 })();
 
-function CalculationStepExecutionVariableParameters(varName, max, min, increment) {
-	this.varName = varName;
+function CalculationStepExecutionVariableParameters(variableName, max, min, increment) {
+	this.variableName = variableName;
 	this.max = max;
 	this.min = min;
 	this.increment = increment;
