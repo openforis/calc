@@ -1,24 +1,25 @@
 /**
- * Data provider for data test
+ * Data provider for calculation step test
  *  
  * @author S. Ricci
  */
-function DataTestViewProvider(entityId, variables) {
+function CalculationStepTestDataProvider(jobId, entityId, variables) {
 	// base context path for rest call
-	this.contextPath = "rest/job/active/step/test/";
+	this.contextPath = "rest/calculationstep/test/";
 	
+	this.jobId = jobId;
 	this.entityId = entityId;
 	this.variables = variables;
 }
 
-DataTestViewProvider.prototype = (function() {
+CalculationStepTestDataProvider.prototype = (function() {
 	
 	/**
-	 * 
+	 * Count the number of available records to show
 	 */
 	var count = function(success) {
 		$.ajax({
-			url : this.contextPath + "count.json",
+			url : this.contextPath + this.jobId + "/count.json",
 			dataType : "json"
 		}).done(function(response) {
 			var cnt = response.fields.count;
@@ -40,7 +41,7 @@ DataTestViewProvider.prototype = (function() {
 		}
 		
 		$.ajax({
-			url : this.contextPath + "query.json" ,
+			url : this.contextPath + this.jobId + "/query.json" ,
 			dataType : "json",
 			data : params
 		}).done(function(response) {
@@ -51,7 +52,7 @@ DataTestViewProvider.prototype = (function() {
 	
 	//prototype
 	return {
-		constructor : DataTestViewProvider,
+		constructor : CalculationStepTestDataProvider,
 		
 		//public methods
 //		_init : init,

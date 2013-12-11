@@ -97,6 +97,27 @@ CalculationStepManager.prototype = (function() {
 		});
 	};
 	
+	/**
+	 * Executes a job for the calculation step test with id stepId
+	 */
+	var test = function(stepId, parameters, success, hideModalStatusOnComplete){
+		$.ajax({
+			url : contextPath + "/"+stepId+"/test.json",
+			type: "POST", 
+			data: JSON.stringify(parameters),
+			dataType: "json",
+			contentType: "application/json"
+		}).done(function(response) {
+//			console.log("job manager job executed");
+//			console.log(response);
+			checkJobStatus(success, false, hideModalStatusOnComplete);
+		})
+		.error(function(e){
+			console.log("error!!! on test calculation step");
+			console.log(e);
+		});
+	};
+	
 	//prototype
 	return {
 		constructor : CalculationStepManager,
@@ -111,6 +132,8 @@ CalculationStepManager.prototype = (function() {
 		remove : remove
 		,
 		updateStepNumber: updateStepNumber
+		,
+		test : test
 	};
 })();
 

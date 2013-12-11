@@ -20,7 +20,7 @@ function CalculationStepExecManager(container, calculationStepResultsManager) {
 	//test btn
 	this.testButton = this.container.find("button[name=test-btn]");
 	//test input variables rows container
-	this.testInputVariablesRows = this.container.find(".input-var-rows");
+	this.settingsRowsContainer = this.container.find(".input-var-rows");
 	//input variable test parameters row template
 	this.testInputVariableRowTemplate = this.container.find(".test-input-var.template");
 	
@@ -29,9 +29,10 @@ function CalculationStepExecManager(container, calculationStepResultsManager) {
 	
 	//job manager
 	this.jobManager = new JobManager();
+	this.calculationStepManager = new CalculationStepManager();
 	
-	//associative array with variable parameters indexed by name
-	this.testVariableParametersByName = {};
+	//array with the variable settings
+	this.settingsRows = new Array();
 	
 	this._init();
 };
@@ -71,11 +72,11 @@ CalculationStepExecManager.prototype = (function() {
 		
 		//validate parameters and starts the execution of the test
 		this.testButton.click(function(e) {
-			if ( $.proxy(validateTestForm, $this)() ) {
+			if ( $.proxy(validateTestSettings, $this)() ) {
 				UI.disableAll();
-				var variablesParameters = $.proxy(extractVariablesParameters, $this)();
+				var variablesParameters = $.proxy(extractVariablesSettings, $this)();
 				var parameters = {variables: variablesParameters};
-				$this.jobManager.testCalculationStep(
+				$this.calculationStepManager.test(
 					$this.calculationStep.id,
 					parameters,
 					//on complete show results
@@ -85,7 +86,7 @@ CalculationStepExecManager.prototype = (function() {
 						// instanciate data provider
 						var entityId = $this.calculationStep.outputEntityId;
 						var variables  = $this.calculationStep.variables;
-						var dataProvider = new DataTestViewProvider(entityId, variables);
+						var dataProvider = new CalculationStepTestDataProvider(job.id, entityId, variables);
 						
 						// once completed hide this and shows results section
 						$this.hide();
@@ -110,7 +111,7 @@ CalculationStepExecManager.prototype = (function() {
 		this.header.append( legend );
 		
 		// update input variables rows
-		$.proxy(updateInputVariablesRows, this)();
+		$.proxy(updateTestSettings, this)();
 		
 		//show main container
 		this.container.fadeIn(400);
@@ -120,40 +121,64 @@ CalculationStepExecManager.prototype = (function() {
 		this.container.hide();
 	};
 	
-	var updateInputVariablesRows = function() {
+	var updateTestSettings = function() {
 		var $this = this;
+		
 		//delete rows corresponding to unused variables
-		$.each($this.testVariableParametersByName, function(variableName, variableParametersRow) {
-			if ( $this.calculationStep.inputVariables.indexOf(variableName) < 0 ) {
-				variableParametersRow.remove();
-				delete $this.testVariableParametersByName[variableName];
-			}
+		var unusedRows = $.proxy(getUnusedVariablesRows, $this)();
+		$.each(unusedRows, function(index, row) {
+			row.remove();
+			ArrayUtils.removeItem($this.settingsRows, row);
 		});
+		
 		//add new variable rows
 		$.each($this.calculationStep.inputVariables, function(index, variableName) {
-			var oldRow = $this.testVariableParametersByName[variableName];
+			var oldRow = $.proxy(getSettingsRow, $this)(variableName);
 			if ( oldRow == null ) {
-				var variableParametersRow = CalculationStepExcecutionVariableRow.newInstance($this.testInputVariableRowTemplate, variableName);
-				$this.testVariableParametersByName[variableName] = variableParametersRow;
-				$this.testInputVariablesRows.append(variableParametersRow.row);
+				var row = new VariableSettingsRow(variableName, $this.testInputVariableRowTemplate);
+				$this.settingsRows.push(row);
+				$this.settingsRowsContainer.append(row.rowElement);
 			}
 		});
 	};
 	
-	var extractVariablesParameters = function() {
+	var getSettingsRow = function(variableName) {
+		for(var i=0; i < this.settingsRows.length; i++) {
+			var row = this.settingsRows[i];
+			if ( row.variableName == variableName ) {
+				return row;
+			}
+		}
+		return null;
+	};
+	
+	var extractVariablesSettings = function() {
 		var result = {};
-		$.each(this.testVariableParametersByName, function(variableName, variableParametersRow) {
-			var params = variableParametersRow.extractParameters();
-			result[variableName] = params;
+		$.each(this.settingsRows, function(index, row) {
+			var params = row.extractParameters();
+			result[row.variableName] = params;
 		});
 		return result;
 	};
 	
-	var validateTestForm = function() {
+	var validateTestSettings = function() {
 		var result = true;
-		$.each(this.testVariableParametersByName, function(variableName, variableParametersRow) {
-			var valid = variableParametersRow.validate();
+		$.each(this.settingsRows, function(index, row) {
+			var valid = row.validate();
 			result = result && valid;
+		});
+		return result;
+	};
+	
+	var getUnusedVariablesRows = function() {
+		var result = new Array();
+		var inputVariables = this.calculationStep.inputVariables;
+		$.each(this.settingsRows, function(index, row) {
+			var variableName = row.variableName;
+			var unused = inputVariables.indexOf(variableName) < 0;
+			if ( unused ) {
+				result.push(row);
+			}
 		});
 		return result;
 	};
@@ -176,43 +201,31 @@ CalculationStepExecManager.prototype = (function() {
 /**
  * Wrapper for a calculation step variable parameters row
  */
-function CalculationStepExcecutionVariableRow(variableName, row, minField, maxField, incrementField) {
+function VariableSettingsRow(variableName, rowTemplate) {
 	this.variableName = variableName;
-	this.row = row;
-	this.minField = minField;
-	this.maxField = maxField;
-	this.incrementField = incrementField;
+	
+	this.rowElement = rowTemplate.clone();
+	this.rowElement.removeClass("template");
+	this.rowElement.show();
+	this.variableNameLabel = this.rowElement.find(".variable-name");
+	this.minField = this.rowElement.find("input[name=min]");
+	this.maxField = this.rowElement.find("input[name=max]");
+	this.incrementField = this.rowElement.find("input[name=increment]");
+
+	//set default values in elements
+	var defaultMin = 0;
+	var defaultMax = 100;
+	var defaultIncrement = 10;
+
+	this.variableNameLabel.text(variableName);
+	this.minField.val(defaultMin);
+	this.maxField.val(defaultMax);
+	this.incrementField.val(defaultIncrement);
 	
 	this._init();
 };
 
-/**
- * Creates an instance of CalculationStepExcecutionVariableRow associated to a variable, starting from a row template.
- */
-CalculationStepExcecutionVariableRow.newInstance = function(rowTemplate, variableName) {
-	//constants
-	var defaultMin = 0;
-	var defaultMax = 100;
-	var defaultIncrement = 10;
-	
-	var row = rowTemplate.clone();
-	row.removeClass("template");
-	row.find(".variable-name").text(variableName);
-	row.show();
-	var minField = row.find("input[name=min_]");
-	minField.attr("name", "min_" + variableName);
-	minField.val(defaultMin);
-	var maxField = row.find("input[name=max_]");
-	maxField.attr("name", "max_" + variableName);
-	maxField.val(defaultMax);
-	var incrementField = row.find("input[name=increment_]");
-	incrementField.attr("name", "increment_" + variableName);
-	incrementField.val(defaultIncrement);
-	var result = new CalculationStepExcecutionVariableRow(variableName, row, minField, maxField, incrementField);
-	return result;
-};
-
-CalculationStepExcecutionVariableRow.prototype = (function() {
+VariableSettingsRow.prototype = (function() {
 	
 	/**
 	 * Initializes event listeners on the fields
@@ -228,7 +241,7 @@ CalculationStepExcecutionVariableRow.prototype = (function() {
 	 * Validates the fields and updates the UI error feedback
 	 */
 	var validate = function() {
-		UI.Form.removeErrors(this.row);
+		UI.Form.removeErrors(this.rowElement);
 		var minValid = UI.Form.validation.required(this.minField, "Min") && UI.Form.validation.numeric(this.minField);
 		var maxValid = UI.Form.validation.required(this.maxField, "Max") && UI.Form.validation.numeric(this.maxField);		
 		var incrementValid = UI.Form.validation.required(this.incrementField, "Increment") && UI.Form.validation.numeric(this.incrementField);
@@ -239,23 +252,25 @@ CalculationStepExcecutionVariableRow.prototype = (function() {
 	 * Removes the row element from the UI
 	 */
 	var remove = function() {
-		this.row.remove();
+		this.rowElement.remove();
 	};
 	
 	/**
-	 * Extracts a @link{CalculationStepExecutionVariableParameters} from the input field values  
+	 * Extracts the variable settings from the input field values  
 	 */
 	var extractParameters = function () {
-		var min = this.minField.val();
-		var max = this.maxField.val();
-		var increment = this.incrementField.val();
-		var result = new CalculationStepExecutionVariableParameters(this.variableName, max, min, increment);
+		var result = { 
+			variableName: this.variableName,
+			max: this.maxField.val(),
+			min: this.minField.val(),
+			increment: this.incrementField.val()
+		};
 		return result;
 	};
 	
 	//prototype
 	return {
-		constructor : CalculationStepExcecutionVariableRow,
+		constructor : VariableSettingsRow,
 		
 		//public methods
 		_init : init,
@@ -268,10 +283,3 @@ CalculationStepExcecutionVariableRow.prototype = (function() {
 		
 	};
 })();
-
-function CalculationStepExecutionVariableParameters(variableName, max, min, increment) {
-	this.variableName = variableName;
-	this.max = max;
-	this.min = min;
-	this.increment = increment;
-}
