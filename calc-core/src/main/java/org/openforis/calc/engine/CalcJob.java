@@ -162,10 +162,9 @@ public class CalcJob extends Job {
 				plotAreaScript = replaceVariables(dataFrame, plotAreaScript);
 				plotArea = r().rScript( plotAreaScript );
 			}
+			
 			// create a task for each step
 			for ( CalculationStep step : this.calculationSteps.get(entityId) ) {
-	//			CalcRTask task = new CalcRTask(rEnvironment, step.getCaption());
-
 				CalculationStepRTask task = new CalculationStepRTask(rEnvironment, dataFrame, step, plotArea);
 				calculationStepTasks.add(task);
 				
@@ -189,7 +188,7 @@ public class CalcJob extends Job {
 			}
 			readDataTask.addScript( r().dbSendQuery(connection, upd) );
 			
-			// 2. append select
+			// 2. append select data
 			SelectQuery<Record> select = new Psql().selectQuery();
 			select.addFrom(view);
 			select.addSelect(view.getIdField());
@@ -214,8 +213,8 @@ public class CalcJob extends Job {
 			
 			
 			// 5. keep results (only pkey and output variables) 
-			RVariable results = r().variable(entity.getName()+"_results");
-			RVector cols = r().c(outputVariables.toArray(new String[]{})).addValue(primaryKey);
+			RVariable results = r().variable( entity.getName()+"_results" );
+			RVector cols = r().c( outputVariables.toArray(new String[]{}) ).addValue( primaryKey );
 			
 			writeResultsTask.addScript( r().setValue(results, dataFrame.filterColumns(cols)) );
 			
@@ -232,7 +231,7 @@ public class CalcJob extends Job {
 			writeResultsTask.addScript( r().dbWriteTable(connection, resultTable.getName(), results) );
 
 			// 8. for each output field, update table with results joining with results table
-			// cast id datatype from varchar to bigint first
+			// convert id datatype from varchar to bigint first
 			AlterColumnStep alterPkey = new Psql()
 				.alterTable(resultTable)
 				.alterColumn( resultTable.getIdField() )

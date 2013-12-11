@@ -50,10 +50,11 @@ public class WorkInProgressTest extends AbstractTransactionalJUnit4SpringContext
 		
 		
 		CalcJob job = taskManager.createCalcJob(workspace);
-		CalculationStep step = calculationStepDao.find(1);
-		job.addCalculationStep(step);
+		job.addCalculationStep(calculationStepDao.find(3));
+		job.addCalculationStep(calculationStepDao.find(8));
+		job.init();
 		
-		
+		System.out.println( job.toString() );
 //		CustomRTask task = (CustomRTask) taskManager.createCalculationStepTask(step);
 //		task.setMaxItems(18000);
 //		

@@ -116,7 +116,7 @@ extends AbstractTransactionalJUnit4SpringContextTests {
 		
 		CalculationStep step = calculationStepDao.find(1);
 		CustomRTask task = (CustomRTask) taskManager.createCalculationStepTask(step);
-		task.setMaxItems(18000);
+//		task.setMaxItems(18000);
 		
 		Job job = taskManager.createJob(workspace);
 		job.addTask(task);

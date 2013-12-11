@@ -128,8 +128,13 @@ public class RScript {
 		// append script
 		String script = this.toScript();
 		if(! StringUtils.isBlank(script) ){
+			script = script.trim();
+			script = script.replaceAll("[\r\n]+","\n");
 			sb.append(script);
-			sb.append(";\n");
+			if( !script.endsWith(";") ) {
+				sb.append(";");
+			}
+			sb.append("\n");
 		}
 		
 		return sb.toString();

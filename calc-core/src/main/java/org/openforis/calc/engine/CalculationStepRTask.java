@@ -49,8 +49,8 @@ public class CalculationStepRTask extends CalcRTask {
 		String variableName = getOutputVariable().getName();
 		RVariable outputVar = r().variable( dataFrame, variableName );
 		//set output variable with calculation step script
-		SetValue setOutputValue = r().setValue( outputVar, r().rScript(script) );
-		addScript(setOutputValue);
+//		SetValue setOutputValue = r().setValue( outputVar, r().rScript(script) );
+		addScript( r().rScript(script) );
 
 		this.outputVariables.add(variableName);
 		

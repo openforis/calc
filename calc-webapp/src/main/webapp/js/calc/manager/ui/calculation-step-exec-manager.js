@@ -75,16 +75,16 @@ CalculationStepExecManager.prototype = (function() {
 		
 		
 		// test
-		var entityId = this.calculationStep.outputEntityId;
-		var variables  = this.calculationStep.variables;
-		var dataProvider = new DataViewProvider(entityId , variables);
-		var start = $.now();
-		console.log("Start : " + start);
-		dataProvider.data( 0 , 100000 , null , null, function(response) {
-//			console.log("finished");
-			var end = ( $.now() - start ) /1000;
-			console.log("End : " + end + " seconds");
-		} );
+//		var entityId = this.calculationStep.outputEntityId;
+//		var variables  = this.calculationStep.variables;
+//		var dataProvider = new DataViewProvider(entityId , variables);
+//		
+//		var start = $.now();
+//		console.log("Start : " + start);
+//		dataProvider.data( 0 , 100000 , null , null, function(response) {
+//			var end = ( $.now() - start ) /1000;
+//			console.log("End : " + end + " seconds");
+//		} );
 	};
 	
 	var hide = function () {

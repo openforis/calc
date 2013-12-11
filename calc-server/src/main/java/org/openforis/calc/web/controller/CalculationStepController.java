@@ -129,24 +129,24 @@ public class CalculationStepController {
 	 * @throws InvalidProcessingChainException
 	 * @throws WorkspaceLockedException
 	 */
-	@Deprecated
-	@RequestMapping(value = "/{stepId}/run.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody
-	synchronized Job executeJob(@PathVariable int stepId, @RequestParam(required=false) Integer totalItems) throws InvalidProcessingChainException, WorkspaceLockedException {
-		Workspace workspace = workspaceService.getActiveWorkspace();
-
-		CalculationStep step = calculationStepDao.find(stepId);
-		CustomRTask task = (CustomRTask) taskManager.createCalculationStepTask(step);
-		if(totalItems != null && totalItems > 0) {
-			task.setMaxItems(totalItems);
-		}
-		
-		Job job = taskManager.createJob(workspace);
-		job.addTask(task);
-
-		taskManager.startJob(job);
-
-		return job;
-	}
+//	@Deprecated
+//	@RequestMapping(value = "/{stepId}/run.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+//	public @ResponseBody
+//	synchronized Job executeJob(@PathVariable int stepId, @RequestParam(required=false) Integer totalItems) throws InvalidProcessingChainException, WorkspaceLockedException {
+//		Workspace workspace = workspaceService.getActiveWorkspace();
+//
+//		CalculationStep step = calculationStepDao.find(stepId);
+//		CustomRTask task = (CustomRTask) taskManager.createCalculationStepTask(step);
+//		if(totalItems != null && totalItems > 0) {
+//			task.setMaxItems(totalItems);
+//		}
+//		
+//		Job job = taskManager.createJob(workspace);
+//		job.addTask(task);
+//
+//		taskManager.startJob(job);
+//
+//		return job;
+//	}
 
 }
