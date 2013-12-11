@@ -8,8 +8,6 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.CalculationStepDao;
@@ -19,12 +17,13 @@ import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.engine.CalculationStepTestTask;
 import org.openforis.calc.engine.DataRecord;
 import org.openforis.calc.engine.Job;
+import org.openforis.calc.engine.ParameterMap;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceLockedException;
 import org.openforis.calc.engine.WorkspaceService;
-import org.openforis.calc.engine.CalculationStepTestTask.Parameters;
+import org.openforis.calc.json.ParameterMapJsonParser;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.VariableDao;
 import org.openforis.calc.module.r.CalcRModule;
@@ -176,9 +175,8 @@ public class CalculationStepController {
 		CalculationStep step = calculationStepDao.find(stepId);
 		CalculationStepTestTask task = taskManager.createCalculationStepTestTask(step);
 		
-		JSONObject parametersJson = (JSONObject) new JSONParser().parse(parametersStr);
-		Parameters parameters = CalculationStepTestTask.Parameters.parse(parametersJson);
-		task.setParameters(parameters);
+		ParameterMap parameterMap = new ParameterMapJsonParser().parse(parametersStr);
+		task.setSettings(parameterMap);
 		
 		Job job = taskManager.createJob(workspace);
 		job.addTask(task);

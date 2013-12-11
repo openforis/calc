@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Vector;
 
-import org.json.simple.JSONObject;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.r.R;
 import org.openforis.calc.r.REnvironment;
@@ -33,7 +32,7 @@ public class CalculationStepTestTask extends CalculationStepTask {
 
 	// parameters
 	@JsonIgnore
-	private Parameters parameters;
+	private ParameterMap settings;
 	@JsonIgnore
 	private long maxItems;
 	@JsonIgnore
@@ -50,14 +49,6 @@ public class CalculationStepTestTask extends CalculationStepTask {
 		maxItems = -1;
 	}
 
-	public Parameters getParameters() {
-		return parameters;
-	}
-	
-	public void setParameters(Parameters parameters) {
-		this.parameters = parameters;
-	}
-	
 	@Override
 	public synchronized void init() {
 		records = createAllCombinations();
@@ -69,7 +60,7 @@ public class CalculationStepTestTask extends CalculationStepTask {
 	synchronized 
 	protected void execute() throws InterruptedException, RException {
 		rEnvironment = r.newEnvironment();
-
+		
 		// for output
 		results = new Vector<DataRecord>();
 
@@ -90,44 +81,8 @@ public class CalculationStepTestTask extends CalculationStepTask {
 			results.add(record);
 			incrementItemsProcessed();
 		}
-		System.out.println(String.format("Generated %d records", results.size()));
 	}
 	
-	protected List<DataRecord> createAllCombinations() {
-		Map<String, List<Double>> seriesByVariable = new HashMap<String, List<Double>>();
-		for (Entry<String, VariableParameters> entry : parameters.getVariableParametersByName().entrySet()) {
-			String varName = entry.getKey();
-			VariableParameters variableParameters = entry.getValue();
-			List<Double> series = variableParameters.generateSeries();
-			seriesByVariable.put(varName, series);
-		}
-		List<DataRecord> result = createAllCombinations(new DataRecord(), seriesByVariable);
-		return result;
-	}
-	
-	protected List<DataRecord> createAllCombinations(DataRecord initialData, Map<String, List<Double>> seriesByVariable) {
-		List<DataRecord> result = new ArrayList<DataRecord>();
-		
-		Entry<String, List<Double>> firstEntry = seriesByVariable.entrySet().iterator().next();
-		String variableName = firstEntry.getKey();
-		List<Double> series = firstEntry.getValue();
-		Map<String, List<Double>> remainingSeries = new HashMap<String, List<Double>>(seriesByVariable);
-		remainingSeries.remove(variableName);
-		for (Double val : series) {
-			try {
-				DataRecord dataRecord = initialData.clone();
-				dataRecord.add(variableName, val);
-				if ( remainingSeries.isEmpty() ) {
-					result.add(dataRecord);
-				} else {
-					List<DataRecord> leafRecords = createAllCombinations(dataRecord, remainingSeries);
-					result.addAll(leafRecords);
-				}
-			} catch (CloneNotSupportedException e1) {
-			}
-		}
-		return result;
-	}
 
 	@Override
 	protected long countTotalItems() {
@@ -137,30 +92,6 @@ public class CalculationStepTestTask extends CalculationStepTask {
 		}
 
 		return maxItems;
-	}
-
-	private Variable<?> getOutputVariable() {
-		return getCalculationStep().getOutputVariable();
-	}
-
-	private String getScript() {
-		return getCalculationStep().getScript();
-	}
-
-	// not used for now
-	synchronized protected void executeExternalScript() throws RException {
-		REnvironment env = r.newEnvironment();
-		String script = getCalculationStep().getScript();
-		log().debug("Custom R: " + script);
-		env.eval(script);
-	}
-
-	public long getMaxItems() {
-		return maxItems;
-	}
-
-	public void setMaxItems(long max) {
-		this.maxItems = max;
 	}
 
 	@JsonIgnore
@@ -185,18 +116,6 @@ public class CalculationStepTestTask extends CalculationStepTask {
 		return null;
 	}
 
-	@JsonIgnore
-	public DataRecord getNextResult() {
-		synchronized (results) {
-			if (results.isEmpty()) {
-				return null;
-			}
-			DataRecord record = results.get(0);
-			results.remove(0);
-			return record;
-		}
-	}
-
 	private double evaluate(String script, Variable<?> outputVariable) {
 		double result = 0;
 		try {
@@ -207,82 +126,79 @@ public class CalculationStepTestTask extends CalculationStepTask {
 		return result;
 	}
 	
-	public static class Parameters {
+	private List<Double> generateSeries(ParameterMap parameterMap) {
+		List<Double> result = new ArrayList<Double>();
 		
-		private Map<String, VariableParameters> variableParametersByName;
+		double min = parameterMap.getNumber("min").doubleValue();
+		double max = parameterMap.getNumber("max").doubleValue();
+		double increment = parameterMap.getNumber("increment").doubleValue();
 		
-		public Map<String, VariableParameters> getVariableParametersByName() {
-			return variableParametersByName;
+		double current = min;
+		while(current <= max) {
+			result.add(current);
+			current += increment;
 		}
-		
-		public void setVariableParametersByName(
-				Map<String, VariableParameters> variableParametersByName) {
-			this.variableParametersByName = variableParametersByName;
-		}
-		
-		public String[] getVariableNames() {
-			String[] result = variableParametersByName.keySet().toArray(new String[]{});
-			return result;
-		}
-
-		public static Parameters parse(JSONObject parameters) {
-			Parameters result = new Parameters();
-			Map<String, VariableParameters> variablesParameters = new HashMap<String, VariableParameters>();
-			JSONObject varsParamsJson = (JSONObject) parameters.get("variables");
-			for (Object varParamsObj : varsParamsJson.values()) {
-				JSONObject varParams = (JSONObject) varParamsObj;
-				String variableName = (String) varParams.get("variableName");
-				VariableParameters params = new VariableParameters();
-				params.max = Double.parseDouble((String) varParams.get("max"));
-				params.increment = Double.parseDouble((String) varParams.get("increment"));
-				params.min = Double.parseDouble((String) varParams.get("min"));
-				variablesParameters.put(variableName, params);
-			}
-			result.variableParametersByName = variablesParameters;
-			return result;
-		}
-		
+		return result;
 	}
 	
-	public static class VariableParameters {
-		private double min;
-		private double max;
-		private double increment;
+	private List<DataRecord> createAllCombinations() {
+		Map<String, List<Double>> seriesByVariable = new HashMap<String, List<Double>>();
+		ParameterMap variablesSettings = settings.getMap("variables");
+		for (String varName : variablesSettings.names()) {
+			ParameterMap varSettings = variablesSettings.getMap(varName);
+			List<Double> series = generateSeries(varSettings);
+			seriesByVariable.put(varName, series);
+		}
+		List<DataRecord> result = createAllCombinations(new DataRecord(), seriesByVariable);
+		return result;
+	}
+	
+	private List<DataRecord> createAllCombinations(DataRecord initialData, Map<String, List<Double>> seriesByVariable) {
+		List<DataRecord> result = new ArrayList<DataRecord>();
 		
-		public List<Double> generateSeries() {
-			List<Double> result = new ArrayList<Double>();
-			double current = min;
-			while(current <= max) {
-				result.add(current);
-				current += increment;
+		Entry<String, List<Double>> firstEntry = seriesByVariable.entrySet().iterator().next();
+		String variableName = firstEntry.getKey();
+		List<Double> series = firstEntry.getValue();
+		Map<String, List<Double>> remainingSeries = new HashMap<String, List<Double>>(seriesByVariable);
+		remainingSeries.remove(variableName);
+		for (Double val : series) {
+			try {
+				DataRecord dataRecord = initialData.clone();
+				dataRecord.add(variableName, val);
+				if ( remainingSeries.isEmpty() ) {
+					result.add(dataRecord);
+				} else {
+					List<DataRecord> leafRecords = createAllCombinations(dataRecord, remainingSeries);
+					result.addAll(leafRecords);
+				}
+			} catch (CloneNotSupportedException e1) {
 			}
-			return result;
 		}
+		return result;
+	}
+	
+	private Variable<?> getOutputVariable() {
+		return getCalculationStep().getOutputVariable();
+	}
 
-		public double getMin() {
-			return min;
-		}
-		
-		public void setMin(double min) {
-			this.min = min;
-		}
-		
-		public double getMax() {
-			return max;
-		}
-		
-		public void setMax(double max) {
-			this.max = max;
-		}
-		
-		public double getIncrement() {
-			return increment;
-		}
-		
-		public void setIncrement(double increment) {
-			this.increment = increment;
-		}
-		
+	private String getScript() {
+		return getCalculationStep().getScript();
+	}
+
+	public long getMaxItems() {
+		return maxItems;
+	}
+
+	public void setMaxItems(long max) {
+		this.maxItems = max;
+	}
+
+	public ParameterMap getSettings() {
+		return settings;
+	}
+	
+	public void setSettings(ParameterMap settings) {
+		this.settings = settings;
 	}
 	
 }
