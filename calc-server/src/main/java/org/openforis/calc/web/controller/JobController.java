@@ -3,6 +3,8 @@
  */
 package org.openforis.calc.web.controller;
 
+import java.util.List;
+
 import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.CalculationStepDao;
 import org.openforis.calc.chain.InvalidProcessingChainException;
@@ -98,4 +100,19 @@ public class JobController {
 		return job;
 	}
 
+	@RequestMapping(value = "/execute.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	synchronized Job execute() throws InvalidProcessingChainException, WorkspaceLockedException {
+		Workspace workspace = workspaceService.getActiveWorkspace();
+		
+		CalcJob job = taskManager.createCalcJob(workspace);
+		//TODO right now it loads all steps. change it so only steps for active workspace are loaded
+		List<CalculationStep> steps = calculationStepDao.loadAll("stepNo");
+		job.addCalculationStep(steps);
+		
+		taskManager.startJob(job);
+
+		return job;
+	}
+	
 }

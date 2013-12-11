@@ -19,15 +19,12 @@ public class RScript {
 	protected static final String ASSIGN = "<-";
 	protected static final String COMMA = ",";
 	
-	// connection name used during script
-	private String connection;
 	// previous r script
 	private RScript previous;
 	// stringbuilder that contains the script
 	private StringBuilder sb;
 	
 	public RScript() {
-		this.connection = "con";
 		this.sb = new StringBuilder();
 	}
 

@@ -35,8 +35,6 @@ public class CalcRTask extends Task {
 	 */
 	@Override
 	protected void execute() throws Throwable {
-		
-		
 		String expr = toString();
 		rEnvironment.eval( expr );
 	}

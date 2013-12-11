@@ -9,6 +9,8 @@ function HomeCalculationManager(container) {
 	//init ui elements
 	this.stepsContainer = this.container.find('.calculation-steps-container');
 	this.deleteBtn = this.container.find(".delete");
+	this.executeBtn = this.container.find(".execute");
+	
 	this.calculationStepBtnTemplate = this.container.find(".calculation-step.template");
 	
 	//init managers
@@ -46,6 +48,14 @@ HomeCalculationManager.prototype = (function() {
 			start: $.proxy(sortStart, $this),
 			stop: $.proxy(sortStop, $this),
 			update: $.proxy(sortUpdate, $this)
+		});
+		
+		// exec button click
+		this.executeBtn.click(function(e){
+			JobManager.getInstance().execute(function(response){
+//				console.log("response. executed?!");
+//				checkJobStatus();
+			});
 		});
 	};
 	/**
