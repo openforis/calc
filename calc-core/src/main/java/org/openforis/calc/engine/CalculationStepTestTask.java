@@ -51,7 +51,7 @@ public class CalculationStepTestTask extends CalculationStepTask {
 
 	@Override
 	public synchronized void init() {
-		records = createAllCombinations();
+		records = generateAllVariablesCombinations();
 		super.init();
 	}
 	
@@ -76,7 +76,7 @@ public class CalculationStepTestTask extends CalculationStepTask {
 				Object value = variableEntry.getValue();
 				script = script.replaceAll("\\$" + name + "\\$", value.toString());
 			}
-			double result = evaluate(script, outputVariable);
+			double result = evaluate(script);
 			record.add(outputVariableName, result);
 			results.add(record);
 			incrementItemsProcessed();
@@ -116,7 +116,7 @@ public class CalculationStepTestTask extends CalculationStepTask {
 		return null;
 	}
 
-	private double evaluate(String script, Variable<?> outputVariable) {
+	private double evaluate(String script) {
 		double result = 0;
 		try {
 			result = rEnvironment.evalDouble(script);
@@ -126,7 +126,7 @@ public class CalculationStepTestTask extends CalculationStepTask {
 		return result;
 	}
 	
-	private List<Double> generateSeries(ParameterMap parameterMap) {
+	private List<Double> generateVariableSeries(ParameterMap parameterMap) {
 		List<Double> result = new ArrayList<Double>();
 		
 		double min = parameterMap.getNumber("min").doubleValue();
@@ -141,19 +141,19 @@ public class CalculationStepTestTask extends CalculationStepTask {
 		return result;
 	}
 	
-	private List<DataRecord> createAllCombinations() {
+	private List<DataRecord> generateAllVariablesCombinations() {
 		Map<String, List<Double>> seriesByVariable = new HashMap<String, List<Double>>();
 		ParameterMap variablesSettings = settings.getMap("variables");
 		for (String varName : variablesSettings.names()) {
 			ParameterMap varSettings = variablesSettings.getMap(varName);
-			List<Double> series = generateSeries(varSettings);
+			List<Double> series = generateVariableSeries(varSettings);
 			seriesByVariable.put(varName, series);
 		}
-		List<DataRecord> result = createAllCombinations(new DataRecord(), seriesByVariable);
+		List<DataRecord> result = generateAllCombinations(new DataRecord(), seriesByVariable);
 		return result;
 	}
 	
-	private List<DataRecord> createAllCombinations(DataRecord initialData, Map<String, List<Double>> seriesByVariable) {
+	private List<DataRecord> generateAllCombinations(DataRecord initialData, Map<String, List<Double>> seriesByVariable) {
 		List<DataRecord> result = new ArrayList<DataRecord>();
 		
 		Entry<String, List<Double>> firstEntry = seriesByVariable.entrySet().iterator().next();
@@ -168,7 +168,7 @@ public class CalculationStepTestTask extends CalculationStepTask {
 				if ( remainingSeries.isEmpty() ) {
 					result.add(dataRecord);
 				} else {
-					List<DataRecord> leafRecords = createAllCombinations(dataRecord, remainingSeries);
+					List<DataRecord> leafRecords = generateAllCombinations(dataRecord, remainingSeries);
 					result.addAll(leafRecords);
 				}
 			} catch (CloneNotSupportedException e1) {
