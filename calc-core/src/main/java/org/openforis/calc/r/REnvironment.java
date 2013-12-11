@@ -49,6 +49,5 @@ public class REnvironment {
 			throw new RException(e);
 		}
 	}
-	
 
 }

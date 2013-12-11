@@ -19,5 +19,4 @@ public class DbDriver extends RScript {
 		
 	}
 
-
 }

@@ -12,7 +12,7 @@ JobManager.prototype = (function(){
 	/**
 	 * execute a job for the calculation step with id stepId
 	 */
-	var executeCalculationStep = function(stepId, success, hideModalStatusOnComplete){
+	var executeCalculationStep = function(stepId, success, hideJobStatusOnComplete){
 		var $this = this;
 		$.ajax({
 			url : $this.contextPath + "/step/"+stepId+"/execute.json",
@@ -20,7 +20,7 @@ JobManager.prototype = (function(){
 		}).done(function(response) {
 //			console.log("job manager job executed");
 //			console.log(response);
-			checkJobStatus(success, false, hideModalStatusOnComplete);
+			checkJobStatus(success, false, hideJobStatusOnComplete);
 		})
 		.error(function(e){
 			console.log("error!!! on exec");

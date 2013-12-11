@@ -6,10 +6,8 @@ package org.openforis.calc.engine;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.metadata.QuantitativeVariable;
-import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.r.Div;
 import org.openforis.calc.r.REnvironment;
 import org.openforis.calc.r.RScript;
@@ -69,12 +67,6 @@ public class CalculationStepRTask extends CalcRTask {
 			
 			this.outputVariables.add( variablePerHaName );
 		}
-		// add scripts 
-//		script = "data$"+step.getOutputVariable().getName() + " <- " + script +";";
-//		scripts.add(script);
-		
-		
-		
 	}
 	
 	public QuantitativeVariable getOutputVariable() {

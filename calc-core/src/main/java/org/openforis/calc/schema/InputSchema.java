@@ -14,6 +14,7 @@ import org.openforis.calc.metadata.Entity;
  * @author M. Togna
  * 
  */
+// TODO rename InputSchema to Schema? or DataSchema?
 public class InputSchema extends RelationalSchema {
 
 	private static final long serialVersionUID = 1L;

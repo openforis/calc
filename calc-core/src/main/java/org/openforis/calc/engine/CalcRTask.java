@@ -35,14 +35,9 @@ public class CalcRTask extends Task {
 	 */
 	@Override
 	protected void execute() throws Throwable {
-		StringBuilder sb = new StringBuilder();
-		for (RScript script : this.scripts) {
-			String scriptString = script.toString();
-			sb.append(scriptString);
-//			sb.append("\n");
-		}
 		
-		String expr = sb.toString();
+		
+		String expr = toString();
 		rEnvironment.eval( expr );
 	}
 	
@@ -58,6 +53,15 @@ public class CalcRTask extends Task {
 	@Override
 	public String getName() {
 		return name;
+	}
+	
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for (RScript script : this.scripts) {
+			String scriptString = script.toString();
+			sb.append(scriptString);
+		}
+		return sb.toString();
 	}
 	
 }

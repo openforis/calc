@@ -18,18 +18,13 @@ import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.SelectQuery;
 import org.jooq.Table;
-import org.jooq.Update;
 import org.jooq.UpdateQuery;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
-import org.jooq.impl.TableImpl;
 import org.openforis.calc.chain.CalculationStep;
-import org.openforis.calc.metadata.Category;
 import org.openforis.calc.metadata.Entity;
-import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.psql.AlterTableStep.AlterColumnStep;
 import org.openforis.calc.psql.Psql;
-import org.openforis.calc.psql.PsqlPart;
 import org.openforis.calc.psql.UpdateWithStep;
 import org.openforis.calc.r.DbConnect;
 import org.openforis.calc.r.R;
@@ -117,11 +112,12 @@ public class CalcJob extends Job {
 		
 		super.init();
 	}
-
+	
+	@SuppressWarnings("unchecked")
 	private void initTasks() {
 		
 		// init task
-		CalcRTask initTask = createTask("Init task");
+		CalcRTask initTask = createTask("Open database connection");
 		
 		// init libraries
 		initTask.addScript( r().library("lmfor") );
@@ -186,6 +182,7 @@ public class CalcJob extends Job {
 				//skip primary key
 				if( !field.equals(primaryKey) ){
 					//TODO what if there are other types of field to update other than double?
+					
 					Field<Double> f = (Field<Double>) table.field(field);
 					upd.addValue( f, DSL.val(null, Double.class) );
 				}
@@ -264,6 +261,7 @@ public class CalcJob extends Job {
 			
 			addTask( writeResultsTask );
 		}
+		
 		// 9. close connection
 		CalcRTask closeConnection = createTask("Close database connection");
 		closeConnection.addScript( r().dbDisconnect(connection) );
@@ -279,6 +277,14 @@ public class CalcJob extends Job {
 	@Override
 	protected long countTotalItems() {
 		return this.calculationSteps.size();
+	}
+	
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for ( Task task : tasks() ) {
+			sb.append( task.toString() );
+		}
+		return sb.toString();
 	}
 	
 }
