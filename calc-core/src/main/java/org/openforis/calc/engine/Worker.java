@@ -1,7 +1,14 @@
 package org.openforis.calc.engine;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.openforis.calc.chain.CalculationStep;
+import org.openforis.calc.r.RScript;
+import org.openforis.calc.r.RVariable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -180,5 +187,34 @@ public abstract class Worker {
 		}
 		return isCompleted();
 	}
+	
+	// returns a new r script. left here now since this is the common super class between calcjob and calcrscript
+	protected RScript r() {
+		return new RScript();
+	}
 
+	protected String replaceVariables(RVariable dataFrame, String script) {
+		String newScript = script;
+		
+		Pattern pattern = Pattern.compile(CalculationStep.VARIABLE_PATTERN);
+		Matcher m = pattern.matcher(script);
+		while (m.find()) {
+			String variable = m.group(1);
+			RVariable rVariable = new RScript().variable(dataFrame, variable);
+			newScript = newScript.replaceFirst("\\$"+variable+"\\$", rVariable.toString().replaceAll("\\$","\\\\\\$") );
+		}
+		
+		return newScript;
+	}
+	
+	protected Set<String> extractVariables(String script) {
+		Set<String> variables = new HashSet<String>();
+		Pattern p = Pattern.compile(CalculationStep.VARIABLE_PATTERN);
+		Matcher m = p.matcher(script);
+		while (m.find()) {
+			String variable = m.group(1);
+			variables.add(variable);
+		}
+		return variables;
+	}
 }

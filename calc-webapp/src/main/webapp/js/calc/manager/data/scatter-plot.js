@@ -67,7 +67,47 @@ function ScatterPlot(container) {
                        color: '#ecf0f1',
                        font: '0.9em Trebuchet MS, Verdana, sans-serif'
                     }
+                 },
+                 events: {
+                 	afterSetExtremes : function (e) {
+                 	   
+                 	    var url;
+                 	    var currentExtremes = this.getExtremes();
+                 	    var range = e.max - e.min;
+                 	    console.log("after set extrems: ", currentExtremes);
+//                 	    var chart = $('#container').highcharts();
+//
+//                 	    var min = 0;
+//                 	    var max = 1.35e12;
+//                 	    if(!isReset)
+//                 	    {
+//                 	        min = e.min;
+//                 	        max = e.max;
+//                 	    }
+//                 	     chart.showLoading('Loading data from server...');
+//                 	    $.getJSON('http://www.highcharts.com/samples/data/from-sql.php?start=' + Math.round(min) +
+//                 	        '&end=' + Math.round(max) + '&callback=?', function (data) {
+//
+//                 	        chart.series[0].setData(data);
+//                 	           
+//                 	        chart.hideLoading();
+//                 	            
+//
+//                 	    });
+
+                 	},
+                 	setExtremes: function (e) {
+                 		console.log("setExtremes ", e);
+                     
+                     if (e.max == null || e.min == null) {
+                        isReset = true;                            
+                     }
+                     else
+                     {
+                      isReset = false;   
+                     }
                  }
+             }
 //                startOnTick: true,
 //                endOnTick: true,
 //                showLastLabel: true
@@ -125,6 +165,10 @@ function ScatterPlot(container) {
                         pointFormat: '{point.x} , {point.y}'
                     }
                 }
+            	,
+            	series : {
+            		turboThreshold : 0
+            	}
             },
             series: [{
                 name: '',
@@ -241,7 +285,7 @@ ScatterPlot.prototype = (function(){
 			// create the chart
 			$this.chartinfo.xAxis.title.text = this.xVariable;
 			$this.chartinfo.yAxis.title.text = this.yVariable;
-			$this.chart = new Highcharts.Chart($this.chartinfo);
+//			$this.chart = new Highcharts.Chart($this.chartinfo);
 			// reset progress bar
 			$this.progressBar.reset();
 			// starts getting data next data
@@ -256,13 +300,13 @@ ScatterPlot.prototype = (function(){
 //			console.log("upd chart");
 //			console.log(this);
 			var vars = [this.xVariable, this.yVariable];
-			this.dataProvider.data( $this.offset , null , null , vars, function(response) {
+			this.dataProvider.data( $this.offset , 5000 , null , vars, function(response) {
 				$.proxy(addPoints, $this)(response);
 
 				//get next data if not all data have been loaded
-				if( $this.offset < $this.totalItems ){
-					$.proxy(getNextData, $this)();
-				}
+//				if( $this.offset < $this.totalItems ){
+//					$.proxy(getNextData, $this)();
+//				}
 			});
 		}
 	};
@@ -271,20 +315,86 @@ ScatterPlot.prototype = (function(){
 	var addPoints = function(data){
 		var $this = this;
 		
+		var series = $this.chartinfo.series[0];
+		var seriesData = series.data;
 		// prepare chart data
 		$.each(data,function(i,record){
+			// get x and y values from record.fields 
 			var seriesItem = [ record.fields[$this.xVariable] , record.fields[$this.yVariable] ] ;
-//			var shift = ($this.chart.series.data) ? $this.chart.series.data.length > 20 : 0;
-			$this.chart.series[0].addPoint(seriesItem, false);
 			
-			if($this.chart.series[0].data.length % 400 == 0) {
-				$this.chart.redraw();
-			}
+			seriesData.push( seriesItem );
+			
+			//disabled now 
+//			$this.chart.series[0].addPoint(seriesItem, false);
+//			if($this.chart.series[0].data.length % 10000 == 0) {
+//				$this.chart.redraw();
+//			}
 		});
+//		console.log($this.chart);
 		// redraw chart
-		$this.chart.redraw();
+//		$this.chart.redraw();
+//		$this.chart = new Highcharts.Chart($this.chartinfo);
+		
+		
+		
+		console.log("==== start testing d3");
+//		var w = this.chartContainer.width();
+//		var h = this.chartContainer.height();
+		var w = 900;
+		var h = 1000;
+		
+		var dataset = seriesData;
+//		               var dataset = [
+//						[5, 20], [480, 90], [250, 50], [100, 33], [330, 95],
+//						[410, 12], [475, 44], [25, 67], [85, 21], [220, 88]
+//					  ];
+
+		//Create SVG element
+		var svg = d3.select("#" + this.chartContainer.attr('id') )
+					.append("svg")
+					.attr("width", w)
+					.attr("height", h);
+
+		svg.selectAll("circle")
+		   .data(dataset)
+		   .enter()
+		   .append("circle")
+		   .attr("cx", function(d) {
+		   		return d[0] * 100 / 900;
+		   })
+		   .attr("cy", function(d) {
+			   	return d[1] * 100 / 1000;
+//		   		return d[1];
+		   })
+		   .attr("r", function(d) {
+		   		return 1;
+		   });
+//		   .attr("r", function(d) {
+//		   		return Math.sqrt(h - d[1]);
+//		   });
+
+//		svg.selectAll("text")
+//		   .data(dataset)
+//		   .enter()
+//		   .append("text")
+//		   .text(function(d) {
+//		   		return d[0] + "," + d[1];
+//		   })
+//		   .attr("x", function(d) {
+//		   		return d[0];
+//		   })
+//		   .attr("y", function(d) {
+//		   		return d[1];
+//		   })
+//		   .attr("font-family", "sans-serif")
+//		   .attr("font-size", "11px")
+//		   .attr("fill", "red");
+		
+		
+		
 		// update offset
-		$this.offset = $this.chart.series[0].data.length;
+//		$this.offset = $this.chart.series[0].data.length;
+		$this.offset += data.length;
 		// update progress
 		$this.progressBar.update($this.offset , $this.totalItems);
 		

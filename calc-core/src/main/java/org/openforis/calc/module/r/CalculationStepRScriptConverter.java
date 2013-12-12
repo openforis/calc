@@ -28,6 +28,11 @@ import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.psql.Psql;
+import org.openforis.calc.r.R;
+import org.openforis.calc.r.REnvironment;
+import org.openforis.calc.r.RException;
+import org.openforis.calc.r.RScript;
+import org.openforis.calc.r.RVariable;
 import org.openforis.calc.schema.EntityDataView;
 import org.openforis.calc.schema.InputTable;
 import org.openforis.calc.schema.Schemas;
@@ -41,6 +46,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * 
  */
 // @Component
+@Deprecated
 public class CalculationStepRScriptConverter {
 
 	@Autowired
@@ -92,6 +98,10 @@ public class CalculationStepRScriptConverter {
 		appendNewLine();
 	}
 
+	protected RScript r() {
+		return new RScript();
+	}
+	
 	//TODO refactor code below. create RScript object?
 	private void appendSteps(Entity entity, CalculationStep[] steps) {
 		EntityDataView view = schemas.getInputSchema().getDataView(entity);
@@ -163,6 +173,8 @@ public class CalculationStepRScriptConverter {
 				upd.addValue( f, DSL.val(null, Double.class) );
 			}
 		}
+//		RScript r = r();
+//		r.dbSendQuery(connection, upd);
 		sb.append("dbSendQuery(conn=con, statement='");
 		sb.append(upd.toString());
 		sb.append("');");
@@ -227,7 +239,7 @@ public class CalculationStepRScriptConverter {
 		sb.append("\");");
 		appendNewLine();
 		
-		//TODO implement updateFrom with Psql
+		//TODO use updateWith
 		StringBuilder update = new StringBuilder();
 		update.append("update ");
 		update.append(table.getName());
@@ -286,11 +298,37 @@ public class CalculationStepRScriptConverter {
 		}
 		return variables;
 	}
+	
+	
 	private void appendNewLine(){
 		sb.append("\n");
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws RException {
+		RVariable connection = new RScript().variable("connection");
+		
+		org.openforis.calc.r.RVariable results = new RScript().variable("results");
+		String resultsTableName = "tree_res";
+		
+		RScript r = new RScript();
+		r = r.dbSendQuery(connection, "aaaaa");
+		r = r.dbGetQuery(connection, "select get from aa");
+		org.openforis.calc.r.RVariable var = new RScript().variable("data", "_tree_id");
+		r = r.setValue(var, new RScript().asCharacter( var ) );
+		r = r.dbWriteTable(connection, resultsTableName, results);
+		r = r.dbRemoveTable(connection, resultsTableName);
+		System.out.println(r.toString());
+		
+		R rr = new R();
+		rr.startup();
+		REnvironment environment = rr.newEnvironment();
+		environment.eval("a <- 3 + 3; ");
+		double d = environment.evalDouble("a  - 1");
+		System.out.println(d);
+	
+		rr.shutdown();
+	}
+		public static void mainOO(String[] args) {
 		String script = "($dbh$ * 0.54353 ) ^ 2 + $dbh$";
 		String newScript = script;
 		

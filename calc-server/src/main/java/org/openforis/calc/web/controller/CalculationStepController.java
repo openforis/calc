@@ -8,7 +8,6 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import org.json.simple.parser.ParseException;
 import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.CalculationStepDao;
 import org.openforis.calc.chain.CalculationStepService;
@@ -28,7 +27,6 @@ import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.VariableDao;
 import org.openforis.calc.module.r.CalcRModule;
 import org.openforis.calc.module.r.CustomROperation;
-import org.openforis.calc.module.r.CustomRTask;
 import org.openforis.calc.web.form.CalculationStepForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -130,46 +128,17 @@ public class CalculationStepController {
 	}
 	
 	/**
-	 * Execute a job for the given calculation step id
-	 * @param stepId
-	 * @param totalItems
-	 * @return
-	 * @throws InvalidProcessingChainException
-	 * @throws WorkspaceLockedException
-	 */
-	@Deprecated
-	@RequestMapping(value = "/{stepId}/run.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody
-	synchronized Job executeJob(@PathVariable int stepId, @RequestParam(required=false) Integer totalItems) throws InvalidProcessingChainException, WorkspaceLockedException {
-		Workspace workspace = workspaceService.getActiveWorkspace();
-
-		CalculationStep step = calculationStepDao.find(stepId);
-		CustomRTask task = (CustomRTask) taskManager.createCalculationStepTask(step);
-		if(totalItems != null && totalItems > 0) {
-			task.setMaxItems(totalItems);
-		}
-		
-		Job job = taskManager.createJob(workspace);
-		job.addTask(task);
-
-		taskManager.startJob(job);
-
-		return job;
-	}
-	
-	/**
-	 * Executes a job for the given calculation step id
+	 * Creates a job that tests the calculation step with the given id
 	 * 
 	 * @param stepId
 	 * @param parameters Parameters in JSON format
 	 * @return
 	 * @throws InvalidProcessingChainException
 	 * @throws WorkspaceLockedException
-	 * @throws ParseException 
 	 */
 	@RequestMapping(value = "/{stepId}/test.json", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
-	synchronized Job testCalculationStep(@PathVariable int stepId, @RequestBody String parametersStr) throws InvalidProcessingChainException, WorkspaceLockedException, ParseException {
+	synchronized Job testCalculationStep(@PathVariable int stepId, @RequestBody String parametersStr) throws InvalidProcessingChainException, WorkspaceLockedException {
 		Workspace workspace = workspaceService.getActiveWorkspace();
 
 		CalculationStep step = calculationStepDao.find(stepId);
@@ -223,5 +192,25 @@ public class CalculationStepController {
 			return null;
 		}
 	}
+
+//	@Deprecated
+//	@RequestMapping(value = "/{stepId}/run.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+//	public @ResponseBody
+//	synchronized Job executeJob(@PathVariable int stepId, @RequestParam(required=false) Integer totalItems) throws InvalidProcessingChainException, WorkspaceLockedException {
+//		Workspace workspace = workspaceService.getActiveWorkspace();
+//
+//		CalculationStep step = calculationStepDao.find(stepId);
+//		CustomRTask task = (CustomRTask) taskManager.createCalculationStepTask(step);
+//		if(totalItems != null && totalItems > 0) {
+//			task.setMaxItems(totalItems);
+//		}
+//		
+//		Job job = taskManager.createJob(workspace);
+//		job.addTask(task);
+//
+//		taskManager.startJob(job);
+//
+//		return job;
+//	}
 
 }
