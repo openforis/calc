@@ -1,16 +1,6 @@
 package org.openforis.calc.r;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import org.openforis.calc.engine.DataRecord;
-import org.rosuda.REngine.REXP;
-import org.rosuda.REngine.REXPDouble;
-import org.rosuda.REngine.REXPInteger;
-import org.rosuda.REngine.REXPList;
-import org.rosuda.REngine.REXPMismatchException;
-import org.rosuda.REngine.REXPString;
-import org.rosuda.REngine.RList;
 
 /**
  * 
@@ -18,25 +8,45 @@ import org.rosuda.REngine.RList;
  * @author S. Ricci
  *
  */
-public class RDataFrame {
+public class RDataFrame extends RScript {
 	
 	private List<String> columnNames;
-	private List<DataRecord> rows;
+	private List<RVector> columns;
 	
-	public RDataFrame(List<String> columnNames, List<DataRecord> rows) {
+	public RDataFrame(List<String> columnNames, List<RVector> columns) {
 		super();
 		this.columnNames = columnNames;
-		this.rows = rows;
+		this.columns = columns;
+		
+		buildScript();
+	}
+	
+	protected void buildScript() {
+		append("data.frame(");
+		if ( columns != null ) {
+			for ( int i=0; i < columnNames.size(); i++) {
+				String columnName = columnNames.get(i);
+				RVector column = columns.get(i);
+				append(columnName);
+				append(" = ");
+				append(column.toScript());
+				if ( i < columnNames.size() - 1 ) {
+					append(",");
+				}
+			}
+		}
+		append(")");
 	}
 	
 	public List<String> getColumnNames() {
 		return columnNames;
 	}
 	
-	public List<DataRecord> getRows() {
-		return rows;
+	public List<RVector> getColumns() {
+		return columns;
 	}
 	
+	/*
 	public REXP toREXP() throws RException {
 		List<REXP> rexpColumns = new ArrayList<REXP>();
 		
@@ -65,34 +75,6 @@ public class RDataFrame {
 			throw new RException(e);
 		}
 	}
-	
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("data.frame(");
-		if ( rows != null ) {
-			for (String columnName : columnNames) {
-				printColumnData(sb, columnName);
-			}
-		}
-		sb.append(")");
-		return sb.toString();
-	}
-
-	private void printColumnData(StringBuilder sb, String columnName) {
-		sb.append(columnName);
-		sb.append(" = ");
-		sb.append("c(");
-		for(int i = 0; i < rows.size(); i++) {
-			DataRecord row = rows.get(i);
-			Object value = row.getValue(columnName);
-			sb.append(value);
-			if ( i < rows.size() - 1 ) {
-				sb.append(",");
-			}
-		}
-		sb.append(")");
-	}
-	
+	*/
 	
 }

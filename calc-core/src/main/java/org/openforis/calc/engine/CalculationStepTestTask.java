@@ -1,7 +1,6 @@
 package org.openforis.calc.engine;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,12 +14,9 @@ import org.openforis.calc.r.R;
 import org.openforis.calc.r.RDataFrame;
 import org.openforis.calc.r.REnvironment;
 import org.openforis.calc.r.RException;
-import org.rosuda.REngine.REXP;
-import org.rosuda.REngine.REXPInteger;
-import org.rosuda.REngine.REXPList;
-import org.rosuda.REngine.REXPMismatchException;
-import org.rosuda.REngine.REXPString;
-import org.rosuda.REngine.RList;
+import org.openforis.calc.r.RScript;
+import org.openforis.calc.r.RVariable;
+import org.openforis.calc.r.RVector;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -69,38 +65,44 @@ public class CalculationStepTestTask extends CalculationStepTask {
 	@Transactional
 	synchronized 
 	protected void execute() throws InterruptedException, RException {
+		Variable<?> outputVariable = getOutputVariable();
+		String outputVariableName = outputVariable.getName();
+
 		rEnvironment = r.newEnvironment();
 		
 		// for output
 		results = new Vector<DataRecord>();
 
-		Variable<?> outputVariable = getOutputVariable();
-		String outputVariableName = outputVariable.getName();
+		RScript rScript = new RScript();
 		
-		RDataFrame df = createTestDataFrame();
-		rEnvironment.assign(getEntity().getName(), df);
+		RDataFrame dataFrame = createTestDataFrame();
 		
+		RVariable dfVar = new RScript().variable(getEntity().getName());
 		
+		rScript = rScript.setValue(dfVar, dataFrame);
 		
-		String script = getScript();
-		rEnvironment.eval(script);
+		RVariable outputRVar = new RScript().variable(dfVar, outputVariableName);
 		
+		//assign script result to output variable column in data frame
+		rScript = rScript.setValue(outputRVar, new RScript().rScript(getScript()));
+		
+		rEnvironment.eval(rScript.toString());
+		
+		//set values into result data records
+		String[] resultValues = rEnvironment.evalStrings(outputRVar.toString());
+		
+		updateResults(outputVariableName, resultValues);
+	}
+
+	private void updateResults(String outputVariableName, String[] resultValues) {
 		//for each record set output variable value
-		/*
-		for (DataRecord record : records) {
-			Map<String, Object> valuesByVariable = record.getFields();
-			String script = getScript();
-			for (Entry<String, Object> variableEntry : valuesByVariable.entrySet()) {
-				String name = variableEntry.getKey();
-				Object value = variableEntry.getValue();
-				script = script.replaceAll("\\$" + name + "\\$", value.toString());
-			}
-			double result = evaluate(script);
-			record.add(outputVariableName, result);
+		for ( int i=0; i < records.size(); i++ ) {
+			DataRecord record = records.get(i);
+			String value = resultValues[i];
+			record.add(outputVariableName, value);
 			results.add(record);
 			incrementItemsProcessed();
 		}
-		*/
 	}
 	
 
@@ -136,19 +138,19 @@ public class CalculationStepTestTask extends CalculationStepTask {
 		return null;
 	}
 
-	private double evaluate(String script) {
-		double result = 0;
-		try {
-			result = rEnvironment.evalDouble(script);
-		} catch (RException e) {
-			throw new IllegalStateException("Error while evaluating script: " + script);
-		}
-		return result;
-	}
-	
 	private RDataFrame createTestDataFrame() throws RException {
-		List<DataRecord> records = generateAllVariablesCombinations();
-		RDataFrame result = new RDataFrame(getVariableNames(), records);
+		List<RVector> columns = new ArrayList<RVector>();
+		List<String> variableNames = getVariableNames();
+		for (String colName : variableNames) {
+			Object[] values = new Object[records.size()];
+			for(int i=0; i<records.size(); i++) {
+				DataRecord record = records.get(i);
+				Object value = record.getValue(colName);
+				values[i] = value;
+			}
+			columns.add(new RVector(null, false, values));
+		}
+		RDataFrame result = new RDataFrame(variableNames, columns);
 		return result;
 	}
 
@@ -180,12 +182,6 @@ public class CalculationStepTestTask extends CalculationStepTask {
 		return result;
 	}
 	
-	private List<String> getVariableNames() {
-		ParameterMap variablesSettings = settings.getMap("variables");
-		Set<String> variableNames = variablesSettings.names();
-		return new ArrayList<String>(variableNames);
-	}
-	
 	private List<DataRecord> generateAllCombinations(DataRecord initialData, Map<String, List<Double>> seriesByVariable) {
 		List<DataRecord> result = new ArrayList<DataRecord>();
 		
@@ -210,6 +206,12 @@ public class CalculationStepTestTask extends CalculationStepTask {
 		return result;
 	}
 	
+	private List<String> getVariableNames() {
+		ParameterMap variablesSettings = settings.getMap("variables");
+		Set<String> variableNames = variablesSettings.names();
+		return new ArrayList<String>(variableNames);
+	}
+
 	private Variable<?> getOutputVariable() {
 		return getCalculationStep().getOutputVariable();
 	}
@@ -221,7 +223,7 @@ public class CalculationStepTestTask extends CalculationStepTask {
 	private String getScript() {
 		return getCalculationStep().getScript();
 	}
-
+	
 	public long getMaxItems() {
 		return maxItems;
 	}
@@ -236,15 +238,6 @@ public class CalculationStepTestTask extends CalculationStepTask {
 	
 	public void setSettings(ParameterMap settings) {
 		this.settings = settings;
-	}
-	
-	public static void main(String[] args) throws REXPMismatchException {
-		Collection<REXP> rows = new ArrayList<REXP>();
-		RList rowList = new RList(new REXP[]{ new REXPString("TEST"), new REXPInteger(123)});
-		REXPList row = new REXPList(rowList);
-		rows.add(row);
-		RList rList = new RList(rows, new String[]{"col1", "col2"});
-		REXP.createDataFrame(rList);
 	}
 	
 }

@@ -16,14 +16,14 @@ public class REnvironment {
 		this.r = r;
 		this.env = env;
 	}
-
+	/*
 	public void assign(String symbol, RDataFrame df) throws RException {
 		//String[] colNames = {"name", "no"};
 		//REXP df = REXP.createDataFrame(new RList(new REXP[] { new REXPString("TEST"), new REXPInteger(123) }, colNames));
 		REXP rexpDF = df.toREXP();
 		r.assign(symbol, rexpDF, env);
 	}
-
+	*/
 	public void eval(String expr) throws RException {
 		r.eval(expr, env, false);
 	}

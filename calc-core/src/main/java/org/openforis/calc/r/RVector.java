@@ -4,9 +4,9 @@
 package org.openforis.calc.r;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author Mino Togna
@@ -14,28 +14,45 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class RVector extends RScript {
 
-	private List<String> strings ;
-	public RVector(RScript previous, String... values) {
+	private List<Object> values ;
+	public RVector(RScript previous, Object... values) {
+		this(previous, true, values);
+	}
+	
+	public RVector(RScript previous, boolean singleScript, Object... values) {
 		super(previous);
-		this.strings = new ArrayList<String>();
-		for (String value : values) {
-			this.strings.add(value);
+		this.values = new ArrayList<Object>(Arrays.asList(values));
+		buildScript();
+	}
+
+	protected void buildScript() {
+		append("c(");
+		Iterator<Object> iterator = this.values.iterator();
+		while(iterator.hasNext()) {
+			Object value = iterator.next();
+			if ( value instanceof Number ) {
+				append(value);
+			} else {
+				append("'");
+				append(value);
+				append("'");
+			}
+			if ( iterator.hasNext() ) {
+				append(",");
+			}
 		}
-		
-		reset();
+		append(")");
 	}
 
-	protected void reset() {
-		super.reset();
-		
-		append("c('");
-		append( StringUtils.join(this.strings, "','") );
-		append("')");
-	}
-
-	public RVector addValue(String value) {
-		this.strings.add(value);
+	public RVector addValue(Object value) {
+		this.values.add(value);
 		reset();
+		//TODO rebuild even previous scripts
+		buildScript();
 		return this;
+	}
+	
+	public Object getValue(int index) {
+		return values.get(index);
 	}
 }

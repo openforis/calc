@@ -23,13 +23,23 @@ public class RScript {
 	private RScript previous;
 	// stringbuilder that contains the script
 	private StringBuilder sb;
-	
+	boolean singleScript;
+
 	public RScript() {
+		this(true);
+	}
+	
+	public RScript(boolean singleScript) {
 		this.sb = new StringBuilder();
+		this.singleScript = singleScript;
 	}
 
 	protected RScript(RScript previous) {
-		this();
+		this(previous, true);
+	}
+	
+	protected RScript(RScript previous, boolean singleScript) {
+		this(singleScript);
 		this.previous = previous;
 	}
 	
@@ -92,8 +102,8 @@ public class RScript {
 		return new Div(this, numerator, denumenator);
 	}
 
-	public RVector c(String... strings) {
-		return new RVector(this, strings);
+	public RVector c(Object... values) {
+		return new RVector(this, values);
 	}
 	
 	// simple text passed as script. no parsing done here. it's assumed that the script is correct
@@ -128,7 +138,7 @@ public class RScript {
 			script = script.trim();
 			script = script.replaceAll("[\r\n]+","\n");
 			sb.append(script);
-			if( !script.endsWith(";") ) {
+			if( singleScript && !script.endsWith(";") ) {
 				sb.append(";");
 			}
 			sb.append("\n");

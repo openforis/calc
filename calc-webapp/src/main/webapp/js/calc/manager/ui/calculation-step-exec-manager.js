@@ -273,7 +273,6 @@ VariableSettingsRow.prototype = (function() {
 	 */
 	var extractParameters = function () {
 		var result = { 
-			variableName: this.variableName,
 			max: this.maxField.val(),
 			min: this.minField.val(),
 			increment: this.incrementField.val()
