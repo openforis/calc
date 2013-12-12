@@ -42,7 +42,7 @@ RScript.prototype = (function() {
 		var $this = this;
 		var script = $this.$inputField.val();
 		var caret = $this.$inputField.caret();
-		var search = StringUtils.getLastWord(script, ' ', caret);
+		var search = StringUtils.getLastWord(script, [" ", "\n"], caret);
 		return search;
 	};
 	
@@ -77,14 +77,19 @@ RScript.prototype = (function() {
 	 */
 	var filterRFunctions = function() {
 		var $this = this;
-		var startsWith = $this.query;
-		var result = new Array();
-		$.each($this.rFunctions, function(index, funct) {
-			if ( StringUtils.startsWith(funct, startsWith) ) {
-				result.push(funct);
+		
+		var filtered = new Array();
+		
+		var totalItems = new Array();
+		totalItems.push($this.entity.name);
+		totalItems = totalItems.concat($this.rFunctions);
+		
+		$.each(totalItems, function(index, funct) {
+			if ( StringUtils.startsWith(funct, $this.query) ) {
+				filtered.push(funct);
 			}
 		});
-		return result;
+		return filtered;
 	};
 	
 	/**
@@ -93,15 +98,15 @@ RScript.prototype = (function() {
 	 */
 	var filterVariables = function() {
 		var $this = this;
-		var startsWith = $this.query;
 		var result = new Array();
 		if ( $this.entity != null ) {
 			var variables = $this.entity.getAncestorsVariables(); 
 			$.each(variables, function(index, variable) {
 				var variableName = variable.name;
-				if ( StringUtils.startsWith(variableName, startsWith) ||
-						StringUtils.startsWith("$" + variableName, startsWith)) {
-					result.push("$" + variableName + "$");
+				var variableItem = $this.entity.name + "$" + variableName;
+				if ( StringUtils.startsWith(variableName, $this.query) ||
+						StringUtils.startsWith(variableItem, $this.query)) {
+					result.push(variableItem);
 				}
 			});
 		}
