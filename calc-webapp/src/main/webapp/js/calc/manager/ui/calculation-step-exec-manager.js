@@ -30,6 +30,7 @@ function CalculationStepExecManager(container, calculationStepResultsManager) {
 	//job manager
 	this.jobManager = new JobManager();
 	this.calculationStepManager = new CalculationStepManager();
+	this.workspaceManager = new WorkspaceManager();
 	
 	//array with the variable settings
 	this.settingsRows = new Array();
@@ -74,25 +75,26 @@ CalculationStepExecManager.prototype = (function() {
 		this.testButton.click(function(e) {
 			if ( $.proxy(validateTestSettings, $this)() ) {
 				UI.disableAll();
-				var variablesParameters = $.proxy(extractVariablesSettings, $this)();
-				var parameters = {variables: variablesParameters};
+				var parameters = {variables: $.proxy(extractVariablesSettings, $this)()};
 				$this.calculationStepManager.test(
 					$this.calculationStep.id,
 					parameters,
 					//on complete show results
 					function(job) {
 						UI.enableAll();
-						
-						// instanciate data provider
-						var entityId = $this.calculationStep.outputEntityId;
-						var variables  = $this.calculationStep.variables;
-						var dataProvider = new CalculationStepTestDataProvider(job.id, entityId, variables);
-						
-						// once completed hide this and shows results section
-						$this.hide();
-						$this.calculationStepResultsManager.show(dataProvider);
+						$this.workspaceManager.activeWorkspace(function(workspace) {
+							// instanciate data provider
+							var entityId = $this.calculationStep.outputEntityId;
+							var entity = workspace.getEntityById(entityId);
+							var variables  = entity.quantitativeVariables;
+							var dataProvider = new CalculationStepTestDataProvider(job.id, entityId, variables);
+							
+							// once completed hide this and shows results section
+							$this.hide();
+							$this.calculationStepResultsManager.show(dataProvider);
+						});
 					}
-					, true
+					, false
 				);
 			}
 		});
@@ -134,6 +136,10 @@ CalculationStepExecManager.prototype = (function() {
 		this.container.hide();
 	};
 	
+	/**
+	 * Updates the settings row.
+	 * First it removes the unused variables settings rows, then adds the new rows.
+	 */
 	var updateTestSettings = function() {
 		var $this = this;
 		
@@ -145,16 +151,22 @@ CalculationStepExecManager.prototype = (function() {
 		});
 		
 		//add new variable rows
-		$.each($this.calculationStep.inputVariables, function(index, variableName) {
-			var oldRow = $.proxy(getSettingsRow, $this)(variableName);
-			if ( oldRow == null ) {
-				var row = new VariableSettingsRow(variableName, $this.testInputVariableRowTemplate);
-				$this.settingsRows.push(row);
-				$this.settingsRowsContainer.append(row.rowElement);
-			}
+		$this.workspaceManager.activeWorkspace(function(workspace) {
+			var entity = workspace.getEntityById($this.calculationStep.outputEntityId);
+			$.each(entity.quantitativeVariables, function(index, variable) {
+				var oldRow = $.proxy(getSettingsRow, $this)(variable.name);
+				if ( oldRow == null ) {
+					var row = new VariableSettingsRow(variable.name, $this.testInputVariableRowTemplate);
+					$this.settingsRows.push(row);
+					$this.settingsRowsContainer.append(row.rowElement);
+				}
+			});
 		});
 	};
 	
+	/**
+	 * Returns the row corresponding to the specified variable
+	 */
 	var getSettingsRow = function(variableName) {
 		for(var i=0; i < this.settingsRows.length; i++) {
 			var row = this.settingsRows[i];
@@ -165,15 +177,21 @@ CalculationStepExecManager.prototype = (function() {
 		return null;
 	};
 	
+	/**
+	 * Extracts all the settings from every row
+	 */
 	var extractVariablesSettings = function() {
 		var result = {};
 		$.each(this.settingsRows, function(index, row) {
-			var params = row.extractParameters();
+			var params = row.extractSettings();
 			result[row.variableName] = params;
 		});
 		return result;
 	};
 	
+	/**
+	 * Validates the input fields of a variable settings row
+	 */
 	var validateTestSettings = function() {
 		var result = true;
 		$.each(this.settingsRows, function(index, row) {
@@ -183,15 +201,24 @@ CalculationStepExecManager.prototype = (function() {
 		return result;
 	};
 	
+	/**
+	 * Returs a list of variable settings rows corresponding to variables not in use by the calculation step
+	 */
 	var getUnusedVariablesRows = function() {
+		var $this = this;
 		var result = new Array();
-		var inputVariables = this.calculationStep.inputVariables;
-		$.each(this.settingsRows, function(index, row) {
-			var variableName = row.variableName;
-			var unused = inputVariables.indexOf(variableName) < 0;
-			if ( unused ) {
-				result.push(row);
-			}
+		$this.workspaceManager.activeWorkspace(function(workspace) {
+			var entity = workspace.getEntityById($this.calculationStep.outputEntityId);
+			var variables = entity.quantitativeVariables;
+			var variableNames = $.map( variables, function(variable) {
+				  return variable.name;
+			});
+			$.each($this.settingsRows, function(index, row) {
+				var variableName = row.variableName;
+				if ( ! ArrayUtils.contains(variableNames, variableName) ) {
+					result.push(row);
+				}
+			});
 		});
 		return result;
 	};
@@ -271,7 +298,7 @@ VariableSettingsRow.prototype = (function() {
 	/**
 	 * Extracts the variable settings from the input field values  
 	 */
-	var extractParameters = function () {
+	var extractSettings = function () {
 		var result = { 
 			max: this.maxField.val(),
 			min: this.minField.val(),
@@ -291,7 +318,7 @@ VariableSettingsRow.prototype = (function() {
 		,
 		remove : remove
 		,
-		extractParameters : extractParameters
+		extractSettings : extractSettings
 		
 	};
 })();

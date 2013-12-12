@@ -46,9 +46,9 @@ public class CalculationStepTestTask extends CalculationStepTask {
 
 	// used during execution
 	@JsonIgnore
-	protected REnvironment rEnvironment;
-	@JsonIgnore
 	private List<DataRecord> records;
+	@JsonIgnore
+	private ArrayList<String> variableNames;
 	
 	public CalculationStepTestTask() {
 		limit = 5000;
@@ -57,7 +57,9 @@ public class CalculationStepTestTask extends CalculationStepTask {
 
 	@Override
 	public synchronized void init() {
-		records = generateAllVariablesCombinations();
+		ParameterMap variablesSettings = settings.getMap("variables");
+		Set<String> variableNames = variablesSettings.names();
+		this.variableNames = new ArrayList<String>(variableNames);
 		super.init();
 	}
 	
@@ -68,24 +70,26 @@ public class CalculationStepTestTask extends CalculationStepTask {
 		Variable<?> outputVariable = getOutputVariable();
 		String outputVariableName = outputVariable.getName();
 
-		rEnvironment = r.newEnvironment();
+		REnvironment rEnvironment = r.newEnvironment();
 		
-		// for output
-		results = new Vector<DataRecord>();
+		records = new Vector<DataRecord>();
 
-		RScript rScript = new RScript();
+		List<DataRecord> allCombinations = generateAllVariablesCombinations();
+
+		RScript rScript = r();
 		
-		RDataFrame dataFrame = createTestDataFrame();
+		RDataFrame dataFrame = createTestDataFrame(allCombinations);
 		
-		RVariable dfVar = new RScript().variable(getEntity().getName());
+		RVariable dfVar = r().variable(getEntity().getName());
 		
 		rScript = rScript.setValue(dfVar, dataFrame);
 		
-		RVariable outputRVar = new RScript().variable(dfVar, outputVariableName);
+		RVariable outputRVar = r().variable(dfVar, outputVariableName);
 		
 		//assign script result to output variable column in data frame
-		rScript = rScript.setValue(outputRVar, new RScript().rScript(getScript()));
+		rScript = rScript.setValue(outputRVar, r().rScript(getScript()));
 		
+		//evaluate the script
 		rEnvironment.eval(rScript.toString());
 		
 		//set values into result data records
@@ -104,15 +108,19 @@ public class CalculationStepTestTask extends CalculationStepTask {
 			incrementItemsProcessed();
 		}
 	}
-	
 
 	@Override
 	protected long countTotalItems() {
-		long count = records.size();
-		if (maxItems <= 0 || maxItems > count) {
-			maxItems = count;
+		long total = 1;
+		for (int i=0; i < variableNames.size(); i++) {
+			String variableName = variableNames.get(i);
+			long seriesSize = getVariableSeriesSize(variableName);
+			total *= seriesSize;
+			if ( total == 0 ) {
+				break;
+			}
 		}
-
+		maxItems = total;
 		return maxItems;
 	}
 
@@ -129,7 +137,6 @@ public class CalculationStepTestTask extends CalculationStepTask {
 					to = results.size();
 				}
 				List<DataRecord> subList = results.subList(from, to);
-				// bufferResults =C ollectionUtils.unmodifiableList(subList);
 				bufferResults = new ArrayList<DataRecord>();
 				bufferResults.addAll(subList);
 				return bufferResults;
@@ -138,9 +145,12 @@ public class CalculationStepTestTask extends CalculationStepTask {
 		return null;
 	}
 
-	private RDataFrame createTestDataFrame() throws RException {
+	/**
+	 * Converts a list of {@link DataRecord} objects into a {@link RDataFrame} object.
+	 *	
+	 */
+	private RDataFrame createTestDataFrame(List<DataRecord> records) throws RException {
 		List<RVector> columns = new ArrayList<RVector>();
-		List<String> variableNames = getVariableNames();
 		for (String colName : variableNames) {
 			Object[] values = new Object[records.size()];
 			for(int i=0; i<records.size(); i++) {
@@ -154,7 +164,10 @@ public class CalculationStepTestTask extends CalculationStepTask {
 		return result;
 	}
 
-	private List<Double> generateVariableSeries(ParameterMap parameterMap) {
+	/**
+	 * Generates a sequence of possible values given the specified settings
+	 */
+	private List<Double> generateSeries(ParameterMap parameterMap) {
 		List<Double> result = new ArrayList<Double>();
 		
 		double min = parameterMap.getNumber("min").doubleValue();
@@ -169,19 +182,46 @@ public class CalculationStepTestTask extends CalculationStepTask {
 		return result;
 	}
 	
+	/**
+	 * Generates all the possible combinations given the specified settings
+	 */
 	private List<DataRecord> generateAllVariablesCombinations() {
+		Map<String, List<Double>> seriesByVariable = generateSeriesByVariables();
+		List<DataRecord> result = generateAllCombinations(new DataRecord(), seriesByVariable);
+		return result;
+	}
+
+	/**
+	 * Creates a map of series of values per each variable
+	 */
+	private Map<String, List<Double>> generateSeriesByVariables() {
 		Map<String, List<Double>> seriesByVariable = new HashMap<String, List<Double>>();
 		ParameterMap variablesSettings = settings.getMap("variables");
 		Set<String> variableNames = variablesSettings.names();
 		for (String varName : variableNames) {
 			ParameterMap varSettings = variablesSettings.getMap(varName);
-			List<Double> series = generateVariableSeries(varSettings);
+			List<Double> series = generateSeries(varSettings);
 			seriesByVariable.put(varName, series);
 		}
-		List<DataRecord> result = generateAllCombinations(new DataRecord(), seriesByVariable);
-		return result;
+		return seriesByVariable;
 	}
 	
+	/**
+	 * Calculates the size of the series that will be generated for the specified variable 
+	 */
+	private long getVariableSeriesSize(String variableName) {
+		ParameterMap variablesSettings = settings.getMap("variables");
+		ParameterMap parameterMap = variablesSettings.getMap(variableName);
+		double min = parameterMap.getNumber("min").doubleValue();
+		double max = parameterMap.getNumber("max").doubleValue();
+		double increment = parameterMap.getNumber("increment").doubleValue();
+		double result = Math.floor((max - min) / increment) + 1;
+		return new Double(result).longValue();
+	}
+	
+	/**
+	 * Generates all the possible combinations starting from an initial data record and given the list of the remaining series
+	 */
 	private List<DataRecord> generateAllCombinations(DataRecord initialData, Map<String, List<Double>> seriesByVariable) {
 		List<DataRecord> result = new ArrayList<DataRecord>();
 		
@@ -206,12 +246,6 @@ public class CalculationStepTestTask extends CalculationStepTask {
 		return result;
 	}
 	
-	private List<String> getVariableNames() {
-		ParameterMap variablesSettings = settings.getMap("variables");
-		Set<String> variableNames = variablesSettings.names();
-		return new ArrayList<String>(variableNames);
-	}
-
 	private Variable<?> getOutputVariable() {
 		return getCalculationStep().getOutputVariable();
 	}

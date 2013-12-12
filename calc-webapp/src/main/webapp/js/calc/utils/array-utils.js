@@ -9,3 +9,10 @@ ArrayUtils.removeItem = function(array, item) {
 		array.splice(index, 1);
 	}
 };
+
+/**
+ * Returns true if the array contains the specified item 
+ */
+ArrayUtils.contains = function(array, item) {
+	return array.indexOf(item) >= 0;
+};
