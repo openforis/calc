@@ -1,16 +1,26 @@
 package org.openforis.calc.engine;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.Vector;
 
+import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.r.R;
+import org.openforis.calc.r.RDataFrame;
 import org.openforis.calc.r.REnvironment;
 import org.openforis.calc.r.RException;
+import org.rosuda.REngine.REXP;
+import org.rosuda.REngine.REXPInteger;
+import org.rosuda.REngine.REXPList;
+import org.rosuda.REngine.REXPMismatchException;
+import org.rosuda.REngine.REXPString;
+import org.rosuda.REngine.RList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +35,7 @@ public class CalculationStepTestTask extends CalculationStepTask {
 
 	@JsonIgnore
 	private List<DataRecord> results;
-
+	
 	@JsonIgnore
 	@Autowired
 	protected R r;
@@ -67,7 +77,16 @@ public class CalculationStepTestTask extends CalculationStepTask {
 		Variable<?> outputVariable = getOutputVariable();
 		String outputVariableName = outputVariable.getName();
 		
+		RDataFrame df = createTestDataFrame();
+		rEnvironment.assign(getEntity().getName(), df);
+		
+		
+		
+		String script = getScript();
+		rEnvironment.eval(script);
+		
 		//for each record set output variable value
+		/*
 		for (DataRecord record : records) {
 			Map<String, Object> valuesByVariable = record.getFields();
 			String script = getScript();
@@ -81,6 +100,7 @@ public class CalculationStepTestTask extends CalculationStepTask {
 			results.add(record);
 			incrementItemsProcessed();
 		}
+		*/
 	}
 	
 
@@ -126,6 +146,12 @@ public class CalculationStepTestTask extends CalculationStepTask {
 		return result;
 	}
 	
+	private RDataFrame createTestDataFrame() throws RException {
+		List<DataRecord> records = generateAllVariablesCombinations();
+		RDataFrame result = new RDataFrame(getVariableNames(), records);
+		return result;
+	}
+
 	private List<Double> generateVariableSeries(ParameterMap parameterMap) {
 		List<Double> result = new ArrayList<Double>();
 		
@@ -144,13 +170,20 @@ public class CalculationStepTestTask extends CalculationStepTask {
 	private List<DataRecord> generateAllVariablesCombinations() {
 		Map<String, List<Double>> seriesByVariable = new HashMap<String, List<Double>>();
 		ParameterMap variablesSettings = settings.getMap("variables");
-		for (String varName : variablesSettings.names()) {
+		Set<String> variableNames = variablesSettings.names();
+		for (String varName : variableNames) {
 			ParameterMap varSettings = variablesSettings.getMap(varName);
 			List<Double> series = generateVariableSeries(varSettings);
 			seriesByVariable.put(varName, series);
 		}
 		List<DataRecord> result = generateAllCombinations(new DataRecord(), seriesByVariable);
 		return result;
+	}
+	
+	private List<String> getVariableNames() {
+		ParameterMap variablesSettings = settings.getMap("variables");
+		Set<String> variableNames = variablesSettings.names();
+		return new ArrayList<String>(variableNames);
 	}
 	
 	private List<DataRecord> generateAllCombinations(DataRecord initialData, Map<String, List<Double>> seriesByVariable) {
@@ -180,6 +213,10 @@ public class CalculationStepTestTask extends CalculationStepTask {
 	private Variable<?> getOutputVariable() {
 		return getCalculationStep().getOutputVariable();
 	}
+	
+	private Entity getEntity() {
+		return getOutputVariable().getEntity();
+	}
 
 	private String getScript() {
 		return getCalculationStep().getScript();
@@ -199,6 +236,15 @@ public class CalculationStepTestTask extends CalculationStepTask {
 	
 	public void setSettings(ParameterMap settings) {
 		this.settings = settings;
+	}
+	
+	public static void main(String[] args) throws REXPMismatchException {
+		Collection<REXP> rows = new ArrayList<REXP>();
+		RList rowList = new RList(new REXP[]{ new REXPString("TEST"), new REXPInteger(123)});
+		REXPList row = new REXPList(rowList);
+		rows.add(row);
+		RList rList = new RList(rows, new String[]{"col1", "col2"});
+		REXP.createDataFrame(rList);
 	}
 	
 }
