@@ -7,39 +7,54 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openforis.calc.r.REnvironment;
+import org.openforis.calc.r.RException;
+import org.openforis.calc.r.RLogger;
 import org.openforis.calc.r.RScript;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * @author Mino Togna
- *
+ * 
  */
 public class CalcRTask extends Task {
-	
+
 	@JsonIgnore
 	private REnvironment rEnvironment;
 	@JsonIgnore
 	private List<RScript> scripts;
 
 	private String name;
-	
+
 	protected CalcRTask(REnvironment rEnvironment, String name) {
 		this.rEnvironment = rEnvironment;
 		this.scripts = new ArrayList<RScript>();
 		this.name = name;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.openforis.calc.engine.Worker#execute()
 	 */
 	@Override
 	protected void execute() throws Throwable {
-		String expr = toString();
-		rEnvironment.eval( expr );
+		RLogger logger = getJobLogger();
+		rEnvironment.eval( toString(), logger );
+
+		// an R error has been logged
+		if (logger.containsCalcErrorSignal()) {
+			throw new RException("R error while evaluating " + this.name);
+		}
 	}
-	
-	protected void addScript(RScript rScript){
+
+	private RLogger getJobLogger() {
+		CalcJob job = (CalcJob) getJob();
+		RLogger logger = job.getLogger();
+		return logger;
+	}
+
+	protected void addScript(RScript rScript) {
 		this.scripts.add(rScript);
 	}
 
@@ -47,12 +62,12 @@ public class CalcRTask extends Task {
 	protected long countTotalItems() {
 		return -1;
 	}
-	
+
 	@Override
 	public String getName() {
 		return name;
 	}
-	
+
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		for (RScript script : this.scripts) {
@@ -61,5 +76,5 @@ public class CalcRTask extends Task {
 		}
 		return sb.toString();
 	}
-	
+
 }

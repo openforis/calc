@@ -76,8 +76,6 @@ public class TaskManager {
 	public CalcJob createCalcJob(Workspace workspace) {
 		CalcJob job = new CalcJob(workspace, dataSource, this.beanFactory);
 		((AutowireCapableBeanFactory)beanFactory).autowireBean(job);
-//		job.setDebugMode(isDebugMode());
-//		job.setSchemas(new Schemas(workspace));
 		return job;
 	}
 	

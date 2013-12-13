@@ -2,7 +2,6 @@ package org.openforis.calc.r;
 
 //import org.rosuda.JRI.RMainLoopCallbacks;
 //import org.rosuda.JRI.Rengine;
-import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Scanner;
@@ -15,7 +14,6 @@ import org.rosuda.REngine.REXP;
 import org.rosuda.REngine.REXPMismatchException;
 import org.rosuda.REngine.REngine;
 import org.rosuda.REngine.REngineException;
-import org.rosuda.REngine.REngineStdOutput;
 import org.rosuda.REngine.JRI.JRIEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,35 +22,35 @@ import org.springframework.stereotype.Component;
 /**
  * Synchronized access to R native R engine
  * 
- * To use:
-	1. Install R and rJava using sudo calc/lib/install-R.sh
-	2. Set environment variable R_HOME=/usr/lib/R 
+ * To use: 1. Install R and rJava using sudo calc/lib/install-R.sh 2. Set
+ * environment variable R_HOME=/usr/lib/R
  * 
  * @author G. Miceli
- *
+ * 
  */
 @Component
 public class R {
-	private static final String[] R_PARAMS = {"--vanilla", "--slave"};
+	private static final String[] R_PARAMS = { "--vanilla", "--slave" };
 	private REngine engine;
 	private Logger logger;
+	private RStdOutputListner rStdOutputListner;
 
 	public R() {
 		this.logger = LoggerFactory.getLogger(getClass());
 	}
-	
+
 	@PostConstruct
-	synchronized
-	public void startup() {
+	synchronized public void startup() {
 		try {
 			String path = getJriPath();
-			if ( path != null ) {
-				SystemUtils.addToClassPath(new File(path + "/JRI.jar"));
+			if (path != null) {
+				// SystemUtils.addToClassPath(new File(path + "/JRI.jar"));
 				SystemUtils.addLibraryPath(path);
-				this.engine = REngine.engineForClass(JRIEngine.class.getName(), R_PARAMS, new RCallbacks(), true);
 			}
+
+			this.rStdOutputListner = new RStdOutputListner(this);
+			this.engine = REngine.engineForClass(JRIEngine.class.getName(), R_PARAMS, rStdOutputListner, true);
 		} catch (InvocationTargetException e) {
-			e.printStackTrace();
 			throw new RuntimeException(e);
 		} catch (ClassNotFoundException e) {
 			throw new RuntimeException(e);
@@ -62,11 +60,12 @@ public class R {
 			throw new RuntimeException(e);
 		}
 	}
-//	/usr/lib/R
+
+	// /usr/lib/R
 
 	private String getJriPath() {
 		try {
-			ProcessBuilder pb = new ProcessBuilder("R", "--slave", "-e","system.file(\"jri\",package=\"rJava\")");
+			ProcessBuilder pb = new ProcessBuilder("R", "--slave", "-e", "system.file(\"jri\",package=\"rJava\")");
 			Process p = pb.start();
 			p.waitFor();
 			InputStream inputStream = p.getInputStream();
@@ -78,31 +77,16 @@ public class R {
 			return path;
 		} catch (Exception e) {
 			logger.warn("Error getting JRI library path from R");
-			//throw new RuntimeException("Error getting JRI library path from R");
+			// throw new
+			// RuntimeException("Error getting JRI library path from R");
 			return null;
 		}
 	}
-	
+
 	@PreDestroy
-	synchronized
-	public void shutdown() {
+	synchronized public void shutdown() {
 		engine.close();
 	}
-	
-	private class RCallbacks extends REngineStdOutput {
-		@Override
-		public void RWriteConsole(REngine engine, String text, int oType) {
-			if ( logger.isDebugEnabled() ) {
-				super.RWriteConsole(engine, text, oType);
-			}
-		}
-	}
-//
-//	public REXP assign(String var, Object o)	 {
-//		REXP ref = engine.createRJavaRef(o);
-//		engine.assign("dataSource", ref);
-//		return ref;
-//	}
 
 	public REnvironment newEnvironment() throws RException {
 		try {
@@ -113,13 +97,19 @@ public class R {
 		} catch (REngineException e) {
 			throw new RException(e);
 		}
-
 	}
-	
-	synchronized
-	REXP eval(String expr, REXP env, boolean resolve) throws RException {
+
+	synchronized REXP eval(String expr, REXP env, boolean resolve, RLogger logger) throws RException {
 		try {
-			return engine.parseAndEval(expr, env, resolve);
+			// before execution register logger
+			this.rStdOutputListner.registerLogger(logger);
+
+			REXP rexp = engine.parseAndEval(expr, env, resolve);
+
+			// after execution unregister logger
+			this.rStdOutputListner.unregisterLogger(logger);
+
+			return rexp;
 		} catch (REXPMismatchException e) {
 			throw new RException(e);
 		} catch (REngineException e) {
@@ -127,8 +117,7 @@ public class R {
 		}
 	}
 
-	synchronized
-	void assign(String symbol, REXP value, REXP env) throws RException {
+	synchronized void assign(String symbol, REXP value, REXP env) throws RException {
 		try {
 			engine.assign(symbol, value, env);
 		} catch (REXPMismatchException e) {
@@ -137,4 +126,13 @@ public class R {
 			throw new RException(e);
 		}
 	}
+
+	Logger getLogger() {
+		return logger;
+	}
+
+	public void log() {
+
+	}
+
 }

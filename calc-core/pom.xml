@@ -331,7 +331,10 @@
 		  <groupId>net.rforge.rjava</groupId>
 		  <artifactId>rengine</artifactId>
 		</dependency>
-
+		<dependency>
+	    	<groupId>net.rforge.rjava</groupId>
+	    	<artifactId>jri</artifactId>
+	    </dependency>
 		<!-- Logging -->
 		<dependency>
 			<groupId>org.slf4j</groupId>

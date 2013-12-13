@@ -51,7 +51,7 @@ public class WorkInProgressTest extends AbstractTransactionalJUnit4SpringContext
 		
 		CalcJob job = taskManager.createCalcJob(workspace);
 		job.addCalculationStep(calculationStepDao.find(3));
-		job.addCalculationStep(calculationStepDao.find(8));
+//		job.addCalculationStep(calculationStepDao.find(8));
 		job.init();
 		
 		System.out.println( job.toString() );

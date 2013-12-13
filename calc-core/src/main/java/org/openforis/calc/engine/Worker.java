@@ -1,28 +1,22 @@
 package org.openforis.calc.engine;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.r.RScript;
-import org.openforis.calc.r.RVariable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
- * Base class for asynchronous  
+ * Base class for asynchronous
  * 
  * @author G. Miceli
- *
+ * 
  */
 public abstract class Worker {
 
-	private Status status;	
+	private Status status;
 	private UUID id;
 	private long startTime;
 	private long endTime;
@@ -30,7 +24,6 @@ public abstract class Worker {
 	private long itemsSkipped;
 	private long totalItems;
 	private Throwable lastException;
-
 	// TODO can use 'transient' Java keyword instead?
 	@JsonIgnore
 	private Logger logger;
@@ -49,24 +42,25 @@ public abstract class Worker {
 		this.logger = LoggerFactory.getLogger(getClass());
 		this.id = UUID.randomUUID();
 	}
-	
-	synchronized 
-	public void init() {
+
+	synchronized public void init() {
 		this.totalItems = countTotalItems();
 	}
 
 	// TODO
-//	protected abstract long countTotalItems();
-	protected long countTotalItems() { return -1; };
+	// protected abstract long countTotalItems();
+	protected long countTotalItems() {
+		return -1;
+	};
 
 	protected abstract void execute() throws Throwable;
 
 	public String getName() {
 		return getClass().getSimpleName();
 	}
-	
+
 	public synchronized void run() {
-		if ( !isPending() ) { 
+		if (!isPending()) {
 			throw new IllegalStateException("Already run");
 		}
 		try {
@@ -74,7 +68,7 @@ public abstract class Worker {
 			this.startTime = System.currentTimeMillis();
 			execute();
 			this.status = Status.COMPLETED;
-		} catch ( Throwable t ) {
+		} catch (Throwable t) {
 			this.status = Status.FAILED;
 			this.lastException = t;
 			logger.warn("Task failed");
@@ -86,7 +80,7 @@ public abstract class Worker {
 	}
 
 	public final long getDuration() {
-		switch ( status ) {
+		switch (status) {
 		case PENDING:
 			return -1;
 		case RUNNING:
@@ -152,11 +146,11 @@ public abstract class Worker {
 	public final Throwable getLastException() {
 		return this.lastException;
 	}
-	
+
 	public void setItemsProcessed(long itemsProcessed) {
 		this.itemsProcessed = itemsProcessed;
 	}
-	
+
 	public long incrementItemsProcessed() {
 		return ++this.itemsProcessed;
 	}
@@ -164,9 +158,9 @@ public abstract class Worker {
 	public long incrementItemsSkipped() {
 		return ++this.itemsSkipped;
 	}
-	
+
 	public long getItemsRemaining() {
-		return getTotalItems() - (getItemsProcessed() + getItemsSkipped()); 
+		return getTotalItems() - (getItemsProcessed() + getItemsSkipped());
 	}
 
 	public UUID getId() {
@@ -187,34 +181,11 @@ public abstract class Worker {
 		}
 		return isCompleted();
 	}
-	
-	// returns a new r script. left here now since this is the common super class between calcjob and calcrscript
+
+	// returns a new r script. left here now since this is the common super
+	// class between calcjob and calcrscript
 	protected RScript r() {
 		return new RScript();
 	}
-
-	protected String replaceVariables(RVariable dataFrame, String script) {
-		String newScript = script;
-		
-		Pattern pattern = Pattern.compile(CalculationStep.VARIABLE_PATTERN);
-		Matcher m = pattern.matcher(script);
-		while (m.find()) {
-			String variable = m.group(1);
-			RVariable rVariable = new RScript().variable(dataFrame, variable);
-			newScript = newScript.replaceFirst("\\$"+variable+"\\$", rVariable.toString().replaceAll("\\$","\\\\\\$") );
-		}
-		
-		return newScript;
-	}
 	
-	protected Set<String> extractVariables(String script) {
-		Set<String> variables = new HashSet<String>();
-		Pattern p = Pattern.compile(CalculationStep.VARIABLE_PATTERN);
-		Matcher m = p.matcher(script);
-		while (m.find()) {
-			String variable = m.group(1);
-			variables.add(variable);
-		}
-		return variables;
-	}
 }

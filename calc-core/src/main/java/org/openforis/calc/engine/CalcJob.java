@@ -30,6 +30,7 @@ import org.openforis.calc.r.DbConnect;
 import org.openforis.calc.r.R;
 import org.openforis.calc.r.REnvironment;
 import org.openforis.calc.r.RException;
+import org.openforis.calc.r.RLogger;
 import org.openforis.calc.r.RScript;
 import org.openforis.calc.r.RVariable;
 import org.openforis.calc.r.RVector;
@@ -63,6 +64,11 @@ public class CalcJob extends Job {
 	@JsonIgnore
 	private BeanFactory beanFactory;
 	
+	/**
+	 * RLogger used by calcRTask.execute 
+	 */
+	private RLogger rLogger;
+	
 	
 	//TODO read dynamically these properties 
 	String host = "localhost";
@@ -79,6 +85,7 @@ public class CalcJob extends Job {
 		super(workspace, dataSource);
 		setSchemas(new Schemas(workspace));
 		
+		this.rLogger = new RLogger();
 		this.beanFactory = beanFactory;
 		this.calculationSteps = new  HashMap<Integer, List<CalculationStep>>();
 	}
@@ -122,7 +129,8 @@ public class CalcJob extends Job {
 		// init libraries
 		initTask.addScript( r().library("lmfor") );
 		initTask.addScript( r().library("RPostgreSQL") );
-		
+		//common functions //org/openforis/calc/r/functions.R
+		initTask.addScript( RScript.getCalcRScript() );
 		// create driver
 		RVariable driver = r().variable("driver");
 		initTask.addScript( r().setValue(driver, r().dbDriver("PostgreSQL")) );
@@ -155,13 +163,7 @@ public class CalcJob extends Job {
 			Set<String> inputVariables = new HashSet<String>();
 			
 			// plot area script if available
-			RScript plotArea = null;
-			String plotAreaScript = entity.getPlotAreaScript();
-			if( StringUtils.isNotBlank(plotAreaScript) ){
-				inputVariables.addAll( extractVariables(plotAreaScript) );
-				plotAreaScript = replaceVariables(dataFrame, plotAreaScript);
-				plotArea = r().rScript( plotAreaScript );
-			}
+			RScript plotArea = entity.getPlotAreaRScript();
 			
 			// create a task for each step
 			for ( CalculationStep step : this.calculationSteps.get(entityId) ) {
@@ -172,6 +174,9 @@ public class CalcJob extends Job {
 				inputVariables.addAll(task.getInputVariables());
 			}
 			
+			if( plotArea != null ) {
+				inputVariables.addAll( plotArea.getVariables() );
+			}
 			// ===== read data task
 			CalcRTask readDataTask = createTask("Read " + entity.getName() + " data");
 			
@@ -191,7 +196,6 @@ public class CalcJob extends Job {
 			// 2. append select data
 			SelectQuery<Record> select = new Psql().selectQuery();
 			select.addFrom(view);
-			select.addSelect(view.getIdField());
 			for (String var : inputVariables) {
 				select.addSelect( view.field(var) );
 			}
@@ -284,6 +288,10 @@ public class CalcJob extends Job {
 			sb.append( task.toString() );
 		}
 		return sb.toString();
+	}
+
+	public RLogger getLogger() {
+		return this.rLogger;
 	}
 	
 }

@@ -423,10 +423,6 @@ calc-step page
 /* 	height: 30px;	 */
 }
 
-#job-status .modal-dialog {
-	width: 65%;	
-	height: 80%;
-}
 
 .section-home, .page-section .modal, .modal label {
 	color: #2c3e50;
@@ -439,11 +435,6 @@ calc-step page
 .container ul.breadcrumb {
 	margin-top : 1em;
 	display: none;
-}
-
-.task-status {
-	padding: 5px 0px;
-	border-bottom: 1px solid #ecf0f1;
 }
 
 #page {	
@@ -728,6 +719,7 @@ ul.scroll-menu {
 	font-size: 2em;
 }
 
+
 /**
 * Dialog
 */
@@ -769,4 +761,45 @@ ul.ui-sortable li {
 }
 .ui-sortable-helper {
 	opacity: 0.4;
+}
+
+
+/**
+* ============ JOB status
+*/
+#job-status .modal-dialog {
+	width: 80%;	
+	height: 100%;
+}
+#job-status .modal-content {
+/* 	border-radius: 0px; */
+	
+	border-radius: 0px;
+	-webkit-box-shadow: 4px 4px 10px 6px rgba(149,165,166,0.4);
+	-moz-box-shadow: 4px 4px 10px 6px rgba(149,165,166,0.4);
+	box-shadow: 4px 4px 10px 6px rgba(149,165,166,0.4);
+}
+#job-status .modal-footer {
+	border-top: none;
+}
+#job-status .modal-header {
+	border-bottom: none;
+	
+}
+
+.task-status {
+	padding: 6px 0px;
+/* 	border-bottom: 1px solid #ecf0f1; */
+}
+
+#job-status .log {
+	padding-bottom: 30px;
+}
+#job-status .console {
+/* 	border: 1px inset #a2a4b1; */
+	height: 100px;
+	-webkit-box-shadow: 2px 1px 10px 1px rgba(149,165,166,0.5);
+	-moz-box-shadow: 2px 1px 10px 1px rgba(149,165,166,0.5);
+	box-shadow: 2px 1px 10px 1px rgba(149,165,166,0.5);
+	
 }
