@@ -75,25 +75,36 @@ CalculationStepExecManager.prototype = (function() {
 		this.testButton.click(function(e) {
 			if ( $.proxy(validateTestSettings, $this)() ) {
 				UI.disableAll();
-				var parameters = {variables: $.proxy(extractVariablesSettings, $this)()};
+				var variablesSettings = $.proxy(extractVariablesSettings, $this)();
+				var parameters = {variables: variablesSettings};
 				$this.calculationStepManager.test(
 					$this.calculationStep.id,
 					parameters,
 					//on complete show results
 					function(job) {
 						UI.enableAll();
-						$.proxy(getTestVariables, $this)(function(variables) {
-							// instanciate data provider
+						$this.workspaceManager.activeWorkspace(function(workspace) {
 							var entityId = $this.calculationStep.outputEntityId;
-							var dataProvider = new CalculationStepTestDataProvider(job.id, entityId, variables);
+							var entity = workspace.getEntityById(entityId);
+							var outputVariable = entity.getVariableById($this.calculationStep.outputVariableId);
+
+							var variableNames = $.map(variablesSettings, function(settings, variableName) {
+								return variableName;
+							});
+							variableNames.push(outputVariable.name);
+							
+							// instanciate data provider
+							var dataProvider = new CalculationStepTestDataProvider(job.id, entityId, variableNames);
 							
 							// once completed hide this and shows results section
 							$this.hide();
 							$this.calculationStepResultsManager.show(dataProvider);
-						}, false);
+						});
 					}
 					, true
 				);
+			} else {
+				UI.showMessage("Please fix the errors in the form before proceeding.");
 			}
 		});
 	};
@@ -149,11 +160,11 @@ CalculationStepExecManager.prototype = (function() {
 		});
 		
 		//add new variable rows
-		var variables = $.proxy(getTestVariables, $this)(function(variables){
+		$.proxy(getTestVariableNames, $this)(function(variables){
 			$.each(variables, function(index, variable) {
-				var oldRow = $.proxy(getSettingsRow, $this)(variable.name);
+				var oldRow = $.proxy(getSettingsRow, $this)(variable);
 				if ( oldRow == null ) {
-					var row = new VariableSettingsRow(variable.name, $this.testInputVariableRowTemplate);
+					var row = new VariableSettingsRow(variable, $this.testInputVariableRowTemplate);
 					$this.settingsRows.push(row);
 					$this.settingsRowsContainer.append(row.rowElement);
 				}
@@ -164,7 +175,7 @@ CalculationStepExecManager.prototype = (function() {
 	/**
 	 * Returns the entity variables used as test parameters.
 	 */
-	var getTestVariables = function(success, excludeOutputVariable) {
+	var getTestVariableNames = function(success, excludeOutputVariable) {
 		var $this = this;
 		$this.workspaceManager.activeWorkspace(function(workspace) {
 			var entity = workspace.getEntityById($this.calculationStep.outputEntityId);
@@ -173,7 +184,10 @@ CalculationStepExecManager.prototype = (function() {
 				var outputVariable = ArrayUtils.getItemByProperty(variables, "id", $this.calculationStep.outputVariableId);
 				ArrayUtils.removeItem(variables, outputVariable);
 			}
-			success(variables);
+			var variableNames = $.map( variables, function(variable) {
+				  return variable.name;
+			});
+			success(variableNames);
 		});
 	};
 	
@@ -197,7 +211,9 @@ CalculationStepExecManager.prototype = (function() {
 		var result = {};
 		$.each(this.settingsRows, function(index, row) {
 			var params = row.extractSettings();
-			result[row.variableName] = params;
+			if ( params.increment > 0 ) {
+				result[row.variableName] = params;
+			}
 		});
 		return result;
 	};
@@ -215,20 +231,14 @@ CalculationStepExecManager.prototype = (function() {
 	};
 	
 	/**
-	 * Returs a list of variable settings rows corresponding to variables not in use by the calculation step
+	 * Returns a list of variable settings rows corresponding to variables not in use by the calculation step
 	 */
 	var getUnusedVariablesRows = function() {
 		var $this = this;
 		var result = new Array();
-		$this.workspaceManager.activeWorkspace(function(workspace) {
-			var entity = workspace.getEntityById($this.calculationStep.outputEntityId);
-			var variables = entity.quantitativeVariables;
-			var variableNames = $.map( variables, function(variable) {
-				  return variable.name;
-			});
+		$.proxy(getTestVariableNames, $this)(function(variables) {
 			$.each($this.settingsRows, function(index, row) {
-				var variableName = row.variableName;
-				if ( ! ArrayUtils.contains(variableNames, variableName) ) {
+				if ( ! ArrayUtils.contains(variables, row.variableName) ) {
 					result.push(row);
 				}
 			});

@@ -113,13 +113,9 @@ public class CalculationStepTestTask extends CalculationStepTask {
 	@Override
 	protected long countTotalItems() {
 		long total = 1;
-		for (int i=0; i < variableNames.size(); i++) {
-			String variableName = variableNames.get(i);
-			long seriesSize = getVariableSeriesSize(variableName);
+		for (String variable : variableNames) {
+			long seriesSize = getVariableSeriesSize(variable);
 			total *= seriesSize;
-			if ( total == 0 ) {
-				break;
-			}
 		}
 		maxItems = Math.min(total, limit);
 		return maxItems;
@@ -193,20 +189,12 @@ public class CalculationStepTestTask extends CalculationStepTask {
 	 * Generates a sequence of possible values given the specified settings
 	 */
 	private List<Double> generateSeries(ParameterMap parameterMap) {
-		List<Double> result = new ArrayList<Double>();
-		
 		double min = parameterMap.getNumber("min").doubleValue();
 		double max = parameterMap.getNumber("max").doubleValue();
 		double increment = parameterMap.getNumber("increment").doubleValue();
-		
-		double current = min;
-		while(current <= max) {
-			result.add(current);
-			current += increment;
-		}
-		return result;
+		return new CombinationsGenerator().generateSeries(min, max, increment);
 	}
-	
+
 	/**
 	 * Calculates the size of the series that will be generated for the specified variable 
 	 */
@@ -253,7 +241,7 @@ public class CalculationStepTestTask extends CalculationStepTask {
 		/**
 		 * Generates all the possible combinations of the specified lists of values
 		 */
-		private List<List<?>> generateAllCombinations(List<List<?>> seriesList, int limit) {
+		public List<List<?>> generateAllCombinations(List<List<?>> seriesList, int limit) {
 			List<List<?>> combinations = new ArrayList<List<?>>();
 
 			long total = calculateTotalCombinations(seriesList);
@@ -265,9 +253,9 @@ public class CalculationStepTestTask extends CalculationStepTask {
 					List<?> series = seriesList.get(seriesIndex);
 					int currentSeriesSize = series.size();
 					
-					int temp = new Double(Math.ceil((double) ((i - 1) / currentSeriesWeight))).intValue();
+					int calculatedValIndex = new Double(Math.ceil((double) ((i - 1) / currentSeriesWeight))).intValue();
 					
-					int valueIndex = temp % currentSeriesSize;
+					int valueIndex = calculatedValIndex % currentSeriesSize;
 					
 					Object value = series.get(valueIndex);
 					row.add(value);
@@ -278,12 +266,24 @@ public class CalculationStepTestTask extends CalculationStepTask {
 			return combinations;
 		}
 
-		private long calculateTotalCombinations(List<List<?>> seriesList) {
+		public long calculateTotalCombinations(List<List<?>> seriesList) {
 			long total = 1;
 			for (List<?> list : seriesList) {
 				total = total *= list.size();
 			}
 			return total;
+		}
+		
+		public List<Double> generateSeries(double min, double max, double increment) {
+			List<Double> result = new ArrayList<Double>();
+			if ( increment > 0 ) {
+				double current = min;
+				while(current <= max) {
+					result.add(current);
+					current += increment;
+				}
+			}
+			return result;
 		}
 		
 	}
