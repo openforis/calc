@@ -18,12 +18,14 @@ import javax.persistence.Table;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.functors.InstanceofPredicate;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.openforis.calc.common.NamedUserObject;
 import org.openforis.calc.engine.Workspace;
+import org.openforis.calc.r.RScript;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -323,6 +325,27 @@ public class Entity extends NamedUserObject {
 		return plotAreaScript;
 	}
 	
+	public RScript getPlotAreaRScript() {
+		if(StringUtils.isBlank(plotAreaScript)){
+			return null;
+		} else {
+			RScript plotArea = new RScript().rScript( plotAreaScript , getHierarchyVariables() );
+			return plotArea;
+		}
+	}
+	
+	public List<Variable<?>> getHierarchyVariables() {
+		List<Variable<?>> variables = new ArrayList<Variable<?>>();
+
+		Entity entity = this;
+		while(entity != null){
+			variables.addAll(entity.getVariables());
+			entity = entity.getParent();
+		}
+		
+		return variables;
+	}
+	
 	public void setPlotAreaScript(String plotAreaScript) {
 		this.plotAreaScript = plotAreaScript;
 	}
@@ -330,6 +353,7 @@ public class Entity extends NamedUserObject {
 	public String getResultsTable() {
 		return String.format(TABLE_NAME_FORMAT, getName());
 	}
+	
 	
 //	@JsonIgnore
 	@SuppressWarnings({ "rawtypes", "unchecked" })

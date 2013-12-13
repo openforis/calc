@@ -20,7 +20,7 @@ public class RVector extends RScript {
 	}
 	
 	public RVector(RScript previous, boolean singleScript, Object... values) {
-		super(previous);
+		super(previous, singleScript);
 		this.values = new ArrayList<Object>(Arrays.asList(values));
 		buildScript();
 	}

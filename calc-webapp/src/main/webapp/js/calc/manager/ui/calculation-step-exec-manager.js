@@ -28,9 +28,9 @@ function CalculationStepExecManager(container, calculationStepResultsManager) {
 	this.calculationStep = null;
 	
 	//job manager
-	this.jobManager = new JobManager();
-	this.calculationStepManager = new CalculationStepManager();
-	this.workspaceManager = new WorkspaceManager();
+	this.jobManager = JobManager.getInstance();
+	this.calculationStepManager = CalculationStepManager.getInstance();
+	this.workspaceManager = WorkspaceManager.getInstance();
 	
 	//array with the variable settings
 	this.settingsRows = new Array();
@@ -82,19 +82,17 @@ CalculationStepExecManager.prototype = (function() {
 					//on complete show results
 					function(job) {
 						UI.enableAll();
-						$this.workspaceManager.activeWorkspace(function(workspace) {
+						$.proxy(getTestVariables, $this)(function(variables) {
 							// instanciate data provider
 							var entityId = $this.calculationStep.outputEntityId;
-							var entity = workspace.getEntityById(entityId);
-							var variables  = entity.quantitativeVariables;
 							var dataProvider = new CalculationStepTestDataProvider(job.id, entityId, variables);
 							
 							// once completed hide this and shows results section
 							$this.hide();
 							$this.calculationStepResultsManager.show(dataProvider);
-						});
+						}, false);
 					}
-					, false
+					, true
 				);
 			}
 		});
@@ -151,9 +149,8 @@ CalculationStepExecManager.prototype = (function() {
 		});
 		
 		//add new variable rows
-		$this.workspaceManager.activeWorkspace(function(workspace) {
-			var entity = workspace.getEntityById($this.calculationStep.outputEntityId);
-			$.each(entity.quantitativeVariables, function(index, variable) {
+		var variables = $.proxy(getTestVariables, $this)(function(variables){
+			$.each(variables, function(index, variable) {
 				var oldRow = $.proxy(getSettingsRow, $this)(variable.name);
 				if ( oldRow == null ) {
 					var row = new VariableSettingsRow(variable.name, $this.testInputVariableRowTemplate);
@@ -161,6 +158,22 @@ CalculationStepExecManager.prototype = (function() {
 					$this.settingsRowsContainer.append(row.rowElement);
 				}
 			});
+		}, true);
+	};
+	
+	/**
+	 * Returns the entity variables used as test parameters.
+	 */
+	var getTestVariables = function(success, excludeOutputVariable) {
+		var $this = this;
+		$this.workspaceManager.activeWorkspace(function(workspace) {
+			var entity = workspace.getEntityById($this.calculationStep.outputEntityId);
+			var variables  = ArrayUtils.clone(entity.quantitativeVariables);
+			if ( excludeOutputVariable ) {
+				var outputVariable = ArrayUtils.getItemByProperty(variables, "id", $this.calculationStep.outputVariableId);
+				ArrayUtils.removeItem(variables, outputVariable);
+			}
+			success(variables);
 		});
 	};
 	

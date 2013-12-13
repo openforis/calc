@@ -4,6 +4,7 @@
 package org.openforis.calc.engine;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.openforis.calc.chain.CalculationStep;
@@ -45,12 +46,14 @@ public class CalculationStepRTask extends CalcRTask {
 	private void setCalculationStep(CalculationStep calculationStep) {
 		this.calculationStep = calculationStep;
 		
-		String script = replaceVariables( this.dataFrame, this.calculationStep.getScript() );
+//		String script = replaceVariables( this.dataFrame, this.calculationStep.getScript() );
+		RScript script = this.calculationStep.getRScript() ;
+		SetValue setOutputValuePerHa = null;
+		
 		String variableName = getOutputVariable().getName();
 		RVariable outputVar = r().variable( dataFrame, variableName );
 		//set output variable with calculation step script
 //		SetValue setOutputValue = r().setValue( outputVar, r().rScript(script) );
-		addScript( r().rScript(script) );
 
 		this.outputVariables.add(variableName);
 		
@@ -62,11 +65,17 @@ public class CalculationStepRTask extends CalcRTask {
 			RVariable outputVarPerHa = r().variable( dataFrame, variablePerHaName );
 			//set output variable per ha as result of output variable / plot area
 			Div valuePerHa = r().div(outputVar, plotArea);
-			SetValue setOutputValuePerHa = r().setValue( outputVarPerHa, valuePerHa );
-			addScript(setOutputValuePerHa);
+			setOutputValuePerHa = r().setValue( outputVarPerHa, valuePerHa );
+//			addScript(setOutputValuePerHa);
 			
 			this.outputVariables.add( variablePerHaName );
 		}
+		
+		RVariable result = r().variable("result");
+		SetValue setValue = r().setValue(result, r().rTry( script, setOutputValuePerHa ));
+
+		addScript( setValue );
+		addScript( r().checkError(result) );
 	}
 	
 	public QuantitativeVariable getOutputVariable() {
@@ -74,7 +83,7 @@ public class CalculationStepRTask extends CalcRTask {
 	}
 
 	public Set<String> getInputVariables() {
-		return calculationStep.getInputVariables();
+		return this.calculationStep.getRScript().getVariables();
 	}
 	
 	public Set<String> getOutputVariables() {

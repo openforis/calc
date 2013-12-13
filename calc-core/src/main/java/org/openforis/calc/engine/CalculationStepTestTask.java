@@ -1,10 +1,8 @@
 package org.openforis.calc.engine;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Vector;
 
@@ -29,6 +27,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 public class CalculationStepTestTask extends CalculationStepTask {
 
+	private static final int DEFAULT_LIMIT = 5000;
+
 	@JsonIgnore
 	private List<DataRecord> results;
 	
@@ -46,12 +46,10 @@ public class CalculationStepTestTask extends CalculationStepTask {
 
 	// used during execution
 	@JsonIgnore
-	private List<DataRecord> records;
-	@JsonIgnore
 	private ArrayList<String> variableNames;
 	
 	public CalculationStepTestTask() {
-		limit = 5000;
+		limit = DEFAULT_LIMIT;
 		maxItems = -1;
 	}
 
@@ -72,9 +70,7 @@ public class CalculationStepTestTask extends CalculationStepTask {
 
 		REnvironment rEnvironment = r.newEnvironment();
 		
-		records = new Vector<DataRecord>();
-
-		List<DataRecord> allCombinations = generateAllVariablesCombinations();
+		List<List<?>> allCombinations = generateAllVariablesCombinations();
 
 		RScript rScript = r();
 		
@@ -95,15 +91,20 @@ public class CalculationStepTestTask extends CalculationStepTask {
 		//set values into result data records
 		String[] resultValues = rEnvironment.evalStrings(outputRVar.toString());
 		
-		updateResults(outputVariableName, resultValues);
+		updateResults(outputVariableName, allCombinations, resultValues);
 	}
 
-	private void updateResults(String outputVariableName, String[] resultValues) {
-		//for each record set output variable value
-		for ( int i=0; i < records.size(); i++ ) {
-			DataRecord record = records.get(i);
-			String value = resultValues[i];
-			record.add(outputVariableName, value);
+	private void updateResults(String outputVariableName, List<List<?>> rows, String[] resultValues) {
+		results = new Vector<DataRecord>();
+
+		for ( int rowIdx=0; rowIdx<rows.size(); rowIdx++ ) {
+			List<?> row = rows.get(rowIdx);
+			DataRecord record = new DataRecord();
+			for ( int varIdx=0; varIdx < variableNames.size(); varIdx++ ) {
+				String varName = variableNames.get(varIdx);
+				record.add(varName, row.get(varIdx));
+			}
+			record.add(outputVariableName, resultValues[rowIdx]);
 			results.add(record);
 			incrementItemsProcessed();
 		}
@@ -120,7 +121,7 @@ public class CalculationStepTestTask extends CalculationStepTask {
 				break;
 			}
 		}
-		maxItems = total;
+		maxItems = Math.min(total, limit);
 		return maxItems;
 	}
 
@@ -129,7 +130,9 @@ public class CalculationStepTestTask extends CalculationStepTask {
 
 	@JsonIgnore
 	public List<DataRecord> getResults(int from, int to) {
-		if (results != null) {
+		if (results == null) {
+			return Collections.emptyList();
+		} else {
 			synchronized (results) {
 				if (this.getItemsProcessed() < to) {
 					to = (int) this.getItemsProcessed();
@@ -142,20 +145,19 @@ public class CalculationStepTestTask extends CalculationStepTask {
 				return bufferResults;
 			}
 		}
-		return null;
 	}
 
 	/**
 	 * Converts a list of {@link DataRecord} objects into a {@link RDataFrame} object.
 	 *	
 	 */
-	private RDataFrame createTestDataFrame(List<DataRecord> records) throws RException {
+	private RDataFrame createTestDataFrame(List<List<?>> records) throws RException {
 		List<RVector> columns = new ArrayList<RVector>();
-		for (String colName : variableNames) {
+		for (int variableIndex = 0; variableIndex < variableNames.size(); variableIndex++) {
 			Object[] values = new Object[records.size()];
 			for(int i=0; i<records.size(); i++) {
-				DataRecord record = records.get(i);
-				Object value = record.getValue(colName);
+				List<?> record = records.get(i);
+				Object value = record.get(variableIndex);
 				values[i] = value;
 			}
 			columns.add(new RVector(null, false, values));
@@ -164,6 +166,29 @@ public class CalculationStepTestTask extends CalculationStepTask {
 		return result;
 	}
 
+	/**
+	 * Generates all the possible combinations given the specified settings
+	 */
+	private List<List<?>> generateAllVariablesCombinations() {
+		List<List<?>> seriesByVariables = generateSeriesByVariables();
+		List<List<?>> result = new CombinationsGenerator().generateAllCombinations(seriesByVariables, limit);
+		return result;
+	}
+
+	/**
+	 * Creates a map of series of values per each variable
+	 */
+	private List<List<?>> generateSeriesByVariables() {
+		List<List<?>> result = new ArrayList<List<?>>();
+		for (String varName : variableNames) {
+			ParameterMap variablesSettings = settings.getMap("variables");
+			ParameterMap varSettings = variablesSettings.getMap(varName);
+			List<Double> series = generateSeries(varSettings);
+			result.add(series);
+		}
+		return result;
+	}
+	
 	/**
 	 * Generates a sequence of possible values given the specified settings
 	 */
@@ -183,30 +208,6 @@ public class CalculationStepTestTask extends CalculationStepTask {
 	}
 	
 	/**
-	 * Generates all the possible combinations given the specified settings
-	 */
-	private List<DataRecord> generateAllVariablesCombinations() {
-		Map<String, List<Double>> seriesByVariable = generateSeriesByVariables();
-		List<DataRecord> result = generateAllCombinations(new DataRecord(), seriesByVariable);
-		return result;
-	}
-
-	/**
-	 * Creates a map of series of values per each variable
-	 */
-	private Map<String, List<Double>> generateSeriesByVariables() {
-		Map<String, List<Double>> seriesByVariable = new HashMap<String, List<Double>>();
-		ParameterMap variablesSettings = settings.getMap("variables");
-		Set<String> variableNames = variablesSettings.names();
-		for (String varName : variableNames) {
-			ParameterMap varSettings = variablesSettings.getMap(varName);
-			List<Double> series = generateSeries(varSettings);
-			seriesByVariable.put(varName, series);
-		}
-		return seriesByVariable;
-	}
-	
-	/**
 	 * Calculates the size of the series that will be generated for the specified variable 
 	 */
 	private long getVariableSeriesSize(String variableName) {
@@ -217,33 +218,6 @@ public class CalculationStepTestTask extends CalculationStepTask {
 		double increment = parameterMap.getNumber("increment").doubleValue();
 		double result = Math.floor((max - min) / increment) + 1;
 		return new Double(result).longValue();
-	}
-	
-	/**
-	 * Generates all the possible combinations starting from an initial data record and given the list of the remaining series
-	 */
-	private List<DataRecord> generateAllCombinations(DataRecord initialData, Map<String, List<Double>> seriesByVariable) {
-		List<DataRecord> result = new ArrayList<DataRecord>();
-		
-		Entry<String, List<Double>> firstEntry = seriesByVariable.entrySet().iterator().next();
-		String variableName = firstEntry.getKey();
-		List<Double> series = firstEntry.getValue();
-		Map<String, List<Double>> remainingSeries = new HashMap<String, List<Double>>(seriesByVariable);
-		remainingSeries.remove(variableName);
-		for (Double val : series) {
-			try {
-				DataRecord dataRecord = initialData.clone();
-				dataRecord.add(variableName, val);
-				if ( remainingSeries.isEmpty() ) {
-					result.add(dataRecord);
-				} else {
-					List<DataRecord> leafRecords = generateAllCombinations(dataRecord, remainingSeries);
-					result.addAll(leafRecords);
-				}
-			} catch (CloneNotSupportedException e1) {
-			}
-		}
-		return result;
 	}
 	
 	private Variable<?> getOutputVariable() {
@@ -272,6 +246,46 @@ public class CalculationStepTestTask extends CalculationStepTask {
 	
 	public void setSettings(ParameterMap settings) {
 		this.settings = settings;
+	}
+	
+	private static class CombinationsGenerator {
+		
+		/**
+		 * Generates all the possible combinations of the specified lists of values
+		 */
+		private List<List<?>> generateAllCombinations(List<List<?>> seriesList, int limit) {
+			List<List<?>> combinations = new ArrayList<List<?>>();
+
+			long total = calculateTotalCombinations(seriesList);
+			
+			for(int i=1; i<=total && i<=limit; i++) {
+				ArrayList<Object> row = new ArrayList<Object>(seriesList.size());
+				int currentSeriesWeight = 1;
+				for (int seriesIndex = 0; seriesIndex < seriesList.size(); seriesIndex++) {
+					List<?> series = seriesList.get(seriesIndex);
+					int currentSeriesSize = series.size();
+					
+					int temp = new Double(Math.ceil((double) ((i - 1) / currentSeriesWeight))).intValue();
+					
+					int valueIndex = temp % currentSeriesSize;
+					
+					Object value = series.get(valueIndex);
+					row.add(value);
+					currentSeriesWeight *= currentSeriesSize;
+				}
+				combinations.add(row);
+			}
+			return combinations;
+		}
+
+		private long calculateTotalCombinations(List<List<?>> seriesList) {
+			long total = 1;
+			for (List<?> list : seriesList) {
+				total = total *= list.size();
+			}
+			return total;
+		}
+		
 	}
 	
 }

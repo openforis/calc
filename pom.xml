@@ -364,15 +364,21 @@
 		    	<artifactId>junit</artifactId>
 		    	<version>4.11</version>
 		    </dependency>
+<!-- 		    ~/dev/apache-maven-3.1.1/bin/mvn deploy:deploy-file -DgroupId=net.rforge.rjava -DartifactId=rengine -Dversion=0.9-6 -Dpackaging=jar -Dfile=REngine.jar -DrepositoryId=openforis-3rd-party -Durl=http://www.openforis.org/nexus/content/repositories/thirdparty/ -->
 		    <dependency>
 		    	<groupId>net.rforge.rjava</groupId>
 		    	<artifactId>jriengine</artifactId>
-		    	<version>0.9-5</version>
+		    	<version>0.9-6</version>
 		    </dependency>
 		    <dependency>
 		    	<groupId>net.rforge.rjava</groupId>
 		    	<artifactId>rengine</artifactId>
-		    	<version>0.9-5</version>
+		    	<version>0.9-6</version>
+		    </dependency>
+		    <dependency>
+		    	<groupId>net.rforge.rjava</groupId>
+		    	<artifactId>jri</artifactId>
+		    	<version>0.9-6</version>
 		    </dependency>
 		    <dependency>
 				<groupId>javax.servlet</groupId>

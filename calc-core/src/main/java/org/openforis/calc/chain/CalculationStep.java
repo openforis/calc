@@ -1,9 +1,6 @@
 package org.openforis.calc.chain;
 
-import java.util.HashSet;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.persistence.Column;
 import javax.persistence.FetchType;
@@ -18,7 +15,9 @@ import org.openforis.calc.common.UserObject;
 import org.openforis.calc.engine.ParameterHashMap;
 import org.openforis.calc.engine.ParameterMap;
 import org.openforis.calc.json.ParameterMapJsonSerializer;
+import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.Variable;
+import org.openforis.calc.r.RScript;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -33,34 +32,34 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @javax.persistence.Entity
 @Table(name = "calculation_step")
 public class CalculationStep extends UserObject {
-	
+
 	public static final String VARIABLE_PATTERN = "\\$(.+?)\\$";
-	
+
 	@Column(name = "module_name")
 	private String moduleName;
-	
+
 	@Column(name = "module_version")
 	private String moduleVersion;
-	
+
 	@Column(name = "operation_name")
 	private String operationName;
-		
+
 	@Column(name = "step_no")
 	private int stepNo;
-	
+
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.EAGER)
 	@Fetch(value = FetchMode.SELECT)
 	@JoinColumn(name = "output_variable_id")
 	private Variable<?> outputVariable;
-	
+
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "chain_id")
 	private ProcessingChain processingChain;
-	
+
 	@JsonSerialize(using = ParameterMapJsonSerializer.class)
-	@Type(type="org.openforis.calc.persistence.hibernate.JsonParameterMapType")
+	@Type(type = "org.openforis.calc.persistence.hibernate.JsonParameterMapType")
 	@Column(name = "parameters")
 	private ParameterMap parameters;
 
@@ -70,13 +69,13 @@ public class CalculationStep extends UserObject {
 	public CalculationStep() {
 		this.parameters = new ParameterHashMap();
 	}
-	
+
 	public Integer getOutputVariableId() {
-		return outputVariable == null ? null: outputVariable.getId();
+		return outputVariable == null ? null : outputVariable.getId();
 	}
-	
+
 	public Integer getOutputEntityId() {
-		return outputVariable == null ? null: outputVariable.getEntity().getId();
+		return outputVariable == null ? null : outputVariable.getEntity().getId();
 	}
 
 	public ProcessingChain getProcessingChain() {
@@ -118,43 +117,60 @@ public class CalculationStep extends UserObject {
 	public int getStepNo() {
 		return this.stepNo;
 	}
-	
+
 	public Variable<?> getOutputVariable() {
 		return outputVariable;
 	}
-	
+
 	public void setOutputVariable(Variable<?> outputVariable) {
 		this.outputVariable = outputVariable;
 	}
-	
+
 	public void setProcessingChain(ProcessingChain chain) {
 		this.processingChain = chain;
 	}
-	
+
 	public String getScript() {
 		return script;
 	}
-	
+
 	public void setScript(String script) {
 		this.script = script;
-	}		
-	
+	}
+
 	@Override
 	public String toString() {
 		return String.format("#%d: %s:%s:%s", stepNo, moduleName, operationName, moduleVersion);
 	}
-	
-	public Set<String> getInputVariables() {
-		Set<String> variables = new HashSet<String>();
-		Pattern p = Pattern.compile(VARIABLE_PATTERN);
-		Matcher m = p.matcher(getScript());
-		while (m.find()) {
-			String variable = m.group(1);
-			variables.add(variable);
-		}
-		return variables;
+
+	public RScript getRScript() {
+		Variable<?> outputVariable = this.getOutputVariable();
+		Entity entity = outputVariable.getEntity();
+		return new RScript().rScript(script, entity.getHierarchyVariables());
 	}
-	
+
+	/**
+	 * Convenience method. left here for backwards compatibility. Use
+	 * getRScript().getVariables() to get variables from script
+	 * 
+	 * @return
+	 */
+	@Deprecated
+	public Set<String> getInputVariables() {
+		return getRScript().getVariables();
+	}
+
+	// public Set<String> getInputVariables() {
+	// Set<String> variables = new HashSet<String>();
+	// Pattern p = Pattern.compile(VARIABLE_PATTERN);
+	// Matcher m = p.matcher(getScript());
+	// while (m.find()) {
+	// String variable = m.group(1);
+	// variables.add(variable);
+	// }
+	// return variables;
+	// }
+
 	public Set<String> getVariables() {
 		Set<String> variables = getInputVariables();
 		variables.add(getOutputVariable().getName());

@@ -3,7 +3,15 @@
  */
 package org.openforis.calc.r;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.openforis.calc.metadata.Variable;
 
 /**
  * @author Mino Togna
@@ -23,17 +31,31 @@ public class RScript {
 	private RScript previous;
 	// stringbuilder that contains the script
 	private StringBuilder sb;
+	/**
+	 * If true, consider the script as a single executable one
+	 * otherwise consider the script as a parameter of another script 
+	 */
 	boolean singleScript;
+	
+	private Set<String> variables;
 
 	public RScript() {
+		this((Collection<Variable<?>>)null);
+	}
+
+	public RScript(Collection<Variable<?>> variables) {
 		this(true);
+		if ( variables != null ) {
+			parseVariables(variables);
+		}
 	}
 	
 	public RScript(boolean singleScript) {
 		this.sb = new StringBuilder();
 		this.singleScript = singleScript;
+		this.variables = new HashSet<String>();
 	}
-
+	 
 	protected RScript(RScript previous) {
 		this(previous, true);
 	}
@@ -106,10 +128,25 @@ public class RScript {
 		return new RVector(this, values);
 	}
 	
+	public Try rTry(RScript... scripts) {
+		return new Try(this, scripts);
+	}
+	
+	public CheckError checkError(RVariable variable) {
+		return new CheckError(this, variable);
+	}
+	
 	// simple text passed as script. no parsing done here. it's assumed that the script is correct
 	public RScript rScript(String script) {
 		RScript rScript = new RScript(this);
 		rScript.append(script);
+		return rScript;
+	}
+	
+	public RScript rScript(String script, Collection<Variable<?>> variables) {
+		RScript rScript = new RScript(this);
+		rScript.append(script);
+		rScript.parseVariables(variables);
 		return rScript;
 	}
 	
@@ -147,22 +184,13 @@ public class RScript {
 		return sb.toString();
 	}
 
+	// =====================================
+	// getters, hash code and equals methods
+	// =====================================
+	public Set<String> getVariables() {
+		return variables;
+	}
 	
-	// =====================================
-	// getters and setters
-	// =====================================
-	
-	// return connection name of root script
-//	protected String getConnection() {
-//		if(previous != null) {
-//			return previous.getConnection();
-//		}
-//		return connection;
-//	}
-	
-	// =====================================
-	// hash code and equals methods
-	// =====================================
 	public int hashCode() {
 		return toString().hashCode();
 	}
@@ -187,5 +215,34 @@ public class RScript {
 	protected void reset() {
 		this.sb = new StringBuilder();
 	}
-
+	
+	private void parseVariables(Collection<Variable<?>> variables) {
+		String script = this.toScript();
+		for (Variable<?> variable : variables) {
+			String variableName = variable.getName();
+			if(script.contains(variableName)){
+				this.variables.add(variableName);
+			}
+			
+		}
+		//TODO find a pattern 
+//		Pattern p = Pattern.compile(CalculationStep.VARIABLE_PATTERN);
+//		Matcher m = p.matcher(script);
+//		while (m.find()) {
+//			String variable = m.group(1);
+//			variables.add(variable);
+//		}
+	}
+	
+	public static RScript getCalcRScript(){
+		InputStream stream = RScript.class.getClassLoader().getResourceAsStream("org/openforis/calc/r/functions.R");
+		try {
+			String string = IOUtils.toString(stream);
+			RScript rScript = new RScript().rScript(string);
+			return rScript;
+		} catch (IOException e) {
+			throw new IllegalStateException("unable to find org/openforis/calc/r/functions.R", e);
+		}
+	}
+	
 }
