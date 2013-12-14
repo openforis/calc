@@ -90,12 +90,18 @@ JobStatus.prototype = (function() {
 				div.hide();
 				div.html(textLine);
 				$this.log.append(div);
-				setTimeout(function(){
+//				setTimeout(function(){
 					div.fadeIn(300);
-					$this.log.stop().animate({
-						scrollTop: div.offset().top
-					}, 500);
-				}, (delay+=50) );
+					// scroll only at the end
+					if(i == newLines.length-1){
+						setTimeout(function(){
+							$this.log.stop().animate({
+								scrollTop: div.offset().top
+							}, 0);
+						}, 1000);
+					}
+//				}, (delay+=50) );
+
 			});
 		}
 		
@@ -185,20 +191,21 @@ JobStatus.prototype = (function() {
 					$this.logBtn.removeClass("option-btn-selected");
 					$this.logBtn.addClass("option-btn");
 					
-					$this.logSection.animate({ height: "80px" }, 600);
+					$this.logSection.animate({ height: "80px" }, 1000);
 					setTimeout(function(){
-						$this.log.fadeOut(500);
-					},500); 
+//						$this.log.fadeOut(500);
+						$this.log.animate({ opacity: ".2" }, 1000);
+					},1000); 
 					
 				} else {
 					// show log
 					$this.logBtn.removeClass("option-btn");
 					$this.logBtn.addClass("option-btn-selected");
 					
-					// TODO update logSection height on window resize
 					var height = $(document).height() / 5;
-					$this.logSection.animate({ height: height }, 600);
-					$this.log.fadeIn(200);
+					$this.logSection.animate({ height: height }, 1000);
+					$this.log.animate({ opacity: "1" }, 1000);
+//					$this.log.fadeIn(200);
 				}
 			});
 		}
@@ -208,15 +215,15 @@ JobStatus.prototype = (function() {
 	
 	// reset its internal state
 	var reset = function() {
-		this.status.html( "Waiting for job to start" );
+		this.status.html( "Waiting execution status?" );
 		this.tasks.empty();
 
 		// empty log
 		this.logSection.hide();
 		this.log.empty();
-		
+		this.log.css({ opacity: "1" });
 		this.logBtn.off("click");
-		
+		UI.enable( this.logBtn );
 		//(3 below lines) let's leave the last ui status. maybe users don't want to see the log? and always have to click it? 
 //		this.log.show();
 //		this.logBtn.removeClass("option-btn");
