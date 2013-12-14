@@ -40,9 +40,9 @@ public class CalcRTask extends Task {
 	@Override
 	protected void execute() throws Throwable {
 		RLogger logger = getJobLogger();
-		rEnvironment.eval( toString(), logger );
+		rEnvironment.eval(toString(), logger);
 
-		// an R error has been logged
+		// an R error has been detected by the logger
 		if (logger.containsCalcErrorSignal()) {
 			throw new RException("R error while evaluating " + this.name);
 		}
@@ -50,7 +50,7 @@ public class CalcRTask extends Task {
 
 	private RLogger getJobLogger() {
 		CalcJob job = (CalcJob) getJob();
-		RLogger logger = job.getLogger();
+		RLogger logger = job.getRLogger();
 		return logger;
 	}
 

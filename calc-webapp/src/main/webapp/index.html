@@ -106,54 +106,6 @@
 	</div>
   	
 	<!--  ==== End container ==== -->
-
-
-
-	<!-- ==== Job Status modal section ==== -->
-	<div class="modal fade" id="job-status">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h4 class="modal-title"></h4>
-				</div>
-				<div class="modal-body"></div>
-				<div class="modal-footer hide">
-					<div class="row log">
-						<div class="col-md-2">
-							<button type="button" class="btn option-btn" style="">Console</button>
-						</div>
-						<div class="col-md-8 console">
-						</div>
-					</div>
-					<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Close</button>
-				</div>
-			</div><!-- /.modal-content -->
-		</div><!-- /.modal-dialog -->
-	</div><!-- /.modal -->
-
-	<div class="row task-status hide">
-   		<div class="col-md-1 number"></div>
-   		<div class="col-md-6 name"></div>
-   		<div class="col-md-4">
-   			<div class="progress"> 
-				<div class="progress-bar"></div>
-			</div>
-   		</div> 
-   		<div class="col-md-1 percent">
-   		</div>
-	</div>
-	<!-- ==== End Job Status modal section ==== -->
-	
-	<!-- ==== UI lock modal section ==== -->
-	<div id="ui-lock-modal" class="modal fade">
-		<div class="modal-dialog">
-			<div class="progress progress-striped active"> 
-				<div class="progress-bar progress-bar-info" style="width: 100%"></div>
-			</div>
-		</div>
-	</div>
-	<!-- ==== End UI lock modal section ==== -->
-	
 	<!--  ==== Footer ==== -->
 	<footer id="footer">
 		<div class="row">
@@ -179,7 +131,51 @@
 		</div>
 	</footer>
 	<!--  ==== End Footer ==== -->
+
+	<!-- ==== Job Status modal section ==== -->
+	<div class="modal fade" id="job-status">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title status"></h4>
+				</div>
+				<div class="modal-body"></div>
+				<div class="modal-footer">
+					<div class="row log-section">
+						<div class="col-md-2">
+							<button type="button" class="btn option-btn-selected toggle-log-btn">Log</button>
+						</div>
+						<div class="col-md-8 log">
+						</div>
+					</div>
+					<button type="button" class="btn btn-default close-btn" data-dismiss="modal" aria-hidden="true">Close</button>
+				</div>
+			</div><!-- /.modal-content -->
+		</div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+
+	<div class="row task-status" id="task-status">
+   		<div class="col-md-1 number"></div>
+   		<div class="col-md-6 name"></div>
+   		<div class="col-md-4">
+   			<div class="progress"> 
+				<div class="progress-bar"></div>
+			</div>
+   		</div> 
+   		<div class="col-md-1 percent">
+   		</div>
+	</div>
+	<!-- ==== End Job Status modal section ==== -->
 	
+	<!-- ==== UI lock modal section ==== -->
+	<div id="ui-lock-modal" class="modal fade">
+		<div class="modal-dialog">
+			<div class="progress progress-striped active"> 
+				<div class="progress-bar progress-bar-info" style="width: 100%"></div>
+			</div>
+		</div>
+	</div>
+	<!-- ==== End UI lock modal section ==== -->
 	
 	<!--  ==== data visualization component ==== -->
 	<div class="data-visualization" id="data-visualization">
@@ -295,11 +291,12 @@
 	<script src="./js/calc/calc-ui-form.js"></script>
 	<script src="./js/calc/calc-autocomplete.js"></script>
 	<script src="./js/calc/r-script.js"></script>
-	<!-- ui components -->
-	<script src="./js/calc/ui/progress-bar.js"></script>
-	
 
 	<script src="./js/calc/ui/jquery-ext.js"></script>
+
+	<!-- ui components -->
+	<script src="./js/calc/ui/progress-bar.js"></script>
+	<script src="./js/calc/ui/job-status.js"></script>
 	
 	<!-- model objects -->
 	<script src="./js/calc/model/workspace.js"></script>

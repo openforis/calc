@@ -176,6 +176,25 @@ WorkspaceManager.prototype = (function(){
 	};
 	
 	/**
+	 * check if the active workspace is locked
+	 */
+	var activeWorkspaceIsLocked = function(complete) {
+		var $this = this;
+		$this.activeWorkspace(function(ws){
+			
+			$.ajax({
+				url : "rest/workspace/active/locked.json",
+				dataType : "json",
+				method : "GET"
+			}).done(function(response) {
+				var locked = response.fields.locked;
+				complete(locked);
+			});
+			
+		});
+	};
+	
+	/**
 	 * Private function to
 	 * Set the active workspace and calls the callback function if present
 	 */
@@ -205,6 +224,8 @@ WorkspaceManager.prototype = (function(){
 		activeWorkspaceAddQuantitativeVariable : activeWorkspaceAddQuantitativeVariable
 		,
 		activeWorkspaceSetEntityPlotArea : activeWorkspaceSetEntityPlotArea
+		,
+		activeWorkspaceIsLocked : activeWorkspaceIsLocked
 	};
 	
 })();

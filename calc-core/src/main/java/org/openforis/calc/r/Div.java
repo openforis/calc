@@ -17,7 +17,9 @@ public class Div extends RScript {
 		append( SPACE );
 		append( "/" );
 		append( SPACE );
+		append("(");
 		append(denumenator.toScript());
+		append(")");
 		append(")");
 		
 	}

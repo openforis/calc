@@ -27,23 +27,23 @@ import org.springframework.transaction.PlatformTransactionManager;
  * 
  * @author G. Miceli
  * @author M. Togna
- *
+ * 
  */
 @Component
 public class TaskManager {
-	
+
 	@Autowired
 	private PlatformTransactionManager txManager;
-	
+
 	@Autowired
 	private Executor taskExecutor;
-	
+
 	@Autowired
 	private WorkspaceService workspaceManager;
-	
-	@Autowired 
+
+	@Autowired
 	private BeanFactory beanFactory;
-	
+
 	@Autowired
 	private DataSource dataSource;
 
@@ -54,9 +54,9 @@ public class TaskManager {
 	private ModuleRegistry moduleRegistry;
 
 	private Map<Integer, Job> jobs;
-	
+
 	private Map<String, Job> jobsById;
-	
+
 	public TaskManager() {
 		jobs = new HashMap<Integer, Job>();
 		jobsById = new HashMap<String, Job>();
@@ -64,24 +64,23 @@ public class TaskManager {
 
 	// TODO move to.. where?
 	protected boolean isDebugMode() {
-		String mode = ((ConfigurableBeanFactory)beanFactory).resolveEmbeddedValue("${calc.debugMode}");
+		String mode = ((ConfigurableBeanFactory) beanFactory).resolveEmbeddedValue("${calc.debugMode}");
 		return "true".equals(mode);
 	}
-	
-	
+
 	/**
 	 * Create a job with write-access to the calc schema. Used for updating
-	 * metadata (e.g. importing sampling design, variables)  
+	 * metadata (e.g. importing sampling design, variables)
 	 */
 	public CalcJob createCalcJob(Workspace workspace) {
 		CalcJob job = new CalcJob(workspace, dataSource, this.beanFactory);
-		((AutowireCapableBeanFactory)beanFactory).autowireBean(job);
+		((AutowireCapableBeanFactory) beanFactory).autowireBean(job);
 		return job;
 	}
-	
+
 	/**
 	 * Create a job with write-access to the calc schema. Used for updating
-	 * metadata (e.g. importing sampling design, variables)  
+	 * metadata (e.g. importing sampling design, variables)
 	 */
 	public Job createJob(Workspace workspace) {
 		Job job = new Job(workspace, dataSource);
@@ -93,11 +92,11 @@ public class TaskManager {
 	public <T extends Task> T createTask(Class<T> type) {
 		try {
 			T task = type.newInstance();
-			((AutowireCapableBeanFactory)beanFactory).autowireBean(task);
+			((AutowireCapableBeanFactory) beanFactory).autowireBean(task);
 			return task;
-		} catch ( InstantiationException e ) {
+		} catch (InstantiationException e) {
 			throw new IllegalArgumentException("Invalid task " + type.getClass(), e);
-		} catch ( IllegalAccessException e ) {
+		} catch (IllegalAccessException e) {
 			throw new IllegalArgumentException("Invalid task " + type.getClass(), e);
 		}
 	}
@@ -106,7 +105,7 @@ public class TaskManager {
 		List<Task> tasks = new ArrayList<Task>();
 		List<CalculationStep> steps = chain.getCalculationSteps();
 		for (CalculationStep step : steps) {
-			CalculationStepTask task = createCalculationStepTask(step);			
+			CalculationStepTask task = createCalculationStepTask(step);
 			tasks.add(task);
 		}
 		return tasks;
@@ -114,8 +113,8 @@ public class TaskManager {
 
 	public CalculationStepTask createCalculationStepTask(CalculationStep step) throws InvalidProcessingChainException {
 		Operation<?> operation = moduleRegistry.getOperation(step);
-		if ( operation == null ) {
-			throw new InvalidProcessingChainException("Unknown operation in step "+step);
+		if (operation == null) {
+			throw new InvalidProcessingChainException("Unknown operation in step " + step);
 		}
 		Class<? extends CalculationStepTask> taskType = operation.getTaskType();
 		CalculationStepTask task = createTask(taskType);
@@ -128,8 +127,7 @@ public class TaskManager {
 	 * 
 	 * @param job
 	 */
-	synchronized
-	public void startJob(final Job job) throws WorkspaceLockedException {
+	synchronized public void startJob(final Job job) throws WorkspaceLockedException {
 		job.init();
 		final Workspace ws = job.getWorkspace();
 		final SimpleLock lock = workspaceManager.lock(ws.getId());
@@ -139,7 +137,7 @@ public class TaskManager {
 			@Override
 			public void run() {
 				try {
-			    	job.run();
+					job.run();
 				} finally {
 					lock.unlock();
 				}
@@ -147,18 +145,16 @@ public class TaskManager {
 		});
 	}
 
-	synchronized
-	public Job getJob(int workspaceId) {
+	synchronized public Job getJob(int workspaceId) {
 		Job job = jobs.get(workspaceId);
 		return job;
 	}
-	
-	synchronized
-	public Job getJobById(String id) {
+
+	synchronized public Job getJobById(String id) {
 		Job job = jobsById.get(id);
 		return job;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public List<Task> createTasks(Class<?>... types) {
 		List<Task> tasks = new ArrayList<Task>();
@@ -168,7 +164,7 @@ public class TaskManager {
 		}
 		return tasks;
 	}
-	
+
 	protected DataSource getDataSource() {
 		return dataSource;
 	}

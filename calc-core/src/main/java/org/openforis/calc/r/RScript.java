@@ -115,8 +115,8 @@ public class RScript {
 		return new Try(this, scripts);
 	}
 	
-	public CheckError checkError(RVariable variable) {
-		return new CheckError(this, variable);
+	public CheckError checkError(RVariable variable, RVariable connection) {
+		return new CheckError(this, variable, connection);
 	}
 	
 	// simple text passed as script. no parsing done here. it's assumed that the script is correct
