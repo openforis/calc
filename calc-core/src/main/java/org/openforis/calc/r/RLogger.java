@@ -39,7 +39,7 @@ public class RLogger {
 
 	
 	public void append(int oType, String text) {
-		if ( StringUtils.isNotBlank(text) && !text.equals("[1]") ) {
+		if ( StringUtils.isNotEmpty(text) && !text.equals("[1]") ) {
 			// check if there has been an error
 			if (CALC_ERROR_SIGNAL.equals(text.trim())) {
 				this.containsCalcErrorSignal = true;
@@ -56,6 +56,9 @@ public class RLogger {
 			Matcher matcher = LINE_PATTERN.matcher(text);
 			while( matcher.find() ){
 				String lineText = matcher.group(1);
+				if(lineText.contains("\\")){
+					System.out.println("aaaa");
+				}
 				RLoggerLine line = new RLoggerLine(this.tempLine.oType, lineText);
 				this.lines.add(line);
 			}

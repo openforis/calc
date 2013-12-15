@@ -833,7 +833,10 @@ ul.ui-sortable li {
 }
 #job-status .log .row span.space {
 	display: inline-block;
-	visibility: hidden;
+/* 	visibility: hidden; */
+	width: 0.6em;
+	text-align: right;
+/* 	letter-spacing: 0.24em; */
 /*     background: radial-gradient(circle, #FFF, rgba(192,192,0,0) 1px); */
 }
 	

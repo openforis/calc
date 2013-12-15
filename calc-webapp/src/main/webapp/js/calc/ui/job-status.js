@@ -59,19 +59,20 @@ JobStatus.prototype = (function() {
 					case "RUNNING":
 						progressBar.progressStriped();
 						break;
-					case "FAILED":
-						progressBar.progressDanger();
-						break;
+//					case "FAILED":
+//						progressBar.progressDanger();
+//						break;
 					case "COMPLETED":
 						progressBar.progressSuccess();
 						break;
 					default:
 				}
-			} else {
-				if(task.status == "FAILED") {
-					progressBar.progressDanger();
-				}
 			}
+//			else {
+			if(task.status == "FAILED") {
+				progressBar.progressDanger();
+			}
+//			}
 
 		});
 		
@@ -84,11 +85,28 @@ JobStatus.prototype = (function() {
 			var newLines = lines.slice(processedLines, lines.length);
 			$.each(newLines, function(i, line){
 				// just faking spaces
-				var textLine = "> " + line.text.replace(/ /g, '<span class="space">|</span>');//.replace(/[\s]/g, "\u0020");;
-
+				var textLine = "<span>" + line.text.replace(/ /g, '<span class="space">&nbsp;</span>')  + "</span>";//.replace(/[\s]/g, "\u0020");;
+				
 				var div = $('<div class="row"></div>');
 				div.hide();
-				div.html(textLine);
+				
+				var match = line.text.match(/.{1}/);
+//				$.each(line.text, function(i, line){
+				for(var k = 0; k< line.text.length; k++ ){
+					var char = line.text[k];
+//					console.log("char " + k);
+					var span =$('<span class="space"></span>');
+//					span.html( char.replace(/ /g,'&nbsp') );
+					span.html( char );
+					div.append(span);
+//					console.log(char);
+				}
+//				});
+				
+//				var s = $("<span>> </span>");
+//				s.disableSelection();
+//				div.append( s );
+//				div.append( $(textLine) );
 				$this.log.append(div);
 //				setTimeout(function(){
 					div.fadeIn(300);
@@ -168,13 +186,40 @@ JobStatus.prototype = (function() {
 			}, (delay+=50) );
 		});
 		
+		// init r logger if calcjob
 		if( $this.job.rlogger ) {
-			// init logger 
-			var height = $(document).height() / 5;
-			$this.logSection.css({"height":height});
-			$this.logSection.fadeIn(500);
+			// show log section
+			$this.logSection.show();
+			if( $this.logBtn.hasClass("option-btn-selected") ){
+				// set logSection height
+				var height = $(document).height() / 5;
+				$this.logSection.css({"height":height});
+			}
 			
-			// add on resize window handler 
+			var clickFunction = function(e){
+				if( $this.logBtn.hasClass("option-btn-selected") ){
+					// click to hide log
+					$this.logBtn.removeClass("option-btn-selected");
+					$this.logBtn.addClass("option-btn");
+					
+					$this.logSection.animate({ height: "80px" }, 800);
+					setTimeout(function(){
+						$this.log.animate({ opacity: ".2" }, 800);
+					},800); 
+					
+				} else {
+					// click to show log
+					$this.logBtn.removeClass("option-btn");
+					$this.logBtn.addClass("option-btn-selected");
+					
+					var height = $(document).height() / 5;
+					$this.logSection.animate({ height: height }, 800);
+					$this.log.animate({ opacity: "1" }, 800);
+				}	
+			};
+			$this.logBtn.on("click", clickFunction);
+			
+			// resize log on window resize
 			$this.updateLogSectionHeight = function() {
 				console.log("resize");
 				if( $this.logBtn.hasClass("option-btn-selected") ){
@@ -184,30 +229,6 @@ JobStatus.prototype = (function() {
 			};
 			$(window).on("resize", $this.updateLogSectionHeight);
 			
-			
-			$this.logBtn.on("click", function(e){
-				if( $this.logBtn.hasClass("option-btn-selected") ){
-					// hide log
-					$this.logBtn.removeClass("option-btn-selected");
-					$this.logBtn.addClass("option-btn");
-					
-					$this.logSection.animate({ height: "80px" }, 1000);
-					setTimeout(function(){
-//						$this.log.fadeOut(500);
-						$this.log.animate({ opacity: ".2" }, 1000);
-					},1000); 
-					
-				} else {
-					// show log
-					$this.logBtn.removeClass("option-btn");
-					$this.logBtn.addClass("option-btn-selected");
-					
-					var height = $(document).height() / 5;
-					$this.logSection.animate({ height: height }, 1000);
-					$this.log.animate({ opacity: "1" }, 1000);
-//					$this.log.fadeIn(200);
-				}
-			});
 		}
 	};
 	
@@ -221,7 +242,7 @@ JobStatus.prototype = (function() {
 		// empty log
 		this.logSection.hide();
 		this.log.empty();
-		this.log.css({ opacity: "1" });
+//		this.log.css({ opacity: "1" });
 		this.logBtn.off("click");
 		UI.enable( this.logBtn );
 		//(3 below lines) let's leave the last ui status. maybe users don't want to see the log? and always have to click it? 

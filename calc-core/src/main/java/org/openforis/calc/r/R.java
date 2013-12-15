@@ -106,14 +106,14 @@ public class R {
 
 			REXP rexp = engine.parseAndEval(expr, env, resolve);
 
-			// after execution unregister logger
-			this.rStdOutputListner.unregisterLogger(logger);
-
 			return rexp;
 		} catch (REXPMismatchException e) {
 			throw new RException(e);
 		} catch (REngineException e) {
 			throw new RException(e);
+		} finally {
+			// after execution unregister logger
+			this.rStdOutputListner.unregisterLogger(logger);
 		}
 	}
 
