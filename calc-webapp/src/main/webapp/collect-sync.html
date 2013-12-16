@@ -55,7 +55,7 @@ $(function(){
 	    	$progressPercent.html(percentVal);
 	    },
 	    success: function ( json ) {
-	    	checkJobStatus(function() {
+	    	JobManager.getInstance().checkJobStatus(function() {
 	    		homeCalculationManager.updateSteps();
 	    	});
 	    },

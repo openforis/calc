@@ -51,12 +51,12 @@ CalculationStepExecManager.prototype = (function() {
 		 */
 		//start step execution on click
 		this.execButton.click(function(e) {
-			UI.disableAll();
+//			UI.disableAll();
 			$this.jobManager.executeCalculationStep(
 					$this.calculationStep.id, 
 					// on complete show results
 					function(job) {
-						UI.enableAll();
+//						UI.enableAll();
 						
 						// create instance of data provider
 						var entityId = $this.calculationStep.outputEntityId;

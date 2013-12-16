@@ -14,29 +14,43 @@ ProgressBar = function(container, percent) {
 ProgressBar.prototype = (function() {
 	
 	// update progress bar 
-	var update = function( completed, total ){
+	var update = function( completed, total ) {
 		this.progressBar.addClass("progress-bar-info");
 		
-		var percent = (total > 0 ) ?  parseInt(completed / total * 100) : -1 ;
+		if( completed > 0 ) {
+			var percent = (total > 0 ) ?  parseInt(completed / total * 100) : -1 ;
+			
+			// update progress bar
+			if( percent >= 0 ){ 
+				this.progressBar.width( percent + "%" );
+			} else {
+//				this.progressBar.parent().addClass("active progress-striped");
+//				this.progressBar.width("100%");
+				this.progressStriped();
+			}
+			
+			// update percent text if set
+			if( this.percentSection ){
+				var htmlPercent = (percent >= 0) ? percent + " %" : " -% ";
+				this.percentSection.text( htmlPercent );
+			}
+		} 
+//		else {
+//			if( this.percentSection ){
+//				this.percentSection.text( " -% " );
+//			}
+//		}
 		
-		if( percent >= 0 ){ 
-			this.progressBar.width( percent + "%" );
-		} else {
-			this.progressBar.parent().addClass("active progress-striped");
-			this.progressBar.width("100%");
-		}
 		
-		// update percent text if set
-		if( this.percentSection ){
-			var htmlPercent = (percent >= 0) ? percent + " %" : " -% ";
-			this.percentSection.text( htmlPercent );
-		}
-		// if completed added success class
-		if( completed == total ){
-			this.progressBar.removeClass();
-			this.progressBar.addClass("progress-bar progress-bar-success");
-			this.progressBar.width("100%");
-			this.percentSection.text("100%");
+		// if completed add success class
+		if( completed == total ) {
+			this.progressSuccess();
+//			this.progressBar.removeClass();
+//			this.progressBar.addClass("progress-bar progress-bar-success");
+//			this.progressBar.width("100%");
+			if( this.percentSection ){
+				this.percentSection.text("100%");
+			}
 		}
 	};
 	
@@ -48,12 +62,38 @@ ProgressBar.prototype = (function() {
 		this.progressBar.parent().addClass("progress");
 	};
 	
+	// utility methos
+	var progressStriped = function(){
+		this.reset();
+		this.progressBar.parent().addClass("active progress-striped");
+		this.progressBar.addClass("progress-bar progress-bar-info");
+		this.progressBar.width("100%");
+	};
+	
+	var progressSuccess = function() {
+		this.reset();
+		this.progressBar.addClass("progress-bar progress-bar-success");
+		this.progressBar.width("100%");
+	};
+	
+	var progressDanger = function() {
+		this.reset();
+		this.progressBar.addClass("progress-bar progress-bar-danger");
+		this.progressBar.width("100%");
+	};
+	
 	return {
 		constructor : ProgressBar
 		,
 		update : update
 		,
 		reset : reset
+		, 
+		progressStriped : progressStriped
+		, 
+		progressSuccess : progressSuccess
+		,
+		progressDanger : progressDanger
 	};
 	
 })();

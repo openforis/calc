@@ -132,4 +132,16 @@ public class WorkspaceController {
 		entity = workspaceService.setEntityPlotAreaScript(entity, plotAreaScript);
 		return entity;
 	}
+	
+	@RequestMapping(value = "/active/locked.json", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	Response activeWorkspaceIsLocked() {
+		Workspace workspace = getActiveWorkspace();
+		boolean locked = workspaceService.isLocked(workspace.getId());
+		
+		Response response = new Response();
+		response.addField("locked", locked);
+		return response;
+	}
+	
 }

@@ -40,6 +40,9 @@ class RStdOutputListner extends REngineStdOutput {
 
 	void unregisterLogger(RLogger logger) {
 		if (this.logger == logger) {
+			if (this.logger != null) {
+				this.logger.flush();
+			}
 			this.logger = null;
 		}
 

@@ -23,6 +23,8 @@ public abstract class Worker {
 	private long itemsProcessed;
 	private long itemsSkipped;
 	private long totalItems;
+	//  deserializing it into json might cause problems
+	@JsonIgnore
 	private Throwable lastException;
 	// TODO can use 'transient' Java keyword instead?
 	@JsonIgnore

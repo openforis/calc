@@ -54,7 +54,6 @@ HomeCalculationManager.prototype = (function() {
 		this.executeBtn.click(function(e){
 			JobManager.getInstance().execute(function(response){
 //				console.log("response. executed?!");
-//				checkJobStatus();
 			});
 		});
 	};
