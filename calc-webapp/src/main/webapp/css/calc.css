@@ -655,12 +655,11 @@ ul.scroll-menu {
 	height: 10%;
 }
 #step-edit-page #calculation-step-exec-container .test {
-	height: 65%;
 	padding-bottom : 5em;
 	padding-top : 5em;
 }
 #step-edit-page #calculation-step-exec-container .test .progress-bar-section {
-		display: none;
+	display: none;
 }
 
 #step-edit-page #calculation-step-exec-container .exec {
@@ -678,6 +677,10 @@ ul.scroll-menu {
 
 #calculation-step-exec-container .test-input-var {
 	padding-bottom: 0.5em;
+}
+
+#calculation-step-exec-container .test-input-var .form-group.small input {
+	width: 100%;
 }
 
 /**

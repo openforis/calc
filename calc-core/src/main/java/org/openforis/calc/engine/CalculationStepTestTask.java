@@ -70,16 +70,19 @@ public class CalculationStepTestTask extends CalculationStepTask {
 
 		REnvironment rEnvironment = r.newEnvironment();
 		
+		//generate all possible combinations with provided variable settings
 		List<List<?>> allCombinations = generateAllVariablesCombinations();
 
 		RScript rScript = r();
-		
-		RDataFrame dataFrame = createTestDataFrame(allCombinations);
+		//create data frame
+		RDataFrame df = createTestDataFrame(allCombinations);
 		
 		RVariable dfVar = r().variable(getEntity().getName());
 		
-		rScript = rScript.setValue(dfVar, dataFrame);
+		//assign data frame to dfVar
+		rScript = rScript.setValue(dfVar, df);
 		
+		//define outputVariable
 		RVariable outputRVar = r().variable(dfVar, outputVariableName);
 		
 		//assign script result to output variable column in data frame
@@ -91,10 +94,10 @@ public class CalculationStepTestTask extends CalculationStepTask {
 		//set values into result data records
 		String[] resultValues = rEnvironment.evalStrings(outputRVar.toString());
 		
-		updateResults(outputVariableName, allCombinations, resultValues);
+		generateResults(outputVariableName, allCombinations, resultValues);
 	}
 
-	private void updateResults(String outputVariableName, List<List<?>> rows, String[] resultValues) {
+	private void generateResults(String outputVariableName, List<List<?>> rows, String[] resultValues) {
 		results = new Vector<DataRecord>();
 
 		for ( int rowIdx=0; rowIdx<rows.size(); rowIdx++ ) {
