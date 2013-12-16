@@ -272,3 +272,20 @@ UI.Form.validation.numeric = function($field, label) {
 		return true;
 	}
 };
+
+/**
+ * Returns true if the field value is greater than the specified value, otherwise returns false and adds error feedback to the field
+ */
+UI.Form.validation.greaterThan = function($field, label, value) {
+	var $formGroup = $field.closest(".form-group");
+	$formGroup.removeClass('has-error');
+	var val = $field.val();
+	var number = Number(val);
+	if ( number > value ) {
+		return true;
+	} else {
+		$formGroup.addClass('has-error');
+		UI.Form.createErrorTooltip($field, "Must be greather than " + value);
+		return false;
+	}
+};

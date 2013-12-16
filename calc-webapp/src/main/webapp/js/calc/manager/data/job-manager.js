@@ -32,6 +32,26 @@ JobManager.prototype = (function(){
 		});
 	};
 	
+	/**
+	 * execute a job for testing the calculation step with id stepId
+	 */
+	var executeCalculationStepTest = function(stepId, complete, variableParameters, hideOnComplete) {
+		var $this = this;
+		var data = {stepId: stepId, variables: JSON.stringify(variableParameters)};
+		$.ajax({
+			url : $this.contextPath + "/test/execute.json",
+			type: "POST", 
+			data: data,
+			dataType:"json"
+		}).done(function(job) {
+			complete(job);
+		})
+		.error(function(e){
+			console.log("error!!! on exec");
+			console.log(e);
+		});
+	};
+	
 	// execute all steps for active workspace
 	var execute = function(complete) {
 		var $this = this;
@@ -57,6 +77,8 @@ JobManager.prototype = (function(){
 		WorkspaceManager.getInstance().activeWorkspaceIsLocked(function(locked){
 			if(locked === true) {
 				$.proxy(start, $this)(null, complete, hideOnComplete);
+			} else if ( complete ) {
+				complete();
 			}
 		});
 	};
@@ -121,6 +143,8 @@ JobManager.prototype = (function(){
 		constructor : JobManager
 		,
 		executeCalculationStep : executeCalculationStep
+		,
+		executeCalculationStepTest : executeCalculationStepTest
 		,
 		execute : execute
 		,

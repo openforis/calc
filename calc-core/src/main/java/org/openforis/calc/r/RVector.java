@@ -15,17 +15,17 @@ import java.util.List;
 public class RVector extends RScript {
 
 	private List<Object> values ;
-	public RVector(RScript previous, Object... values) {
-		this(previous, true, values);
-	}
 	
-	public RVector(RScript previous, boolean singleScript, Object... values) {
-		super(previous, singleScript);
+	public RVector(RScript previous, Object... values) {
+		super(previous);
+		
 		this.values = new ArrayList<Object>(Arrays.asList(values));
-		buildScript();
+		
+		createVector();
 	}
 
-	protected void buildScript() {
+	//TODO now only strings and numbers
+	protected void createVector() {
 		append("c(");
 		Iterator<Object> iterator = this.values.iterator();
 		while(iterator.hasNext()) {
@@ -47,8 +47,7 @@ public class RVector extends RScript {
 	public RVector addValue(Object value) {
 		this.values.add(value);
 		reset();
-		//TODO rebuild even previous scripts
-		buildScript();
+		createVector();
 		return this;
 	}
 	

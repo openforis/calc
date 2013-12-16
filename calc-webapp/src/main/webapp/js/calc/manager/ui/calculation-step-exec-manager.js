@@ -74,34 +74,36 @@ CalculationStepExecManager.prototype = (function() {
 		//validate parameters and starts the execution of the test
 		this.testButton.click(function(e) {
 			if ( $.proxy(validateTestSettings, $this)() ) {
-				UI.disableAll();
+				UI.lock();
 				var variablesSettings = $.proxy(extractVariablesSettings, $this)();
-				var parameters = {variables: variablesSettings};
-				$this.calculationStepManager.test(
+				$this.jobManager.executeCalculationStepTest(
 					$this.calculationStep.id,
-					parameters,
 					//on complete show results
 					function(job) {
-						UI.enableAll();
-						$this.workspaceManager.activeWorkspace(function(workspace) {
-							var entityId = $this.calculationStep.outputEntityId;
-							var entity = workspace.getEntityById(entityId);
-							var outputVariable = entity.getVariableById($this.calculationStep.outputVariableId);
-
-							var variableNames = $.map(variablesSettings, function(settings, variableName) {
-								return variableName;
-							});
-							variableNames.push(outputVariable.name);
-							
-							// instanciate data provider
-							var dataProvider = new CalculationStepTestDataProvider(job.id, entityId, variableNames);
-							
-							// once completed hide this and shows results section
-							$this.hide();
-							$this.calculationStepResultsManager.show(dataProvider);
-						});
-					}
-					, true
+						UI.unlock();
+						JobManager.getInstance().checkJobStatus(
+							function() {
+								$this.workspaceManager.activeWorkspace(function(workspace) {
+									var variableNames = $.map(variablesSettings, function(settings, variableName) {
+										return variableName;
+									});
+									var entityId = $this.calculationStep.outputEntityId;
+									var entity = workspace.getEntityById(entityId);
+									var outputVariable = entity.getVariableById($this.calculationStep.outputVariableId);
+									
+									variableNames.push(outputVariable.name);
+									
+									// instanciate data provider
+									var dataProvider = new CalculationStepTestDataProvider(job.id, entityId, variableNames);
+									
+									// once completed hide this and shows results section
+									$this.hide();
+									$this.calculationStepResultsManager.show(dataProvider);
+								});
+							}, true
+						);
+					},
+					variablesSettings
 				);
 			} else {
 				UI.showMessage("Please fix the errors in the form before proceeding.");
@@ -178,15 +180,13 @@ CalculationStepExecManager.prototype = (function() {
 	var getTestVariableNames = function(success, excludeOutputVariable) {
 		var $this = this;
 		$this.workspaceManager.activeWorkspace(function(workspace) {
+			var rScript = $this.calculationStep.rscript;
+			var variableNames = ArrayUtils.clone(rScript.variables);
 			var entity = workspace.getEntityById($this.calculationStep.outputEntityId);
-			var variables  = ArrayUtils.clone(entity.quantitativeVariables);
+			var outputVariable = entity.getVariableById($this.calculationStep.outputVariableId);
 			if ( excludeOutputVariable ) {
-				var outputVariable = ArrayUtils.getItemByProperty(variables, "id", $this.calculationStep.outputVariableId);
-				ArrayUtils.removeItem(variables, outputVariable);
+				ArrayUtils.removeItem(variableNames, outputVariable.name);
 			}
-			var variableNames = $.map( variables, function(variable) {
-				  return variable.name;
-			});
 			success(variableNames);
 		});
 	};
@@ -306,8 +306,10 @@ VariableSettingsRow.prototype = (function() {
 	var validate = function() {
 		UI.Form.removeErrors(this.rowElement);
 		var minValid = UI.Form.validation.required(this.minField, "Min") && UI.Form.validation.numeric(this.minField);
-		var maxValid = UI.Form.validation.required(this.maxField, "Max") && UI.Form.validation.numeric(this.maxField);		
-		var incrementValid = UI.Form.validation.required(this.incrementField, "Increment") && UI.Form.validation.numeric(this.incrementField);
+		var maxValid = UI.Form.validation.required(this.maxField, "Max") && UI.Form.validation.numeric(this.maxField) && 
+			UI.Form.validation.greaterThan(this.maxField, "Max", Number(this.minField.val()));
+		var incrementValid = UI.Form.validation.required(this.incrementField, "Increment") && UI.Form.validation.numeric(this.incrementField) &&
+			UI.Form.validation.greaterThan(this.incrementField, "Increment", 0);
 		return minValid && maxValid && incrementValid;
 	};
 	

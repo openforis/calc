@@ -5,7 +5,7 @@
  */
 function CalculationStepTestDataProvider(jobId, entityId, variables) {
 	// base context path for rest call
-	this.contextPath = "rest/calculationstep/test/";
+	this.contextPath = "rest/job/test/";
 	
 	this.jobId = jobId;
 	this.entityId = entityId;
@@ -19,7 +19,8 @@ CalculationStepTestDataProvider.prototype = (function() {
 	 */
 	var count = function(success) {
 		$.ajax({
-			url : this.contextPath + this.jobId + "/count.json",
+			url : this.contextPath + "results/count.json",
+			data: {jobId: this.jobId},
 			dataType : "json"
 		}).done(function(response) {
 			var cnt = response.fields.count;
@@ -32,18 +33,18 @@ CalculationStepTestDataProvider.prototype = (function() {
 	 */
 	var data = function(offset , numberOfItems , excludeNulls, variables, success) {
 		// prepare request parameters
-		var params = { offset:offset };
+		var data = { jobId: this.jobId, offset:offset };
 		if(numberOfItems) {
-			params.numberOfRows = numberOfItems;
+			data.numberOfRows = numberOfItems;
 		}
 		if(excludeNulls){
-			params.excludeNulls = excludeNulls;
+			data.excludeNulls = excludeNulls;
 		}
 		
 		$.ajax({
-			url : this.contextPath + this.jobId + "/query.json" ,
+			url : this.contextPath + "results.json" ,
 			dataType : "json",
-			data : params
+			data : data
 		}).done(function(response) {
 			success(response);
 		});

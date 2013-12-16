@@ -13,7 +13,6 @@ import org.openforis.calc.chain.InvalidProcessingChainException;
 import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.module.ModuleRegistry;
 import org.openforis.calc.module.Operation;
-import org.openforis.calc.module.r.CustomROperation;
 import org.openforis.calc.schema.Schemas;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,11 +55,11 @@ public class TaskManager {
 
 	private Map<Integer, Job> jobs;
 
-	private Map<String, Job> jobsById;
+//	private Map<String, Job> jobsById;
 
 	public TaskManager() {
 		jobs = new HashMap<Integer, Job>();
-		jobsById = new HashMap<String, Job>();
+//		jobsById = new HashMap<String, Job>();
 	}
 
 	// TODO move to.. where?
@@ -75,6 +74,15 @@ public class TaskManager {
 	 */
 	public CalcJob createCalcJob(Workspace workspace) {
 		CalcJob job = new CalcJob(workspace, dataSource, this.beanFactory);
+		((AutowireCapableBeanFactory) beanFactory).autowireBean(job);
+		return job;
+	}
+	
+	/**
+	 * Creates a job for testing a {@link CalculationStep}
+	 */
+	public CalcTestJob createCalcTestJob(Workspace workspace, CalculationStep step, ParameterMap variableParameters) throws InvalidProcessingChainException {
+		CalcTestJob job = new CalcTestJob(workspace, this.beanFactory, variableParameters);
 		((AutowireCapableBeanFactory) beanFactory).autowireBean(job);
 		return job;
 	}
@@ -123,20 +131,6 @@ public class TaskManager {
 		return task;
 	}
 
-	public CalculationStepTestTask createCalculationStepTestTask(CalculationStep step) throws InvalidProcessingChainException {
-		Operation<?> operation = moduleRegistry.getOperation(step);
-		if ( operation == null) {
-			throw new InvalidProcessingChainException("Unknown operation in step " + step);
-		}
-		if ( ! (operation instanceof CustomROperation) ) {
-			throw new InvalidProcessingChainException(String.format("Unexpected operation type (%s) in step %s. Expected %s" + 
-					operation.getName(), step.toString(), CustomROperation.class.getName()));
-		}
-		CalculationStepTestTask task = createTask(CalculationStepTestTask.class);
-		task.setCalculationStep(step);
-		return task;
-	}
-	
 	/**
 	 * Executes a job in the background
 	 * 
@@ -147,7 +141,7 @@ public class TaskManager {
 		final Workspace ws = job.getWorkspace();
 		final SimpleLock lock = workspaceManager.lock(ws.getId());
 		jobs.put(ws.getId(), job);
-		jobsById.put(job.getId().toString(), job);
+//		jobsById.put(job.getId().toString(), job);
 		taskExecutor.execute(new Runnable() {
 			@Override
 			public void run() {
@@ -165,10 +159,10 @@ public class TaskManager {
 		return job;
 	}
 
-	synchronized public Job getJobById(String id) {
-		Job job = jobsById.get(id);
-		return job;
-	}
+//	synchronized public Job getJobById(String id) {
+//		Job job = jobsById.get(id);
+//		return job;
+//	}
 
 	@SuppressWarnings("unchecked")
 	public List<Task> createTasks(Class<?>... types) {

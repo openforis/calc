@@ -31,11 +31,6 @@ public class RScript {
 	private RScript previous;
 	// stringbuilder that contains the script
 	private StringBuilder sb;
-	/**
-	 * If true, consider the script as a single executable one
-	 * otherwise consider the script as a parameter of another script 
-	 */
-	boolean singleScript;
 	
 	private Set<String> variables;
 
@@ -44,24 +39,15 @@ public class RScript {
 	}
 
 	public RScript(Collection<Variable<?>> variables) {
-		this(true);
+		this.sb = new StringBuilder();
+		this.variables = new HashSet<String>();
 		if ( variables != null ) {
 			parseVariables(variables);
 		}
 	}
 	
-	public RScript(boolean singleScript) {
-		this.sb = new StringBuilder();
-		this.singleScript = singleScript;
-		this.variables = new HashSet<String>();
-	}
-	 
 	protected RScript(RScript previous) {
-		this(previous, true);
-	}
-	
-	protected RScript(RScript previous, boolean singleScript) {
-		this(singleScript);
+		this((Collection<Variable<?>>)null);
 		this.previous = previous;
 	}
 	
@@ -175,7 +161,7 @@ public class RScript {
 			script = script.trim();
 			script = script.replaceAll("[\r\n]+","\n");
 			sb.append(script);
-			if( singleScript && !script.endsWith(";") ) {
+			if( ! script.endsWith(";") ) {
 				sb.append(";");
 			}
 			sb.append("\n");

@@ -120,8 +120,8 @@ public class CalcJob extends Job {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void initTasks() {
-
+	protected void initTasks() {
+		
 		// init task
 		CalcRTask initTask = createTask("Open database connection");
 
@@ -263,7 +263,7 @@ public class CalcJob extends Job {
 		addTask(closeConnection);
 	}
 
-	private CalcRTask createTask(String name) {
+	protected CalcRTask createTask(String name) {
 		CalcRTask task = new CalcRTask(rEnvironment, name);
 		((AutowireCapableBeanFactory) beanFactory).autowireBean(task);
 		return task;
@@ -287,4 +287,8 @@ public class CalcJob extends Job {
 		return this.rLogger;
 	}
 
+	protected REnvironment getrEnvironment() {
+		return rEnvironment;
+	}
+	
 }

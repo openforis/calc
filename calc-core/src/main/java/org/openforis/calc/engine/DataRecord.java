@@ -21,6 +21,10 @@ public class DataRecord implements Cloneable {
 	public DataRecord() {
 		fields = new LinkedHashMap<String, Object>();
 	}
+	
+	public DataRecord(int fieldsSize) {
+		fields = new LinkedHashMap<String, Object>(fieldsSize);
+	}
 
 	public DataRecord(long id) {
 		this();
