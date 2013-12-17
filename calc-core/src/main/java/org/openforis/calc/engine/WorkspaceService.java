@@ -185,20 +185,20 @@ public class WorkspaceService {
 		}
 	}
 
-	/**
-	 * Creates a column in the input schema entity table for each variable per ha defined
-	 */
-	@Transactional
-	public void addVariablePerHaColumns(Workspace ws) {
-		for (Entity entity : ws.getEntities()) {
-			for (QuantitativeVariable v : entity.getQuantitativeVariables()) {
-				QuantitativeVariable variablePerHa = v.getVariablePerHa();
-				if ( variablePerHa != null ) {
-					inputSchemaDao.addUserDefinedVariableColumn(variablePerHa);
-				}
-			}
-		}
-	}
+//	/**
+//	 * Creates a column in the input schema entity table for each variable per ha defined
+//	 */
+//	@Transactional
+//	public void addVariablePerHaColumns(Workspace ws) {
+//		for (Entity entity : ws.getEntities()) {
+//			for (QuantitativeVariable v : entity.getQuantitativeVariables()) {
+//				QuantitativeVariable variablePerHa = v.getVariablePerHa();
+//				if ( variablePerHa != null ) {
+//					inputSchemaDao.addUserDefinedVariableColumn(variablePerHa);
+//				}
+//			}
+//		}
+//	}
 	
 	public void activate(Workspace ws) {
 		workspaceDao.deactivateAll();
@@ -304,8 +304,8 @@ public class WorkspaceService {
 			variableDao.save(variablePerHa);			
 			variable = (QuantitativeVariable) variableDao.save(variable);
 			
-			addVariableColumn(variablePerHa);
-			updateEntityView(variablePerHa);
+//			addVariableColumn(variablePerHa);
+//			updateEntityView(variablePerHa);
 		}
 
 		return variable;
@@ -321,15 +321,15 @@ public class WorkspaceService {
 		QuantitativeVariable variablePerHa = variable.getVariablePerHa();
 
 		if (variablePerHa != null) {
-			dropVariableColumn(variablePerHa);
+//			dropVariableColumn(variablePerHa);
 			
 			variable.setVariablePerHa(null);
 			variableDao.delete(variablePerHa.getId());
 			variable = (QuantitativeVariable) variableDao.save(variable);
 			
-			if ( updateEntityView ) {
-				updateEntityView(variable);
-			}
+//			if ( updateEntityView ) {
+//				updateEntityView(variable);
+//			}
 		}
 
 		return variable;

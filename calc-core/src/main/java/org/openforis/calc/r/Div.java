@@ -9,7 +9,7 @@ package org.openforis.calc.r;
  */
 public class Div extends RScript {
 
-	public Div(RScript previous, RScript numerator, RScript denumenator) {
+	Div(RScript previous, RScript numerator, RScript denumenator) {
 		super(previous);
 		
 		append("(");

@@ -127,6 +127,10 @@ public class QuantitativeVariable extends Variable<BigDecimal> {
 		}
 	}
 	
+	public String getVariablePerHaName(){
+		return String.format( "%s_per_ha", getName() );
+	}
+	
 	/**
 	 * Returns the list of available aggregates for the variable
 	 * @return

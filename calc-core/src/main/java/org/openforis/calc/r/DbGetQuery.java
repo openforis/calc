@@ -14,7 +14,7 @@ public class DbGetQuery extends DbQuery {
 	 * @param rFunction
 	 * @param query
 	 */
-	public DbGetQuery(RScript previous, RVariable connection, Object query) {
+	DbGetQuery(RScript previous, RVariable connection, Object query) {
 		super(previous, "dbGetQuery", connection, query);
 	}
 

@@ -9,7 +9,7 @@ package org.openforis.calc.r;
  */
 public class DbWriteTable extends RScript {
 
-	public DbWriteTable(RScript previous, RVariable connection, String name, RVariable variable) {
+	DbWriteTable(RScript previous, RVariable connection, String name, RVariable variable) {
 		super(previous);
 		
 		append("dbWriteTable");

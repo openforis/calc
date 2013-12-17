@@ -49,7 +49,7 @@ public class CollectInputSchemaCreatorTask extends Task {
 		
 		addUserDefinedVariableColumns();
 		
-		addVariablePerHaColumns();
+//		addVariablePerHaColumns();
 		
 		createViews();
 	}
@@ -83,10 +83,10 @@ public class CollectInputSchemaCreatorTask extends Task {
 		incrementItemsProcessed();
 	}
 
-	private void addVariablePerHaColumns() {
-		workspaceService.addVariablePerHaColumns(getWorkspace());
-		incrementItemsProcessed();
-	}
+//	private void addVariablePerHaColumns() {
+//		workspaceService.addVariablePerHaColumns(getWorkspace());
+//		incrementItemsProcessed();
+//	}
 
 	private void createViews() {
 		workspaceService.createViews(getWorkspace());

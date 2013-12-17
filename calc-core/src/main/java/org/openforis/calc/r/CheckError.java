@@ -9,7 +9,7 @@ package org.openforis.calc.r;
  */
 public class CheckError extends RScript {
 
-	protected CheckError(RScript previous, RVariable variable, RVariable connection) {
+	CheckError(RScript previous, RVariable variable, RVariable connection) {
 		super(previous);
 		append("checkError(");
 		append(variable.toScript());

@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.openforis.calc.engine.DataRecord;
-
 /**
  * 
  * @author G. Miceli
@@ -32,27 +30,7 @@ public class RDataFrame extends RScript {
 		changed = true;
 	}
 	
-	public List<DataRecord> toRecords() {
-		List<DataRecord> results = new ArrayList<DataRecord>();
-		int count = 0;
-		while ( count < getRowsCount() ) {
-			DataRecord record = new DataRecord();
-			for ( int columnIndex = 0;  columnIndex < columns.size(); columnIndex++ ) {
-				RNamedVector column = columns.get(columnIndex);
-				String colName = column.getName();
-				if ( count >= column.size() ) {
-					System.out.println(String.format("Trying to access invalid position %d for column %s", count, colName));
-				}
-				Object value = column.getValue(count);
-				record.add(colName, value);
-			}
-			results.add(record);
-			count ++;
-		}
-		return results;
-	}
-	
-	public int getRowsCount() {
+	public int getSize() {
 		if ( columns == null || columns.isEmpty() ) {
 			return 0;
 		} else {

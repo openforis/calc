@@ -4,17 +4,13 @@
 package org.openforis.calc.engine;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.metadata.Variable;
-import org.openforis.calc.r.CheckError;
 import org.openforis.calc.r.RDataFrame;
 import org.openforis.calc.r.REnvironment;
 import org.openforis.calc.r.RNamedVector;
@@ -124,7 +120,26 @@ public class CalcTestJob extends CalcJob {
 			
 			//generate results
 			dataFrame.addColumn(r().c(outputVariable.getName(), (Object[]) ArrayUtils.toObject(resultValues)));
-			results = dataFrame.toRecords();
+			
+			generateResultRecords(dataFrame);
+		}
+
+		private void generateResultRecords(RDataFrame dataFrame) {
+			results = new ArrayList<DataRecord>();
+			for(int count = 0;  count < dataFrame.getSize(); count++) {
+				DataRecord record = new DataRecord();
+				List<RNamedVector> columns = dataFrame.getColumns();
+				for ( int columnIndex = 0;  columnIndex < columns.size(); columnIndex++ ) {
+					RNamedVector column = columns.get(columnIndex);
+					String colName = column.getName();
+					if ( count >= column.size() ) {
+						System.out.println(String.format("Trying to access invalid position %d for column %s", count, colName));
+					}
+					Object value = column.getValue(count);
+					record.add(colName, value);
+				}
+				results.add(record);
+			}
 		}
 
 	}
@@ -141,33 +156,20 @@ public class CalcTestJob extends CalcJob {
 		 * Generates all the possible combinations given the specified settings
 		 */
 		public RDataFrame generateCombinations() {
-			Map<String, List<?>> seriesByVariables = new HashMap<String, List<?>>();
-			for (String columnName : variableSettings.names()) {
-				ParameterMap seriesSet = variableSettings.getMap(columnName);
-				List<Double> series = generateSeries(seriesSet);
-				seriesByVariables.put(columnName, series);
-			}
-			RDataFrame result = generateAllCombinations(seriesByVariables, limit);
-			return result;
-		}
-		
-		/**
-		 * Generates all the possible combinations of the specified series of values
-		 */
-		public RDataFrame generateAllCombinations(Map<String, List<?>> seriesByName, int limit) {
-			RDataFrame dataFrame = r().dataFrame();
-
-			long total = calculateTotalCombinations(seriesByName.values());
-
+			RDataFrame result = r().dataFrame();
+			
+			long total = calculateTotalCombinations();
+			
 			//give a weight to each column (weight = previous_column_weight * series_size)
 			int currentSeriesWeight = 1;
-
-			for ( String columnName : seriesByName.keySet() ) {
-				RNamedVector column = r().c(columnName);
+			
+			for ( String varName : variableSettings.names() ) {
+				ParameterMap varSettings = variableSettings.getMap(varName);
+				List<Double> series = generateSeries(varSettings);
+				RNamedVector column = r().c(varName);
 				
-				List<?> series = seriesByName.get(columnName);
 				int currentSeriesSize = series.size();
-
+			
 				// generate column combinations
 				for(int count=1; count<=total && count<=limit; count++) {
 					//calculate series value position
@@ -178,11 +180,11 @@ public class CalcTestJob extends CalcJob {
 					
 					column.addValue(value);
 				}
-				dataFrame.addColumn(column);
+				result.addColumn(column);
 				
 				currentSeriesWeight *= currentSeriesSize;
 			}
-			return dataFrame;
+			return result;
 		}
 		
 		/**
@@ -203,17 +205,6 @@ public class CalcTestJob extends CalcJob {
 			return result;
 		}
 
-		/**
-		 * Calculates the total number of possible combinations of the series specified
-		 */
-		public long calculateTotalCombinations(Collection<List<?>> seriesList) {
-			long total = 1;
-			for (List<?> list : seriesList) {
-				total = total *= list.size();
-			}
-			return total;
-		}
-		
 		/**
 		 * Calculates the total number of possible combinations of the series that can be obtained by the specified settings 
 		 */
