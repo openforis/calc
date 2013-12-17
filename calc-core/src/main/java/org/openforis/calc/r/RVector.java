@@ -10,18 +10,20 @@ import java.util.List;
 
 /**
  * @author Mino Togna
+ * @author S. Ricci
  *
  */
 public class RVector extends RScript {
 
 	private List<Object> values ;
+	private boolean changed;
 	
 	public RVector(RScript previous, Object... values) {
 		super(previous);
 		
 		this.values = new ArrayList<Object>(Arrays.asList(values));
 		
-		createVector();
+		this.changed = true;
 	}
 
 	//TODO now only strings and numbers
@@ -46,12 +48,24 @@ public class RVector extends RScript {
 
 	public RVector addValue(Object value) {
 		this.values.add(value);
-		reset();
-		createVector();
+		this.changed = true;
 		return this;
 	}
 	
 	public Object getValue(int index) {
 		return values.get(index);
+	}
+	
+	public int size() {
+		return values.size();
+	}
+	
+	@Override
+	protected String toScript() {
+		if ( changed ) {
+			reset();
+			createVector();
+		}
+		return super.toScript();
 	}
 }

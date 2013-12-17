@@ -6,6 +6,9 @@ package org.openforis.calc.engine;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
+
+import org.openforis.commons.collection.CollectionUtils;
 
 /**
  * This class is a container for the data entity table
@@ -41,6 +44,10 @@ public class DataRecord implements Cloneable {
 	
 	public Map<String, Object> getFields() {
 		return fields;
+	}
+	
+	public Set<String> getFieldNames() {
+		return CollectionUtils.unmodifiableSet(fields.keySet());
 	}
 
 	public Object getValue(String field) {

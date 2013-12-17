@@ -9,18 +9,18 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
-import java.util.Vector;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.metadata.Variable;
+import org.openforis.calc.r.CheckError;
 import org.openforis.calc.r.RDataFrame;
 import org.openforis.calc.r.REnvironment;
-import org.openforis.calc.r.RException;
+import org.openforis.calc.r.RNamedVector;
 import org.openforis.calc.r.RVariable;
-import org.openforis.calc.r.RVector;
 import org.openforis.calc.r.SetValue;
+import org.openforis.calc.r.Try;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,21 +33,22 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 public class CalcTestJob extends CalcJob {
 
-	private static final int DEFAULT_LIMIT = 1000;
+	private static final int DEFAULT_LIMIT = 10000;
 
+	// input
 	@JsonIgnore
 	private CalculationStep calculationStep;
 	
 	@JsonIgnore
-	private List<DataRecord> results;
+	private ParameterMap variableSettings;
 	
-	// parameters
 	@JsonIgnore
 	private int limit;
 
+	// output
 	@JsonIgnore
-	private ParameterMap variableSettings;
-	
+	private List<DataRecord> results;
+
 	protected CalcTestJob(Workspace workspace, BeanFactory beanFactory, ParameterMap variableSettings) {
 		super(workspace, null, beanFactory);
 		this.variableSettings = variableSettings;
@@ -56,10 +57,6 @@ public class CalcTestJob extends CalcJob {
 	
 	public void setCalculationStep(CalculationStep calculationStep) {
 		this.calculationStep = calculationStep;
-	}
-	
-	public CalculationStep getCalculationStep() {
-		return calculationStep;
 	}
 	
 	@Override
@@ -83,14 +80,8 @@ public class CalcTestJob extends CalcJob {
 	}
 	
 	public long getResultsCount() {
-		long total = new CombinationsGenerator().calculateTotalCombinations(variableSettings);
+		long total = new CombinationsGenerator().calculateTotalCombinations();
 		return Math.min(total, limit);
-	}
-	
-	private ArrayList<String> getVariableNames() {
-		Set<String> variableNamesSet = variableSettings.names();
-		ArrayList<String> variableNames = new ArrayList<String>(variableNamesSet);
-		return variableNames;
 	}
 	
 	public class TestTask extends CalcRTask {
@@ -102,108 +93,98 @@ public class CalcTestJob extends CalcJob {
 		@Override
 		@Transactional
 		synchronized 
-		protected void execute() throws InterruptedException, RException {
-			Variable<?> outputVariable = getCalculationStep().getOutputVariable();
-			String outputVariableName = outputVariable.getName();
-
+		protected void execute() throws Throwable {
 			REnvironment rEnvironment = getrEnvironment();
 			
-			//generate all possible combinations with provided variable settings
-			List<DataRecord> allCombinations = generateCombinations();
+			//generate the data frame using all possible combinations according to the provided variable settings
+			RDataFrame dataFrame = new CombinationsGenerator().generateCombinations();
 
-			//create data frame
-			RDataFrame dataFrame = createTestDataFrame(allCombinations);
+			//assing the data frame to a variable called as the entity name
+			Variable<?> outputVariable = calculationStep.getOutputVariable();
+			
 			RVariable dataFrameVariable = r().variable( outputVariable.getEntity().getName() );
 			SetValue setDataFrame = r().setValue( dataFrameVariable , dataFrame);
-			rEnvironment.eval(setDataFrame.toString());
+			addScript(setDataFrame);
 			
-			//evaluate calculation step script
-			rEnvironment.eval(getCalculationStep().getScript());
+			//add try calculation step script
+			Try rTry = r().rTry(calculationStep.getRScript());
+			addScript(rTry);
 			
-			//set values into result data records
-			String[] resultValues = rEnvironment.evalStrings(r().variable(dataFrameVariable, outputVariableName).toString());
+			RVariable outputRVariable = r().variable(dataFrameVariable, outputVariable.getName());
 			
-			generateResults(outputVariableName, allCombinations, resultValues);
-		}
-
-		private void generateResults(String outputVariableName, List<DataRecord> rows, String[] resultValues) {
-			results = new Vector<DataRecord>();
-
-			for ( int rowIdx=0; rowIdx<rows.size(); rowIdx++ ) {
-				DataRecord row = rows.get(rowIdx);
-				row.add(outputVariableName, resultValues[rowIdx]);
-				results.add(row);
-			}
-		}
-
-		/**
-		 * Converts a list of {@link DataRecord} objects into a {@link RDataFrame} object.
-		 *	
-		 */
-		private RDataFrame createTestDataFrame(List<DataRecord> records) throws RException {
-			List<RVector> columns = new ArrayList<RVector>();
-			for (String variableName : getVariableNames()) {
-				//create a column of values per each variable
-				Object[] values = new Object[records.size()];
-				for (int i = 0; i < records.size(); i++) {
-					DataRecord record = records.get(i);
-					Object value = record.getValue(variableName);
-					values[i] = value;
-				}
-				columns.add( r().c(values) );
-			}
-			RDataFrame result = new RDataFrame(getVariableNames(), columns);
-			return result;
-		}
-
-		/**
-		 * Generates all the possible combinations given the specified settings
-		 */
-		private List<DataRecord> generateCombinations() {
-			Map<String, List<?>> seriesByVariables = new HashMap<String, List<?>>();
-			for (String varName : getVariableNames()) {
-				ParameterMap varSettings = variableSettings.getMap(varName);
-				List<Double> series = new CombinationsGenerator().generateSeries(varSettings);
-				seriesByVariables.put(varName, series);
-			}
-			List<DataRecord> result = new CombinationsGenerator().generateAllCombinations(seriesByVariables, limit);
-			return result;
+			//check errors
+//			CheckError checkError = r().checkError(outputRVariable, null);
+//			addScript(checkError);
+			
+			//evaluate script
+			super.execute();
+			
+			//get output variable values
+			double[] resultValues = rEnvironment.evalDoubles(outputRVariable.toString());
+			
+			//generate results
+			dataFrame.addColumn(r().c(outputVariable.getName(), (Object[]) ArrayUtils.toObject(resultValues)));
+			results = dataFrame.toRecords();
 		}
 
 	}
 	
-	private static class CombinationsGenerator {
+	/**
+	 * It generates data frames with test data using all the possible combinations of the specified series of values.
+	 * 
+	 * @author S. Ricci
+	 *
+	 */
+	private class CombinationsGenerator {
 		
 		/**
-		 * Generates all the possible combinations of the specified lists of values
+		 * Generates all the possible combinations given the specified settings
 		 */
-		public List<DataRecord> generateAllCombinations(Map<String, List<?>> seriesByName, int limit) {
-			List<DataRecord> combinations = new ArrayList<DataRecord>();
+		public RDataFrame generateCombinations() {
+			Map<String, List<?>> seriesByVariables = new HashMap<String, List<?>>();
+			for (String columnName : variableSettings.names()) {
+				ParameterMap seriesSet = variableSettings.getMap(columnName);
+				List<Double> series = generateSeries(seriesSet);
+				seriesByVariables.put(columnName, series);
+			}
+			RDataFrame result = generateAllCombinations(seriesByVariables, limit);
+			return result;
+		}
+		
+		/**
+		 * Generates all the possible combinations of the specified series of values
+		 */
+		public RDataFrame generateAllCombinations(Map<String, List<?>> seriesByName, int limit) {
+			RDataFrame dataFrame = r().dataFrame();
 
 			long total = calculateTotalCombinations(seriesByName.values());
-			
-			for(int count=1; count<=total && count<=limit; count++) {
-				DataRecord row = new DataRecord(seriesByName.size());
-				int currentSeriesWeight = 1;
-				for (Entry<String, List<?>> seriesEntry : seriesByName.entrySet()) {
-					String seriesName = seriesEntry.getKey();
-					List<?> series = seriesEntry.getValue();
-					
-					int currentSeriesSize = series.size();
-					
+
+			//give a weight to each column (weight = previous_column_weight * series_size)
+			int currentSeriesWeight = 1;
+
+			for ( String columnName : seriesByName.keySet() ) {
+				RNamedVector column = r().c(columnName);
+				
+				List<?> series = seriesByName.get(columnName);
+				int currentSeriesSize = series.size();
+
+				// generate column combinations
+				for(int count=1; count<=total && count<=limit; count++) {
+					//calculate series value position
 					int calculatedValIndex = new Double(Math.ceil((double) ((count - 1) / currentSeriesWeight))).intValue();
-					
 					int valueIndex = calculatedValIndex % currentSeriesSize;
 					
 					Object value = series.get(valueIndex);
-					row.add(seriesName, value);
-					currentSeriesWeight *= currentSeriesSize;
+					
+					column.addValue(value);
 				}
-				combinations.add(row);
+				dataFrame.addColumn(column);
+				
+				currentSeriesWeight *= currentSeriesSize;
 			}
-			return combinations;
+			return dataFrame;
 		}
-
+		
 		/**
 		 * Generates a list of values according to min, max and increment specified in the settings 
 		 */
@@ -211,13 +192,6 @@ public class CalcTestJob extends CalcJob {
 			double min = settings.getNumber("min").doubleValue();
 			double max = settings.getNumber("max").doubleValue();
 			double increment = settings.getNumber("increment").doubleValue();
-			return generateSeries(min, max, increment);
-		}
-
-		/**
-		 * Generates a list of values from min to max with the increment specified 
-		 */
-		public List<Double> generateSeries(double min, double max, double increment) {
 			List<Double> result = new ArrayList<Double>();
 			if ( increment > 0 ) {
 				double current = min;
@@ -228,7 +202,7 @@ public class CalcTestJob extends CalcJob {
 			}
 			return result;
 		}
-		
+
 		/**
 		 * Calculates the total number of possible combinations of the series specified
 		 */
@@ -243,15 +217,12 @@ public class CalcTestJob extends CalcJob {
 		/**
 		 * Calculates the total number of possible combinations of the series that can be obtained by the specified settings 
 		 */
-		public long calculateTotalCombinations(ParameterMap seriesParams) {
+		public long calculateTotalCombinations() {
 			long total = 1;
-			Set<String> names = seriesParams.names();
+			Set<String> names = variableSettings.names();
 			for (String name : names) {
-				ParameterMap seriesParam = seriesParams.getMap(name);
-				double min = seriesParam.getNumber("min").doubleValue();
-				double max = seriesParam.getNumber("max").doubleValue();
-				double increment = seriesParam.getNumber("increment").doubleValue();
-				List<Double> series = generateSeries(min, max, increment);
+				ParameterMap seriesParam = variableSettings.getMap(name);
+				List<Double> series = generateSeries(seriesParam);
 				total *= series.size();
 			}
 			return total;

@@ -14,7 +14,7 @@ public class CheckError extends RScript {
 		append("checkError(");
 		append(variable.toScript());
 		append(",");
-		append(connection.toScript());
+		append(connection == null ? NULL: connection.toScript());
 		append(")");
 	}
 

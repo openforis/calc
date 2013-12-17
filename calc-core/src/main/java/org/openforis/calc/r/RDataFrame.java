@@ -1,6 +1,10 @@
 package org.openforis.calc.r;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import org.openforis.calc.engine.DataRecord;
 
 /**
  * 
@@ -10,27 +14,69 @@ import java.util.List;
  */
 public class RDataFrame extends RScript {
 	
-	private List<String> columnNames;
-	private List<RVector> columns;
+	private List<RNamedVector> columns;
+	private boolean changed;
 	
-	public RDataFrame(List<String> columnNames, List<RVector> columns) {
+	public RDataFrame() {
+		this((RNamedVector) null);
+	}
+	
+	public RDataFrame(RNamedVector... columns) {
 		super();
-		this.columnNames = columnNames;
-		this.columns = columns;
-		
-		buildScript();
+		this.columns= new ArrayList<RNamedVector>(Arrays.asList(columns));
+		this.changed = true;
+	}
+
+	public void addColumn(RNamedVector column) {
+		columns.add(column);
+		changed = true;
+	}
+	
+	public List<DataRecord> toRecords() {
+		List<DataRecord> results = new ArrayList<DataRecord>();
+		int count = 0;
+		while ( count < getRowsCount() ) {
+			DataRecord record = new DataRecord();
+			for ( int columnIndex = 0;  columnIndex < columns.size(); columnIndex++ ) {
+				RNamedVector column = columns.get(columnIndex);
+				String colName = column.getName();
+				if ( count >= column.size() ) {
+					System.out.println(String.format("Trying to access invalid position %d for column %s", count, colName));
+				}
+				Object value = column.getValue(count);
+				record.add(colName, value);
+			}
+			results.add(record);
+			count ++;
+		}
+		return results;
+	}
+	
+	public int getRowsCount() {
+		if ( columns == null || columns.isEmpty() ) {
+			return 0;
+		} else {
+			RVector firstColumn = columns.get(0);
+			return firstColumn.size();
+		}
+	}
+	
+	@Override
+	protected String toScript() {
+		if ( changed ) {
+			buildScript();
+		}
+		return super.toScript();
 	}
 	
 	protected void buildScript() {
+		reset();
 		append("data.frame(");
 		if ( columns != null ) {
-			for ( int i=0; i < columnNames.size(); i++) {
-				String columnName = columnNames.get(i);
-				RVector column = columns.get(i);
-				append(columnName);
-				append(" = ");
+			for ( int i=0; i < columns.size(); i++) {
+				RNamedVector column = columns.get(i);
 				append(column.toScript());
-				if ( i < columnNames.size() - 1 ) {
+				if ( i < columns.size() - 1 ) {
 					append(",");
 				}
 			}
@@ -39,10 +85,14 @@ public class RDataFrame extends RScript {
 	}
 	
 	public List<String> getColumnNames() {
-		return columnNames;
+		List<String> result = new ArrayList<String>();
+		for (RNamedVector col : columns) {
+			result.add(col.getName());
+		}
+		return result;
 	}
 	
-	public List<RVector> getColumns() {
+	public List<RNamedVector> getColumns() {
 		return columns;
 	}
 	

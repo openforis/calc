@@ -26,6 +26,7 @@ public class RScript {
 	protected static final String SPACE = " ";
 	protected static final String ASSIGN = "<-";
 	protected static final String COMMA = ",";
+	protected static final String NULL = "NULL";
 	
 	// previous r script
 	private RScript previous;
@@ -112,6 +113,14 @@ public class RScript {
 
 	public RVector c(Object... values) {
 		return new RVector(this, values);
+	}
+	
+	public RNamedVector c(String name, Object... values) {
+		return new RNamedVector(this, name, values);
+	}
+	
+	public RDataFrame dataFrame(RNamedVector... columns) {
+		return new RDataFrame(columns);
 	}
 	
 	public Try rTry(RScript... scripts) {

@@ -36,6 +36,10 @@ public class REnvironment {
 		return this.evalStrings(expr, null);
 	}
 
+	public double[] evalDoubles(String expr) throws RException {
+		return this.evalDoubles(expr, null);
+	}
+
 	public void eval(String expr, RLogger logger) throws RException {
 		r.eval(expr, env, false, logger);
 	}
@@ -51,6 +55,14 @@ public class REnvironment {
 	public String[] evalStrings(String expr, RLogger logger) throws RException {
 		try {
 			return r.eval(expr, env, true, logger).asStrings();
+		} catch (REXPMismatchException e) {
+			throw new RException(e);
+		}
+	}
+	
+	public double[] evalDoubles(String expr, RLogger logger) throws RException {
+		try {
+			return r.eval(expr, env, true, logger).asDoubles();
 		} catch (REXPMismatchException e) {
 			throw new RException(e);
 		}
