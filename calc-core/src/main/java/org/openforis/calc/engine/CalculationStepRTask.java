@@ -22,21 +22,24 @@ public class CalculationStepRTask extends CalcRTask {
 
 	private CalculationStep calculationStep;
 	private RVariable dataFrame;
-	private RScript plotArea;
+	private RVariable plotArea;
 
 	private Set<String> outputVariables;
+	// temp fix. 
+	private Set<String> allOutputVariables;
 	private RVariable connection;
 
 	/**
 	 * @param rEnvironment
 	 * @param name
 	 */
-	public CalculationStepRTask(CalculationStep calculationStep, REnvironment rEnvironment, RVariable connection, RVariable dataFrame, RScript plotArea) {
+	public CalculationStepRTask(CalculationStep calculationStep, REnvironment rEnvironment, RVariable connection, RVariable dataFrame, RVariable plotAreaVariable) {
 		super(rEnvironment, calculationStep.getCaption());
 		this.connection = connection;
 		this.dataFrame = dataFrame;
-		this.plotArea = plotArea;
+		this.plotArea = plotAreaVariable;
 		this.outputVariables = new HashSet<String>();
+		this.allOutputVariables = new HashSet<String>();
 		this.calculationStep = calculationStep;
 		
 		initScripts();
@@ -54,19 +57,19 @@ public class CalculationStepRTask extends CalcRTask {
 		RVariable outputVar = r().variable(this.dataFrame, variableName);
 
 		this.outputVariables.add(variableName);
-
+		this.allOutputVariables.add(variableName);
 		// check if per/ha script needs to be added
-		QuantitativeVariable variablePerHa = getOutputVariable().getVariablePerHa();
-		if (variablePerHa != null && this.plotArea != null) {
-
-			String variablePerHaName = variablePerHa.getName();
+//		QuantitativeVariable variablePerHa = getOutputVariable().getVariablePerHa();
+//		if (variablePerHa != null && this.plotArea != null) {
+		if ( this.plotArea != null ) {
+			String variablePerHaName = getOutputVariable().getVariablePerHaName();
 			RVariable outputVarPerHa = r().variable(dataFrame, variablePerHaName);
 			// set output variable per ha as result of output variable / plot
 			// area
 			Div valuePerHa = r().div(outputVar, plotArea);
 			setOutputValuePerHa = r().setValue(outputVarPerHa, valuePerHa);
 
-			this.outputVariables.add(variablePerHaName);
+			this.allOutputVariables.add(variablePerHaName);
 		}
 
 		// assign the result of the scripts (surrounded by a try statement)
@@ -75,7 +78,7 @@ public class CalculationStepRTask extends CalcRTask {
 		SetValue setValue = r().setValue(result, r().rTry(script, setOutputValuePerHa));
 
 		addScript(setValue);
-		addScript(r().checkError(result, connection));
+		addScript( r().checkError(result, connection) );
 	}
 
 	public QuantitativeVariable getOutputVariable() {
@@ -88,6 +91,10 @@ public class CalculationStepRTask extends CalcRTask {
 
 	public Set<String> getOutputVariables() {
 		return outputVariables;
+	}
+	
+	public Set<String> getAllOutputVariables() {
+		return allOutputVariables;
 	}
 
 }

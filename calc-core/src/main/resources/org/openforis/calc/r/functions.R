@@ -4,7 +4,9 @@
 checkError <- function(e, connection){
   if( inherits(e, "try-error") || inherits(e, "simpleError") ){
     print("CALC-ERROR",quote=F);
-    dbDisconnect(connection);
+    if( !is.null(connection) ){      
+      dbDisconnect(connection);
+    }
     stop(e);
   }
 };

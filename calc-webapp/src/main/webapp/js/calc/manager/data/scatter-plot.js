@@ -333,10 +333,23 @@ ScatterPlot.prototype = (function(){
 //		console.log($this.chart);
 		// redraw chart
 //		$this.chart.redraw();
-//		$this.chart = new Highcharts.Chart($this.chartinfo);
+		$this.chart = new Highcharts.Chart($this.chartinfo);
 		
 		
 		
+
+		
+		
+		
+		// update offset
+//		$this.offset = $this.chart.series[0].data.length;
+		$this.offset += data.length;
+		// update progress
+		$this.progressBar.update($this.offset , $this.totalItems);
+		
+	};
+	
+	var d3test = function(){
 		console.log("==== start testing d3");
 //		var w = this.chartContainer.width();
 //		var h = this.chartContainer.height();
@@ -389,15 +402,6 @@ ScatterPlot.prototype = (function(){
 //		   .attr("font-family", "sans-serif")
 //		   .attr("font-size", "11px")
 //		   .attr("fill", "red");
-		
-		
-		
-		// update offset
-//		$this.offset = $this.chart.series[0].data.length;
-		$this.offset += data.length;
-		// update progress
-		$this.progressBar.update($this.offset , $this.totalItems);
-		
 	};
 	
 	return {

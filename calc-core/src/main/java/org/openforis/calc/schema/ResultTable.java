@@ -1,10 +1,15 @@
 package org.openforis.calc.schema;
 
+import java.math.BigDecimal;
+
 import org.jooq.DataType;
 import org.jooq.Field;
+import org.jooq.Record;
+import org.jooq.TableField;
 import org.jooq.impl.SQLDataType;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.Variable;
+import org.openforis.calc.psql.Psql;
 
 /**
  * 
@@ -15,14 +20,28 @@ public class ResultTable extends DataTable {
 
 	private static final long serialVersionUID = 1L;
 
+	public static final String PLOT_AREA_COLUMN_NAME = "plot_area";
+
+	private TableField<Record, BigDecimal> plotArea;
+	
 	public ResultTable(Entity entity, InputSchema schema) {
 		super(entity, entity.getResultsTable(), schema);
 		createPrimaryKeyField();
 //		createParentIdField();
 //		createCategoryValueFields(entity, true);
 		createQuantityFields(false);
+		
+		if( entity.getPlotAreaRScript() != null ){
+//			Field<BigDecimal> field = createValueField(var, Psql.DOUBLE_PRECISION, valueColumn);
+			plotArea = super.createField( PLOT_AREA_COLUMN_NAME, Psql.DOUBLE_PRECISION , this );
+		}
+		
 //		createCoordinateFields();
 //		createTextFields();
+	}
+	
+	public TableField<Record, BigDecimal> getPlotArea() {
+		return plotArea;
 	}
 
 //	@SuppressWarnings("unchecked")

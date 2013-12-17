@@ -33,6 +33,7 @@ import org.openforis.calc.r.RLogger;
 import org.openforis.calc.r.RScript;
 import org.openforis.calc.r.RVariable;
 import org.openforis.calc.r.RVector;
+import org.openforis.calc.r.SetValue;
 import org.openforis.calc.schema.EntityDataView;
 import org.openforis.calc.schema.InputTable;
 import org.openforis.calc.schema.ResultTable;
@@ -158,22 +159,30 @@ public class CalcJob extends Job {
 			List<CalculationStepRTask> calculationStepTasks = new ArrayList<CalculationStepRTask>();
 			Set<String> outputVariables = new HashSet<String>();
 			Set<String> inputVariables = new HashSet<String>();
+			// temp fix it contains all variables will be saved in the results table
+			Set<String> allOutputVariables = new HashSet<String>();
 
 			// plot area script if available
 			RScript plotArea = entity.getPlotAreaRScript();
-
+			// plot_area variable hardcoded now
+			RVariable plotAreaVariable = null;
+			if ( plotArea != null ) {
+				plotAreaVariable = r().variable( dataFrame, ResultTable.PLOT_AREA_COLUMN_NAME );
+				allOutputVariables.add( ResultTable.PLOT_AREA_COLUMN_NAME );
+				inputVariables.addAll(plotArea.getVariables());
+			}
+			
 			// create a task for each step
 			for (CalculationStep step : this.calculationSteps.get(entityId)) {
-				CalculationStepRTask task = new CalculationStepRTask(step, rEnvironment, connection, dataFrame, plotArea);
+				CalculationStepRTask task = new CalculationStepRTask(step, rEnvironment, connection, dataFrame, plotAreaVariable );
 				calculationStepTasks.add(task);
 
 				outputVariables.addAll(task.getOutputVariables());
 				inputVariables.addAll(task.getInputVariables());
+				allOutputVariables.addAll(task.getAllOutputVariables());
 			}
 
-			if (plotArea != null) {
-				inputVariables.addAll(plotArea.getVariables());
-			}
+			
 			// ===== read data task
 			CalcRTask readDataTask = createTask("Read " + entity.getName() + " data");
 
@@ -201,7 +210,15 @@ public class CalcJob extends Job {
 			}
 			readDataTask.addScript(r().setValue(dataFrame, r().dbGetQuery(connection, select)));
 			addTask(readDataTask);
-
+			 
+			// append plot_area script
+			if( plotArea != null ) {
+				RVariable results = r().variable( "results" );
+				SetValue setValue = r().setValue(results, r().rTry(plotArea) );
+				readDataTask.addScript( setValue );
+			}
+			
+			
 			// ======= add all calculation step tasks
 			addTasks(calculationStepTasks);
 
@@ -215,7 +232,7 @@ public class CalcJob extends Job {
 
 			// 5. keep results (only pkey and output variables)
 			RVariable results = r().variable(entity.getName() + "_results");
-			RVector cols = r().c(outputVariables.toArray(new String[] {})).addValue(primaryKey);
+			RVector cols = r().c(allOutputVariables.toArray(new String[] {})).addValue(primaryKey);
 
 			writeResultsTask.addScript(r().setValue(results, dataFrame.filterColumns(cols)));
 
