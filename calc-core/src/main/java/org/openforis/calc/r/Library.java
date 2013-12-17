@@ -9,7 +9,7 @@ package org.openforis.calc.r;
  */
 public class Library extends RScript {
 
-	public Library(RScript previous, String name) {
+	Library(RScript previous, String name) {
 		super(previous);
 		
 		append("library");

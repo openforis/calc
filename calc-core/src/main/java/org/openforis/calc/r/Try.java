@@ -10,7 +10,7 @@ package org.openforis.calc.r;
  */
 public class Try extends RScript {
 	
-	protected Try(RScript previous, RScript... scripts) {
+	Try(RScript previous, RScript... scripts) {
 		super(previous);
 		append("try({");
 		for (RScript script : scripts) {

@@ -9,7 +9,7 @@ package org.openforis.calc.r;
  */
 public class DbDriver extends RScript {
 
-	public DbDriver(RScript previous, String name) {
+	DbDriver(RScript previous, String name) {
 		super(previous);
 		
 		append("dbDriver");

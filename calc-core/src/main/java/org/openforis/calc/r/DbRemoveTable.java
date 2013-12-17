@@ -9,7 +9,7 @@ package org.openforis.calc.r;
  */
 public class DbRemoveTable extends RScript {
 
-	public DbRemoveTable(RScript previous, RVariable connection, String name) {
+	DbRemoveTable(RScript previous, RVariable connection, String name) {
 		super(previous);
 		
 		append("dbRemoveTable");

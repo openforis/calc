@@ -9,7 +9,7 @@ package org.openforis.calc.r;
  */
 public class SetValue extends RScript {
 
-	public SetValue(RScript previous, RVariable variable, RScript script) {
+	SetValue(RScript previous, RVariable variable, RScript script) {
 		super(previous);
 		
 		append(variable.toScript());

@@ -15,7 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 public class RVector extends RScript {
 
 	private List<String> strings ;
-	public RVector(RScript previous, String... values) {
+	RVector(RScript previous, String... values) {
 		super(previous);
 		this.strings = new ArrayList<String>();
 		for (String value : values) {
