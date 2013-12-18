@@ -11,12 +11,12 @@ import java.util.Set;
 import org.apache.commons.lang3.ArrayUtils;
 import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.metadata.Variable;
-import org.openforis.calc.r.CheckError;
 import org.openforis.calc.r.RDataFrame;
 import org.openforis.calc.r.REnvironment;
+import org.openforis.calc.r.RException;
 import org.openforis.calc.r.RNamedVector;
+import org.openforis.calc.r.RScript;
 import org.openforis.calc.r.RVariable;
-import org.openforis.calc.r.SetValue;
 import org.openforis.calc.r.Try;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -93,36 +93,43 @@ public class CalcTestJob extends CalcJob {
 		protected void execute() throws Throwable {
 			REnvironment rEnvironment = getrEnvironment();
 			
+			addScript(RScript.getCalcRScript());
+			
 			//generate the data frame using all possible combinations according to the provided variable settings
 			RDataFrame dataFrame = new CombinationsGenerator().generateCombinations();
 
 			//assing the data frame to a variable called as the entity name
 			Variable<?> outputVariable = calculationStep.getOutputVariable();
-			
 			RVariable dataFrameVariable = r().variable( outputVariable.getEntity().getName() );
-			SetValue setDataFrame = r().setValue( dataFrameVariable , dataFrame);
-			addScript(setDataFrame);
 			
-			//add try calculation step script
+			addScript(r().setValue( dataFrameVariable , dataFrame));
+			
+			//create try calculation step script
 			Try rTry = r().rTry(calculationStep.getRScript());
-			addScript(rTry);
 			
-			RVariable outputRVariable = r().variable(dataFrameVariable, outputVariable.getName());
+			//set try result into temp variable
+			RVariable tryResultVariable = r().variable("try_result");
+			addScript(r().setValue( tryResultVariable, rTry));
 			
 			//check errors
-			CheckError checkError = r().checkError(outputRVariable, null);
-			addScript(checkError);
+			addScript(r().checkError(tryResultVariable));
 			
 			//evaluate script
-			super.execute();
-			
-			//get output variable values
-			double[] resultValues = rEnvironment.evalDoubles(outputRVariable.toString());
-			
-			//generate results
-			dataFrame.addColumn(r().c(outputVariable.getName(), (Object[]) ArrayUtils.toObject(resultValues)));
-			
-			generateResultRecords(dataFrame);
+			try {
+				super.execute();
+
+				//get output variable values
+				RVariable outputRVariable = r().variable(dataFrameVariable, outputVariable.getName());
+				double[] resultValues = rEnvironment.evalDoubles(outputRVariable.toString());
+				
+				//generate results
+				dataFrame.addColumn(r().c(outputVariable.getName(), (Object[]) ArrayUtils.toObject(resultValues)));
+				
+				generateResultRecords(dataFrame);
+			} catch ( RException e) {
+				getRLogger().appendError("Unable to parse script. Please make sure it's syntactically correct.");
+				throw e;
+			}
 		}
 
 		private void generateResultRecords(RDataFrame dataFrame) {
