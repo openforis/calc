@@ -13,6 +13,7 @@ import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.r.RDataFrame;
 import org.openforis.calc.r.REnvironment;
+import org.openforis.calc.r.RException;
 import org.openforis.calc.r.RNamedVector;
 import org.openforis.calc.r.RScript;
 import org.openforis.calc.r.RVariable;
@@ -111,19 +112,24 @@ public class CalcTestJob extends CalcJob {
 			addScript(r().setValue( tryResultVariable, rTry));
 			
 			//check errors
-			addScript(r().checkError(tryResultVariable, null));
+			addScript(r().checkError(tryResultVariable));
 			
 			//evaluate script
-			super.execute();
-			
-			//get output variable values
-			RVariable outputRVariable = r().variable(dataFrameVariable, outputVariable.getName());
-			double[] resultValues = rEnvironment.evalDoubles(outputRVariable.toString());
-			
-			//generate results
-			dataFrame.addColumn(r().c(outputVariable.getName(), (Object[]) ArrayUtils.toObject(resultValues)));
-			
-			generateResultRecords(dataFrame);
+			try {
+				super.execute();
+
+				//get output variable values
+				RVariable outputRVariable = r().variable(dataFrameVariable, outputVariable.getName());
+				double[] resultValues = rEnvironment.evalDoubles(outputRVariable.toString());
+				
+				//generate results
+				dataFrame.addColumn(r().c(outputVariable.getName(), (Object[]) ArrayUtils.toObject(resultValues)));
+				
+				generateResultRecords(dataFrame);
+			} catch ( RException e) {
+				getRLogger().appendError("Unable to parse script. Please make sure it's syntactically correct.");
+				throw e;
+			}
 		}
 
 		private void generateResultRecords(RDataFrame dataFrame) {

@@ -49,6 +49,15 @@ public class RLogger {
 		}
 	}
 	
+	/**
+	 * Appends a error message. 
+	 */
+	public void appendError(String text) {
+		flush();
+		append(1, text);
+		flush();
+	}
+
 	void flush() {
 		if( this.tempLine != null ) {
 			String text = this.tempLine.getText();
