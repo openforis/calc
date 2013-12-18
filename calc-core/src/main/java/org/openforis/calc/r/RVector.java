@@ -4,38 +4,68 @@
 package org.openforis.calc.r;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author Mino Togna
+ * @author S. Ricci
  *
  */
 public class RVector extends RScript {
 
-	private List<String> strings ;
-	RVector(RScript previous, String... values) {
+	private List<Object> values ;
+	private boolean changed;
+	
+	RVector(RScript previous, Object... values) {
 		super(previous);
-		this.strings = new ArrayList<String>();
-		for (String value : values) {
-			this.strings.add(value);
+		
+		this.values = new ArrayList<Object>(Arrays.asList(values));
+		
+		this.changed = true;
+	}
+
+	//TODO now only strings and numbers
+	protected void createVector() {
+		append("c(");
+		Iterator<Object> iterator = this.values.iterator();
+		while(iterator.hasNext()) {
+			Object value = iterator.next();
+			if ( value instanceof Number ) {
+				append(value);
+			} else {
+				append("'");
+				append(value);
+				append("'");
+			}
+			if ( iterator.hasNext() ) {
+				append(",");
+			}
 		}
-		
-		reset();
+		append(")");
 	}
 
-	protected void reset() {
-		super.reset();
-		
-		append("c('");
-		append( StringUtils.join(this.strings, "','") );
-		append("')");
-	}
-
-	public RVector addValue(String value) {
-		this.strings.add(value);
-		reset();
+	public RVector addValue(Object value) {
+		this.values.add(value);
+		this.changed = true;
 		return this;
+	}
+	
+	public Object getValue(int index) {
+		return values.get(index);
+	}
+	
+	public int size() {
+		return values.size();
+	}
+	
+	@Override
+	protected String toScript() {
+		if ( changed ) {
+			reset();
+			createVector();
+		}
+		return super.toScript();
 	}
 }

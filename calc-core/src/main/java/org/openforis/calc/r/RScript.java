@@ -29,25 +29,29 @@ public class RScript {
 	protected static final String ASSIGN = "<-";
 	protected static final String COMMA = ",";
 	protected static final String NEW_LINE = "\n";
-
+	protected static final String NULL = "NULL";
+	
 	// previous r script
 	private RScript previous;
 	// stringbuilder that contains the script
 	private StringBuilder sb;
+	
 	private Set<String> variables;
 
-	//
+	public RScript() {
+		this((Collection<Variable<?>>)null);
+	}
+
 	public RScript(Collection<Variable<?>> variables) {
 		this.sb = new StringBuilder();
 		this.variables = new HashSet<String>();
-	}
-
-	public RScript() {
-		this((Collection<Variable<?>>) null);
+		if ( variables != null ) {
+			parseVariables(variables);
+		}
 	}
 
 	protected RScript(RScript previous) {
-		this();
+		this((Collection<Variable<?>>)null);
 		this.previous = previous;
 	}
 
@@ -110,8 +114,16 @@ public class RScript {
 		return new Div(this, numerator, denumenator);
 	}
 
-	public RVector c(String... strings) {
-		return new RVector(this, strings);
+	public RVector c(Object... values) {
+		return new RVector(this, values);
+	}
+	
+	public RNamedVector c(String name, Object... values) {
+		return new RNamedVector(this, name, values);
+	}
+	
+	public RDataFrame dataFrame(RNamedVector... columns) {
+		return new RDataFrame(columns);
 	}
 
 	public Try rTry(RScript... scripts) {

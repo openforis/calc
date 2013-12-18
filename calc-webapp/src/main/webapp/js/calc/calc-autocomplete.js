@@ -270,6 +270,7 @@ Autocomplete.prototype = (function() {
 			$this.$menu.show();
 			$this.dropdownOpen = true;
 		}
+		$this.$menu.scrollTop(0);
 	};
 	
 	/**

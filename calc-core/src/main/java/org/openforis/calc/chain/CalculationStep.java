@@ -15,6 +15,7 @@ import org.openforis.calc.common.UserObject;
 import org.openforis.calc.engine.ParameterHashMap;
 import org.openforis.calc.engine.ParameterMap;
 import org.openforis.calc.json.ParameterMapJsonSerializer;
+import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.r.RScript;
 
@@ -143,7 +144,9 @@ public class CalculationStep extends UserObject {
 	}
 
 	public RScript getRScript() {
-		return new RScript().rScript(script, this.getOutputVariable().getEntity().getHierarchyVariables());
+		Variable<?> outputVariable = this.getOutputVariable();
+		Entity entity = outputVariable.getEntity();
+		return new RScript().rScript(script, entity.getHierarchyVariables());
 	}
 
 	/**

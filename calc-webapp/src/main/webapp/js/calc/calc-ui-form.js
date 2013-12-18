@@ -101,10 +101,14 @@ UI.Form.enable = function(form){
  * 
  * @param $field
  * @param error
+ * @param fieldLabel (optional) if not specified, field label will be assigned using getFieldLabel function
  */
-UI.Form.createErrorTooltip = function($field, error) {
-	var fieldLabel = UI.Form.getFieldLabel($field);
-	var message = fieldLabel + " " + error.defaultMessage;
+UI.Form.createErrorTooltip = function($field, error, fieldLabel) {
+	if ( ! fieldLabel ) {
+		fieldLabel = UI.Form.getFieldLabel($field);
+	}
+	var errorMessage = typeof error == "string" ? error: error.hasOwnProperty("defaultMessage") ? error.defaultMessage: "error";
+	var message = fieldLabel + " " + errorMessage;
 	
 	var $parentModal = $field.closest('.modal');
 	var container = $parentModal.length == 0 ? 'body': $parentModal; 
@@ -230,4 +234,58 @@ UI.Form.toJSON = function($form) {
     	result[this.name] = this.value || '';
     });
     return result;
+};
+
+/**
+ * Form client side validation functions
+ */
+UI.Form.validation = function() {};
+
+/**
+ * Returns true if the field is not empty, otherwise returns false and adds error feedback to the field
+ */
+UI.Form.validation.required = function($field, label) {
+	var $formGroup = $field.closest(".form-group");
+	$formGroup.removeClass('has-error');
+	var val = $field.val();
+	if ( val.trim().length == 0 ) {
+		$formGroup.addClass('has-error');
+		UI.Form.createErrorTooltip($field, "is required", label);
+		return false;
+	} else {
+		return true;
+	}
+};
+
+/**
+ * Returns true if the field value is a valid number, otherwise returns false and adds error feedback to the field
+ */
+UI.Form.validation.numeric = function($field, label) {
+	var $formGroup = $field.closest(".form-group");
+	$formGroup.removeClass('has-error');
+	var val = $field.val();
+	if ( isNaN(val) ) {
+		$formGroup.addClass('has-error');
+		UI.Form.createErrorTooltip($field, "Invalid number");
+		return false;
+	} else {
+		return true;
+	}
+};
+
+/**
+ * Returns true if the field value is greater than the specified value, otherwise returns false and adds error feedback to the field
+ */
+UI.Form.validation.greaterThan = function($field, label, value) {
+	var $formGroup = $field.closest(".form-group");
+	$formGroup.removeClass('has-error');
+	var val = $field.val();
+	var number = Number(val);
+	if ( number > value ) {
+		return true;
+	} else {
+		$formGroup.addClass('has-error');
+		UI.Form.createErrorTooltip($field, "Must be greather than " + value);
+		return false;
+	}
 };

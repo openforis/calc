@@ -48,6 +48,8 @@ public class ParameterHashMap implements ParameterMap {
 		Object value = map.get(name);
 		if ( value == null ) {
 			return null;
+		} else if ( value instanceof ParameterMap ) {
+			return (ParameterMap) value;
 		} else if ( value instanceof Map ) {
 			return new ParameterHashMap((Map<String, Object>) value);
 		} else {
@@ -68,7 +70,17 @@ public class ParameterHashMap implements ParameterMap {
 
 	@Override
 	public Number getNumber(String name) {
-		return (Number) map.get(name);
+		Object value = map.get(name);
+		if ( value == null ) {
+			return null;
+		} else if ( value instanceof Number ) {
+			return (Number) value;
+		} else if ( value instanceof String ) {
+			double result = Double.parseDouble((String) value);
+			return result;
+		} else {
+			throw new IllegalStateException("Exptected Number, found: " + value.getClass().getName());
+		}
 	}
 
 	@Override
@@ -88,7 +100,17 @@ public class ParameterHashMap implements ParameterMap {
 
 	@Override
 	public Boolean getBoolean(String name) {
-		return (Boolean) map.get(name);
+		Object value = map.get(name);
+		if ( value == null ) {
+			return null;
+		} else if ( value instanceof Boolean ) {
+			return (Boolean) value;
+		} else if ( value instanceof String ) {
+			boolean result = Boolean.parseBoolean((String) value);
+			return result;
+		} else {
+			throw new IllegalStateException("Exptected Boolean, found: " + value.getClass().getName());
+		}
 	}
 
 	@Override

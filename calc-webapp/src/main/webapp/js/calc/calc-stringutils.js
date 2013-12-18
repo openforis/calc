@@ -4,11 +4,13 @@ StringUtils = function() {};
  * Returns the last word in a string using the specified delimiter
  * 
  * @param str The string
- * @param delimiter (optional)
+ * @param delimiters (optional) Array of characters considered for splitting the text into words (empty space is the default)
  */
-StringUtils.getLastWord = function (str, delimiter, endIndex) {
-	if ( ! delimiter ) {
-		delimiter = ' ';
+StringUtils.getLastWord = function (str, delimiters, endIndex) {
+	if ( ! delimiters ) {
+		delimiters = [' '];
+	} else if ( typeof delimiters == "string" ) {
+		delimiters = [delimiters];
 	}
 	if ( endIndex == 0 ) {
 		return "";
@@ -16,15 +18,14 @@ StringUtils.getLastWord = function (str, delimiter, endIndex) {
 	if ( ! endIndex ) {
 		endIndex = str.length;
 	}
-	var result = "";
+	var startIndex = 0;
 	for(var i = 0; i < endIndex; i++ ) {
 		var c = str.charAt(i);
-		if ( c == delimiter ) {
-			result = "";
-		} else {
-			result += c;
+		if ( delimiters.indexOf(c) >= 0 ) {
+			startIndex = i+1;
 		}
 	}
+	var result = str.substring(startIndex, endIndex);
 	return result;
 };
 

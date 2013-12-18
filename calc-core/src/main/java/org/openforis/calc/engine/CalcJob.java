@@ -130,8 +130,8 @@ public class CalcJob extends Job {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void initTasks() {
-
+	protected void initTasks() {
+		
 		// init task
 		CalcRTask initTask = createTask("Open database connection");
 
@@ -271,8 +271,13 @@ public class CalcJob extends Job {
 		addTask(closeConnection);
 	}
 
-	private CalcRTask createTask(String name) {
-		CalcRTask task = new CalcRTask(getrEnvironment(), name);
+//<<<<<<< HEAD
+//	private CalcRTask createTask(String name) {
+//		CalcRTask task = new CalcRTask(getrEnvironment(), name);
+//=======
+	protected CalcRTask createTask(String name) {
+		CalcRTask task = new CalcRTask(rEnvironment, name);
+//>>>>>>> 74e058bbec47d38183ba465391ac92f6982b6e6c
 		((AutowireCapableBeanFactory) beanFactory).autowireBean(task);
 		return task;
 	}
@@ -308,5 +313,5 @@ public class CalcJob extends Job {
 		this.tempResults = tempResults;
 	}
 
-
+	
 }
