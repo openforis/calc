@@ -46,7 +46,7 @@ $(document).ready(function() {
 	};
 	
 	resizeContainer = function() {
-		containerHeight = $(document).height() - $footer.height();
+		containerHeight = $(window).height() - $footer.height();
 		$("#container").css({"height":containerHeight+"px"});
 	};
 	

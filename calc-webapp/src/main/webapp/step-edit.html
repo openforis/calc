@@ -265,8 +265,10 @@ $(function() {
 	var calculationStepEditManager = new CalculationStepEditManager( stepEdit.find("#calculation-step-edit-container") );	
 	var calculationStepResultsManager = new CalculationStepResultsManager( stepEdit.find("#calculation-step-results-container") );
 	var calculationStepExecManager = new CalculationStepExecManager( stepEdit.find("#calculation-step-exec-container") , calculationStepResultsManager );
+	
 	calculationStepExecManager.hide();
-
+	calculationStepResultsManager.hide();
+	
 	// header buttons
 	var showEditBtn = stepEdit.find("button[name=show-edit-btn]");
 	var showExecBtn = stepEdit.find("button[name=show-exec-btn]");
