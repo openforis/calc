@@ -74,36 +74,17 @@ CalculationStepExecManager.prototype = (function() {
 		//validate parameters and starts the execution of the test
 		this.testButton.click(function(e) {
 			if ( $.proxy(validateTestSettings, $this)() ) {
-				UI.lock();
-				var variablesSettings = $.proxy(extractVariablesSettings, $this)();
+				UI.disableAll();
+				var variableSettings = $.proxy(extractVariablesSettings, $this)();
 				$this.jobManager.executeCalculationStepTest(
 					$this.calculationStep.id,
 					//on complete show results
 					function(job) {
-						UI.unlock();
-						JobManager.getInstance().checkJobStatus(
-							function() {
-								$this.workspaceManager.activeWorkspace(function(workspace) {
-									var variableNames = $.map(variablesSettings, function(settings, variableName) {
-										return variableName;
-									});
-									var entityId = $this.calculationStep.outputEntityId;
-									var entity = workspace.getEntityById(entityId);
-									var outputVariable = entity.getVariableById($this.calculationStep.outputVariableId);
-									
-									variableNames.push(outputVariable.name);
-									
-									// instanciate data provider
-									var dataProvider = new CalculationStepTestDataProvider(job.id, entityId, variableNames);
-									
-									// once completed hide this and shows results section
-									$this.hide();
-									$this.calculationStepResultsManager.show(dataProvider);
-								});
-							}, true
-						);
+						if ( job.status == "COMPLETED" ) {
+							$.proxy(showTestResults, $this)(variableSettings, job);
+						}
 					},
-					variablesSettings
+					variableSettings
 				);
 			} else {
 				UI.showMessage("Please fix the errors in the form before proceeding.");
@@ -145,6 +126,27 @@ CalculationStepExecManager.prototype = (function() {
 	
 	var hide = function () {
 		this.container.hide();
+	};
+	
+	var showTestResults = function(variableSettings, job) {
+		var $this = this;
+		$this.workspaceManager.activeWorkspace(function(workspace) {
+			var variableNames = $.map(variableSettings, function(settings, variableName) {
+				return variableName;
+			});
+			var entityId = $this.calculationStep.outputEntityId;
+			var entity = workspace.getEntityById(entityId);
+			var outputVariable = entity.getVariableById($this.calculationStep.outputVariableId);
+			
+			variableNames.push(outputVariable.name);
+			
+			// instanciate data provider
+			var dataProvider = new CalculationStepTestDataProvider(job.id, entityId, variableNames);
+			
+			// once completed hide this and shows results section
+			$this.hide();
+			$this.calculationStepResultsManager.show(dataProvider);
+		});
 	};
 	
 	/**

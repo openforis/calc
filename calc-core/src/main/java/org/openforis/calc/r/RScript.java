@@ -129,6 +129,10 @@ public class RScript {
 		return new Try(this, scripts);
 	}
 
+	public CheckError checkError(RVariable variable) {
+		return checkError(variable, null);
+	}
+	
 	public CheckError checkError(RVariable variable, RVariable connection) {
 		return new CheckError(this, variable, connection);
 	}

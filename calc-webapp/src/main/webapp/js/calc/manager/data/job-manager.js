@@ -43,8 +43,8 @@ JobManager.prototype = (function(){
 			type: "POST", 
 			data: data,
 			dataType:"json"
-		}).done(function(job) {
-			complete(job);
+		}).done(function(response) {
+			$.proxy(start, $this)(response, complete, hideOnComplete);
 		})
 		.error(function(e){
 			console.log("error!!! on exec");
