@@ -11,6 +11,7 @@ import java.util.Set;
 import org.apache.commons.lang3.ArrayUtils;
 import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.metadata.Variable;
+import org.openforis.calc.r.CheckError;
 import org.openforis.calc.r.RDataFrame;
 import org.openforis.calc.r.REnvironment;
 import org.openforis.calc.r.RNamedVector;
@@ -109,8 +110,8 @@ public class CalcTestJob extends CalcJob {
 			RVariable outputRVariable = r().variable(dataFrameVariable, outputVariable.getName());
 			
 			//check errors
-//			CheckError checkError = r().checkError(outputRVariable, null);
-//			addScript(checkError);
+			CheckError checkError = r().checkError(outputRVariable, null);
+			addScript(checkError);
 			
 			//evaluate script
 			super.execute();
