@@ -105,7 +105,7 @@ public class R {
 			this.rStdOutputListner.registerLogger(logger);
 
 			REXP rexp = engine.parseAndEval(expr, env, resolve);
-
+			
 			return rexp;
 		} catch (REXPMismatchException e) {
 			throw new RException(e);

@@ -94,7 +94,8 @@ public class JobController {
 		
 		CalcJob job = taskManager.createCalcJob(workspace);
 		job.addCalculationStep(step);
-
+//		job.setTempResults(true);
+		
 		taskManager.startJob(job);
 
 		return job;

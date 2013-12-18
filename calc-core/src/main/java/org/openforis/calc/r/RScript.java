@@ -28,6 +28,7 @@ public class RScript {
 	protected static final String SPACE = " ";
 	protected static final String ASSIGN = "<-";
 	protected static final String COMMA = ",";
+	protected static final String NEW_LINE = "\n";
 
 	// previous r script
 	private RScript previous;

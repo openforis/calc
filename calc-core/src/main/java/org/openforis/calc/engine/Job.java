@@ -1,6 +1,7 @@
 package org.openforis.calc.engine;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -117,7 +118,7 @@ public class Job extends Worker implements Iterable<Task> {
 		tasks.add(task);
 	}
 
-	public void addTasks(List<? extends Task> tasks) {
+	public <T extends Collection<? extends Task>> void addTasks(T tasks) {
 		for (Task task : tasks) {
 			addTask(task);
 		}

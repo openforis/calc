@@ -6,6 +6,8 @@ import java.util.List;
 import org.jooq.Field;
 import org.jooq.SelectQuery;
 import org.jooq.impl.DSL;
+import org.openforis.calc.engine.CalcJob;
+import org.openforis.calc.engine.Job;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.metadata.AoiLevel;
 import org.openforis.calc.metadata.Entity;
@@ -15,7 +17,9 @@ import org.openforis.calc.psql.Psql.Privilege;
 import org.openforis.calc.schema.AggregateTable;
 import org.openforis.calc.schema.ExpansionFactorTable;
 import org.openforis.calc.schema.FactTable;
+import org.openforis.calc.schema.InputSchema;
 import org.openforis.calc.schema.OutputSchema;
+import org.openforis.calc.schema.Schemas;
 
 /**
  * Creates and populates aggregate tables for sampling unit entities and descendants. One for each AOI level (at AOI/stratum level) is created.
@@ -24,8 +28,33 @@ import org.openforis.calc.schema.OutputSchema;
  * @author M. Togna
  */
 public final class CreateAggregateTablesTask extends Task {
-	@Override
+	
+	private Entity entity;
+
+	public CreateAggregateTablesTask(Entity entity) {
+		super();
+		this.entity = entity;
+	}
+
+	
 	protected void execute() throws Throwable {
+		CalcJob job = (CalcJob) getJob();
+	
+		Schemas schemas = job.getSchemas();
+		InputSchema schema = schemas.getInputSchema();
+		
+		Entity samplingUnit = getWorkspace().getSamplingDesign().getSamplingUnit();
+		
+//		job.get
+	}	
+	
+	@Override
+	public String getName() {
+		return String.format( "Aggregate %s", this.entity.getName() );
+	}
+	
+//	@Override
+	protected void oldExecute() throws Throwable {
 		// TODO threshold
 		OutputSchema outputSchema = getOutputSchema();
 		Collection<AggregateTable> aggTables = outputSchema.getAggregateTables();
