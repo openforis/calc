@@ -22,6 +22,7 @@ import org.jooq.UpdateQuery;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.openforis.calc.chain.CalculationStep;
+import org.openforis.calc.chain.post.CreateFactTablesTask;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.psql.AlterTableStep.AlterColumnStep;
 import org.openforis.calc.psql.Psql;
@@ -82,11 +83,17 @@ public class CalcJob extends Job {
 	String password = "calc";
 	int port = 5432;
 
+	private boolean aggregates;
+
+	protected CalcJob(Workspace workspace, DataSource dataSource, BeanFactory beanFactory) {
+		this(workspace, dataSource, beanFactory, false);
+	}
+	
 	/**
 	 * @param workspace
 	 * @param dataSource
 	 */
-	protected CalcJob(Workspace workspace, DataSource dataSource, BeanFactory beanFactory) {
+	protected CalcJob(Workspace workspace, DataSource dataSource, BeanFactory beanFactory, boolean aggregates) {
 		super(workspace, dataSource);
 		setSchemas(new Schemas(workspace));
 
@@ -95,6 +102,7 @@ public class CalcJob extends Job {
 		this.group = new CalcJobEntityGroup(this);
 		
 		this.tempResults = false;
+		this.aggregates = aggregates;
 //		this.calculationSteps = new HashMap<Integer, List<CalculationStep>>();
 	}
 
@@ -269,15 +277,17 @@ public class CalcJob extends Job {
 		CalcRTask closeConnection = createTask("Close database connection");
 		closeConnection.addScript( r().dbDisconnect(connection) );
 		addTask(closeConnection);
+		
+		
+		if( aggregates ) {
+			CreateFactTablesTask task = new CreateFactTablesTask();
+			((AutowireCapableBeanFactory) beanFactory).autowireBean(task);
+			addTask( task );
+ 		}
 	}
 
-//<<<<<<< HEAD
-//	private CalcRTask createTask(String name) {
-//		CalcRTask task = new CalcRTask(getrEnvironment(), name);
-//=======
 	protected CalcRTask createTask(String name) {
 		CalcRTask task = new CalcRTask(rEnvironment, name);
-//>>>>>>> 74e058bbec47d38183ba465391ac92f6982b6e6c
 		((AutowireCapableBeanFactory) beanFactory).autowireBean(task);
 		return task;
 	}
@@ -288,6 +298,10 @@ public class CalcJob extends Job {
 		return tasks().size();
 	}
 
+	public void setAggregates(boolean aggregates) {
+		this.aggregates = aggregates;
+	}
+	
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		for (Task task : tasks()) {

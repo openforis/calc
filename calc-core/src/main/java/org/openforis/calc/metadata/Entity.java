@@ -407,7 +407,30 @@ public class Entity extends NamedUserObject {
 			}
 		});
 	}
-
+	
+	// TODO for now simulated this way. 
+	
+	@SuppressWarnings("unchecked")
+	@JsonIgnore
+	public Collection<QuantitativeVariable> getOriginalQuantitativeVariables() {
+		return CollectionUtils.select(getQuantitativeVariables(), new Predicate() {
+			@Override
+			public boolean evaluate(Object object) {
+				return ((QuantitativeVariable)object).getOriginalId() != null;
+			}
+		});
+	}
+	@SuppressWarnings("unchecked")
+	@JsonIgnore
+	public Collection<QuantitativeVariable> getOutputVariables() {
+		return CollectionUtils.select(getQuantitativeVariables(), new Predicate() {
+			@Override
+			public boolean evaluate(Object object) {
+				return ((QuantitativeVariable)object).getOriginalId() == null;
+			}
+		});
+	}
+	
 	private Collection<Variable<?>> getVariables(Predicate predicate) {
 		@SuppressWarnings("unchecked")
 		Collection<Variable<?>> result = CollectionUtils.select(variables, predicate);
@@ -610,7 +633,18 @@ public class Entity extends NamedUserObject {
 
 	// returns true if at least one quantitative variable or output variable has an aggregate function associated
 	public boolean isAggregable() {
-		// TODO Auto-generated method stub
+		for (QuantitativeVariable var : getQuantitativeVariables()) {
+			if( var.getAggregates().size() > 0 ){
+				return true;
+			}
+			QuantitativeVariable variablePerHa = var.getVariablePerHa();
+			if( variablePerHa != null ){
+				if( variablePerHa.getAggregates().size() >0 ){
+					return true;
+				}
+			}
+		}
+		
 		return false;
 	}
 	

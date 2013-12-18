@@ -14,7 +14,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.jooq.Field;
+import org.jooq.Record;
 import org.jooq.Schema;
+import org.jooq.TableField;
 import org.jooq.impl.SQLDataType;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.AoiHierarchy;
@@ -41,6 +43,7 @@ public class NewFactTable extends DataTable {
 	private NewFactTable parentTable;
 //	private Map<AoiHierarchy, List<AggregateTable>> aggregateTables;
 	private EntityDataView entityView;
+private TableField<Record, BigDecimal> plotAreaField;
 
 //	protected NewFactTable(Entity entity, String name, Schema schema, DataTable sourceTable, NewFactTable parentTable) {
 //		super(entity, name, schema);
@@ -49,12 +52,15 @@ public class NewFactTable extends DataTable {
 	NewFactTable(Entity entity, Schema schema, EntityDataView entityView, NewFactTable parentTable) {
 		super(entity, getName(entity), schema);
 		this.entityView = entityView;
-		
+		TableField<Record, BigDecimal> plotArea = entityView.getPlotAreaField();
+		if (plotArea != null) {
+			this.plotAreaField = super.createField(plotArea.getName(), Psql.DOUBLE_PRECISION, this);
+		}
 //		this.sourceOutputTable = sourceOutputTable;
 //		this.parentTable = parentTable;
 //		
-//		this.dimensionIdFields = new HashMap<CategoricalVariable<?>, Field<Integer>>();
-//		this.measureFields = new HashMap<VariableAggregate, Field<BigDecimal>>();
+		this.dimensionIdFields = new HashMap<CategoricalVariable<?>, Field<Integer>>();
+		this.measureFields = new HashMap<VariableAggregate, Field<BigDecimal>>();
 //		this.aggregateTables = new HashMap<AoiHierarchy, List<AggregateTable>>();
 //		
 		createPrimaryKeyField();
@@ -95,13 +101,13 @@ public class NewFactTable extends DataTable {
 		}
 	}
 
-//	protected void createMeasureFields(Entity entity) {
-//		List<VariableAggregate> aggregates = entity.getVariableAggregates();
-//		for ( VariableAggregate agg : aggregates ) {
-//			Field<BigDecimal> field = createField(agg.getName(), Psql.DOUBLE_PRECISION, this);
-//			measureFields.put(agg, field);
-//		}
-//	}
+	protected void createMeasureFields(Entity entity) {
+		List<VariableAggregate> aggregates = entity.getVariableAggregates();
+		for ( VariableAggregate agg : aggregates ) {
+			Field<BigDecimal> field = createField(agg.getName(), Psql.DOUBLE_PRECISION, this);
+			measureFields.put(agg, field);
+		}
+	}
 //	
 //	protected void createAggregateTables() {
 //		Entity entity = getEntity();
@@ -139,9 +145,9 @@ public class NewFactTable extends DataTable {
 //		return dimensionIdFields.get(variable);
 //	}
 //
-//	public Collection<Field<Integer>> getDimensionIdFields() {
-//		return Collections.unmodifiableCollection(dimensionIdFields.values());
-//	}
+	public Collection<Field<Integer>> getDimensionIdFields() {
+		return Collections.unmodifiableCollection(dimensionIdFields.values());
+	}
 //	
 //	protected void createStratumIdField() {
 //		this.stratumIdField = createField("_stratum_id", INTEGER, this);
@@ -170,4 +176,13 @@ public class NewFactTable extends DataTable {
 //		}
 //		return Collections.unmodifiableCollection(tables);
 //	}
+
+	public TableField<Record, BigDecimal> getPlotAreaField() {
+		return plotAreaField;
+	}
+	
+	public EntityDataView getEntityView() {
+		return entityView;
+	}
+
 }
