@@ -118,7 +118,7 @@ HomeCalculationManager.prototype = (function() {
 			$.proxy(addStepElement, $this)(step);
 		} else {
 			element.data("calculationStep", step);
-			element.text(step.caption);
+			element.find("button").text(step.caption);
 		}
 		if (callback) {
 			callback();
