@@ -301,13 +301,13 @@ public class Entity extends NamedUserObject {
 
 //	@Deprecated
 	public boolean isSamplingUnit() {
-		return getWorkspace().isSamplingUnit(getId());
+		return getId() != null && getWorkspace().isSamplingUnit(getId());
 //		return samplingUnit;
 	}
 
-	public void setSamplingUnit(boolean samplingUnit) {
-		this.samplingUnit = samplingUnit;
-	}
+//	public void setSamplingUnit(boolean samplingUnit) {
+//		this.samplingUnit = samplingUnit;
+//	}
 	
 	public List<Entity> getChildren() {
 		return Collections.unmodifiableList(children);
