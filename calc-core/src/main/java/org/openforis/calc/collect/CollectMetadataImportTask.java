@@ -19,7 +19,6 @@ import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceDao;
 import org.openforis.calc.metadata.BinaryVariable;
-import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.EntityDao;
 import org.openforis.calc.metadata.MultiwayVariable;
@@ -29,6 +28,8 @@ import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.Variable.Scale;
 import org.openforis.calc.metadata.VariableDao;
 import org.openforis.collect.model.CollectSurvey;
+import org.openforis.collect.relational.model.CodeTable;
+import org.openforis.collect.relational.model.Column;
 import org.openforis.collect.relational.model.DataColumn;
 import org.openforis.collect.relational.model.DataTable;
 import org.openforis.collect.relational.model.PrimaryKeyColumn;
@@ -60,7 +61,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class CollectMetadataImportTask extends Task {
 
 	private static final QName CALC_SAMPLING_UNIT_ANNOTATION = new QName("http://www.openforis.org/calc/1.0/calc", "samplingUnit");
-	private static final String DIMENSION_TABLE_FORMAT = "%s_%s_dim";
+//	private static final String DIMENSION_TABLE_FORMAT = "%s_%s_dim";
 
 	@Autowired
 	private WorkspaceDao workspaceDao;
@@ -204,6 +205,10 @@ public class CollectMetadataImportTask extends Task {
 //		oldVariable.setInputValueColumn(newVariable.getInputValueColumn());
 		//oldVariable.setName(newVariable.getName());
 		oldVariable.setOutputValueColumn(newVariable.getOutputValueColumn());
+		if ( newVariable instanceof MultiwayVariable ) {
+			((MultiwayVariable) oldVariable).setInputCategoryIdColumn(((MultiwayVariable) newVariable).getInputCategoryIdColumn());
+			((MultiwayVariable) oldVariable).setDimensionTable(((MultiwayVariable) newVariable).getDimensionTable());
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -224,7 +229,7 @@ public class CollectMetadataImportTask extends Task {
 	private List<Entity> createEntitiesFromSchema() throws IdmlParseException {
 		CollectSurvey survey = ((CollectJob) getJob()).getSurvey();
 		
-		final RelationalSchema relationalSchema = ((CollectJob) getJob()).createInputRelationalSchema();
+		final RelationalSchema relationalSchema = ((CollectJob) getJob()).getInputRelationalSchema();
 		
 		Schema schema = survey.getSchema();
 		
@@ -306,11 +311,22 @@ public class CollectMetadataImportTask extends Task {
 		} else if ( attrDefn instanceof CodeAttributeDefinition &&
 				columnNodeDefnNam.equals(CodeAttributeDefinition.CODE_FIELD)) {
 			v = new MultiwayVariable();
-			v.setScale(Scale.NOMINAL);
-			((MultiwayVariable) v).setMultipleResponse(attrDefn.isMultiple());
-			((MultiwayVariable) v).setDisaggregate(! (column instanceof PrimaryKeyColumn));
-			CodeList list = ((CodeAttributeDefinition) attrDefn).getList();
-			((CategoricalVariable<?>) v).setDegenerateDimension(list.isExternal());
+			MultiwayVariable multiwayVar = (MultiwayVariable) v;
+			multiwayVar.setScale(Scale.NOMINAL);
+			multiwayVar.setMultipleResponse(attrDefn.isMultiple());
+			multiwayVar.setDisaggregate(! (column instanceof PrimaryKeyColumn));
+			CodeAttributeDefinition codeAttrDefn = (CodeAttributeDefinition) attrDefn;
+			CodeList list = codeAttrDefn.getList();
+			multiwayVar.setDegenerateDimension(list.isExternal());
+			
+			if ( ! multiwayVar.isDegenerateDimension() ) {
+				//set dimension table and input category id column
+				RelationalSchema inputRelationalSchema = ((CollectJob) getJob()).getInputRelationalSchema();
+				CodeTable categoryTable = inputRelationalSchema.getCodeListTable(list, codeAttrDefn.getListLevelIndex());
+				multiwayVar.setDimensionTable(categoryTable.getName());
+				Column<?> categoryIdColumn = categoryTable.getPrimaryKeyConstraint().getColumns().get(0);				
+				multiwayVar.setInputCategoryIdColumn(categoryIdColumn.getName());
+			}
 		} else if ( attrDefn instanceof DateAttributeDefinition ) {
 			v = new TextVariable();
 			v.setScale(Scale.TEXT);
@@ -339,10 +355,10 @@ public class CollectMetadataImportTask extends Task {
 			if ( v.getName() == null ) {
 				v.setName(generateVariableName(entityName, column.getName()));
 			}
-			if ( ! (v instanceof CategoricalVariable && ((CategoricalVariable<?>) v).isDegenerateDimension() ||
-					v instanceof TextVariable ) ) {
-				v.setDimensionTable(getDimensionTableName(entityName, v.getName()));
-			}
+//			if ( ! (v instanceof CategoricalVariable && ((CategoricalVariable<?>) v).isDegenerateDimension() ||
+//					v instanceof TextVariable ) ) {
+//				v.setDimensionTable(getDimensionTableName(entityName, v.getName()));
+//			}
 			v.setInputValueColumn(v.getName());
 			v.setOutputValueColumn(v.getName());
 			v.setOriginalId(attrDefn.getId());
@@ -350,10 +366,10 @@ public class CollectMetadataImportTask extends Task {
 		}
 	}
 
-	private String getDimensionTableName(String entityName, String variableName) {
-		String result = String.format(DIMENSION_TABLE_FORMAT, entityName, variableName);
-		return result;
-	}
+//	private String getDimensionTableName(String entityName, String variableName) {
+//		String result = String.format(DIMENSION_TABLE_FORMAT, entityName, variableName);
+//		return result;
+//	}
 
 	private void setCoordinateColumns(Entity entity, DataTable dataTable) {
 		EntityDefinition entityDefinition = (EntityDefinition) dataTable.getNodeDefinition();
