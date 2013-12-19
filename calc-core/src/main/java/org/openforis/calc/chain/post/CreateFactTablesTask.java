@@ -1,5 +1,6 @@
 package org.openforis.calc.chain.post;
 
+import java.awt.ItemSelectable;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
@@ -15,10 +16,14 @@ import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.VariableAggregate;
+import org.openforis.calc.psql.CreateTableStep.AsStep;
 import org.openforis.calc.psql.Psql;
 import org.openforis.calc.psql.Psql.Privilege;
 import org.openforis.calc.schema.DataTable;
+import org.openforis.calc.schema.EntityDataView;
 import org.openforis.calc.schema.FactTable;
+import org.openforis.calc.schema.InputSchema;
+import org.openforis.calc.schema.NewFactTable;
 import org.openforis.calc.schema.OutputSchema;
 import org.openforis.calc.schema.OutputTable;
 
@@ -28,8 +33,76 @@ import org.openforis.calc.schema.OutputTable;
  * @author G. Miceli
  */
 public final class CreateFactTablesTask extends Task {
+	
 	@Override
+	public String getName() {
+		return "Create data tables for aggregations";
+}
+	
 	protected void execute() throws Throwable {
+		InputSchema schema = getInputSchema();
+		List<NewFactTable> factTables = schema.getFactTables();
+		
+		for (NewFactTable factTable : factTables) {
+			EntityDataView dataTable = factTable.getEntityView();
+			
+			SelectQuery<?> select = new Psql().selectQuery(dataTable);
+			select.addSelect(dataTable.getIdField());
+//			select.addSelect(dataTable.getAoiIdFields());
+			for (Field<Integer> field : factTable.getDimensionIdFields()) {
+				// todo add dim fields to entitydataview
+				select.addSelect( dataTable.field(field) );
+			}
+			
+			// select measure
+			List<QuantitativeVariable> vars = factTable.getEntity().getQuantitativeVariables();
+			for (QuantitativeVariable var : vars) {
+				Field<BigDecimal> fld = dataTable.getQuantityField(var);
+				select.addSelect(fld);
+				
+//				for (VariableAggregate agg : var.getAggregates()) {
+//						Field<BigDecimal> measureFld = factTable.getVariableAggregateField(agg);
+//						Field<BigDecimal> valueFld = dataTable.getQuantityField(var);
+//						select.addSelect( valueFld.as(measureFld.getName()) );
+////					}
+//				}
+			}
+			
+			// add plot area
+			TableField<Record,BigDecimal> plotAreaField = factTable.getPlotAreaField();
+			if(plotAreaField != null) {
+//				select.addSelect( dataTable.field(plotAreaField) );
+			}
+			
+			psql()
+			.dropTableIfExists(factTable)
+			.execute();
+			
+			AsStep as = psql()
+			.createTable(factTable)
+			.as(select);
+			
+			as.execute();
+		
+		// Grant access to system user
+		psql()
+			.grant(Privilege.ALL)
+			.on(factTable)
+			.to(getSystemUser())
+			.execute();
+		
+			incrementItemsProcessed();
+		}
+		
+	}
+	
+	@Override
+	protected long countTotalItems() {
+		return getInputSchema().getFactTables().size();
+	}
+	
+//	@Override
+	protected void old_execute() throws Throwable {
 		OutputSchema outputSchema = getOutputSchema();
 		Collection<FactTable> factTables = outputSchema.getFactTables();
 		

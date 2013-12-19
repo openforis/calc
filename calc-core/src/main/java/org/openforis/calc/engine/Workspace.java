@@ -154,6 +154,16 @@ public class Workspace extends UserObject {
 		return samplingDesign;
 	}
 	
+	public boolean isSamplingUnit(int entityId) {
+		if( this.samplingDesign != null ){
+			Integer samplingUnitId = this.samplingDesign.getSamplingUnitId();
+			if( samplingUnitId != null ){
+				return samplingUnitId.equals( entityId );
+			}
+		}
+		return false;
+	}
+	
 	public void setSamplingDesign(SamplingDesign samplingDesign) {
 		this.samplingDesign = samplingDesign;
 	}

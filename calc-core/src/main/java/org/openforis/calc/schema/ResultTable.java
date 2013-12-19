@@ -24,8 +24,10 @@ public class ResultTable extends DataTable {
 
 	private TableField<Record, BigDecimal> plotArea;
 	
-	public ResultTable(Entity entity, InputSchema schema) {
-		super(entity, entity.getResultsTable(), schema);
+	
+	
+	public ResultTable(Entity entity, InputSchema schema, boolean temprary) {
+		super(entity, (temprary?entity.getTemporaryResultsTable():entity.getResultsTable()), schema);
 		createPrimaryKeyField();
 //		createParentIdField();
 //		createCategoryValueFields(entity, true);
@@ -38,6 +40,10 @@ public class ResultTable extends DataTable {
 		
 //		createCoordinateFields();
 //		createTextFields();
+	}
+	
+	public ResultTable(Entity entity, InputSchema schema) {
+		this(entity, schema, false);
 	}
 	
 	public TableField<Record, BigDecimal> getPlotArea() {

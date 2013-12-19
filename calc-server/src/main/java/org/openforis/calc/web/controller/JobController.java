@@ -99,7 +99,8 @@ public class JobController {
 		
 		CalcJob job = taskManager.createCalcJob(workspace);
 		job.addCalculationStep(step);
-
+//		job.setTempResults(true);
+		
 		taskManager.startJob(job);
 
 		return job;
@@ -114,6 +115,8 @@ public class JobController {
 		//TODO right now it loads all steps. change it so only steps for active workspace are loaded
 		List<CalculationStep> steps = calculationStepDao.loadAll("stepNo");
 		job.addCalculationStep(steps);
+		job.setAggregates(true);
+		
 		
 		taskManager.startJob(job);
 

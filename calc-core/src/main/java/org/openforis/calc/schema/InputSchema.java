@@ -3,7 +3,9 @@
  */
 package org.openforis.calc.schema;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.openforis.calc.engine.Workspace;
@@ -72,11 +74,27 @@ public class InputSchema extends RelationalSchema {
 	}
 	
 	public ResultTable getResultTable(Entity entity) {
-		ResultTable table = new ResultTable(entity, this);
-		return table;
+		return this.getResultTable(entity, false);
 	}
 
+	public ResultTable getResultTable(Entity entity, boolean temporary) {
+		ResultTable table = new ResultTable(entity, this, temporary);
+		return table;
+	}
+	
 	public EntityDataView getDataView(Entity entity) {
 		return dataViews.get(entity.getId());
 	}
+	
+	public List<NewFactTable> getFactTables() {
+		List<NewFactTable> tables = new ArrayList<NewFactTable>();
+		for ( Entity entity : workspace.getEntities() ) {
+			if( entity.isAggregable() ) {
+				NewFactTable factTable = new NewFactTable(entity, this, getDataView(entity), null);
+				tables.add(factTable);
+			}
+		}
+		return tables;
+	}
+	
 }

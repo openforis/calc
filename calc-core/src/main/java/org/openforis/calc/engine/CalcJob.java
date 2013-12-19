@@ -5,6 +5,7 @@ package org.openforis.calc.engine;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -21,6 +22,7 @@ import org.jooq.UpdateQuery;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.openforis.calc.chain.CalculationStep;
+import org.openforis.calc.chain.post.CreateFactTablesTask;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.psql.AlterTableStep.AlterColumnStep;
 import org.openforis.calc.psql.Psql;
@@ -51,6 +53,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  */
 public class CalcJob extends Job {
 
+	// save results in a temporary results table 
+	private boolean tempResults;
+	
 	@Autowired
 	@JsonIgnore
 	R r;
@@ -59,8 +64,9 @@ public class CalcJob extends Job {
 
 	@JsonIgnore
 	// private List<CalculationStep> calculationSteps;
-	private Map<Integer, List<CalculationStep>> calculationSteps;
-
+//	private Map<Integer, List<CalculationStep>> calculationSteps;
+	private CalcJobEntityGroup group;
+	
 	@Autowired
 	@JsonIgnore
 	private BeanFactory beanFactory;
@@ -77,28 +83,39 @@ public class CalcJob extends Job {
 	String password = "calc";
 	int port = 5432;
 
+	private boolean aggregates;
+
+	protected CalcJob(Workspace workspace, DataSource dataSource, BeanFactory beanFactory) {
+		this(workspace, dataSource, beanFactory, false);
+	}
+	
 	/**
 	 * @param workspace
 	 * @param dataSource
 	 */
-	protected CalcJob(Workspace workspace, DataSource dataSource, BeanFactory beanFactory) {
+	protected CalcJob(Workspace workspace, DataSource dataSource, BeanFactory beanFactory, boolean aggregates) {
 		super(workspace, dataSource);
 		setSchemas(new Schemas(workspace));
 
 		this.rLogger = new RLogger();
 		this.beanFactory = beanFactory;
-		this.calculationSteps = new HashMap<Integer, List<CalculationStep>>();
+		this.group = new CalcJobEntityGroup(this);
+		
+		this.tempResults = false;
+		this.aggregates = aggregates;
+//		this.calculationSteps = new HashMap<Integer, List<CalculationStep>>();
 	}
 
 	// calculation steps are grouped by entity for performance reason
 	public void addCalculationStep(CalculationStep step) {
-		Integer entityId = step.getOutputVariable().getEntity().getId();
-		List<CalculationStep> steps = this.calculationSteps.get(entityId);
-		if (steps == null) {
-			steps = new ArrayList<CalculationStep>();
-			this.calculationSteps.put(entityId, steps);
-		}
-		steps.add(step);
+		this.group.addCalculationStep(step);
+//		Integer entityId = step.getOutputVariable().getEntity().getId();
+//		List<CalculationStep> steps = this.calculationSteps.get(entityId);
+//		if (steps == null) {
+//			steps = new ArrayList<CalculationStep>();
+//			this.calculationSteps.put(entityId, steps);
+//		}
+//		steps.add(step);
 	}
 
 	public void addCalculationStep(List<CalculationStep> steps) {
@@ -145,43 +162,18 @@ public class CalcJob extends Job {
 		initTask.addScript(r().dbSendQuery(connection, "set search_path to " + getInputSchema().getName() + ", public"));
 		addTask(initTask);
 
+		
+		// init entity groups
+		this.group.init(connection);
 		// execute the calculation steps grouped by entity
-
-		for (Integer entityId : this.calculationSteps.keySet()) {
+		for (Integer entityId : this.group.entityIds() ) {
+//		for (Integer entityId : this.calculationSteps.keySet()) {
 			Entity entity = getWorkspace().getEntityById(entityId);
 			EntityDataView view = getSchemas().getInputSchema().getDataView(entity);
 			InputTable table = getSchemas().getInputSchema().getDataTable(entity);
 			Field<?> primaryKeyField = view.getPrimaryKey().getFields().get(0);
 			String primaryKey = primaryKeyField.getName();
 			RVariable dataFrame = r().variable(entity.getName());
-
-			// create calc steps
-			List<CalculationStepRTask> calculationStepTasks = new ArrayList<CalculationStepRTask>();
-			Set<String> outputVariables = new HashSet<String>();
-			Set<String> inputVariables = new HashSet<String>();
-			// temp fix it contains all variables will be saved in the results table
-			Set<String> allOutputVariables = new HashSet<String>();
-
-			// plot area script if available
-			RScript plotArea = entity.getPlotAreaRScript();
-			// plot_area variable hardcoded now
-			RVariable plotAreaVariable = null;
-			if ( plotArea != null ) {
-				plotAreaVariable = r().variable( dataFrame, ResultTable.PLOT_AREA_COLUMN_NAME );
-				allOutputVariables.add( ResultTable.PLOT_AREA_COLUMN_NAME );
-				inputVariables.addAll(plotArea.getVariables());
-			}
-			
-			// create a task for each step
-			for (CalculationStep step : this.calculationSteps.get(entityId)) {
-				CalculationStepRTask task = new CalculationStepRTask(step, rEnvironment, connection, dataFrame, plotAreaVariable );
-				calculationStepTasks.add(task);
-
-				outputVariables.addAll(task.getOutputVariables());
-				inputVariables.addAll(task.getInputVariables());
-				allOutputVariables.addAll(task.getAllOutputVariables());
-			}
-
 			
 			// ===== read data task
 			CalcRTask readDataTask = createTask("Read " + entity.getName() + " data");
@@ -189,7 +181,7 @@ public class CalcJob extends Job {
 			// 1. update output variables to null
 			UpdateQuery<Record> upd = new Psql().updateQuery(table);// .set(null,
 																	// null).
-			for (String field : outputVariables) {
+			for (String field : group.getOutputVariables(entityId) ) {
 				// skip primary key
 				if (!field.equals(primaryKey)) {
 					// TODO what if there are other types of field to update
@@ -205,13 +197,14 @@ public class CalcJob extends Job {
 			SelectQuery<Record> select = new Psql().selectQuery();
 			select.addFrom(view);
 			select.addSelect(view.getIdField());
-			for (String var : inputVariables) {
+			for (String var : group.getInputVariables(entityId) ) {
 				select.addSelect(view.field(var));
 			}
 			readDataTask.addScript(r().setValue(dataFrame, r().dbGetQuery(connection, select)));
 			addTask(readDataTask);
 			 
 			// append plot_area script
+			RScript plotArea = group.getPlotAreaScript(entityId);
 			if( plotArea != null ) {
 				RVariable results = r().variable( "results" );
 				SetValue setValue = r().setValue(results, r().rTry(plotArea) );
@@ -220,7 +213,7 @@ public class CalcJob extends Job {
 			
 			
 			// ======= add all calculation step tasks
-			addTasks(calculationStepTasks);
+			addTasks( group.getCalculationStepTasks(entityId) );
 
 			// ======= write results to db
 			CalcRTask writeResultsTask = createTask("Write " + entity.getName() + " results");
@@ -231,8 +224,8 @@ public class CalcJob extends Job {
 			writeResultsTask.addScript(r().setValue(pkeyVar, r().asCharacter(pkeyVar)));
 
 			// 5. keep results (only pkey and output variables)
-			RVariable results = r().variable(entity.getName() + "_results");
-			RVector cols = r().c(allOutputVariables.toArray(new String[] {})).addValue(primaryKey);
+			RVariable results = r().variable( entity.getName() + "_results" );
+			RVector cols = r().c(group.getAllOutputVariables(entityId).toArray(new String[] {})).addValue(primaryKey);
 
 			writeResultsTask.addScript(r().setValue(results, dataFrame.filterColumns(cols)));
 
@@ -241,7 +234,7 @@ public class CalcJob extends Job {
 			writeResultsTask.addScript(removeInf);
 
 			// 6. remove results table
-			ResultTable resultTable = getInputSchema().getResultTable(entity);
+			ResultTable resultTable = getInputSchema().getResultTable(entity, tempResults);
 			writeResultsTask.addScript(r().dbRemoveTable(connection, resultTable.getName()));
 
 			// 7. write results to db
@@ -257,7 +250,8 @@ public class CalcJob extends Job {
 			SelectQuery<Record> selectResults = new Psql().selectQuery();
 			selectResults.addFrom(resultTable);
 			selectResults.addSelect(resultTable.getIdField());
-			for (String var : outputVariables) {
+			Collection<String> outputVariables = group.getOutputVariables(entityId);
+			for (String var : outputVariables ) {
 				selectResults.addSelect(resultTable.field(var));
 			}
 			Table<?> cursor = selectResults.asTable("r");
@@ -271,6 +265,11 @@ public class CalcJob extends Job {
 
 			writeResultsTask.addScript(r().dbSendQuery(connection, update));
 
+			// update tree view if it's not temporary results 
+			if( !tempResults ) {
+				
+			}
+			
 			addTask(writeResultsTask);
 		}
 
@@ -278,6 +277,13 @@ public class CalcJob extends Job {
 		CalcRTask closeConnection = createTask("Close database connection");
 		closeConnection.addScript( r().dbDisconnect(connection) );
 		addTask(closeConnection);
+		
+		
+		if( aggregates ) {
+			CreateFactTablesTask task = new CreateFactTablesTask();
+			((AutowireCapableBeanFactory) beanFactory).autowireBean(task);
+			addTask( task );
+ 		}
 	}
 
 	protected CalcRTask createTask(String name) {
@@ -288,9 +294,14 @@ public class CalcJob extends Job {
 
 	@Override
 	protected long countTotalItems() {
-		return this.calculationSteps.size();
+//		return this.calculationSteps.size();
+		return tasks().size();
 	}
 
+	public void setAggregates(boolean aggregates) {
+		this.aggregates = aggregates;
+	}
+	
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		for (Task task : tasks()) {
@@ -304,8 +315,17 @@ public class CalcJob extends Job {
 		return this.rLogger;
 	}
 
-	protected REnvironment getrEnvironment() {
+	REnvironment getrEnvironment() {
 		return rEnvironment;
 	}
+
+	public boolean isTempResults() {
+		return tempResults;
+	}
+
+	public void setTempResults(boolean tempResults) {
+		this.tempResults = tempResults;
+	}
+
 	
 }

@@ -42,8 +42,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @Table(name = "entity")
 public class Entity extends NamedUserObject {
 	
-	private static final String TABLE_NAME_FORMAT = "_%s_results";
-	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "workspace_id")
 	@JsonIgnore
@@ -301,8 +299,10 @@ public class Entity extends NamedUserObject {
 		this.parentIdColumn = parentIdColumn;
 	}
 
+//	@Deprecated
 	public boolean isSamplingUnit() {
-		return samplingUnit;
+		return getWorkspace().isSamplingUnit(getId());
+//		return samplingUnit;
 	}
 
 	public void setSamplingUnit(boolean samplingUnit) {
@@ -351,7 +351,11 @@ public class Entity extends NamedUserObject {
 	}
 	
 	public String getResultsTable() {
-		return String.format(TABLE_NAME_FORMAT, getName());
+		return String.format( "_%s_results" , getName() );
+	}
+
+	public String getTemporaryResultsTable() {
+		return String.format( "_%s_temp_results" , getName() );
 	}
 	
 	
@@ -403,7 +407,30 @@ public class Entity extends NamedUserObject {
 			}
 		});
 	}
-
+	
+	// TODO for now simulated this way. 
+	
+	@SuppressWarnings("unchecked")
+	@JsonIgnore
+	public Collection<QuantitativeVariable> getOriginalQuantitativeVariables() {
+		return CollectionUtils.select(getQuantitativeVariables(), new Predicate() {
+			@Override
+			public boolean evaluate(Object object) {
+				return ((QuantitativeVariable)object).getOriginalId() != null;
+			}
+		});
+	}
+	@SuppressWarnings("unchecked")
+	@JsonIgnore
+	public Collection<QuantitativeVariable> getOutputVariables() {
+		return CollectionUtils.select(getQuantitativeVariables(), new Predicate() {
+			@Override
+			public boolean evaluate(Object object) {
+				return ((QuantitativeVariable)object).getOriginalId() == null;
+			}
+		});
+	}
+	
 	private Collection<Variable<?>> getVariables(Predicate predicate) {
 		@SuppressWarnings("unchecked")
 		Collection<Variable<?>> result = CollectionUtils.select(variables, predicate);
@@ -602,6 +629,23 @@ public class Entity extends NamedUserObject {
 			}
 		}
 		return null;
+	}
+
+	// returns true if at least one quantitative variable or output variable has an aggregate function associated
+	public boolean isAggregable() {
+		for (QuantitativeVariable var : getQuantitativeVariables()) {
+			if( var.getAggregates().size() > 0 ){
+				return true;
+			}
+			QuantitativeVariable variablePerHa = var.getVariablePerHa();
+			if( variablePerHa != null ){
+				if( variablePerHa.getAggregates().size() >0 ){
+					return true;
+				}
+			}
+		}
+		
+		return false;
 	}
 	
 }

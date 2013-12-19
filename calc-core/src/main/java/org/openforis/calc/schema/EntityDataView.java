@@ -1,9 +1,12 @@
 package org.openforis.calc.schema;
 
+import java.math.BigDecimal;
+
 import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Select;
 import org.jooq.SelectQuery;
+import org.jooq.TableField;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.psql.Psql;
 
@@ -25,10 +28,11 @@ public class EntityDataView extends DataTable {
 	 */
 	private SelectQuery<Record> select;
 
+	private TableField<Record, BigDecimal> plotAreaField;
+
 	public EntityDataView(Entity entity, InputSchema schema) {
 		super(entity, getViewName(entity), schema);
 		this.inputSchema = schema;
-
 		createPrimaryKeyField();
 		createParentIdField();
 		// TODO: coordinates disabled now
@@ -37,6 +41,15 @@ public class EntityDataView extends DataTable {
 		createQuantityFields(true);
 		createTextFields();
 		initSelect();
+
+		ResultTable resultTable = this.inputSchema.getResultTable(entity);
+		if (resultTable != null) {
+			TableField<Record, BigDecimal> plotArea = resultTable.getPlotArea();
+			if (plotArea != null) {
+				this.plotAreaField = super.createField(plotArea.getName(), Psql.DOUBLE_PRECISION, this);
+			}
+		}
+
 	}
 
 	private void initSelect() {
@@ -71,13 +84,13 @@ public class EntityDataView extends DataTable {
 
 	private Field<?> getFieldByName(SelectQuery<Record> select, String name) {
 		for (Field<?> field : select.getSelect()) {
-			if ( field.getName().equals(name) ) {
+			if (field.getName().equals(name)) {
 				return field;
 			}
 		}
 		return null;
 	}
-	
+
 	@Override
 	protected void createCategoryValueFields(Entity entity, boolean input) {
 		Entity currentEntity = getEntity();
@@ -86,7 +99,7 @@ public class EntityDataView extends DataTable {
 			currentEntity = currentEntity.getParent();
 		}
 	}
-	
+
 	@Override
 	protected void createQuantityFields(boolean input, boolean variableAggregates) {
 		Entity currentEntity = getEntity();
@@ -111,6 +124,10 @@ public class EntityDataView extends DataTable {
 
 	public Select<?> getSelect() {
 		return select;
+	}
+
+	public TableField<Record, BigDecimal> getPlotAreaField() {
+		return plotAreaField;
 	}
 
 }
