@@ -51,9 +51,13 @@ public class EntityDataView extends DataTable {
 	}
 
 	private void createQuantityFields() {
-		Collection<QuantitativeVariable> quantitativeVariables = getEntity().getOriginalQuantitativeVariables();
-		for (QuantitativeVariable var : quantitativeVariables) {
-			createQuantityField(var, var.getOutputValueColumn());
+		Entity currentEntity = getEntity();
+		while (currentEntity != null) {
+			Collection<QuantitativeVariable> quantitativeVariables = currentEntity.getOriginalQuantitativeVariables();
+			for (QuantitativeVariable var : quantitativeVariables) {
+				createQuantityField(var, var.getOutputValueColumn());
+			}
+			currentEntity = currentEntity.getParent();
 		}
 	}
 
@@ -141,6 +145,9 @@ public class EntityDataView extends DataTable {
 			select.addSelect( parentTable.getCategoryValueFields() );
 			select.addSelect( parentTable.getCategoryIdFields() );
 			select.addSelect( parentTable.getTextFields() );
+			for (QuantitativeVariable var : parentEntity.getOriginalQuantitativeVariables()) {
+				select.addSelect( parentTable.getQuantityField(var) );
+			}
 			
 			select.addJoin(parentTable, currentTable.getParentIdField().eq(parentTable.getIdField()));
 			
