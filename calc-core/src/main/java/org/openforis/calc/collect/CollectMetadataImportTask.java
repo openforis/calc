@@ -26,8 +26,7 @@ import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.Variable.Scale;
 import org.openforis.calc.metadata.VariableDao;
 import org.openforis.collect.model.CollectSurvey;
-import org.openforis.collect.relational.model.CodeTable;
-import org.openforis.collect.relational.model.Column;
+import org.openforis.collect.relational.model.CodeValueFKColumn;
 import org.openforis.collect.relational.model.DataColumn;
 import org.openforis.collect.relational.model.DataTable;
 import org.openforis.collect.relational.model.PrimaryKeyColumn;
@@ -320,10 +319,12 @@ public class CollectMetadataImportTask extends Task {
 			if ( ! multiwayVar.isDegenerateDimension() ) {
 				//set dimension table and input category id column
 				RelationalSchema inputRelationalSchema = ((CollectJob) getJob()).getInputRelationalSchema();
-				CodeTable categoryTable = inputRelationalSchema.getCodeListTable(list, codeAttrDefn.getListLevelIndex());
-				multiwayVar.setDimensionTable(categoryTable.getName());
-				Column<?> categoryIdColumn = categoryTable.getPrimaryKeyConstraint().getColumns().get(0);				
-				multiwayVar.setInputCategoryIdColumn(categoryIdColumn.getName());
+				
+				DataTable table = inputRelationalSchema.getDataTable(codeAttrDefn.getParentEntityDefinition());
+				CodeValueFKColumn fk = table.getForeignKeyCodeColumn(codeAttrDefn);
+				if ( fk != null ) {
+					multiwayVar.setInputCategoryIdColumn(fk.getName());
+				}
 			}
 		} else if ( attrDefn instanceof DateAttributeDefinition ) {
 			v = new TextVariable();
