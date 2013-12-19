@@ -52,8 +52,7 @@ public class CollectDataImportTask extends Task {
 	
 	@Override
 	protected void execute() throws Throwable {
-		
-		RelationalSchema targetSchema = ((CollectJob) getJob()).createInputRelationalSchema();
+		RelationalSchema targetSchema = ((CollectJob) getJob()).getInputRelationalSchema();
 		
 		DatabaseExporter databaseExporter = new CollectDatabaseExporter(config);
 		databaseExporter.insertReferenceData(targetSchema);

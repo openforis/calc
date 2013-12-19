@@ -38,7 +38,7 @@ public class CollectInputSchemaCreatorTask extends Task {
 	
 	@Override
 	protected long countTotalItems() {
-		return 5;
+		return 4;
 	}
 	
 	@Override
@@ -70,7 +70,7 @@ public class CollectInputSchemaCreatorTask extends Task {
 			.execute();
 		DataSourceConnectionProvider connectionProvider = (DataSourceConnectionProvider) config.connectionProvider();
 		DataSource dataSource = connectionProvider.dataSource();
-		RelationalSchema schema = ((CollectJob) getJob()).createInputRelationalSchema();
+		RelationalSchema schema = ((CollectJob) getJob()).getInputRelationalSchema();
 		RelationalSchemaCreator relationalSchemaCreator = new LiquibaseRelationalSchemaCreator();
 		Connection connection = DataSourceUtils.getConnection(dataSource);
 		relationalSchemaCreator.createRelationalSchema(schema, connection);

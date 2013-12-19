@@ -23,12 +23,21 @@ public abstract class CollectJob extends Job {
 	@JsonIgnore
 	private CollectSurvey survey;
 
+	@JsonIgnore
+	private RelationalSchema inputRelationalSchema;
+
 	public CollectJob(Workspace workspace, DataSource dataSource, CollectSurvey survey) {
 		super(workspace, dataSource);
 		this.survey = survey;
 	}
 	
-	protected RelationalSchema createInputRelationalSchema() {
+	@Override
+	public void init() {
+		super.init();
+		inputRelationalSchema = createInputRelationalSchema();
+	}
+	
+	private RelationalSchema createInputRelationalSchema() {
 		String inputSchemaName = getWorkspace().getInputSchema();
 		RelationalSchemaConfig config = RelationalSchemaConfig.createDefault();
 		config.setUniqueColumnNames(true);
@@ -44,5 +53,9 @@ public abstract class CollectJob extends Job {
 	
 	public CollectSurvey getSurvey() {
 		return survey;
+	}
+	
+	protected RelationalSchema getInputRelationalSchema() {
+		return inputRelationalSchema;
 	}
 }

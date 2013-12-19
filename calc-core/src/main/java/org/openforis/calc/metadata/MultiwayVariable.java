@@ -59,8 +59,8 @@ public class MultiwayVariable extends CategoricalVariable<String> {
 		return inputCategoryIdColumn;
 	}
 
-	public void setInputCategoryIdColumn(String inputCcategoryIdColumn) {
-		this.inputCategoryIdColumn = inputCcategoryIdColumn;
+	public void setInputCategoryIdColumn(String inputCategoryIdColumn) {
+		this.inputCategoryIdColumn = inputCategoryIdColumn;
 	}
 
 	public String getOutputCategoryIdColumn() {

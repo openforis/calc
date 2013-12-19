@@ -59,8 +59,6 @@ public class CategoriesImportTask extends Task {
 	@Autowired
 	private CategoryDao categoryDao;
 	
-	private RelationalSchema inputRelationalSchema;
-
 	@Override
 	public String getName() {
 		return "Import categories";
@@ -75,8 +73,6 @@ public class CategoriesImportTask extends Task {
 	@Override
 	protected void execute() throws Throwable {
 		deleteCategories();
-		
-		inputRelationalSchema = ( (CollectJob) getJob()).createInputRelationalSchema();
 		
 		insertCategories();
 	}
@@ -200,6 +196,7 @@ public class CategoriesImportTask extends Task {
 	private DataColumn getRDBDataColumn(CategoricalVariable<?> v) {
 		Entity entity = v.getEntity();
 		String tableName = entity.getDataTable();
+		RelationalSchema inputRelationalSchema = ((CollectJob) getJob()).getInputRelationalSchema();
 		Table<?> table = inputRelationalSchema.getTable(tableName);
 		Column<?> column = table.getColumn(v.getInputValueColumn());
 		if ( column instanceof DataColumn ) {
@@ -213,6 +210,7 @@ public class CategoriesImportTask extends Task {
 		NodeDefinition codeFieldDefn = column.getNodeDefinition();
 		CodeAttributeDefinition codeAttrDefn = (CodeAttributeDefinition) codeFieldDefn.getParentDefinition();
 		CodeList codeList = codeAttrDefn.getList();
+		RelationalSchema inputRelationalSchema = ((CollectJob) getJob()).getInputRelationalSchema();
 		CodeTable codeListTable = inputRelationalSchema.getCodeListTable(codeList, codeAttrDefn.getListLevelIndex());
 		return codeListTable;
 	}
