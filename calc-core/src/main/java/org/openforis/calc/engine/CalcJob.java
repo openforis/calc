@@ -16,6 +16,7 @@ import javax.sql.DataSource;
 
 import org.jooq.Field;
 import org.jooq.Record;
+import org.jooq.Select;
 import org.jooq.SelectQuery;
 import org.jooq.Table;
 import org.jooq.UpdateQuery;
@@ -25,6 +26,8 @@ import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.post.CreateFactTablesTask;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.psql.AlterTableStep.AlterColumnStep;
+import org.openforis.calc.psql.CreateViewStep.AsStep;
+import org.openforis.calc.psql.DropViewStep;
 import org.openforis.calc.psql.Psql;
 import org.openforis.calc.psql.UpdateWithStep;
 import org.openforis.calc.r.DbConnect;
@@ -247,27 +250,34 @@ public class CalcJob extends Job {
 
 			writeResultsTask.addScript(r().dbSendQuery(connection, alterPkey));
 
-			SelectQuery<Record> selectResults = new Psql().selectQuery();
-			selectResults.addFrom(resultTable);
-			selectResults.addSelect(resultTable.getIdField());
-			Collection<String> outputVariables = group.getOutputVariables(entityId);
-			for (String var : outputVariables ) {
-				selectResults.addSelect(resultTable.field(var));
-			}
-			Table<?> cursor = selectResults.asTable("r");
-
-			UpdateQuery<Record> updateResults = new Psql().updateQuery(table);
-			for (String var : outputVariables) {
-				updateResults.addValue((Field<BigDecimal>) table.field(var), (Field<BigDecimal>) cursor.field(var));
-			}
-
-			UpdateWithStep update = new Psql().updateWith(cursor, updateResults, table.getIdField().eq((Field<Long>) cursor.field(resultTable.getIdField().getName())));
-
-			writeResultsTask.addScript(r().dbSendQuery(connection, update));
+//			SelectQuery<Record> selectResults = new Psql().selectQuery();
+//			selectResults.addFrom(resultTable);
+//			selectResults.addSelect(resultTable.getIdField());
+//			Collection<String> outputVariables = group.getOutputVariables(entityId);
+//			for (String var : outputVariables ) {
+//				selectResults.addSelect(resultTable.field(var));
+//			}
+//			Table<?> cursor = selectResults.asTable("r");
+//
+//			UpdateQuery<Record> updateResults = new Psql().updateQuery(table);
+//			for (String var : outputVariables) {
+//				updateResults.addValue((Field<BigDecimal>) table.field(var), (Field<BigDecimal>) cursor.field(var));
+//			}
+//
+//			UpdateWithStep update = new Psql().updateWith(cursor, updateResults, table.getIdField().eq((Field<Long>) cursor.field(resultTable.getIdField().getName())));
+//
+//			writeResultsTask.addScript(r().dbSendQuery(connection, update));
 
 			// update tree view if it's not temporary results 
 			if( !tempResults ) {
+//				getWorkspace().
+				Select<?> selectView = view.getSelect(true);
+				// recreate view
+				DropViewStep dropViewIfExists = new Psql().dropViewIfExists(view);
+				writeResultsTask.addScript(r().dbSendQuery( connection, dropViewIfExists ));
 				
+				AsStep createView = new Psql().createView(view).as(selectView);
+				writeResultsTask.addScript(r().dbSendQuery( connection, createView ));
 			}
 			
 			addTask(writeResultsTask);

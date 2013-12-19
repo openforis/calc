@@ -56,6 +56,7 @@ public abstract class DataTable extends AbstractTable {
 	private Map<AoiLevel, Field<Integer>> aoiIdFields;
 	private Map<QuantitativeVariable, Field<BigDecimal>> quantityFields;
 	private Map<CategoricalVariable<?>, Field<?>> categoryValueFields;
+	protected Map<CategoricalVariable<?>, Field<Integer>> categoryIdFields;
 	private Map<VariableAggregate, Field<BigDecimal>> variableAggregateFields;
 	private Map<TextVariable, Field<String>> textFields;
 	
@@ -72,6 +73,7 @@ public abstract class DataTable extends AbstractTable {
 		this.aoiIdFields = new HashMap<AoiLevel, Field<Integer>>();
 		this.quantityFields = new HashMap<QuantitativeVariable, Field<BigDecimal>>();
 		this.categoryValueFields = new HashMap<CategoricalVariable<?>, Field<?>>();
+		this.categoryIdFields = new HashMap<CategoricalVariable<?>, Field<Integer>>();
 		this.variableAggregateFields = new HashMap<VariableAggregate, Field<BigDecimal>>();
 		this.textFields = new HashMap<TextVariable, Field<String>>();
 	}
@@ -126,6 +128,25 @@ public abstract class DataTable extends AbstractTable {
 			Field<BigDecimal> field = createField(varAgg.getName(), Psql.DOUBLE_PRECISION, this);
 			variableAggregateFields.put(varAgg, field);
 		}
+	}
+	
+	protected void createCategoryIdFields(Entity entity, boolean input) {
+		List<CategoricalVariable<?>> variables = entity.getCategoricalVariables();
+		for ( CategoricalVariable<?> var : variables ) {
+			String valueColumn = input ? var.getInputValueColumn() : var.getOutputValueColumn();
+			if ( valueColumn != null ) {
+				if ( var instanceof BinaryVariable ) {
+//					createBinaryCategoryValueField((BinaryVariable) var, valueColumn);
+				} else if ( var instanceof MultiwayVariable ) {
+					createCategoryIdField((MultiwayVariable) var, ((MultiwayVariable) var).getInputCategoryIdColumn());
+				}
+			}
+		}
+	}
+	
+	protected void createCategoryIdField(MultiwayVariable var, String valueColumn) {
+		Field<Integer> fld = createValueField(var,SQLDataType.INTEGER, valueColumn);
+		categoryIdFields.put(var, fld);
 	}
 	
 	protected void createCategoryValueFields(Entity entity, boolean input) {
@@ -271,6 +292,10 @@ public abstract class DataTable extends AbstractTable {
 		return Collections.unmodifiableCollection(categoryValueFields.values());
 	}
 	
+	public Collection<Field<Integer>> getCategoryIdFields() {
+		return Collections.unmodifiableCollection(categoryIdFields.values());
+	}
+	
 	public Collection<Field<Integer>> getAoiIdFields() {
 		return Collections.unmodifiableCollection(aoiIdFields.values());
 	}
@@ -285,6 +310,10 @@ public abstract class DataTable extends AbstractTable {
 	
 	public Field<?> getCategoryValueField(CategoricalVariable<?> var) {
 		return categoryValueFields.get(var);
+	}
+	
+	public Field<Integer> getCategoryIdField(CategoricalVariable<?> var) {
+		return categoryIdFields.get(var);
 	}
 	
 	public Field<BigDecimal> getVariableAggregateField(VariableAggregate variableAggregate){

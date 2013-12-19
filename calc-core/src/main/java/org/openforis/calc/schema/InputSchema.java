@@ -78,8 +78,11 @@ public class InputSchema extends RelationalSchema {
 	}
 
 	public ResultTable getResultTable(Entity entity, boolean temporary) {
-		ResultTable table = new ResultTable(entity, this, temporary);
-		return table;
+		if( entity.getOriginalQuantitativeVariables().size() > 0 ){
+			ResultTable table = new ResultTable(entity, this, temporary);
+			return table;
+		}
+		return null;
 	}
 	
 	public EntityDataView getDataView(Entity entity) {

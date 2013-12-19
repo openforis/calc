@@ -23,6 +23,7 @@ import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.AoiLevel;
 import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.VariableAggregate;
 import org.openforis.calc.psql.Psql;
 import org.openforis.commons.collection.CollectionUtils;
@@ -36,14 +37,14 @@ public class NewFactTable extends DataTable {
 	private static final String TABLE_NAME_FORMAT = "_%s_fact";
 	private static final String DIMENSION_ID_COLUMN_FORMAT = "%s_id";
 
-	protected Map<VariableAggregate, Field<BigDecimal>> measureFields;
+//	protected Map<VariableAggregate, Field<BigDecimal>> measureFields;
 	protected Map<CategoricalVariable<?>, Field<Integer>> dimensionIdFields;
 	
 	private Field<Integer> stratumIdField;
 	private NewFactTable parentTable;
 //	private Map<AoiHierarchy, List<AggregateTable>> aggregateTables;
 	private EntityDataView entityView;
-private TableField<Record, BigDecimal> plotAreaField;
+	private TableField<Record, BigDecimal> plotAreaField;
 
 //	protected NewFactTable(Entity entity, String name, Schema schema, DataTable sourceTable, NewFactTable parentTable) {
 //		super(entity, name, schema);
@@ -60,7 +61,7 @@ private TableField<Record, BigDecimal> plotAreaField;
 //		this.parentTable = parentTable;
 //		
 		this.dimensionIdFields = new HashMap<CategoricalVariable<?>, Field<Integer>>();
-		this.measureFields = new HashMap<VariableAggregate, Field<BigDecimal>>();
+//		this.measureFields = new HashMap<VariableAggregate, Field<BigDecimal>>();
 //		this.aggregateTables = new HashMap<AoiHierarchy, List<AggregateTable>>();
 //		
 		createPrimaryKeyField();
@@ -95,19 +96,21 @@ private TableField<Record, BigDecimal> plotAreaField;
 
 	protected void createDimensionIdField(CategoricalVariable<?> var) {
 		if ( !var.isDegenerateDimension() && var.isDisaggregate() ) {
-			String fieldName = String.format(DIMENSION_ID_COLUMN_FORMAT, var.getName());
-			Field<Integer> fld = createField(fieldName, SQLDataType.INTEGER, this);
-			dimensionIdFields.put(var, fld);
+			if( var instanceof MultiwayVariable){
+				String fieldName = ((MultiwayVariable) var).getInputCategoryIdColumn();  // String.format(DIMENSION_ID_COLUMN_FORMAT, var.getName());
+				Field<Integer> fld = createField(fieldName, SQLDataType.INTEGER, this);
+				dimensionIdFields.put(var, fld);
+			}
 		}
 	}
 
-	protected void createMeasureFields(Entity entity) {
-		List<VariableAggregate> aggregates = entity.getVariableAggregates();
-		for ( VariableAggregate agg : aggregates ) {
-			Field<BigDecimal> field = createField(agg.getName(), Psql.DOUBLE_PRECISION, this);
-			measureFields.put(agg, field);
-		}
-	}
+//	protected void createMeasureFields(Entity entity) {
+//		List<VariableAggregate> aggregates = entity.getVariableAggregates();
+//		for ( VariableAggregate agg : aggregates ) {
+//			Field<BigDecimal> field = createField(agg.getName(), Psql.DOUBLE_PRECISION, this);
+//			measureFields.put(agg, field);
+//		}
+//	}
 //	
 //	protected void createAggregateTables() {
 //		Entity entity = getEntity();

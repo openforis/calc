@@ -93,9 +93,9 @@ public class Entity extends NamedUserObject {
 	@Column(name = "location_column")
 	private String locationColumn;
 	
-	@JsonIgnore
-	@Column(name = "sampling_unit")
-	private boolean samplingUnit;
+//	@JsonIgnore
+//	@Column(name = "sampling_unit")
+//	private boolean samplingUnit;
 	
 	@JsonIgnore
 	@Column(name = "unit_of_analysis")
@@ -299,10 +299,11 @@ public class Entity extends NamedUserObject {
 		this.parentIdColumn = parentIdColumn;
 	}
 
-//	@Deprecated
 	public boolean isSamplingUnit() {
-		return getId() != null && getWorkspace().isSamplingUnit(getId());
-//		return samplingUnit;
+		if( this.getId() == null ){
+			throw new IllegalStateException("Id cannot be null");
+		}
+		return getWorkspace().isSamplingUnit(getId());
 	}
 
 //	public void setSamplingUnit(boolean samplingUnit) {
@@ -514,7 +515,7 @@ public class Entity extends NamedUserObject {
 		result = prime * result + (override ? 1231 : 1237);
 		result = prime * result
 				+ ((parentIdColumn == null) ? 0 : parentIdColumn.hashCode());
-		result = prime * result + (samplingUnit ? 1231 : 1237);
+//		result = prime * result + (samplingUnit ? 1231 : 1237);
 		result = prime * result + sortOrder;
 		result = prime * result
 				+ ((srsColumn == null) ? 0 : srsColumn.hashCode());
@@ -571,8 +572,8 @@ public class Entity extends NamedUserObject {
 				return false;
 		} else if (!parentIdColumn.equals(other.parentIdColumn))
 			return false;
-		if (samplingUnit != other.samplingUnit)
-			return false;
+//		if (samplingUnit != other.samplingUnit)
+//			return false;
 		if (sortOrder != other.sortOrder)
 			return false;
 		if (srsColumn == null) {
