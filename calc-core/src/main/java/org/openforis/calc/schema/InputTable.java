@@ -21,6 +21,7 @@ public class InputTable extends DataTable {
 		createPrimaryKeyField();
 		createParentIdField();
 		createCategoryValueFields(entity, true);
+		createCategoryIdFields(entity, true);
 		createQuantityFields(true);
 		createCoordinateFields();
 		createTextFields();

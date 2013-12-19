@@ -236,7 +236,7 @@ JobStatus.prototype = (function() {
 	
 	// reset its internal state
 	var reset = function() {
-		this.status.html( "Waiting execution status?" );
+		this.status.html( "Waiting job status" );
 		this.tasks.empty();
 
 		// empty log
