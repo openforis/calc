@@ -281,6 +281,7 @@ ScatterPlot.prototype = (function(){
 			
 			// set total items
 			$this.totalItems = cnt;
+			$this.offset = 0;
 			
 			// create the chart
 			$this.chartinfo.xAxis.title.text = this.xVariable;
