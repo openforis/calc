@@ -100,8 +100,13 @@ public class EntityDataViewDao extends AbstractJooqDao {
 			Long id = record.getValue(view.getIdField().getName(), Long.class);
 			DataRecord dataRecord = new DataRecord(id);
 			for (String field : fields) {
-				Object value = record.getValue(field);
-				dataRecord.add(field, value);
+				Object value;
+				try {
+					value = record.getValue(field);
+					dataRecord.add(field, value);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 			if (visitor != null) {
 				visitor.visit(dataRecord);

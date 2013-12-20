@@ -54,7 +54,7 @@ public class CalculationStepService {
 	private void deleteOutputVariable(int variableId) {
 		Variable<?> variable = variableDao.find(variableId);
 		if ( variable instanceof QuantitativeVariable ) {
-			workspaceService.deleteVariable((QuantitativeVariable) variable, true);
+			workspaceService.deleteOutputVariable((QuantitativeVariable) variable, true);
 		} else {
 			String errorMessage = String.format("Quantitative variable expected associated, found %s", 
 					variable.getClass().getName());

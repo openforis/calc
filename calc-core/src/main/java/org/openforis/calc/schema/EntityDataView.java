@@ -51,6 +51,11 @@ public class EntityDataView extends DataTable {
 	}
 
 	private void createQuantityFields() {
+		// first output variables
+		for (QuantitativeVariable var : getEntity().getOutputVariables() ) {
+			createQuantityField(var, var.getOutputValueColumn());
+		}
+		// then all original qty variables up to root
 		Entity currentEntity = getEntity();
 		while (currentEntity != null) {
 			Collection<QuantitativeVariable> quantitativeVariables = currentEntity.getOriginalQuantitativeVariables();
@@ -157,7 +162,7 @@ public class EntityDataView extends DataTable {
 		
 		// add join with results table if exits
 		ResultTable resultTable = schema.getResultTable(getEntity());
-		if( joinWithResults && resultTable != null ){
+		if( resultTable != null ){
 			// select output variables from results table
 			for (QuantitativeVariable var : getEntity().getOutputVariables()) {
 				select.addSelect( resultTable.getQuantityField(var) );

@@ -31,6 +31,8 @@ import org.openforis.calc.psql.DropViewStep;
 import org.openforis.calc.psql.Psql;
 import org.openforis.calc.psql.UpdateWithStep;
 import org.openforis.calc.r.DbConnect;
+import org.openforis.calc.r.DbWriteTable;
+import org.openforis.calc.r.If;
 import org.openforis.calc.r.R;
 import org.openforis.calc.r.REnvironment;
 import org.openforis.calc.r.RException;
@@ -182,8 +184,8 @@ public class CalcJob extends Job {
 			CalcRTask readDataTask = createTask("Read " + entity.getName() + " data");
 
 			// 1. update output variables to null
-			UpdateQuery<Record> upd = new Psql().updateQuery(table);// .set(null,
-																	// null).
+			ResultTable finalResultTable = getSchemas().getInputSchema().getResultTable(entity);
+			UpdateQuery<Record> upd = new Psql().updateQuery(finalResultTable);// .set(null,
 			for (String field : group.getOutputVariables(entityId) ) {
 				// skip primary key
 				if (!field.equals(primaryKey)) {
@@ -238,15 +240,20 @@ public class CalcJob extends Job {
 
 			// 6. remove results table
 			ResultTable resultTable = getInputSchema().getResultTable(entity, tempResults);
-			writeResultsTask.addScript(r().dbRemoveTable(connection, resultTable.getName()));
-
+//			writeResultsTask.addScript(r().dbRemoveTable(connection, resultTable.getName()));
+			writeResultsTask.addScript( r().dbSendQuery(connection, new Psql().dropTableIfExists(resultTable).cascade()) );
 			// 7. write results to db
 			writeResultsTask.addScript(r().dbWriteTable(connection, resultTable.getName(), results));
 
 			// 8. for each output field, update table with results joining with
 			// results table
 			// convert id datatype from varchar to bigint first
-			AlterColumnStep alterPkey = new Psql().alterTable(resultTable).alterColumn(resultTable.getIdField()).type(SQLDataType.BIGINT).using(resultTable.getIdField().getName() + "::bigint");
+			AlterColumnStep alterPkey = 
+					new Psql()
+						.alterTable(resultTable)
+						.alterColumn(resultTable.getIdField())
+						.type(SQLDataType.BIGINT)
+						.using(resultTable.getIdField().getName() + "::bigint");
 
 			writeResultsTask.addScript(r().dbSendQuery(connection, alterPkey));
 
@@ -269,20 +276,51 @@ public class CalcJob extends Job {
 //			writeResultsTask.addScript(r().dbSendQuery(connection, update));
 
 			// update tree view if it's not temporary results 
-			if( !tempResults ) {
-//				getWorkspace().
-				Select<?> selectView = view.getSelect(true);
-				// recreate view
-				DropViewStep dropViewIfExists = new Psql().dropViewIfExists(view);
-				writeResultsTask.addScript(r().dbSendQuery( connection, dropViewIfExists ));
+			if( tempResults ) {
 				
-				AsStep createView = new Psql().createView(view).as(selectView);
-				writeResultsTask.addScript(r().dbSendQuery( connection, createView ));
+				// if results table doesn't exists yet, it needs to create it anyway 
+//				DbWriteTable writeResults = r().dbWriteTable(connection, entity.getResultsTable(), results);
+//				If writeResultsIfItDoesntExist = r().rIf( r().not(r().dbExistsTable(connection, entity.getResultsTable())), writeResults );
+//				writeResultsTask.addScript(	writeResultsIfItDoesntExist );
+
+				// update results with temporary results
+				
+				
+				SelectQuery<Record> selectResults = new Psql().selectQuery();
+				selectResults.addFrom(resultTable);
+				selectResults.addSelect(resultTable.getIdField());
+				Collection<String> outputVariables = group.getOutputVariables(entityId);
+				for (String var : outputVariables ) {
+					selectResults.addSelect(resultTable.field(var));
+				}
+				Table<?> cursor = selectResults.asTable("r");
+	
+				UpdateQuery<Record> updateResults = new Psql().updateQuery(finalResultTable);
+				for (String var : outputVariables) {
+					updateResults.addValue((Field<BigDecimal>) finalResultTable.field(var), (Field<BigDecimal>) cursor.field(var));
+				}
+	
+				UpdateWithStep update = new Psql().updateWith(cursor, updateResults, finalResultTable.getIdField().eq((Field<Long>) cursor.field(resultTable.getIdField().getName())));
+	
+				writeResultsTask.addScript(r().dbSendQuery(connection, update));
+				
+				
+//			} else{
+//				getWorkspace().
+				
 			}
+			
+			// recreate view
+			DropViewStep dropViewIfExists = new Psql().dropViewIfExists(view);
+			writeResultsTask.addScript(r().dbSendQuery( connection, dropViewIfExists ));
+			
+			Select<?> selectView = view.getSelect(true);
+			AsStep createView = new Psql().createView(view).as(selectView);
+			writeResultsTask.addScript(r().dbSendQuery( connection, createView ));
+	//			}
 			
 			addTask(writeResultsTask);
 		}
-
 		// 9. close connection
 		CalcRTask closeConnection = createTask("Close database connection");
 		closeConnection.addScript( r().dbDisconnect(connection) );

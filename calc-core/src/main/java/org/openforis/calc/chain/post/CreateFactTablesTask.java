@@ -30,14 +30,14 @@ import org.openforis.calc.schema.OutputTable;
 /**
  * Creates and populates fact tables for entities marked "unit of analysis"
  * 
- * @author G. Miceli
+ * @author Mino Togna
  */
 public final class CreateFactTablesTask extends Task {
 	
 	@Override
 	public String getName() {
 		return "Create data tables for aggregations";
-}
+	}
 	
 	protected void execute() throws Throwable {
 		InputSchema schema = getInputSchema();

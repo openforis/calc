@@ -4,6 +4,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
+import org.jooq.Insert;
+import org.jooq.Record;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.EntityDao;
 import org.openforis.calc.metadata.QuantitativeVariable;
@@ -13,8 +17,13 @@ import org.openforis.calc.metadata.Variable.Scale;
 import org.openforis.calc.metadata.VariableAggregate;
 import org.openforis.calc.metadata.VariableAggregateDao;
 import org.openforis.calc.metadata.VariableDao;
+import org.openforis.calc.psql.Psql;
 import org.openforis.calc.schema.EntityDataViewDao;
+import org.openforis.calc.schema.InputSchema;
 import org.openforis.calc.schema.InputSchemaDao;
+import org.openforis.calc.schema.InputTable;
+import org.openforis.calc.schema.ResultTable;
+import org.openforis.calc.schema.Schemas;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,6 +61,9 @@ public class WorkspaceService {
 	@Autowired
 	private SamplingDesignDao samplingDesignDao;
 
+	@Autowired
+	private DataSource dataSource;
+	
 	private Map<Integer, SimpleLock> locks;
 
 	public WorkspaceService() {
@@ -130,14 +142,33 @@ public class WorkspaceService {
 		return ws;
 	}
 
-	public QuantitativeVariable addQuantitativeVariable(Entity entity, String name) {
+	public QuantitativeVariable addOutputVariable(Entity entity, String name) {
+		
+		// get result table
+		InputSchema schema = new Schemas( entity.getWorkspace() ).getInputSchema();
+		ResultTable originalTable = schema.getResultTable(entity);
+		
 		QuantitativeVariable variable = createQuantitativeVariable(name);
 
 		entity.addVariable(variable);
 
 		variableDao.save(variable);
 
-		addVariableColumn(variable);
+//		addVariableColumn(variable);
+		
+		// add column to results table and update entity view
+		ResultTable resultTable = schema.getResultTable(entity);
+		if( originalTable == null) { 
+			new Psql(dataSource)
+				.createTable(originalTable, resultTable.fields())
+				.execute();
+		} else {
+			new Psql(dataSource)
+				.alterTable(resultTable)
+				.addColumn( resultTable.getQuantityField(variable) )
+				.execute();
+		}
+		
 		updateEntityView(variable);
 
 		return variable;
@@ -211,6 +242,35 @@ public class WorkspaceService {
 			entityDataViewDao.createOrUpdateView(entity);
 		}
 	}
+	
+	/**
+	 * Remove all results table and recreates them empty
+	 */
+	public void resetResults(Workspace ws) {
+		InputSchema schema = new Schemas(ws).getInputSchema();
+		List<Entity> entities = ws.getEntities();
+		for (Entity entity : entities) {
+			ResultTable resultsTable = schema.getResultTable(entity);
+			InputTable dataTable = schema.getDataTable(entity);
+			
+			if( resultsTable != null ) {
+				new Psql()
+				.dropTableIfExists(resultsTable)
+				.execute();
+				
+				new Psql()
+					.createTable(resultsTable, resultsTable.fields())
+					.execute();
+				
+				Insert<Record> insert = new Psql()
+					.insertInto(resultsTable, resultsTable.getIdField() )
+					.select( new Psql().select(dataTable.getIdField()).from(dataTable) );
+				
+				insert.execute();
+			}	
+		}
+		
+	}
 
 	@Transactional
 	public Workspace setActiveWorkspaceSamplingUnit(Integer entityId) {
@@ -256,7 +316,7 @@ public class WorkspaceService {
 		}
 		variable = (QuantitativeVariable) variableDao.find(variableReturnId);
 		
-		updateEntityView(variable);
+//		updateEntityView(variable);
 		
 		return variable;
 	}
@@ -284,7 +344,7 @@ public class WorkspaceService {
 		
 		variable = (QuantitativeVariable) variableDao.find(variableReturnId);
 		
-		updateEntityView(variable);
+//		updateEntityView(variable);
 		
 		return variable;
 	}
@@ -336,12 +396,12 @@ public class WorkspaceService {
 	}
 	
 	@Transactional
-	public void deleteVariable(QuantitativeVariable variable, boolean updateEntityView) {
+	public void deleteOutputVariable(QuantitativeVariable variable, boolean updateEntityView) {
 		QuantitativeVariable variablePerHa = variable.getVariablePerHa();
 		if ( variablePerHa != null ) {
 			deleteVariablePerHa(variable, false);
 		}
-		dropVariableColumn(variable);
+//		dropVariableColumn(variable);
 		
 		Entity entity = getEntity(variable);
 		
@@ -349,9 +409,18 @@ public class WorkspaceService {
 
 		entity.removeVariable(variable);
 		
-		if ( updateEntityView ) {
+		// drop column from results table
+		InputSchema schema = new Schemas(entity.getWorkspace()).getInputSchema();
+		ResultTable table = schema.getResultTable(entity);
+		
+		new Psql(dataSource)
+			.alterTable(table)
+			.dropColumn( table.getQuantityField(variable) )
+			.execute();
+		
+//		if ( updateEntityView ) {
 			updateEntityView(variable);
-		}
+//		}
 	}
 	
 	/**
