@@ -3,6 +3,8 @@
  */
 package org.openforis.calc.engine;
 
+import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -11,6 +13,7 @@ import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Select;
 import org.jooq.SelectQuery;
+import org.jooq.Table;
 import org.jooq.UpdateQuery;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
@@ -22,9 +25,8 @@ import org.openforis.calc.psql.AlterTableStep.AlterColumnStep;
 import org.openforis.calc.psql.CreateViewStep.AsStep;
 import org.openforis.calc.psql.DropViewStep;
 import org.openforis.calc.psql.Psql;
+import org.openforis.calc.psql.UpdateWithStep;
 import org.openforis.calc.r.DbConnect;
-import org.openforis.calc.r.DbWriteTable;
-import org.openforis.calc.r.If;
 import org.openforis.calc.r.R;
 import org.openforis.calc.r.REnvironment;
 import org.openforis.calc.r.RException;
