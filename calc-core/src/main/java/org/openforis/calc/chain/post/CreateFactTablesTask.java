@@ -48,6 +48,7 @@ public final class CreateFactTablesTask extends Task {
 			
 			SelectQuery<?> select = new Psql().selectQuery(dataTable);
 			select.addSelect(dataTable.getIdField());
+			select.addSelect(dataTable.getParentIdField() );
 //			select.addSelect(dataTable.getAoiIdFields());
 			for (Field<Integer> field : factTable.getDimensionIdFields()) {
 				// todo add dim fields to entitydataview
@@ -71,7 +72,7 @@ public final class CreateFactTablesTask extends Task {
 			// add plot area
 			TableField<Record,BigDecimal> plotAreaField = factTable.getPlotAreaField();
 			if(plotAreaField != null) {
-//				select.addSelect( dataTable.field(plotAreaField) );
+				select.addSelect( dataTable.field(plotAreaField) );
 			}
 			
 			psql()

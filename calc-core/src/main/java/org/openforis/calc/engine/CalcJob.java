@@ -19,6 +19,7 @@ import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.SchemaImpl;
 import org.openforis.calc.chain.CalculationStep;
+import org.openforis.calc.chain.post.CreateAggregateTablesTask;
 import org.openforis.calc.chain.post.CreateFactTablesTask;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.psql.AlterTableStep.AlterColumnStep;
@@ -323,6 +324,10 @@ public class CalcJob extends Job {
 			CreateFactTablesTask task = new CreateFactTablesTask();
 			((AutowireCapableBeanFactory) beanFactory).autowireBean(task);
 			addTask( task );
+			
+			CreateAggregateTablesTask aggTask = new CreateAggregateTablesTask();
+			((AutowireCapableBeanFactory) beanFactory).autowireBean(aggTask);
+			addTask( aggTask );
  		}
 	}
 

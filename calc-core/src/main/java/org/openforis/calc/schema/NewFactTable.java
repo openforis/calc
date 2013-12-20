@@ -49,18 +49,25 @@ public class NewFactTable extends DataTable {
 //	protected NewFactTable(Entity entity, String name, Schema schema, DataTable sourceTable, NewFactTable parentTable) {
 //		super(entity, name, schema);
 //	}
+	NewFactTable(Entity entity , String name, Schema schema){
+		super(entity, name, schema);
+		
+		this.dimensionIdFields = new HashMap<CategoricalVariable<?>, Field<Integer>>();
+	}
 	
 	NewFactTable(Entity entity, Schema schema, EntityDataView entityView, NewFactTable parentTable) {
-		super(entity, getName(entity), schema);
+		this(entity, getName(entity), schema);
+		
 		this.entityView = entityView;
 		TableField<Record, BigDecimal> plotArea = entityView.getPlotAreaField();
+		
 		if (plotArea != null) {
 			this.plotAreaField = super.createField(plotArea.getName(), Psql.DOUBLE_PRECISION, this);
 		}
 //		this.sourceOutputTable = sourceOutputTable;
 //		this.parentTable = parentTable;
 //		
-		this.dimensionIdFields = new HashMap<CategoricalVariable<?>, Field<Integer>>();
+		
 //		this.measureFields = new HashMap<VariableAggregate, Field<BigDecimal>>();
 //		this.aggregateTables = new HashMap<AoiHierarchy, List<AggregateTable>>();
 //		
@@ -70,7 +77,7 @@ public class NewFactTable extends DataTable {
 //		createAoiIdFields();
 		createQuantityFields(false, true);
 //		createMeasureFields(entity);
-//		createParentIdField();
+		createParentIdField();
 //		createAggregateTables();
 	}
 
@@ -186,6 +193,13 @@ public class NewFactTable extends DataTable {
 	
 	public EntityDataView getEntityView() {
 		return entityView;
+	}
+	
+	public PlotAggregateTable getPlotAggregateTable() {
+		if( getEntity().getParent().isSamplingUnit() ){
+			return new PlotAggregateTable(this);
+		}
+		return null;
 	}
 
 }

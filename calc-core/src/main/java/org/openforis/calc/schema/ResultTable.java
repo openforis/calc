@@ -22,8 +22,6 @@ public class ResultTable extends DataTable {
 
 	private TableField<Record, BigDecimal> plotArea;
 	
-	
-	
 	public ResultTable(Entity entity, InputSchema schema, boolean temporary) {
 		super(entity, (temporary?entity.getTemporaryResultsTable():entity.getResultsTable()), schema);
 		createPrimaryKeyField();
