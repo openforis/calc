@@ -824,6 +824,7 @@ ul.ui-sortable li {
 	overflow: hidden;
 }
 #job-status .log {
+	border: none;
 /* 	border: 1px inset #a2a4b1; */
 	min-height: 100px;
 	-webkit-box-shadow: 1px 1px 2px 1px rgba(149,165,166,0.5);
@@ -835,24 +836,12 @@ ul.ui-sortable li {
 	height: 100%;
 	overflow: auto;
 }
-#job-status .log .row {
+#job-status .log div {
+	font-family: monospace;
 	text-align: left;
 	font-size: 0.8em;
 	margin: 0px;
+	color: #2c3e50;
+	white-space: pre;
 }
-#job-status .log .row span.space {
-	display: inline-block;
-/* 	visibility: hidden; */
-	width: 0.6em;
-	text-align: right;
-/* 	letter-spacing: 0.24em; */
-/*     background: radial-gradient(circle, #FFF, rgba(192,192,0,0) 1px); */
-}
-	
-	
-	
-	
-	
-	
-	
 	

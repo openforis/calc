@@ -80,46 +80,26 @@ JobStatus.prototype = (function() {
 		if( job.rlogger ) {
 			var lines = job.rlogger.lines;
 			var processedLines = this.log.children().length;
-			var delay = 50;
-			
 			var newLines = lines.slice(processedLines, lines.length);
+			
 			$.each(newLines, function(i, line){
-				// just faking spaces
-				var textLine = "<span>" + line.text.replace(/ /g, '<span class="space">&nbsp;</span>')  + "</span>";//.replace(/[\s]/g, "\u0020");;
-				
-				var div = $('<div class="row"></div>');
+				var div = $('<div></div>');
 				div.hide();
 				
-				var match = line.text.match(/.{1}/);
-//				$.each(line.text, function(i, line){
-				for(var k = 0; k< line.text.length; k++ ){
-					var char = line.text[k];
-//					console.log("char " + k);
-					var span =$('<span class="space"></span>');
-//					span.html( char.replace(/ /g,'&nbsp') );
-					span.html( char );
-					div.append(span);
-//					console.log(char);
-				}
-//				});
+				div.text(line.text);
 				
-//				var s = $("<span>> </span>");
-//				s.disableSelection();
-//				div.append( s );
-//				div.append( $(textLine) );
 				$this.log.append(div);
-//				setTimeout(function(){
-					div.fadeIn(300);
-					// scroll only at the end
-					if(i == newLines.length-1){
-						setTimeout(function(){
-							$this.log.stop().animate({
-								scrollTop: div.offset().top
-							}, 0);
-						}, 1000);
-					}
-//				}, (delay+=50) );
-
+				
+				div.fadeIn(300);
+				
+				// scroll only at the end
+				if(i == newLines.length-1){
+					setTimeout(function(){
+						$this.log.stop().animate({
+							scrollTop: div.offset().top
+						}, 0);
+					}, 1000);
+				}
 			});
 		}
 		
@@ -220,15 +200,15 @@ JobStatus.prototype = (function() {
 			$this.logBtn.on("click", clickFunction);
 			
 			// resize log on window resize
-			$this.updateLogSectionHeight = function() {
-				console.log("resize");
-				if( $this.logBtn.hasClass("option-btn-selected") ){
-					var height = $(document).height() / 5;
-					$this.logSection.animate({ height: height }, 600);
-				}
-			};
-			$(window).on("resize", $this.updateLogSectionHeight);
-			
+//			$this.updateLogSectionHeight = function() {
+//				console.log("resize");
+//				if( $this.logBtn.hasClass("option-btn-selected") ){
+//					var height = $(document).height() / 5;
+//					$this.logSection.animate({ height: height }, 600);
+//				}
+//			};
+//			$(window).on("resize", $this.updateLogSectionHeight);
+//			
 		}
 	};
 	
