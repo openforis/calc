@@ -30,14 +30,14 @@ import org.openforis.calc.schema.OutputTable;
 /**
  * Creates and populates fact tables for entities marked "unit of analysis"
  * 
- * @author G. Miceli
+ * @author Mino Togna
  */
 public final class CreateFactTablesTask extends Task {
 	
 	@Override
 	public String getName() {
 		return "Create data tables for aggregations";
-}
+	}
 	
 	protected void execute() throws Throwable {
 		InputSchema schema = getInputSchema();
@@ -48,6 +48,7 @@ public final class CreateFactTablesTask extends Task {
 			
 			SelectQuery<?> select = new Psql().selectQuery(dataTable);
 			select.addSelect(dataTable.getIdField());
+			select.addSelect(dataTable.getParentIdField() );
 //			select.addSelect(dataTable.getAoiIdFields());
 			for (Field<Integer> field : factTable.getDimensionIdFields()) {
 				// todo add dim fields to entitydataview
@@ -71,7 +72,7 @@ public final class CreateFactTablesTask extends Task {
 			// add plot area
 			TableField<Record,BigDecimal> plotAreaField = factTable.getPlotAreaField();
 			if(plotAreaField != null) {
-//				select.addSelect( dataTable.field(plotAreaField) );
+				select.addSelect( dataTable.field(plotAreaField) );
 			}
 			
 			psql()

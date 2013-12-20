@@ -30,7 +30,7 @@ public class RScript {
 	protected static final String COMMA = ",";
 	protected static final String NEW_LINE = "\n";
 	protected static final String NULL = "NULL";
-	
+	protected static final String NOT = "!";
 	// previous r script
 	private RScript previous;
 	// stringbuilder that contains the script
@@ -101,7 +101,19 @@ public class RScript {
 	public DbRemoveTable dbRemoveTable(RVariable connection, String name) {
 		return new DbRemoveTable(this, connection, name);
 	}
-
+	
+	public DbExistsTable dbExistsTable(RVariable connection, String name) {
+		return new DbExistsTable(this, connection, name);
+	}
+	
+	public If rIf(RScript condition, RScript script) {
+		return new If(this, condition, script);
+	}
+	
+	public Not not(RScript script) {
+		return new Not(this, script);
+	}
+	
 	public DbDriver dbDriver(String name) {
 		return new DbDriver(this, name);
 	}

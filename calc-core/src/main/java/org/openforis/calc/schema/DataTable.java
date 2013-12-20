@@ -83,6 +83,14 @@ public abstract class DataTable extends AbstractTable {
 		this.idField = createField(entity.getIdColumn(), BIGINT, this);
 		this.primaryKey = KeyFactory.newUniqueKey(this, idField);
 	}
+	
+	protected void setIdField(TableField<Record, Long> idField) {
+		this.idField = idField;
+	}
+	
+	protected void setPrimaryKey(UniqueKey<Record> primaryKey) {
+		this.primaryKey = primaryKey;
+	}
 
 	protected void createQuantityField(QuantitativeVariable var, String valueColumn) {
 		Field<BigDecimal> field = createValueField(var, Psql.DOUBLE_PRECISION, valueColumn);
@@ -126,8 +134,12 @@ public abstract class DataTable extends AbstractTable {
 		List<VariableAggregate> aggregates = var.getAggregates();
 		for ( VariableAggregate varAgg : aggregates ) {
 			Field<BigDecimal> field = createField(varAgg.getName(), Psql.DOUBLE_PRECISION, this);
-			variableAggregateFields.put(varAgg, field);
+			addVariableAggregateField(varAgg, field);
 		}
+	}
+
+	protected void addVariableAggregateField(VariableAggregate varAgg, Field<BigDecimal> field) {
+		variableAggregateFields.put(varAgg, field);
 	}
 	
 	protected void createCategoryIdFields(Entity entity, boolean input) {

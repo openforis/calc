@@ -1,9 +1,11 @@
 package org.openforis.calc.chain.post;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 
 import org.jooq.Field;
+import org.jooq.Record;
 import org.jooq.SelectQuery;
 import org.jooq.impl.DSL;
 import org.openforis.calc.engine.CalcJob;
@@ -11,6 +13,7 @@ import org.openforis.calc.engine.Job;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.metadata.AoiLevel;
 import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.VariableAggregate;
 import org.openforis.calc.psql.Psql;
 import org.openforis.calc.psql.Psql.Privilege;
@@ -18,7 +21,10 @@ import org.openforis.calc.schema.AggregateTable;
 import org.openforis.calc.schema.ExpansionFactorTable;
 import org.openforis.calc.schema.FactTable;
 import org.openforis.calc.schema.InputSchema;
+import org.openforis.calc.schema.NewFactTable;
 import org.openforis.calc.schema.OutputSchema;
+import org.openforis.calc.schema.PlotAggregateTable;
+import org.openforis.calc.schema.ResultTable;
 import org.openforis.calc.schema.Schemas;
 
 /**
@@ -29,13 +35,17 @@ import org.openforis.calc.schema.Schemas;
  */
 public final class CreateAggregateTablesTask extends Task {
 	
-	private Entity entity;
+//	private Entity entity;
 
-	public CreateAggregateTablesTask(Entity entity) {
+	public CreateAggregateTablesTask() {
 		super();
-		this.entity = entity;
+//		this.entity = entity;
 	}
 
+	@Override
+	protected long countTotalItems() {
+		return getJob().getInputSchema().getFactTables().size();
+	}
 	
 	protected void execute() throws Throwable {
 		CalcJob job = (CalcJob) getJob();
@@ -43,14 +53,58 @@ public final class CreateAggregateTablesTask extends Task {
 		Schemas schemas = job.getSchemas();
 		InputSchema schema = schemas.getInputSchema();
 		
-		Entity samplingUnit = getWorkspace().getSamplingDesign().getSamplingUnit();
+		List<NewFactTable> factTables = schema.getFactTables();
+		for (NewFactTable factTable : factTables) {
+			Entity entity = factTable.getEntity();
+			if( entity.getParent().isSamplingUnit() ){
+				PlotAggregateTable plotAgg = factTable.getPlotAggregateTable();
+				
+				SelectQuery<Record> select = psql().selectQuery();
+				select.addFrom( factTable );
+				
+				select.addSelect( factTable.getParentIdField() );
+				select.addGroupBy( factTable.getParentIdField() );
+				select.addSelect( factTable.getDimensionIdFields() );
+				select.addGroupBy( factTable.getDimensionIdFields() );
+				
+				// for now quantity fields. check if it needs to be done for each variable aggregate
+				for (QuantitativeVariable var : entity.getOutputVariables()) {
+					Field<BigDecimal> quantityField = factTable.getQuantityField(var);
+					
+					select.addSelect( DSL.sum( quantityField.div(factTable.getPlotAreaField()) ).as(quantityField.getName()) );
+				}
+				
+				// drop table
+				psql()
+					.dropTableIfExists( plotAgg )
+					.execute();
+				
+				int execute = psql()
+					.createTable(plotAgg)
+					.as(select)
+					.execute();
+				
+			}
+			
+		}
+//		for (Entity entity : getWorkspace().getEntities()) {
+//			ResultTable resultTable = schema.getResultTable(entity);
+//			if( resultTable != null ){
+//				// aggregate based on the sampling design
+//				if( entity.getParent().isSamplingUnit() ){
+//					resultTable.getPlotAggregateTable();
+//				} else {
+//					// nothing for now
+//				}
+//			}
+//		}
 		
 //		job.get
 	}	
 	
 	@Override
 	public String getName() {
-		return String.format( "Aggregate %s", this.entity.getName() );
+		return String.format( "Aggregate Tables" );
 	}
 	
 //	@Override
