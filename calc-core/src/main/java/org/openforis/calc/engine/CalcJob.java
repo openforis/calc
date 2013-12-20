@@ -3,14 +3,7 @@
  */
 package org.openforis.calc.engine;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import javax.sql.DataSource;
 
@@ -18,10 +11,10 @@ import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Select;
 import org.jooq.SelectQuery;
-import org.jooq.Table;
 import org.jooq.UpdateQuery;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
+import org.jooq.impl.SchemaImpl;
 import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.post.CreateFactTablesTask;
 import org.openforis.calc.metadata.Entity;
@@ -29,7 +22,6 @@ import org.openforis.calc.psql.AlterTableStep.AlterColumnStep;
 import org.openforis.calc.psql.CreateViewStep.AsStep;
 import org.openforis.calc.psql.DropViewStep;
 import org.openforis.calc.psql.Psql;
-import org.openforis.calc.psql.UpdateWithStep;
 import org.openforis.calc.r.DbConnect;
 import org.openforis.calc.r.DbWriteTable;
 import org.openforis.calc.r.If;
@@ -162,11 +154,9 @@ public class CalcJob extends Job {
 		DbConnect dbConnect = r().dbConnect(driver, host, database, user, password, port);
 		initTask.addScript(r().setValue(connection, dbConnect));
 
-		// set search path to current schema
-		// TODO replace with psql().setSearchPath() once implemented
-		initTask.addScript(r().dbSendQuery(connection, "set search_path to " + getInputSchema().getName() + ", public"));
+		// set search path to current and public schemas
+		initTask.addScript(r().dbSendQuery(connection, new Psql().setDefaultSchemaSearchPath(getInputSchema(), new SchemaImpl("public"))));
 		addTask(initTask);
-
 		
 		// init entity groups
 		this.group.init(connection);
