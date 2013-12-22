@@ -351,9 +351,30 @@ formula editor
 /**
 *  Data visualization
 */
-.data-visualization, .data-visualization .scatter-plot {
+.data-visualization {
 	display: none;	
 	height: 100%;
+}
+.data-visualization .data-visualization-header-buttons button {
+	height: 5%;
+	width:100%;	
+/* 	border: 1px solid #2c3e50; */
+}
+.data-visualization .data-table {
+	height: 95%;
+}
+.data-visualization .scatter-plot { 
+	display: none;
+	height: 95%;
+	padding-top : 5px;
+}
+.data-visualization .scatter-plot .options {
+	height: 5%;
+} 
+.data-visualization .scatter-plot .chart {
+	height: 95%;
+	width: 100%;
+	padding-top: 5px;
 }
 
 .data-visualization, .data-visualization .scatter-plot .btn.refresh {
@@ -389,19 +410,31 @@ formula editor
 	border-top: 1px solid #ecf0f1;
 	
 }
-.data-visualization .data-visualization-header-buttons button {
-	width:100%;	
-/* 	border: 1px solid #2c3e50; */
-}
-.data-visualization .chart {
-	height: 100%;
-	width: 100%;
-	padding-top: 20px;
-}
-.data-visualization .scatter-plot {
-	padding-top : 15px;
+/**== chart svg properties*/
+.axis path,
+.axis line {
+    fill: none;
+    stroke: rgba(236, 240, 241, .2);
+    shape-rendering: crispEdges;
 }
 
+.axis text, .axis-label {
+    font-family: "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 0.9em;
+/*     fill: #ecf0f1; */
+    fill: rgba(236, 240, 241, .7);
+}
+.scatter-plot-point {
+	fill: rgb(108, 159, 183);
+	opacity : 0;
+}
+
+
+
+
+/**
+* == common styles
+*/
 .no-padding {
 	padding: 0px;
 }

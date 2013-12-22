@@ -7,6 +7,7 @@ import java.util.List;
 import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.SelectQuery;
+import org.jooq.TableField;
 import org.jooq.impl.DSL;
 import org.openforis.calc.engine.CalcJob;
 import org.openforis.calc.engine.Job;
@@ -15,6 +16,7 @@ import org.openforis.calc.metadata.AoiLevel;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.VariableAggregate;
+import org.openforis.calc.psql.CreateTableStep.AsStep;
 import org.openforis.calc.psql.Psql;
 import org.openforis.calc.psql.Psql.Privilege;
 import org.openforis.calc.schema.AggregateTable;
@@ -68,10 +70,18 @@ public final class CreateAggregateTablesTask extends Task {
 				select.addGroupBy( factTable.getDimensionIdFields() );
 				
 				// for now quantity fields. check if it needs to be done for each variable aggregate
+				TableField<Record, BigDecimal> plotArea = factTable.getPlotAreaField();
 				for (QuantitativeVariable var : entity.getOutputVariables()) {
 					Field<BigDecimal> quantityField = factTable.getQuantityField(var);
 					
-					select.addSelect( DSL.sum( quantityField.div(factTable.getPlotAreaField()) ).as(quantityField.getName()) );
+					Field<BigDecimal> aggregateField = 
+						DSL.sum(
+							DSL.decode()
+							.when( plotArea.notEqual(BigDecimal.ZERO), quantityField.div(plotArea) )
+							.otherwise( BigDecimal.ZERO )
+						).as( quantityField.getName() );
+
+					select.addSelect( aggregateField );
 				}
 				
 				// drop table
@@ -79,10 +89,11 @@ public final class CreateAggregateTablesTask extends Task {
 					.dropTableIfExists( plotAgg )
 					.execute();
 				
-				int execute = psql()
+				AsStep as = psql()
 					.createTable(plotAgg)
-					.as(select)
-					.execute();
+					.as(select);
+				
+					as.execute();
 				
 			}
 			

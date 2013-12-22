@@ -14,7 +14,8 @@ function ScatterPlot(container) {
 	
 	// progress for data loading
 	this.progressBar = new ProgressBar( optionsSection.find(".progress") , optionsSection.find(".percent") );
-	
+	// hide for now progress bar. temporary
+	optionsSection.find(".progress,.percent").hide();
 	//chart container
 	this.chartContainer = this.container.find(".chart");
 //	this.chartContainer = this.container.find(".chart").replaceWith( $("<div id='ssss'></div") );
@@ -301,7 +302,7 @@ ScatterPlot.prototype = (function(){
 //			console.log("upd chart");
 //			console.log(this);
 			var vars = [this.xVariable, this.yVariable];
-			this.dataProvider.data( $this.offset , 5000 , null , vars, function(response) {
+			this.dataProvider.data( $this.offset , 1000 , null , vars, function(response) {
 				$.proxy(addPoints, $this)(response);
 
 				//get next data if not all data have been loaded
@@ -314,6 +315,10 @@ ScatterPlot.prototype = (function(){
 	
 	// add points to the chart
 	var addPoints = function(data){
+		var start = $.now();
+		console.log("Start : " + start);
+		
+		
 		var $this = this;
 		
 		var series = $this.chartinfo.series[0];
@@ -334,11 +339,12 @@ ScatterPlot.prototype = (function(){
 //		console.log($this.chart);
 		// redraw chart
 //		$this.chart.redraw();
+		
 		$this.chart = new Highcharts.Chart($this.chartinfo);
+		// highcharts 0.32ms
 		
-		
-		
-
+		//		$.proxy(d3test, $this)(seriesData);
+		//d3: 0.039 ms
 		
 		
 		
@@ -348,45 +354,191 @@ ScatterPlot.prototype = (function(){
 		// update progress
 		$this.progressBar.update($this.offset , $this.totalItems);
 		
+		
+		
+		var end = ( $.now() - start );
+		console.log("End : " + end + " msSeconds");
+		console.log("End : " +  end/1000 + " seconds");
 	};
 	
-	var d3test = function(){
+	var d3test = function(dataset) {
 		console.log("==== start testing d3");
-//		var w = this.chartContainer.width();
-//		var h = this.chartContainer.height();
-		var w = 900;
-		var h = 1000;
 		
-		var dataset = seriesData;
+		
+		var padding = 50;
+		var w = this.chartContainer.width();
+		var h = this.chartContainer.height();
+//		var w = 900;
+//		var h = 1000;
+		
+		var xMax = 120;
+		var yMax = 175;
+//		var dataset = seriesData;
 //		               var dataset = [
 //						[5, 20], [480, 90], [250, 50], [100, 33], [330, 95],
 //						[410, 12], [475, 44], [25, 67], [85, 21], [220, 88]
 //					  ];
+		//Create scale functions
+		var xScale = d3.scale.linear()
+//							 .domain([0, xMax])
+							 .domain([0, d3.max(dataset, function(d) { return d[0]; })])
+							 .range([padding, w - padding * 2]);
 
+		var yScale = d3.scale.linear()
+//							 .domain([0, yMax])
+							 .domain([0, d3.max(dataset, function(d) { return d[1]; })])
+							 .range([h - padding, padding]);
+
+		var rScale = d3.scale.linear()
+							 .domain([0, d3.max(dataset, function(d) { return d[1]; })])
+							 .range([3, 5]);
+
+		//Define X axis
+		var xAxis = d3.svg.axis()
+						  .scale(xScale)
+						  .orient("bottom")
+						  .ticks(15);
+
+		//Define Y axis
+		var yAxis = d3.svg.axis()
+						  .scale(yScale)
+						  .orient("left")
+						  .ticks(15);
+		
 		//Create SVG element
 		var svg = d3.select("#" + this.chartContainer.attr('id') )
 					.append("svg")
 					.attr("width", w)
 					.attr("height", h);
-
-		svg.selectAll("circle")
+		//Create circles
+		 var delay = 2;
+		var circles = svg.selectAll("circle")
 		   .data(dataset)
 		   .enter()
 		   .append("circle")
+		   .attr("class", "scatter-plot-point")
 		   .attr("cx", function(d) {
-		   		return d[0] * 100 / 900;
+		   		return xScale(d[0]);
 		   })
 		   .attr("cy", function(d) {
-			   	return d[1] * 100 / 1000;
-//		   		return d[1];
+		   		return yScale(d[1]);
 		   })
-		   .attr("r", function(d) {
-		   		return 1;
-		   });
+		   .attr("r", "8")
+//		   .style("opacity",.4);
+		
+		circles
+			.transition().delay(function(d,i){
+				return (delay+=5);
+				}).duration(150).styleTween("opacity", 
+							function() { return d3.interpolate(0, .4); });
+//		.transition()
+//		   .delay(function(d,i){
+//				return (delay+=500);
+//			})
+//			.duration(100)
+//			.style("opacity", .4)
+//		   .ease("elastic");
+			
 //		   .attr("r", function(d) {
-//		   		return Math.sqrt(h - d[1]);
+//		   		return rScale(d[1]);
 //		   });
+		
+		// what to do when we mouse over a bubble
+		var mouseOn = function() { 
+			var circle = d3.select(this);
+			var data = circle.data();
+			console.log(circle.data());
+		// transition to increase size/opacity of bubble
+			
+			circle.transition()
+				.duration(600)
+				.style("opacity", 1)
+				.attr("r", 16)
+				.ease("elastic");
+//
+//			console.log(circle.attr("cx"));
+//			console.log(circle.attr("cy"));
+//			console.log("width:" +w);
+//			console.log("h:" +h);
+//			
+			// append lines to bubbles that will be used to show the precise data points.
+			// translate their location based on margins
+			svg.append("g")
+				.attr("class", "guide")
+			.append("line")
+				.attr("x1", circle.attr("cx"))
+				.attr("x2", circle.attr("cx"))
+				.attr("y1", +circle.attr("cy") + 26)
+//				.attr("y2", h - margin.t - margin.b)
+				.attr("y2", h - padding)
+//				.attr("transform", "translate(0," + (h - padding) + ")")
+//				.attr("transform", "translate(40,20)")
+				.style("stroke", circle.style("fill"))
+				.style("opacity", 0)
+				.transition().delay(50).duration(300).styleTween("opacity", 
+							function() { return d3.interpolate(0, .4); });
 
+			svg.append("g")
+				.attr("class", "guide")
+			.append("line")
+				.attr("x1", +circle.attr("cx") - 26)
+				.attr("x2", 0 + padding)
+				.attr("y1", circle.attr("cy"))
+				.attr("y2", circle.attr("cy"))
+//				.attr("transform", "translate(40,30)")
+				.style("stroke", circle.style("fill"))
+				.style("opacity", 0)
+				.transition().delay(50).duration(300).styleTween("opacity", 
+							function() { return d3.interpolate(0, .4); });
+			
+			// 	show point legend
+//			svg.append("g")
+//				.attr("class", "scatter-point-legend")
+//				.append("rect")
+//				.attr("x", circle.attr("cx"))
+//				.attr("y", circle.attr("cy"))
+//				.attr("width", 400)
+//				.attr("height", 400)
+//				.append("text")
+//				.attr("x", circle.attr("cx"))
+//				.attr("y", circle.attr("cy"))
+//				.text( this.xVariable + " : " +data[0] +"\n"+this.yVariable +" : " + data[1]);
+			
+		// function to move mouseover item to front of SVG stage, in case
+		// another bubble overlaps it
+			d3.selection.prototype.moveToFront = function() { 
+			  return this.each(function() { 
+				this.parentNode.appendChild(this); 
+			  }); 
+			};
+
+		// skip this functionality for IE9, which doesn't like it
+//			if (!$.browser.msie) {
+				circle.moveToFront();	
+//				}
+		};
+		// what happens when we leave a bubble?
+		var mouseOff = function() {
+			var circle = d3.select(this);
+
+			// go back to original size and opacity
+			circle.transition()
+			.duration(800).style("opacity", .4)
+			.attr("r", 8).ease("elastic");
+
+			// fade out guide lines, then remove them
+			d3.selectAll(".guide,.scatter-point-legend").transition().duration(100).styleTween("opacity", 
+							function() { return d3.interpolate(.5, 0); })
+				.remove()
+		};
+
+		// run the mouseon/out functions
+		circles.on("mouseover", mouseOn);
+		circles.on("mouseout", mouseOff);
+		
+		
+		
+		//Create labels
 //		svg.selectAll("text")
 //		   .data(dataset)
 //		   .enter()
@@ -395,14 +547,44 @@ ScatterPlot.prototype = (function(){
 //		   		return d[0] + "," + d[1];
 //		   })
 //		   .attr("x", function(d) {
-//		   		return d[0];
+//		   		return xScale(d[0]);
 //		   })
 //		   .attr("y", function(d) {
-//		   		return d[1];
+//		   		return yScale(d[1]);
 //		   })
 //		   .attr("font-family", "sans-serif")
 //		   .attr("font-size", "11px")
 //		   .attr("fill", "red");
+		
+		//Create X axis
+		svg.append("g")
+			.attr("class", "axis")
+			.attr("transform", "translate(0," + (h - padding) + ")")
+			.call(xAxis);
+		
+		//Create Y axis
+		svg.append("g")
+			.attr("class", "axis")
+			.attr("transform", "translate(" + padding + ",0)")
+			.call(yAxis);
+		
+		// create x / y labels
+		svg.append("text")
+		.attr("class", "axis-label")
+		.attr("text-anchor", "end")
+		.attr("x", w - 150)
+		.attr("y", h - padding - 5)
+		.text( this.xVariable );
+
+		svg.append("text")
+			.attr("class", "axis-label")
+			.attr("text-anchor", "end")
+			.attr("x", -(padding))
+			.attr("y", padding + 10)
+			.attr("dy", ".75em")
+			.attr("transform", "rotate(-90)")
+			.text( this.yVariable );
+		
 	};
 	
 	return {
