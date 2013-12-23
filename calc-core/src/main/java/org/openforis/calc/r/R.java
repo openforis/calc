@@ -2,6 +2,7 @@ package org.openforis.calc.r;
 
 //import org.rosuda.JRI.RMainLoopCallbacks;
 //import org.rosuda.JRI.Rengine;
+import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Scanner;
@@ -42,12 +43,15 @@ public class R {
 	@PostConstruct
 	synchronized public void startup() {
 		try {
-			String path = getJriPath();
-			if (path != null) {
-				// SystemUtils.addToClassPath(new File(path + "/JRI.jar"));
-				SystemUtils.addLibraryPath(path);
+			String jriPath = getJriPath();
+			if (jriPath != null) {
+				SystemUtils.addLibraryPath(jriPath);
+				File jriDll = new File(jriPath + "/jri.dll");
+				if ( jriDll.exists() ) {
+					System.load(jriDll.getAbsolutePath());
+				}
+				logger.info("JRI path added to library path: " + jriPath);
 			}
-
 			this.rStdOutputListner = new RStdOutputListner(this);
 			this.engine = REngine.engineForClass(JRIEngine.class.getName(), R_PARAMS, rStdOutputListner, true);
 		} catch (InvocationTargetException e) {
@@ -65,7 +69,7 @@ public class R {
 
 	private String getJriPath() {
 		try {
-			ProcessBuilder pb = new ProcessBuilder("R", "--slave", "-e", "system.file(\"jri\",package=\"rJava\")");
+			ProcessBuilder pb = new ProcessBuilder("R", "--slave", "-e", "system.file('jri',package='rJava')");
 			Process p = pb.start();
 			p.waitFor();
 			InputStream inputStream = p.getInputStream();
