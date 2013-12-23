@@ -95,7 +95,7 @@ UBUNTU
 				LD_LIBRARY_PATH=$JAVA_HOME/jre/lib/i386:$JAVA_HOME/jre/lib/i386/client
 			(log out and login again)
 			
-			- run javareconf
+			- run javareconf:
 				sudo R CMD javareconf
 
 ==============
@@ -119,7 +119,43 @@ Linux RedHat 6
 	
 	- continue installing required R libraries (see Ubuntu instructions but skip installing libpq-dev)
 	
-	Set enviroment variable (see above)
+	Set environment variable (see above)
+
+=======
+Windows
+=======
+
+	- Download R for Windows (http://cran.r-project.org/bin/windows/base/)
+	
+	- Run the downloaded installer and accept the default settings or specify the preferred ones.
+	
+	(If you install R under Windows Vista/7, please install it outside of c:\program files, e.g. c:\opt\r)
+	
+	In case of troubles installing R under Windows Vista/7, please see the R FAQ (http://cran.r-project.org/bin/windows/base/rw-FAQ.html).
+	
+	- Configure environment variables:
+		- Define R_HOME environment variable ( e.g. R_HOME=c:\opt\R )
+		- Add R_HOME\bin and R_HOME\bin\i386 (or other folder containing R.dll) to the PATH environment variable (e.g. PATH=%PATH%;%R_HOME%\bin )
+	
+	- Install R required packages:
+		From command line type:
+			R CMD INSTALL calc\lib\lmfor_1.1_20130520.zip
+	
+		From command line type:
+			R
+			
+			Then inside R terminal type:
+				
+				install.packages("RPostgreSQL")
+				install.packages("rJava")
+		
+	- Check that rJava is properly installed.
+		Inside R terminal type:
+			
+			library(rJava)
+			
+			(if getting an error, check that JAVA_HOME is properly defined)
+	
 
 
 ============================================================================
