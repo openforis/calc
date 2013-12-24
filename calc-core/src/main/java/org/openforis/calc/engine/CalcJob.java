@@ -144,7 +144,7 @@ public class CalcJob extends Job {
 		CalcRTask initTask = createTask("Open database connection");
 
 		// init libraries
-		initTask.addScript(r().library("lmfor"));
+//		initTask.addScript(r().library("lmfor"));
 		initTask.addScript(r().library("RPostgreSQL"));
 		// common functions //org/openforis/calc/r/functions.R
 		initTask.addScript(RScript.getCalcRScript());

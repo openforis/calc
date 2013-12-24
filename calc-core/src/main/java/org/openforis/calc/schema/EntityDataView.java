@@ -3,6 +3,7 @@ package org.openforis.calc.schema;
 import java.math.BigDecimal;
 import java.util.Collection;
 
+import org.jooq.JoinType;
 import org.jooq.Record;
 import org.jooq.Select;
 import org.jooq.SelectQuery;
@@ -171,7 +172,7 @@ public class EntityDataView extends DataTable {
 				select.addSelect( resultTable.getPlotArea() );
 			}
 			
-			select.addJoin(resultTable, resultTable.getIdField().eq(table.getIdField()));
+			select.addJoin(resultTable, JoinType.LEFT_OUTER_JOIN, resultTable.getIdField().eq(table.getIdField()));
 		}
 		
 		return select;

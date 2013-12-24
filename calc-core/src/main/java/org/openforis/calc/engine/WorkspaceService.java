@@ -17,6 +17,7 @@ import org.openforis.calc.metadata.Variable.Scale;
 import org.openforis.calc.metadata.VariableAggregate;
 import org.openforis.calc.metadata.VariableAggregateDao;
 import org.openforis.calc.metadata.VariableDao;
+import org.openforis.calc.psql.CreateTableWithFieldsStep;
 import org.openforis.calc.psql.Psql;
 import org.openforis.calc.schema.EntityDataViewDao;
 import org.openforis.calc.schema.InputSchema;
@@ -159,9 +160,9 @@ public class WorkspaceService {
 		// add column to results table and update entity view
 		ResultTable resultTable = schema.getResultTable(entity);
 		if( originalTable == null) { 
-			new Psql(dataSource)
-				.createTable(originalTable, resultTable.fields())
-				.execute();
+			CreateTableWithFieldsStep createTable = new Psql(dataSource)
+				.createTable(resultTable, resultTable.fields());
+				createTable.execute();
 		} else {
 			new Psql(dataSource)
 				.alterTable(resultTable)
