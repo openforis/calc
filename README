@@ -135,7 +135,7 @@ Windows
 	
 	- Configure environment variables:
 		- Define R_HOME environment variable ( e.g. R_HOME=c:\opt\R )
-		- Add R_HOME\bin and R_HOME\bin\i386 (or other folder containing R.dll) to the PATH environment variable (e.g. PATH=%PATH%;%R_HOME%\bin )
+		- Add %R_HOME%\bin and %R_HOME%\bin\i386 (or other folder containing R.dll) to the PATH environment variable (e.g. PATH=%PATH%;%R_HOME%\bin )
 	
 	- Install R required packages:
 		From command line type:
@@ -156,6 +156,7 @@ Windows
 			
 			(if getting an error, check that JAVA_HOME is properly defined)
 	
+	- Add %R_HOME%\library\rJava\jri to the PATH environment variable
 
 
 ============================================================================
