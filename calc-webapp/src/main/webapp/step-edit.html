@@ -2,7 +2,7 @@
 <div class="page-section" id="step-edit-page">
 
 	<!--  Header button bar  -->
-	<div class="row no-margin-no-padding header-button-group" style="height: 5%">
+	<div class="row no-margin-no-padding header-button-group" style="width: 100%; height: 7%">
 		<div class="col-md-2 col-md-offset-4 no-padding">
 			<button class="btn blue-btn" name="show-edit-btn" >Edit</button>
 		</div>
@@ -13,17 +13,14 @@
 	</div>
 	
 	<!-- edit form -->
-	<div class="row" id="calculation-step-edit-container" style="width: 100%; height: 95%; left:0">
-		<div class="col-md-2">
-		</div>
-		<div class="col-md-8">
-		
-			<form id="step-form" class="form-horizontal" method="POST" action="rest/calculationstep/save.json">
-				<input type="hidden" class="form-control" name="id" /> 
+	<div class="row" id="calculation-step-edit-container" style="width: 100%; height: 93%; left:0">
+<!-- 		<div class="col-md-2"> -->
+<!-- 		</div> -->
+		<form id="step-form" class="form-horizontal" method="POST" action="rest/calculationstep/save.json">
+		<input type="hidden" class="form-control" name="id" /> 
+		<div class="row col-md-8 col-md-offset-2">
 				<fieldset>
-
-					<legend>Formula Editor</legend>
-						
+<!-- 					<legend>Formula Editor</legend> -->
 					<div class="form-group">
 						<label class="col-md-2 control-label">Caption</label>
 						<div class="col-md-10">
@@ -74,7 +71,7 @@
 					
 					<div class="form-group buttons">
 						<div class="col-md-2 col-md-offset-5" style="text-align: center;">
-							<button type="submit" class="btn btn-default btn-lg" style="width: 100%">Save</button>
+							<button type="submit" class="btn btn-default" style="width: 100%">Save</button>
 						</div>
 <!-- 						<div class="col-md-6 step-edit-exec-option"> -->
 <!-- 							<div class="col-md-6"> -->
@@ -127,15 +124,15 @@
 				</div>
 				
 				
-			</form>
 		</div>
-		<div class="col-md-2">
-		</div>
+		</form>
+<!-- 		<div class="col-md-2"> -->
+<!-- 		</div> -->
 <!-- 		</div> -->
 	</div>
 	
 	<!-- Execution  -->
-	<div class="row" id="calculation-step-exec-container" style="width: 100%; height: 95%; padding-top:10px; ">
+	<div class="row" id="calculation-step-exec-container" style="width: 100%; height: 93%; padding-top:10px; ">
 		<!-- step information section -->
 		<div class="row header">
 <!-- 			<div class="col-md-1 col-md-offset-3" style="text-align: right;"> -->
@@ -176,7 +173,7 @@
 			<div style="margin-top: 5em"></div>
 			<div class="row">
 				<div class="col-md-2 col-md-offset-5" style="text-align: center;">
-					<button type="button" class="btn btn-default btn-lg" name="test-btn" style="width: 100%">Test</button>
+					<button type="button" class="btn btn-default" name="test-btn" style="width: 100%">Test</button>
 				</div>
 			</div>
 			<!-- Test input variable settings template -->
@@ -199,7 +196,7 @@
 		
 		<div class="row exec" >
 			<div class="col-md-2 col-md-offset-5" style="text-align: center;">
-				<button type="button" class="btn btn-default btn-lg" name="exec-btn" style="width: 100%">Execute</button>
+				<button type="button" class="btn btn-default" name="exec-btn" style="width: 100%">Execute</button>
 			</div>
 		</div>
 		
@@ -216,12 +213,11 @@
 	</div>
 	
 	<!-- Results section -->
-	<div class="row" id="calculation-step-results-container" style="width: 100%; height: 95%; padding-top:10px; ">
-		<!-- step information section -->
+	<div class="row" id="calculation-step-results-container" style="width: 100%; height: 93%; padding-top:10px; ">
 		<div class="row" style="height: 100%;">
 			<div class="col-md-2">
 			</div>
-			<div class="col-md-8 results-container" style="height: 100%">
+			<div class="col-md-8 results-container" style="height: 97%">
 			</div>
 			<div class="col-md-2">
 			</div>

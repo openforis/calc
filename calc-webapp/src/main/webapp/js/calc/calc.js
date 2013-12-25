@@ -42,17 +42,17 @@ homeCalculationManager = null;
 $(document).ready(function() {
 	
 	positionFooter = function() {
-		$footer.animate({top:$(window).height()- $footer.height() }, 10);
+		$footer.animate({top:$(window).height()- $footer.height() +1 }, 400);
 	};
 	
 	resizeContainer = function() {
-		containerHeight = $(window).height() - $footer.height();
+		var containerHeight = $(window).height() - $footer.height();
 		$("#container").css({"height":containerHeight+"px"});
 	};
 	
 	$footer.find(".links button").click(function(event){
 		event.preventDefault();
-		target = $(this).attr("href");
+		var target = $(this).attr("href");
 
 		$('html, body').stop().animate({
 	        scrollTop: $(target).offset().top

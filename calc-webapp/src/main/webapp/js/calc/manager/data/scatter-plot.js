@@ -340,10 +340,10 @@ ScatterPlot.prototype = (function(){
 		// redraw chart
 //		$this.chart.redraw();
 		
-		$this.chart = new Highcharts.Chart($this.chartinfo);
+//		$this.chart = new Highcharts.Chart($this.chartinfo);
 		// highcharts 0.32ms
 		
-		//		$.proxy(d3test, $this)(seriesData);
+		$.proxy(d3test, $this)(seriesData);
 		//d3: 0.039 ms
 		
 		
@@ -367,7 +367,7 @@ ScatterPlot.prototype = (function(){
 		
 		var padding = 50;
 		var w = this.chartContainer.width();
-		var h = this.chartContainer.height();
+		var h = this.chartContainer.height() ;
 //		var w = 900;
 //		var h = 1000;
 		
@@ -397,13 +397,13 @@ ScatterPlot.prototype = (function(){
 		var xAxis = d3.svg.axis()
 						  .scale(xScale)
 						  .orient("bottom")
-						  .ticks(15);
+						  .ticks(10);
 
 		//Define Y axis
 		var yAxis = d3.svg.axis()
 						  .scale(yScale)
 						  .orient("left")
-						  .ticks(15);
+						  .ticks(10);
 		
 		//Create SVG element
 		var svg = d3.select("#" + this.chartContainer.attr('id') )
@@ -411,26 +411,61 @@ ScatterPlot.prototype = (function(){
 					.attr("width", w)
 					.attr("height", h);
 		//Create circles
-		 var delay = 2;
 		var circles = svg.selectAll("circle")
 		   .data(dataset)
 		   .enter()
 		   .append("circle")
 		   .attr("class", "scatter-plot-point")
-		   .attr("cx", function(d) {
-		   		return xScale(d[0]);
-		   })
-		   .attr("cy", function(d) {
-		   		return yScale(d[1]);
-		   })
-		   .attr("r", "8")
+//		   .attr("cx", function(d) {
+//		   		return xScale(d[0]);
+//		   })
+//		   .attr("cx", Math.floor(w/2) - padding)
+//		   .attr("cy", Math.floor(h/2) - padding)
+		   .attr("cx", -1)
+		   .attr("cy", -1)
+//		   .attr("cy", function(d) {
+//		   		return yScale(d[1]);
+//		   })
+		   .attr("r", "8");
 //		   .style("opacity",.4);
 		
+//		setTimeout(function(){
+			
+		var delay = 100;
 		circles
-			.transition().delay(function(d,i){
-				return (delay+=5);
-				}).duration(150).styleTween("opacity", 
-							function() { return d3.interpolate(0, .4); });
+//			.transition()
+//			.delay(100)			
+//			.attr("opacity", .4)
+			.transition()
+			.delay(function(d,i){
+//				console.log( Math.floor(i/100) );				
+//				return (delay+=300);
+//				return ( Math.floor(i/100) * 250 );
+				return i + 200;
+			})
+			.duration(400)
+			.ease("elastic")
+			.attr("cx", Math.floor(w/2) - padding)
+			.attr("cy", Math.floor(h/2) - padding)
+			.styleTween("opacity", function() { return d3.interpolate(0, .4); })
+			.transition()
+			.delay(function(d,i){
+//				console.log( Math.floor(i/100) );				
+//				return (delay+=300);
+//				return ( Math.floor(i/100) * 250 );
+				return i + 600;
+			})
+			.duration(400)
+			.ease("elastic")
+			.attr("cy", function(d,i) {
+				return yScale(d[1]);
+			})
+			.attr("cx", function(d,i) {
+				return xScale(d[0]);
+			})
+			;
+//		}, 1000);
+//			.styleTween("cy", function(d) { return d3.interpolate(-10, yScale(d[1])); } );
 //		.transition()
 //		   .delay(function(d,i){
 //				return (delay+=500);
