@@ -653,6 +653,7 @@ ul.scroll-menu {
 	margin-bottom : 1px;
 	padding-top: 20px;
 	padding-bottom: 20px;
+	font-weight: 200;
 }
 #sampling-design .sampling-unit-section .variables, 
 #sampling-design .sampling-unit-section .variable {
