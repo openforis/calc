@@ -143,6 +143,8 @@ DataTable.prototype = (function(){
 		}
 	};
 	
+	var formatNumber = d3.format(".4n");
+	
 	// update html table with data given as parameter
 	var updateTbody = function(data) {
 		var $this = this;
@@ -167,7 +169,7 @@ DataTable.prototype = (function(){
 			
 			var variables = $this.dataProvider.variables;
 			$.each(variables, function(j,variable){
-				var field = record.fields[variable];
+				var field = record.fields[variable] ? formatNumber( record.fields[variable] ) : "";
 				var $td = $("<td></td>");
 				$td.html(field);
 				$tr.append($td);

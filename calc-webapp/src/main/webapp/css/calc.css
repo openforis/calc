@@ -275,7 +275,7 @@ button.settings:hover {
 * Footer
 */
 #footer {
-  	height: 10%;
+  	height: 12%;
 	position: fixed;
 /* 	top: -75px; */
 /* 	z-index: 999; */
@@ -293,17 +293,16 @@ button.settings:hover {
 }
 #footer .links {
 /* 	margin-top:40px; */
-	padding: 10px 0px;
+	padding: 15px 0px;
 	text-align:center;
 	width:100%;
 }
 #footer .links  button {
 	height: 100%;
 	width: 25%;
-	font-size:1.4em;
+	font-size:1.3em;
 	font-weight: 100;
-/* 	font-size: 1.7em; */
-/* 	font-weight: 200; */
+	letter-spacing: 0.03em;
 /* 	line-height: 2em; */
 /* 	overflow: visible; */
 /* 	border-radius:8px; */
@@ -422,13 +421,15 @@ formula editor
     shape-rendering: crispEdges;
 }
 
-.axis text, .axis-label {
+.axis text, .axis-label, .axis-tick {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 /*     font-family: "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif; */
     font-size: 0.7em;
     font-weight: 100;
 /*     fill: #ecf0f1; */
-    fill: rgba(236, 240, 241, .7);
+    fill: rgb(236, 240, 241);
+    opacity: .7;
+	text-anchor: middle;
 }
 .scatter-plot-point {
 	fill: rgb(108, 159, 183);

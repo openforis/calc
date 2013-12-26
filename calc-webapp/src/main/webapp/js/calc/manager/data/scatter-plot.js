@@ -367,22 +367,13 @@ ScatterPlot.prototype = (function(){
 		
 		var padding = 50;
 		var w = this.chartContainer.width();
-		var h = this.chartContainer.height() ;
-//		var w = 900;
-//		var h = 1000;
+		var h = this.chartContainer.height() - 10;
 		
-		var xMax = 120;
-		var yMax = 175;
-//		var dataset = seriesData;
-//		               var dataset = [
-//						[5, 20], [480, 90], [250, 50], [100, 33], [330, 95],
-//						[410, 12], [475, 44], [25, 67], [85, 21], [220, 88]
-//					  ];
 		//Create scale functions
 		var xScale = d3.scale.linear()
 //							 .domain([0, xMax])
 							 .domain([0, d3.max(dataset, function(d) { return d[0]; })])
-							 .range([padding, w - padding * 2]);
+							 .range([padding, w - padding]);
 
 		var yScale = d3.scale.linear()
 //							 .domain([0, yMax])
@@ -444,9 +435,9 @@ ScatterPlot.prototype = (function(){
 				return i + 200;
 			})
 			.duration(400)
-			.ease("elastic")
-			.attr("cx", Math.floor(w/2) - padding)
-			.attr("cy", Math.floor(h/2) - padding)
+			.ease( "circle" )
+			.attr( "cx", Math.floor(w/2) - padding )
+			.attr( "cy", Math.floor(h/2) - padding )
 			.styleTween("opacity", function() { return d3.interpolate(0, .4); })
 			.transition()
 			.delay(function(d,i){
@@ -488,22 +479,24 @@ ScatterPlot.prototype = (function(){
 			circle.transition()
 				.duration(600)
 				.style("opacity", 1)
-				.attr("r", 16)
+				.attr("r", 14)
 				.ease("elastic");
 //
 //			console.log(circle.attr("cx"));
 //			console.log(circle.attr("cy"));
+//			console.log( (circle.attr("cy") + 26) );
 //			console.log("width:" +w);
 //			console.log("h:" +h);
 //			
 			// append lines to bubbles that will be used to show the precise data points.
-			// translate their location based on margins
+			var y1 = parseFloat(circle.attr("cy")) + 26;
 			svg.append("g")
 				.attr("class", "guide")
 			.append("line")
 				.attr("x1", circle.attr("cx"))
 				.attr("x2", circle.attr("cx"))
-				.attr("y1", +circle.attr("cy") + 26)
+				.attr("y1", Math.min( y1 , h-padding) )
+//				.attr("y1", y1 )
 //				.attr("y2", h - margin.t - margin.b)
 				.attr("y2", h - padding)
 //				.attr("transform", "translate(0," + (h - padding) + ")")
@@ -513,23 +506,59 @@ ScatterPlot.prototype = (function(){
 				.transition().delay(50).duration(300).styleTween("opacity", 
 							function() { return d3.interpolate(0, .4); });
 
+			var x1 = parseFloat(circle.attr("cx")) - 26;
 			svg.append("g")
 				.attr("class", "guide")
 			.append("line")
-				.attr("x1", +circle.attr("cx") - 26)
-				.attr("x2", 0 + padding)
+				.attr("x1", Math.max(x1, padding) )
+//				.attr("x1", circle.attr("cx") )
+				.attr("x2", padding)
 				.attr("y1", circle.attr("cy"))
 				.attr("y2", circle.attr("cy"))
-//				.attr("transform", "translate(40,30)")
 				.style("stroke", circle.style("fill"))
 				.style("opacity", 0)
 				.transition().delay(50).duration(300).styleTween("opacity", 
 							function() { return d3.interpolate(0, .4); });
 			
-			// 	show point legend
-//			svg.append("g")
-//				.attr("class", "scatter-point-legend")
-//				.append("rect")
+			// set low opacity to axis
+			d3
+			.selectAll(".axis,.axis-label")
+			.transition()
+			.duration(400)
+//			.attr("opacity",.1);
+			.styleTween("opacity", function() { return d3.interpolate(.7, .2); });
+//			d3
+//			.selectAll(".axis")
+//			.transition()
+//			.duration(400)
+//			.attr("opacity",.1);
+			
+			var format = d3.format(".3n");
+			// 	show point data values
+			svg.append("g")
+				.attr("class", "axis-tick")
+				.append("text")
+				.attr("opacity",0)
+				.attr("x",circle.attr("cx"))
+				.attr("y", h-(padding/2))
+				.text( format(data[0][0]) )
+				.transition()
+				.duration(400)
+//			.attr("opacity",.1);
+				.styleTween("opacity", function() { return d3.interpolate(0, .7); });
+
+			svg.append("g")
+			.attr("class", "axis-tick")
+			.style("text-anchor", "right")
+			.append("text")
+			.attr("opacity",0)
+			.attr("x",padding/2)
+			.attr("y",circle.attr("cy"))
+			.text( format(data[0][1]) )
+			.transition()
+			.duration(400)
+//			.attr("opacity",.1);
+			.styleTween("opacity", function() { return d3.interpolate(0, .7); });
 //				.attr("x", circle.attr("cx"))
 //				.attr("y", circle.attr("cy"))
 //				.attr("width", 400)
@@ -549,7 +578,7 @@ ScatterPlot.prototype = (function(){
 
 		// skip this functionality for IE9, which doesn't like it
 //			if (!$.browser.msie) {
-				circle.moveToFront();	
+			circle.moveToFront();
 //				}
 		};
 		// what happens when we leave a bubble?
@@ -560,11 +589,28 @@ ScatterPlot.prototype = (function(){
 			circle.transition()
 			.duration(800).style("opacity", .4)
 			.attr("r", 8).ease("elastic");
-
+			// increase opacity to axis
+			d3
+			.selectAll(".axis,.axis-label")
+			.transition()
+			.duration(400)
+			.styleTween("opacity", function() { return d3.interpolate(.2, .7); });
+			
+			// fade out data points
+			d3
+			.selectAll(".axis-tick")
+			.transition()
+			.duration(100)
+			.styleTween("opacity", function() { return d3.interpolate(.7, 0); })
+			.remove();
+			
 			// fade out guide lines, then remove them
-			d3.selectAll(".guide,.scatter-point-legend").transition().duration(100).styleTween("opacity", 
-							function() { return d3.interpolate(.5, 0); })
-				.remove()
+			d3
+			.selectAll(".guide,.scatter-point-legend")
+			.transition()
+			.duration(100)
+			.styleTween("opacity", function() { return d3.interpolate(.5, 0); })
+			.remove();
 		};
 
 		// run the mouseon/out functions
