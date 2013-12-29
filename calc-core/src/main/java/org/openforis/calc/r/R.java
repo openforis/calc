@@ -2,7 +2,6 @@ package org.openforis.calc.r;
 
 //import org.rosuda.JRI.RMainLoopCallbacks;
 //import org.rosuda.JRI.Rengine;
-import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Scanner;
@@ -10,6 +9,7 @@ import java.util.Scanner;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import org.apache.commons.io.IOUtils;
 import org.openforis.calc.system.SystemUtils;
 import org.rosuda.REngine.REXP;
 import org.rosuda.REngine.REXPMismatchException;
@@ -46,10 +46,6 @@ public class R {
 			String jriPath = getJriPath();
 			if (jriPath != null) {
 				SystemUtils.addLibraryPath(jriPath);
-				File jriDll = new File(jriPath + "/jri.dll");
-				if ( jriDll.exists() ) {
-					System.load(jriDll.getAbsolutePath());
-				}
 				logger.info("JRI path added to library path: " + jriPath);
 			}
 			this.rStdOutputListner = new RStdOutputListner(this);
@@ -65,15 +61,18 @@ public class R {
 		}
 	}
 
-	// /usr/lib/R
-
+	/**
+	 * Returns JRI absolute path from R.
+	 * JRI is included by rJava, the usual path should be /usr/lib/R/library/rJava/jri
+	 */
 	private String getJriPath() {
+		Scanner s = null;
 		try {
 			ProcessBuilder pb = new ProcessBuilder("R", "--slave", "-e", "system.file('jri',package='rJava')");
 			Process p = pb.start();
 			p.waitFor();
 			InputStream inputStream = p.getInputStream();
-			Scanner s = new Scanner(inputStream);
+			s = new Scanner(inputStream);
 			s.next("\\[1\\]");
 			String path = s.next(".*");
 			// Remove quotes
@@ -84,6 +83,8 @@ public class R {
 			// throw new
 			// RuntimeException("Error getting JRI library path from R");
 			return null;
+		} finally {
+			IOUtils.closeQuietly(s);
 		}
 	}
 
@@ -133,10 +134,6 @@ public class R {
 
 	Logger getLogger() {
 		return logger;
-	}
-
-	public void log() {
-
 	}
 
 }

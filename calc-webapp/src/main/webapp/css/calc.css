@@ -823,29 +823,24 @@ ul.ui-sortable li {
 	height: 100%;
 }
 #job-status .modal-content {
-/* 	border-radius: 0px; */
-	
 	border-radius: 0px;
 	-webkit-box-shadow: 0px 0px 1px 1px rgba(149,165,166,0.4);
 	-moz-box-shadow: 0px 0px 1px 1px rgba(149,165,166,0.4);
 	box-shadow: 0px 0px 1px 1px rgba(149,165,166,0.4);
-	
 	max-height: 100%;
-	min-height: 30%;
+	min-height: 400px;
 }
 #job-status .modal-header {
-	max-height: 10%;
-	
 	border-bottom: none;
 }
-#job-status .modal-body {
-	max-height: 60%;
-	min-height: 30%;
+#job-status .task-section {
+	overflow-y: auto;
+	overflow-x: hidden;
+	min-height: 100px;
 }
 #job-status .modal-footer {
-	height: 30%;
-	
 	border-top: none;
+	margin-top: 0px;
 }
 #job-status .status {
 	text-transform: capitalize;
@@ -861,14 +856,11 @@ ul.ui-sortable li {
 }
 
 #job-status .log-section {
-	padding-bottom: 30px;
 	padding-top: 10px;
-	overflow: hidden;
 }
 #job-status .log {
 	border: none;
 /* 	border: 1px inset #a2a4b1; */
-	min-height: 100px;
 	-webkit-box-shadow: 1px 1px 2px 1px rgba(149,165,166,0.5);
 	-moz-box-shadow: 1px 1px 2px 1px rgba(149,165,166,0.5);
 	box-shadow: 1px 1px 2px 1px rgba(149,165,166,0.5);
@@ -876,7 +868,7 @@ ul.ui-sortable li {
 	padding: 2px 10px;
 	
 	height: 100%;
-	overflow: auto;
+	overflow-y: auto;
 }
 #job-status .log div {
 	font-family: monospace;
@@ -884,6 +876,5 @@ ul.ui-sortable li {
 	font-size: 0.8em;
 	margin: 0px;
 	color: #2c3e50;
-	white-space: pre;
+	white-space: pre-wrap;
 }
-	

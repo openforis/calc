@@ -9,7 +9,7 @@ JobStatus = function() {
 	// status header text 
 	this.status = this.container.find( ".status" );
 	// ui container for the tasks
-	this.tasks = this.container.find( ".modal-body" );
+	this.taskSection = this.container.find( ".task-section" );
 	// template for taskStatus
 	this.taskStatus = $( "#task-status" );
 
@@ -47,7 +47,7 @@ JobStatus.prototype = (function() {
 		// update each task 
 		var tasks = job.tasks;
 		$.each(tasks, function(i, task) {
-			var taskStatus =  $this.tasks.find("#" + task.id);
+			var taskStatus =  $this.taskSection.find("#" + task.id);
 
 			var progressBar = taskStatus.data("progress-bar");
 			progressBar.update( task.itemsProcessed, task.totalItems );
@@ -103,7 +103,6 @@ JobStatus.prototype = (function() {
 			});
 		}
 		
-		var $this = this;
 		// show/hide close btn
 		switch(job.status) {
 			case "PENDING":
@@ -114,6 +113,7 @@ JobStatus.prototype = (function() {
 					$this.hide(complete, job);
 				});
 				this.closeBtn.show();
+				$.proxy(adjustSize, $this)();
 				// auto hide disabled for now
 //				if( hideOnComplete === true ) {
 //					$this.hide(complete, job);
@@ -124,6 +124,7 @@ JobStatus.prototype = (function() {
 					$this.hide();
 				});
 				this.closeBtn.show();
+				$.proxy(adjustSize, $this)();
 				break;
 			default:
 //				this.closeBtn.show();
@@ -159,7 +160,7 @@ JobStatus.prototype = (function() {
 			var progressBar = new ProgressBar( taskStatus.find(".progress"), taskStatus.find(".percent") );
 			taskStatus.data("progress-bar", progressBar);
 
-			$this.tasks.append(taskStatus);	
+			$this.taskSection.append(taskStatus);	
 
 			setTimeout(function(){
 				taskStatus.fadeIn(100);
@@ -170,54 +171,79 @@ JobStatus.prototype = (function() {
 		if( $this.job.rlogger ) {
 			// show log section
 			$this.logSection.show();
-			if( $this.logBtn.hasClass("option-btn-selected") ){
-				// set logSection height
-				var height = $(document).height() / 5;
-				$this.logSection.css({"height":height});
-			}
+//			if( $this.logBtn.hasClass("option-btn-selected") ){
+//				// set logSection height
+//				var height = $(document).height() / 5;
+//				$this.logSection.css({"height":height});
+//			}
 			
 			var clickFunction = function(e){
 				if( $this.logBtn.hasClass("option-btn-selected") ){
-					// click to hide log
-					$this.logBtn.removeClass("option-btn-selected");
-					$this.logBtn.addClass("option-btn");
-					
-					$this.logSection.animate({ height: "80px" }, 800);
-					setTimeout(function(){
-						$this.log.animate({ opacity: ".2" }, 800);
-					},800); 
-					
+					$.proxy(hideLog, $this)();
 				} else {
-					// click to show log
-					$this.logBtn.removeClass("option-btn");
-					$this.logBtn.addClass("option-btn-selected");
-					
-					var height = $(document).height() / 5;
-					$this.logSection.animate({ height: height }, 800);
-					$this.log.animate({ opacity: "1" }, 800);
+					$.proxy(showLog, $this)();
 				}	
 			};
 			$this.logBtn.on("click", clickFunction);
-			
-			// resize log on window resize
-//			$this.updateLogSectionHeight = function() {
-//				console.log("resize");
-//				if( $this.logBtn.hasClass("option-btn-selected") ){
-//					var height = $(document).height() / 5;
-//					$this.logSection.animate({ height: height }, 600);
-//				}
-//			};
-//			$(window).on("resize", $this.updateLogSectionHeight);
-//			
 		}
+		$(window).on("resize", $.proxy(adjustSize, $this));
+		
+		$.proxy(showLog, $this)();
+		$.proxy(adjustSize, $this)();
+	};
+
+	var showLog = function() {
+		var $this = this;
+		$this.logBtn.removeClass("option-btn");
+		$this.logBtn.addClass("option-btn-selected");
+		
+		//var height = $(document).height() / 5;
+		var height = 130;
+		this.logSection.animate({ height: height }, 800);
+		this.log.animate({ opacity: "1" }, 800);
+		
+		$.proxy(adjustSize, $this)();
 	};
 	
+	var hideLog = function() {
+		var $this = this;
+		$this.logBtn.removeClass("option-btn-selected");
+		$this.logBtn.addClass("option-btn");
+		
+		$this.logSection.animate({ height: "80px" }, 800);
+		setTimeout(function(){
+			$this.log.animate({ opacity: ".2" }, 800);
+		},800); 
+		
+		$.proxy(adjustSize, $this)();
+	};
 	
+	var adjustSize = function() {
+		var taskMinHeight = 90;
+		
+		var header = this.container.find(".modal-header");
+		var footer = this.container.find(".modal-footer");
+		var maxHeight = $(window).height() - 60; //max available height, excluding padding
+		var otherPartsHeight = header.outerHeight() + footer.outerHeight();
+		
+		var bodyMaxHeight = maxHeight - otherPartsHeight - 30;
+		var taskRequiredHeight = this.taskStatus.outerHeight() * this.taskSection.children().length;
+		var taskMaxHeight = Math.max(taskMinHeight, taskRequiredHeight);
+		
+		var logOpen = this.logBtn.hasClass("option-btn-selected");
+		var logSectionHeight = logOpen ? 130: 80;
+		
+		//if task section required height is greater than maximum available, reduce task section
+		if ( taskRequiredHeight + logSectionHeight > bodyMaxHeight ) {
+			taskMaxHeight = Math.max(taskMinHeight, bodyMaxHeight - logSectionHeight);
+		}
+		this.taskSection.css({maxHeight: taskMaxHeight});
+	};
 	
 	// reset its internal state
 	var reset = function() {
 		this.status.html( "Waiting job status" );
-		this.tasks.empty();
+		this.taskSection.empty();
 
 		// empty log
 		this.logSection.hide();
@@ -235,7 +261,7 @@ JobStatus.prototype = (function() {
 		
 		this.job = null;
 		
-		$(window).off("resize", $this.updateLogSectionHeight);
+		$(window).off("resize", $.proxy(adjustSize, $this));
 	};
 	
 	return {
