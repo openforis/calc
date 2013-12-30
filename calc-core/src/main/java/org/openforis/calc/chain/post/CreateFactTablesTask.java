@@ -32,126 +32,114 @@ import org.openforis.calc.schema.OutputTable;
  * 
  * @author Mino Togna
  */
+@Deprecated
 public final class CreateFactTablesTask extends Task {
-	
+
 	@Override
 	public String getName() {
 		return "Create data tables for aggregations";
 	}
-	
+
 	protected void execute() throws Throwable {
 		InputSchema schema = getInputSchema();
 		List<NewFactTable> factTables = schema.getFactTables();
-		
+
 		for (NewFactTable factTable : factTables) {
-			EntityDataView dataTable = factTable.getEntityView();
-			
-			SelectQuery<?> select = new Psql().selectQuery(dataTable);
-			select.addSelect(dataTable.getIdField());
-			select.addSelect(dataTable.getParentIdField() );
-//			select.addSelect(dataTable.getAoiIdFields());
-			for (Field<Integer> field : factTable.getDimensionIdFields()) {
-				// todo add dim fields to entitydataview
-				select.addSelect( dataTable.field(field) );
-			}
-			
-			// select measure
-			List<QuantitativeVariable> vars = factTable.getEntity().getQuantitativeVariables();
-			for (QuantitativeVariable var : vars) {
-				Field<BigDecimal> fld = dataTable.getQuantityField(var);
-				select.addSelect(fld);
-				
-//				for (VariableAggregate agg : var.getAggregates()) {
-//						Field<BigDecimal> measureFld = factTable.getVariableAggregateField(agg);
-//						Field<BigDecimal> valueFld = dataTable.getQuantityField(var);
-//						select.addSelect( valueFld.as(measureFld.getName()) );
-////					}
-//				}
-			}
-			
-			// add plot area
-			TableField<Record,BigDecimal> plotAreaField = factTable.getPlotAreaField();
-			if(plotAreaField != null) {
-				select.addSelect( dataTable.field(plotAreaField) );
-			}
-			
-			psql()
-			.dropTableIfExists(factTable)
-			.execute();
-			
-			AsStep as = psql()
-			.createTable(factTable)
-			.as(select);
-			
-			as.execute();
-		
-		// Grant access to system user
-		psql()
-			.grant(Privilege.ALL)
-			.on(factTable)
-			.to(getSystemUser())
-			.execute();
-		
+			createFactTable(factTable);
+
 			incrementItemsProcessed();
 		}
-		
+
 	}
-	
+
+	private void createFactTable(NewFactTable factTable) {
+		EntityDataView dataTable = factTable.getEntityView();
+
+		SelectQuery<?> select = new Psql().selectQuery(dataTable);
+		select.addSelect(dataTable.getIdField());
+		select.addSelect(dataTable.getParentIdField());
+		// select.addSelect(dataTable.getAoiIdFields());
+		for (Field<Integer> field : factTable.getDimensionIdFields()) {
+			// todo add dim fields to entitydataview
+			select.addSelect(dataTable.field(field));
+		}
+
+		// select measure
+		List<QuantitativeVariable> vars = factTable.getEntity().getQuantitativeVariables();
+		for (QuantitativeVariable var : vars) {
+			Field<BigDecimal> fld = dataTable.getQuantityField(var);
+			select.addSelect(fld);
+
+			// for (VariableAggregate agg : var.getAggregates()) {
+			// Field<BigDecimal> measureFld = factTable.getVariableAggregateField(agg);
+			// Field<BigDecimal> valueFld = dataTable.getQuantityField(var);
+			// select.addSelect( valueFld.as(measureFld.getName()) );
+			// // }
+			// }
+		}
+
+		// add plot area
+		TableField<Record, BigDecimal> plotAreaField = factTable.getPlotAreaField();
+		if (plotAreaField != null) {
+			select.addSelect(dataTable.field(plotAreaField));
+		}
+
+		psql().dropTableIfExists(factTable).execute();
+
+		AsStep as = psql().createTable(factTable).as(select);
+
+		as.execute();
+
+		// Grant access to system user
+		psql().grant(Privilege.ALL).on(factTable).to(getSystemUser()).execute();
+	}
+
 	@Override
 	protected long countTotalItems() {
 		return getInputSchema().getFactTables().size();
 	}
-	
-//	@Override
+
+	// @Override
 	protected void old_execute() throws Throwable {
 		OutputSchema outputSchema = getOutputSchema();
 		Collection<FactTable> factTables = outputSchema.getFactTables();
-		
+
 		for (FactTable factTable : factTables) {
 			OutputTable outputTable = (OutputTable) factTable.getSourceOutputTable();
-			
+
 			SelectQuery<?> select = new Psql().selectQuery(outputTable);
 			select.addSelect(outputTable.getIdField());
 			select.addSelect(outputTable.getAoiIdFields());
-			
-			selectDimensionsRecursive(select, factTable, outputTable);			
+
+			selectDimensionsRecursive(select, factTable, outputTable);
 			selectQuantities(select, outputTable);
 			selectMeasures(select, factTable);
-			
+
 			Field<Integer> stratumId = factTable.getStratumIdField();
 			select.addSelect(Psql.nullAs(stratumId));
-			
-			if ( factTable.getEntity().isSamplingUnit() ) {
+
+			if (factTable.getEntity().isSamplingUnit()) {
 				addStratumId(select, factTable);
 			}
-			
-			if ( isDebugMode() ) {
-				psql()
-					.dropTableIfExists(factTable)
-					.execute();
+
+			if (isDebugMode()) {
+				psql().dropTableIfExists(factTable).execute();
 			}
-			
-			psql()
-				.createTable(factTable)
-				.as(select)
-				.execute();
-			
+
+			psql().createTable(factTable).as(select).execute();
+
 			// Grant access to system user
-			psql()
-				.grant(Privilege.ALL)
-				.on(factTable)
-				.to(getSystemUser())
-				.execute();
+			psql().grant(Privilege.ALL).on(factTable).to(getSystemUser()).execute();
 		}
 	}
 
 	private void addStratumId(SelectQuery<?> select, FactTable factTable) {
-//		OutputSchema outputSchema = (OutputSchema) factTable.getSchema();
-//		select.addSelect(SAMPLING_UNIT.STRATUM_ID.as(factTable.getStratumIdField().getName()));
-//		Condition cond = SAMPLING_UNIT.CLUSTER.eq(DSL.field(""))
-//				.and();
-//		select.addJoin(SAMPLING_UNIT, JoinType.LEFT_OUTER_JOIN, cond);
-		
+		// OutputSchema outputSchema = (OutputSchema) factTable.getSchema();
+		// select.addSelect(SAMPLING_UNIT.STRATUM_ID.as(factTable.getStratumIdField().getName()));
+		// Condition cond = SAMPLING_UNIT.CLUSTER.eq(DSL.field(""))
+		// .and();
+		// select.addJoin(SAMPLING_UNIT, JoinType.LEFT_OUTER_JOIN, cond);
+
 	}
 
 	private void selectQuantities(SelectQuery<?> select, OutputTable outputTable) {
@@ -168,12 +156,12 @@ public final class CreateFactTablesTask extends Task {
 		List<VariableAggregate> aggs = entity.getVariableAggregates();
 		OutputTable outputDataTable = (OutputTable) factTable.getSourceOutputTable();
 		for (VariableAggregate agg : aggs) {
-			if( !VariableAggregate.AGGREGATE_TYPE.PER_UNIT_AREA.equals(agg.getAggregateType()) ) {
+			if (!VariableAggregate.AGGREGATE_TYPE.PER_UNIT_AREA.equals(agg.getAggregateType())) {
 				QuantitativeVariable var = agg.getVariable();
-//				Field<BigDecimal> measureFld = factTable.getMeasureField(agg);
+				// Field<BigDecimal> measureFld = factTable.getMeasureField(agg);
 				Field<BigDecimal> measureFld = factTable.getVariableAggregateField(agg);
 				Field<BigDecimal> valueFld = outputDataTable.getQuantityField(var);
-				select.addSelect( valueFld.as(measureFld.getName()) );
+				select.addSelect(valueFld.as(measureFld.getName()));
 			}
 		}
 	}
@@ -181,24 +169,24 @@ public final class CreateFactTablesTask extends Task {
 	private void selectDimensionsRecursive(SelectQuery<?> select, FactTable factTable, OutputTable outputTable) {
 		Entity entity = outputTable.getEntity();
 		OutputTable parentTable = (OutputTable) outputTable.getParentTable();
-		if ( parentTable != null ) {
-//			Entity parentEntity = parentTable.getEntity();
-//			if ( parentEntity.isUnitOfAnalysis() ) {
+		if (parentTable != null) {
+			// Entity parentEntity = parentTable.getEntity();
+			// if ( parentEntity.isUnitOfAnalysis() ) {
 			addJoin(select, outputTable);
 			selectDimensionsRecursive(select, factTable, parentTable);
-//			}
+			// }
 		}
 		List<CategoricalVariable<?>> variables = entity.getCategoricalVariables();
 		for (CategoricalVariable<?> var : variables) {
 			Field<?> valueField = outputTable.getCategoryValueField(var);
 			select.addSelect(valueField);
 			Field<Integer> idField = factTable.getDimensionIdField(var);
-			if ( idField != null ) {
+			if (idField != null) {
 				select.addSelect(DSL.value(null).cast(SQLDataType.INTEGER).as(idField.getName()));
 			}
 		}
 	}
-	
+
 	private void addJoin(SelectQuery<?> select, OutputTable outputTable) {
 		DataTable parentTable = outputTable.getParentTable();
 		Field<Long> parentId = outputTable.getParentIdField();

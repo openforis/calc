@@ -93,11 +93,19 @@ public class InputSchema extends RelationalSchema {
 		List<NewFactTable> tables = new ArrayList<NewFactTable>();
 		for ( Entity entity : workspace.getEntities() ) {
 			if( entity.isAggregable() ) {
-				NewFactTable factTable = new NewFactTable(entity, this, getDataView(entity), null);
+				NewFactTable factTable = getFactTable(entity);
 				tables.add(factTable);
 			}
 		}
 		return tables;
+	}
+
+	public NewFactTable getFactTable(Entity entity) {
+		if (entity.isAggregable()) {
+			NewFactTable factTable = new NewFactTable(entity, this, getDataView(entity), null);
+			return factTable;
+		}
+		return null;
 	}
 	
 }

@@ -126,7 +126,7 @@ public class RScript {
 		return new Div(this, numerator, denumenator);
 	}
 
-	public RVector c(Object... values) {
+	public<T extends Object> RVector c(T... values) {
 		return new RVector(this, values);
 	}
 	

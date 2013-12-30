@@ -18,7 +18,7 @@ public class RVector extends RScript {
 	private List<Object> values ;
 	private boolean changed;
 	
-	RVector(RScript previous, Object... values) {
+	<T extends Object> RVector(RScript previous, T... values) {
 		super(previous);
 		
 		this.values = new ArrayList<Object>(Arrays.asList(values));

@@ -84,7 +84,7 @@ public class R {
 			// RuntimeException("Error getting JRI library path from R");
 			return null;
 		} finally {
-			IOUtils.closeQuietly(s);
+//			IOUtils.closeQuietly(s);
 		}
 	}
 

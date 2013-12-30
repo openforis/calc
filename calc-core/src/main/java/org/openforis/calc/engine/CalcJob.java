@@ -20,7 +20,6 @@ import org.jooq.impl.SQLDataType;
 import org.jooq.impl.SchemaImpl;
 import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.post.CreateAggregateTablesTask;
-import org.openforis.calc.chain.post.CreateFactTablesTask;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.psql.AlterTableStep.AlterColumnStep;
 import org.openforis.calc.psql.CreateViewStep.AsStep;
@@ -313,22 +312,25 @@ public class CalcJob extends Job {
 	//			}
 			
 			addTask(writeResultsTask);
+
+			if( aggregates && entity.isAggregable() ) {
+//			CreateFactTablesTask task = new CreateFactTablesTask();
+//			((AutowireCapableBeanFactory) beanFactory).autowireBean(task);
+//			addTask( task );
+				
+				CreateAggregateTablesTask aggTask = new CreateAggregateTablesTask(entity);
+				((AutowireCapableBeanFactory) beanFactory).autowireBean(aggTask);
+				addTask( aggTask );
+			}
+			
 		}
+		
 		// 9. close connection
 		CalcRTask closeConnection = createTask("Close database connection");
 		closeConnection.addScript( r().dbDisconnect(connection) );
 		addTask(closeConnection);
 		
 		
-		if( aggregates ) {
-			CreateFactTablesTask task = new CreateFactTablesTask();
-			((AutowireCapableBeanFactory) beanFactory).autowireBean(task);
-			addTask( task );
-			
-			CreateAggregateTablesTask aggTask = new CreateAggregateTablesTask();
-			((AutowireCapableBeanFactory) beanFactory).autowireBean(aggTask);
-			addTask( aggTask );
- 		}
 	}
 
 	protected CalcRTask createTask(String name) {

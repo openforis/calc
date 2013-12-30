@@ -10,7 +10,6 @@ import org.jooq.SelectQuery;
 import org.jooq.TableField;
 import org.jooq.impl.DSL;
 import org.openforis.calc.engine.CalcJob;
-import org.openforis.calc.engine.Job;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.metadata.AoiLevel;
 import org.openforis.calc.metadata.Entity;
@@ -20,13 +19,13 @@ import org.openforis.calc.psql.CreateTableStep.AsStep;
 import org.openforis.calc.psql.Psql;
 import org.openforis.calc.psql.Psql.Privilege;
 import org.openforis.calc.schema.AggregateTable;
+import org.openforis.calc.schema.EntityDataView;
 import org.openforis.calc.schema.ExpansionFactorTable;
 import org.openforis.calc.schema.FactTable;
 import org.openforis.calc.schema.InputSchema;
 import org.openforis.calc.schema.NewFactTable;
 import org.openforis.calc.schema.OutputSchema;
 import org.openforis.calc.schema.PlotAggregateTable;
-import org.openforis.calc.schema.ResultTable;
 import org.openforis.calc.schema.Schemas;
 
 /**
@@ -37,16 +36,17 @@ import org.openforis.calc.schema.Schemas;
  */
 public final class CreateAggregateTablesTask extends Task {
 	
-//	private Entity entity;
+	private Entity entity;
 
-	public CreateAggregateTablesTask() {
+	public CreateAggregateTablesTask(Entity entity) {
 		super();
-//		this.entity = entity;
+		this.entity = entity;
 	}
 
 	@Override
 	protected long countTotalItems() {
-		return getJob().getInputSchema().getFactTables().size();
+		// just one for now.
+		return 1;
 	}
 	
 	protected void execute() throws Throwable {
@@ -55,49 +55,19 @@ public final class CreateAggregateTablesTask extends Task {
 		Schemas schemas = job.getSchemas();
 		InputSchema schema = schemas.getInputSchema();
 		
-		List<NewFactTable> factTables = schema.getFactTables();
-		for (NewFactTable factTable : factTables) {
-			Entity entity = factTable.getEntity();
-			if( entity.getParent().isSamplingUnit() ){
-				PlotAggregateTable plotAgg = factTable.getPlotAggregateTable();
-				
-				SelectQuery<Record> select = psql().selectQuery();
-				select.addFrom( factTable );
-				
-				select.addSelect( factTable.getParentIdField() );
-				select.addGroupBy( factTable.getParentIdField() );
-				select.addSelect( factTable.getDimensionIdFields() );
-				select.addGroupBy( factTable.getDimensionIdFields() );
-				
-				// for now quantity fields. check if it needs to be done for each variable aggregate
-				TableField<Record, BigDecimal> plotArea = factTable.getPlotAreaField();
-				for (QuantitativeVariable var : entity.getOutputVariables()) {
-					Field<BigDecimal> quantityField = factTable.getQuantityField(var);
-					
-					Field<BigDecimal> aggregateField = 
-						DSL.sum(
-							DSL.decode()
-							.when( plotArea.notEqual(BigDecimal.ZERO), quantityField.div(plotArea) )
-							.otherwise( BigDecimal.ZERO )
-						).as( quantityField.getName() );
-
-					select.addSelect( aggregateField );
-				}
-				
-				// drop table
-				psql()
-					.dropTableIfExists( plotAgg )
-					.execute();
-				
-				AsStep as = psql()
-					.createTable(plotAgg)
-					.as(select);
-				
-					as.execute();
-				
-			}
-			
+//		List<NewFactTable> factTables = schema.getFactTables();
+//		for (NewFactTable factTable : factTables) {
+//			Entity entity = factTable.getEntity();
+		
+		NewFactTable factTable = schema.getFactTable(entity);
+		
+		createFactTable(factTable);
+		
+		if( entity.getParent().isSamplingUnit() ){			
+			createPlotAggregateTable(factTable);
 		}
+		incrementItemsProcessed();	
+//		}
 //		for (Entity entity : getWorkspace().getEntities()) {
 //			ResultTable resultTable = schema.getResultTable(entity);
 //			if( resultTable != null ){
@@ -111,11 +81,95 @@ public final class CreateAggregateTablesTask extends Task {
 //		}
 		
 //		job.get
+	}
+
+	private void createPlotAggregateTable(NewFactTable factTable) {
+		PlotAggregateTable plotAgg = factTable.getPlotAggregateTable();
+			
+			SelectQuery<Record> select = psql().selectQuery();
+			select.addFrom( factTable );
+			
+			select.addSelect( factTable.getParentIdField() );
+			select.addGroupBy( factTable.getParentIdField() );
+			select.addSelect( factTable.getDimensionIdFields() );
+			select.addGroupBy( factTable.getDimensionIdFields() );
+			
+			// for now quantity fields. check if it needs to be done for each variable aggregate
+			TableField<Record, BigDecimal> plotArea = factTable.getPlotAreaField();
+			for (QuantitativeVariable var : entity.getOutputVariables()) {
+				Field<BigDecimal> quantityField = factTable.getQuantityField(var);
+				
+				Field<BigDecimal> aggregateField = 
+					DSL.sum(
+						DSL.decode()
+						.when( plotArea.notEqual(BigDecimal.ZERO), quantityField.div(plotArea) )
+						.otherwise( BigDecimal.ZERO )
+					).as( quantityField.getName() );
+
+				select.addSelect( aggregateField );
+			}
+			
+			// drop table
+			psql()
+				.dropTableIfExists( plotAgg )
+				.execute();
+			
+			AsStep as = psql()
+				.createTable(plotAgg)
+				.as(select);
+			
+				as.execute();
 	}	
+	
+	
+	
+	private void createFactTable(NewFactTable factTable) {
+		EntityDataView dataTable = factTable.getEntityView();
+
+		SelectQuery<?> select = new Psql().selectQuery(dataTable);
+		select.addSelect(dataTable.getIdField());
+		select.addSelect(dataTable.getParentIdField());
+		// select.addSelect(dataTable.getAoiIdFields());
+		for (Field<Integer> field : factTable.getDimensionIdFields()) {
+			// todo add dim fields to entitydataview
+			select.addSelect(dataTable.field(field));
+		}
+
+		// select measure
+		List<QuantitativeVariable> vars = factTable.getEntity().getQuantitativeVariables();
+		for (QuantitativeVariable var : vars) {
+			Field<BigDecimal> fld = dataTable.getQuantityField(var);
+			select.addSelect(fld);
+
+			// for (VariableAggregate agg : var.getAggregates()) {
+			// Field<BigDecimal> measureFld = factTable.getVariableAggregateField(agg);
+			// Field<BigDecimal> valueFld = dataTable.getQuantityField(var);
+			// select.addSelect( valueFld.as(measureFld.getName()) );
+			// // }
+			// }
+		}
+
+		// add plot area
+		TableField<Record, BigDecimal> plotAreaField = factTable.getPlotAreaField();
+		if (plotAreaField != null) {
+			select.addSelect(dataTable.field(plotAreaField));
+		}
+
+		psql().dropTableIfExists(factTable).execute();
+
+		AsStep as = psql().createTable(factTable).as(select);
+
+		as.execute();
+
+		// Grant access to system user
+		psql().grant(Privilege.ALL).on(factTable).to(getSystemUser()).execute();
+	}
+	
+	
 	
 	@Override
 	public String getName() {
-		return String.format( "Aggregate Tables" );
+		return String.format( "%s aggregates" , this.entity.getName() );
 	}
 	
 //	@Override

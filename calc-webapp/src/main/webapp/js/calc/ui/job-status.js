@@ -210,9 +210,9 @@ JobStatus.prototype = (function() {
 		$this.logBtn.removeClass("option-btn-selected");
 		$this.logBtn.addClass("option-btn");
 		
-		$this.logSection.animate({ height: "80px" }, 800);
+		$this.logSection.animate({ height: "80px" }, 600);
 		setTimeout(function(){
-			$this.log.animate({ opacity: ".2" }, 800);
+			$this.log.animate({ opacity: ".2" }, 600);
 		},800); 
 		
 		$.proxy(adjustSize, $this)();
