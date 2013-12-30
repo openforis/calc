@@ -266,7 +266,7 @@ button.settings:hover {
 }
 
 #calculation button.highlight {
-	color: yellow;
+	color: #ffe29c;
 }
 
 
@@ -285,7 +285,7 @@ button.settings:hover {
 /* 	top:0px; */
 } 
 .footer-placeholder {
-	height: 10%;	
+	height: 12%;
 }
 
 #footer div{
@@ -731,7 +731,8 @@ ul.scroll-menu {
 **
 **/
 .button-bar {
-	width: 20em ; 
+	width: 16em ;
+	height: 12em;
 	float:left; 
 	border:1px solid #2c3e50; 
 	display: block;
@@ -744,7 +745,8 @@ ul.scroll-menu {
 .button-bar-inner {
 	background-color: #496d7e;
 	position: fixed; 
-	width: 20em ;
+	width: 16em ;
+	height: 12em;
 /* 	font-size: 2em; */
 }
 .button-bar button,
@@ -754,7 +756,7 @@ ul.scroll-menu {
 	border-color: #496d7e;
 	color: #FFF;
 	border-radius: 0;
-	height: 6em;
+	height: 100%;
 }
 .button-bar button:hover, .button-bar button.blue-btn-hover {
 	background-color: #36525f;
@@ -763,7 +765,12 @@ ul.scroll-menu {
 .button-bar button i{
 	font-size: 2em;
 }
-
+.height100 {
+	height: 100%;
+}
+.height50 {
+	height: 50%;
+}
 
 /**
 * Dialog

@@ -42,7 +42,8 @@ homeCalculationManager = null;
 $(document).ready(function() {
 	
 	positionFooter = function() {
-		$footer.animate({top:$(window).height()- $footer.height() +1 }, 400);
+		$(".footer-placeholder").css("height", $footer.height());
+		$footer.animate({top:$(window).height()- $footer.height() }, 400);
 	};
 	
 	resizeContainer = function() {
@@ -158,9 +159,9 @@ $(document).ready(function() {
 		
 		JobManager.getInstance().checkJobStatus();
 		//on load, the footer buttons is positioned to the bottom of the page
+		resizeContainer();
 		positionFooter();
 		
-		resizeContainer();
 	};
 	
 	init();
