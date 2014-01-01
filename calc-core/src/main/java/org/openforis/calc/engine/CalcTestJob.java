@@ -123,7 +123,7 @@ public class CalcTestJob extends CalcJob {
 				double[] resultValues = rEnvironment.evalDoubles(outputRVariable.toString());
 				
 				//generate results
-				dataFrame.addColumn(r().c(outputVariable.getName(), (Object[]) ArrayUtils.toObject(resultValues)));
+				dataFrame.addColumn(r().cUseless(outputVariable.getName(), (Object[]) ArrayUtils.toObject(resultValues)));
 				
 				generateResultRecords(dataFrame);
 			} catch ( RException e) {
@@ -174,7 +174,7 @@ public class CalcTestJob extends CalcJob {
 			for ( String varName : variableSettings.names() ) {
 				ParameterMap varSettings = variableSettings.getMap(varName);
 				List<Double> series = generateSeries(varSettings);
-				RNamedVector column = r().c(varName);
+				RNamedVector column = r().cUseless(varName);
 				
 				int currentSeriesSize = series.size();
 			

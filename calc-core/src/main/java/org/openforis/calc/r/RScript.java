@@ -130,7 +130,7 @@ public class RScript {
 		return new RVector(this, values);
 	}
 	
-	public RNamedVector c(String name, Object... values) {
+	public RNamedVector cUseless(String name, Object... values) {
 		return new RNamedVector(this, name, values);
 	}
 	
