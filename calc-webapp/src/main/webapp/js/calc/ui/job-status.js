@@ -199,8 +199,8 @@ JobStatus.prototype = (function() {
 		
 		//var height = $(document).height() / 5;
 		var height = 130;
-		this.logSection.animate({ height: height }, 800);
-		this.log.animate({ opacity: "1" }, 800);
+		this.logSection.animate({ height: height }, 600);
+		this.log.animate({ opacity: "1" }, 600);
 		
 		$.proxy(adjustSize, $this)();
 	};
