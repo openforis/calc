@@ -41,6 +41,7 @@ import org.openforis.calc.schema.ResultTable;
 import org.openforis.calc.schema.Schemas;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -76,11 +77,20 @@ public class CalcJob extends Job {
 	private RLogger rLogger;
 
 	// TODO read dynamically these properties
-	String host = "localhost";
-	String database = "calc";
-	String user = "calc";
-	String password = "calc";
-	int port = 5432;
+	@Value("${calc.jdbc.host}")
+	private String host;
+	
+	@Value("${calc.jdbc.db}")
+	private String database;
+	
+	@Value("${calc.jdbc.username}")
+	private String user;
+	
+	@Value("${calc.jdbc.password}")
+	private String password;
+	
+	@Value("${calc.jdbc.port}")
+	private int port;
 
 	private boolean aggregates;
 

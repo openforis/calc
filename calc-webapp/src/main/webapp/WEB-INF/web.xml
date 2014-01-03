@@ -113,4 +113,25 @@
 		<session-timeout>60</session-timeout>
 	</session-config>
 
+
+
+
+<!-- 	<security-constraint> -->
+<!-- 		<web-resource-collection> -->
+<!-- 			<web-resource-name>Open Foris Calc</web-resource-name> -->
+<!-- 			<url-pattern>/*</url-pattern> -->
+<!-- 		</web-resource-collection> -->
+<!-- 		<auth-constraint> -->
+<!-- 			<role-name>calc</role-name> -->
+<!-- 		</auth-constraint> -->
+
+<!-- 		<user-data-constraint> -->
+<!-- 			<transport-guarantee>NONE</transport-guarantee> -->
+<!-- 		</user-data-constraint> -->
+<!-- 	</security-constraint> -->
+
+<!-- 	<login-config> -->
+<!-- 		<auth-method>BASIC</auth-method> -->
+<!-- 	</login-config> -->
+
 </web-app>
