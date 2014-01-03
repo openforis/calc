@@ -1,0 +1,1632 @@
+<Schema name="Naforma1">
+	<Dimension type="StandardDimension" visible="true" highCardinality="false" name="AdminUnit" caption="Administrative Units">
+		<Hierarchy name="AdminUnit" visible="true" hasAll="false">
+			<View alias="admin-unit">
+				<SQL dialect="generic">
+					<![CDATA[select "naforma1_dims"."country"."id" as "country_id", "naforma1_dims"."country"."label" as "country_label", "naforma1_dims"."zone"."id" as "zone_id", "naforma1_dims"."zone"."label" as "zone_label", "naforma1_dims"."region"."id" as "region_id", "naforma1_dims"."region"."label" as "region_label", "naforma1_dims"."district"."id" as "district_id", "naforma1_dims"."district"."label" as "district_label" from "naforma1_dims"."district" join "naforma1_dims"."region" on "naforma1_dims"."district"."parent_id" = "naforma1_dims"."region"."id" join "naforma1_dims"."zone" on "naforma1_dims"."region"."parent_id" = "naforma1_dims"."zone"."id" join "naforma1_dims"."country" on "naforma1_dims"."zone"."parent_id" = "naforma1_dims"."country"."id"]]>
+				</SQL>
+			</View>
+			<Level name="Country" visible="true" column="country_id" nameColumn="country_label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+			</Level>
+			<Level name="Zone" visible="true" column="zone_id" nameColumn="zone_label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+			</Level>
+			<Level name="Region" visible="true" column="region_id" nameColumn="region_label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+			</Level>
+			<Level name="District" visible="true" column="district_id" nameColumn="district_label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+			</Level>
+		</Hierarchy>
+	</Dimension>
+	<!--<Dimension type="StandardDimension" visible="true" highCardinality="false" name="Stratum" caption="Stratum">
+		<Hierarchy name="Stratum" visible="true" hasAll="true">
+			<Table name="stratum" schema="naforma1">
+			</Table>
+			<Level name="Stratum" visible="true" table="stratum" column="id" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+			</Level>
+		</Hierarchy>
+	</Dimension>-->
+	<!--<Dimension type="StandardDimension" visible="true" highCardinality="false" name="SESU" caption="Socioeconomic SU">
+		<Hierarchy name="Cluster" visible="true" hasAll="true">
+			<Table name="cluster" schema="naforma1">
+			</Table>
+			<Level name="Cluster" visible="true" table="cluster" column="id" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+			</Level>
+		</Hierarchy>
+	</Dimension>-->
+	<!--<Dimension type="StandardDimension" visible="true" highCardinality="false" name="PlotNo" caption="Biophysical Sample Plot">
+		<Hierarchy name="Plot" visible="true" hasAll="true">
+			<View alias="plot">
+				<SQL dialect="generic">
+					<![CDATA[select "naforma1"."cluster"."id" as "cluster_id", "naforma1"."cluster"."label" as "cluster_label", "naforma1"."plot_no"."id" as "plot_no_id", "naforma1"."plot_no"."label" as "plot_no_label" from "naforma1"."plot_no" join "naforma1"."cluster" on "naforma1"."plot_no"."parent_id" = "naforma1"."cluster"."id"]]>
+				</SQL>
+			</View>
+			<Level name="Cluster" visible="true" column="cluster_id" nameColumn="cluster_label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+			</Level>
+			<Level name="PlotNo" visible="true" column="plot_no_id" nameColumn="plot_no_label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+			</Level>
+		</Hierarchy>
+	</Dimension>-->
+	<!--<Dimension type="StandardDimension" visible="true" highCardinality="false" name="TreeNo" caption="Tree">
+		<Hierarchy name="Tree" visible="true" hasAll="true">
+			<View alias="tree">
+				<SQL dialect="generic">
+					<![CDATA[select "naforma1"."cluster"."id" as "cluster_id", "naforma1"."cluster"."label" as "cluster_label", "naforma1"."plot_no"."id" as "plot_no_id", "naforma1"."plot_no"."label" as "plot_no_label", "naforma1"."tree_no"."id" as "tree_no_id", "naforma1"."tree_no"."label" as "tree_no_label" from "naforma1"."tree_no" join "naforma1"."plot_no" on "naforma1"."tree_no"."parent_id" = "naforma1"."plot_no"."id" join "naforma1"."cluster" on "naforma1"."plot_no"."parent_id" = "naforma1"."cluster"."id"]]>
+				</SQL>
+			</View>
+			<Level name="Cluster" visible="true" column="cluster_id" nameColumn="cluster_label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+			</Level>
+			<Level name="PlotNo" visible="true" column="plot_no_id" nameColumn="plot_no_label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+			</Level>
+			<Level name="TreeNo" visible="true" column="tree_no_id" nameColumn="tree_no_label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+			</Level>
+		</Hierarchy>
+	</Dimension>-->
+	<!--<Dimension type="StandardDimension" visible="true" highCardinality="false" name="BambooNo" caption="Bamboo">
+		<Hierarchy name="Bamboo" visible="true" hasAll="true">
+			<View alias="bamboo">
+				<SQL dialect="generic">
+					<![CDATA[select "naforma1"."cluster"."id" as "cluster_id", "naforma1"."cluster"."label" as "cluster_label", "naforma1"."plot_no"."id" as "plot_no_id", "naforma1"."plot_no"."label" as "plot_no_label", "naforma1"."bamboo_no"."id" as "bamboo_no_id", "naforma1"."bamboo_no"."label" as "bamboo_no_label" from "naforma1"."bamboo_no" join "naforma1"."plot_no" on "naforma1"."bamboo_no"."parent_id" = "naforma1"."plot_no"."id" join "naforma1"."cluster" on "naforma1"."plot_no"."parent_id" = "naforma1"."cluster"."id"]]>
+				</SQL>
+			</View>
+			<Level name="Cluster" visible="true" column="cluster_id" nameColumn="cluster_label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+			</Level>
+			<Level name="PlotNo" visible="true" column="plot_no_id" nameColumn="plot_no_label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+			</Level>
+			<Level name="BambooNo" visible="true" column="bamboo_no_id" nameColumn="bamboo_no_label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+			</Level>
+		</Hierarchy>
+	</Dimension>-->
+	<!--<Dimension type="StandardDimension" visible="true" highCardinality="false" name="DeadWoodNo" caption="Dead Wood">
+		<Hierarchy name="DeadWood" visible="true" hasAll="true">
+			<View alias="dead_wood">
+				<SQL dialect="generic">
+					<![CDATA[select "naforma1"."cluster"."id" as "cluster_id", "naforma1"."cluster"."label" as "cluster_label", "naforma1"."plot_no"."id" as "plot_no_id", "naforma1"."plot_no"."label" as "plot_no_label", "naforma1"."dead_wood_no"."id" as "dead_wood_no_id", "naforma1"."dead_wood_no"."label" as "dead_wood_no_label" from "naforma1"."dead_wood_no" join "naforma1"."plot_no" on "naforma1"."dead_wood_no"."parent_id" = "naforma1"."plot_no"."id" join "naforma1"."cluster" on "naforma1"."plot_no"."parent_id" = "naforma1"."cluster"."id"]]>
+				</SQL>
+			</View>
+			<Level name="Cluster" visible="true" column="cluster_id" nameColumn="cluster_label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+			</Level>
+			<Level name="PlotNo" visible="true" column="plot_no_id" nameColumn="plot_no_label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+			</Level>
+			<Level name="DeadWoodNo" visible="true" column="dead_wood_no_id" nameColumn="dead_wood_no_label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+			</Level>
+		</Hierarchy>
+	</Dimension>-->
+	<Dimension type="StandardDimension" visible="true" highCardinality="false" name="Trees" caption="Trees">
+		<Hierarchy name="Trees" visible="true" hasAll="true">
+			<Table name="trees" schema="naforma1_dims">
+			</Table>
+			<Level name="Trees" visible="true" column="code" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+			</Level>
+		</Hierarchy>
+	</Dimension>
+	<!--<Dimension type="StandardDimension" visible="true" highCardinality="false" name="Bamboo" caption="Bamboo">
+		<Hierarchy name="Bamboo" visible="true" hasAll="true">
+			<Table name="bamboo" schema="naforma1">
+			</Table>
+			<Level name="Bamboo" visible="true" column="id" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+			</Level>
+		</Hierarchy>
+	</Dimension>-->
+	<Dimension type="StandardDimension" visible="true" highCardinality="false" name="LandUse">
+		<Hierarchy name="LandUse" visible="true" hasAll="true">
+			<Table name="land_use" schema="naforma1_dims">
+			</Table>
+			<Level name="LandUse" visible="true" table="land_use" column="code" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+			</Level>
+		</Hierarchy>
+	</Dimension>
+	<Dimension type="StandardDimension" visible="true" highCardinality="false" name="VegetationType">
+		<Hierarchy name="VegetationType" visible="true" hasAll="true" caption="Vegetation Type">
+			<Table name="vegetation_type" schema="naforma1_dims">
+			</Table>
+			<Level name="PrimaryVegetationType" caption="Primary Veg Type" visible="true" table="vegetation_type" column="p_code" 
+					nameColumn="p_label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+			</Level>
+			<Level name="VegetationType" caption="Veg Type" visible="true" table="vegetation_type" column="code" 
+					nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+			</Level>
+		</Hierarchy>
+		<Hierarchy name="OrigVegetationType" visible="true" hasAll="true" caption="Original Vegetation Type">
+			<Table name="vegetation_type" schema="naforma1_dims">
+			</Table>
+			<Level name="PrimaryVegetationType" caption="Primary Veg Type" visible="true" table="vegetation_type" column="old_p_code" 
+				nameColumn="old_p_label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+			</Level>
+			<Level name="VegetationType" caption="Veg Type" visible="true" table="vegetation_type" column="code" 
+				nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+			</Level>
+		</Hierarchy>
+	</Dimension>
+	<Dimension type="StandardDimension" visible="true" highCardinality="false" name="OwnershipType">
+		<Hierarchy name="OwnershipType" visible="true" hasAll="true">
+			<Table name="ownership_type" schema="naforma1_dims">
+			</Table>
+			<Level name="OwnershipType" visible="true" table="ownership_type" column="code" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+			</Level>
+		</Hierarchy>
+	</Dimension>
+	<Dimension type="StandardDimension" visible="true" highCardinality="false" name="UndergrowthType">
+		<Hierarchy name="UndergrowthType" visible="true" hasAll="true">
+			<Table name="undergrowth_type" schema="naforma1_dims">
+			</Table>
+			<Level name="UndergrowthType" visible="true" table="undergrowth_type" column="code" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+			</Level>
+		</Hierarchy>
+	</Dimension>
+	<Dimension type="StandardDimension" visible="true" highCardinality="false" name="SoilStructure">
+		<Hierarchy name="SoilStructure" visible="true" hasAll="true">
+			<Table name="soil_structure" schema="naforma1_dims">
+			</Table>
+			<Level name="SoilStructure" visible="true" table="soil_structure" column="code" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+			</Level>
+		</Hierarchy>
+	</Dimension>
+	<Dimension type="StandardDimension" visible="true" highCardinality="false" name="SoilTexture">
+		<Hierarchy name="SoilTexture" visible="true" hasAll="true">
+			<Table name="soil_texture" schema="naforma1_dims">
+			</Table>
+			<Level name="SoilTexture" visible="true" table="soil_texture" column="code" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+			</Level>
+		</Hierarchy>
+	</Dimension>
+	<Dimension type="StandardDimension" visible="true" highCardinality="false" name="Erosion">
+		<Hierarchy name="Erosion" visible="true" hasAll="true">
+			<Table name="erosion" schema="naforma1_dims">
+			</Table>
+			<Level name="Erosion" visible="true" table="erosion" column="code" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+			</Level>
+		</Hierarchy>
+	</Dimension>
+	<Dimension type="StandardDimension" visible="true" highCardinality="false" name="Grazing">
+		<Hierarchy name="Grazing" visible="true" hasAll="true">
+			<Table name="grazing" schema="naforma1_dims">
+			</Table>
+			<Level name="Grazing" visible="true" table="grazing" column="code" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+			</Level>
+		</Hierarchy>
+	</Dimension>
+	<Dimension type="StandardDimension" visible="true" highCardinality="false" name="Catchment">
+		<Hierarchy name="Catchment" visible="true" hasAll="true">
+			<Table name="catchment" schema="naforma1_dims">
+			</Table>
+			<Level name="Catchment" visible="true" table="catchment" column="code" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+			</Level>
+		</Hierarchy>
+	</Dimension>
+	<Dimension type="StandardDimension" visible="true" highCardinality="false" name="ShrubsCoverage">
+		<Hierarchy name="ShrubsCoverage" visible="true" hasAll="true">
+			<Table name="shrubs_coverage" schema="naforma1_dims">
+			</Table>
+			<Level name="ShrubsCoverage" visible="true" table="shrubs_coverage" column="code" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+			</Level>
+		</Hierarchy>
+	</Dimension>
+	<Dimension type="StandardDimension" visible="true" highCardinality="false" name="ProtectionStatus">
+		<Hierarchy name="ProtectionStatus" visible="true" hasAll="true">
+			<Table name="protection_status_code" schema="naforma1">
+			</Table>
+			<Level name="ProtectionStatus" visible="true" table="protection_status_code" column="protection_status_id" nameColumn="protection_status_label_en" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+			</Level>
+		</Hierarchy>
+	</Dimension>
+	<!--	<Dimension type="StandardDimension" visible="true" highCardinality="false" name="Nwfp">
+		<Hierarchy name="Nwfp" visible="true" hasAll="true">
+			<Table name="nwfp" schema="naforma1_dims">
+			</Table>
+			<Level name="Nwfp" visible="true" table="nwfp" column="code" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+			</Level>
+		</Hierarchy>
+	</Dimension>
+	<Dimension type="StandardDimension" visible="true" highCardinality="false" name="MgmtProposal">
+		<Hierarchy name="MgmtProposal" visible="true" hasAll="true">
+			<Table name="mgmt_proposal" schema="naforma1_dims">
+			</Table>
+			<Level name="MgmtProposal" visible="true" table="mgmt_proposal" column="code" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+			</Level>
+		</Hierarchy>
+	</Dimension>
+-->	
+	<Dimension type="StandardDimension" visible="true" highCardinality="false" name="CanopyCoverClass">
+		<Hierarchy name="CanopyCoverClass" visible="true" hasAll="true">
+			<Table name="canopy_cover_class" schema="naforma1_dims">
+			</Table>
+			<Level name="CanopyCoverClass" visible="true" table="canopy_cover_class" column="code" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+			</Level>
+		</Hierarchy>
+	</Dimension>
+	<!--<Dimension type="StandardDimension" visible="true" highCardinality="false" name="HumanImpact0" caption="Human Impact - No impact">
+		<Hierarchy name="HumanImpact0" visible="true" hasAll="true" caption="Human Impact - No impact">
+		<Table name="human_impact_0" schema="naforma1_dims">
+		</Table>
+		<Level name="HumanImpact0" visible="true" table="human_impact_0" column="code" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never" caption="Human Impact - No impact">
+		</Level>
+		</Hierarchy>
+		</Dimension>
+		<Dimension type="StandardDimension" visible="true" highCardinality="false" name="HumanImpact1" caption="Human Impact - Selection cutting (commercial)">
+		<Hierarchy name="HumanImpact1" visible="true" hasAll="true" caption="Human Impact - Selection cutting (commercial)">
+		<Table name="human_impact_1" schema="naforma1_dims">
+		</Table>
+		<Level name="HumanImpact1" visible="true" table="human_impact_1" column="code" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never" caption="Human Impact - Selection cutting (commercial)">
+		</Level>
+		</Hierarchy>
+		</Dimension>
+		<Dimension type="StandardDimension" visible="true" highCardinality="false" name="HumanImpact2" caption="Human Impact - Selection cutting (domestic use)">
+		<Hierarchy name="HumanImpact2" visible="true" hasAll="true" caption="Human Impact - Selection cutting (domestic use)">
+		<Table name="human_impact_2" schema="naforma1_dims">
+		</Table>
+		<Level name="HumanImpact2" visible="true" table="human_impact_2" column="code" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never" caption="Human Impact - Selection cutting (domestic use)">
+		</Level>
+		</Hierarchy>
+		</Dimension>
+		<Dimension type="StandardDimension" visible="true" highCardinality="false" name="HumanImpact3" caption="Human Impact - Clear felling">
+		<Hierarchy name="HumanImpact3" visible="true" hasAll="true" caption="Human Impact - Clear felling">
+		<Table name="human_impact_3" schema="naforma1_dims">
+		</Table>
+		<Level name="HumanImpact3" visible="true" table="human_impact_3" column="code" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never" caption="Human Impact - Clear felling">
+		</Level>
+		</Hierarchy>
+		</Dimension>
+		<Dimension type="StandardDimension" visible="true" highCardinality="false" name="HumanImpact4" caption="Human Impact - Shifting cultivation">
+		<Hierarchy name="HumanImpact4" visible="true" hasAll="true" caption="Human Impact - Shifting cultivation">
+		<Table name="human_impact_4" schema="naforma1_dims">
+		</Table>
+		<Level name="HumanImpact4" visible="true" table="human_impact_4" column="code" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never" caption="Human Impact - Shifting cultivation">
+		</Level>
+		</Hierarchy>
+		</Dimension>
+		<Dimension type="StandardDimension" visible="true" highCardinality="false" name="HumanImpact5" caption="Human Impact - Silvicultural treatment">
+		<Hierarchy name="HumanImpact5" visible="true" hasAll="true" caption="Human Impact - Silvicultural treatment">
+		<Table name="human_impact_5" schema="naforma1_dims">
+		</Table>
+		<Level name="HumanImpact5" visible="true" table="human_impact_5" column="code" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never" caption="Human Impact - Silvicultural treatment">
+		</Level>
+		</Hierarchy>
+		</Dimension>
+		<Dimension type="StandardDimension" visible="true" highCardinality="false" name="HumanImpact6" caption="Human Impact - Illegal cutting">
+		<Hierarchy name="HumanImpact6" visible="true" hasAll="true" caption="Human Impact - Illegal cutting">
+		<Table name="human_impact_6" schema="naforma1_dims">
+		</Table>
+		<Level name="HumanImpact6" visible="true" table="human_impact_6" column="code" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never" caption="Human Impact - Illegal cutting">
+		</Level>
+		</Hierarchy>
+		</Dimension>
+		<Dimension type="StandardDimension" visible="true" highCardinality="false" name="HumanImpact7" caption="Human Impact - Burning or/and ringbarking">
+		<Hierarchy name="HumanImpact7" visible="true" hasAll="true" caption="Human Impact - Burning or/and ringbarking">
+		<Table name="human_impact_7" schema="naforma1_dims">
+		</Table>
+		<Level name="HumanImpact7" visible="true" table="human_impact_7" column="code" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never" caption="Human Impact - Burning or/and ringbarking">
+		</Level>
+		</Hierarchy>
+		</Dimension>
+		<Dimension type="StandardDimension" visible="true" highCardinality="false" name="HumanImpact8" caption="Human Impact - Charcoal production">
+		<Hierarchy name="HumanImpact8" visible="true" hasAll="true" caption="Human Impact - Charcoal production">
+		<Table name="human_impact_8" schema="naforma1_dims">
+		</Table>
+		<Level name="HumanImpact8" visible="true" table="human_impact_8" column="code" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never" caption="Human Impact - Charcoal production">
+		</Level>
+		</Hierarchy>
+		</Dimension>
+		<Dimension type="StandardDimension" visible="true" highCardinality="false" name="HumanImpact9" caption="Human Impact - Timber sawing">
+		<Hierarchy name="HumanImpact9" visible="true" hasAll="true" caption="Human Impact - Timber sawing">
+		<Table name="human_impact_9" schema="naforma1_dims">
+		</Table>
+		<Level name="HumanImpact9" visible="true" table="human_impact_9" column="code" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never" caption="Human Impact - Timber sawing">
+		</Level>
+		</Hierarchy>
+		</Dimension>
+		<Dimension type="StandardDimension" visible="true" highCardinality="false" name="HumanImpact10" caption="Human Impact - Honey hunting">
+		<Hierarchy name="HumanImpact10" visible="true" hasAll="true" caption="Human Impact - Honey hunting">
+		<Table name="human_impact_10" schema="naforma1_dims">
+		</Table>
+		<Level name="HumanImpact10" visible="true" table="human_impact_10" column="code" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never" caption="Human Impact - Honey hunting">
+		</Level>
+		</Hierarchy>
+		</Dimension>
+		<Dimension type="StandardDimension" visible="true" highCardinality="false" name="HumanImpact11" caption="Human Impact - Medicinal activities">
+		<Hierarchy name="HumanImpact11" visible="true" hasAll="true" caption="Human Impact - Medicinal activities">
+		<Table name="human_impact_11" schema="naforma1_dims">
+		</Table>
+		<Level name="HumanImpact11" visible="true" table="human_impact_11" column="code" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never" caption="Human Impact - Medicinal activities">
+		</Level>
+		</Hierarchy>
+		</Dimension>
+		<Dimension type="StandardDimension" visible="true" highCardinality="false" name="HumanImpact12" caption="Human Impact - Sacred place">
+		<Hierarchy name="HumanImpact12" visible="true" hasAll="true" caption="Human Impact - Sacred place">
+		<Table name="human_impact_12" schema="naforma1_dims">
+		</Table>
+		<Level name="HumanImpact12" visible="true" table="human_impact_12" column="code" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never" caption="Human Impact - Sacred place">
+		</Level>
+		</Hierarchy>
+		</Dimension>
+		<Dimension type="StandardDimension" visible="true" highCardinality="false" name="HumanImpact13" caption="Human Impact - Land-use change (from forest, woodland or bushland)">
+		<Hierarchy name="HumanImpact13" visible="true" hasAll="true" caption="Human Impact - Land-use change (from forest, woodland or bushland)">
+		<Table name="human_impact_13" schema="naforma1_dims">
+		</Table>
+		<Level name="HumanImpact13" visible="true" table="human_impact_13" column="code" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never" caption="Human Impact - Land-use change (from forest, woodland or bushland)">
+		</Level>
+		</Hierarchy>
+		</Dimension>
+		<Dimension type="StandardDimension" visible="true" highCardinality="false" name="HumanImpact14" caption="Human Impact - Afforestation">
+		<Hierarchy name="HumanImpact14" visible="true" hasAll="true" caption="Human Impact - Afforestation">
+		<Table name="human_impact_14" schema="naforma1_dims">
+		</Table>
+		<Level name="HumanImpact14" visible="true" table="human_impact_14" column="code" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never" caption="Human Impact - Afforestation">
+		</Level>
+		</Hierarchy>
+		</Dimension>
+		<Dimension type="StandardDimension" visible="true" highCardinality="false" name="HumanImpact15" caption="Human Impact - Mining, Sand collection">
+		<Hierarchy name="HumanImpact15" visible="true" hasAll="true" caption="Human Impact - Mining, Sand collection">
+		<Table name="human_impact_15" schema="naforma1_dims">
+		</Table>
+		<Level name="HumanImpact15" visible="true" table="human_impact_15" column="code" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never" caption="Human Impact - Mining, Sand collection">
+		</Level>
+		</Hierarchy>
+		</Dimension>
+		<Dimension type="StandardDimension" visible="true" highCardinality="false" name="HumanImpact16" caption="Human Impact - Ringbarking">
+		<Hierarchy name="HumanImpact16" visible="true" hasAll="true" caption="Human Impact - Ringbarking">
+		<Table name="human_impact_16" schema="naforma1_dims">
+		</Table>
+		<Level name="HumanImpact16" visible="true" table="human_impact_16" column="code" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never" caption="Human Impact - Ringbarking">
+		</Level>
+		</Hierarchy>
+		</Dimension>
+		<Dimension type="StandardDimension" visible="true" highCardinality="false" name="HumanImpact17" caption="Human Impact - Agriculture">
+		<Hierarchy name="HumanImpact17" visible="true" hasAll="true" caption="Human Impact - Agriculture">
+		<Table name="human_impact_17" schema="naforma1_dims">
+		</Table>
+		<Level name="HumanImpact17" visible="true" table="human_impact_17" column="code" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never" caption="Human Impact - Agriculture">
+		</Level>
+		</Hierarchy>
+		</Dimension>
+		<Dimension type="StandardDimension" visible="true" highCardinality="false" name="HumanImpact99" caption="Human Impact - Other">
+		<Hierarchy name="HumanImpact99" visible="true" hasAll="true" caption="Human Impact - Other">
+		<Table name="human_impact_99" schema="naforma1_dims">
+		</Table>
+		<Level name="HumanImpact99" visible="true" table="human_impact_99" column="code" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never" caption="Human Impact - Other">
+		</Level>
+		</Hierarchy>
+		</Dimension>
+	-->
+	<Dimension type="StandardDimension" visible="true" highCardinality="false" name="Health" caption="Health">
+		<Hierarchy name="Health" visible="true" hasAll="true" caption="Health">
+			<Table name="health" schema="naforma1_dims">
+			</Table>
+			<Level name="Health" visible="true" table="health" column="code" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never" caption="Health">
+			</Level>
+		</Hierarchy>
+	</Dimension>
+	<Dimension type="StandardDimension" visible="true" highCardinality="false" name="Origin" caption="Origin">
+		<Hierarchy name="Origin" visible="true" hasAll="true" caption="Origin">
+			<Table name="origin" schema="naforma1_dims">
+			</Table>
+			<Level name="Origin" visible="true" table="origin" column="code" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never" caption="Origin">
+			</Level>
+		</Hierarchy>
+	</Dimension>
+	<Dimension type="StandardDimension" visible="true" highCardinality="false" name="DbhClass" caption="Dbh Class">
+		<Hierarchy name="DbhClass" visible="true" hasAll="true" caption="Dbh Class">
+		    <Table name="_dbh_class" schema="naforma1_dims">
+			</Table>
+			<Level name="DbhClass1" visible="true" table="_dbh_class" column="parent_code" nameColumn="parent_label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never" caption="Dbh Class 10cm">
+			</Level>
+			<Level name="DbhClass" visible="true" table="_dbh_class" column="code" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never" caption="Dbh Class 5cm">
+			</Level>
+		</Hierarchy>
+	</Dimension>
+	<Dimension type="StandardDimension" visible="true" highCardinality="false" name="SpeciesGroup" caption="Species Group">
+		<Hierarchy name="SpeciesGroup" visible="true" hasAll="true" caption="Species Group">
+			<Table name="species_group" schema="naforma1_dims">
+			</Table>
+			<Level name="SpeciesGroup" visible="true" table="species_group" column="_code" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never" caption="Species Group">
+			</Level>
+		</Hierarchy>
+	</Dimension>
+	<Dimension type="StandardDimension" visible="true" highCardinality="false" name="HumanImpact" caption="Human Impact">
+		<Hierarchy name="HumanImpactCode" visible="true" hasAll="true" caption="Human Impact">
+			<Table name="human_impact_code" schema="naforma1">
+			</Table>
+			<Level name="HumanImpact" visible="true" table="human_impact_code" column="human_impact" nameColumn="human_impact_label_en" uniqueMembers="false" levelType="Regular" hideMemberIf="Never" caption="Human Impact">
+			</Level>
+		</Hierarchy>
+	</Dimension>
+	<Dimension type="StandardDimension" visible="true" highCardinality="false" name="Nwfp" caption="Nwfp">
+		<Hierarchy name="Nwfp" visible="true" hasAll="true" caption="Nwfp">
+			<Table name="nwfp_code" schema="naforma1">
+			</Table>
+			<Level name="Nwfp" visible="true" table="nwfp_code" column="nwfp" nameColumn="nwfp_label_en" uniqueMembers="false" levelType="Regular" hideMemberIf="Never" caption="Nwfp">
+			</Level>
+		</Hierarchy>
+	</Dimension>
+	<Dimension type="StandardDimension" visible="true" highCardinality="false" name="MgmtProposal" caption="Mgmt Proposal">
+		<Hierarchy name="MgmtProposal" visible="true" hasAll="true" caption="Mgmt Proposal">
+			<Table name="mgmt_proposal_code" schema="naforma1">
+			</Table>
+			<Level name="MgmtProposal" visible="true" table="mgmt_proposal_code" column="mgmt_proposal" nameColumn="mgmt_proposal_label_en" uniqueMembers="false" levelType="Regular" hideMemberIf="Never" caption="Mgmt Proposal">
+			</Level>
+		</Hierarchy>
+	</Dimension>
+	<Dimension type="StandardDimension" visible="true" highCardinality="false" name="Biodiversity" caption="Biodiversity">
+		<Hierarchy name="Biodiversity" visible="true" hasAll="true" caption="Biodiversity">
+			<Table name="biodiversity_code" schema="naforma1">
+			</Table>
+			<Level name="Biodiversity" visible="true" table="biodiversity_code" column="biodiversity" nameColumn="biodiversity_label_en" uniqueMembers="false" levelType="Regular" hideMemberIf="Never" caption="Biodiversity">
+			</Level>
+		</Hierarchy>
+	</Dimension>
+	<Dimension type="StandardDimension" visible="true" highCardinality="false" name="Damage" caption="Damage">
+		<Hierarchy name="Damage" visible="true" hasAll="true" caption="Damage">
+			<Table name="damage_type_code" schema="naforma1">
+			</Table>
+			<Level name="Damage" visible="true" table="damage_type_code" column="damage_type" nameColumn="damage_type_label_en" uniqueMembers="false" levelType="Regular" hideMemberIf="Never" caption="Damage">
+			</Level>
+		</Hierarchy>
+	</Dimension>
+	<Dimension type="StandardDimension" visible="true" highCardinality="false" name="CommercialTree" caption="Commercial">
+		<Hierarchy name="CommercialTree" visible="true" hasAll="true" caption="Commercial">
+			<Table name="_commercial_tree_code" schema="naforma1">
+			</Table>
+			<Level name="CommercialTree" visible="true" table="_commercial_tree_code" column="code" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never" caption="Commercial">
+			</Level>
+		</Hierarchy>
+	</Dimension>
+	<Dimension type="StandardDimension" visible="true" highCardinality="false" name="CommercialClass" caption="Commercial Class">
+		<Hierarchy name="CommercialTreeClass" visible="true" hasAll="true" caption="Commercial Class">
+			<Table name="_commercial_tree_class" schema="naforma1">
+			</Table>
+			<Level name="CommercialTreeClass" visible="true" table="_commercial_tree_class" 
+				column="code" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never" caption="Commercial Class">
+			</Level>
+		</Hierarchy>
+	</Dimension>
+	<Dimension type="StandardDimension" visible="true" highCardinality="false" name="GrowingStock" caption="Growing Stock">
+		<Hierarchy name="GrowingStock" visible="true" hasAll="true" caption="Growing Stock">
+			<Table name="_growing_stock_tree_code" schema="naforma1">
+			</Table>
+			<Level name="GrowingStock" visible="true" table="_growing_stock_tree_code" column="code" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never" caption="Growing Stock">
+			</Level>
+		</Hierarchy>
+	</Dimension>
+	
+	<!--<Dimension type="StandardDimension" visible="true" highCardinality="false" name="PlotNo" caption="Plot No">
+		<Hierarchy name="PLotNo" visible="true" hasAll="true" caption="Plot No">
+			<Table name="_plot_no" schema="naforma1">
+			</Table>
+			<Level name="PlotNo" visible="true" table="_plot_no" column="plot_id" nameColumn="label" uniqueMembers="false" levelType="Regular" hideMemberIf="Never" caption="Plot No">
+			</Level>
+		</Hierarchy>
+	</Dimension>
+	-->
+	<Cube name="Plot" visible="true" cache="false" enabled="true">
+		<Table name="_plot" schema="naforma1">
+			<AggName name="_country_plot_agg" approxRowCount="100">
+				<AggFactCount column="agg_cnt">
+				</AggFactCount>
+				<!--<AggForeignKey factColumn="accessibility" aggColumn="accessibility">
+				</AggForeignKey>-->
+				<AggForeignKey factColumn="land_use" aggColumn="land_use">
+				</AggForeignKey>
+				<AggForeignKey factColumn="vegetation_type" aggColumn="vegetation_type">
+				</AggForeignKey>
+				<AggForeignKey factColumn="ownership_type" aggColumn="ownership_type">
+				</AggForeignKey>
+				<AggForeignKey factColumn="protection_status_id" aggColumn="protection_status_id">
+				</AggForeignKey>
+				<AggForeignKey factColumn="undergrowth_type" aggColumn="undergrowth_type">
+				</AggForeignKey>
+				<AggForeignKey factColumn="soil_structure" aggColumn="soil_structure">
+				</AggForeignKey>
+				<AggForeignKey factColumn="soil_texture" aggColumn="soil_texture">
+				</AggForeignKey>
+				<AggForeignKey factColumn="erosion" aggColumn="erosion">
+				</AggForeignKey>
+				<AggForeignKey factColumn="grazing" aggColumn="grazing">
+				</AggForeignKey>
+				<AggForeignKey factColumn="catchment" aggColumn="catchment">
+				</AggForeignKey>
+				<AggForeignKey factColumn="shrubs_coverage" aggColumn="shrubs_coverage">
+				</AggForeignKey>
+				<!--<AggForeignKey factColumn="nwfp" aggColumn="nwfp">
+				</AggForeignKey>
+				<AggForeignKey factColumn="mgmt_proposal" aggColumn="mgmt_proposal">
+				</AggForeignKey>-->
+				<AggForeignKey factColumn="canopy_cover_class" aggColumn="canopy_cover_class">
+				</AggForeignKey>
+				<!--<AggForeignKey factColumn="human_impact_0" aggColumn="human_impact_0">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_1" aggColumn="human_impact_1">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_2" aggColumn="human_impact_2">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_3" aggColumn="human_impact_3">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_4" aggColumn="human_impact_4">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_5" aggColumn="human_impact_5">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_6" aggColumn="human_impact_6">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_7" aggColumn="human_impact_7">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_8" aggColumn="human_impact_8">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_9" aggColumn="human_impact_9">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_10" aggColumn="human_impact_10">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_11" aggColumn="human_impact_11">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_12" aggColumn="human_impact_12">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_13" aggColumn="human_impact_13">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_14" aggColumn="human_impact_14">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_15" aggColumn="human_impact_15">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_16" aggColumn="human_impact_16">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_17" aggColumn="human_impact_17">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_99" aggColumn="human_impact_99">
+				</AggForeignKey>-->
+				<!--<AggMeasure column="cnt" name="[Measures].[Cnt]">
+				</AggMeasure>-->
+				<AggMeasure column="est_area" name="[Measures].[EstArea]">
+				</AggMeasure>
+				<AggLevel column="country_id" name="[AdminUnit].[Country]">
+				</AggLevel>
+			</AggName>
+			<AggName name="_zone_plot_agg" approxRowCount="200">
+				<AggFactCount column="agg_cnt">
+				</AggFactCount>
+				<!--<AggForeignKey factColumn="accessibility" aggColumn="accessibility">
+				</AggForeignKey>-->
+				<AggForeignKey factColumn="land_use" aggColumn="land_use">
+				</AggForeignKey>
+				<AggForeignKey factColumn="vegetation_type" aggColumn="vegetation_type">
+				</AggForeignKey>
+				<AggForeignKey factColumn="ownership_type" aggColumn="ownership_type">
+				</AggForeignKey>
+				<AggForeignKey factColumn="protection_status_id" aggColumn="protection_status_id">
+				</AggForeignKey>
+				<AggForeignKey factColumn="undergrowth_type" aggColumn="undergrowth_type">
+				</AggForeignKey>
+				<AggForeignKey factColumn="soil_structure" aggColumn="soil_structure">
+				</AggForeignKey>
+				<AggForeignKey factColumn="soil_texture" aggColumn="soil_texture">
+				</AggForeignKey>
+				<AggForeignKey factColumn="erosion" aggColumn="erosion">
+				</AggForeignKey>
+				<AggForeignKey factColumn="grazing" aggColumn="grazing">
+				</AggForeignKey>
+				<AggForeignKey factColumn="catchment" aggColumn="catchment">
+				</AggForeignKey>
+				<AggForeignKey factColumn="shrubs_coverage" aggColumn="shrubs_coverage">
+				</AggForeignKey>
+				<!--<AggForeignKey factColumn="nwfp" aggColumn="nwfp">
+				</AggForeignKey>
+				<AggForeignKey factColumn="mgmt_proposal" aggColumn="mgmt_proposal">
+				</AggForeignKey>-->
+				<AggForeignKey factColumn="canopy_cover_class" aggColumn="canopy_cover_class">
+				</AggForeignKey>
+				<!--<AggForeignKey factColumn="human_impact_0" aggColumn="human_impact_0">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_1" aggColumn="human_impact_1">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_2" aggColumn="human_impact_2">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_3" aggColumn="human_impact_3">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_4" aggColumn="human_impact_4">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_5" aggColumn="human_impact_5">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_6" aggColumn="human_impact_6">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_7" aggColumn="human_impact_7">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_8" aggColumn="human_impact_8">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_9" aggColumn="human_impact_9">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_10" aggColumn="human_impact_10">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_11" aggColumn="human_impact_11">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_12" aggColumn="human_impact_12">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_13" aggColumn="human_impact_13">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_14" aggColumn="human_impact_14">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_15" aggColumn="human_impact_15">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_16" aggColumn="human_impact_16">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_17" aggColumn="human_impact_17">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_99" aggColumn="human_impact_99">
+				</AggForeignKey>
+				<AggMeasure column="cnt" name="[Measures].[Cnt]">
+				</AggMeasure>-->
+				<AggMeasure column="est_area" name="[Measures].[EstArea]">
+				</AggMeasure>
+				<AggLevel column="country_id" name="[AdminUnit].[Country]">
+				</AggLevel>
+				<AggLevel column="zone_id" name="[AdminUnit].[Zone]">
+				</AggLevel>
+			</AggName>
+			<AggName name="_region_plot_agg" approxRowCount="300">
+				<AggFactCount column="agg_cnt">
+				</AggFactCount>
+				<!--<AggForeignKey factColumn="accessibility" aggColumn="accessibility">
+				</AggForeignKey>-->
+				<AggForeignKey factColumn="land_use" aggColumn="land_use">
+				</AggForeignKey>
+				<AggForeignKey factColumn="vegetation_type" aggColumn="vegetation_type">
+				</AggForeignKey>
+				<AggForeignKey factColumn="ownership_type" aggColumn="ownership_type">
+				</AggForeignKey>
+				<AggForeignKey factColumn="protection_status_id" aggColumn="protection_status_id">
+				</AggForeignKey>
+				<AggForeignKey factColumn="undergrowth_type" aggColumn="undergrowth_type">
+				</AggForeignKey>
+				<AggForeignKey factColumn="soil_structure" aggColumn="soil_structure">
+				</AggForeignKey>
+				<AggForeignKey factColumn="soil_texture" aggColumn="soil_texture">
+				</AggForeignKey>
+				<AggForeignKey factColumn="erosion" aggColumn="erosion">
+				</AggForeignKey>
+				<AggForeignKey factColumn="grazing" aggColumn="grazing">
+				</AggForeignKey>
+				<AggForeignKey factColumn="catchment" aggColumn="catchment">
+				</AggForeignKey>
+				<AggForeignKey factColumn="shrubs_coverage" aggColumn="shrubs_coverage">
+				</AggForeignKey>
+				<!--<AggForeignKey factColumn="nwfp" aggColumn="nwfp">
+				</AggForeignKey>
+				<AggForeignKey factColumn="mgmt_proposal" aggColumn="mgmt_proposal">
+				</AggForeignKey>-->
+				<AggForeignKey factColumn="canopy_cover_class" aggColumn="canopy_cover_class">
+				</AggForeignKey>
+				<!--<AggForeignKey factColumn="human_impact_0" aggColumn="human_impact_0">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_1" aggColumn="human_impact_1">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_2" aggColumn="human_impact_2">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_3" aggColumn="human_impact_3">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_4" aggColumn="human_impact_4">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_5" aggColumn="human_impact_5">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_6" aggColumn="human_impact_6">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_7" aggColumn="human_impact_7">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_8" aggColumn="human_impact_8">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_9" aggColumn="human_impact_9">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_10" aggColumn="human_impact_10">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_11" aggColumn="human_impact_11">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_12" aggColumn="human_impact_12">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_13" aggColumn="human_impact_13">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_14" aggColumn="human_impact_14">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_15" aggColumn="human_impact_15">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_16" aggColumn="human_impact_16">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_17" aggColumn="human_impact_17">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_99" aggColumn="human_impact_99">
+				</AggForeignKey>
+				<AggMeasure column="cnt" name="[Measures].[Cnt]">
+				</AggMeasure>-->
+				<AggMeasure column="est_area" name="[Measures].[EstArea]">
+				</AggMeasure>
+				<AggLevel column="country_id" name="[AdminUnit].[Country]">
+				</AggLevel>
+				<AggLevel column="zone_id" name="[AdminUnit].[Zone]">
+				</AggLevel>
+				<AggLevel column="region_id" name="[AdminUnit].[Region]">
+				</AggLevel>
+			</AggName>
+			<AggName name="_district_plot_agg" approxRowCount="400">
+				<AggFactCount column="agg_cnt">
+				</AggFactCount>
+				<!--<AggForeignKey factColumn="accessibility" aggColumn="accessibility">
+				</AggForeignKey>-->
+				<AggForeignKey factColumn="land_use" aggColumn="land_use">
+				</AggForeignKey>
+				<AggForeignKey factColumn="vegetation_type" aggColumn="vegetation_type">
+				</AggForeignKey>
+				<AggForeignKey factColumn="ownership_type" aggColumn="ownership_type">
+				</AggForeignKey>
+				<AggForeignKey factColumn="protection_status_id" aggColumn="protection_status_id">
+				</AggForeignKey>
+				<AggForeignKey factColumn="undergrowth_type" aggColumn="undergrowth_type">
+				</AggForeignKey>
+				<AggForeignKey factColumn="soil_structure" aggColumn="soil_structure">
+				</AggForeignKey>
+				<AggForeignKey factColumn="soil_texture" aggColumn="soil_texture">
+				</AggForeignKey>
+				<AggForeignKey factColumn="erosion" aggColumn="erosion">
+				</AggForeignKey>
+				<AggForeignKey factColumn="grazing" aggColumn="grazing">
+				</AggForeignKey>
+				<AggForeignKey factColumn="catchment" aggColumn="catchment">
+				</AggForeignKey>
+				<AggForeignKey factColumn="shrubs_coverage" aggColumn="shrubs_coverage">
+				</AggForeignKey>
+				<!--<AggForeignKey factColumn="nwfp" aggColumn="nwfp">
+				</AggForeignKey>
+				<AggForeignKey factColumn="mgmt_proposal" aggColumn="mgmt_proposal">
+				</AggForeignKey>-->
+				<AggForeignKey factColumn="canopy_cover_class" aggColumn="canopy_cover_class">
+				</AggForeignKey>
+				<!--<AggForeignKey factColumn="human_impact_0" aggColumn="human_impact_0">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_1" aggColumn="human_impact_1">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_2" aggColumn="human_impact_2">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_3" aggColumn="human_impact_3">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_4" aggColumn="human_impact_4">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_5" aggColumn="human_impact_5">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_6" aggColumn="human_impact_6">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_7" aggColumn="human_impact_7">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_8" aggColumn="human_impact_8">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_9" aggColumn="human_impact_9">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_10" aggColumn="human_impact_10">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_11" aggColumn="human_impact_11">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_12" aggColumn="human_impact_12">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_13" aggColumn="human_impact_13">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_14" aggColumn="human_impact_14">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_15" aggColumn="human_impact_15">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_16" aggColumn="human_impact_16">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_17" aggColumn="human_impact_17">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_99" aggColumn="human_impact_99">
+				</AggForeignKey>
+				<AggMeasure column="cnt" name="[Measures].[Cnt]">
+				</AggMeasure>-->
+				<AggMeasure column="est_area" name="[Measures].[EstArea]">
+				</AggMeasure>
+				<AggLevel column="country_id" name="[AdminUnit].[Country]">
+				</AggLevel>
+				<AggLevel column="zone_id" name="[AdminUnit].[Zone]">
+				</AggLevel>
+				<AggLevel column="region_id" name="[AdminUnit].[Region]">
+				</AggLevel>
+				<AggLevel column="district_id" name="[AdminUnit].[District]">
+				</AggLevel>
+			</AggName>
+		</Table>
+		<Dimension type="StandardDimension" visible="true" highCardinality="false" name="Stratum" caption="Stratum">
+			<Hierarchy name="Stratum" visible="true" hasAll="true">				
+				<Level name="Stratum" visible="true" column="stratum" 
+					uniqueMembers="false" levelType="Regular" hideMemberIf="Never"> </Level>
+			</Hierarchy>
+		</Dimension>
+<!--		<DimensionUsage source="Stratum" name="Stratum" visible="true" foreignKey="stratum_id" highCardinality="false">
+		</DimensionUsage>-->
+		<!--<DimensionUsage source="PlotNo" name="PlotNo" visible="true" foreignKey="plot_id" highCardinality="false">
+		</DimensionUsage>-->
+		<DimensionUsage source="AdminUnit" name="AdminUnit" visible="true" foreignKey="district_id" highCardinality="false">
+		</DimensionUsage>
+<!--		<DimensionUsage source="Accessibility" name="Accessibility" visible="true" foreignKey="accessibility" highCardinality="false">
+		</DimensionUsage>-->
+		<DimensionUsage source="LandUse" name="LandUse" visible="true" foreignKey="land_use" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="VegetationType" name="VegetationType" visible="true" foreignKey="vegetation_type" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="OwnershipType" name="OwnershipType" visible="true" foreignKey="ownership_type" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="ProtectionStatus" name="ProtectionStatus" visible="true" foreignKey="protection_status_id" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="UndergrowthType" name="UndergrowthType" visible="true" foreignKey="undergrowth_type" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="SoilStructure" name="SoilStructure" visible="true" foreignKey="soil_structure" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="SoilTexture" name="SoilTexture" visible="true" foreignKey="soil_texture" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="Erosion" name="Erosion" visible="true" foreignKey="erosion" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="Grazing" name="Grazing" visible="true" foreignKey="grazing" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="Catchment" name="Catchment" visible="true" foreignKey="catchment" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="ShrubsCoverage" name="ShrubsCoverage" visible="true" foreignKey="shrubs_coverage" highCardinality="false">
+		</DimensionUsage>
+		<!--<DimensionUsage source="Nwfp" name="Nwfp" visible="true" foreignKey="nwfp" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="MgmtProposal" name="MgmtProposal" visible="true" foreignKey="mgmt_proposal" highCardinality="false">
+		</DimensionUsage>-->
+		<DimensionUsage source="CanopyCoverClass" name="CanopyCoverClass" visible="true" foreignKey="canopy_cover_class" highCardinality="false">
+		</DimensionUsage>
+		<!--<DimensionUsage source="HumanImpact0" name="HumanImpact0" visible="true" foreignKey="human_impact_0" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="HumanImpact1" name="HumanImpact1" visible="true" foreignKey="human_impact_1" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="HumanImpact2" name="HumanImpact2" visible="true" foreignKey="human_impact_2" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="HumanImpact3" name="HumanImpact3" visible="true" foreignKey="human_impact_3" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="HumanImpact4" name="HumanImpact4" visible="true" foreignKey="human_impact_4" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="HumanImpact5" name="HumanImpact5" visible="true" foreignKey="human_impact_5" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="HumanImpact6" name="HumanImpact6" visible="true" foreignKey="human_impact_6" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="HumanImpact7" name="HumanImpact7" visible="true" foreignKey="human_impact_7" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="HumanImpact8" name="HumanImpact8" visible="true" foreignKey="human_impact_8" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="HumanImpact9" name="HumanImpact9" visible="true" foreignKey="human_impact_9" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="HumanImpact10" name="HumanImpact10" visible="true" foreignKey="human_impact_10" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="HumanImpact11" name="HumanImpact11" visible="true" foreignKey="human_impact_11" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="HumanImpact12" name="HumanImpact12" visible="true" foreignKey="human_impact_12" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="HumanImpact13" name="HumanImpact13" visible="true" foreignKey="human_impact_13" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="HumanImpact14" name="HumanImpact14" visible="true" foreignKey="human_impact_14" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="HumanImpact15" name="HumanImpact15" visible="true" foreignKey="human_impact_15" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="HumanImpact16" name="HumanImpact16" visible="true" foreignKey="human_impact_16" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="HumanImpact17" name="HumanImpact17" visible="true" foreignKey="human_impact_17" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="HumanImpact99" name="HumanImpact99" visible="true" foreignKey="human_impact_99" highCardinality="false">
+		</DimensionUsage>
+		<Measure name="PlotLocationDeviation" column="plot_location_deviation" datatype="Numeric" formatString="#,###.##" aggregator="sum" caption="Location deviation" visible="true">
+		</Measure>-->
+		<Measure name="EstArea" column="est_area" datatype="Numeric" formatString="#,###.##" aggregator="sum" caption="Est. area" visible="true">
+		</Measure>
+		<!--<Measure name="Cnt" column="cnt" datatype="Numeric" formatString="#,###.##" aggregator="sum" caption="Count" visible="true">
+		</Measure>-->
+	</Cube>
+	<Cube name="HiddenTree" visible="true" cache="false" enabled="true">
+		<Table name="_tree" schema="naforma1">
+			<AggName name="_country_tree_agg" approxRowCount="100">
+				<AggFactCount column="agg_cnt">
+				</AggFactCount>
+				<AggForeignKey factColumn="species" aggColumn="species">
+				</AggForeignKey>
+				<!--<AggForeignKey factColumn="accessibility" aggColumn="accessibility">
+				</AggForeignKey>-->
+				<AggForeignKey factColumn="land_use" aggColumn="land_use">
+				</AggForeignKey>
+				<AggForeignKey factColumn="vegetation_type" aggColumn="vegetation_type">
+				</AggForeignKey>
+				<AggForeignKey factColumn="ownership_type" aggColumn="ownership_type">
+				</AggForeignKey>
+				<AggForeignKey factColumn="undergrowth_type" aggColumn="undergrowth_type">
+				</AggForeignKey>
+				<AggForeignKey factColumn="soil_structure" aggColumn="soil_structure">
+				</AggForeignKey>
+				<AggForeignKey factColumn="soil_texture" aggColumn="soil_texture">
+				</AggForeignKey>
+				<AggForeignKey factColumn="erosion" aggColumn="erosion">
+				</AggForeignKey>
+				<AggForeignKey factColumn="grazing" aggColumn="grazing">
+				</AggForeignKey>
+				<AggForeignKey factColumn="catchment" aggColumn="catchment">
+				</AggForeignKey>
+				<AggForeignKey factColumn="shrubs_coverage" aggColumn="shrubs_coverage">
+				</AggForeignKey>
+				<!--<AggForeignKey factColumn="nwfp" aggColumn="nwfp">
+				</AggForeignKey>
+				<AggForeignKey factColumn="mgmt_proposal" aggColumn="mgmt_proposal">
+				</AggForeignKey>-->
+				<AggForeignKey factColumn="canopy_cover_class" aggColumn="canopy_cover_class">
+				</AggForeignKey>
+				
+				<AggForeignKey factColumn="health" aggColumn="health">
+				</AggForeignKey>
+				<AggForeignKey factColumn="origin" aggColumn="origin">
+				</AggForeignKey>
+				<AggForeignKey factColumn="dbh_class" aggColumn="dbh_class">
+				</AggForeignKey>
+				<AggForeignKey factColumn="species_group" aggColumn="species_group">
+				</AggForeignKey>
+				<AggForeignKey factColumn="commercial_tree" aggColumn="commercial_tree">
+				</AggForeignKey>
+				<AggForeignKey factColumn="commercial_class" aggColumn="commercial_class">
+				</AggForeignKey>
+				<AggForeignKey factColumn="growing_stock" aggColumn="growing_stock">
+				</AggForeignKey>
+				<AggMeasure column="aboveground_biomass" name="[Measures].[AbovegroundBiomass]">
+				</AggMeasure>
+				<AggMeasure column="belowground_biomass" name="[Measures].[BelowgroundBiomass]">
+				</AggMeasure>
+				<AggMeasure column="carbon" name="[Measures].[Carbon]">
+				</AggMeasure>
+				<AggMeasure column="volume" name="[Measures].[Volume]">
+				</AggMeasure>
+				<AggMeasure column="basal_area" name="[Measures].[BasalArea]">
+				</AggMeasure>
+				<!--<AggMeasure column="bole_volume" name="[Measures].[BoleVolume]">
+				</AggMeasure>
+				
+				<AggMeasure column="cnt" name="[Measures].[Cnt]">
+				</AggMeasure>-->
+				<AggMeasure column="est_cnt" name="[Measures].[CountEst]">
+				</AggMeasure>
+				<AggLevel column="country_id" name="[AdminUnit].[Country]">
+				</AggLevel>
+			</AggName>
+			<AggName name="_zone_tree_agg" approxRowCount="200">
+				<AggFactCount column="agg_cnt">
+				</AggFactCount>
+				<AggForeignKey factColumn="species" aggColumn="species">
+				</AggForeignKey>
+				<!--<AggForeignKey factColumn="accessibility" aggColumn="accessibility">
+				</AggForeignKey>-->
+				<AggForeignKey factColumn="land_use" aggColumn="land_use">
+				</AggForeignKey>
+				<AggForeignKey factColumn="vegetation_type" aggColumn="vegetation_type">
+				</AggForeignKey>
+				<AggForeignKey factColumn="ownership_type" aggColumn="ownership_type">
+				</AggForeignKey>
+				<AggForeignKey factColumn="undergrowth_type" aggColumn="undergrowth_type">
+				</AggForeignKey>
+				<AggForeignKey factColumn="soil_structure" aggColumn="soil_structure">
+				</AggForeignKey>
+				<AggForeignKey factColumn="soil_texture" aggColumn="soil_texture">
+				</AggForeignKey>
+				<AggForeignKey factColumn="erosion" aggColumn="erosion">
+				</AggForeignKey>
+				<AggForeignKey factColumn="grazing" aggColumn="grazing">
+				</AggForeignKey>
+				<AggForeignKey factColumn="catchment" aggColumn="catchment">
+				</AggForeignKey>
+				<AggForeignKey factColumn="shrubs_coverage" aggColumn="shrubs_coverage">
+				</AggForeignKey>
+			
+				<AggForeignKey factColumn="canopy_cover_class" aggColumn="canopy_cover_class">
+				</AggForeignKey>
+				
+				<AggForeignKey factColumn="health" aggColumn="health">
+				</AggForeignKey>
+				<AggForeignKey factColumn="origin" aggColumn="origin">
+				</AggForeignKey>
+				<AggForeignKey factColumn="dbh_class" aggColumn="dbh_class">
+				</AggForeignKey>
+				<AggForeignKey factColumn="species_group" aggColumn="species_group">
+				</AggForeignKey>
+				<AggForeignKey factColumn="commercial_tree" aggColumn="commercial_tree">
+				</AggForeignKey>
+				<AggForeignKey factColumn="commercial_class" aggColumn="commercial_class">
+				</AggForeignKey>
+				<AggForeignKey factColumn="growing_stock" aggColumn="growing_stock">
+				</AggForeignKey>				
+				<AggMeasure column="aboveground_biomass" name="[Measures].[AbovegroundBiomass]">
+				</AggMeasure>
+				<AggMeasure column="belowground_biomass" name="[Measures].[BelowgroundBiomass]">
+				</AggMeasure>
+				<AggMeasure column="carbon" name="[Measures].[Carbon]">
+				</AggMeasure>
+				<AggMeasure column="volume" name="[Measures].[Volume]">
+				</AggMeasure>
+				<AggMeasure column="basal_area" name="[Measures].[BasalArea]">
+				</AggMeasure>
+				<AggMeasure column="est_cnt" name="[Measures].[CountEst]">
+				</AggMeasure>
+				<!--<AggMeasure column="bole_volume" name="[Measures].[BoleVolume]">
+				</AggMeasure>
+				<AggMeasure column="count_est" name="[Measures].[CountEst]">
+				</AggMeasure>
+				<AggMeasure column="cnt" name="[Measures].[Cnt]">
+				</AggMeasure>-->
+				<AggLevel column="country_id" name="[AdminUnit].[Country]">
+				</AggLevel>
+				<AggLevel column="zone_id" name="[AdminUnit].[Zone]">
+				</AggLevel>
+			</AggName>
+			<AggName name="_region_tree_agg" approxRowCount="300">
+				<AggFactCount column="agg_cnt">
+				</AggFactCount>
+				<AggForeignKey factColumn="species" aggColumn="species">
+				</AggForeignKey>
+				<!--<AggForeignKey factColumn="accessibility" aggColumn="accessibility">
+				</AggForeignKey>-->
+				<AggForeignKey factColumn="land_use" aggColumn="land_use">
+				</AggForeignKey>
+				<AggForeignKey factColumn="vegetation_type" aggColumn="vegetation_type">
+				</AggForeignKey>
+				<AggForeignKey factColumn="ownership_type" aggColumn="ownership_type">
+				</AggForeignKey>
+				<AggForeignKey factColumn="undergrowth_type" aggColumn="undergrowth_type">
+				</AggForeignKey>
+				<AggForeignKey factColumn="soil_structure" aggColumn="soil_structure">
+				</AggForeignKey>
+				<AggForeignKey factColumn="soil_texture" aggColumn="soil_texture">
+				</AggForeignKey>
+				<AggForeignKey factColumn="erosion" aggColumn="erosion">
+				</AggForeignKey>
+				<AggForeignKey factColumn="grazing" aggColumn="grazing">
+				</AggForeignKey>
+				<AggForeignKey factColumn="catchment" aggColumn="catchment">
+				</AggForeignKey>
+				<AggForeignKey factColumn="shrubs_coverage" aggColumn="shrubs_coverage">
+				</AggForeignKey>
+				
+				<AggForeignKey factColumn="canopy_cover_class" aggColumn="canopy_cover_class">
+				</AggForeignKey>
+				<!--<AggForeignKey factColumn="human_impact_0" aggColumn="human_impact_0">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_1" aggColumn="human_impact_1">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_2" aggColumn="human_impact_2">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_3" aggColumn="human_impact_3">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_4" aggColumn="human_impact_4">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_5" aggColumn="human_impact_5">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_6" aggColumn="human_impact_6">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_7" aggColumn="human_impact_7">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_8" aggColumn="human_impact_8">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_9" aggColumn="human_impact_9">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_10" aggColumn="human_impact_10">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_11" aggColumn="human_impact_11">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_12" aggColumn="human_impact_12">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_13" aggColumn="human_impact_13">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_14" aggColumn="human_impact_14">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_15" aggColumn="human_impact_15">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_16" aggColumn="human_impact_16">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_17" aggColumn="human_impact_17">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_99" aggColumn="human_impact_99">
+				</AggForeignKey>-->
+				<AggForeignKey factColumn="health" aggColumn="health">
+				</AggForeignKey>
+				<AggForeignKey factColumn="origin" aggColumn="origin">
+				</AggForeignKey>
+				<AggForeignKey factColumn="dbh_class" aggColumn="dbh_class">
+				</AggForeignKey>
+				<AggForeignKey factColumn="species_group" aggColumn="species_group">
+				</AggForeignKey>
+				<AggForeignKey factColumn="commercial_tree" aggColumn="commercial_tree">
+				</AggForeignKey>
+				<AggForeignKey factColumn="commercial_class" aggColumn="commercial_class">
+				</AggForeignKey>
+				<AggForeignKey factColumn="growing_stock" aggColumn="growing_stock">
+				</AggForeignKey>
+				<AggMeasure column="aboveground_biomass" name="[Measures].[AbovegroundBiomass]">
+				</AggMeasure>
+				<AggMeasure column="belowground_biomass" name="[Measures].[BelowgroundBiomass]">
+				</AggMeasure>
+				<AggMeasure column="carbon" name="[Measures].[Carbon]">
+				</AggMeasure>
+				<AggMeasure column="volume" name="[Measures].[Volume]">
+				</AggMeasure>
+				<AggMeasure column="basal_area" name="[Measures].[BasalArea]">
+				</AggMeasure>
+				<AggMeasure column="est_cnt" name="[Measures].[CountEst]">
+				</AggMeasure>
+				<!--<AggMeasure column="bole_volume" name="[Measures].[BoleVolume]">
+				</AggMeasure>
+				<AggMeasure column="count_est" name="[Measures].[CountEst]">
+				</AggMeasure>
+				<AggMeasure column="cnt" name="[Measures].[Cnt]">
+				</AggMeasure>-->
+				<AggLevel column="country_id" name="[AdminUnit].[Country]">
+				</AggLevel>
+				<AggLevel column="zone_id" name="[AdminUnit].[Zone]">
+				</AggLevel>
+				<AggLevel column="region_id" name="[AdminUnit].[Region]">
+				</AggLevel>
+			</AggName>
+			<AggName name="_district_tree_agg" approxRowCount="400">
+				<AggFactCount column="agg_cnt">
+				</AggFactCount>
+				<AggForeignKey factColumn="species" aggColumn="species">
+				</AggForeignKey>
+				<!--<AggForeignKey factColumn="accessibility" aggColumn="accessibility">
+				</AggForeignKey>-->
+				<AggForeignKey factColumn="land_use" aggColumn="land_use">
+				</AggForeignKey>
+				<AggForeignKey factColumn="vegetation_type" aggColumn="vegetation_type">
+				</AggForeignKey>
+				<AggForeignKey factColumn="ownership_type" aggColumn="ownership_type">
+				</AggForeignKey>
+				<AggForeignKey factColumn="undergrowth_type" aggColumn="undergrowth_type">
+				</AggForeignKey>
+				<AggForeignKey factColumn="soil_structure" aggColumn="soil_structure">
+				</AggForeignKey>
+				<AggForeignKey factColumn="soil_texture" aggColumn="soil_texture">
+				</AggForeignKey>
+				<AggForeignKey factColumn="erosion" aggColumn="erosion">
+				</AggForeignKey>
+				<AggForeignKey factColumn="grazing" aggColumn="grazing">
+				</AggForeignKey>
+				<AggForeignKey factColumn="catchment" aggColumn="catchment">
+				</AggForeignKey>
+				<AggForeignKey factColumn="shrubs_coverage" aggColumn="shrubs_coverage">
+				</AggForeignKey>
+				<!--<AggForeignKey factColumn="nwfp" aggColumn="nwfp">
+				</AggForeignKey>
+				<AggForeignKey factColumn="mgmt_proposal" aggColumn="mgmt_proposal">
+				</AggForeignKey>-->
+				<AggForeignKey factColumn="canopy_cover_class" aggColumn="canopy_cover_class">
+				</AggForeignKey>
+				<!--<AggForeignKey factColumn="human_impact_0" aggColumn="human_impact_0">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_1" aggColumn="human_impact_1">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_2" aggColumn="human_impact_2">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_3" aggColumn="human_impact_3">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_4" aggColumn="human_impact_4">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_5" aggColumn="human_impact_5">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_6" aggColumn="human_impact_6">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_7" aggColumn="human_impact_7">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_8" aggColumn="human_impact_8">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_9" aggColumn="human_impact_9">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_10" aggColumn="human_impact_10">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_11" aggColumn="human_impact_11">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_12" aggColumn="human_impact_12">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_13" aggColumn="human_impact_13">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_14" aggColumn="human_impact_14">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_15" aggColumn="human_impact_15">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_16" aggColumn="human_impact_16">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_17" aggColumn="human_impact_17">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_99" aggColumn="human_impact_99">
+				</AggForeignKey>-->
+				<AggForeignKey factColumn="health" aggColumn="health">
+				</AggForeignKey>
+				<AggForeignKey factColumn="origin" aggColumn="origin">
+				</AggForeignKey>
+				<AggForeignKey factColumn="dbh_class" aggColumn="dbh_class">
+				</AggForeignKey>
+				<AggForeignKey factColumn="species_group" aggColumn="species_group">
+				</AggForeignKey>
+				<AggForeignKey factColumn="commercial_tree" aggColumn="commercial_tree">
+				</AggForeignKey>
+				<AggForeignKey factColumn="commercial_class" aggColumn="commercial_class">
+				</AggForeignKey>
+				<AggForeignKey factColumn="growing_stock" aggColumn="growing_stock">
+				</AggForeignKey>
+				<AggMeasure column="aboveground_biomass" name="[Measures].[AbovegroundBiomass]">
+				</AggMeasure>
+				<AggMeasure column="belowground_biomass" name="[Measures].[BelowgroundBiomass]">
+				</AggMeasure>
+				<AggMeasure column="carbon" name="[Measures].[Carbon]">
+				</AggMeasure>
+				<AggMeasure column="volume" name="[Measures].[Volume]">
+				</AggMeasure>
+				<AggMeasure column="basal_area" name="[Measures].[BasalArea]">
+				</AggMeasure>
+				<AggMeasure column="est_cnt" name="[Measures].[CountEst]">
+				</AggMeasure>
+				<!--<AggMeasure column="bole_volume" name="[Measures].[BoleVolume]">
+				</AggMeasure>
+				<AggMeasure column="count_est" name="[Measures].[CountEst]">
+				</AggMeasure>
+				<AggMeasure column="cnt" name="[Measures].[Cnt]">
+				</AggMeasure>-->
+				<AggLevel column="country_id" name="[AdminUnit].[Country]">
+				</AggLevel>
+				<AggLevel column="zone_id" name="[AdminUnit].[Zone]">
+				</AggLevel>
+				<AggLevel column="region_id" name="[AdminUnit].[Region]">
+				</AggLevel>
+				<AggLevel column="district_id" name="[AdminUnit].[District]">
+				</AggLevel>
+			</AggName>
+			<!--<AggName name="_plot_tree_agg" approxRowCount="500">
+				<AggFactCount column="agg_cnt">
+				</AggFactCount>
+				<!-\-<AggForeignKey factColumn="stratum" aggColumn="stratum">
+				</AggForeignKey>-\->
+				<AggForeignKey factColumn="species" aggColumn="species">
+				</AggForeignKey>
+				<!-\-<AggForeignKey factColumn="accessibility" aggColumn="accessibility">
+				</AggForeignKey>-\->
+				<AggForeignKey factColumn="land_use" aggColumn="land_use">
+				</AggForeignKey>
+				<AggForeignKey factColumn="vegetation_type" aggColumn="vegetation_type">
+				</AggForeignKey>
+				<AggForeignKey factColumn="ownership_type" aggColumn="ownership_type">
+				</AggForeignKey>
+				<AggForeignKey factColumn="undergrowth_type" aggColumn="undergrowth_type">
+				</AggForeignKey>
+				<AggForeignKey factColumn="soil_structure" aggColumn="soil_structure">
+				</AggForeignKey>
+				<AggForeignKey factColumn="soil_texture" aggColumn="soil_texture">
+				</AggForeignKey>
+				<AggForeignKey factColumn="erosion" aggColumn="erosion">
+				</AggForeignKey>
+				<AggForeignKey factColumn="grazing" aggColumn="grazing">
+				</AggForeignKey>
+				<AggForeignKey factColumn="catchment" aggColumn="catchment">
+				</AggForeignKey>
+				<AggForeignKey factColumn="shrubs_coverage" aggColumn="shrubs_coverage">
+				</AggForeignKey>
+				<!-\-<AggForeignKey factColumn="nwfp" aggColumn="nwfp">
+				</AggForeignKey>
+				<AggForeignKey factColumn="mgmt_proposal" aggColumn="mgmt_proposal">
+				</AggForeignKey>-\->
+				<AggForeignKey factColumn="canopy_cover_class" aggColumn="canopy_cover_class">
+				</AggForeignKey>
+				<!-\-<AggForeignKey factColumn="human_impact_0" aggColumn="human_impact_0">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_1" aggColumn="human_impact_1">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_2" aggColumn="human_impact_2">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_3" aggColumn="human_impact_3">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_4" aggColumn="human_impact_4">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_5" aggColumn="human_impact_5">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_6" aggColumn="human_impact_6">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_7" aggColumn="human_impact_7">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_8" aggColumn="human_impact_8">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_9" aggColumn="human_impact_9">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_10" aggColumn="human_impact_10">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_11" aggColumn="human_impact_11">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_12" aggColumn="human_impact_12">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_13" aggColumn="human_impact_13">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_14" aggColumn="human_impact_14">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_15" aggColumn="human_impact_15">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_16" aggColumn="human_impact_16">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_17" aggColumn="human_impact_17">
+				</AggForeignKey>
+				<AggForeignKey factColumn="human_impact_99" aggColumn="human_impact_99">
+				</AggForeignKey>-\->
+				<AggForeignKey factColumn="health" aggColumn="health">
+				</AggForeignKey>
+				<AggForeignKey factColumn="origin" aggColumn="origin">
+				</AggForeignKey>
+				<AggForeignKey factColumn="dbh_class" aggColumn="dbh_class">
+				</AggForeignKey>
+				<AggForeignKey factColumn="species_group" aggColumn="species_group">
+				</AggForeignKey>
+				<AggForeignKey factColumn="commercial_tree" aggColumn="commercial_tree">
+				</AggForeignKey>
+				<AggMeasure column="aboveground_biomass" name="[Measures].[AbovegroundBiomass]">
+				</AggMeasure>
+				<AggMeasure column="belowground_biomass" name="[Measures].[BelowgroundBiomass]">
+				</AggMeasure>
+				<AggMeasure column="carbon" name="[Measures].[Carbon]">
+				</AggMeasure>
+				<AggMeasure column="volume" name="[Measures].[Volume]">
+				</AggMeasure>
+				<!-\-<AggMeasure column="bole_volume" name="[Measures].[BoleVolume]">
+				</AggMeasure>
+				<AggMeasure column="count_est" name="[Measures].[CountEst]">
+				</AggMeasure>
+				<AggMeasure column="cnt" name="[Measures].[Cnt]">
+				</AggMeasure>-\->
+				<AggLevel column="plot_id" name="[TreeNo].[PlotNo]">
+				</AggLevel>
+			</AggName>			-->
+		</Table>
+		<!--<DimensionUsage source="Stratum" name="Stratum" visible="true" foreignKey="stratum_id" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="TreeNo" name="TreeNo" visible="true" foreignKey="specimen_id" highCardinality="false">
+		</DimensionUsage>-->
+		<DimensionUsage source="Trees" name="Trees" visible="true" foreignKey="species" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="AdminUnit" name="AdminUnit" visible="true" foreignKey="district_id" highCardinality="false">
+		</DimensionUsage>
+		<!--<DimensionUsage source="Accessibility" name="Accessibility" visible="true" foreignKey="accessibility" highCardinality="false">
+		</DimensionUsage>-->
+		<DimensionUsage source="LandUse" name="LandUse" visible="true" foreignKey="land_use" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="VegetationType" name="VegetationType" visible="true" foreignKey="vegetation_type" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="OwnershipType" name="OwnershipType" visible="true" foreignKey="ownership_type" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="UndergrowthType" name="UndergrowthType" visible="true" foreignKey="undergrowth_type" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="SoilStructure" name="SoilStructure" visible="true" foreignKey="soil_structure" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="SoilTexture" name="SoilTexture" visible="true" foreignKey="soil_texture" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="Erosion" name="Erosion" visible="true" foreignKey="erosion" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="Grazing" name="Grazing" visible="true" foreignKey="grazing" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="Catchment" name="Catchment" visible="true" foreignKey="catchment" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="ShrubsCoverage" name="ShrubsCoverage" visible="true" foreignKey="shrubs_coverage" highCardinality="false">
+		</DimensionUsage>
+		<!--<DimensionUsage source="Nwfp" name="Nwfp" visible="true" foreignKey="nwfp" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="MgmtProposal" name="MgmtProposal" visible="true" foreignKey="mgmt_proposal" highCardinality="false">
+		</DimensionUsage>-->
+		<DimensionUsage source="CanopyCoverClass" name="CanopyCoverClass" visible="true" foreignKey="canopy_cover_class" highCardinality="false">
+		</DimensionUsage>
+		<!--<DimensionUsage source="HumanImpact0" name="HumanImpact0" visible="true" foreignKey="human_impact_0" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="HumanImpact1" name="HumanImpact1" visible="true" foreignKey="human_impact_1" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="HumanImpact2" name="HumanImpact2" visible="true" foreignKey="human_impact_2" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="HumanImpact3" name="HumanImpact3" visible="true" foreignKey="human_impact_3" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="HumanImpact4" name="HumanImpact4" visible="true" foreignKey="human_impact_4" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="HumanImpact5" name="HumanImpact5" visible="true" foreignKey="human_impact_5" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="HumanImpact6" name="HumanImpact6" visible="true" foreignKey="human_impact_6" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="HumanImpact7" name="HumanImpact7" visible="true" foreignKey="human_impact_7" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="HumanImpact8" name="HumanImpact8" visible="true" foreignKey="human_impact_8" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="HumanImpact9" name="HumanImpact9" visible="true" foreignKey="human_impact_9" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="HumanImpact10" name="HumanImpact10" visible="true" foreignKey="human_impact_10" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="HumanImpact11" name="HumanImpact11" visible="true" foreignKey="human_impact_11" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="HumanImpact12" name="HumanImpact12" visible="true" foreignKey="human_impact_12" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="HumanImpact13" name="HumanImpact13" visible="true" foreignKey="human_impact_13" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="HumanImpact14" name="HumanImpact14" visible="true" foreignKey="human_impact_14" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="HumanImpact15" name="HumanImpact15" visible="true" foreignKey="human_impact_15" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="HumanImpact16" name="HumanImpact16" visible="true" foreignKey="human_impact_16" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="HumanImpact17" name="HumanImpact17" visible="true" foreignKey="human_impact_17" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="HumanImpact99" name="HumanImpact99" visible="true" foreignKey="human_impact_99" highCardinality="false">
+		</DimensionUsage>-->
+		<DimensionUsage source="Health" name="Health" visible="true" foreignKey="health" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="Origin" name="Origin" visible="true" foreignKey="origin" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="DbhClass" name="DbhClass" visible="true" foreignKey="dbh_class" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="SpeciesGroup" name="TSpeciesGroup" visible="true" foreignKey="species_group" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="CommercialTree" name="CommercialTree" visible="true" foreignKey="commercial_tree" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="CommercialClass" name="CommercialClass" visible="true" foreignKey="commercial_class" highCardinality="false">
+		</DimensionUsage>
+		<DimensionUsage source="GrowingStock" name="GrowingStock" visible="true" foreignKey="growing_stock" highCardinality="false">			
+		</DimensionUsage>
+		<!--<Measure name="Cnt" column="cnt" datatype="Numeric" formatString="#,###.##" aggregator="sum" caption="Count" visible="true">
+		</Measure>
+		<Measure name="InclusionArea" column="inclusion_area" datatype="Numeric" formatString="#,###.##" aggregator="sum" caption="" visible="false">
+		</Measure>
+		<Measure name="PlotSectionArea" column="plot_section_area" datatype="Numeric" formatString="#,###.##" aggregator="sum" caption="" visible="false">
+		</Measure>
+		-->
+		<Measure name="CountEst" column="est_cnt" datatype="Numeric" formatString="#,###.##" aggregator="sum" caption="Count Est" visible="true">
+		</Measure>
+		<Measure name="AbovegroundBiomass" column="aboveground_biomass" datatype="Numeric" formatString="#,###.##" aggregator="sum" caption="Aboveground Biomass" visible="true">
+		</Measure>
+		<Measure name="BelowgroundBiomass" column="belowground_biomass" datatype="Numeric" formatString="#,###.##" aggregator="sum" caption="Belowground Biomass" visible="true">
+		</Measure>
+		<Measure name="Carbon" column="carbon" datatype="Numeric" formatString="#,###.##" aggregator="sum" caption="Carbon" visible="true">
+		</Measure>
+		<Measure name="Volume" column="volume" datatype="Numeric" formatString="#,###.##" aggregator="sum" caption="Volume" visible="true">
+		</Measure>
+		<Measure name="BasalArea" column="basal_area" datatype="Numeric" formatString="#,###.##" aggregator="sum" caption="Basal area" visible="true">
+		</Measure>
+		<!--<Measure name="BoleVolume" column="bole_volume" datatype="Numeric" formatString="#,###.##" aggregator="sum" caption="Bole Volume" visible="true">
+		</Measure>-->
+	</Cube>
+	
+	<VirtualCube name="Tree">
+		<CubeUsages>
+			<CubeUsage cubeName="Plot" ignoreUnrelatedDimensions="true">
+			</CubeUsage>
+			<CubeUsage cubeName="HiddenTree" ignoreUnrelatedDimensions="true">
+			</CubeUsage>
+		</CubeUsages>
+		<!--<VirtualCubeDimension cubeName="HiddenTree" name="Stratum">
+		</VirtualCubeDimension>
+		<VirtualCubeDimension cubeName="HiddenTree" name="TreeNo">
+		</VirtualCubeDimension>-->
+		<VirtualCubeDimension cubeName="HiddenTree" name="Trees">
+		</VirtualCubeDimension>
+		<VirtualCubeDimension cubeName="HiddenTree" name="AdminUnit">
+		</VirtualCubeDimension>
+		<!--<VirtualCubeDimension cubeName="HiddenTree" name="Accessibility">
+		</VirtualCubeDimension>-->
+		<VirtualCubeDimension cubeName="HiddenTree" name="LandUse">
+		</VirtualCubeDimension>
+		<VirtualCubeDimension cubeName="HiddenTree" name="VegetationType">
+		</VirtualCubeDimension>
+		<VirtualCubeDimension cubeName="HiddenTree" name="OwnershipType">
+		</VirtualCubeDimension>
+		<VirtualCubeDimension cubeName="HiddenTree" name="UndergrowthType">
+		</VirtualCubeDimension>
+		<VirtualCubeDimension cubeName="HiddenTree" name="SoilStructure">
+		</VirtualCubeDimension>
+		<VirtualCubeDimension cubeName="HiddenTree" name="SoilTexture">
+		</VirtualCubeDimension>
+		<VirtualCubeDimension cubeName="HiddenTree" name="Erosion">
+		</VirtualCubeDimension>
+		<VirtualCubeDimension cubeName="HiddenTree" name="Grazing">
+		</VirtualCubeDimension>
+		<VirtualCubeDimension cubeName="HiddenTree" name="Catchment">
+		</VirtualCubeDimension>
+		<VirtualCubeDimension cubeName="HiddenTree" name="ShrubsCoverage">
+		</VirtualCubeDimension>
+		<!--<VirtualCubeDimension cubeName="HiddenTree" name="Nwfp">
+		</VirtualCubeDimension>
+		<VirtualCubeDimension cubeName="HiddenTree" name="MgmtProposal">
+		</VirtualCubeDimension>-->
+		<VirtualCubeDimension cubeName="HiddenTree" name="CanopyCoverClass">
+		</VirtualCubeDimension>
+		<!--<VirtualCubeDimension cubeName="HiddenTree" name="HumanImpact0">
+		</VirtualCubeDimension>
+		<VirtualCubeDimension cubeName="HiddenTree" name="HumanImpact1">
+		</VirtualCubeDimension>
+		<VirtualCubeDimension cubeName="HiddenTree" name="HumanImpact2">
+		</VirtualCubeDimension>
+		<VirtualCubeDimension cubeName="HiddenTree" name="HumanImpact3">
+		</VirtualCubeDimension>
+		<VirtualCubeDimension cubeName="HiddenTree" name="HumanImpact4">
+		</VirtualCubeDimension>
+		<VirtualCubeDimension cubeName="HiddenTree" name="HumanImpact5">
+		</VirtualCubeDimension>
+		<VirtualCubeDimension cubeName="HiddenTree" name="HumanImpact6">
+		</VirtualCubeDimension>
+		<VirtualCubeDimension cubeName="HiddenTree" name="HumanImpact7">
+		</VirtualCubeDimension>
+		<VirtualCubeDimension cubeName="HiddenTree" name="HumanImpact8">
+		</VirtualCubeDimension>
+		<VirtualCubeDimension cubeName="HiddenTree" name="HumanImpact9">
+		</VirtualCubeDimension>
+		<VirtualCubeDimension cubeName="HiddenTree" name="HumanImpact10">
+		</VirtualCubeDimension>
+		<VirtualCubeDimension cubeName="HiddenTree" name="HumanImpact11">
+		</VirtualCubeDimension>
+		<VirtualCubeDimension cubeName="HiddenTree" name="HumanImpact12">
+		</VirtualCubeDimension>
+		<VirtualCubeDimension cubeName="HiddenTree" name="HumanImpact13">
+		</VirtualCubeDimension>
+		<VirtualCubeDimension cubeName="HiddenTree" name="HumanImpact14">
+		</VirtualCubeDimension>
+		<VirtualCubeDimension cubeName="HiddenTree" name="HumanImpact15">
+		</VirtualCubeDimension>
+		<VirtualCubeDimension cubeName="HiddenTree" name="HumanImpact16">
+		</VirtualCubeDimension>
+		<VirtualCubeDimension cubeName="HiddenTree" name="HumanImpact17">
+		</VirtualCubeDimension>
+		<VirtualCubeDimension cubeName="HiddenTree" name="HumanImpact99">
+		</VirtualCubeDimension>-->
+		<VirtualCubeDimension cubeName="HiddenTree" name="Health">
+		</VirtualCubeDimension>
+		<VirtualCubeDimension cubeName="HiddenTree" name="Origin">
+		</VirtualCubeDimension>
+		<VirtualCubeDimension cubeName="HiddenTree" name="DbhClass">
+		</VirtualCubeDimension>
+		<VirtualCubeDimension cubeName="HiddenTree" name="TSpeciesGroup">
+		</VirtualCubeDimension>
+		<VirtualCubeDimension cubeName="HiddenTree" name="CommercialTree">
+		</VirtualCubeDimension>
+		<VirtualCubeDimension cubeName="HiddenTree" name="CommercialClass">
+		</VirtualCubeDimension>
+		<VirtualCubeDimension cubeName="HiddenTree" name="GrowingStock">			
+		</VirtualCubeDimension>
+		<!--<VirtualCubeMeasure cubeName="HiddenTree" name="[Measures].[Cnt]" visible="true">
+		</VirtualCubeMeasure>
+		<VirtualCubeMeasure cubeName="HiddenTree" name="[Measures].[InclusionArea]" visible="false">
+		</VirtualCubeMeasure>
+		<VirtualCubeMeasure cubeName="HiddenTree" name="[Measures].[PlotSectionArea]" visible="false">
+		</VirtualCubeMeasure>-->
+		<VirtualCubeMeasure cubeName="HiddenTree" name="[Measures].[CountEst]" visible="true">
+		</VirtualCubeMeasure>
+		<VirtualCubeMeasure cubeName="HiddenTree" name="[Measures].[AbovegroundBiomass]" visible="true">
+		</VirtualCubeMeasure>
+		<VirtualCubeMeasure cubeName="HiddenTree" name="[Measures].[BelowgroundBiomass]" visible="true">
+		</VirtualCubeMeasure>
+		<VirtualCubeMeasure cubeName="HiddenTree" name="[Measures].[Carbon]" visible="true">
+		</VirtualCubeMeasure>
+		<VirtualCubeMeasure cubeName="HiddenTree" name="[Measures].[Volume]" visible="true">
+		</VirtualCubeMeasure>
+		<VirtualCubeMeasure cubeName="HiddenTree" name="[Measures].[BasalArea]" visible="false">
+		</VirtualCubeMeasure>		
+		<!--<VirtualCubeMeasure cubeName="HiddenTree" name="[Measures].[BoleVolume]" visible="true">
+		</VirtualCubeMeasure>-->
+		<VirtualCubeMeasure cubeName="Plot" name="[Measures].[EstArea]" visible="true">
+		</VirtualCubeMeasure>
+		<CalculatedMember name="ResultArea" dimension="Measures" visible="true">
+			<Formula>
+				<![CDATA[ValidMeasure([Measures].[EstArea])]]>
+			</Formula>
+		</CalculatedMember>
+		<CalculatedMember name="CountEst Ha" caption="CountEst/ha" formula="[Measures].[CountEst]/[Measures].[ResultArea]" dimension="Measures" visible="true">
+		</CalculatedMember>
+		<CalculatedMember name="AbovegroundBiomass Ha" caption="AbovegroundBiomass/ha" formula="[Measures].[AbovegroundBiomass]/[Measures].[ResultArea]" dimension="Measures" visible="true">
+		</CalculatedMember>
+		<CalculatedMember name="BelowgroundBiomass Ha" caption="BelowgroundBiomass/ha" formula="[Measures].[BelowgroundBiomass]/[Measures].[ResultArea]" dimension="Measures" visible="true">
+		</CalculatedMember>
+		<CalculatedMember name="Carbon Ha" caption="Carbon/ha" formula="[Measures].[Carbon]/[Measures].[ResultArea]" dimension="Measures" visible="true">
+		</CalculatedMember>
+		<CalculatedMember name="Volume Ha" caption="Volume/ha" formula="[Measures].[Volume]/[Measures].[ResultArea]" dimension="Measures" visible="true">
+		</CalculatedMember>
+		<CalculatedMember name="Basal Area per Ha" caption="Basal Area (ha)" formula="[Measures].[BasalArea]/[Measures].[ResultArea]" dimension="Measures" visible="true">
+		</CalculatedMember>
+		<!--<CalculatedMember name="BoleVolume Ha" caption="BoleVolume/ha" formula="[Measures].[BoleVolume]/[Measures].[ResultArea]" dimension="Measures" visible="true">
+		</CalculatedMember>-->
+	</VirtualCube>
+		
+	<Role name="ROLE_ADMIN">
+		<SchemaGrant access="all"/>
+	</Role>
+	<Role name="ROLE_USER">
+		<SchemaGrant access="all">
+			<CubeGrant cube="HiddenTree" access="none"/>
+			<!--<CubeGrant cube="HumanImpactOccurrence" access="none"/>
+			<CubeGrant cube="NwfpOccurrence" access="none"/>
+			<CubeGrant cube="MgmtProposalOccurrence" access="none"/>
+			<CubeGrant cube="BiodiversityOccurrence" access="none"/>
+			<CubeGrant cube="DamageOccurrence" access="none"/>-->
+		</SchemaGrant>
+	</Role>
+</Schema>

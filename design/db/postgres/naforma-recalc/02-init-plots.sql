@@ -217,10 +217,12 @@ add column canopy_cover_class varchar;
 update _plot
 set canopy_cover_tmp =
     case
-        when canopy_cover is null then            
-            (canopy_coverage_centre + canopy_coverage_north + canopy_coverage_east + canopy_coverage_south + canopy_coverage_west) / 5 * 4.17
+        when canopy_coverage_centre is not null and canopy_coverage_north is not null and canopy_coverage_east is not null and canopy_coverage_south is not null and canopy_coverage_west is not null                
+            then (canopy_coverage_centre + canopy_coverage_north + canopy_coverage_east + canopy_coverage_south + canopy_coverage_west) / 5 * 4.17
+        when canopy_cover is not null then    
+                canopy_cover
         else     
-            canopy_cover
+            null
     end
 ;
 
