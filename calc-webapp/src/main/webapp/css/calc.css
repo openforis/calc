@@ -696,8 +696,8 @@ ul.scroll-menu {
 	height: 10%;
 }
 #step-edit-page #calculation-step-exec-container .test {
-	padding-bottom : 5em;
-	padding-top : 0em;
+/* 	padding-bottom : 5em; */
+	padding-top : 5em;
 	width: 100%;
 }
 #step-edit-page #calculation-step-exec-container .test .progress-bar-section {
@@ -705,7 +705,7 @@ ul.scroll-menu {
 }
 
 #step-edit-page #calculation-step-exec-container .exec {
-	border-top: 1px solid #496d7e;
+	border-bottom: 1px solid #496d7e;
 	padding-top : 5em;	
 	padding-bottom : 5em;	
 }
@@ -730,10 +730,10 @@ ul.scroll-menu {
 ** button-bar
 **
 **/
-.button-bar {
-	width: 16em ;
-	height: 12em;
-	float:left; 
+.button-bar-left ,
+.button-bar-right {
+	
+	height: 6em;
 	border:1px solid #2c3e50; 
 	display: block;
 /* 	background-color: #496d7e; */
@@ -742,15 +742,26 @@ ul.scroll-menu {
 /* 	background-color: #36525f; */
 /* 	border-color: #36525f; */
 }
+.button-bar-left {
+	width: 16em ;
+	float:left; 
+}
+.button-bar-right {
+	width: 8em ;
+	float: right; 
+}
 .button-bar-inner {
 	background-color: #496d7e;
 	position: fixed; 
 	width: 16em ;
-	height: 12em;
+	height: 6em;
 /* 	font-size: 2em; */
 }
-.button-bar button,
-.button-bar button:focus {
+.button-bar-right .button-bar-inner {
+	width: 8em ;
+}
+.button-bar-inner button,
+.button-bar-inner button:focus {
 	width: 100%;
 	background-color: #496d7e;
 	border-color: #496d7e;
@@ -758,11 +769,12 @@ ul.scroll-menu {
 	border-radius: 0;
 	height: 100%;
 }
-.button-bar button:hover, .button-bar button.blue-btn-hover {
+.button-bar-inner button:hover, 
+.button-bar-inner button.blue-btn-hover {
 	background-color: #36525f;
 	border-color: #36525f;
 }
-.button-bar button i{
+.button-bar-inner button i{
 	font-size: 2em;
 }
 .height100 {

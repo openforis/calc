@@ -160,6 +160,7 @@ HomeCalculationManager.prototype = (function() {
 		
 		var position = $this.deleteBtn.offset();
 		position.top -= 20; 
+		position.left -= 200; 
 		var onOk = $.proxy(deleteStep, $this, step);
 		
 		var onCancel = function() {
