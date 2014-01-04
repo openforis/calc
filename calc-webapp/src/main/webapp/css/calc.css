@@ -253,7 +253,7 @@ button.settings:hover {
  	#calculation .calculation-step-placeholder {
 	width: 15em;
 	height: 6em;
-	margin: 0 1em 1em 1em;
+	padding: 0.1em 0.3em;
 }
 
 #calculation li.calculation-step button {
@@ -751,6 +751,7 @@ ul.scroll-menu {
 	float: right; 
 }
 .button-bar-inner {
+	margin: -0.2em;
 	background-color: #496d7e;
 	position: fixed; 
 	width: 16em ;
