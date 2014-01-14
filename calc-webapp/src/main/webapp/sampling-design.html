@@ -1,8 +1,7 @@
 <div class="page-section">
 
-	<div class="col-md-10 col-md-offset-1" style="height: 100%" id="sampling-design">
-	
-		<div class="row" style="height: 40%">
+	<div class="col-md-10 col-md-offset-1" style="height: 100%" id="sampling-design">	
+		<div class="row" style="height: 50%">
 			<div class="col-md-2" style="height: 100%">
 				<div class="blue-bg" style="width: 100%; height: 100%; text-align: center; padding: 3em 0.5em; background-color: #496d7e">
 					Sampling Design
@@ -17,40 +16,40 @@
 				</div>
 				<div class="row" style="padding-top:1em">
 					<div class="col-md-4 col-md-offset-1">
-						<button type="button" class="btn option-btn width100" style="">Simple random sampling</button>
+						<button type="button" class="btn width100" style="" name="srs">Simple random sampling</button>
 					</div>
 					<div class="col-md-4 col-md-offset-1">
-						<button type="button" class="btn option-btn width100" style="">Systematic sampling</button>
-					</div>
-				</div>
-				<div class="row" style="padding-top:1em">
-					<div class="col-md-4 col-md-offset-1">
-						<button type="button" class="btn option-btn width100" style="">Stratified</button>
+						<button type="button" class="btn width100" style="" name="systematic">Systematic sampling</button>
 					</div>
 				</div>
 				<div class="row" style="padding-top:1em">
 					<div class="col-md-4 col-md-offset-1">
-						<button type="button" class="btn option-btn width100" style="">Cluster</button>
+						<button type="button" class="btn width100" style="" name="stratified">Stratified</button>
 					</div>
 				</div>
 				<div class="row" style="padding-top:1em">
 					<div class="col-md-4 col-md-offset-1">
-						<button type="button" class="btn option-btn width100" style="">2 phases</button>
+						<button type="button" class="btn width100" style="" name="cluster">Cluster</button>
+					</div>
+				</div>
+				<div class="row" style="padding-top:1em">
+					<div class="col-md-4 col-md-offset-1">
+						<button type="button" class="btn width100" style="" name="twoPhases">2 phases</button>
 					</div>
 				</div>
 			</div>
 		</div>
 		
-		<div class="row" style="height: 1px"></div>
+		<div class="row" style="height: 5px"></div>
 		<!-- area calculation -->
-		<div class="row" style="height: 30%">
+		<div class="row" style="height: 40%">
 			<div class="col-md-2" style="height: 100%">
 				<div class="blue-bg" style="width: 100%; height: 100%; text-align: center; padding: 3em 0.5em; background-color: #496d7e">
 					Area calculation
 				</div>
 			</div>
 			<div class="col-md-10">
-				<div class="row" style="padding-top:1.5em">
+				<div class="row" style="padding-top: 1.5em">
 					<label class="col-md-2 col-md-offset-1 control-label">Plot weight</label>
 					<div class="col-md-6 col-md-offset-1">
 						<div class="row" style="margin-top: 5px;">
@@ -61,6 +60,13 @@
 			</div>
 		</div>
 		
+		<div class="row" style="height: 5px"></div>
+		<!-- area calculation -->
+		<div class="row" style="height: 5%;">
+			<div class="col-md-2 col-md-offset-5">
+				<button type="button" name="save-btn" class="btn btn-default" style="width: 100%" >Save</button>
+			</div>
+		</div>
 <!-- 		<div class="row col-md-12"> -->
 <!-- 			<div class="form-group"> -->
 <!-- 					<label class="col-md-2 control-label">Sampling Unit</label> -->
@@ -101,7 +107,7 @@
 	<script>
 	$(function() {
 
-		//var manager = new SamplingDesignManager( $("#sampling-design") );
+		var manager = new SamplingDesignManager( $("#sampling-design") );
 		
 	});
 	</script>

@@ -1,0 +1,51 @@
+<div class="page-section" id="aoi">
+
+	<div class="row col-md-10 col-md-offset-1 aoi-section" style="height: 100%">	
+		
+		<div class="row upload-section">
+			<form  method="post" enctype="multipart/form-data" action="rest/csv-upload.json">
+			<div class="col-md-2 col-md-offset-5">
+				<button type="button" class="btn btn-default width100" name="upload-btn">Upload Csv</button>
+			    <input type="file" name="file" style="display:none" />  
+			</div>
+			</form>
+		</div>
+		
+		<div class="row progress-section">
+			<div class="col-md-2 col-md-offset-5">
+				<div class="progress">
+		        	<div class="progress-bar progress-bar-info"></div>
+		        </div>	        
+		    </div>
+		    <div class="col-md-1 percent">
+		    </div>
+		</div>
+					
+	</div>
+	
+	<div class="row col-md-10 col-md-offset-1 aoi-import-section" style="height: 100%;">
+		<div class="row">
+			<div class="col-md-2 col-md-offset-5">Level captions</div>
+		</div>
+		<div class="row levels">
+			
+		</div>
+		<div class="row col-md-2 col-md-offset-5">
+			<button type="button" class="btn btn-default width100" name="import-btn">Import</button>
+		</div>
+	</div>
+	
+	<div class="row level" style="display: none;">
+		<div class="col-md-2 col-md-offset-5">
+			<input type="text" class="form-control" >
+		</div>
+	</div>
+				
+	<script>
+	$(function() {
+		
+		var aoiManager = new AoiManager( "#aoi" );
+		
+	});
+	</script>
+</div>

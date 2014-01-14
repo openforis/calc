@@ -137,7 +137,11 @@ public class Workspace extends UserObject {
 	public void setAoiHierarchies(List<AoiHierarchy> aoiHierarchies) {
 		this.aoiHierarchies = aoiHierarchies;
 	}
-
+	
+	public void addAoiHierarchy(AoiHierarchy aoiHierarchy) {
+		this.aoiHierarchies.add(aoiHierarchy);
+	}
+	
 	public List<ProcessingChain> getProcessingChains() {
 		return org.openforis.commons.collection.CollectionUtils.unmodifiableList(processingChains);
 	}
