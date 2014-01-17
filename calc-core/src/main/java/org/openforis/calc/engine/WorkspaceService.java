@@ -1,5 +1,6 @@
 package org.openforis.calc.engine;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,11 +11,11 @@ import org.jooq.Insert;
 import org.jooq.Record;
 import org.openforis.calc.metadata.AoiDao;
 import org.openforis.calc.metadata.AoiHierarchy;
-import org.openforis.calc.metadata.AoiManager;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.EntityDao;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.SamplingDesign;
+import org.openforis.calc.metadata.StratumDao;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.Variable.Scale;
 import org.openforis.calc.metadata.VariableAggregate;
@@ -28,6 +29,8 @@ import org.openforis.calc.schema.InputSchemaDao;
 import org.openforis.calc.schema.InputTable;
 import org.openforis.calc.schema.ResultTable;
 import org.openforis.calc.schema.Schemas;
+import org.openforis.commons.io.csv.CsvReader;
+import org.openforis.commons.io.flat.FlatRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,6 +73,9 @@ public class WorkspaceService {
 	
 	@Autowired
 	private AoiDao aoiDao;
+
+	@Autowired
+	private StratumDao stratumDao;
 	
 	private Map<Integer, SimpleLock> locks;
 
@@ -446,6 +452,26 @@ public class WorkspaceService {
 		entity.setPlotAreaScript(plotAreaScript);
 		Entity updEntity = entityDao.save(entity);
 		return updEntity;
+	}
+
+	@Transactional
+	public void importStrata(Workspace workspace, String filepath) throws IOException {
+		stratumDao.deleteAll(workspace);
+		
+		CsvReader csvReader = new CsvReader(filepath);
+		csvReader.readHeaders();
+		
+		FlatRecord record = csvReader.nextRecord();
+		while(record != null){
+			Integer no = record.getValue(0, Integer.class);
+			String caption = record.getValue(1, String.class);
+			
+			stratumDao.add(workspace, no, caption);
+			
+			
+			record = csvReader.nextRecord();
+		}
+		
 	}
 
 }

@@ -211,7 +211,7 @@ button.settings:hover {
 
 /* .btn-home, .btn-home-plus { */
 .btn-home {
-	height:100%;
+	height: 6em;
 	width: 15%;
 /* 	font-size: 1.7em; */
 /* 	font-weight: 200; */
@@ -767,6 +767,9 @@ ul.scroll-menu {
 }
 .height50 {
 	height: 50%;
+}
+.height33 {
+	height: 33%;
 }
 
 /**

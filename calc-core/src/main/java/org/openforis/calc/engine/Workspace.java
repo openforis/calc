@@ -25,6 +25,7 @@ import org.openforis.calc.common.UserObject;
 import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.SamplingDesign;
+import org.openforis.calc.metadata.Stratum;
 import org.openforis.calc.metadata.Variable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -68,7 +69,6 @@ public class Workspace extends UserObject {
 	@Cascade(CascadeType.ALL)
 	private List<Entity> entities;
 
-//	@JsonIgnore
 	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER)
 	@OrderBy("name")
 	@Fetch(FetchMode.SUBSELECT)
@@ -82,6 +82,13 @@ public class Workspace extends UserObject {
 	@Cascade(CascadeType.ALL)
 	private List<ProcessingChain> processingChains;
 
+	
+	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER)
+	@OrderBy("stratum_no")
+	@Fetch(FetchMode.SUBSELECT)
+	@Cascade(CascadeType.ALL)
+	private List<Stratum> strata;
+	
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "sampling_design_id")
 	private SamplingDesign samplingDesign;
@@ -154,6 +161,22 @@ public class Workspace extends UserObject {
 		this.active = active;
 	}
 
+	public List<Stratum> getStrata() {
+		return strata;
+	}
+	
+	public void setStrata(List<Stratum> strata) {
+		this.strata = strata;
+	}
+	
+	public void emptyStrata() {
+		setStrata(new ArrayList<Stratum>());
+	}
+	
+	public void addStratum(Stratum stratum) {
+		this.strata.add(stratum);
+	}
+	
 	public SamplingDesign getSamplingDesign() {
 		return samplingDesign;
 	}

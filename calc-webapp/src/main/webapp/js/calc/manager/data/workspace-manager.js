@@ -20,11 +20,13 @@ WorkspaceManager.prototype = (function(){
 		if($this._activeWorkspace) {
 			success($this._activeWorkspace);
 		} else {
+			UI.lock();
 			$.ajax({
 				url:"rest/workspace/active.json",
 				dataType:"json"
 			}).done(function(response) {
 				$.proxy(setActiveWorkspace, $this)( response, success );
+				UI.unlock();
 			});
 		}
 	};
@@ -215,6 +217,29 @@ WorkspaceManager.prototype = (function(){
 			
 		});
 	};
+	
+	/**
+	 * Import strata for the active workspace
+	 */
+	var activeWorkspaceImportStrata = function(filepath, complete) {
+		var $this = this;
+		$this.activeWorkspace(function(ws){
+			UI.lock();
+			$.ajax({
+				url : "rest/workspace/active/strata/import.json",
+				dataType : "json",
+				method : "POST",
+				data : { "filepath":filepath } 
+			}).done(function(response) {
+				var strata = response;
+				ws.strata = strata;
+				complete(ws);
+				UI.unlock();
+			});
+			
+		});
+	};
+	
 	/**
 	 * Private function to
 	 * Set the active workspace and calls the callback function if present
@@ -249,6 +274,8 @@ WorkspaceManager.prototype = (function(){
 		activeWorkspaceIsLocked : activeWorkspaceIsLocked
 		,
 		activeWorkspaceImportAoi : activeWorkspaceImportAoi
+		,
+		activeWorkspaceImportStrata : activeWorkspaceImportStrata
 	};
 	
 })();
