@@ -1,0 +1,36 @@
+<div class="page-section" id="strata">
+
+	<div class="row col-md-10 col-md-offset-1" style="height: 100%; ">	
+		
+		<div class="row upload-section" style="height: 10%; ">
+			<form  method="post" enctype="multipart/form-data" action="rest/csv-upload.json">
+			<div class="col-md-2 col-md-offset-5" style="padding-top: 20px;">
+				<button type="button" class="btn btn-default width100" name="upload-btn">Upload Csv</button>
+			    <input type="file" name="file" style="display:none" />  
+			</div>
+			</form>
+		</div>
+		
+		<div class="row phase1-table">
+			<div class="col-md-4 col-md-offset-4 data-table">
+				<table style="width:100%" class="table">
+					<thead>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+			</div>
+			
+		</div>
+		
+	</div>
+	
+				
+	<script>
+	$(function() {
+		
+		var manager = new Phase1Manager( "#strata" );
+		
+	});
+	</script>
+</div>
