@@ -661,9 +661,27 @@ ul.scroll-menu {
 	display: none;
 }
 
-
-
-
+/**
+* home settings section
+*
+*/
+#settings .group ,
+#settings .group-buttons {
+	height: 50%;
+	width: 100%;
+}
+#settings .group-header {
+	height: 25%;
+	width: 100%;
+}
+#settings .group-header div {
+	height: 50%;
+	padding-top: 1.1em; 
+	border-bottom: 1px solid #8f91a0;
+	color: #8f91a0;
+/* 	background-color: #5d5f69;  */
+	font-size: 1.2em;
+}
 
 
 /**
@@ -762,14 +780,20 @@ ul.scroll-menu {
 .width100 {
 	width: 100%;	
 }
-.height100 {
-	height: 100%;
+.height25 {
+	height: 25%;
+}
+.height33 {
+	height: 33%;
 }
 .height50 {
 	height: 50%;
 }
-.height33 {
-	height: 33%;
+.height75 {
+	height: 75%;
+}
+.height100 {
+	height: 100%;
 }
 
 /**
@@ -945,18 +969,22 @@ ul.ui-sortable li {
 * d3 pack layout
 */
 .pack-node circle {
-  fill: rgb(31, 119, 180);
-  fill-opacity: .25;
-  stroke: rgb(31, 119, 180);
-  stroke-width: 1px;
+  fill: #52849b;
+  fill-opacity: .37;
+/*   stroke: #52849b; */
+  stroke-width: 0px;
 }
 
 .pack-node-leaf circle {
-  fill: #ff7f0e;
-  fill-opacity: 1;
+  fill: #a9aed5;
+/*   stroke: #7f9a9c; */
+  fill-opacity: .3;
 }
 
 .pack-node text {
-  font: 10px sans-serif;
-  fill: #fff;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+/*     font-family: "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif; */
+   font-size: 0.9em;
+   font-weight: 200;
+  fill: rgb(236, 240, 241);
 }
