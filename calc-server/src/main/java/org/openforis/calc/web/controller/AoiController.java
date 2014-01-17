@@ -2,7 +2,9 @@ package org.openforis.calc.web.controller;
 
 import java.io.IOException;
 
+import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceService;
+import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.AoiManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -29,12 +31,12 @@ public class AoiController {
 	
 	@RequestMapping(value = "/import.json", method = RequestMethod.POST, produces = "application/json")
 	public @ResponseBody
-	Response csvFileImport(@RequestParam("filepath") String filepath, @RequestParam("captions") String[] captions) throws IOException {
-		Response response = new Response();
+	AoiHierarchy csvFileImport(@RequestParam("filepath") String filepath, @RequestParam("captions") String[] captions) throws IOException {
+		Workspace activeWorkspace = workspaceService.getActiveWorkspace();
+		aoiManager.csvImport(activeWorkspace, filepath, captions);
 		
-		aoiManager.csvImport(workspaceService.getActiveWorkspace(), filepath, captions);
-		
-		return response;
+		AoiHierarchy aoiHierarchy = activeWorkspace.getAoiHierarchies().get(0);
+		return aoiHierarchy;
 	}
 
 }

@@ -8,6 +8,9 @@ import javax.sql.DataSource;
 
 import org.jooq.Insert;
 import org.jooq.Record;
+import org.openforis.calc.metadata.AoiDao;
+import org.openforis.calc.metadata.AoiHierarchy;
+import org.openforis.calc.metadata.AoiManager;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.EntityDao;
 import org.openforis.calc.metadata.QuantitativeVariable;
@@ -65,6 +68,9 @@ public class WorkspaceService {
 	@Autowired
 	private DataSource dataSource;
 	
+	@Autowired
+	private AoiDao aoiDao;
+	
 	private Map<Integer, SimpleLock> locks;
 
 	public WorkspaceService() {
@@ -103,6 +109,11 @@ public class WorkspaceService {
 	 */
 	public Workspace getActiveWorkspace() {
 		Workspace workspace = workspaceDao.fetchActive();
+		List<AoiHierarchy> aoiHierarchies = workspace.getAoiHierarchies();
+		// set root aoi to each aoiHierarchy linked to the workspace
+		for (AoiHierarchy aoiHierarchy : aoiHierarchies) {
+			aoiDao.assignRootAoi(aoiHierarchy);
+		}
 		return workspace;
 	}
 

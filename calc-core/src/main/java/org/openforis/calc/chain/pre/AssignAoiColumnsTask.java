@@ -1,7 +1,10 @@
 package org.openforis.calc.chain.pre;
 
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.jooq.Field;
 import org.jooq.JoinType;
@@ -47,12 +50,14 @@ public final class AssignAoiColumnsTask extends Task {
 		List<AoiHierarchy> hierarchies = workspace.getAoiHierarchies();
 
 		for ( AoiHierarchy hierarchy : hierarchies ) {
-			List<AoiLevel> levels = hierarchy.getLevels();
-			
+			Set<AoiLevel> levels = hierarchy.getLevels();
+			Iterator<AoiLevel> iterator = new LinkedList<AoiLevel>(levels).descendingIterator();
 			AoiLevel childLevel = null;
-			for ( int i = levels.size() - 1 ; i >= 0 ; i-- ) {
+			while(iterator.hasNext()){
+//			for ( int i = levels.size() - 1 ; i >= 0 ; i-- ) {
 				
-				AoiLevel level = levels.get(i);
+//				AoiLevel level = levels.get(i);
+				AoiLevel level = iterator.next();
 				AoiDimensionTable aoiTable = getOutputSchema().getAoiDimensionTable(level);
 				
 				// spatial query only for leaf aoi hierarchy level

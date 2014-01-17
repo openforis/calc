@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.AoiHierarchy;
@@ -124,7 +125,7 @@ public class OutputSchema extends RelationalSchema {
 		this.aoiDimensionTables = new HashMap<AoiLevel, AoiDimensionTable>();
 		List<AoiHierarchy> aoiHierarchies = workspace.getAoiHierarchies();
 		for ( AoiHierarchy aoiHierarchy : aoiHierarchies ) {
-			List<AoiLevel> levels = aoiHierarchy.getLevels();
+			Set<AoiLevel> levels = aoiHierarchy.getLevels();
 			for ( AoiLevel level : levels ) {
 				AoiDimensionTable table = new AoiDimensionTable(this, level);
 				addTable(table);

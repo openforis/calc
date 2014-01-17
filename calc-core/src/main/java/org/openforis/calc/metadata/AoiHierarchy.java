@@ -1,6 +1,6 @@
 package org.openforis.calc.metadata;
 
-import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.FetchType;
@@ -9,7 +9,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.openforis.calc.common.NamedUserObject;
 import org.openforis.calc.engine.Workspace;
 
@@ -26,15 +28,18 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Table(name = "aoi_hierarchy")
 public class AoiHierarchy extends NamedUserObject {
 
+	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "workspace_id")
-	@JsonIgnore
 	private Workspace workspace;
 
 	@OneToMany(mappedBy = "hierarchy", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@OrderBy("rank")
-	private List<AoiLevel> levels;
+	private Set<AoiLevel> levels;
 
+	@Transient
+	private Aoi rootAoi;
+	
 	public Workspace getWorkspace() {
 		return this.workspace;
 	}
@@ -43,16 +48,25 @@ public class AoiHierarchy extends NamedUserObject {
 		this.workspace = workspace;
 	}
 
-	public List<AoiLevel> getLevels() {
-		return levels;
+	public Set<AoiLevel> getLevels() {
+		return org.openforis.commons.collection.CollectionUtils.unmodifiableSet( levels );
 	}
 
-	public void setLevels(List<AoiLevel> levels) {
+	public void setLevels(Set<AoiLevel> levels) {
 		this.levels = levels;
 	}
-
+	
+	@JsonIgnore
 	public AoiLevel getLeafLevel() {
-		return levels.get(levels.size() - 1);
+		return (AoiLevel) CollectionUtils.get(levels, levels.size() - 1);
+	}
+
+	public Aoi getRootAoi() {
+		return rootAoi;
+	}
+
+	public void setRootAoi(Aoi rootAoi) {
+		this.rootAoi = rootAoi;
 	}
 
 }

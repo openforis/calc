@@ -195,6 +195,27 @@ WorkspaceManager.prototype = (function(){
 	};
 	
 	/**
+	 * Import aois for the active workspace
+	 */
+	var activeWorkspaceImportAoi = function(filepath, captions, complete) {
+		var $this = this;
+		$this.activeWorkspace(function(ws){
+			UI.lock();
+			$.ajax({
+				url : "rest/workspace/active/aoi/import.json",
+				dataType : "json",
+				method : "POST",
+				data : { "filepath":filepath, "captions":captions.join(",") } 
+			}).done(function(response) {
+				var aoiHierarchy = response;
+				ws.aoiHierarchies[0] = response;
+				complete(ws);
+				UI.unlock();
+			});
+			
+		});
+	};
+	/**
 	 * Private function to
 	 * Set the active workspace and calls the callback function if present
 	 */
@@ -226,6 +247,8 @@ WorkspaceManager.prototype = (function(){
 		activeWorkspaceSetEntityPlotArea : activeWorkspaceSetEntityPlotArea
 		,
 		activeWorkspaceIsLocked : activeWorkspaceIsLocked
+		,
+		activeWorkspaceImportAoi : activeWorkspaceImportAoi
 	};
 	
 })();

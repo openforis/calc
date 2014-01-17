@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.jooq.DataType;
@@ -235,7 +236,7 @@ public abstract class DataTable extends AbstractTable {
 			Workspace workspace = entity.getWorkspace();
 			List<AoiHierarchy> aoiHierarchies = workspace.getAoiHierarchies();
 			for ( AoiHierarchy hierarchy : aoiHierarchies ) {
-				List<AoiLevel> levels = hierarchy.getLevels();
+				Set<AoiLevel> levels = hierarchy.getLevels();
 				for ( AoiLevel level : levels ) {
 					if ( lowestLevel == null || level.getRank() <= lowestLevel.getRank() ) {
 						String fkColumn = level.getFkColumn();

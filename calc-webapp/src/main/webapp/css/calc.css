@@ -413,28 +413,7 @@ formula editor
 	border-top: 1px solid #ecf0f1;
 	
 }
-/**== chart svg properties*/
-.axis path,
-.axis line {
-    fill: none;
-    stroke: rgba(236, 240, 241, .2);
-    shape-rendering: crispEdges;
-}
 
-.axis text, .axis-label, .axis-tick {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-/*     font-family: "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif; */
-    font-size: 0.7em;
-    font-weight: 100;
-/*     fill: #ecf0f1; */
-    fill: rgb(236, 240, 241);
-    opacity: .7;
-	text-anchor: middle;
-}
-.scatter-plot-point {
-	fill: rgb(108, 159, 183);
-	opacity : 0;
-}
 
 
 
@@ -902,4 +881,79 @@ ul.ui-sortable li {
 	margin: 0px;
 	color: #2c3e50;
 	white-space: pre-wrap;
+}
+
+
+
+
+/**
+* d3 scatter plot
+*/
+
+/**== chart svg properties*/
+.axis path,
+.axis line {
+    fill: none;
+    stroke: rgba(236, 240, 241, .2);
+    shape-rendering: crispEdges;
+}
+
+.axis text, .axis-label, .axis-tick {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+/*     font-family: "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif; */
+    font-size: 0.7em;
+    font-weight: 100;
+/*     fill: #ecf0f1; */
+    fill: rgb(236, 240, 241);
+    opacity: .7;
+	text-anchor: middle;
+}
+.scatter-plot-point {
+	fill: rgb(108, 159, 183);
+	opacity : 0;
+}
+
+
+/**
+*	d3 tree layout
+*/
+.svg-tree-node circle {
+  fill: #fff;
+  stroke: steelblue;2
+  stroke-width: 1.5px;22
+}
+
+.svg-tree-node {
+  font: 10px sans-serif;
+  fill: #fff;
+}
+
+.svg-tree-link {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 1.5px;
+}
+.overlay {
+  fill: none;
+  pointer-events: all;
+}
+
+/**
+* d3 pack layout
+*/
+.pack-node circle {
+  fill: rgb(31, 119, 180);
+  fill-opacity: .25;
+  stroke: rgb(31, 119, 180);
+  stroke-width: 1px;
+}
+
+.pack-node-leaf circle {
+  fill: #ff7f0e;
+  fill-opacity: 1;
+}
+
+.pack-node text {
+  font: 10px sans-serif;
+  fill: #fff;
 }

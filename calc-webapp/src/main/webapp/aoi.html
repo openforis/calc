@@ -1,17 +1,17 @@
 <div class="page-section" id="aoi">
 
-	<div class="row col-md-10 col-md-offset-1 aoi-section" style="height: 100%">	
+	<div class="row col-md-10 col-md-offset-1 aoi-section" style="height: 100%; ">	
 		
-		<div class="row upload-section">
+		<div class="row upload-section" style="height: 15%; ">
 			<form  method="post" enctype="multipart/form-data" action="rest/csv-upload.json">
-			<div class="col-md-2 col-md-offset-5">
+			<div class="col-md-2 col-md-offset-5" style="padding-top: 20px;">
 				<button type="button" class="btn btn-default width100" name="upload-btn">Upload Csv</button>
 			    <input type="file" name="file" style="display:none" />  
 			</div>
 			</form>
 		</div>
 		
-		<div class="row progress-section">
+		<div class="row progress-section" style="height: 15%;">
 			<div class="col-md-2 col-md-offset-5">
 				<div class="progress">
 		        	<div class="progress-bar progress-bar-info"></div>
@@ -20,7 +20,10 @@
 		    <div class="col-md-1 percent">
 		    </div>
 		</div>
-					
+
+		<div class="row aoi-tree-section" style="display: block; height: 80%; width:100%; padding: 15px;">
+			
+		</div>
 	</div>
 	
 	<div class="row col-md-10 col-md-offset-1 aoi-import-section" style="height: 100%;">

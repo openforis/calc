@@ -7,6 +7,7 @@ import static org.openforis.calc.persistence.jooq.Tables.STRATUM_AOI_VIEW;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.jooq.Field;
 import org.openforis.calc.engine.Task;
@@ -59,7 +60,7 @@ public final class CalculateExpansionFactorsTask extends Task {
 			Entity entity = factTable.getEntity();
 			if ( entity.isSamplingUnit() ) {
 				for ( AoiHierarchy hierarchy : hierarchies ) {
-					List<AoiLevel> levels = hierarchy.getLevels();
+					Set<AoiLevel> levels = hierarchy.getLevels();
 					for ( AoiLevel level : levels ) {
 						Field<Integer> aoiId = factTable.getAoiIdField(level);
 

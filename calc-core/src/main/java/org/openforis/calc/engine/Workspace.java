@@ -68,7 +68,7 @@ public class Workspace extends UserObject {
 	@Cascade(CascadeType.ALL)
 	private List<Entity> entities;
 
-	@JsonIgnore
+//	@JsonIgnore
 	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER)
 	@OrderBy("name")
 	@Fetch(FetchMode.SUBSELECT)

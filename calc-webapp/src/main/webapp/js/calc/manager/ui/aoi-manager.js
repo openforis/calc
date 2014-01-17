@@ -20,7 +20,6 @@ AoiManager = function(container) {
 	this.uploadProgressSection = this.aoiSection.find(".progress-section");
 	this.uploadProgressSection.hide();
 	
-	
 	// aoi import section
 	this.aoiImportSection = this.container.find(".aoi-import-section");
 	this.aoiImportSection.hide();
@@ -29,6 +28,14 @@ AoiManager = function(container) {
 	this.levelSection = this.container.find(".level");
 	
 	this.importBtn = this.aoiImportSection.find( "[name=import-btn]" );
+	
+	
+	// aoi tree section (it contains the svg that shows the aoi tree structure)
+	this.aoiTreeSection = this.aoiSection.find( ".aoi-tree-section" );
+	this.aoiTreeSection.css( "width", Math.floor( this.container.width()*(10/12) )+"px" );
+	this.aoiTreeSection.css( "height", Math.floor( this.container.height()*0.79 )+"px" );
+	this.aoiTreeSection.attr("id","aoi-tree-svg");
+	  
 	this.init();
 };
 
@@ -47,16 +54,9 @@ AoiManager.prototype.init = function(){
 	    },
 	    uploadProgress: function ( event, position, total, percentComplete ) {
 	    	$this.uploadProgressBar.update(position, total);
-//	    	var percentVal = percentComplete+'%';
-//	    	$progressBar.width(percentVal);
-//	    	$progressPercent.html(percentVal);
 	    },
 	    success: function ( response ) {
 	    	$this.uploadProgressBar.progressSuccess();
-//	    	console.log( response );
-//	    	JobManager.getInstance().checkJobStatus(function() {
-//	    		homeCalculationManager.updateSteps();
-//	    	});
 	    	$this.showImport(response);
 	    },
 	    error: function (e) {
@@ -82,6 +82,12 @@ AoiManager.prototype.init = function(){
 	});
 	
 	this.importBtn.click( function(e){ $this.import(); } );
+	
+	// update aoi tree
+	$this.initSvg();
+	WorkspaceManager.getInstance().activeWorkspace(function(ws){
+		$this.updateAoiTree(ws);
+	});
 };
 
 AoiManager.prototype.showImport = function(response) {
@@ -107,8 +113,8 @@ AoiManager.prototype.showImport = function(response) {
 		//append level section
 		var l = this.levelSection.clone();
 		var input = l.find("input[type=text]");
-		input.attr("name","level");
-		input.attr("value","Level " +(levels+1) );
+		input.attr( "name","level" );
+		input.attr( "value","Level " +(levels+1) );
 		this.levelsSection.append(l);
 		l.show();
 		
@@ -119,25 +125,123 @@ AoiManager.prototype.showImport = function(response) {
 AoiManager.prototype.import = function() {
 	var $this = this;
 	
-	var s = this.levelsSection.find("input[type=text]");
+	var s = $this.levelsSection.find("input[type=text]");
 	var captions = [];
 	$.each(s, function(i,e){
 		var caption = $(e).val();
 		if(caption=="") {
-			UI.showError( "Specify a valid caption for level " + (i+1) , true );
+			UI.showError( "Caption not valid for level " + (i+1) , true );
 			return;
 		}
 		captions.push( caption );
 	});
 	
-	$.ajax({
-		url : "rest/workspace/active/aoi/import.json",
-		dataType : "json",
-		method : "POST",
-		data : {"filepath":$this.filepath, "captions":captions.join(",")} 
-	}).done(function(response) {
-		console.log(response);
+	WorkspaceManager.getInstance().activeWorkspaceImportAoi($this.filepath, captions, function(ws){
+		$this.aoiImportSection.hide(0);
+		$this.aoiSection.fadeIn();
+		
+		$this.updateAoiTree(ws);
 	});
 	
-//	console.log(s);
+};
+
+AoiManager.prototype.initSvg = function(){
+	var padding = 10,
+		width = this.aoiTreeSection.width() - padding,
+    	height = this.aoiTreeSection.height() - padding;
+	
+	this.diameter = Math.min(width, height);
+	this.format = d3.format(",d");
+	
+
+	this.svg = d3
+	.select( "#"+this.aoiTreeSection.attr("id") )
+	.append("svg")
+    .attr("width", this.diameter)
+    .attr("height", this.diameter)
+    .append("g")
+    .attr("transform", "translate(2,2)");
+
+};
+
+AoiManager.prototype.updateAoiTree = function(ws) {
+	var $this = this;
+	if( ws.aoiHierarchies && ws.aoiHierarchies.length > 0 ) {
+		
+		var root = ws.aoiHierarchies[0].rootAoi;
+		this.pack = d3.layout.pack()
+	    .size([this.diameter - 4, this.diameter - 4])
+	    .value(function(d) { 
+	    	return d.landArea; 
+		});
+		
+		this.nodes = 
+			this.svg.datum({})
+			.selectAll(".node")
+			.data(this.pack.nodes);
+		//exit and remove old elements
+        this.nodes.exit()
+            .attr("class", "exit")
+            .transition(200)
+            .ease("out")
+            .style("opacity", 0.2)
+            .remove();
+        
+        this.nodes = 
+			this.svg.datum(root)
+			.selectAll(".pack-node")
+			.data(this.pack.nodes);
+		this.nodes.enter()
+			.append("g")
+			.attr("class", function(d) { 
+				return d.children ? "pack-node" : "pack-node-leaf pack-node"; 
+			})
+			.attr("transform", function(d) { 
+				return "translate(" + d.x + "," + d.y + ")"; 
+			});
+
+		this.nodes.append("title")
+			.text(function(d) { 
+				return d.caption + " (" + $this.format(d.landArea) + ") " ; 
+			});
+
+		this.nodes.append("circle")
+			.attr("r", 0)
+			.transition()
+			.delay(function(d,i){
+				return d.depth * 200;
+			})
+			.duration(400)
+			.ease( "out-in" )
+			.attr("r", function(d) { 
+				return d.r; 
+			})
+			.styleTween("opacity", function() { return d3.interpolate(0, 1); })
+			;
+
+		this.nodes.filter(function(d) { 
+				return !d.children; 
+			})
+		.append("text")		
+		.attr("dy", ".3em")
+		.style("text-anchor", "middle")
+		.style("opacity","0")
+		.text(function(d) {
+			return d.caption;
+		})
+		.transition()
+		.delay(function(d,i){
+			return (d.depth+1) * 200;
+		})
+		.ease( "out-in" )
+		.styleTween( "opacity", function() { return d3.interpolate(0, 1); } )
+		;
+
+		d3.select(self.frameElement).style("height", this.diameter + "px");
+		
+	} else {
+		// empty tree
+		this.aoiTreeSection.empty();
+		
+	}
 };

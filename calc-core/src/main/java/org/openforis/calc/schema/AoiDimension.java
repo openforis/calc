@@ -3,7 +3,9 @@
  */
 package org.openforis.calc.schema;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.jooq.Record;
 import org.jooq.SelectQuery;
@@ -37,7 +39,8 @@ public class AoiDimension extends Dimension {
 		Hierarchy hierarchy = new Hierarchy(aoiHierarchyName);
 
 		SelectQuery<Record> select = new Psql().selectQuery();
-		List<AoiLevel> aoiLevels = aoiHierarchy.getLevels();
+		Set<AoiLevel> levels = aoiHierarchy.getLevels();
+		List<AoiLevel> aoiLevels = new ArrayList<AoiLevel>(levels);
 		for ( int i = aoiLevels.size() - 1 ; i >= 0 ; i-- ) {
 			AoiLevel aoiLevel = aoiLevels.get(i);
 			AoiDimensionTable aoiDimTable = outputSchema.getAoiDimensionTable(aoiLevel);

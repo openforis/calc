@@ -5,7 +5,10 @@ import static org.openforis.calc.persistence.jooq.tables.EntityTable.ENTITY;
 import static org.openforis.calc.persistence.jooq.tables.SamplingUnitAoiTable.SAMPLING_UNIT_AOI;
 import static org.openforis.calc.persistence.jooq.tables.SamplingUnitTable.SAMPLING_UNIT;
 
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.jooq.Insert;
 import org.jooq.Record;
@@ -40,11 +43,12 @@ public final class UpdateSamplingUnitAoisTask extends Task {
 	private void populateSamplingUnitAois(Workspace ws) {
 		List<AoiHierarchy> hierarchies = ws.getAoiHierarchies();
 		for ( AoiHierarchy hierarchy : hierarchies ) {
-			List<AoiLevel> levels = hierarchy.getLevels();
-			
 			AoiLevel childLevel = null;
-			for ( int i = levels.size() - 1 ; i >= 0 ; i-- ) {
-				AoiLevel level = levels.get(i);
+			Set<AoiLevel> levels = hierarchy.getLevels();
+			Iterator<AoiLevel> iterator = new LinkedList<AoiLevel>(levels).descendingIterator();
+			while(iterator.hasNext()){
+				AoiLevel level = iterator.next();
+//			for ( int i = levels.size() - 1 ; i >= 0 ; i-- ) {
 				log().debug("AOI Level: "+level);
 				
 				if (childLevel == null) {
