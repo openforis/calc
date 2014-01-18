@@ -84,7 +84,7 @@ AoiManager.prototype.init = function(){
 	this.importBtn.click( function(e){ $this.import(); } );
 	
 	// update aoi tree
-	$this.initSvg();
+//	$this.initSvg();
 	WorkspaceManager.getInstance().activeWorkspace(function(ws){
 		$this.updateAoiTree(ws);
 	});
@@ -153,7 +153,13 @@ AoiManager.prototype.initSvg = function(){
 	this.diameter = Math.min(width, height);
 	this.format = d3.format(",d");
 	
+	this.pack = d3.layout.pack()
+    .size([this.diameter - 4, this.diameter - 4])
+    .value(function(d) { 
+    	return d.landArea; 
+	});
 
+	this.aoiTreeSection.empty();
 	this.svg = d3
 	.select( "#"+this.aoiTreeSection.attr("id") )
 	.append("svg")
@@ -166,31 +172,17 @@ AoiManager.prototype.initSvg = function(){
 
 AoiManager.prototype.updateAoiTree = function(ws) {
 	var $this = this;
+	this.aoiTreeSection.empty();
 	if( ws.aoiHierarchies && ws.aoiHierarchies.length > 0 ) {
+		this.initSvg();
 		
 		var root = ws.aoiHierarchies[0].rootAoi;
-		this.pack = d3.layout.pack()
-	    .size([this.diameter - 4, this.diameter - 4])
-	    .value(function(d) { 
-	    	return d.landArea; 
-		});
 		
 		this.nodes = 
-			this.svg.datum({})
+			this.svg	
 			.selectAll(".node")
-			.data(this.pack.nodes);
-		//exit and remove old elements
-        this.nodes.exit()
-            .attr("class", "exit")
-            .transition(200)
-            .ease("out")
-            .style("opacity", 0.2)
-            .remove();
-        
-        this.nodes = 
-			this.svg.datum(root)
-			.selectAll(".pack-node")
-			.data(this.pack.nodes);
+			.data(this.pack.nodes(root));
+		
 		this.nodes.enter()
 			.append("g")
 			.attr("class", function(d) { 
@@ -241,7 +233,7 @@ AoiManager.prototype.updateAoiTree = function(ws) {
 		
 	} else {
 		// empty tree
-		this.aoiTreeSection.empty();
+//		this.aoiTreeSection.empty();
 		
 	}
 };
