@@ -177,11 +177,12 @@ AoiManager.prototype.updateAoiTree = function(ws) {
 		this.initSvg();
 		
 		var root = ws.aoiHierarchies[0].rootAoi;
-		
+
 		this.nodes = 
 			this.svg	
 			.selectAll(".node")
-			.data(this.pack.nodes(root));
+			.data(this.pack.nodes(root))
+			;
 		
 		this.nodes.enter()
 			.append("g")
@@ -196,7 +197,7 @@ AoiManager.prototype.updateAoiTree = function(ws) {
 			.text(function(d) { 
 				return d.caption + " (" + $this.format(d.landArea) + ") " ; 
 			});
-
+		
 		this.nodes.append("circle")
 			.attr("r", 0)
 			.transition()
@@ -230,6 +231,10 @@ AoiManager.prototype.updateAoiTree = function(ws) {
 		;
 
 		d3.select(self.frameElement).style("height", this.diameter + "px");
+		
+		this.nodes.on("click", function(d){
+			console.log(d);
+		});
 		
 	} else {
 		// empty tree
