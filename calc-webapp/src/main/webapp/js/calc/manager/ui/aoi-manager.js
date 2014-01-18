@@ -233,7 +233,7 @@ AoiManager.prototype.updateAoiTree = function(ws) {
 		d3.select(self.frameElement).style("height", this.diameter + "px");
 		
 		this.nodes.on("click", function(d){
-			console.log(d);
+//			console.log(d);
 		});
 		
 	} else {
