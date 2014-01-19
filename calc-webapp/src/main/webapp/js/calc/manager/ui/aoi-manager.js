@@ -147,14 +147,14 @@ AoiManager.prototype.import = function() {
 
 AoiManager.prototype.initSvg = function(){
 	var padding = 10,
-		width = this.aoiTreeSection.width() - padding,
-    	height = this.aoiTreeSection.height() - padding;
+		width = this.aoiTreeSection.width()  - padding,
+    	height = this.aoiTreeSection.height()  - padding;
 	
 	this.diameter = Math.min(width, height);
 	this.format = d3.format(",d");
 	
 	this.pack = d3.layout.pack()
-    .size([this.diameter - 4, this.diameter - 4])
+    .size([this.diameter - padding, this.diameter])
     .value(function(d) { 
     	return d.landArea; 
 	});
@@ -166,7 +166,7 @@ AoiManager.prototype.initSvg = function(){
     .attr("width", this.diameter)
     .attr("height", this.diameter)
     .append("g")
-    .attr("transform", "translate(2,2)");
+    .attr("transform", "translate(0,0)");
 
 };
 
@@ -212,13 +212,26 @@ AoiManager.prototype.updateAoiTree = function(ws) {
 			.styleTween("opacity", function() { return d3.interpolate(0, 1); })
 			;
 
-		this.nodes.filter(function(d) { 
-				return !d.children; 
-			})
+		this.nodes
+//		.filter(function(d) { 
+//			return !d.children; 
+//		})
 		.append("text")		
-		.attr("dy", ".3em")
+		.attr("transform", function(d) {
+			var y = (d.children) ? - d.r : 0;
+			y += (d.depth == 0) ? 20:0;
+			return "translate(" + 0 + "," + y + ")";
+		})
+//		.attr("dy", function(d){
+//			var dy = (d.children) ? "-5em" : ".3em";
+//			return dy;
+//		}) 
+//				".3em")
 		.style("text-anchor", "middle")
 		.style("opacity","0")
+		.style("font-size",function(d,i){
+			return ( 1 - (d.depth*0.125) ) + "em";
+		})
 		.text(function(d) {
 			return d.caption;
 		})
