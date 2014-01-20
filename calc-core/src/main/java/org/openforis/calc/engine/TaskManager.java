@@ -18,7 +18,6 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -46,9 +45,6 @@ public class TaskManager {
 
 	@Autowired
 	private DataSource dataSource;
-
-	@Autowired
-	private PropertyPlaceholderConfigurer placeholderConfigurer;
 
 	@Autowired
 	private ModuleRegistry moduleRegistry;
