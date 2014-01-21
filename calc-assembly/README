@@ -1,0 +1,5 @@
+To build this assembly (Calc+Tomcat), build Calc with:
+
+   mvn package -P assembly
+
+The resulting ZIP will be created in target/
