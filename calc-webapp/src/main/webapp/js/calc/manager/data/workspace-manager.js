@@ -25,7 +25,11 @@ WorkspaceManager.prototype = (function(){
 				url:"rest/workspace/active.json",
 				dataType:"json"
 			}).done(function(response) {
-				$.proxy(setActiveWorkspace, $this)( response, success );
+				if ( response.workspace ) {
+					$.proxy(setActiveWorkspace, $this)( response.workspace, success );
+				} else {
+					//TODO show metadata import page
+				}
 				UI.unlock();
 			});
 		}
