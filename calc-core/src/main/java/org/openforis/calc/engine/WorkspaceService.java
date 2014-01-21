@@ -115,10 +115,12 @@ public class WorkspaceService {
 	 */
 	public Workspace getActiveWorkspace() {
 		Workspace workspace = workspaceDao.fetchActive();
-		List<AoiHierarchy> aoiHierarchies = workspace.getAoiHierarchies();
-		// set root aoi to each aoiHierarchy linked to the workspace
-		for (AoiHierarchy aoiHierarchy : aoiHierarchies) {
-			aoiDao.assignRootAoi(aoiHierarchy);
+		if ( workspace != null ) {
+			List<AoiHierarchy> aoiHierarchies = workspace.getAoiHierarchies();
+			// set root aoi to each aoiHierarchy linked to the workspace
+			for (AoiHierarchy aoiHierarchy : aoiHierarchies) {
+				aoiDao.assignRootAoi(aoiHierarchy);
+			}
 		}
 		return workspace;
 	}
