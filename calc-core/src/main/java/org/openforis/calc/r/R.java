@@ -9,7 +9,6 @@ import java.util.Scanner;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-import org.apache.commons.io.IOUtils;
 import org.openforis.calc.system.SystemUtils;
 import org.rosuda.REngine.REXP;
 import org.rosuda.REngine.REXPMismatchException;
@@ -84,7 +83,9 @@ public class R {
 			// RuntimeException("Error getting JRI library path from R");
 			return null;
 		} finally {
-//			IOUtils.closeQuietly(s);
+			if ( s != null ) {
+				s.close();
+			}
 		}
 	}
 

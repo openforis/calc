@@ -14,6 +14,7 @@
 		<module>calc-core</module>
 		<module>calc-server</module>
 		<module>calc-webapp</module>
+		<module>calc-assembly</module>
 	</modules>
 
 	<properties>
@@ -235,15 +236,10 @@
 			
 			<!-- Database -->
 			<dependency>
-				<groupId>postgresql</groupId>
-				<artifactId>postgresql</artifactId>
-				<version>${postgres-driver.version}</version>
+				<groupId>org.jooq</groupId>
+				<artifactId>jooq</artifactId>
+				<version>${jooq.version}</version>
 			</dependency>
-			<dependency>
-				<groupId>org.xerial</groupId>
-				<artifactId>sqlite-jdbc</artifactId>
-				<version>${sqlite-driver.version}</version>
-			</dependency>		
 			<dependency>
 				<groupId>org.postgis</groupId>
 				<artifactId>postgis-jdbc</artifactId>
@@ -255,10 +251,21 @@
 				<version>1.4</version>
 			</dependency>
 			<dependency>
-				<groupId>org.jooq</groupId>
-				<artifactId>jooq</artifactId>
-				<version>${jooq.version}</version>
+				<groupId>commons-pool</groupId>
+				<artifactId>commons-pool</artifactId>
+				<version>1.5.4</version>
 			</dependency>
+			<!-- DBMS drivers -->
+			<dependency>
+				<groupId>postgresql</groupId>
+				<artifactId>postgresql</artifactId>
+				<version>${postgres-driver.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.xerial</groupId>
+				<artifactId>sqlite-jdbc</artifactId>
+				<version>${sqlite-driver.version}</version>
+			</dependency>		
 
 			<!-- Data formats -->			
 			<dependency>

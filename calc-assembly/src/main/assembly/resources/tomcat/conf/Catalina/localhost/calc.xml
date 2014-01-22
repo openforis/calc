@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context path="/calc" reloadable="false">
+	
+	<Parameter name="calc.jdbc.driver" 		value="org.postgresql.Driver" />
+	<Parameter name="calc.jdbc.host" 		value="localhost" />
+	<Parameter name="calc.jdbc.port" 		value="5432" />
+	<Parameter name="calc.jdbc.db" 			value="calc" />
+	<Parameter name="calc.jdbc.url" 		value="jdbc:postgresql://${calc.jdbc.host}:${calc.jdbc.port}/${calc.jdbc.db}" />
+	<Parameter name="calc.jdbc.schema" 		value="calc" />
+	<Parameter name="calc.jdbc.username" 		value="calc" />
+	<Parameter name="calc.jdbc.password" 		value="calc" />
+	<Parameter name="calc.jdbc.adminuser" 	value="postgres" />
+	<Parameter name="calc.jdbc.adminpassword" 	value="postgres" />
+	<Parameter name="calc.jdbc.maxActive" 		value="10" />
+	<Parameter name="calc.jdbc.minIdle" 		value="5" />
+	
+</Context>

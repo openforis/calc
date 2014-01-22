@@ -160,37 +160,26 @@ Windows
 
 
 ============================================================================
- 				JNDI database resource configuration
+ 				Tomcat 7 database parameters configuration
 ============================================================================
 
-==============
-Tomcat 7
-==============
-	
-	- If using a standalone Tomcat installation, define the same resource in a file calc.xml inside tomcat/conf/Catalina/localhost:
-		
-		<!-- calc.xml file -->
+	- If using a standalone Tomcat installation, define the a file calc.xml inside tomcat/conf/Catalina/localhost as follow:
 		
 		<?xml version="1.0" encoding="UTF-8"?>
-		
 		<Context path="/calc" reloadable="false">
-			
-			<Resource 
-			   name="jdbc/calcDs" 
-			   auth="Container"
-			   type="javax.sql.DataSource"
-			   factory="org.apache.commons.dbcp.BasicDataSourceFactory"
-			   driverClassName="org.postgresql.Driver"
-			   url="jdbc:postgresql://localhost:5432/calc"
-			   username="calc"
-			   password="calc"
-			   initialSize="5"
-			   maxActive="20"
-			   maxIdle="5" />
-			   
+			<Parameter name="calc.jdbc.driver" 		value="org.postgresql.Driver" />
+			<Parameter name="calc.jdbc.host" 		value="localhost" />
+			<Parameter name="calc.jdbc.port" 		value="5432" />
+			<Parameter name="calc.jdbc.db" 			value="calc" />
+			<Parameter name="calc.jdbc.url" 		value="jdbc:postgresql://${calc.jdbc.host}:${calc.jdbc.port}/${calc.jdbc.db}" />
+			<Parameter name="calc.jdbc.schema" 		value="calc" />
+			<Parameter name="calc.jdbc.username" 	value="calc" />
+			<Parameter name="calc.jdbc.password" 	value="calc" />
+			<Parameter name="calc.jdbc.adminuser" 		value="postgres" />
+			<Parameter name="calc.jdbc.adminpassword" 	value="postgres" />
+			<Parameter name="calc.jdbc.maxActive" 	value="10" />
+			<Parameter name="calc.jdbc.minIdle" 	value="5" />
 		</Context>
-		
-		<!-- end of calc.xml file -->
 	
-	- If Tomcat server uses Eclipse metadata, define the JNDI resource in the context.xml file of the relative server.
+	- If Tomcat server uses Eclipse metadata, define these parameters in the context.xml file of the relative server.
 	

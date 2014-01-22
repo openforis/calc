@@ -76,7 +76,6 @@ public class CalcJob extends Job {
 	 */
 	private RLogger rLogger;
 
-	// TODO read dynamically these properties
 	@Value("${calc.jdbc.host}")
 	private String host;
 	

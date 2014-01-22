@@ -1,0 +1,65 @@
+<assembly
+	xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+	<id>distribution</id>
+	<formats>
+		<format>zip</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<fileSets>
+		<!-- Include files from unpacked Tomcat distribution -->
+		<fileSet>
+			<directory>${project.build.directory}/apache-tomcat-${tomcat.version}</directory>
+			<outputDirectory>${output.directory}/tomcat</outputDirectory>
+			<excludes>
+				<exclude>**/webapps/ROOT/**</exclude>
+				<exclude>**/webapps/docs/**</exclude>
+				<exclude>**/webapps/examples/**</exclude>
+			</excludes>
+		</fileSet>
+		<!-- Include context config files -->
+		<fileSet>
+			<directory>${basedir}/src/main/assembly/resources/tomcat/conf</directory>
+			<outputDirectory>${output.directory}/tomcat/conf</outputDirectory>
+			<includes>
+				<include>**/**</include>
+			</includes>
+		</fileSet>
+		<!-- Include custom startup scripts (e.g. setenv.sh/setenv.bat) -->
+		<fileSet>
+			<directory>${basedir}/src/main/assembly/resources/tomcat/bin</directory>
+			<outputDirectory>${output.directory}/tomcat/bin</outputDirectory>
+			<includes>
+				<include>**/**</include>
+			</includes>
+		</fileSet>
+		<!-- Include startup/shutdown batch files -->
+		<fileSet>
+			<directory>${basedir}/src/main/assembly/resources</directory>
+			<outputDirectory>${output.directory}</outputDirectory>
+			<includes>
+				<include>*</include>
+			</includes>
+		</fileSet>
+	</fileSets>
+	<dependencySets>
+		<!-- PostgreSQL and connection pool dependencies for server installations -->
+		<dependencySet>
+			<outputDirectory>${output.directory}/tomcat/lib</outputDirectory>
+			<includes>
+				<include>postgresql:postgresql:jar</include>
+				<include>commons-pool:commons-pool:jar</include>
+				<include>commons-dbcp:commons-dbcp:jar</include>
+			</includes>
+		</dependencySet>
+		<!-- Add the actual Calc webapp (unpacked) -->
+		<dependencySet>
+			<outputDirectory>${output.directory}/tomcat/webapps/calc</outputDirectory>
+			<includes>
+				<include>org.openforis.calc:calc-webapp</include>
+			</includes>
+			<unpack>true</unpack>
+		</dependencySet>
+	</dependencySets>
+</assembly>

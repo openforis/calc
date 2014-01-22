@@ -40,12 +40,20 @@
 <!-- 	</listener> -->
 	
 	<!-- ====================================================== -->
-	<!-- SPRING CONTEXT LOADER -->
+	<!-- Calc bootstrap context listener -->
 	<!-- ====================================================== -->
 	<listener>
-		<display-name>Spring Context Loader</display-name>
-		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+		<display-name>Calc Context Listener</display-name>
+		<listener-class>org.openforis.calc.web.listener.CalcContextListener</listener-class>
 	</listener>
+	
+	<!-- ====================================================== -->
+	<!-- SPRING CONTEXT LOADER -->
+	<!-- ====================================================== -->
+<!-- 	<listener> -->
+<!-- 		<display-name>Spring Context Loader</display-name> -->
+<!-- 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class> -->
+<!-- 	</listener> -->
 
 	<!-- ====================================================== -->
 	<!-- SPRING REQUEST LISTENER -->

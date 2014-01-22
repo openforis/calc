@@ -54,9 +54,11 @@ public class WorkspaceController {
 	
 	@RequestMapping(value = "/active.json", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody
-	Workspace getActiveWorkspace() {
+	Response getActiveWorkspace() {
 		Workspace workspace = workspaceService.getActiveWorkspace();
-		return workspace;
+		Response response = new Response();
+		response.addField("workspace", workspace);
+		return response;
 	}
 
 	// TODO change rest call /active/job.json
@@ -87,7 +89,7 @@ public class WorkspaceController {
 	@RequestMapping(value = "/active/entity/{entityId}/variable/{variableId}/aggregates/{agg}.json", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	QuantitativeVariable activeWorkspaceCreateVariableAggregate(@PathVariable int entityId, @PathVariable int variableId, @PathVariable String agg) {
-		Workspace workspace = getActiveWorkspace();
+		Workspace workspace = workspaceService.getActiveWorkspace();
 		QuantitativeVariable variable = workspaceService.createVariableAggregate(workspace, entityId, variableId, agg);
 		return variable;
 	}
@@ -95,7 +97,7 @@ public class WorkspaceController {
 	@RequestMapping(value = "/active/entity/{entityId}/variable/{variableId}/aggregates/{agg}.json", method = RequestMethod.DELETE, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	QuantitativeVariable activeWorkspaceDeleteVariableAggregate(@PathVariable int entityId, @PathVariable int variableId, @PathVariable String agg) {
-		Workspace workspace = getActiveWorkspace();
+		Workspace workspace = workspaceService.getActiveWorkspace();
 		QuantitativeVariable variable = workspaceService.deleteVariableAggregate(workspace, entityId, variableId, agg);
 		return variable;
 	}
@@ -104,7 +106,7 @@ public class WorkspaceController {
 	@RequestMapping(value = "/active/entity/{entityId}/variable/{variableId}/variable-per-ha", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	QuantitativeVariable activeWorkspaceAddVariablePerHa(@PathVariable int entityId, @PathVariable int variableId) {
-		Workspace workspace = getActiveWorkspace();
+		Workspace workspace = workspaceService.getActiveWorkspace();
 		Entity entity = workspace.getEntityById(entityId);
 		QuantitativeVariable variable = entity.getQtyVariableById(variableId);
 		variable = workspaceService.addVariablePerHa(variable);
@@ -114,7 +116,7 @@ public class WorkspaceController {
 	@RequestMapping(value = "/active/entity/{entityId}/variable/{variableId}/variable-per-ha", method = RequestMethod.DELETE, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	QuantitativeVariable activeWorkspaceDeleteVariablePerHa(@PathVariable int entityId, @PathVariable int variableId) {
-		Workspace workspace = getActiveWorkspace();
+		Workspace workspace = workspaceService.getActiveWorkspace();
 		Entity entity = workspace.getEntityById(entityId);
 		QuantitativeVariable variable = entity.getQtyVariableById(variableId);
 		variable = workspaceService.deleteVariablePerHa(variable);
@@ -138,8 +140,9 @@ public class WorkspaceController {
 	// rest/workspace/active/entity/"+entityId+"/plot-area.json
 	@RequestMapping(value = "/active/entity/{entityId}/plot-area.json", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody
-	Entity activeWorkspaceSetEntityPlotAreaScript(@PathVariable int entityId, @RequestParam(required = false, value = "plot-area-script") String plotAreaScript) {
-		Workspace workspace = getActiveWorkspace();
+	Entity activeWorkspaceSetEntityPlotAreaScript(@PathVariable int entityId, @RequestParam(required=false, value="plot-area-script") String plotAreaScript) {
+		Workspace workspace = workspaceService.getActiveWorkspace();
+
 		Entity entity = workspace.getEntityById(entityId);
 		entity = workspaceService.setEntityPlotAreaScript(entity, plotAreaScript);
 		return entity;
@@ -148,7 +151,7 @@ public class WorkspaceController {
 	@RequestMapping(value = "/active/locked.json", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	Response activeWorkspaceIsLocked() {
-		Workspace workspace = getActiveWorkspace();
+		Workspace workspace = workspaceService.getActiveWorkspace();
 		boolean locked = workspaceService.isLocked(workspace.getId());
 
 		Response response = new Response();
@@ -160,10 +163,9 @@ public class WorkspaceController {
 	public @ResponseBody
 	Job importTable(@RequestParam("filepath") String filepath, @RequestParam("table") String tableName, @RequestParam("columns") String columnOptions) throws ParseException,
 			IOException, WorkspaceLockedException {
-
 		
-		Workspace workspace = getActiveWorkspace();
-		boolean locked = workspaceService.isLocked(workspace.getId());
+		Workspace workspace = workspaceService.getActiveWorkspace();
+
 		Job job = taskManager.createJob(workspace);
 
 		JSONParser jsonParser = new JSONParser();
@@ -172,12 +174,7 @@ public class WorkspaceController {
 		job.addTask(task);
 
 		taskManager.startJob(job);
-
-		// Workspace workspace = getActiveWorkspace();
-		// boolean locked = workspaceService.isLocked(workspace.getId());
-
-//		Response response = new Response();
-		// response.addField("locked", locked);
+		
 		return job;
 	}
 
