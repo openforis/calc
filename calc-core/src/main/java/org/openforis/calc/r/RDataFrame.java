@@ -1,7 +1,6 @@
 package org.openforis.calc.r;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -12,20 +11,34 @@ import java.util.List;
  */
 public class RDataFrame extends RScript {
 	
-	private List<RNamedVector> columns;
+	private List<String> columnNames;
+	private List<RVector> columns;
 	private boolean changed;
 	
 	public RDataFrame() {
-		this((RNamedVector) null);
+		this((String[]) null, (RVector[]) null);
 	}
 	
-	public RDataFrame(RNamedVector... columns) {
+	public RDataFrame(String[] columnNames, RVector[] columns) {
 		super();
-		this.columns= new ArrayList<RNamedVector>(Arrays.asList(columns));
+		this.columnNames = new ArrayList<String>();
+		this.columns= new ArrayList<RVector>();
+		
+		if ( columnNames != null ) {
+			for ( int i=0; i < columnNames.length; i++) {
+				String columnName = columnNames[i];
+				RVector column = columns[i];
+				addColumn(columnName, column);
+			}
+		}
 		this.changed = true;
 	}
 
-	public void addColumn(RNamedVector column) {
+	public void addColumn(String name, RVector column) {
+		if ( columnNames.contains(name) ) {
+			throw new IllegalArgumentException("Column already defined for this dataframe: " + name);
+		}
+		columnNames.add(name);
 		columns.add(column);
 		changed = true;
 	}
@@ -50,12 +63,15 @@ public class RDataFrame extends RScript {
 	protected void buildScript() {
 		reset();
 		append("data.frame(");
-		if ( columns != null ) {
-			for ( int i=0; i < columns.size(); i++) {
-				RNamedVector column = columns.get(i);
+		if ( columnNames != null ) {
+			for ( int i=0; i < columnNames.size(); i++) {
+				String columnName = columnNames.get(i);
+				RVector column = columns.get(i);
+				append(columnName);
+				append(" = ");
 				append(column.toScript());
 				if ( i < columns.size() - 1 ) {
-					append(",");
+					append(", ");
 				}
 			}
 		}
@@ -63,14 +79,10 @@ public class RDataFrame extends RScript {
 	}
 	
 	public List<String> getColumnNames() {
-		List<String> result = new ArrayList<String>();
-		for (RNamedVector col : columns) {
-			result.add(col.getName());
-		}
-		return result;
+		return columnNames;
 	}
 	
-	public List<RNamedVector> getColumns() {
+	public List<RVector> getColumns() {
 		return columns;
 	}
 	

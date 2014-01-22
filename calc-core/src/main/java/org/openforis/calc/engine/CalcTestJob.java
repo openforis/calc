@@ -14,9 +14,9 @@ import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.r.RDataFrame;
 import org.openforis.calc.r.REnvironment;
 import org.openforis.calc.r.RException;
-import org.openforis.calc.r.RNamedVector;
 import org.openforis.calc.r.RScript;
 import org.openforis.calc.r.RVariable;
+import org.openforis.calc.r.RVector;
 import org.openforis.calc.r.Try;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -123,7 +123,7 @@ public class CalcTestJob extends CalcJob {
 				double[] resultValues = rEnvironment.evalDoubles(outputRVariable.toString());
 				
 				//generate results
-				dataFrame.addColumn(r().cUseless(outputVariable.getName(), (Object[]) ArrayUtils.toObject(resultValues)));
+				dataFrame.addColumn(outputVariable.getName(), r().c((Object[]) ArrayUtils.toObject(resultValues)));
 				
 				generateResultRecords(dataFrame);
 			} catch ( RException e) {
@@ -136,10 +136,11 @@ public class CalcTestJob extends CalcJob {
 			results = new ArrayList<DataRecord>();
 			for(int count = 0;  count < dataFrame.getSize(); count++) {
 				DataRecord record = new DataRecord();
-				List<RNamedVector> columns = dataFrame.getColumns();
+				List<String> columnNames = dataFrame.getColumnNames();
+				List<RVector> columns = dataFrame.getColumns();
 				for ( int columnIndex = 0;  columnIndex < columns.size(); columnIndex++ ) {
-					RNamedVector column = columns.get(columnIndex);
-					String colName = column.getName();
+					String colName = columnNames.get(columnIndex);
+					RVector column = columns.get(columnIndex);
 					if ( count >= column.size() ) {
 						System.out.println(String.format("Trying to access invalid position %d for column %s", count, colName));
 					}
@@ -174,7 +175,7 @@ public class CalcTestJob extends CalcJob {
 			for ( String varName : variableSettings.names() ) {
 				ParameterMap varSettings = variableSettings.getMap(varName);
 				List<Double> series = generateSeries(varSettings);
-				RNamedVector column = r().cUseless(varName);
+				RVector column = r().c();
 				
 				int currentSeriesSize = series.size();
 			
@@ -188,7 +189,7 @@ public class CalcTestJob extends CalcJob {
 					
 					column.addValue(value);
 				}
-				result.addColumn(column);
+				result.addColumn(varName, column);
 				
 				currentSeriesWeight *= currentSeriesSize;
 			}

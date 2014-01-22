@@ -130,12 +130,12 @@ public class RScript {
 		return new RVector(this, values);
 	}
 	
-	public RNamedVector cUseless(String name, Object... values) {
-		return new RNamedVector(this, name, values);
+	public RDataFrame dataFrame() {
+		return dataFrame((String[]) null, (RVector[]) null);
 	}
 	
-	public RDataFrame dataFrame(RNamedVector... columns) {
-		return new RDataFrame(columns);
+	public RDataFrame dataFrame(String[] columnNames, RVector[] columns) {
+		return new RDataFrame(columnNames, columns);
 	}
 
 	public Try rTry(RScript... scripts) {
