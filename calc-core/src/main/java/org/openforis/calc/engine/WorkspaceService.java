@@ -23,6 +23,7 @@ import org.openforis.calc.metadata.VariableAggregateDao;
 import org.openforis.calc.metadata.VariableDao;
 import org.openforis.calc.psql.CreateTableWithFieldsStep;
 import org.openforis.calc.psql.Psql;
+import org.openforis.calc.schema.EntityDataView;
 import org.openforis.calc.schema.EntityDataViewDao;
 import org.openforis.calc.schema.InputSchema;
 import org.openforis.calc.schema.InputSchemaDao;
@@ -275,8 +276,8 @@ public class WorkspaceService {
 			
 			if( resultsTable != null ) {
 				new Psql()
-				.dropTableIfExists(resultsTable)
-				.execute();
+					.dropTableIfExists(resultsTable)
+					.execute();
 				
 				new Psql()
 					.createTable(resultsTable, resultsTable.fields())
@@ -425,18 +426,30 @@ public class WorkspaceService {
 		
 		Entity entity = getEntity(variable);
 		
-		variableDao.delete(variable.getId());
+		InputSchema schema = new Schemas(entity.getWorkspace()).getInputSchema();
+		ResultTable originalResultsTable = schema.getResultTable(entity);
+		EntityDataView view = schema.getDataView(entity);
 
-		entity.removeVariable(variable);
+		// drop entity data view
+		entityDataViewDao.drop(view);
 		
 		// drop column from results table
-		InputSchema schema = new Schemas(entity.getWorkspace()).getInputSchema();
-		ResultTable table = schema.getResultTable(entity);
-		
 		new Psql(dataSource)
-			.alterTable(table)
-			.dropColumn( table.getQuantityField(variable) )
+			.alterTable(originalResultsTable)
+			.dropColumn( originalResultsTable.getQuantityField(variable) )
 			.execute();
+		
+		// delete variable
+		variableDao.delete(variable.getId());
+		entity.removeVariable(variable);
+		
+		// drop result table, if there are no more output variables
+		ResultTable newResultTable = schema.getResultTable(entity);
+		if ( newResultTable == null ) {
+			new Psql(dataSource)
+				.dropTableIfExists(originalResultsTable)
+				.execute();
+		}
 		
 //		if ( updateEntityView ) {
 			updateEntityView(variable);

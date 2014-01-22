@@ -32,14 +32,19 @@ public class EntityDataViewDao extends AbstractJooqDao {
 		InputSchema inputSchema = schemas.getInputSchema();
 		EntityDataView view = inputSchema.getDataView(entity);
 		
-		psql()
-			.dropViewIfExists(view)
-			.execute();
+		drop(view);
 		
+		//create view
 		Select<?> select = view.getSelect();
 		psql()
 			.createView(view)
 			.as(select)
+			.execute();
+	}
+
+	public void drop(EntityDataView view) {
+		psql()
+			.dropViewIfExists(view)
 			.execute();
 	}
 	
