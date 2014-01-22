@@ -6,8 +6,6 @@ Entity = function(workspace, object) {
 	$.extend(this, object);
 	
 	this.workspace = workspace;
-	
-	this.parent = this.parentId ? workspace.getEntityById(this.parentId) : null;
 };
 
 Entity.prototype = (function(){
@@ -61,12 +59,12 @@ Entity.prototype = (function(){
 	 * Returns all the variables up to the root entity
 	 */
 	var getAncestorsVariables = function() {
-		var currentParent = this.parent;
+		var currentParent = this.parent();
 		var result = $.proxy(getVariables, this)();
 		while ( currentParent != null ) {
 			var parentVariables = currentParent.getVariables();
 			result = parentVariables.concat(result);
-			currentParent = currentParent.parent;
+			currentParent = currentParent.parent();
 		};
 		return result;
 	};
@@ -93,6 +91,10 @@ Entity.prototype = (function(){
 		this.quantitativeVariables.splice(index, 1);
 	};
 	
+	var parent = function() {
+		return this.workspace.getEntityById(this.parentId);
+	};
+	
 	return {
 		constructor : Entity
 		,
@@ -109,6 +111,8 @@ Entity.prototype = (function(){
 		getVariableById : getVariableById
 		,
 		deleteVariable : deleteVariable
+		,
+		parent : parent
 	};
 	
 })();

@@ -15,59 +15,45 @@ Workspace = function(object) {
 	});
 };
 
-Workspace.prototype = (function(){
-	/**
-	 * Returns the entity with the id passed as argument if there is.
-	 */
-	var getEntityById = function(id) {
-		if( id ) {
-			var $this = this;
-			
-			for(var i in $this.entities) {
-				var entity = $this.entities[i];
-				if( entity.id.toString() == id.toString() ) {
-					return entity;
-				}
+/**
+ * Returns the entity with the id passed as argument if there is.
+ */
+Workspace.prototype.getEntityById = function(id) {
+	if( id ) {
+		for(var i in this.entities) {
+			var entity = this.entities[i];
+			if( entity.id.toString() == id.toString() ) {
+				return entity;
 			}
 		}
-	};
-	
-	/**
-	 * Returns the entities that contains at least one aggregable measure (quantitative var) children of the entity passed as parameter
-	 */
-	var getAggregableEntities = function(entityId) {
-		var entities = [];
-		$.each(this.entities, function(i, e){
-			if(e.parentId == entityId && e.quantitativeVariables.length > 0) {
-				entities.push(e);
+	}
+};
+
+/**
+ * Returns the entities that contains at least one aggregable measure (quantitative var) children of the entity passed as parameter
+ */
+Workspace.prototype.getAggregableEntities = function(entityId) {
+	var entities = [];
+	$.each(this.entities, function(i, e){
+		if(e.parentId == entityId && e.quantitativeVariables.length > 0) {
+			entities.push(e);
+		}
+	});
+	return entities;
+};
+
+/**
+ * update an entity with the passed argument if Ids match
+ */
+Workspace.prototype.updateEntity = function(entity) {
+	if ( entity ) {
+		var $this = this;
+		$.each($this.entities, function(i, currEntity) {
+			if(currEntity.id == entity.id){
+				$this.entities[i] = entity;
+				return false;
 			}
 		});
-		return entities;
-	};
-	
-	/**
-	 * update an entity with the passed argument if Ids match
-	 */
-	var updateEntity = function(entity) {
-		var $this = this;
-		if(entity){
-			$.each($this.entities, function(i, currEntity) {
-				if(currEntity.id == entity.id){
-					$this.entities[i] = entity;
-					return false;
-				}
-			});
-		}
-	};
-	
-	return {
-		constructor : Workspace
-		,
-		getEntityById : getEntityById
-		,
-		getAggregableEntities : getAggregableEntities
-		,
-		updateEntity : updateEntity
-	};
-	
-})();
+	}
+};
+
