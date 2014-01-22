@@ -461,8 +461,8 @@ public class WorkspaceService {
 		CsvReader csvReader = new CsvReader(filepath);
 		csvReader.readHeaders();
 		
-		FlatRecord record = csvReader.nextRecord();
-		while(record != null){
+//		FlatRecord record = csvReader.nextRecord();
+		for(FlatRecord record = csvReader.nextRecord() ; record != null ; record = csvReader.nextRecord()) {
 			Integer no = record.getValue(0, Integer.class);
 			String caption = record.getValue(1, String.class);
 			

@@ -2,12 +2,20 @@ package org.openforis.calc.web.controller;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+import java.io.IOException;
+
+import javax.sql.DataSource;
 import javax.validation.Valid;
 
+import org.json.simple.JSONArray;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.openforis.calc.engine.CollectTaskService;
+import org.openforis.calc.engine.CsvDataImportTask;
 import org.openforis.calc.engine.Job;
 import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
+import org.openforis.calc.engine.WorkspaceLockedException;
 import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
@@ -39,7 +47,11 @@ public class WorkspaceController {
 
 	@Autowired
 	private CollectTaskService collectTaskManager;
+	
+	@Autowired
+	private DataSource dataSource; 
 
+	
 	@RequestMapping(value = "/active.json", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	Workspace getActiveWorkspace() {
@@ -122,26 +134,51 @@ public class WorkspaceController {
 		}
 		return response;
 	}
-	
-	//rest/workspace/active/entity/"+entityId+"/plot-area.json
+
+	// rest/workspace/active/entity/"+entityId+"/plot-area.json
 	@RequestMapping(value = "/active/entity/{entityId}/plot-area.json", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody
-	Entity activeWorkspaceSetEntityPlotAreaScript(@PathVariable int entityId, @RequestParam(required=false, value="plot-area-script") String plotAreaScript) {
+	Entity activeWorkspaceSetEntityPlotAreaScript(@PathVariable int entityId, @RequestParam(required = false, value = "plot-area-script") String plotAreaScript) {
 		Workspace workspace = getActiveWorkspace();
 		Entity entity = workspace.getEntityById(entityId);
 		entity = workspaceService.setEntityPlotAreaScript(entity, plotAreaScript);
 		return entity;
 	}
-	
+
 	@RequestMapping(value = "/active/locked.json", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	Response activeWorkspaceIsLocked() {
 		Workspace workspace = getActiveWorkspace();
 		boolean locked = workspaceService.isLocked(workspace.getId());
-		
+
 		Response response = new Response();
 		response.addField("locked", locked);
 		return response;
 	}
-	
+
+	@RequestMapping(value = "/active/import-table.json", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	Job importTable(@RequestParam("filepath") String filepath, @RequestParam("table") String tableName, @RequestParam("columns") String columnOptions) throws ParseException,
+			IOException, WorkspaceLockedException {
+
+		
+		Workspace workspace = getActiveWorkspace();
+		boolean locked = workspaceService.isLocked(workspace.getId());
+		Job job = taskManager.createJob(workspace);
+
+		JSONParser jsonParser = new JSONParser();
+		JSONArray array = (JSONArray) jsonParser.parse(columnOptions);
+		CsvDataImportTask task = new CsvDataImportTask(filepath, tableName, array, dataSource);
+		job.addTask(task);
+
+		taskManager.startJob(job);
+
+		// Workspace workspace = getActiveWorkspace();
+		// boolean locked = workspaceService.isLocked(workspace.getId());
+
+//		Response response = new Response();
+		// response.addField("locked", locked);
+		return job;
+	}
+
 }

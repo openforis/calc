@@ -29,6 +29,7 @@ import org.openforis.calc.metadata.Stratum;
 import org.openforis.calc.metadata.Variable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * Conceptually, a workspace contains all data, metadata, processing
@@ -193,6 +194,11 @@ public class Workspace extends UserObject {
 	
 	public void setSamplingDesign(SamplingDesign samplingDesign) {
 		this.samplingDesign = samplingDesign;
+	}
+	
+	@JsonInclude
+	public String getPhase1PlotTable() {
+		return String.format( "phase1_plot_%s" , this.getName() );
 	}
 	
 	public void addProcessingChain(ProcessingChain chain) {

@@ -10,13 +10,13 @@ import org.jooq.impl.AbstractKeys;
  * 
  * @author G. Miceli
  * @author S. Ricci
- *
+ * 
  */
 public final class KeyFactory extends AbstractKeys {
-    /**
-     * Factory method for unique keys
-     */
-    public static UniqueKey<Record> newUniqueKey(Table<Record> table, TableField<Record, ?>... fields) {
-        return AbstractKeys.createUniqueKey(table, fields);
-    }
+	/**
+	 * Factory method for unique keys
+	 */
+	public static UniqueKey<Record> newUniqueKey(Table<Record> table, TableField<Record, ?>... fields) {
+		return AbstractKeys.createUniqueKey(table, fields);
+	}
 }

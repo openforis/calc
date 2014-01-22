@@ -2,7 +2,7 @@
 
 	<div class="row col-md-10 col-md-offset-1" style="height: 100%; ">	
 		
-		<div class="row upload-section" style="height: 10%; ">
+		<div class="row upload-section height10">
 			<form  method="post" enctype="multipart/form-data" action="rest/csv-upload.json">
 			<div class="col-md-2 col-md-offset-5" style="padding-top: 20px;">
 				<button type="button" class="btn btn-default width100" name="upload-btn">Upload Csv</button>
@@ -11,8 +11,8 @@
 			</form>
 		</div>
 		
-		<div class="row phase1-table">
-			<div class="col-md-4 col-md-offset-4 data-table">
+		<div class="row table-section height90">
+			<div class="col-md-4 col-md-offset-4">
 				<table style="width:100%" class="table">
 					<thead>
 					</thead>
@@ -20,9 +20,22 @@
 					</tbody>
 				</table>
 			</div>
-			
 		</div>
-		
+	
+	
+		<div class="row import-section height100">
+			<div class="row col-md-8 col-md-offset-2" style="max-height: 80%; overflow: auto; padding-top: 2em;">
+				<table style="width:100%" class="import-csv-table">
+					<thead>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+			</div>
+			<div class="row col-md-2 col-md-offset-5" style="padding-top: 3em;">
+				<button type="button" class="btn btn-default width100" name="import-btn">Import</button>
+			</div>
+		</div>		
 	</div>
 	
 				

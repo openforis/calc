@@ -98,7 +98,7 @@ StratumManager.prototype.updateStrata = function(ws) {
 			tr.append(caption);
 			
 			tbody.append(tr);
-			var delay = 50;
+			var delay = 25;
 			setTimeout(function(e){
 				tr.fadeIn(delay);
 			} , (delay*i) );

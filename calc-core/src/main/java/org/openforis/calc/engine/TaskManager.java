@@ -39,7 +39,7 @@ public class TaskManager {
 	private Executor taskExecutor;
 
 	@Autowired
-	private WorkspaceService workspaceManager;
+	private WorkspaceService workspaceService;
 
 	@Autowired
 	private BeanFactory beanFactory;
@@ -139,7 +139,7 @@ public class TaskManager {
 	synchronized public void startJob(final Job job) throws WorkspaceLockedException {
 		job.init();
 		final Workspace ws = job.getWorkspace();
-		final SimpleLock lock = workspaceManager.lock(ws.getId());
+		final SimpleLock lock = workspaceService.lock(ws.getId());
 		jobs.put(ws.getId(), job);
 //		jobsById.put(job.getId().toString(), job);
 		taskExecutor.execute(new Runnable() {

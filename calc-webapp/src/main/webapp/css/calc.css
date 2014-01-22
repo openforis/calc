@@ -707,7 +707,39 @@ ul.scroll-menu {
 .aoi-import-section div{
 	padding: 0.6em 0em;
 }
-
+/**
+* table import 
+*/
+table.import-csv-table {
+	
+}
+table.import-csv-table th {	
+	text-align: center;
+	background-color: #5d616e;
+	padding: 1em 0em;
+}
+table.import-csv-table td {
+	padding: 0.5em 0px;
+	text-align: center;
+}
+table.import-csv-table tr:not(:first-child) {
+	border-top: 1px solid #5d616e;
+}
+table.import-csv-table select {
+	width: 80%;
+	display: inherit;
+	border: none;
+	border-radius: 2px;
+}
+table.import-csv-table option {
+	margin: 1em 0em;	
+}
+table.import-csv-table input[type=checkbox] {
+	width: 1.1em;
+	height: 1.1em;
+	display: inherit;
+	cursor: pointer;
+}
 /**
 **
 ** step-edit page
@@ -804,6 +836,9 @@ ul.scroll-menu {
 .width100 {
 	width: 100%;	
 }
+.height10 {
+	height: 10%;
+}
 .height25 {
 	height: 25%;
 }
@@ -815,6 +850,9 @@ ul.scroll-menu {
 }
 .height75 {
 	height: 75%;
+}
+.height90 {
+	height: 90%;
 }
 .height100 {
 	height: 100%;

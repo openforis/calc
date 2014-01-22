@@ -28,18 +28,19 @@ import org.slf4j.LoggerFactory;
  */
 public final class Psql extends DefaultDSLContext {
 	private static final long serialVersionUID = 1L;
-	
+
 	public static final DataType<BigDecimal> DOUBLE_PRECISION = SQLDataType.NUMERIC.precision(15, 5);
+	public static final DataType<Long> SERIAL = new SerialDataType();
 	public static final DataType<GeodeticCoordinate> GEODETIC_COORDINATE = new GeodeticCoordinateDataType();
-	
+
 	public static final Schema PUBLIC = DSL.schemaByName("public");
 
 	private Logger log;
 
 	public enum Privilege {
-		
+
 		USAGE, ALL, SELECT;
-		
+
 		public String toString() {
 			return name().toLowerCase();
 		};
@@ -56,7 +57,7 @@ public final class Psql extends DefaultDSLContext {
 	}
 
 	private void init() {
-		this.log = LoggerFactory.getLogger(getClass());		
+		this.log = LoggerFactory.getLogger(getClass());
 		configuration().set(new DefaultExecuteListenerProvider(new LogSqlListener(this)));
 	}
 
@@ -80,7 +81,7 @@ public final class Psql extends DefaultDSLContext {
 		return new CreateViewStep(this, table);
 	}
 
-	public Select<?> selectStarFrom(Table<?> table) {		
+	public Select<?> selectStarFrom(Table<?> table) {
 		String tableName = table.getName();
 		String schemaName = table.getSchema().getName();
 		return select().from(DSL.tableByName(schemaName, tableName));
@@ -123,7 +124,7 @@ public final class Psql extends DefaultDSLContext {
 	}
 
 	void logSql(String sql, Object... bindings) {
-		if ( bindings.length == 0 ) {
+		if (bindings.length == 0) {
 			log.debug(sql + ";");
 		} else {
 			log.debug(sql + "; -- Parameters: " + StringUtils.join(bindings) + "");
