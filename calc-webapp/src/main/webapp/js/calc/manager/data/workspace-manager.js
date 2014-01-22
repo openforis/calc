@@ -25,7 +25,7 @@ WorkspaceManager.prototype = (function(){
 				url:"rest/workspace/active.json",
 				dataType:"json"
 			}).done(function(response) {
-				var workspace = response.workspace;
+				var workspace = response.fields.workspace;
 				$.proxy(setActiveWorkspace, $this)( workspace, success );
 				if ( ! workspace ) {
 					//TODO show metadata import page
