@@ -94,6 +94,9 @@ public class Workspace extends UserObject {
 	@JoinColumn(name = "sampling_design_id")
 	private SamplingDesign samplingDesign;
 	
+	@Column(name = "phase1_plot_table")
+	private String phase1PlotTable;
+	
 	public Workspace() {
 		this.processingChains = new ArrayList<ProcessingChain>();
 	}
@@ -196,8 +199,16 @@ public class Workspace extends UserObject {
 		this.samplingDesign = samplingDesign;
 	}
 	
-	@JsonInclude
 	public String getPhase1PlotTable() {
+		return phase1PlotTable;
+	}
+	
+	public void setPhase1PlotTable(String phase1PlotTable) {
+		this.phase1PlotTable = phase1PlotTable;
+	}
+	
+	@JsonInclude
+	public String getPhase1PlotTableName() {
 		return String.format( "phase1_plot_%s" , this.getName() );
 	}
 	

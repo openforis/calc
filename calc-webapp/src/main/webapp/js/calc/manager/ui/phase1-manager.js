@@ -70,9 +70,10 @@ Phase1Manager.prototype.showImport = function( filepath, headers ){
 	
 	WorkspaceManager.getInstance().activeWorkspace(function(ws){
 		
-		$this.importTable = new CsvTableImport( $this.importSection, filepath, headers, ws.phase1PlotTable );
+		$this.importTable = new CsvTableImport( $this.importSection, filepath, headers, ws.phase1PlotTableName );
 		// import csv table
 		$this.importTable.import(function(schema, table) {
+			UI.lock();
 			// then sets the phase1plots table of the active workspace
 			WorkspaceManager.getInstance().activeWorkspaceSetPhase1PlotsTable(table, function(ws){
 				
@@ -81,6 +82,7 @@ Phase1Manager.prototype.showImport = function( filepath, headers ){
 				$this.tableSection.fadeIn();
 				
 				$this.updateTable(schema, table);
+				UI.unlock();
 			});
 			
 			

@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
- * Controller for the active workspace areas of interest settings
+ * Rest controller for the settings section
  * 
  * @author M. Togna
  * 
@@ -51,5 +51,14 @@ public class DataSettingsController {
 		return activeWorkspace.getStrata();
 	}
 
-	
+	@RequestMapping(value = "/phase1plotstable.json", method = RequestMethod.POST, produces = "application/json")
+	public @ResponseBody
+	Workspace setPhase1PlotsTable(@RequestParam("table") String table) throws IOException {
+		Workspace workspace = workspaceService.getActiveWorkspace();
+		workspace.setPhase1PlotTable(table);
+		
+		workspaceService.save(workspace);
+		
+		return workspace;
+	}
 }

@@ -245,6 +245,26 @@ WorkspaceManager.prototype = (function(){
 	};
 	
 	/**
+	 * Set the phase1 plot table to the active workspace
+	 */
+	var activeWorkspaceSetPhase1PlotsTable = function(table, success){
+		var $this = this;
+		$this.activeWorkspace(function(ws){
+
+			$.ajax({
+				url : "rest/workspace/active/phase1plotstable.json",
+				dataType : "json",
+				method : "POST",
+				data : { "table":table } 
+			}).done(function(response) {
+//				var ws = response;
+				$.proxy(setActiveWorkspace, $this)( response, success );
+			});
+			
+		});
+	};
+	
+	/**
 	 * Private function to
 	 * Set the active workspace and calls the callback function if present
 	 */
@@ -280,6 +300,8 @@ WorkspaceManager.prototype = (function(){
 		activeWorkspaceImportAoi : activeWorkspaceImportAoi
 		,
 		activeWorkspaceImportStrata : activeWorkspaceImportStrata
+		,
+		activeWorkspaceSetPhase1PlotsTable : activeWorkspaceSetPhase1PlotsTable
 	};
 	
 })();
