@@ -27,7 +27,7 @@ public class CsvUploadController {
 
 	@RequestMapping(value = "/csv-upload.json", method = RequestMethod.POST, produces = "application/json")
 	public synchronized @ResponseBody
-	Response importCollectData(@ModelAttribute("file") MultipartFile file) {
+	Response upload(@ModelAttribute("file") MultipartFile file) {
 		try {
 			// upload file
 			File tempFile = File.createTempFile(fileNameFormat.format(new Date()), ".csv");

@@ -9,7 +9,6 @@ import java.util.List;
 import org.jooq.DataType;
 import org.jooq.Field;
 import org.jooq.Record;
-import org.jooq.Schema;
 
 /**
  * @author Mino Togna
@@ -21,8 +20,8 @@ public class DynamicTable<R extends Record> extends TableImpl<R> {
 
 	private List<Field<?>> fields;
 
-	public DynamicTable(String name, Schema schema) {
-		super(name, schema);
+	public DynamicTable(String name, String schema) {
+		super(name, new SchemaImpl(schema));
 		this.fields = new ArrayList<Field<?>>();
 	}
 

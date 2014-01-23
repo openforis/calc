@@ -29,7 +29,7 @@ public class CsvFileTable extends DynamicTable<Record> {
 
 	@SuppressWarnings("unchecked")
 	public CsvFileTable(String name, JSONArray columnOptions, String schema) {
-		super(name, new SchemaImpl(schema));
+		super(name, schema);
 		createFields(columnOptions);
 
 		primaryKey = KeyFactory.newUniqueKey(this, ID);

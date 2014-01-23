@@ -14,10 +14,13 @@ Phase1Manager = function(container) {
 	this.form = this.container.find( "form" );
 	
 	// table section
-	this.tableSection = this.container.find(".table-section");
+	this.tableSection = this.container.find(".data-table");
+	this.dataTable = new DataTable(this.tableSection);
 	
 	// import section 
 	this.importSection = this.container.find(".import-section");
+	
+	//data table
 	
 	this.init();
 };
@@ -60,9 +63,12 @@ Phase1Manager.prototype.init = function(){
 		$this.form.submit();
 	});
 	
-//	WorkspaceManager.getInstance().activeWorkspace(function(ws){
-//		$this.updateTable(ws);
-//	});
+	WorkspaceManager.getInstance().activeWorkspace(function(ws){
+		if( ws.phase1PlotTable ){
+			// now hardcoded
+			$this.updateTable("calc", ws.phase1PlotTable);
+		}
+	});
 };
 
 Phase1Manager.prototype.showImport = function( filepath, headers ){
@@ -96,6 +102,10 @@ Phase1Manager.prototype.showImport = function( filepath, headers ){
 };
 
 Phase1Manager.prototype.updateTable = function(schema, table) {
-	var $this = this;
+//	var $this = this;
+	var dataProvider = new TableDataProvider(schema, table);
+	this.dataTable.setDataProvider(dataProvider);
+	this.dataTable.show();
+	
 };
 
