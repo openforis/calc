@@ -41,11 +41,11 @@ import org.openforis.idm.metamodel.EntityDefinition;
 import org.openforis.idm.metamodel.FieldDefinition;
 import org.openforis.idm.metamodel.NodeDefinition;
 import org.openforis.idm.metamodel.NodeDefinitionVisitor;
+import org.openforis.idm.metamodel.NodeLabel;
 import org.openforis.idm.metamodel.NumberAttributeDefinition;
 import org.openforis.idm.metamodel.Schema;
 import org.openforis.idm.metamodel.TaxonAttributeDefinition;
 import org.openforis.idm.metamodel.TextAttributeDefinition;
-import org.openforis.idm.metamodel.TextAttributeDefinition.Type;
 import org.openforis.idm.metamodel.TimeAttributeDefinition;
 import org.openforis.idm.metamodel.xml.IdmlParseException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -250,7 +250,8 @@ public class CollectMetadataImportTask extends Task {
 		int id = nodeDefinition.getId();
 		
 		entity.setWorkspace(getWorkspace());
-//		entity.setCaption(caption);
+		entity.setCaption(nodeDefinition.getLabel(NodeLabel.Type.INSTANCE));
+		entity.setDescription(nodeDefinition.getDescription());
 		entity.setDataTable(dataTable.getName());
 //		entity.setDescription(description);
 		entity.setIdColumn( dataTable.getPrimaryKeyColumn().getName() );
@@ -343,7 +344,7 @@ public class CollectMetadataImportTask extends Task {
 			v.setName(generateVariableName(entityName, name));
 			((MultiwayVariable) v).setDegenerateDimension(true);
 		} else if ( attrDefn instanceof TextAttributeDefinition && 
-				((TextAttributeDefinition) attrDefn).getType() == Type.SHORT ) {
+				((TextAttributeDefinition) attrDefn).getType() == TextAttributeDefinition.Type.SHORT ) {
 			v = new TextVariable();
 			v.setScale(Scale.TEXT);
 		} else if ( attrDefn instanceof TimeAttributeDefinition ) {
@@ -358,6 +359,8 @@ public class CollectMetadataImportTask extends Task {
 //					v instanceof TextVariable ) ) {
 //				v.setDimensionTable(getDimensionTableName(entityName, v.getName()));
 //			}
+			v.setCaption(attrDefn.getLabel(NodeLabel.Type.INSTANCE));
+			v.setDescription(attrDefn.getDescription());
 			v.setInputValueColumn(v.getName());
 			v.setOutputValueColumn(v.getName());
 			v.setOriginalId(attrDefn.getId());
