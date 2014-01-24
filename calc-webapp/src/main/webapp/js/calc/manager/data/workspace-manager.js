@@ -265,6 +265,32 @@ WorkspaceManager.prototype = (function(){
 	};
 	
 	/**
+	 * Set the sampling desing for the active workspace
+	 * the sampling desing param must be a json object
+	 */
+	var activeWorkspaceSetSamplingDesign = function(samplingDesign, success){
+		var $this = this;
+		UI.lock();
+		$this.activeWorkspace(function(ws){
+			
+			var params = { "samplingDesign" : JSON.stringify(samplingDesign) };
+			$.ajax({
+				url : "rest/workspace/active/samplingDesign.json",
+				dataType : "json",
+				method : "POST",
+				data : params
+			}).done(function(response) {
+				var sd = response;
+				ws.samplingDesign = sd;
+				
+				success( ws );
+				UI.unlock();
+			});
+			
+		});
+	};
+	
+	/**
 	 * Private function to
 	 * Set the active workspace and calls the callback function if present
 	 */
@@ -302,6 +328,8 @@ WorkspaceManager.prototype = (function(){
 		activeWorkspaceImportStrata : activeWorkspaceImportStrata
 		,
 		activeWorkspaceSetPhase1PlotsTable : activeWorkspaceSetPhase1PlotsTable
+		,
+		activeWorkspaceSetSamplingDesign : activeWorkspaceSetSamplingDesign
 	};
 	
 })();

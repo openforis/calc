@@ -1,109 +1,82 @@
 <div class="page-section">
 
-	<div class="col-md-10 col-md-offset-1" style="height: 100%" id="sampling-design">	
-		<div class="row" style="height: 50%">
-			<div class="col-md-2" style="height: 100%">
-				<div class="blue-bg" style="width: 100%; height: 100%; text-align: center; padding: 3em 0.5em; background-color: #496d7e">
-					Sampling Design
-				</div>
-			</div>
-			<div class="col-md-10">
-				<div class="row" style="padding-top:1.5em">
-					<label class="col-md-4 col-md-offset-1 control-label">Sampling Unit</label>
-					<div class="col-md-4 col-md-offset-1">
+	<div class="col-md-8 col-md-offset-2" style="height: 100%" id="sampling-design">	
+		<div class="row height90">
+<!-- 			<div class="col-md-2" style="height: 100%"> -->
+<!-- 				<div class="blue-bg" style="width: 100%; height: 100%; text-align: center; padding: 3em 0.5em; background-color: #496d7e"> -->
+<!-- 					Sampling Design -->
+<!-- 				</div> -->
+<!-- 			</div> -->
+<!-- 			<div class="col-md-10"> -->
+				<div class="row option">
+					<label class="col-md-3 col-md-offset-3 control-label" style="text-align: right;">Sampling Unit</label>
+					<div class="col-md-3">
 						<select class="form-control" name="sampling-unit"></select>
 					</div>
 				</div>
-				<div class="row" style="padding-top:1em">
-					<div class="col-md-4 col-md-offset-1">
-						<button type="button" class="btn width100" style="" name="srs">Simple random sampling</button>
+				<div class="row option">
+					<div class="col-md-2 col-md-offset-5">
+						<button type="button" class="btn option-btn" name="srs">Simple random sampling</button>
 					</div>
-					<div class="col-md-4 col-md-offset-1">
-						<button type="button" class="btn width100" style="" name="systematic">Systematic sampling</button>
+					
+				</div>
+				<div class="row option">
+					<div class="col-md-2 col-md-offset-5">
+						<button type="button" class="btn option-btn" name="systematic">Systematic sampling</button>
 					</div>
 				</div>
-				<div class="row" style="padding-top:1em">
-					<div class="col-md-4 col-md-offset-1">
-						<button type="button" class="btn width100" style="" name="stratified">Stratified</button>
+				<div class="row option" style="border-top : 1px dotted ">
+					<div class="col-md-2 col-md-offset-5">
+						<button type="button" class="btn option-btn" name="twoPhases">2 phases</button>
 					</div>
 				</div>
-				<div class="row" style="padding-top:1em">
-					<div class="col-md-4 col-md-offset-1">
-						<button type="button" class="btn width100" style="" name="cluster">Cluster</button>
+				<div class="row option">
+					<div class="col-md-2 col-md-offset-5">
+						<button type="button" class="btn option-btn" name="stratified">Stratification</button>
+					</div>
+<!-- 					<div class="col-md-4"> -->
+<!-- 						<i class="fa fa-exchange fa2"></i> -->
+<!-- 						<button type="button" class="btn option-btn join-options-btn" style="width:10em;">Join options</button> -->
+<!-- 					</div> -->
+				</div>
+				<div class="row option">
+					<div class="col-md-2 col-md-offset-5">
+						<button type="button" class="btn option-btn" name="cluster">Cluster</button>
 					</div>
 				</div>
-				<div class="row" style="padding-top:1em">
-					<div class="col-md-4 col-md-offset-1">
-						<button type="button" class="btn width100" style="" name="twoPhases">2 phases</button>
-					</div>
-				</div>
-			</div>
+				
+<!-- 			</div> -->
 		</div>
 		
-		<div class="row" style="height: 5px"></div>
-		<!-- area calculation -->
-		<div class="row" style="height: 40%">
-			<div class="col-md-2" style="height: 100%">
-				<div class="blue-bg" style="width: 100%; height: 100%; text-align: center; padding: 3em 0.5em; background-color: #496d7e">
-					Area calculation
-				</div>
-			</div>
-			<div class="col-md-10">
-				<div class="row" style="padding-top: 1.5em">
-					<label class="col-md-2 col-md-offset-1 control-label">Plot weight</label>
-					<div class="col-md-6 col-md-offset-1">
-						<div class="row" style="margin-top: 5px;">
-							<textarea class="form-control" rows="8" name="plot-weight-script"></textarea>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
+<!-- 		<div class="row" style="height: 5px"></div> -->
 		
-		<div class="row" style="height: 5px"></div>
 		<!-- area calculation -->
-		<div class="row" style="height: 5%;">
+<!-- 		<div class="row" style="height: 40%"> -->
+<!-- 			<div class="col-md-2" style="height: 100%"> -->
+<!-- 				<div class="blue-bg" style="width: 100%; height: 100%; text-align: center; padding: 3em 0.5em; background-color: #496d7e"> -->
+<!-- 					Area calculation -->
+<!-- 				</div> -->
+<!-- 			</div> -->
+<!-- 			<div class="col-md-10"> -->
+<!-- 				<div class="row" style="padding-top: 1.5em"> -->
+<!-- 					<label class="col-md-2 col-md-offset-1 control-label">Plot weight</label> -->
+<!-- 					<div class="col-md-6 col-md-offset-1"> -->
+<!-- 						<div class="row" style="margin-top: 5px;"> -->
+<!-- 							<textarea class="form-control" rows="8" name="plot-weight-script"></textarea> -->
+<!-- 						</div> -->
+<!-- 					</div> -->
+<!-- 				</div> -->
+<!-- 			</div> -->
+<!-- 		</div> -->
+		
+<!-- 		<div class="row" style="height: 5px"></div>	 -->
+		<div class="row height10">
 			<div class="col-md-2 col-md-offset-5">
 				<button type="button" name="save-btn" class="btn btn-default" style="width: 100%" >Save</button>
 			</div>
 		</div>
-<!-- 		<div class="row col-md-12"> -->
-<!-- 			<div class="form-group"> -->
-<!-- 					<label class="col-md-2 control-label">Sampling Unit</label> -->
-<!-- 					<div class="col-md-4"> -->
-<!-- 						<select class="form-control" name="sampling-unit"></select> -->
-<!-- 					</div> -->
-<!-- 				</div> -->
-<!-- 		</div> -->
-		
-		
-<!-- 		<div class="row sampling-unit-section" style="padding-top: 50px;"> -->
-<!-- 			<div class="col-md-2 no-padding entities"> -->
-<!-- 			</div> -->
-			
-<!-- 			<div class="col-md-9 no-padding aggregate-settings-section"> -->
-				
-<!-- 				inclusion area settings -->
-<!-- 				<div class="row no-margin plot-area-section"> -->
-<!-- 					<div class="col-md-2">Plot area: </div> -->
-<!-- 					<div class="col-md-10" style="text-align: left"> -->
-<!-- 						<textarea rows="1" cols="" name="plot-area" class="form-control"></textarea> -->
-<!-- 					</div> -->
-<!-- 				</div> -->
-				
-<!-- 				variable aggregates section -->
-<!-- 				<div class="row no-margin" style="padding-top: 30px;"> -->
-<!-- 					<div class="col-md-2 no-padding variables"> -->
-<!-- 					</div> -->
-<!-- 					<div class="col-md-2 no-padding variable"> -->
-<!-- 					</div> -->
-<!-- 					<div class="col-md-2 no-padding variable-per-ha"> -->
-<!-- 					</div> -->
-<!-- 				</div> -->
-				
-<!-- 			</div> -->
-<!-- 		</div> -->
 	</div>	
+	
 	<script>
 	$(function() {
 

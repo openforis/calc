@@ -168,11 +168,11 @@ DataTable.prototype = (function(){
 			$tr.append($td);
 			
 			var variables = $this.dataProvider.variables;
-			$.each(variables, function(j,variable){
+			$.each(variables, function(j, variable){
 				var value = record.fields[variable];
 				// format only numbers with decimal points
 				var field = ( typeof value === "number" && value % 1 !== 0 ) ? formatNumber( value ) : value;
-				var $td = $("<td></td>");
+				var $td = $( "<td></td>" );
 				$td.html(field);
 				$tr.append($td);
 			});

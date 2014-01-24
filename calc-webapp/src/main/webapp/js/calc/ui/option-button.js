@@ -49,3 +49,11 @@ OptionButton.prototype.deselect = function(deselect) {
 		}
 	};
 };
+
+OptionButton.prototype.disable =function(){
+	UI.disable( this.button );
+};
+
+OptionButton.prototype.enable =function(){
+	UI.enable( this.button );
+};

@@ -643,6 +643,15 @@ ul.scroll-menu {
 **
 **/
 
+#sampling-design button:not([name=save-btn]){
+	height: 6em;
+	width: 100%;
+}
+
+#sampling-design .option{
+	padding: 1.5em 0em;
+}
+/** Old */
 #sampling-design .sampling-unit-section button ,
 #sampling-design  .name {
 /* #sampling-design .sampling-unit-section .entities button,  */
@@ -678,6 +687,14 @@ ul.scroll-menu {
 #sampling-design .plot-area-section {
 	display: none;
 }
+
+/* .join-options-btn { */
+/* 	background: none; */
+/* 	border-radius: 12px; */
+/* 	border: 1px solid #888889; */
+/* } */
+
+
 
 /**
 * home settings section

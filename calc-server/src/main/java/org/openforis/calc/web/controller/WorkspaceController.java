@@ -79,6 +79,7 @@ public class WorkspaceController {
 	 * 
 	 * @return
 	 */
+	@Deprecated
 	@RequestMapping(value = "/active/samplingDesign/samplingUnit/{entityId}.json", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	Workspace activeWorkspaceSetSamplingUnit(@PathVariable Integer entityId) {
@@ -170,7 +171,7 @@ public class WorkspaceController {
 
 		JSONParser jsonParser = new JSONParser();
 		JSONArray array = (JSONArray) jsonParser.parse(columnOptions);
-		CsvDataImportTask task = new CsvDataImportTask(filepath, tableName, array, dataSource);
+		CsvDataImportTask task = new CsvDataImportTask(filepath, tableName, array);
 		job.addTask(task);
 
 		taskManager.startJob(job);

@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.sql.DataSource;
-
 import org.jooq.Field;
 import org.jooq.InsertQuery;
 import org.jooq.Record;
@@ -31,16 +29,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 public class CsvDataImportTask extends Task {
 
 	private CsvReader csvReader;
-	private DataSource dataSource;
 	private CsvFileTable table;
 
-	public CsvDataImportTask(String filepath, String table, JSONArray colOptions, DataSource dataSource) throws IOException {
+	public CsvDataImportTask(String filepath, String table, JSONArray colOptions) throws IOException {
 		this.table = new CsvFileTable(table, colOptions);
 
 		this.csvReader = new CsvReader(filepath);
 		this.csvReader.readHeaders();
-		
-		this.dataSource = dataSource;
 		
 	}
 
@@ -57,11 +52,11 @@ public class CsvDataImportTask extends Task {
 	protected void execute() throws Throwable {
 
 		// drop table if it exists
-		new Psql(dataSource).dropTableIfExists(table).execute();
+		new Psql(getDataSource()).dropTableIfExists(table).execute();
 		// create table
-		new Psql(dataSource).createTable(table, table.fields()).execute();
+		new Psql(getDataSource()).createTable(table, table.fields()).execute();
 		// add pkey to table
-		new Psql(dataSource).alterTable(table).addPrimaryKey(table.getPrimaryKey()).execute();
+		new Psql(getDataSource()).alterTable(table).addPrimaryKey(table.getPrimaryKey()).execute();
 
 		populateTable(table);
 	}
@@ -73,7 +68,7 @@ public class CsvDataImportTask extends Task {
 		List<InsertQuery<Record>> queries = new ArrayList<InsertQuery<Record>>();
 		for (FlatRecord record = this.csvReader.nextRecord(); record != null; record = this.csvReader.nextRecord()) {
 
-			InsertQuery<Record> insert = new Psql(this.dataSource).insertQuery(table);
+			InsertQuery<Record> insert = new Psql(this.getDataSource()).insertQuery(table);
 			@SuppressWarnings("unchecked")
 			Field<T>[] fields = (Field<T>[]) table.fields();
 			for (Field<T> field : fields) {
@@ -99,7 +94,7 @@ public class CsvDataImportTask extends Task {
 	}
 
 	private void executeBatch(List<InsertQuery<Record>> queries) {
-		new Psql(this.dataSource).batch(queries).execute();
+		new Psql(this.getDataSource()).batch(queries).execute();
 		queries.clear();
 	}
 
