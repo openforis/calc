@@ -1,19 +1,16 @@
 package org.openforis.calc.web.controller;
 
 import java.io.IOException;
-import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.openforis.calc.engine.SamplingDesignDao;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceService;
-import org.openforis.calc.metadata.AoiHierarchy;
-import org.openforis.calc.metadata.AoiManager;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.SamplingDesign;
-import org.openforis.calc.metadata.Stratum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,31 +39,58 @@ public class InventorySettingsController {
 	
 	@RequestMapping(value = "/samplingDesign.json", method = RequestMethod.POST, produces = "application/json")
 	public @ResponseBody
-	SamplingDesign setSamplingDesign(@RequestParam("samplingDesign") String samplingDesignParam) throws IOException, ParseException {
+	Response setSamplingDesign(@RequestParam(value="samplingDesign", required = false) String samplingDesignParam) throws IOException, ParseException {
+		Response response = new Response();
 		Workspace workspace = workspaceService.getActiveWorkspace();
+		workspace.setSamplingDesign(null);
+		samplingDesignDao.deleteByWorkspace( workspace.getId() );
 		
 		SamplingDesign samplingDesign = parseSamplingDesignFromJsonString( workspace, samplingDesignParam );
-		
-		samplingDesignDao.save(samplingDesign);
-		workspace.setSamplingDesign(samplingDesign);
-		
-		return samplingDesign;
-	}
-
-	private SamplingDesign parseSamplingDesignFromJsonString( Workspace workspace, String samplingDesignParam) throws ParseException {
-		
-		JSONObject json = (JSONObject) new JSONParser().parse(samplingDesignParam);
-		SamplingDesign samplingDesign = new SamplingDesign();
-		Object suId = json.get("samplingUnitId");
-		if( suId != null){
-			
-			Entity entity = workspace.getEntityById( ((Number) suId).intValue() );
-			samplingDesign.setSamplingUnit( entity );
-			
-			
-			
+		if( samplingDesign != null) {
+			samplingDesignDao.save(samplingDesign);
+			workspace.setSamplingDesign(samplingDesign);
+			response.addField("samplingDesign", samplingDesign);
 		}
-		return samplingDesign;
+		
+		return response;
+	}
+	
+	/**
+	 * Parse the json object into a samplingDesing instance
+	 * @param workspace
+	 * @param samplingDesignParam
+	 * @return
+	 * @throws ParseException
+	 */
+	private SamplingDesign parseSamplingDesignFromJsonString( Workspace workspace, String samplingDesignParam) throws ParseException {
+		if( StringUtils.isNotEmpty(samplingDesignParam) ){
+			JSONObject json = (JSONObject) new JSONParser().parse(samplingDesignParam);
+			Object suId = json.get("samplingUnitId");
+			if( suId != null) {
+				SamplingDesign samplingDesign = new SamplingDesign();
+				Entity entity = workspace.getEntityById( Integer.valueOf(suId.toString()) );
+				
+				samplingDesign.setWorkspace(workspace);
+				samplingDesign.setSamplingUnit( entity );
+				samplingDesign.setSrs( getBooleanValue(json, "srs") );
+				samplingDesign.setSystematic( getBooleanValue(json, "systematic") );
+				samplingDesign.setTwoPhases( getBooleanValue(json, "twoPhases") );
+				samplingDesign.setStratified( getBooleanValue(json, "stratified") );
+				samplingDesign.setCluster( getBooleanValue(json, "cluster") );
+				
+				return samplingDesign;
+			}
+		}
+		return null;
+	}
+	
+	private Boolean getBooleanValue(JSONObject json, String property){
+		Object object = json.get(property);
+		Boolean value = false;
+		if( object != null ){
+			value = (Boolean) object;
+		}
+		return value;
 	}
 
 }

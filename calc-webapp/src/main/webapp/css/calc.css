@@ -643,14 +643,18 @@ ul.scroll-menu {
 **
 **/
 
-#sampling-design button:not([name=save-btn]){
-	height: 6em;
-	width: 100%;
+/* #sampling-design button:not([name=save-btn]){ */
+/* 	height: 6em; */
+/* 	width: 100%; */
+/* } */
+
+#sampling-design .option {
+	padding: 1.5em 0em;
+	text-align: left;
+	margin: 0px 0px;
 }
 
-#sampling-design .option{
-	padding: 1.5em 0em;
-}
+
 /** Old */
 #sampling-design .sampling-unit-section button ,
 #sampling-design  .name {

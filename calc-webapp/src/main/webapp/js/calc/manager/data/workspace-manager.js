@@ -280,9 +280,8 @@ WorkspaceManager.prototype = (function(){
 				method : "POST",
 				data : params
 			}).done(function(response) {
-				var sd = response;
+				var sd = response.fields.samplingDesign;
 				ws.samplingDesign = sd;
-				
 				success( ws );
 				UI.unlock();
 			});

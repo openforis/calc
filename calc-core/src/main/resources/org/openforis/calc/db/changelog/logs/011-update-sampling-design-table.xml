@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+	<changeSet author="mino togna" id="011-update-sampling-design-table">
+	
+		<sql>
+			
+			ALTER TABLE
+    			calc.workspace DROP CONSTRAINT workspace_sampling_design_fkey;
+    
+			ALTER TABLE
+    			calc.workspace DROP COLUMN sampling_design_id;
+    			
+			ALTER TABLE
+			    calc.sampling_design ADD COLUMN workspace_id integer;
+			    
+			ALTER TABLE
+			    calc.sampling_design ALTER COLUMN workspace_id SET NOT NULL;
+			    
+			ALTER TABLE
+			    calc.sampling_design ADD CONSTRAINT sampling_design_workpsace_fk FOREIGN KEY (workspace_id) 
+			    REFERENCES calc.workspace (id);
+			    
+			ALTER TABLE
+			    calc.sampling_design ADD COLUMN srs BOOLEAN;
+			    
+		    ALTER TABLE
+			    calc.sampling_design ADD COLUMN systematic BOOLEAN;
+			    
+			ALTER TABLE
+			    calc.sampling_design ADD COLUMN two_phases BOOLEAN;
+			    
+			ALTER TABLE
+			    calc.sampling_design ADD COLUMN stratified BOOLEAN;
+			    
+			ALTER TABLE
+			    calc.sampling_design ADD COLUMN cluster BOOLEAN;
+			            			    
+    	</sql>
+	
+	</changeSet>
+
+</databaseChangeLog>

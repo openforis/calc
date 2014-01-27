@@ -8,9 +8,8 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 
@@ -90,8 +89,9 @@ public class Workspace extends UserObject {
 	@Cascade(CascadeType.ALL)
 	private List<Stratum> strata;
 	
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "sampling_design_id")
+	@OneToOne(mappedBy = "workspace", fetch = FetchType.EAGER)
+//	@Fetch(FetchMode.SUBSELECT)
+	@Cascade(CascadeType.ALL)	
 	private SamplingDesign samplingDesign;
 	
 	@Column(name = "phase1_plot_table")

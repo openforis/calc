@@ -16,6 +16,11 @@ StratumManager = function(container) {
 	
 	this.table = this.container.find(".strata-table table");
 	
+	// buttons section
+	this.buttonsSection = this.container.find( ".buttons-section" );
+	this.saveBtn = this.buttonsSection.find( "[name=save-btn]" );
+	this.cancelBtn = this.buttonsSection.find( "[name=cancel-btn]" );
+	
 	this.init();
 };
 
@@ -54,14 +59,32 @@ StratumManager.prototype.init = function(){
 	});
 	
 	
-	// update aoi tree
-//	$this.initSvg();
+	// update strata table
 	WorkspaceManager.getInstance().activeWorkspace(function(ws){
 		$this.updateStrata(ws);
 	});
+	
+	this.saveBtn.click(function(e){
+		if($this.save){
+			$this.save();
+		}
+	});
+	this.cancelBtn.click(function(e){
+		if($this.cancel) {
+			$this.cancel();
+		}
+	});
 };
 
+StratumManager.prototype.cancel = null;
+StratumManager.prototype.save = null;
 
+StratumManager.prototype.show = function() {
+	this.container.fadeIn(200);
+};
+StratumManager.prototype.hide = function() {
+	this.container.hide();
+};
 
 StratumManager.prototype.import = function(filepath) {
 	var $this = this;
@@ -73,7 +96,6 @@ StratumManager.prototype.import = function(filepath) {
 	});
 	
 };
-
 
 StratumManager.prototype.updateStrata = function(ws) {
 //	var $this = this;

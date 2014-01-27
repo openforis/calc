@@ -5,7 +5,7 @@
 
 Phase1Manager = function(container) {
 	
-	this.container = $(container);
+	this.container = $( container );
 	
 	// upload section
 	this.uploadSection = this.container.find(".upload-section");	
@@ -20,7 +20,10 @@ Phase1Manager = function(container) {
 	// import section 
 	this.importSection = this.container.find(".import-section");
 	
-	//data table
+	// buttons section
+	this.buttonsSection = this.container.find( ".buttons-section" );
+	this.saveBtn = this.buttonsSection.find( "[name=save-btn]" );
+	this.cancelBtn = this.buttonsSection.find( "[name=cancel-btn]" );
 	
 	this.init();
 };
@@ -69,6 +72,27 @@ Phase1Manager.prototype.init = function(){
 			$this.updateTable("calc", ws.phase1PlotTable);
 		}
 	});
+	
+	this.saveBtn.click(function(e){
+		if($this.save){
+			$this.save();
+		}
+	});
+	this.cancelBtn.click(function(e){
+		if($this.cancel) {
+			$this.cancel();
+		}
+	});
+};
+
+Phase1Manager.prototype.cancel = null;
+Phase1Manager.prototype.save = null;
+
+Phase1Manager.prototype.show = function() {
+	this.container.fadeIn(200);
+};
+Phase1Manager.prototype.hide = function() {
+	this.container.hide();
 };
 
 Phase1Manager.prototype.showImport = function( filepath, headers ){
@@ -86,6 +110,7 @@ Phase1Manager.prototype.showImport = function( filepath, headers ){
 				$this.importSection.hide(0);
 				$this.uploadSection.fadeIn();
 				$this.tableSection.fadeIn();
+				$this.buttonsSection.fadeIn();
 				
 				$this.updateTable(schema, table);
 				UI.unlock();
@@ -96,6 +121,7 @@ Phase1Manager.prototype.showImport = function( filepath, headers ){
 		
 		$this.uploadSection.hide(0);
 		$this.tableSection.hide(0);
+		$this.buttonsSection.hide( 0 );
 		$this.importSection.fadeIn();
 	
 	});
