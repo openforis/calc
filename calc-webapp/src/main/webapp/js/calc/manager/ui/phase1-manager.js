@@ -127,6 +127,7 @@ Phase1Manager.prototype.showImport = function( filepath, headers ){
 //					$this.phase1TableInfo = response;
 //				}  );
 				// update join settings
+				$this.tableJoin.empty();
 				$this.updateTableJoin();
 				
 				$this.importSection.hide(0);
@@ -158,9 +159,9 @@ Phase1Manager.prototype.updateTableJoin = function(){
 			
 			UI.lock();
 			new TableDataProvider("calc" , ws.phase1PlotTable ).tableInfo( function(response) {
-				$this.phase1TableInfo = response;
+				$this.sdManager.phase1TableInfo = response;
 				
-				$this.tableJoin.setTableInfo( $this.phase1TableInfo , $this.sdManager.samplingUnitTableInfo );
+				$this.tableJoin.setTableInfo( $this.sdManager.phase1TableInfo , $this.sdManager.samplingUnitTableInfo , "phase 1 table" );
 				$this.tableJoin.show();
 				
 				UI.unlock();
@@ -174,7 +175,24 @@ Phase1Manager.prototype.updateTableJoin = function(){
 	
 };
 
-//Phase1Manager.prototype.updateTable = function(schema, table) {
+Phase1Manager.prototype.validate = function() {
+	var rows = this.tableJoin.rows;
+	for( var i in rows ){
+		var row = rows[i];
+		if( !row.isFilled() ){
+			UI.showError("All columns must be set", false);
+			return false;
+		}
+	}
+	return true;
+};
+
+Phase1Manager.prototype.joinOptions = function(){
+	return this.tableJoin.jsonSettings();
+};
+Phase1Manager.prototype.setJoinOptions = function(options){
+	this.tableJoin.settings = options;
+};
 //	var $this = this;
 //	var dataProvider = new TableDataProvider(schema, table);
 //	this.dataTable.setDataProvider(dataProvider);

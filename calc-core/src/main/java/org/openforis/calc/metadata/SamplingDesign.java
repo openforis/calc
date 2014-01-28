@@ -46,6 +46,9 @@ public class SamplingDesign extends Identifiable {
 	@Column(name = "cluster")
 	private Boolean cluster;
 
+	@Column(name = "phase1_join_settings")
+	private String phase1JoinSettings;
+	
 	public Entity getSamplingUnit() {
 		return samplingUnit;
 	}
@@ -102,6 +105,14 @@ public class SamplingDesign extends Identifiable {
 		this.cluster = cluster;
 	}
 
+	public String getPhase1JoinSettings() {
+		return phase1JoinSettings;
+	}
+	
+	public void setPhase1JoinSettings(String phase1JoinSettings) {
+		this.phase1JoinSettings = phase1JoinSettings;
+	}
+	
 	@JsonInclude
 	public Integer getSamplingUnitId() {
 		if (this.samplingUnit != null) {

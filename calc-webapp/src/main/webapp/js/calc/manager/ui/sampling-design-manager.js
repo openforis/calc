@@ -75,39 +75,16 @@ SamplingDesignManager.prototype.init = function(){
 	
 	// start edit
 	this.editBtn.click( $.proxy( function(){
-		
-		if(this.samplingDesign.samplingUnitId) {
-			// edit form properties
-			this.samplingUnitCombo.val( this.samplingUnit.id );
-			( this.samplingDesign.srs === true ) ? this.srsBtn.select() : this.srsBtn.deselect();
-			( this.samplingDesign.systematic === true ) ? this.systematicBtn.select() : this.systematicBtn.deselect();
-//			( this.samplingDesign.srs === true ) ? this.srsBtn.select() : this.srsBtn.deselect();
-//			this.srs.prop( 'checked', this.samplingDesign.srs === true );
-//			this.systematic.prop( 'checked', this.samplingDesign.systematic === true );
-//			this.stratified.prop( 'checked', this.samplingDesign.stratified === true );
-//			this.cluster.prop( 'checked', this.samplingDesign.cluster === true );
-//			this.twoPhases.prop( 'checked', this.samplingDesign.twoPhases === true );
-		}
+		$this.updateSamplingDesign();
 		this.viewSd.hide();
 		this.startEdit();
-		
 	} , this) );
 	
-	// 
 	this.prevBtn.click( $.proxy(this.prev , this) );
 	this.nextBtn.click( $.proxy(this.next , this) );
 	
 	this.saveBtn.click( $.proxy(this.saveSamplingDesign, this) );
-	
 
-	WorkspaceManager.getInstance().activeWorkspace(function(ws){
-		//refresh sampling unit select.
-		$this.samplingUnitCombo.data(ws.entities, 'id','name');
-		
-		//if sampling design is defined for active workspace update ui
-		$this.updateSamplingDesign(ws);
-	});
-	
 	/**
 	 * Sampling desing change event handlers
 	 */ 
@@ -142,6 +119,7 @@ SamplingDesignManager.prototype.init = function(){
 		this.samplingDesign.twoPhases = true;
 		this.phase1Manager.show();
 	}, this) );	
+	this.twoPhasesBtn.select();
 	this.twoPhasesBtn.deselect( $.proxy(function(){
 		this.samplingDesign.twoPhases = false;
 		this.phase1Manager.hide();
@@ -160,6 +138,15 @@ SamplingDesignManager.prototype.init = function(){
 	this.clusterBtn.deselect( $.proxy(function(){
 		this.samplingDesign.cluster = false;
 	}, this) );
+	
+	
+	WorkspaceManager.getInstance().activeWorkspace(function(ws){
+		//refresh sampling unit select.
+		$this.samplingUnitCombo.data(ws.entities, 'id','name');
+		
+		//if sampling design is defined for active workspace update ui
+		$this.updateSamplingDesign();
+	});
 	
 //	// main sd strategy
 //	this.sd.change( $.proxy(function(){
@@ -299,6 +286,7 @@ SamplingDesignManager.prototype.validateStep0 = function(){
  * Two phases validation (step 2)
  */
 SamplingDesignManager.prototype.validateStep2 = function(){
+	var $this = this;
 	if( this.samplingDesign.twoPhases === true ){
 		
 		var valid = false;
@@ -307,7 +295,11 @@ SamplingDesignManager.prototype.validateStep2 = function(){
 				UI.showError("Import a valid csv file", false);
 				valid = false;
 			} else {
-				valid = true;
+				valid = $this.phase1Manager.validate();
+				if(valid){
+					$this.samplingDesign.phase1JoinSettings = $this.phase1Manager.joinOptions();
+				}
+//				valid = true;
 			}
 		} );
 		return valid;
@@ -315,47 +307,70 @@ SamplingDesignManager.prototype.validateStep2 = function(){
 		return true;
 	}
 };
-SamplingDesignManager.prototype.updateSamplingDesign = function(ws) {
+SamplingDesignManager.prototype.updateSamplingDesign = function() {
 	
-	this.editSd.hide();
-	this.viewSd.show(10);
-	this.samplingDesignUI.empty();
-	
-	if(ws.samplingDesign) {
-		this.samplingDesign = $.extend( {}, ws.samplingDesign );
+	WorkspaceManager.getInstance().activeWorkspace( $.proxy(function(ws) {
 		
-//			ws.samplingDesign;
-//		$this.setSamplingDesign(sd);
-		if(this.samplingDesign.samplingUnitId){
-			// edit form properties
-			this.samplingUnit = ws.getEntityById(this.samplingDesign.samplingUnitId);
-			this.loadSamplingUnitTableInfo();
-			// view properties
-			if( this.samplingDesign.srs === true ){
-				this.addToSdUi("Srs");
+		this.editSd.hide();
+		this.viewSd.show(10);
+		this.samplingDesignUI.empty();
+		
+		if(ws.samplingDesign) {
+			this.samplingDesign = $.extend( {}, ws.samplingDesign );
+			
+//				ws.samplingDesign;
+//			$this.setSamplingDesign(sd);
+			if(this.samplingDesign.samplingUnitId){
+				// edit form properties
+				this.samplingUnit = ws.getEntityById(this.samplingDesign.samplingUnitId);
+				this.loadSamplingUnitTableInfo( $.proxy(function(){
+					
+					// view properties
+					if( this.samplingDesign.srs === true ){
+						this.addToSdUi("Srs");
+						this.srsBtn.select();
+					} else {
+						this.srsBtn.deselect();
+					}
+					
+					if( this.samplingDesign.systematic === true ){
+						this.addToSdUi("Systematic");
+						this.systematicBtn.select();
+					} else {
+						this.systematicBtn.deselect(); 
+					}
+					
+					if( this.samplingDesign.twoPhases === true ){
+						this.addToSdUi("Two phases");
+						this.twoPhasesBtn.select();
+						this.phase1Manager.show();
+					} else {
+						this.twoPhasesBtn.deselect();
+						this.phase1Manager.hide();
+					}
+					
+					if( this.samplingDesign.stratified === true ){
+						this.addToSdUi("Stratified");
+					}
+					if( this.samplingDesign.cluster === true ){
+						this.addToSdUi("Cluster");
+					}
+					// edit form properties
+					this.samplingUnitCombo.val( this.samplingUnit.id );
+					
+					if( this.samplingDesign.phase1JoinSettings ) {
+						this.phase1Manager.setJoinOptions( $.parseJSON( this.samplingDesign.phase1JoinSettings ) );
+					}
+				} , this));
+				
 			}
-			if( this.samplingDesign.systematic === true ){
-				this.addToSdUi("Systematic");
-			}
-			if( this.samplingDesign.stratified === true ){
-				this.addToSdUi("Stratified");
-			}
-			if( this.samplingDesign.cluster === true ){
-				this.addToSdUi("Cluster");
-			}
-			if( this.samplingDesign.twoPhases === true ){
-				this.addToSdUi("Two phases");
-			}
-		}
-	} else {
-//		this.disableButtons();
-		this.samplingDesign = {};
-		this.samplingUnit = {};
-	}	
-//	WorkspaceManager.getInstance().activeWorkspace($.proxy(function(ws){
-//		this.samplingDesign = sd;
-//		console.log(this);
-//	} , this) );
+		} else {
+//			this.disableButtons();
+			this.samplingDesign = {};
+			this.samplingUnit = {};
+		}	
+		
+	} , this) );
 };
 SamplingDesignManager.prototype.addToSdUi = function(text) {
 	var btn = $( '<button class="btn option-btn-selected"></button>' );
@@ -367,13 +382,16 @@ SamplingDesignManager.prototype.addToSdUi = function(text) {
 /**
  * Load plot data table info
  */
-SamplingDesignManager.prototype.loadSamplingUnitTableInfo = function(){
+SamplingDesignManager.prototype.loadSamplingUnitTableInfo = function(callback){
 	if( this.samplingDesign.samplingUnitId ) {
 		WorkspaceManager.getInstance().activeWorkspace( $.proxy( function(ws){
 			var entity = ws.getEntityById( this.samplingDesign.samplingUnitId );
 			// load sampling unit table info
 			new TableDataProvider(ws.dataSchema , entity.name ).tableInfo( $.proxy( function(response){
 				this.samplingUnitTableInfo = response;
+				if(callback){
+					callback();
+				}
 			} , this ) );
 		} , this ) );
 	}
@@ -410,7 +428,7 @@ SamplingDesignManager.prototype.saveSamplingDesign = function(){
 		// validate
 		WorkspaceManager.getInstance().activeWorkspaceSetSamplingDesign( this.samplingDesign, $.proxy( function(ws){
 //			var sd = ws.samplingDesign;
-			this.updateSamplingDesign(ws);
+			this.updateSamplingDesign();
 		} , this) );
 		
 //	} else {
