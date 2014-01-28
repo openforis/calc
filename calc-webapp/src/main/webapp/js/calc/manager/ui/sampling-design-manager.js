@@ -3,55 +3,60 @@
  * @author Mino Togna
  */
 
-SamplingDesignManager = function(container, phase1Section, strataSection) {
+SamplingDesignManager = function(container,  strataSection) {
 	//main ui sections
 	this.container = $( container );
+	
 	// view section
 	this.viewSd = this.container.find(".view-sd");
 	this.editBtn = this.viewSd.find("[name=edit-btn]");
 	this.samplingDesignUI = this.viewSd.find(".sampling-design");
+	
 	// edit section
 	this.editSd = this.container.find(".edit-sd");
 	this.prevBtn = this.editSd.find("button.prev");
 	this.nextBtn = this.editSd.find("button.next");
 	this.editSd.hide();
 
+	// edit ui buttons
+	this.srsBtn = new OptionButton( this.container.find('[name=srs]') );
+	this.systematicBtn = new OptionButton( this.container.find('[name=systematic]') );
+	this.twoPhasesBtn = new OptionButton( this.container.find('[name=twoPhases]') );
+	this.stratifiedBtn = new OptionButton( this.container.find('[name=stratified]') );
+	this.clusterBtn = new OptionButton( this.container.find('[name=cluster]') );
 	
-	
-	
-	
-	
-	
-	
-//	this.phase1Section = $( phase1Section );
-	this.phase1Manager = new Phase1Manager( phase1Section );
-	this.phase1Manager.hide();
-	
-//	this.strataSection = $( strataSection );
-//	this.strataSection.hide();
-	this.stratumManager = new StratumManager( strataSection );
-	this.stratumManager.hide();
 	
 	// sampling unit combo
 	this.samplingUnitCombo =  this.container.find('[name=sampling-unit]').combobox();
-
-	//sampling design buttons
-	this.sd = this.container.find('[name=sd]') ;
-	this.srs = this.container.find('[name=sd][value=srs]') ;
-	this.systematic = this.container.find('[name=sd][value=systematic]') ;
-	this.stratified = this.container.find('[name=stratified]') ;
-	this.cluster = this.container.find('[name=cluster]') ;
-	this.twoPhases = this.container.find('[name=twoPhases]') ;
 	
+	this.phase1Manager = new Phase1Manager( this.editSd.find(".phase1_section") , this);
+	this.phase1Manager.hide();
+	
+	this.stratumManager = new StratumManager( strataSection );
+	this.stratumManager.hide();
+	
+
+	
+	//sampling design buttons
+	// DEPRECATED
+//	this.sd = this.container.find('[name=sd]') ;
+//	this.srs = this.container.find('[name=sd][value=srs]') ;
+//	this.systematic = this.container.find('[name=sd][value=systematic]') ;
+//	this.stratified = this.container.find('[name=stratified]') ;
+//	this.cluster = this.container.find('[name=cluster]') ;
+//	this.twoPhases = this.container.find('[name=twoPhases]') ;
 	// settings buttons
-	this.twoPhasesSettingsBtn = this.container.find( "[name=twoPhases-settings-btn]" );
+//	this.twoPhasesSettingsBtn = this.container.find( "[name=twoPhases-settings-btn]" );
 	this.strataSettingsBtn = this.container.find( "[name=strata-settings-btn]" );
 	
-//	this.srsBtn = new OptionButton( this.container.find('[name=srs]') );
-//	this.systematicBtn = new OptionButton( this.container.find('[name=systematic]') );
-//	this.stratifiedBtn = new OptionButton( this.container.find('[name=stratified]') );
-//	this.clusterBtn = new OptionButton( this.container.find('[name=cluster]') );
-//	this.twoPhasesBtn = new OptionButton( this.container.find('[name=twoPhases]') );
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	// save btn
 	this.saveBtn = this.container.find("[name=save-btn]");
@@ -69,97 +74,150 @@ SamplingDesignManager.prototype.init = function(){
 	var $this = this;
 	
 	// start edit
-	this.editBtn.click($.proxy( function(){
+	this.editBtn.click( $.proxy( function(){
+		
+		if(this.samplingDesign.samplingUnitId) {
+			// edit form properties
+			this.samplingUnitCombo.val( this.samplingUnit.id );
+			( this.samplingDesign.srs === true ) ? this.srsBtn.select() : this.srsBtn.deselect();
+			( this.samplingDesign.systematic === true ) ? this.systematicBtn.select() : this.systematicBtn.deselect();
+//			( this.samplingDesign.srs === true ) ? this.srsBtn.select() : this.srsBtn.deselect();
+//			this.srs.prop( 'checked', this.samplingDesign.srs === true );
+//			this.systematic.prop( 'checked', this.samplingDesign.systematic === true );
+//			this.stratified.prop( 'checked', this.samplingDesign.stratified === true );
+//			this.cluster.prop( 'checked', this.samplingDesign.cluster === true );
+//			this.twoPhases.prop( 'checked', this.samplingDesign.twoPhases === true );
+		}
 		this.viewSd.hide();
 		this.startEdit();
+		
 	} , this) );
 	
 	// 
 	this.prevBtn.click( $.proxy(this.prev , this) );
 	this.nextBtn.click( $.proxy(this.next , this) );
 	
-	this.saveBtn.click( $.proxy( $this.saveSamplingDesign, this ) );
+	this.saveBtn.click( $.proxy(this.saveSamplingDesign, this) );
 	
+
 	WorkspaceManager.getInstance().activeWorkspace(function(ws){
 		//refresh sampling unit select.
 		$this.samplingUnitCombo.data(ws.entities, 'id','name');
 		
 		//if sampling design is defined for active workspace update ui
 		$this.updateSamplingDesign(ws);
-//		if(ws.samplingDesign) {
-//			var sd = ws.samplingDesign;
-//			$this.setSamplingDesign(sd);
-//		} else {
-//			$this.disableButtons();
-//		}
-		
 	});
 	
 	/**
 	 * Sampling desing change event handlers
 	 */ 
+	
 	// sampling unit change
 	this.samplingUnitCombo.change( $.proxy(function(e){
 		e.preventDefault();
 		this.samplingDesign.samplingUnitId = $this.samplingUnitCombo.val();
+		this.loadSamplingUnitTableInfo();
 	} , this) );
 	
-	// main sd strategy
-	this.sd.change( $.proxy(function(){
-		this.samplingDesign.srs = this.srs.prop('checked');
-		this.samplingDesign.systematic = this.systematic.prop('checked');
+	// simple random sampling
+	this.srsBtn.select( $.proxy(function(){
+		this.samplingDesign.srs = true;
+		this.samplingDesign.systematic = false;
+		this.systematicBtn.deselect();
+	}, this) );	
+	this.srsBtn.deselect( $.proxy(function(){
+		this.samplingDesign.srs = false;
 	}, this) );
-	
+	// systematic
+	this.systematicBtn.select( $.proxy(function(){
+		this.samplingDesign.srs = false;
+		this.samplingDesign.systematic = true;
+		this.srsBtn.deselect();
+	}, this) );	
+	this.systematicBtn.deselect( $.proxy(function(){
+		this.samplingDesign.systematic = false;
+	}, this) );
 	//2 phases
-	this.twoPhases.change( $.proxy(function(){
-		this.samplingDesign.twoPhases = this.twoPhases.prop('checked');;
+	this.twoPhasesBtn.select( $.proxy(function(){
+		this.samplingDesign.twoPhases = true;
+		this.phase1Manager.show();
 	}, this) );	
+	this.twoPhasesBtn.deselect( $.proxy(function(){
+		this.samplingDesign.twoPhases = false;
+		this.phase1Manager.hide();
+	}, this) );
 	//stratified
-	this.stratified.change( $.proxy(function(){
-//		console.log( this.stratified.prop('checked') );
-		this.samplingDesign.stratified = this.stratified.prop('checked');
+	this.stratifiedBtn.select( $.proxy(function(){
+		this.samplingDesign.stratified = true;
+	}, this) );
+	this.stratifiedBtn.deselect( $.proxy(function(){
+		this.samplingDesign.stratified = false;
+	}, this) );	
+	// cluster
+	this.clusterBtn.select( $.proxy(function(){
+		this.samplingDesign.cluster = true;
+	}, this) );	
+	this.clusterBtn.deselect( $.proxy(function(){
+		this.samplingDesign.cluster = false;
 	}, this) );
 	
-	// cluster
-	this.cluster.change( $.proxy(function(){
-		this.samplingDesign.cluster = this.cluster.prop('checked');;
-	}, this) );	
+//	// main sd strategy
+//	this.sd.change( $.proxy(function(){
+//		this.samplingDesign.srs = this.srs.prop('checked');
+//		this.samplingDesign.systematic = this.systematic.prop('checked');
+//	}, this) );
+//	
+//	//2 phases
+//	this.twoPhases.change( $.proxy(function(){
+//		this.samplingDesign.twoPhases = this.twoPhases.prop('checked');;
+//	}, this) );	
+//	//stratified
+//	this.stratified.change( $.proxy(function(){
+////		console.log( this.stratified.prop('checked') );
+//		this.samplingDesign.stratified = this.stratified.prop('checked');
+//	}, this) );
+//	
+//	// cluster
+//	this.cluster.change( $.proxy(function(){
+//		this.samplingDesign.cluster = this.cluster.prop('checked');;
+//	}, this) );	
+	
 
 	
 	// settings buttons click
-	this.twoPhasesSettingsBtn.click(function(e){
-		e.preventDefault();
-		$this.container.hide(20);
-		setTimeout( function(e) { 
-			$this.phase1Manager.show();
-		} , 50 );
-	});
-	this.strataSettingsBtn.click(function(e){
-		e.preventDefault();
-		$this.container.hide(20);
-		setTimeout( function(e) { 
-			$this.stratumManager.show();
-		} , 50 );
-	});
+//	this.twoPhasesSettingsBtn.click(function(e){
+//		e.preventDefault();
+//		$this.container.hide(20);
+//		setTimeout( function(e) { 
+//			$this.phase1Manager.show();
+//		} , 50 );
+//	});
+//	this.strataSettingsBtn.click(function(e){
+//		e.preventDefault();
+//		$this.container.hide(20);
+//		setTimeout( function(e) { 
+//			$this.stratumManager.show();
+//		} , 50 );
+//	});
 	
 	
 	
 	/**
 	 * External managers event handlers
 	 */
-	this.phase1Manager.save = $.proxy( function(){
-		this.samplingDesign.twoPhases = true;
-		this.twoPhases.prop('checked', true);
-		this.phase1Manager.hide();
-		this.container.fadeIn(200);
-	} , this );
-	this.phase1Manager.cancel = $.proxy( function(){
-		this.samplingDesign.twoPhases = false;
-//		this.twoPhases.removeProp('checked');
-		this.twoPhases.prop('checked', false);
-		this.phase1Manager.hide();
-		this.container.fadeIn(200);
-	} , this );
+//	this.phase1Manager.save = $.proxy( function(){
+//		this.samplingDesign.twoPhases = true;
+//		this.twoPhases.prop('checked', true);
+//		this.phase1Manager.hide();
+//		this.container.fadeIn(200);
+//	} , this );
+//	this.phase1Manager.cancel = $.proxy( function(){
+//		this.samplingDesign.twoPhases = false;
+////		this.twoPhases.removeProp('checked');
+//		this.twoPhases.prop('checked', false);
+//		this.phase1Manager.hide();
+//		this.container.fadeIn(200);
+//	} , this );
 	
 	this.stratumManager.save = $.proxy( function(){
 		this.samplingDesign.stratified = true;
@@ -180,10 +238,11 @@ SamplingDesignManager.prototype.init = function(){
  * Start showing the edit section
  */
 SamplingDesignManager.prototype.startEdit = function(){
+	var steps = this.editSd.find(".step");
 	this.step = 0;
-	this.stepMax = 4;
+	this.stepMax = steps.length - 1;
 	// hide steps
-	this.editSd.find(".step").hide();
+	steps.hide();
 	this.editSd.fadeIn(200);
 	this.showStep(this.step);
 };
@@ -191,13 +250,13 @@ SamplingDesignManager.prototype.startEdit = function(){
  * Show step section
  * @param step
  */
-SamplingDesignManager.prototype.showStep = function(step){
+SamplingDesignManager.prototype.showStep = function(step) {
 	this.editSd.find(".step").hide();
 	this.editSd.find(".step-"+step).fadeIn(200);
 	this.updateEditNavigationBtns();
 };
 /**
- * Prev and next on edit page
+ * Move ui to previous edit section
  */
 SamplingDesignManager.prototype.prev = function(){
 	if( this.step != 0){
@@ -205,11 +264,14 @@ SamplingDesignManager.prototype.prev = function(){
 		this.showStep(this.step);
 	}
 };
+/**
+ * Move to next edit section
+ */
 SamplingDesignManager.prototype.next = function(){
 	var validate =  this["validateStep"+this.step] ;
 	if( validate ){
 		var valid = $.proxy( validate, this )();
-		if( valid ){			
+		if( valid ){
 			this.step ++ ;
 			this.showStep(this.step);
 		}
@@ -219,9 +281,12 @@ SamplingDesignManager.prototype.next = function(){
 	}
 };
 SamplingDesignManager.prototype.updateEditNavigationBtns = function(){
-	this.step==0 ? UI.disable( this.prevBtn ) : UI.enable( this.prevBtn );
+	this.step == 0 ? UI.disable( this.prevBtn ) : UI.enable( this.prevBtn );
 	this.step == this.stepMax ? UI.disable( this.nextBtn ) : UI.enable( this.nextBtn );
 };
+/**
+ * Sampling unit validation (step 0)
+ */
 SamplingDesignManager.prototype.validateStep0 = function(){
 	if( this.samplingDesign.samplingUnitId ){
 		return true;
@@ -230,28 +295,41 @@ SamplingDesignManager.prototype.validateStep0 = function(){
 		return false;
 	}
 };
-
-SamplingDesignManager.prototype.updateSamplingDesign = function(ws){
+/**
+ * Two phases validation (step 2)
+ */
+SamplingDesignManager.prototype.validateStep2 = function(){
+	if( this.samplingDesign.twoPhases === true ){
+		
+		var valid = false;
+		WorkspaceManager.getInstance().activeWorkspace( function(ws){
+			if (! ws.phase1PlotTable ){
+				UI.showError("Import a valid csv file", false);
+				valid = false;
+			} else {
+				valid = true;
+			}
+		} );
+		return valid;
+	} else {
+		return true;
+	}
+};
+SamplingDesignManager.prototype.updateSamplingDesign = function(ws) {
 	
 	this.editSd.hide();
 	this.viewSd.show(10);
 	this.samplingDesignUI.empty();
 	
 	if(ws.samplingDesign) {
-		this.samplingDesign = ws.samplingDesign;
+		this.samplingDesign = $.extend( {}, ws.samplingDesign );
+		
+//			ws.samplingDesign;
 //		$this.setSamplingDesign(sd);
 		if(this.samplingDesign.samplingUnitId){
 			// edit form properties
-			var entity = ws.getEntityById(this.samplingDesign.samplingUnitId);
-			if(entity){
-				this.samplingUnitCombo.val(entity.id);
-			}
-			this.srs.prop('checked', this.samplingDesign.srs === true );
-			this.systematic.prop('checked', this.samplingDesign.systematic === true );
-			this.stratified.prop('checked', this.samplingDesign.stratified === true );
-			this.cluster.prop('checked', this.samplingDesign.cluster === true );
-			this.twoPhases.prop('checked', this.samplingDesign.twoPhases === true );
-			
+			this.samplingUnit = ws.getEntityById(this.samplingDesign.samplingUnitId);
+			this.loadSamplingUnitTableInfo();
 			// view properties
 			if( this.samplingDesign.srs === true ){
 				this.addToSdUi("Srs");
@@ -271,17 +349,34 @@ SamplingDesignManager.prototype.updateSamplingDesign = function(ws){
 		}
 	} else {
 //		this.disableButtons();
+		this.samplingDesign = {};
+		this.samplingUnit = {};
 	}	
 //	WorkspaceManager.getInstance().activeWorkspace($.proxy(function(ws){
 //		this.samplingDesign = sd;
 //		console.log(this);
 //	} , this) );
 };
-SamplingDesignManager.prototype.addToSdUi = function(text){
-	var btn = $('<button class="btn option-btn-selected"></button>');
+SamplingDesignManager.prototype.addToSdUi = function(text) {
+	var btn = $( '<button class="btn option-btn-selected"></button>' );
 	btn.html( text );
 	this.samplingDesignUI.append( btn );
 	UI.disable( btn );
+};
+
+/**
+ * Load plot data table info
+ */
+SamplingDesignManager.prototype.loadSamplingUnitTableInfo = function(){
+	if( this.samplingDesign.samplingUnitId ) {
+		WorkspaceManager.getInstance().activeWorkspace( $.proxy( function(ws){
+			var entity = ws.getEntityById( this.samplingDesign.samplingUnitId );
+			// load sampling unit table info
+			new TableDataProvider(ws.dataSchema , entity.name ).tableInfo( $.proxy( function(response){
+				this.samplingUnitTableInfo = response;
+			} , this ) );
+		} , this ) );
+	}
 };
 //SamplingDesignManager.prototype.disableButtons = function(){
 //	var $this = this;

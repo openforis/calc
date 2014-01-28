@@ -124,6 +124,15 @@ public class Workspace extends UserObject {
 	public String getInputSchema() {
 		return this.inputSchema;
 	}
+	
+	/**
+	 * TODO remove getInputSchema and replace it with getDataSchema
+	 * @return
+	 */
+	@JsonInclude
+	public String getDataSchema(){
+		return getInputSchema();
+	} 
 
 	public void setOutputSchema(String outputSchema) {
 		this.outputSchema = outputSchema;

@@ -67,13 +67,13 @@ CsvTableImport.prototype.init = function(){
 			method : "POST",
 			data : params 
 		}).done(function(response){
-			UI.unlock();
 			
 			JobManager.getInstance().checkJobStatus( function(job){
 				var task = job.tasks[0];				
 				$this.importCallback(task.schema, task.table); 
 			}, true );
 			
+			UI.unlock();
 		});
 		
 	});

@@ -667,7 +667,8 @@ ul.scroll-menu {
 	padding: 1em 0px;
 }
 /* sampling desing settings ui */
-#sampling-design .sampling-design button.option-btn-selected {
+#sampling-design button.option-btn-selected ,
+#sampling-design button.option-btn {
 	width: 10em;
 /* 	ma */
 /* 	background-color: #758677; */
@@ -754,7 +755,7 @@ ul.scroll-menu {
 * table import 
 */
 table.import-csv-table {
-	
+	font-size: small;
 }
 table.import-csv-table th {	
 	text-align: center;
@@ -769,10 +770,10 @@ table.import-csv-table tr:not(:first-child) {
 	border-top: 1px solid #5d616e;
 }
 table.import-csv-table select {
-	width: 80%;
+/* 	width: 80%; */
 	display: inherit;
 	border: none;
-	border-radius: 2px;
+	border-radius: 1px;
 }
 table.import-csv-table option {
 	margin: 1em 0em;	

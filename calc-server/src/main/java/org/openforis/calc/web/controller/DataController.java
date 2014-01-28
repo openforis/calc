@@ -81,13 +81,18 @@ public class DataController {
 	public @ResponseBody 
 	Response getTableInfo(@RequestParam String schema, @RequestParam String table) {
 //		Workspace workspace = workspaceService.getActiveWorkspace();
-		
-		long count = tableDataDao.count(schema, table);
 		Response response = new Response();
-		response.addField("count", count);
 		
-		JSONArray result = tableDataDao.info(schema, table);
-		response.addField("columns", result);
+		if( tableDataDao.exists(schema, table) ) {
+			long count = tableDataDao.count(schema, table);
+			response.addField("count", count);
+			
+			JSONArray result = tableDataDao.info(schema, table);
+			response.addField("columns", result);
+			
+			response.addField("schema", schema);
+			response.addField("table", table);
+		}
 		
 		return response;
 	} 

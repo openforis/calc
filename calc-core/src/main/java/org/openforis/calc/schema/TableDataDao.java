@@ -10,13 +10,11 @@ import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.SelectQuery;
+import org.jooq.Table;
 import org.jooq.impl.DynamicTable;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.openforis.calc.engine.DataRecord;
-import org.openforis.calc.engine.DataRecordVisitor;
-import org.openforis.calc.engine.Workspace;
-import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.persistence.jooq.AbstractJooqDao;
 import org.openforis.calc.psql.InformationSchemaColumnsTable;
 import org.springframework.stereotype.Repository;
@@ -27,7 +25,23 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class TableDataDao extends AbstractJooqDao {
-
+	
+	/**
+	 * Check if the given table exists in the database
+	 * @param schema
+	 * @param table
+	 * @return
+	 */
+	public boolean exists(String schema, String table){
+		Table<Record> dbTable = new DynamicTable<Record>("tables", "information_schema").as("t");
+		Long count = 
+				psql()
+				.selectCount()
+				.from(dbTable)
+				.where( "t.table_name = '" + table + "' and t.table_schema = '" + schema + "'" )
+				.fetchOne(0, Long.class);
+		return count >= 0;
+	}
 	
 	public long count(String schema, String table){
 		DynamicTable<?> dbTable = new DynamicTable<Record>(table, schema);

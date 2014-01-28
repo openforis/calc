@@ -12,13 +12,28 @@ TableDataProvider = function (schema, table) {
 	this.variables = null;
 };
 
-TableDataProvider.prototype.count = function(success) {
-	var $this = this;
+/**
+ * Returns info on the current table
+ */
+TableDataProvider.prototype.tableInfo = function(success) {
 	$.ajax({
 		url : this.contextPath + "/table/info.json",
 		dataType : "json",
-		data :{ "schema":this.schema, "table":this.table}
-	}).done(function(response) {
+		data : { "schema":this.schema, "table":this.table }
+	}).done( $.proxy( function(response) {
+		success(response);
+	} , this ) );
+};
+
+TableDataProvider.prototype.count = function(success) {
+	
+	var $this = this;
+//	$.ajax({
+//		url : this.contextPath + "/table/info.json",
+//		dataType : "json",
+//		data : { "schema":this.schema, "table":this.table }
+//	}).done(function(response) {
+	this.tableInfo( function(response) {
 		var cnt = response.fields.count;
 		var cols = response.fields.columns;
 		$this.variables = [];
