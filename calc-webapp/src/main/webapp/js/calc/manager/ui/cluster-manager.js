@@ -1,9 +1,9 @@
 /**
- * manager for Strata settings page
+ * manager for cluster settings page
  * @author Mino Togna
  */
 
-StratumManager = function(container , sdManager) {
+ClusterManager = function(container , sdManager) {
 	
 	this.container = $(container);
 	this.sdManager = sdManager;
@@ -28,7 +28,7 @@ StratumManager = function(container , sdManager) {
 	this.init();
 };
 
-StratumManager.prototype.init = function(){
+ClusterManager.prototype.init = function(){
 	var $this = this;
 
 	// upload csv form methods 
@@ -81,7 +81,7 @@ StratumManager.prototype.init = function(){
 //StratumManager.prototype.cancel = null;
 //StratumManager.prototype.save = null;
 
-StratumManager.prototype.show = function() {
+ClusterManager.prototype.show = function() {
 	this.container.fadeIn(200);
 	
 	WorkspaceManager.getInstance().activeWorkspace( $.proxy( function(ws){
@@ -89,11 +89,11 @@ StratumManager.prototype.show = function() {
 	} , this ) );
 };
 
-StratumManager.prototype.hide = function() {
+ClusterManager.prototype.hide = function() {
 	this.container.hide();
 };
 
-StratumManager.prototype.import = function(filepath) {
+ClusterManager.prototype.import = function(filepath) {
 	var $this = this;
 	
 	WorkspaceManager.getInstance().activeWorkspaceImportStrata(filepath, function(ws){
@@ -104,7 +104,7 @@ StratumManager.prototype.import = function(filepath) {
 	
 };
 
-StratumManager.prototype.updateStrata = function(ws) {
+ClusterManager.prototype.updateJoinColumn = function(ws) {
 	if( ws.strata && ws.strata.length > 0 ) {
 		
 		var tableInfo = ( this.sdManager.samplingDesign.twoPhases === true ) ? this.sdManager.phase1TableInfo : this.sdManager.samplingUnitTableInfo;
@@ -123,7 +123,7 @@ StratumManager.prototype.updateStrata = function(ws) {
 	}
 };
 
-StratumManager.prototype.validate = function() {
+ClusterManager.prototype.validate = function() {
 	if( this.tableColumnSelector.joinColumn && this.tableColumnSelector.joinColumn !== "" ) {
 		return true;
 	} else {
@@ -132,10 +132,10 @@ StratumManager.prototype.validate = function() {
 	}
 };
 
-StratumManager.prototype.joinOptions = function() {
+ClusterManager.prototype.joinOptions = function() {
 	return this.tableColumnSelector.jsonSettings();
 };
 
-StratumManager.prototype.setJoinOptions = function(options){
+ClusterManager.prototype.setJoinOptions = function(options){
 	this.tableColumnSelector.settings = options;
 };

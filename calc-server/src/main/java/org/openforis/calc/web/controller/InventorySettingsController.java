@@ -6,6 +6,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.openforis.calc.engine.ParameterHashMap;
+import org.openforis.calc.engine.ParameterMap;
 import org.openforis.calc.engine.SamplingDesignDao;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceService;
@@ -78,16 +80,31 @@ public class InventorySettingsController {
 				samplingDesign.setTwoPhases(getBooleanValue(json, "twoPhases"));
 				samplingDesign.setStratified(getBooleanValue(json, "stratified"));
 				samplingDesign.setCluster(getBooleanValue(json, "cluster"));
-
-				Object phase1JoinSettings = json.get("phase1JoinSettings");
-				if (phase1JoinSettings != null) {
-					samplingDesign.setPhase1JoinSettings(phase1JoinSettings.toString());
-				}
+					
+				samplingDesign.setPhase1JoinSettings( getParameterMapValue( json , "phase1JoinSettings" ) );
+				samplingDesign.setStratumJoinSettings( getParameterMapValue( json , "stratumJoinSettings" ) );
+				samplingDesign.setClusterColumnSettings( getParameterMapValue( json , "clusterColumnSettings" ) );
+				samplingDesign.setAoiJoinSettings( getParameterMapValue( json , "aoiJoinSettings" ) );
 
 				return samplingDesign;
 			}
 		}
 		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	private ParameterMap getParameterMapValue(JSONObject json, String property) throws ParseException {
+		ParameterMap paramMap = null;
+		Object object = json.get(property);
+		if( object != null) {
+			JSONParser parser = new JSONParser();
+			Object obj = parser.parse( object.toString() );
+			if ( obj instanceof JSONObject ) {
+				paramMap = new ParameterHashMap((JSONObject) obj);
+			}
+		}
+		
+		return paramMap;
 	}
 
 	private Boolean getBooleanValue(JSONObject json, String property) {

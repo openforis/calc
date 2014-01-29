@@ -3,7 +3,7 @@
  * @author Mino Togna
  */
 
-SamplingDesignManager = function(container,  strataSection) {
+SamplingDesignManager = function(container) {
 	//main ui sections
 	this.container = $( container );
 	
@@ -32,7 +32,7 @@ SamplingDesignManager = function(container,  strataSection) {
 	this.phase1Manager = new Phase1Manager( this.editSd.find(".phase1_section") , this);
 	this.phase1Manager.hide();
 	
-	this.stratumManager = new StratumManager( strataSection );
+	this.stratumManager = new StratumManager( this.editSd.find(".strata_section") , this );
 	this.stratumManager.hide();
 	
 
@@ -117,6 +117,7 @@ SamplingDesignManager.prototype.init = function(){
 	this.systematicBtn.deselect( $.proxy(function(){
 		this.samplingDesign.systematic = false;
 	}, this) );
+	
 	//2 phases
 	this.twoPhasesBtn.select( $.proxy(function(){
 		this.samplingDesign.twoPhases = true;
@@ -125,13 +126,18 @@ SamplingDesignManager.prototype.init = function(){
 	this.twoPhasesBtn.deselect( $.proxy(function(){
 		this.samplingDesign.twoPhases = false;
 		this.phase1Manager.hide();
+		
+		this.stratifiedBtn.deselect();
+		this.clusterBtn.deselect();
 	}, this) );
 	//stratified
 	this.stratifiedBtn.select( $.proxy(function(){
 		this.samplingDesign.stratified = true;
+		this.stratumManager.show();
 	}, this) );
 	this.stratifiedBtn.deselect( $.proxy(function(){
 		this.samplingDesign.stratified = false;
+		this.stratumManager.hide();
 	}, this) );	
 	// cluster
 	this.clusterBtn.select( $.proxy(function(){
@@ -311,6 +317,32 @@ SamplingDesignManager.prototype.validateStep2 = function(){
 		return true;
 	}
 };
+/**
+ * Validate strata settings
+ */
+SamplingDesignManager.prototype.validateStep3 = function(){
+	var $this = this;
+	if( this.samplingDesign.stratified === true ){
+		
+		var valid = false;
+		WorkspaceManager.getInstance().activeWorkspace( function(ws){
+			if (! ws.strata || ws.strata.length <= 0) {
+				UI.showError("Import a valid csv file", false);
+				valid = false;
+			} else {
+				valid = $this.stratumManager.validate();
+				if(valid) {
+					$this.samplingDesign.stratumJoinSettings = $this.stratumManager.joinOptions();
+				}
+			}
+		} );
+		return valid;
+		
+	} else {
+		return true;
+	}
+};
+
 SamplingDesignManager.prototype.updateSamplingDesign = function() {
 	
 	WorkspaceManager.getInstance().activeWorkspace( $.proxy(function(ws) {
@@ -324,7 +356,7 @@ SamplingDesignManager.prototype.updateSamplingDesign = function() {
 			
 //				ws.samplingDesign;
 //			$this.setSamplingDesign(sd);
-			if(this.samplingDesign.samplingUnitId){
+			if(this.samplingDesign.samplingUnitId) {
 				// edit form properties
 				this.samplingUnit = ws.getEntityById(this.samplingDesign.samplingUnitId);
 				this.loadSamplingUnitTableInfo( $.proxy(function(){
@@ -365,6 +397,8 @@ SamplingDesignManager.prototype.updateSamplingDesign = function() {
 //					if( this.samplingDesign.phase1JoinSettings ) {
 //						this.phase1Manager.setJoinOptions( $.parseJSON( this.samplingDesign.phase1JoinSettings ) );
 //					}
+					
+					this.loadPhase1TableInfo();
 				} , this));
 				
 			}
@@ -404,7 +438,11 @@ SamplingDesignManager.prototype.updateEditView = function(){
 	
 	if( this.samplingDesign.stratified === true ){
 //		this.addToSdUi("Stratified");
+		this.stratifiedBtn.select();
+	} else {
+		this.stratifiedBtn.deselect();
 	}
+	
 	if( this.samplingDesign.cluster === true ){
 //		this.addToSdUi("Cluster");
 	}
@@ -412,8 +450,9 @@ SamplingDesignManager.prototype.updateEditView = function(){
 	this.samplingUnitCombo.val( this.samplingUnit.id );
 	
 	if( this.samplingDesign.phase1JoinSettings ) {
-		this.phase1Manager.setJoinOptions( $.parseJSON( this.samplingDesign.phase1JoinSettings ) );
+		this.phase1Manager.setJoinOptions( this.samplingDesign.phase1JoinSettings );
 	}
+	
 };
 
 SamplingDesignManager.prototype.addToSdUi = function(text) {
@@ -440,6 +479,25 @@ SamplingDesignManager.prototype.loadSamplingUnitTableInfo = function(callback){
 		} , this ) );
 	}
 };
+SamplingDesignManager.prototype.loadPhase1TableInfo = function(callback){
+	var $this  = this;
+	WorkspaceManager.getInstance().activeWorkspace(function(ws){
+		if( ws.phase1PlotTable ) {
+			
+			new TableDataProvider("calc" , ws.phase1PlotTable ).tableInfo( function(response) {
+				$this.phase1TableInfo = response;
+				
+				if(callback){
+					callback();
+				}
+				
+			} );
+		} 
+		
+	});
+	
+};
+
 //SamplingDesignManager.prototype.disableButtons = function(){
 //	var $this = this;
 //	setTimeout( function(e){

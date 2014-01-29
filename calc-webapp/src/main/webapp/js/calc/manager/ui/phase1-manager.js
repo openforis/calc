@@ -144,6 +144,7 @@ Phase1Manager.prototype.showImport = function( filepath, headers ){
 		});
 		
 		$this.uploadSection.hide(0);
+		$this.tableJoin.hide();
 //		$this.tableJoin.hide(0);
 //		$this.tableSection.hide(0);
 //		$this.buttonsSection.hide( 0 );

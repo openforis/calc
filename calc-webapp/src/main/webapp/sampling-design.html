@@ -19,7 +19,7 @@
 						<i class="fa fa-angle-left"></i>
 					</button>
 				</div>
-				<div class="col-md-8">
+				<div class="col-md-8 height100">
 					<div class="row option step step-0">
 						<div class="row">Sampling Unit</div>
 						<div class="row">
@@ -78,18 +78,51 @@
 					</div>
 					
 					<div class="row option step step-3">
-						<div class="row">
-							<label>
-								<input type="checkbox" name="stratified"> Stratification 
-								<button name="strata-settings-btn" class="btn no-background"><i class="fa fa-cog"></i></button>
-							</label>
+						<div class="row height25">
+							<div class="col-md-6 col-md-offset-3">
+								<button class="btn" name="stratified">Stratified</button>
+							</div>
 						</div>
+						
+						<div class="row no-margin strata_section height75" style="padding: 0px;">
+							<div class="row upload-section height10">
+								<form  method="post" enctype="multipart/form-data" action="rest/csv-upload.json">
+								<div class="col-md-6 col-md-offset-3" style="padding-top: 20px;">
+									<button type="button" class="btn btn-default width100" name="upload-btn">Upload Csv</button>
+								    <input type="file" name="file" style="display:none" />  
+								</div>
+								</form>
+							</div>
+							<div class="row table-column-selector height90">
+								
+							</div>
+						</div>
+						
 					</div>
 					<div class="row option step step-4">
-						<div class="row">
-								<label> <input type="checkbox" name="cluster"> Cluster </label>
+						<div class="row height25">
+							<div class="col-md-6 col-md-offset-3">
+								<button class="btn" name="cluster">Cluster</button>
+							</div>
 						</div>
-						<div class="row col-md-4 col-md-offset-4">
+						
+						<div class="row table-column-selector height90">
+							
+						</div>
+					</div>
+					
+					<div class="row option step step-5 height100">
+						<div class="row height25">
+							<div class="col-md-6 col-md-offset-3">
+								Area of Interest column join
+							</div>
+						</div>
+						
+						<div class="row table-column-selector height50">
+							
+						</div>
+					
+						<div class="row col-md-4 col-md-offset-4 height50" >
 							<button type="button" name="save-btn" class="btn btn-default width100">Save</button>
 						</div>
 					</div>
@@ -101,58 +134,14 @@
 				</div>
 			</div>
 		
-			
-		
 		</div>	
 
-	</div>
-	
-	
-	
-	
-	
-	<div class="col-md-10 col-md-offset-1" style="height: 100%" id="strata_section">
-			
-		<div class="row upload-section height10">
-			<form  method="post" enctype="multipart/form-data" action="rest/csv-upload.json">
-			<div class="col-md-2 col-md-offset-5" style="padding-top: 20px;">
-				<button type="button" class="btn btn-default width100" name="upload-btn">Upload Csv</button>
-			    <input type="file" name="file" style="display:none" />  
-			</div>
-			</form>
-		</div>
-		
-		<div class="row strata-table height75">
-			<div class="col-md-4 col-md-offset-4 data-table" style="max-height:90%; overflow: auto;">
-				<table style="width:100%" class="table">
-					<thead>
-						<tr>
-							<th style="width:50%">No</th>
-							<th style="width:50%">Caption</th>
-						</tr>
-					</thead>
-					<tbody>
-					</tbody>
-				</table>
-			</div>
-		</div>
-		<!-- buttons section -->
-		<div class="row buttons-section height10">
-			<div class="col-md-2 col-md-offset-4" style="padding-top: 20px;">
-				<button type="button" class="btn btn-default width100" name="save-btn">Save</button>
-			</div>
-   			<div class="col-md-2" style="padding-top: 20px;">
-				<button type="button" class="btn btn-default width100" name="cancel-btn">Cancel</button>
-			</div>
-			      
-		</div>			
-		
 	</div>
 	
 	<script>
 	$(function() {
 
-		var manager = new SamplingDesignManager( $("#sampling-design") ,$("#strata_section") );
+		var manager = new SamplingDesignManager( $("#sampling-design") );
 		
 	});
 	</script>
