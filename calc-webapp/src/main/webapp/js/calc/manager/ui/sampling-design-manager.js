@@ -141,10 +141,9 @@ SamplingDesignManager.prototype.init = function(){
 		this.samplingDesign.cluster = false;
 	}, this) );
 	
-	
-	WorkspaceManager.getInstance().activeWorkspace(function(ws){
+	WorkspaceManager.getInstance().activeWorkspace( function(ws){
 		//refresh sampling unit select.
-		$this.samplingUnitCombo.data(ws.entities, 'id','name');
+		$this.samplingUnitCombo.data( ws.entities, 'id','name' );
 		
 		//if sampling design is defined for active workspace update ui
 		$this.updateSamplingDesign();
