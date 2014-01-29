@@ -74,11 +74,14 @@ SamplingDesignManager.prototype.init = function(){
 	var $this = this;
 	
 	// start edit
-	this.editBtn.click( $.proxy( function(){
-		$this.updateSamplingDesign();
-		this.viewSd.hide();
-		this.startEdit();
-	} , this) );
+	this.editBtn.click( $.proxy( this.startEdit 
+//			function(){
+//		$this.updateSamplingDesign();
+//		$this.updateEditView();
+//		this.viewSd.hide();
+//		this.startEdit();
+//	} 
+, this) );
 	
 	this.prevBtn.click( $.proxy(this.prev , this) );
 	this.nextBtn.click( $.proxy(this.next , this) );
@@ -119,7 +122,6 @@ SamplingDesignManager.prototype.init = function(){
 		this.samplingDesign.twoPhases = true;
 		this.phase1Manager.show();
 	}, this) );	
-	this.twoPhasesBtn.select();
 	this.twoPhasesBtn.deselect( $.proxy(function(){
 		this.samplingDesign.twoPhases = false;
 		this.phase1Manager.hide();
@@ -225,6 +227,9 @@ SamplingDesignManager.prototype.init = function(){
  * Start showing the edit section
  */
 SamplingDesignManager.prototype.startEdit = function(){
+	this.updateEditView();
+	this.viewSd.hide();
+	
 	var steps = this.editSd.find(".step");
 	this.step = 0;
 	this.stepMax = steps.length - 1;
@@ -328,25 +333,25 @@ SamplingDesignManager.prototype.updateSamplingDesign = function() {
 					// view properties
 					if( this.samplingDesign.srs === true ){
 						this.addToSdUi("Srs");
-						this.srsBtn.select();
+//						this.srsBtn.select();
 					} else {
-						this.srsBtn.deselect();
+//						this.srsBtn.deselect();
 					}
 					
 					if( this.samplingDesign.systematic === true ){
 						this.addToSdUi("Systematic");
-						this.systematicBtn.select();
+//						this.systematicBtn.select();
 					} else {
-						this.systematicBtn.deselect(); 
+//						this.systematicBtn.deselect(); 
 					}
 					
 					if( this.samplingDesign.twoPhases === true ){
 						this.addToSdUi("Two phases");
-						this.twoPhasesBtn.select();
-						this.phase1Manager.show();
+//						this.twoPhasesBtn.select();
+//						this.phase1Manager.show();
 					} else {
-						this.twoPhasesBtn.deselect();
-						this.phase1Manager.hide();
+//						this.twoPhasesBtn.deselect();
+//						this.phase1Manager.hide();
 					}
 					
 					if( this.samplingDesign.stratified === true ){
@@ -356,11 +361,11 @@ SamplingDesignManager.prototype.updateSamplingDesign = function() {
 						this.addToSdUi("Cluster");
 					}
 					// edit form properties
-					this.samplingUnitCombo.val( this.samplingUnit.id );
+//					this.samplingUnitCombo.val( this.samplingUnit.id );
 					
-					if( this.samplingDesign.phase1JoinSettings ) {
-						this.phase1Manager.setJoinOptions( $.parseJSON( this.samplingDesign.phase1JoinSettings ) );
-					}
+//					if( this.samplingDesign.phase1JoinSettings ) {
+//						this.phase1Manager.setJoinOptions( $.parseJSON( this.samplingDesign.phase1JoinSettings ) );
+//					}
 				} , this));
 				
 			}
@@ -372,6 +377,46 @@ SamplingDesignManager.prototype.updateSamplingDesign = function() {
 		
 	} , this) );
 };
+
+SamplingDesignManager.prototype.updateEditView = function(){
+	// view properties
+	if( this.samplingDesign.srs === true ){
+//		this.addToSdUi("Srs");
+		this.srsBtn.select();
+	} else {
+		this.srsBtn.deselect();
+	}
+	
+	if( this.samplingDesign.systematic === true ){
+//		this.addToSdUi("Systematic");
+		this.systematicBtn.select();
+	} else {
+		this.systematicBtn.deselect(); 
+	}
+	
+	if( this.samplingDesign.twoPhases === true ){
+//		this.addToSdUi("Two phases");
+		this.twoPhasesBtn.select();
+		this.phase1Manager.show();
+	} else {
+		this.twoPhasesBtn.deselect();
+		this.phase1Manager.hide();
+	}
+	
+	if( this.samplingDesign.stratified === true ){
+//		this.addToSdUi("Stratified");
+	}
+	if( this.samplingDesign.cluster === true ){
+//		this.addToSdUi("Cluster");
+	}
+	// edit form properties
+	this.samplingUnitCombo.val( this.samplingUnit.id );
+	
+	if( this.samplingDesign.phase1JoinSettings ) {
+		this.phase1Manager.setJoinOptions( $.parseJSON( this.samplingDesign.phase1JoinSettings ) );
+	}
+};
+
 SamplingDesignManager.prototype.addToSdUi = function(text) {
 	var btn = $( '<button class="btn option-btn-selected"></button>' );
 	btn.html( text );

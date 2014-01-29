@@ -171,8 +171,6 @@ Phase1Manager.prototype.updateTableJoin = function(){
 		}
 	});
 	
-	console.log(this);
-	
 };
 
 Phase1Manager.prototype.validate = function() {
