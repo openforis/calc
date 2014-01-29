@@ -396,10 +396,10 @@ SamplingDesignManager.prototype.updateEditView = function(){
 	if( this.samplingDesign.twoPhases === true ){
 //		this.addToSdUi("Two phases");
 		this.twoPhasesBtn.select();
-		this.phase1Manager.show();
+//		this.phase1Manager.show();
 	} else {
 		this.twoPhasesBtn.deselect();
-		this.phase1Manager.hide();
+//		this.phase1Manager.hide();
 	}
 	
 	if( this.samplingDesign.stratified === true ){
