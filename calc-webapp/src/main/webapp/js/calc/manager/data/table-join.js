@@ -126,31 +126,33 @@ TableJoinRow = function( tableJoin, leftValue, rightValue ) {
 	this.row.hide();
 	tableJoin.container.append( this.row );
 	
-	var leftInput = $( '<input type="text" autocomplete="off" class="form-control">' );
+	var leftSelect = $( '<select class="form-control">' );
 	var col1 = $( '<div class="col-md-5"></div>' );
-	col1.append( leftInput );
+	col1.append( leftSelect );
 	this.row.append( col1 );
 	
-	var leftCombo =  leftInput.combobox();
+	var leftCombo =  leftSelect.combobox();
 	leftCombo.data( tableJoin.leftTable.fields.columns, 'column_name','column_name' );
 	leftCombo.change( $.proxy(function(){
 		this.leftColumn = leftCombo.val();
 	} , this ) );
 	if(leftValue){
+		this.leftColumn = leftValue;
 		leftCombo.val( leftValue );
 	}
 	
-	var rightInput = $( '<input type="text" autocomplete="off" class="form-control">' );
+	var rightSelect = $( '<select class="form-control">' );
 	var col2 = $( '<div class="col-md-5"></div>' );
-	col2.append( rightInput );
+	col2.append( rightSelect );
 	this.row.append( col2 );
 	
-	var rightCombo = rightInput.combobox();
+	var rightCombo = rightSelect.combobox();
 	rightCombo.data( tableJoin.rightTable.fields.columns, 'column_name','column_name' );
 	rightCombo.change( $.proxy(function(){
 		this.rightColumn = rightCombo.val();
 	} , this ) );
 	if(rightValue){
+		this.rightColumn = rightValue;
 		rightCombo.val( rightValue );
 	}
 	
