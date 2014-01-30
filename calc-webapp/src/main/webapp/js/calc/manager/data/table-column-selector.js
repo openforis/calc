@@ -6,26 +6,9 @@
 TableColumnSelector = function(container) {
 	
 	this.container = $( container );
-//	this.tableInfo = tableInfo;
-	this.init();
-};
-
-TableColumnSelector.prototype.init = function() {
-	// append headers
+	
 	var row = $( '<div class="row no-margin table-column-selector-header">Join column</div>' );
-//	var col = $( '<div class="col-md-12 ">Join Options</div>' );
-//	row.append( col );
 	this.container.append( row );
-	
-	
-	
-	
-//	row = $( '<div class="row no-margin tables-header"></div>' );
-//	var col1 = $( '<div class="col-md-5 left-table-header"></div>' );
-//	row.append( col1 );
-//	var col2 = $( '<div class="col-md-5 right-table-header"></div>' );
-//	row.append( col2 );
-//	this.container.append( row );
 };
 
 /**

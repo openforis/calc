@@ -18,13 +18,6 @@ StratumManager = function(container , sdManager) {
 	
 	this.tableColumnSelector = new TableColumnSelector( this.container.find(".table-column-selector") );
 	
-//	this.table = this.container.find(".strata-table table");
-	
-	// buttons section
-//	this.buttonsSection = this.container.find( ".buttons-section" );
-//	this.saveBtn = this.buttonsSection.find( "[name=save-btn]" );
-//	this.cancelBtn = this.buttonsSection.find( "[name=cancel-btn]" );
-	
 	this.init();
 };
 
@@ -61,25 +54,7 @@ StratumManager.prototype.init = function(){
 		event.preventDefault();
 		$this.form.submit();
 	});
-	
-	
-	// update strata table
-	
-	
-//	this.saveBtn.click(function(e){
-//		if($this.save){
-//			$this.save();
-//		}
-//	});
-//	this.cancelBtn.click(function(e){
-//		if($this.cancel) {
-//			$this.cancel();
-//		}
-//	});
 };
-
-//StratumManager.prototype.cancel = null;
-//StratumManager.prototype.save = null;
 
 StratumManager.prototype.show = function() {
 	this.container.fadeIn(200);
