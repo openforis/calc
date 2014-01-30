@@ -22,18 +22,19 @@ AoiJoinManager.prototype.hide = function() {
 
 AoiJoinManager.prototype.updateJoinColumn = function() {
 	var sd = this.sdManager.samplingDesign;
-//	if( sd.cluster === true ) {
+	
+	if( sd.samplingUnitId ) {
+		var tableInfo = ( sd.twoPhases === true ) ? this.sdManager.phase1TableInfo : this.sdManager.samplingUnitTableInfo;
+		var header = ( sd.twoPhases === true ) ? "phase 1 table aoi column" : this.sdManager.samplingUnitTableInfo.table + " table aoi column";
+		this.tableColumnSelector.setTableInfo( tableInfo , header);
 		
-	var tableInfo = ( sd.twoPhases === true ) ? this.sdManager.phase1TableInfo : this.sdManager.samplingUnitTableInfo;
-	var header = ( sd.twoPhases === true ) ? "phase 1 table aoi column" : this.sdManager.samplingUnitTableInfo.table + " table aoi column";
-	this.tableColumnSelector.setTableInfo( tableInfo , header);
-	
-	var options = sd.aoiJoinSettings; 
-	if( options ){
-		this.tableColumnSelector.settings = options;
+		var options = sd.aoiJoinSettings; 
+		if( options ){
+			this.tableColumnSelector.settings = options;
+		}
+		
+		this.tableColumnSelector.show();
 	}
-	
-	this.tableColumnSelector.show();
 };
 
 AoiJoinManager.prototype.validate = function() {
