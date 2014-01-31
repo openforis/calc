@@ -40,6 +40,7 @@ public abstract class CollectJob extends Job {
 	private RelationalSchema createInputRelationalSchema() {
 		String inputSchemaName = getWorkspace().getInputSchema();
 		RelationalSchemaConfig config = RelationalSchemaConfig.createDefault();
+		config.setDefaultCode("-1");
 		config.setUniqueColumnNames(true);
 		RelationalSchemaGenerator rdbGenerator = new RelationalSchemaGenerator(config);
 		CollectSurvey survey = getSurvey();
