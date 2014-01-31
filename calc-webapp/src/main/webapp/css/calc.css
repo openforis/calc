@@ -678,9 +678,14 @@ ul.scroll-menu {
 /* 	font-size: 1.3em; */
 }
 
-/** Old */
-#sampling-design .sampling-unit-section button ,
-#sampling-design  .name {
+
+/**
+* =====================
+* Aggregation settings
+* =====================
+*/
+#aggregation-settings .sampling-unit-section button ,
+#aggregation-settings .name {
 /* #sampling-design .sampling-unit-section .entities button,  */
 /* #sampling-design .sampling-unit-section .variables button { */
 	width: 100%;
@@ -689,29 +694,29 @@ ul.scroll-menu {
 	padding-bottom: 20px;
 	font-weight: 200;
 }
-#sampling-design .sampling-unit-section .variables, 
-#sampling-design .sampling-unit-section .variable {
+#aggregation-settings .sampling-unit-section .variables, 
+#aggregation-settings .sampling-unit-section .variable {
 	margin-left: 3px;
 }
 
-#sampling-design .sampling-unit-section div {
+#aggregation-settings .sampling-unit-section div {
 	text-align: center;
 }
 
-#sampling-design .sampling-unit-section .aggregates button  {
+#aggregation-settings .sampling-unit-section .aggregates button  {
 	width: 60%;
 	margin-bottom : 1px;
 }
-#sampling-design .sampling-unit-section .variable-per-ha button.header-btn  {
+#aggregation-settings .sampling-unit-section .variable-per-ha button.header-btn  {
 	border-radius: 5px;
 	width: 100%;
 }
-#sampling-design .aggregate-settings-section {
+#aggregation-settings .aggregate-settings-section {
 	margin-left: 40px; 
 	padding: 20px; 
 /* 	border-left: 1px solid #ecf0f1; */
 }
-#sampling-design .plot-area-section {
+#aggregation-settings .plot-area-section {
 	display: none;
 }
 

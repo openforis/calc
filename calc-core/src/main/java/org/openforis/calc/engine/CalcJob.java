@@ -111,19 +111,11 @@ public class CalcJob extends Job {
 		
 		this.tempResults = false;
 		this.aggregates = aggregates;
-//		this.calculationSteps = new HashMap<Integer, List<CalculationStep>>();
 	}
 
 	// calculation steps are grouped by entity for performance reason
 	public void addCalculationStep(CalculationStep step) {
 		this.group.addCalculationStep(step);
-//		Integer entityId = step.getOutputVariable().getEntity().getId();
-//		List<CalculationStep> steps = this.calculationSteps.get(entityId);
-//		if (steps == null) {
-//			steps = new ArrayList<CalculationStep>();
-//			this.calculationSteps.put(entityId, steps);
-//		}
-//		steps.add(step);
 	}
 
 	public void addCalculationStep(List<CalculationStep> steps) {
@@ -171,6 +163,7 @@ public class CalcJob extends Job {
 		
 		// init entity groups
 		this.group.init(connection);
+		
 		// execute the calculation steps grouped by entity
 		for (Integer entityId : this.group.entityIds() ) {
 //		for (Integer entityId : this.calculationSteps.keySet()) {

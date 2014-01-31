@@ -3,9 +3,10 @@
  * @author Mino Togna
  */
 
-StratumManager = function(container) {
+StratumManager = function(container , sdManager) {
 	
 	this.container = $(container);
+	this.sdManager = sdManager;
 	
 	// upload csv ui components
 	this.uploadSection = this.container.find(".upload-section");
@@ -14,12 +15,8 @@ StratumManager = function(container) {
 	this.file = this.container.find( "[name=file]" );
 	this.form = this.container.find( "form" );
 	
-	this.table = this.container.find(".strata-table table");
 	
-	// buttons section
-	this.buttonsSection = this.container.find( ".buttons-section" );
-	this.saveBtn = this.buttonsSection.find( "[name=save-btn]" );
-	this.cancelBtn = this.buttonsSection.find( "[name=cancel-btn]" );
+	this.tableColumnSelector = new TableColumnSelector( this.container.find(".table-column-selector") );
 	
 	this.init();
 };
@@ -57,31 +54,16 @@ StratumManager.prototype.init = function(){
 		event.preventDefault();
 		$this.form.submit();
 	});
-	
-	
-	// update strata table
-	WorkspaceManager.getInstance().activeWorkspace(function(ws){
-		$this.updateStrata(ws);
-	});
-	
-	this.saveBtn.click(function(e){
-		if($this.save){
-			$this.save();
-		}
-	});
-	this.cancelBtn.click(function(e){
-		if($this.cancel) {
-			$this.cancel();
-		}
-	});
 };
-
-StratumManager.prototype.cancel = null;
-StratumManager.prototype.save = null;
 
 StratumManager.prototype.show = function() {
 	this.container.fadeIn(200);
+	
+	WorkspaceManager.getInstance().activeWorkspace( $.proxy( function(ws){
+		this.updateStrata(ws);
+	} , this ) );
 };
+
 StratumManager.prototype.hide = function() {
 	this.container.hide();
 };
@@ -91,41 +73,44 @@ StratumManager.prototype.import = function(filepath) {
 	
 	WorkspaceManager.getInstance().activeWorkspaceImportStrata(filepath, function(ws){
 		UI.unlock();
-		
+		UI.showSuccess( ws.strata.length +" strata successfully imported", true);
 		$this.updateStrata(ws);
 	});
 	
 };
 
 StratumManager.prototype.updateStrata = function(ws) {
-//	var $this = this;
-	var thead = this.table.find("thead"), 
-		tbody = this.table.find("tbody");
-	
-	tbody.empty();
-	
 	if( ws.strata && ws.strata.length > 0 ) {
-		thead.show();
 		
-		$.each(ws.strata,function(i,stratum){
-			var tr = $( "<tr></tr>" );
-			tr.hide();
-			
-			var no = $( "<td></td>" );
-			no.html( stratum.stratumNo );
-			tr.append(no);
-			
-			var caption = $( "<td></td>" );
-			caption.html( stratum.caption );
-			tr.append(caption);
-			
-			tbody.append(tr);
-			var delay = 25;
-			setTimeout(function(e){
-				tr.fadeIn(delay);
-			} , (delay*i) );
-		});
+		var tableInfo = ( this.sdManager.samplingDesign.twoPhases === true ) ? this.sdManager.phase1TableInfo : this.sdManager.samplingUnitTableInfo;
+		var header = ( this.sdManager.samplingDesign.twoPhases === true ) ? "phase 1 table join column" : this.sdManager.samplingUnitTableInfo.table + " table join column";
+		this.tableColumnSelector.setTableInfo( tableInfo , header);
+		
+		var options = this.sdManager.samplingDesign.stratumJoinSettings; 
+		if( options ){
+//			this.stratumManager.setJoinOptions( this.sdManager.samplingDesign.stratumJoinSettings );
+			this.tableColumnSelector.settings = options;
+		}
+		this.tableColumnSelector.show();
 	} else {
-		thead.hide();
+		this.tableColumnSelector.hide();
+
 	}
+};
+
+StratumManager.prototype.validate = function() {
+	if( this.tableColumnSelector.joinColumn && this.tableColumnSelector.joinColumn !== "" ) {
+		return true;
+	} else {
+		UI.showError("Join column must be specified", false);
+		return false;
+	}
+};
+
+StratumManager.prototype.joinOptions = function() {
+	return this.tableColumnSelector.jsonSettings();
+};
+
+StratumManager.prototype.setJoinOptions = function(options){
+	this.tableColumnSelector.settings = options;
 };
