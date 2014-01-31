@@ -52,6 +52,11 @@ Entity.prototype = (function(){
 		var result = this.categoricalVariables
 						.concat(this.quantitativeVariables)
 						.concat(this.textVariables);
+		
+		if( this.workspace.isSamplingUnit(this) ){
+			result = result.concat( {name : "plot_weight"} );
+		}
+		
 		return result;
 	};
 	

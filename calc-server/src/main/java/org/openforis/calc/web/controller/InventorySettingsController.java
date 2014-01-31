@@ -75,6 +75,7 @@ public class InventorySettingsController {
 
 				samplingDesign.setWorkspace(workspace);
 				samplingDesign.setSamplingUnit(entity);
+				
 				samplingDesign.setSrs(getBooleanValue(json, "srs"));
 				samplingDesign.setSystematic(getBooleanValue(json, "systematic"));
 				samplingDesign.setTwoPhases(getBooleanValue(json, "twoPhases"));
@@ -86,6 +87,8 @@ public class InventorySettingsController {
 				samplingDesign.setClusterColumnSettings( getParameterMapValue( json , "clusterColumnSettings" ) );
 				samplingDesign.setAoiJoinSettings( getParameterMapValue( json , "aoiJoinSettings" ) );
 
+				samplingDesign.setSamplingUnitWeightScript( getStringValue(json, "samplingUnitWeightScript") );
+				
 				return samplingDesign;
 			}
 		}
@@ -116,4 +119,10 @@ public class InventorySettingsController {
 		return value;
 	}
 
+	private String getStringValue(JSONObject json, String property) {
+		Object object = json.get(property);
+		String value = (object != null) ? object.toString() : null ;
+		return value;
+	}
+	
 }

@@ -43,6 +43,10 @@ SamplingDesignManager = function(container) {
 	this.aoiJoinManager = new AoiJoinManager( this.editSd.find(".aoi-join-section") , this );
 	this.aoiJoinManager.hide();
 	
+	// r script
+	this.weightInput = this.editSd.find( "[name=sampling-unit-weigth]" );
+	this.weightScript = new RScript(this.weightInput);
+	
 	// inatance variable that contains all sampling design settings
 	this.samplingDesign = {};
 	
@@ -73,6 +77,9 @@ SamplingDesignManager.prototype.init = function(){
 	this.samplingUnitCombo.change( $.proxy(function(e){
 		e.preventDefault();
 		this.samplingDesign.samplingUnitId = $this.samplingUnitCombo.val();
+		WorkspaceManager.getInstance().activeWorkspace( $.proxy(function(ws){
+			this.weightScript.entity = ws.getEntityById( this.samplingDesign.samplingUnitId );
+		} , this ) );
 		this.loadSamplingUnitTableInfo();
 	} , this) );
 	
@@ -303,6 +310,18 @@ SamplingDesignManager.prototype.validateStep5 = function(){
 	}
 	return valid;
 };
+/**
+ * Validate weight script 
+ */
+SamplingDesignManager.prototype.validateStep6 = function(){
+	if( this.weightInput.val().trim() ){
+		this.samplingDesign.samplingUnitWeightScript = this.weightInput.val();
+		return true;
+	} else {
+		UI.showError("Sampling unit weigth script must be filled", true);
+		return false;
+	}
+};
 
 
 /**
@@ -387,13 +406,24 @@ SamplingDesignManager.prototype.updateEditView = function(){
 		this.clusterBtn.deselect();
 	}
 	
-	this.samplingUnitCombo.val( this.samplingUnit.id );
+	if( this.samplingDesign.samplingUnitId ){
+		this.samplingUnitCombo.val( this.samplingUnit.id );
+		// update weight script
+		WorkspaceManager.getInstance().activeWorkspace( $.proxy(function(ws){
+			this.weightScript.entity = ws.getEntityById( this.samplingDesign.samplingUnitId );
+		} , this ) );
+		
+		if( this.samplingDesign.samplingUnitWeightScript ){
+			this.weightInput.val( this.samplingDesign.samplingUnitWeightScript );
+		}
+	}
 	
 	if( this.samplingDesign.phase1JoinSettings ) {
 		this.phase1Manager.setJoinOptions( this.samplingDesign.phase1JoinSettings );
 	}
 	
 	this.aoiJoinManager.show();
+	
 	
 };
 

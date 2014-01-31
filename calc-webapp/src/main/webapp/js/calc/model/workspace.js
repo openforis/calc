@@ -57,3 +57,11 @@ Workspace.prototype.updateEntity = function(entity) {
 	}
 };
 
+Workspace.prototype.isSamplingUnit = function(entity) {
+	var result = false;
+	if( this.samplingDesign ){
+		var suId = this.samplingDesign.samplingUnitId;
+		result = ( suId === entity.id);
+	}
+	return result;
+};

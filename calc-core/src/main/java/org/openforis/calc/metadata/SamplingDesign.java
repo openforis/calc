@@ -70,6 +70,9 @@ public class SamplingDesign extends Identifiable {
 	@Column(name = "aoi_join_settings")
 	private ParameterMap aoiJoinSettings;
 	
+	@Column( name = "sampling_unit_weight_script" )
+	private String samplingUnitWeightScript;
+	
 	public Entity getSamplingUnit() {
 		return samplingUnit;
 	}
@@ -158,6 +161,14 @@ public class SamplingDesign extends Identifiable {
 		this.aoiJoinSettings = aoiJoinSettings;
 	}
 
+	public String getSamplingUnitWeightScript() {
+		return samplingUnitWeightScript;
+	}
+	
+	public void setSamplingUnitWeightScript(String samplingUnitWeightScript) {
+		this.samplingUnitWeightScript = samplingUnitWeightScript;
+	}
+	
 	@JsonInclude
 	public Integer getSamplingUnitId() {
 		if (this.samplingUnit != null) {
