@@ -177,4 +177,9 @@ public class SamplingDesign extends Identifiable {
 		return null;
 	}
 
+	// hard coded for now
+	public String getWeightVariable() {
+		return "weight";
+	}
+
 }

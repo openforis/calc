@@ -93,6 +93,8 @@ public class CalcJob extends Job {
 
 	private boolean aggregates;
 
+	protected RVariable connection;
+
 	protected CalcJob(Workspace workspace, DataSource dataSource, BeanFactory beanFactory) {
 		this(workspace, dataSource, beanFactory, false);
 	}
@@ -141,25 +143,8 @@ public class CalcJob extends Job {
 	protected void initTasks() {
 		
 		// init task
-		CalcRTask initTask = createTask("Open database connection");
-
-		// init libraries
-//		initTask.addScript(r().library("lmfor"));
-		initTask.addScript(r().library("RPostgreSQL"));
-		// common functions //org/openforis/calc/r/functions.R
-		initTask.addScript(RScript.getCalcRScript());
-		// create driver
-		RVariable driver = r().variable("driver");
-		initTask.addScript(r().setValue(driver, r().dbDriver("PostgreSQL")));
-
-		// open connection
-		RVariable connection = r().variable("connection");
-		DbConnect dbConnect = r().dbConnect(driver, host, database, user, password, port);
-		initTask.addScript(r().setValue(connection, dbConnect));
-
-		// set search path to current and public schemas
-		initTask.addScript(r().dbSendQuery(connection, new Psql().setDefaultSchemaSearchPath(getInputSchema(), new SchemaImpl("public"))));
-		addTask(initTask);
+		openConnection();
+		
 		
 		// init entity groups
 		this.group.init(connection);
@@ -328,11 +313,35 @@ public class CalcJob extends Job {
 		}
 		
 		// 9. close connection
+		closeConnection();
+	}
+
+	protected void closeConnection() {
 		CalcRTask closeConnection = createTask("Close database connection");
 		closeConnection.addScript( r().dbDisconnect(connection) );
 		addTask(closeConnection);
+	}
+
+	protected void openConnection() {
+		CalcRTask initTask = createTask("Open database connection");
+
+		// init libraries
+//		initTask.addScript(r().library("lmfor"));
+		initTask.addScript(r().library("RPostgreSQL"));
+		// common functions //org/openforis/calc/r/functions.R
+		initTask.addScript(RScript.getCalcRScript());
+		// create driver
+		RVariable driver = r().variable("driver");
+		initTask.addScript(r().setValue(driver, r().dbDriver("PostgreSQL")));
+
+		connection = r().variable("connection");
+		DbConnect dbConnect = r().dbConnect(driver, host, database, user, password, port);
+		initTask.addScript(r().setValue(connection, dbConnect));
+
+		// set search path to current and public schemas
+		initTask.addScript(r().dbSendQuery(connection, new Psql().setDefaultSchemaSearchPath(getInputSchema(), new SchemaImpl("public"))));
 		
-		
+		addTask(initTask);
 	}
 
 	protected CalcRTask createTask(String name) {

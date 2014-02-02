@@ -74,6 +74,12 @@ public class TaskManager {
 		return job;
 	}
 	
+	public PreProsessingChainJob createPreProcessingJob(Workspace workspace) {
+		PreProsessingChainJob job = new PreProsessingChainJob(workspace, dataSource, this.beanFactory);
+		((AutowireCapableBeanFactory) beanFactory).autowireBean(job);
+		return job;
+	}
+	
 	/**
 	 * Creates a job for testing a {@link CalculationStep}
 	 */

@@ -8,10 +8,14 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.openforis.calc.engine.ParameterHashMap;
 import org.openforis.calc.engine.ParameterMap;
+import org.openforis.calc.engine.PreProsessingChainJob;
 import org.openforis.calc.engine.SamplingDesignDao;
+import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
+import org.openforis.calc.engine.WorkspaceLockedException;
 import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.SamplingDesign;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -38,10 +42,13 @@ public class InventorySettingsController {
 
 	@Autowired
 	private SamplingDesignDao samplingDesignDao;
+	
+	@Autowired
+	private TaskManager taskManager;
 
 	@RequestMapping(value = "/samplingDesign.json", method = RequestMethod.POST, produces = "application/json")
 	public @ResponseBody
-	Response setSamplingDesign(@RequestParam(value = "samplingDesign", required = false) String samplingDesignParam) throws IOException, ParseException {
+	Response setSamplingDesign(@RequestParam(value = "samplingDesign", required = false) String samplingDesignParam) throws IOException, ParseException, WorkspaceLockedException {
 		Response response = new Response();
 		Workspace workspace = workspaceService.getActiveWorkspace();
 		workspace.setSamplingDesign(null);
@@ -51,9 +58,23 @@ public class InventorySettingsController {
 		if (samplingDesign != null) {
 			samplingDesignDao.save(samplingDesign);
 			workspace.setSamplingDesign(samplingDesign);
+			
+			Entity samplingUnit = samplingDesign.getSamplingUnit();
+			// add weight variable to sampling unit if it doesnt exist
+			String weightVariable = samplingDesign.getWeightVariable();
+			QuantitativeVariable weightVar = samplingUnit.getOutputVariable( weightVariable );
+			if( weightVar == null ){
+				workspaceService.addOutputVariable( samplingUnit, weightVariable );
+			}
+			
 			response.addField("samplingDesign", samplingDesign);
 		}
 
+		// execute job
+		PreProsessingChainJob job = taskManager.createPreProcessingJob(workspace);
+		taskManager.startJob(job);
+		response.addField("job", job);
+		
 		return response;
 	}
 

@@ -421,6 +421,18 @@ public class Entity extends NamedUserObject {
 			}
 		});
 	}
+	
+	@SuppressWarnings("unchecked")
+	@JsonIgnore
+	public Collection<Variable<?>> getOriginalVariables() {
+		return CollectionUtils.select(getVariables(), new Predicate() {
+			@Override
+			public boolean evaluate(Object object) {
+				return ((Variable<?>)object).getOriginalId() != null;
+			}
+		});
+	}
+	
 	@SuppressWarnings("unchecked")
 	@JsonIgnore
 	public Collection<QuantitativeVariable> getOutputVariables() {
@@ -647,6 +659,15 @@ public class Entity extends NamedUserObject {
 		}
 		
 		return false;
+	}
+
+	public QuantitativeVariable getOutputVariable(String variable) {
+		for (QuantitativeVariable var : this.getQuantitativeVariables()) {
+			if( var.getName().equals(variable) ){
+				return var;
+			}
+		}
+		return null;
 	}
 	
 }
