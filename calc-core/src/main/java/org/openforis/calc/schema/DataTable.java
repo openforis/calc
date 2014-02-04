@@ -232,7 +232,7 @@ public abstract class DataTable extends AbstractTable {
 	}
 	
 	protected void createAoiIdFields(AoiLevel lowestLevel) {
-		if ( isGeoreferenced() ) {
+		if ( isGeoreferenced() || entity.isSamplingUnit() ) {
 			Workspace workspace = entity.getWorkspace();
 			List<AoiHierarchy> aoiHierarchies = workspace.getAoiHierarchies();
 			for ( AoiHierarchy hierarchy : aoiHierarchies ) {

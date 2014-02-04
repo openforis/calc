@@ -11,6 +11,8 @@ import javax.sql.DataSource;
 import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.InvalidProcessingChainException;
 import org.openforis.calc.chain.ProcessingChain;
+import org.openforis.calc.chain.pre.AssignAoiColumnsTask;
+import org.openforis.calc.chain.pre.CalculateExpansionFactorsTask;
 import org.openforis.calc.module.ModuleRegistry;
 import org.openforis.calc.module.Operation;
 import org.openforis.calc.schema.Schemas;
@@ -70,13 +72,20 @@ public class TaskManager {
 	 */
 	public CalcJob createCalcJob(Workspace workspace) {
 		CalcJob job = new CalcJob(workspace, dataSource, this.beanFactory);
-		((AutowireCapableBeanFactory) beanFactory).autowireBean(job);
+		autowire(job);
 		return job;
 	}
 	
-	public PreProsessingChainJob createPreProcessingJob(Workspace workspace) {
-		PreProsessingChainJob job = new PreProsessingChainJob(workspace, dataSource, this.beanFactory);
-		((AutowireCapableBeanFactory) beanFactory).autowireBean(job);
+	public Job createPreProcessingJob(Workspace workspace) {
+		Job job = createJob(workspace);
+		
+		CalculateSamplingUnitWeightTask weightTask = new CalculateSamplingUnitWeightTask( job.newREnvironment() );
+		autowire(weightTask);
+		
+		job.addTask(weightTask);
+		job.addTask( createTask(AssignAoiColumnsTask.class) );
+		job.addTask( createTask(CalculateExpansionFactorsTask.class) );
+		
 		return job;
 	}
 	
@@ -97,19 +106,24 @@ public class TaskManager {
 		Job job = new Job(workspace, dataSource);
 		job.setDebugMode(isDebugMode());
 		job.setSchemas(new Schemas(workspace));
+		autowire(job);
 		return job;
 	}
 
 	public <T extends Task> T createTask(Class<T> type) {
 		try {
 			T task = type.newInstance();
-			((AutowireCapableBeanFactory) beanFactory).autowireBean(task);
+			autowire(task);
 			return task;
 		} catch (InstantiationException e) {
 			throw new IllegalArgumentException("Invalid task " + type.getClass(), e);
 		} catch (IllegalAccessException e) {
 			throw new IllegalArgumentException("Invalid task " + type.getClass(), e);
 		}
+	}
+
+	protected <T extends Object> void autowire(T object) {
+		((AutowireCapableBeanFactory) beanFactory).autowireBean(object);
 	}
 
 	public List<Task> createCalculationStepTasks(ProcessingChain chain) throws InvalidProcessingChainException {

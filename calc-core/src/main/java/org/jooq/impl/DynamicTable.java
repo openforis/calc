@@ -25,14 +25,47 @@ public class DynamicTable<R extends Record> extends TableImpl<R> {
 		this.fields = new ArrayList<Field<?>>();
 	}
 
-	public void addField(String name, DataType<?> dataType) {
-		Field<?> field = super.createField(name, dataType, this);
+	public <T extends Object> Field<T> addField(String name, DataType<T> dataType) {
+		Field<T> field = super.createField(name, dataType, this);
 		this.fields.add(field);
+		return field;
 	}
 
 	public List<Field<?>> getFields() {
 		return fields;
 	}
 
+	@SuppressWarnings("unchecked")
+	public Field<Integer> getIntegerField(String name) {
+		Field<?> field = field(name);
+		if( field == null ){
+			field = addField(name, SQLDataType.INTEGER);
+		}
+		
+		return (Field<Integer>) field;
+	}
 
+	@SuppressWarnings("unchecked")
+	public Field<Long> getLongField(String name) {
+		Field<?> field = field(name);
+		if( field == null ){
+			field = addField(name, SQLDataType.BIGINT);
+		}
+		
+		return (Field<Long>) field;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public Field<String> getVarcharField(String name) {
+		Field<?> field = field(name);
+		if( field == null ){
+			field = addField(name, SQLDataType.VARCHAR);
+		}
+		
+		return (Field<String>) field;
+	}
+	
+	public Field<Long> getIdField(){
+		return getLongField( "id" );
+	}
 }

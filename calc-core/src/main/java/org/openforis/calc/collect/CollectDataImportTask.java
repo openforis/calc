@@ -115,6 +115,7 @@ public class CollectDataImportTask extends Task {
 		Workspace ws = getWorkspace();
 		
 		InputSchema schema = new Schemas(ws).getInputSchema();
+		
 		List<Entity> entities = ws.getEntities();
 		for (Entity entity : entities) {
 			ResultTable resultsTable = schema.getResultTable(entity);
@@ -131,7 +132,11 @@ public class CollectDataImportTask extends Task {
 				
 				Insert<Record> insert = psql()
 					.insertInto(resultsTable, resultsTable.getIdField() )
-					.select( psql().select(dataTable.getIdField()).from(dataTable) );
+					.select(
+							psql()
+							.select( dataTable.getIdField() )
+							.from(dataTable)							
+						);
 				
 				insert.execute();
 			}	

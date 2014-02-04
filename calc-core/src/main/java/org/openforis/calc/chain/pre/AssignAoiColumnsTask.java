@@ -1,26 +1,19 @@
 package org.openforis.calc.chain.pre;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import org.jooq.Field;
-import org.jooq.JoinType;
 import org.jooq.Record;
-import org.jooq.Table;
-import org.jooq.UniqueKey;
-import org.jooq.Update;
+import org.jooq.SelectQuery;
+import org.jooq.impl.DynamicTable;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
-import org.openforis.calc.metadata.AoiHierarchy;
-import org.openforis.calc.metadata.AoiLevel;
-import org.openforis.calc.psql.Psql;
-import org.openforis.calc.psql.UpdateWithStep;
-import org.openforis.calc.schema.AoiDimensionTable;
-import org.openforis.calc.schema.OutputSchema;
-import org.openforis.calc.schema.OutputTable;
+import org.openforis.calc.metadata.SamplingDesign;
+import org.openforis.calc.metadata.SamplingDesign.ColumnJoin;
+import org.openforis.calc.persistence.jooq.Tables;
+import org.openforis.calc.schema.AoiHierarchyFlatTable;
+import org.openforis.calc.schema.DataAoiTable;
+import org.openforis.calc.schema.InputSchema;
 
 /**
  * Task responsible for assigning AOI codes and/or ids to an output table based on a Point column. <br/>
@@ -30,127 +23,163 @@ import org.openforis.calc.schema.OutputTable;
  * @author M. Togna
  */
 public final class AssignAoiColumnsTask extends Task {
-
+	
 	@Override
 	protected void execute() throws Throwable {
 
-		OutputSchema outputSchema = getOutputSchema();
-		Collection<OutputTable> tables = outputSchema.getOutputTables();
-		
-		for ( OutputTable table : tables ) {
-			if ( table.getEntity().isGeoreferenced() ) {
-				assignAoiColumns(table);
-			}
-		}
-
-	}
-
-	private void assignAoiColumns(OutputTable dataTable) {
 		Workspace workspace = getWorkspace();
-		List<AoiHierarchy> hierarchies = workspace.getAoiHierarchies();
+		InputSchema schema = getInputSchema();
 
-		for ( AoiHierarchy hierarchy : hierarchies ) {
-			Set<AoiLevel> levels = hierarchy.getLevels();
-			Iterator<AoiLevel> iterator = new LinkedList<AoiLevel>(levels).descendingIterator();
-			AoiLevel childLevel = null;
-			while(iterator.hasNext()){
-//			for ( int i = levels.size() - 1 ; i >= 0 ; i-- ) {
-				
-//				AoiLevel level = levels.get(i);
-				AoiLevel level = iterator.next();
-				AoiDimensionTable aoiTable = getOutputSchema().getAoiDimensionTable(level);
-				
-				// spatial query only for leaf aoi hierarchy level
-				if ( childLevel == null ) {
-					assignLeafAoiColumn(dataTable, aoiTable, level);
-				} else {
-					assignAncestorAoiColumn(dataTable, aoiTable, level, childLevel);
-				}
-				
-				childLevel = level;
-			}
-			
+		// only first hierarchy at the moment.
+		List<AoiHierarchyFlatTable> hierchyTables = schema.getAoiHierchyTables();
+		AoiHierarchyFlatTable hierarchyTable = hierchyTables.get(0);
+		
+		SamplingDesign samplingDesign = workspace.getSamplingDesign();
+		
+		DataAoiTable dataAoiTable = null;
+		if( samplingDesign.getTwoPhases() ) {
+			dataAoiTable = schema.getPhase1AoiTable();
+		} else {
+			dataAoiTable = schema.getSamplingUnitAoiTable();
 		}
+		createAoiJoinTable( dataAoiTable , hierarchyTable , samplingDesign.getAoiJoin() );
+
 	}
 
-	@SuppressWarnings("unchecked")
-	private void assignLeafAoiColumn(OutputTable dataTable, AoiDimensionTable aoiTable,  AoiLevel level) {
+	private void createAoiJoinTable(DataAoiTable dataAoiTable, AoiHierarchyFlatTable hierarchyTable, ColumnJoin columnJoin) {
 		
-		UniqueKey<Record> tablePK = dataTable.getPrimaryKey();
-		Field<Integer> dataTablePKField = (Field<Integer>) tablePK.getFields().get(0);
-		Field<Integer> dataTableAoiFkField = (Field<Integer>)dataTable.field(level.getFkColumn());
+		// drop table first
+		psql()
+			.dropTableIfExists( dataAoiTable )
+			.execute();
 		
-		Table<?> cursor = new Psql()
-							.select(dataTablePKField, aoiTable.ID)				
-							.from(dataTable)
-							.join(aoiTable, JoinType.JOIN)
-							.on("ST_Contains(" + aoiTable.SHAPE +","+dataTable.field(AssignLocationColumnsTask.LOCATION_COLUMN)+")" )
-							.and( aoiTable.AOI_LEVEL_ID.eq(level.getId()) )
-							.asTable("tmp");
-		
-		Update<?> update =  new Psql()
-								.update(dataTable)
-								.set( dataTableAoiFkField , cursor.field(aoiTable.ID) );
-		
-		UpdateWithStep updateWithStep =  psql().updateWith( cursor, update, dataTablePKField.eq(cursor.field(dataTablePKField)) );
+		// create table 
+		DynamicTable<?> dataTable = new DynamicTable<Record>( columnJoin.getTable(), columnJoin.getSchema() );
 			
-		updateWithStep.execute();
-	}
-	
-	@SuppressWarnings("unchecked")
-	private void assignAncestorAoiColumn(OutputTable dataTable, AoiDimensionTable aoiTable, AoiLevel level, AoiLevel childLevel) {
-		AoiDimensionTable childAoiTable = getOutputSchema().getAoiDimensionTable(childLevel); 
-		Field<Integer> dataTableChildAoiFkField = (Field<Integer>)dataTable.field(childLevel.getFkColumn());	
-		Field<Integer> dataTableAoiFkField = (Field<Integer>)dataTable.field(level.getFkColumn());
+		SelectQuery<Record> select = hierarchyTable.getSelectQuery();
 		
-		Table<?> cursor = new Psql()
-								.select( childAoiTable.ID, childAoiTable.PARENT_AOI_ID )				
-								.from(childAoiTable)
-								.asTable("tmp");
-		
-		Update<?> update =  new Psql()
-								.update(dataTable)
-								.set( dataTableAoiFkField , cursor.field(aoiTable.PARENT_AOI_ID) );
-		
-		UpdateWithStep updateWithStep = psql().updateWith( cursor, update, dataTableChildAoiFkField.eq( cursor.field(childAoiTable.ID) ) );
-		
-		updateWithStep.execute();
+		Field<String> joinField = dataTable.getVarcharField( columnJoin.getColumn() );
+		String aliasJoin = hierarchyTable.getAoiHierarchy().getLeafLevel().getNormalizedName();
+		select.addJoin( dataTable ,	Tables.AOI.as( aliasJoin ).CODE.eq(joinField) );
+		select.addSelect( dataTable.getIntegerField("id") );
+			
+		psql()
+			.createTable( dataAoiTable )
+			.as( select )
+			.execute() ;
+			
 	}
 
-//	private void createAoiColumns(Entity entity, AoiHierarchyLevel level, AoiHierarchyLevel childLevel) {
-//		// add AOI id column to fact table output schema
-//		String dataTable = quote(entity.getDataTable());
-//		String aoiFkColumn = quote(level.getFkColumn());
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+//	@Override
+//	protected void executeOld() throws Throwable {
 //
-//		createPsqlBuilder().alterTable(dataTable).addColumn(aoiFkColumn, INTEGER).execute();
+//		OutputSchema outputSchema = getOutputSchema();
+//		Collection<OutputTable> tables = outputSchema.getOutputTables();
+//		
+//		for ( OutputTable table : tables ) {
+//			if ( table.getEntity().isGeoreferenced() ) {
+//				assignAoiColumnsOld(table);
+//			}
+//		}
 //
-//		// update aoi column value
-//		String factIdColumn = quote(entity.getIdColumn());
-//		String aoiDimTable = quote(level.getDimensionTable());
+//	}
 //
-//		// spatial query only for leaf aoi hierarchy level
-//		if ( childLevel == null ) {
-//			Integer levelId = level.getId();
-//			updateLeafAoi(dataTable, aoiFkColumn, factIdColumn, aoiDimTable, levelId);
-//		} else {
-//			String childAoiFkColumn = quote(childLevel.getFkColumn());
-//			String childAoiDimTable = quote(childLevel.getDimensionTable());
+//	private void assignAoiColumnsOld(OutputTable dataTable) {
+//		Workspace workspace = getWorkspace();
+//		List<AoiHierarchy> hierarchies = workspace.getAoiHierarchies();
 //
-//			updateAncesctorAoi(dataTable, aoiFkColumn, childAoiFkColumn, childAoiDimTable);
+//		for ( AoiHierarchy hierarchy : hierarchies ) {
+//			Set<AoiLevel> levels = hierarchy.getLevels();
+//			Iterator<AoiLevel> iterator = new LinkedList<AoiLevel>(levels).descendingIterator();
+//			AoiLevel childLevel = null;
+//			while(iterator.hasNext()){
+////			for ( int i = levels.size() - 1 ; i >= 0 ; i-- ) {
+//				
+////				AoiLevel level = levels.get(i);
+//				AoiLevel level = iterator.next();
+//				AoiDimensionTable aoiTable = getOutputSchema().getAoiDimensionTable(level);
+//				
+//				// spatial query only for leaf aoi hierarchy level
+//				if ( childLevel == null ) {
+//					assignLeafAoiColumnOld(dataTable, aoiTable, level);
+//				} else {
+//					assignAncestorAoiColumnOld(dataTable, aoiTable, level, childLevel);
+//				}
+//				
+//				childLevel = level;
+//			}
+//			
 //		}
 //	}
+//
+//	@SuppressWarnings("unchecked")
+//	private void assignLeafAoiColumnOld(OutputTable dataTable, AoiDimensionTable aoiTable,  AoiLevel level) {
+//		
+//		UniqueKey<Record> tablePK = dataTable.getPrimaryKey();
+//		Field<Integer> dataTablePKField = (Field<Integer>) tablePK.getFields().get(0);
+//		Field<Integer> dataTableAoiFkField = (Field<Integer>)dataTable.field(level.getFkColumn());
+//		
+//		Table<?> cursor = new Psql()
+//							.select(dataTablePKField, aoiTable.ID)				
+//							.from(dataTable)
+//							.join(aoiTable, JoinType.JOIN)
+//							.on("ST_Contains(" + aoiTable.SHAPE +","+dataTable.field(AssignLocationColumnsTask.LOCATION_COLUMN)+")" )
+//							.and( aoiTable.AOI_LEVEL_ID.eq(level.getId()) )
+//							.asTable("tmp");
+//		
+//		Update<?> update =  new Psql()
+//								.update(dataTable)
+//								.set( dataTableAoiFkField , cursor.field(aoiTable.ID) );
+//		
+//		UpdateWithStep updateWithStep =  psql().updateWith( cursor, update, dataTablePKField.eq(cursor.field(dataTablePKField)) );
+//			
+//		updateWithStep.execute();
+//	}
+//	
+//	@SuppressWarnings("unchecked")
+//	private void assignAncestorAoiColumnOld(OutputTable dataTable, AoiDimensionTable aoiTable, AoiLevel level, AoiLevel childLevel) {
+//		AoiDimensionTable childAoiTable = getOutputSchema().getAoiDimensionTable(childLevel); 
+//		Field<Integer> dataTableChildAoiFkField = (Field<Integer>)dataTable.field(childLevel.getFkColumn());	
+//		Field<Integer> dataTableAoiFkField = (Field<Integer>)dataTable.field(level.getFkColumn());
+//		
+//		Table<?> cursor = new Psql()
+//								.select( childAoiTable.ID, childAoiTable.PARENT_AOI_ID )				
+//								.from(childAoiTable)
+//								.asTable("tmp");
+//		
+//		Update<?> update =  new Psql()
+//								.update(dataTable)
+//								.set( dataTableAoiFkField , cursor.field(aoiTable.PARENT_AOI_ID) );
+//		
+//		UpdateWithStep updateWithStep = psql().updateWith( cursor, update, dataTableChildAoiFkField.eq( cursor.field(childAoiTable.ID) ) );
+//		
+//		updateWithStep.execute();
+//	}
 
-//	private void updateAncesctorAoi(String dataTable, String aoiFkColumn, String childAoiFkColumn, String childAoiDimTable) {
-//		PsqlBuilder selectAois = new PsqlBuilder().select("a.id, a.parent_aoi_id").from(childAoiDimTable + " a");
-//
-//		createPsqlBuilder().with("tmp", selectAois).update(dataTable + " f").set(aoiFkColumn + " = tmp.parent_aoi_id").from("tmp").where("f." + childAoiFkColumn + "  = tmp.id").execute();
-//	}
-//
-//	private void updateLeafAoi(String dataTable, String aoiFkColumn, String factIdColumn, String aoiDimTable, Integer levelId) {
-//
-//		PsqlBuilder selectAois = new PsqlBuilder().select("f." + factIdColumn + " as fid", "a.id as aid").from(dataTable + " f").innerJoin(aoiDimTable + " a")
-//				.on("ST_Contains(a.shape, f." + CreateLocationColumnsTask.LOCATION_COLUMN + ")").and("a.aoi_level_id = " + levelId);
-//
-//		createPsqlBuilder().with("tmp", selectAois).update(dataTable + " f").set(aoiFkColumn + " = aid").from("tmp").where("f." + factIdColumn + " = tmp.fid").execute();
-//	}
+	@Override
+	public String getName() {
+		return "Assign area of interest columns";
+	}
+	
 }

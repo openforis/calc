@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.openforis.calc.engine.Workspace;
+import org.openforis.calc.metadata.AoiHierarchy;
+import org.openforis.calc.metadata.AoiLevel;
 import org.openforis.calc.metadata.Entity;
 
 /**
@@ -28,6 +30,11 @@ public class InputSchema extends RelationalSchema {
 	
 	private Map<Integer, EntityDataView> dataViews;
 	
+	private Phase1AoiTable phase1AoiTable;
+	
+	private List<AoiHierarchyFlatTable> aoiHierchyTables;
+	private Map<AoiLevel, ExpansionFactorTable> expansionFactorTables;
+	
 	public InputSchema(Workspace workspace) {
 		super(workspace.getInputSchema());
 		this.workspace = workspace;
@@ -36,6 +43,12 @@ public class InputSchema extends RelationalSchema {
 //		initResultTables();
 		
 		initDataViews();
+		
+		this.phase1AoiTable = new Phase1AoiTable(this);
+		
+		initAoiHirerchyTables();
+		
+		initExpansionFactorTables();
 	}
 	
 	private void initDataTables() {
@@ -106,6 +119,54 @@ public class InputSchema extends RelationalSchema {
 			return factTable;
 		}
 		return null;
+	}
+	
+	public Phase1AoiTable getPhase1AoiTable() {
+		return phase1AoiTable;
+	}
+	
+	public DataAoiTable getSamplingUnitAoiTable() {
+		Entity su = workspace.getSamplingUnit();
+		if( su != null ){
+			return new DataAoiTable(su.getDataTable(), this);
+		}
+		return null;
+	}
+	
+	public EntityAoiTable getEntityAoiTable(Entity entity){
+		return new EntityAoiTable(entity, this);
+	}
+	
+	private void initAoiHirerchyTables() {
+		this.aoiHierchyTables = new ArrayList<AoiHierarchyFlatTable>();
+		
+		List<AoiHierarchy> aoiHierarchies = getWorkspace().getAoiHierarchies();
+		for (AoiHierarchy hierarchy : aoiHierarchies) {
+			AoiHierarchyFlatTable table = new AoiHierarchyFlatTable(hierarchy, this);
+			this.aoiHierchyTables.add( table );
+		}
+		
+	}
+	
+	public List<AoiHierarchyFlatTable> getAoiHierchyTables() {
+		return aoiHierchyTables;
+	}
+
+	private void initExpansionFactorTables() {
+		this.expansionFactorTables = new HashMap<AoiLevel, ExpansionFactorTable>();
+		
+		for (AoiHierarchy aoiHierarchy : workspace.getAoiHierarchies()) {
+			for (AoiLevel level : aoiHierarchy.getLevels()) {
+				
+				ExpansionFactorTable table = new ExpansionFactorTable(level, this);
+				this.expansionFactorTables.put( level, table );
+			
+			}
+		}
+	}
+	
+	public ExpansionFactorTable getExpansionFactorTable(AoiLevel aoiLevel) {
+		return this.expansionFactorTables.get(aoiLevel);
 	}
 	
 }

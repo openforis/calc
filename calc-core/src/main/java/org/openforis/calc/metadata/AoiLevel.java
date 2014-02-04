@@ -30,7 +30,10 @@ public class AoiLevel extends NamedUserObject {
 
 	private static final String DIMENSION_TABLE_FORMAT = "_%s_%s_aoi_dim";
 	private static final String FK_COLUMN_FORMAT = "_%s_%s_id";
-
+	private static final String CAPTION_COLUMN_FORMAT = "_%s_%s_caption";
+	private static final String CODE_COLUMN_FORMAT = "_%s_%s_code";
+	private static final String AREA_COLUMN_FORMAT = "_%s_%s_area";
+	
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "aoi_hierarchy_id")
@@ -69,9 +72,25 @@ public class AoiLevel extends NamedUserObject {
 	 * @return the name of the aoi id in output fact tables
 	 */
 	public String getFkColumn() {
-		return String.format(FK_COLUMN_FORMAT, hierarchy.getName(), getName());
+		return normalize( String.format(FK_COLUMN_FORMAT, hierarchy.getName(), getName()) ) ;
 	}
 
+	public String getCaptionColumn() {
+		return normalize( String.format(CAPTION_COLUMN_FORMAT, hierarchy.getName(), getName()) ) ;
+	}
+	
+	public String getCodeColumn() {
+		return normalize( String.format(CODE_COLUMN_FORMAT, hierarchy.getName(), getName()) ) ;
+	}
+	
+	public String getAreaColumn() {
+		return normalize( String.format(AREA_COLUMN_FORMAT, hierarchy.getName(), getName()) ) ;
+	}
+	
+	private String normalize(String string){
+		return string.replaceAll("\\W", "_").toLowerCase();
+	}
+	
 	public Set<Aoi> getAois() {
 		return CollectionUtils.unmodifiableSet(aois);
 	}
@@ -86,4 +105,9 @@ public class AoiLevel extends NamedUserObject {
 		}
 		this.aois.add(aoi);
 	}
+
+	public String getNormalizedName() {
+		return normalize( getName() ) ;
+	}
+
 }

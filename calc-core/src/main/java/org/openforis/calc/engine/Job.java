@@ -9,18 +9,21 @@ import java.util.UUID;
 
 import javax.sql.DataSource;
 
+import org.openforis.calc.r.R;
+import org.openforis.calc.r.REnvironment;
+import org.openforis.calc.r.RException;
 import org.openforis.calc.schema.InputSchema;
 import org.openforis.calc.schema.OutputSchema;
 import org.openforis.calc.schema.RolapSchema;
 import org.openforis.calc.schema.Schemas;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Synchronously executes a series of Tasks in order.  Jobs are also Tasks and
- * may be nested accordingly.
+ * Synchronously executes a series of Tasks in order.  Jobs are also Tasks and may be nested accordingly.
  * 
  * @author G. Miceli
  * @author M. Togna
@@ -36,7 +39,13 @@ public class Job extends Worker implements Iterable<Task> {
 	private DataSource dataSource;
 	@JsonIgnore
 	private Schemas schemas;
-	
+
+	@Autowired
+	@JsonIgnore
+	R r;
+//	@JsonIgnore
+//	protected REnvironment rEnvironment;
+
 	protected Job(Workspace workspace, DataSource dataSource) {
 		this.currentTaskIndex = -1;
 		this.tasks = new ArrayList<Task>();
@@ -48,17 +57,17 @@ public class Job extends Worker implements Iterable<Task> {
 	protected void setDebugMode(boolean debugMode) {
 		this.debugMode = debugMode;
 	}
-	
+
 	void setSchemas(Schemas schemas) {
 		this.schemas = schemas;
 	}
-	
+
 	public Schemas getSchemas() {
 		return schemas;
 	}
+
 	/**
-	 * Initializes each contained task in order. Called after all tasks have been added 
-	 * (i.e. not in constructor!)
+	 * Initializes each contained task in order. Called after all tasks have been added (i.e. not in constructor!)
 	 */
 	public void init() {
 		super.init();
@@ -76,7 +85,7 @@ public class Job extends Worker implements Iterable<Task> {
 		}
 		return total;
 	}
-	
+
 	@Override
 	public synchronized void run() {
 		log().debug("Starting job");
@@ -94,7 +103,7 @@ public class Job extends Worker implements Iterable<Task> {
 		for (Task task : tasks) {
 			this.currentTaskIndex += 1;
 			task.run();
-			if ( task.isFailed() ) {
+			if (task.isFailed()) {
 				throw task.getLastException();
 			}
 		}
@@ -111,7 +120,7 @@ public class Job extends Worker implements Iterable<Task> {
 	 * @param task
 	 */
 	public void addTask(Task task) {
-		if ( !isPending() ) {
+		if (!isPending()) {
 			throw new IllegalStateException("Cannot add tasks to a job once started");
 		}
 		task.setJob(this);
@@ -124,17 +133,17 @@ public class Job extends Worker implements Iterable<Task> {
 		}
 	}
 
-//	/**
-//	 * Adds a task to the Job
-//	 * @param task The Class of the task we want to add to the Job
-//	 * @return The added Task instance
-//	 */
-//	@SuppressWarnings("unchecked")
-//	public <T extends Task> T addTask(Class<T> task) {
-//		Task newTask = taskManager.createTask(task);
-//		addTask(newTask);
-//		return (T) newTask;
-//	}
+	// /**
+	// * Adds a task to the Job
+	// * @param task The Class of the task we want to add to the Job
+	// * @return The added Task instance
+	// */
+	// @SuppressWarnings("unchecked")
+	// public <T extends Task> T addTask(Class<T> task) {
+	// Task newTask = taskManager.createTask(task);
+	// addTask(newTask);
+	// return (T) newTask;
+	// }
 
 	public int getCurrentTaskIndex() {
 		return this.currentTaskIndex;
@@ -149,11 +158,11 @@ public class Job extends Worker implements Iterable<Task> {
 	@Override
 	public Iterator<Task> iterator() {
 		return tasks().iterator();
-	}	
+	}
 
 	public Worker getTask(UUID taskId) {
 		for (Worker task : tasks) {
-			if ( task.getId().equals(taskId) ) {
+			if (task.getId().equals(taskId)) {
 				return task;
 			}
 		}
@@ -163,27 +172,35 @@ public class Job extends Worker implements Iterable<Task> {
 	public Workspace getWorkspace() {
 		return this.workspace;
 	}
-	
+
 	public boolean isDebugMode() {
 		return debugMode;
 	}
-	
+
 	public DataSource getDataSource() {
 		return dataSource;
 	}
-	
+
 	@JsonIgnore
 	public RolapSchema getRolapSchema() {
 		return schemas.getRolapSchema();
 	}
-	
+
 	@JsonIgnore
 	public OutputSchema getOutputSchema() {
 		return schemas.getOutputSchema();
 	}
-	
+
 	@JsonIgnore
 	public InputSchema getInputSchema() {
 		return schemas.getInputSchema();
+	}
+
+	protected REnvironment newREnvironment() {
+		try {
+			return r.newEnvironment();
+		} catch (RException e) {
+			throw new IllegalStateException("Unable to create new r environment", e);
+		}
 	}
 }

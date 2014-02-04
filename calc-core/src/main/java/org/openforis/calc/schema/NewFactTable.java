@@ -74,7 +74,7 @@ public class NewFactTable extends DataTable {
 		createPrimaryKeyField();
 		createDimensionFieldsRecursive(entity);
 //		createStratumIdField();
-//		createAoiIdFields();
+		createAoiIdFields();
 		createQuantityFields(false, true);
 //		createMeasureFields(entity);
 		createParentIdField();

@@ -336,6 +336,8 @@ SamplingDesignManager.prototype.updateSamplingDesign = function() {
 		this.samplingDesignUI.empty();
 		
 		if(ws.samplingDesign) {
+			UI.lock();
+			
 			this.samplingDesign = $.extend( {}, ws.samplingDesign );
 			
 			if(this.samplingDesign.samplingUnitId) {
@@ -362,9 +364,13 @@ SamplingDesignManager.prototype.updateSamplingDesign = function() {
 						this.addToSdUi("Cluster");
 					}
 					
+					
+					UI.unlock();
+					
 				} , this));
 				
 			}
+			
 		} else {
 			this.samplingDesign = {};
 			this.samplingUnit = {};

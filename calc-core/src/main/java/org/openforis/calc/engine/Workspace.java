@@ -218,7 +218,7 @@ public class Workspace extends UserObject {
 	
 	@JsonInclude
 	public String getPhase1PlotTableName() {
-		return String.format( "phase1_plot_%s" , this.getName() );
+		return String.format( "_phase1_plot_%s" , this.getName() );
 	}
 	
 	public void addProcessingChain(ProcessingChain chain) {
@@ -350,6 +350,15 @@ public class Workspace extends UserObject {
 				return v;
 			}
 		}
+		return null;
+	}
+
+	@JsonIgnore
+	public Entity getSamplingUnit() {
+		if( this.getSamplingDesign() != null ){
+			return this.getSamplingDesign().getSamplingUnit();
+		}
+		
 		return null;
 	}
 

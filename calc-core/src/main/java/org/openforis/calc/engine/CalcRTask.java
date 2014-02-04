@@ -6,10 +6,14 @@ package org.openforis.calc.engine;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jooq.impl.SchemaImpl;
+import org.openforis.calc.psql.Psql;
+import org.openforis.calc.r.DbConnect;
 import org.openforis.calc.r.REnvironment;
 import org.openforis.calc.r.RException;
 import org.openforis.calc.r.RLogger;
 import org.openforis.calc.r.RScript;
+import org.openforis.calc.r.RVariable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -25,6 +29,8 @@ public class CalcRTask extends Task {
 	private List<RScript> scripts;
 
 	private String name;
+
+	private RVariable rConnection;
 
 	protected CalcRTask(REnvironment rEnvironment, String name) {
 		this.rEnvironment = rEnvironment;
@@ -43,12 +49,12 @@ public class CalcRTask extends Task {
 		rEnvironment.eval(toString(), logger);
 
 		// an R error has been detected by the logger
-		if (logger.containsCalcErrorSignal()) {
+		if ( logger.containsCalcErrorSignal() ) {
 			throw new RException("R error while evaluating " + this.name);
 		}
 	}
 
-	private RLogger getJobLogger() {
+	protected RLogger getJobLogger() {
 		CalcJob job = (CalcJob) getJob();
 		RLogger logger = job.getRLogger();
 		return logger;
@@ -77,4 +83,31 @@ public class CalcRTask extends Task {
 		return sb.toString();
 	}
 
+	@JsonIgnore
+	protected RVariable getrConnection() {
+		return rConnection;
+	}
+
+	protected void addCloseConnectionScript() {
+		addScript(r().dbDisconnect(rConnection));
+	}
+
+	protected void addOpenConnectionScript() {
+		// init libraries
+		// initTask.addScript(r().library("lmfor"));
+		addScript(r().library("RPostgreSQL"));
+		
+		// common functions //org/openforis/calc/r/functions.R
+		addScript(RScript.getCalcRScript());
+		// create driver
+		RVariable driver = r().variable("driver");
+		addScript(r().setValue(driver, r().dbDriver("PostgreSQL")));
+
+		rConnection = r().variable("connection");
+		DbConnect dbConnect = r().dbConnect(driver, getHost(), getDatabase(), getUser(), getPassword(), getPort());
+		addScript(r().setValue(rConnection, dbConnect));
+
+		// set search path to current and public schemas
+		addScript(r().dbSendQuery(rConnection, new Psql().setDefaultSchemaSearchPath(getInputSchema(), new SchemaImpl("public"))));
+	}
 }

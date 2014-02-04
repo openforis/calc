@@ -3,8 +3,6 @@
  */
 package org.openforis.calc.engine;
 
-import javax.sql.DataSource;
-
 import org.jooq.Record;
 import org.jooq.Select;
 import org.jooq.SelectQuery;
@@ -15,48 +13,62 @@ import org.openforis.calc.psql.AlterTableStep.AlterColumnStep;
 import org.openforis.calc.psql.CreateViewStep.AsStep;
 import org.openforis.calc.psql.DropViewStep;
 import org.openforis.calc.psql.Psql;
+import org.openforis.calc.r.REnvironment;
+import org.openforis.calc.r.RLogger;
 import org.openforis.calc.r.RScript;
 import org.openforis.calc.r.RVariable;
 import org.openforis.calc.r.SetValue;
 import org.openforis.calc.schema.EntityDataView;
 import org.openforis.calc.schema.InputTable;
 import org.openforis.calc.schema.ResultTable;
-import org.springframework.beans.factory.BeanFactory;
 
 /**
  * @author Mino Togna
  * 
  */
-public class PreProsessingChainJob extends CalcJob {
+public class CalculateSamplingUnitWeightTask extends CalcRTask {
 
-	/**
-	 * @param workspace
-	 * @param dataSource
-	 * @param beanFactory
-	 */
-	protected PreProsessingChainJob(Workspace workspace, DataSource dataSource, BeanFactory beanFactory) {
-		super(workspace, dataSource, beanFactory);
+	private RLogger rLogger;
+
+	protected CalculateSamplingUnitWeightTask(REnvironment rEnvironment) {
+		super(rEnvironment, "Calculate sampling unit weight");
 	}
 
 	@Override
-	protected void initTasks() {
+	synchronized 
+	public void init() {
+		super.init();
+		
+		this.rLogger = new RLogger();
+		
+		initScript();
+	}
+
+	@Override
+	protected RLogger getJobLogger() {
+		return rLogger;
+	}
+	
+	protected void initScript() {
+		addOpenConnectionScript();
+		
+		addSamplingUnitWeightTask();
+		
+		addCloseConnectionScript();
+	}
+
+	private void addSamplingUnitWeightTask() {
 		Workspace workspace = getWorkspace();
 		
-		// add plot weight script
 		SamplingDesign samplingDesign = workspace.getSamplingDesign();
 		String samplingUnitWeightScript = samplingDesign.getSamplingUnitWeightScript();
 		Entity samplingUnit = samplingDesign.getSamplingUnit();
 		
-		//add open r db connection
-		openConnection();
+		InputTable table = getInputSchema().getDataTable(samplingUnit);
+		EntityDataView view = getInputSchema().getDataView(samplingUnit);
+		ResultTable resultTable = getInputSchema().getResultTable(samplingUnit);
 		
-		// =====  calculat plot weight task
-		CalcRTask weightTask = createTask("Calculate " + samplingUnit.getName() + " weight");
-
-		InputTable table = getSchemas().getInputSchema().getDataTable(samplingUnit);
-		EntityDataView view = getSchemas().getInputSchema().getDataView(samplingUnit);
-		ResultTable resultTable = getSchemas().getInputSchema().getResultTable(samplingUnit);
-		
+		// add plot weight script
 		
 		RScript weightScript = new RScript().rScript(samplingUnitWeightScript, samplingUnit.getOriginalVariables());
 		
@@ -69,18 +81,17 @@ public class PreProsessingChainJob extends CalcJob {
 		for (String var : weightScript.getVariables() ) {
 			select.addSelect(table.field(var));
 		}
-		weightTask.addScript(r().setValue(dataFrame, r().dbGetQuery(connection, select)));
-		addTask(weightTask);
+		addScript(r().setValue(dataFrame, r().dbGetQuery(getrConnection(), select)));
 					
 		// execute weight script			
 		RVariable result = r().variable("result");
 		SetValue setValue = r().setValue(result, r().rTry(weightScript));			
-		weightTask.addScript(setValue);
-		weightTask.addScript( r().checkError(result, connection) );
+		addScript(setValue);
+		addScript( r().checkError(result, getrConnection()) );
 		
 		// write results 
-		weightTask.addScript( r().dbSendQuery(connection, new Psql().dropTableIfExists(resultTable).cascade()) );
-		weightTask.addScript(r().dbWriteTable(connection, resultTable.getName(), dataFrame));
+		addScript( r().dbSendQuery(getrConnection(), new Psql().dropTableIfExists(resultTable).cascade()) );
+		addScript(r().dbWriteTable(getrConnection(), resultTable.getName(), dataFrame));
 		// convert id datatype from varchar to bigint
 		AlterColumnStep alterPkey = 
 			new Psql()
@@ -89,18 +100,14 @@ public class PreProsessingChainJob extends CalcJob {
 				.type(SQLDataType.BIGINT)
 				.using(resultTable.getIdField().getName() + "::bigint");
 
-		weightTask.addScript(r().dbSendQuery(connection, alterPkey));
-		
+		addScript(r().dbSendQuery(getrConnection(), alterPkey));
 		
 		// drop view
 		DropViewStep dropViewIfExists = new Psql().dropViewIfExists(view);
-		weightTask.addScript(r().dbSendQuery( connection, dropViewIfExists ));
+		addScript(r().dbSendQuery( getrConnection(), dropViewIfExists ));
 		
 		Select<?> selectView = view.getSelect(true);
 		AsStep createView = new Psql().createView(view).as(selectView);
-		weightTask.addScript(r().dbSendQuery( connection, createView ));
-		
-		// closeconnection
-		closeConnection();
+		addScript(r().dbSendQuery( getrConnection(), createView ));
 	}
 }

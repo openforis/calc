@@ -9,7 +9,7 @@ import org.jooq.Record;
 import org.jooq.SelectQuery;
 import org.jooq.TableField;
 import org.jooq.impl.DSL;
-import org.openforis.calc.engine.CalcJob;
+import org.openforis.calc.engine.Job;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.metadata.AoiLevel;
 import org.openforis.calc.metadata.Entity;
@@ -50,7 +50,7 @@ public final class CreateAggregateTablesTask extends Task {
 	}
 	
 	protected void execute() throws Throwable {
-		CalcJob job = (CalcJob) getJob();
+		Job job = (Job) getJob();
 	
 		Schemas schemas = job.getSchemas();
 		InputSchema schema = schemas.getInputSchema();

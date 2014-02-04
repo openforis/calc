@@ -6,9 +6,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.openforis.calc.engine.Job;
 import org.openforis.calc.engine.ParameterHashMap;
 import org.openforis.calc.engine.ParameterMap;
-import org.openforis.calc.engine.PreProsessingChainJob;
 import org.openforis.calc.engine.SamplingDesignDao;
 import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
@@ -64,6 +64,7 @@ public class InventorySettingsController {
 			String weightVariable = samplingDesign.getWeightVariable();
 			QuantitativeVariable weightVar = samplingUnit.getOutputVariable( weightVariable );
 			if( weightVar == null ){
+				workspaceService.resetResultTable(samplingUnit);
 				workspaceService.addOutputVariable( samplingUnit, weightVariable );
 			}
 			
@@ -71,7 +72,7 @@ public class InventorySettingsController {
 		}
 
 		// execute job
-		PreProsessingChainJob job = taskManager.createPreProcessingJob(workspace);
+		Job job = taskManager.createPreProcessingJob(workspace);
 		taskManager.startJob(job);
 		response.addField("job", job);
 		

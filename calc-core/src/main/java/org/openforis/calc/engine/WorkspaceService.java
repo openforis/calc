@@ -486,4 +486,30 @@ public class WorkspaceService {
 		
 	}
 
+	public void resetResultTable(Entity entity){
+		InputSchema schema = new Schemas( entity.getWorkspace() ).getInputSchema();
+		ResultTable resultsTable = schema.getResultTable(entity);
+		InputTable dataTable = schema.getDataTable(entity);
+		
+		if( resultsTable != null ){
+			
+			new Psql(dataSource)
+				.dropTableIfExists(resultsTable)
+				.execute();
+			
+			new Psql(dataSource)
+				.createTable(resultsTable, resultsTable.fields())
+				.execute();
+			
+			Insert<Record> insert = new Psql(dataSource)
+					.insertInto(resultsTable, resultsTable.getIdField() )
+					.select(
+							new Psql()
+							.select( dataTable.getIdField() )
+							.from(dataTable)
+					);
+			insert.execute();
+		}
+	}
+	
 }

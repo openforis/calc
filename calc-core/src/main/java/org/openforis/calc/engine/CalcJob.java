@@ -27,9 +27,7 @@ import org.openforis.calc.psql.DropViewStep;
 import org.openforis.calc.psql.Psql;
 import org.openforis.calc.psql.UpdateWithStep;
 import org.openforis.calc.r.DbConnect;
-import org.openforis.calc.r.R;
 import org.openforis.calc.r.REnvironment;
-import org.openforis.calc.r.RException;
 import org.openforis.calc.r.RLogger;
 import org.openforis.calc.r.RScript;
 import org.openforis.calc.r.RVariable;
@@ -56,12 +54,7 @@ public class CalcJob extends Job {
 	// save results in a temporary results table 
 	private boolean tempResults;
 	
-	@Autowired
-	@JsonIgnore
-	R r;
-	@JsonIgnore
-	private REnvironment rEnvironment;
-
+	
 	@JsonIgnore
 	// private List<CalculationStep> calculationSteps;
 //	private Map<Integer, List<CalculationStep>> calculationSteps;
@@ -94,6 +87,9 @@ public class CalcJob extends Job {
 	private boolean aggregates;
 
 	protected RVariable connection;
+
+
+	private REnvironment rEnvironment;
 
 	protected CalcJob(Workspace workspace, DataSource dataSource, BeanFactory beanFactory) {
 		this(workspace, dataSource, beanFactory, false);
@@ -128,11 +124,7 @@ public class CalcJob extends Job {
 
 	@Override
 	public void init() {
-		try {
-			this.rEnvironment = r.newEnvironment();
-		} catch (RException e) {
-			throw new CalculationException("Unable to create rEnvironement", e);
-		}
+		this.rEnvironment = newREnvironment();
 
 		initTasks();
 

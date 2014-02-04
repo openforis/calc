@@ -27,6 +27,17 @@ public abstract class Task extends Worker implements Captionable {
 	@JsonIgnore
 	private Job job;
 	
+	@Value("${calc.jdbc.host}")
+	private String host;
+	@Value("${calc.jdbc.db}")
+	private String database;
+	@Value("${calc.jdbc.username}")
+	private String user;
+	@Value("${calc.jdbc.password}")
+	private String password;
+	@Value("${calc.jdbc.port}")
+	private int port;
+	
 	@JsonIgnore
 	public Workspace getWorkspace() {
 		return getJob().getWorkspace();
@@ -76,6 +87,26 @@ public abstract class Task extends Worker implements Captionable {
 	@JsonIgnore
 	protected String getSystemUser() {
 		return systemUser;
+	}
+	@JsonIgnore
+	protected String getHost() {
+		return host;
+	}
+	@JsonIgnore
+	protected String getDatabase() {
+		return database;
+	}
+	@JsonIgnore
+	protected String getUser() {
+		return user;
+	}
+	@JsonIgnore
+	protected String getPassword() {
+		return password;
+	}
+	@JsonIgnore
+	protected int getPort() {
+		return port;
 	}
 	
 }

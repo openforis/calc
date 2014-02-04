@@ -1,4 +1,5 @@
 /**
+
  * Manager for job operations
  * @author Mino Togna
  */
@@ -111,7 +112,8 @@ JobManager.prototype.updateJobStatus = function(complete, hideOnComplete) {
 				case "RUNNING":
 					// update job status
 					setTimeout(function(){
-						$.proxy(updateJobStatus , $this)(complete, hideOnComplete);
+						$this.updateJobStatus(complete, hideOnComplete);
+//						$.proxy(updateJobStatus , $this)(complete, hideOnComplete);
 					}, 100);
 					break;
 				case "COMPLETED":
@@ -130,7 +132,8 @@ JobManager.prototype.updateJobStatus = function(complete, hideOnComplete) {
 		} else {
 			// job not yet started and never executed one so far
 			setTimeout(function(){
-				$.proxy(updateJobStatus , $this)(complete, hideOnComplete);
+				$this.updateJobStatus(complete, hideOnComplete);
+//				$.proxy(updateJobStatus , $this)(complete, hideOnComplete);
 			}, 200);
 		}
 		
