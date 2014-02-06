@@ -2,6 +2,7 @@ package org.openforis.calc.chain.pre;
 
 import java.util.List;
 
+import org.jooq.Condition;
 import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.SelectQuery;
@@ -10,10 +11,13 @@ import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.SamplingDesign;
 import org.openforis.calc.metadata.SamplingDesign.ColumnJoin;
+import org.openforis.calc.metadata.SamplingDesign.TableJoin;
 import org.openforis.calc.persistence.jooq.Tables;
 import org.openforis.calc.schema.AoiHierarchyFlatTable;
 import org.openforis.calc.schema.DataAoiTable;
+import org.openforis.calc.schema.EntityDataView;
 import org.openforis.calc.schema.InputSchema;
+import org.openforis.calc.schema.Phase1AoiTable;
 
 /**
  * Task responsible for assigning AOI codes and/or ids to an output table based on a Point column. <br/>
@@ -36,14 +40,67 @@ public final class AssignAoiColumnsTask extends Task {
 		
 		SamplingDesign samplingDesign = workspace.getSamplingDesign();
 		
-		DataAoiTable dataAoiTable = null;
+//		DataAoiTable dataAoiTable = null;
 		if( samplingDesign.getTwoPhases() ) {
-			dataAoiTable = schema.getPhase1AoiTable();
+//			dataAoiTable = schema.getPhase1AoiTable();			
+			createAoiJoinTable( schema.getPhase1AoiTable() , hierarchyTable , samplingDesign.getAoiJoin() );
+			createSamplingUnitAoi();
+			
 		} else {
-			dataAoiTable = schema.getSamplingUnitAoiTable();
+			createAoiJoinTable( schema.getSamplingUnitAoiTable() , hierarchyTable , samplingDesign.getAoiJoin() );
+//			dataAoiTable = schema.getSamplingUnitAoiTable();
 		}
-		createAoiJoinTable( dataAoiTable , hierarchyTable , samplingDesign.getAoiJoin() );
 
+	}
+
+//	@SuppressWarnings("unchecked")
+	private void createSamplingUnitAoi() {
+		DynamicTable<Record> phase1Table = getInputSchema().getPhase1Table();// new DynamicTable<Record>( getWorkspace().getPhase1PlotTable(), "calc" );
+		Phase1AoiTable phase1AoiTable = getInputSchema().getPhase1AoiTable();
+		EntityDataView suDataView = getInputSchema().getDataView( getWorkspace().getSamplingUnit() );
+		
+		DataAoiTable suAoiTable = getInputSchema().getSamplingUnitAoiTable();
+		
+		
+		SelectQuery<Record> select = psql().selectQuery();
+		select.setDistinct(true);
+		select.addSelect( suDataView.getIdField().as(suAoiTable.getIdField().getName()) );
+		select.addFrom( suDataView );
+		
+		// join with phase 1 table to select id
+		TableJoin phase1Join = getWorkspace().getSamplingDesign().getPhase1Join();
+		Condition conditions = phase1Table.getJoinConditions(suDataView, phase1Join);
+//		for ( int i =0; i < phase1Join.getColumnJoinSize(); i++ ) {
+//			ColumnJoin leftColumn = phase1Join.getLeft().getColumnJoins().get(i);
+//			ColumnJoin rightJoin = phase1Join.getRight().getColumnJoins().get(i);
+//			Field<String> leftField = phase1Table.getVarcharField(leftColumn.getColumn());				
+//			Field<String> rightField = (Field<String>)suDataView.field(rightJoin.getColumn());
+//			
+//			if( conditions == null ) {
+//				conditions = leftField.eq( rightField );
+//			} else {
+//				conditions = conditions.and( leftField.eq( rightField) );
+//			}
+//		}
+		select.addJoin(phase1Table, conditions);
+		
+		// now join with phase1aoi table to select the aoi ids
+		select.addSelect( phase1AoiTable.getAoiIdFields() );
+		select.addSelect( phase1AoiTable.getAoiAreaFields() );
+		select.addSelect( phase1AoiTable.getAoiCodeFields() );
+		select.addSelect( phase1AoiTable.getAoiCaptionFields() );
+		select.addJoin(phase1AoiTable, phase1Table.getIdField().eq(phase1AoiTable.getIdField()) );
+
+		
+		psql()
+			.dropTableIfExists( suAoiTable )
+			.execute();
+		
+		// create table
+		psql()
+			.createTable(suAoiTable)
+			.as(select)
+			.execute();
 	}
 
 	private void createAoiJoinTable(DataAoiTable dataAoiTable, AoiHierarchyFlatTable hierarchyTable, ColumnJoin columnJoin) {

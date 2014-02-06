@@ -448,7 +448,7 @@ SamplingDesignManager.prototype.loadSamplingUnitTableInfo = function(callback){
 		WorkspaceManager.getInstance().activeWorkspace( $.proxy( function(ws){
 			var entity = ws.getEntityById( this.samplingDesign.samplingUnitId );
 			// load sampling unit table info
-			new TableDataProvider(ws.dataSchema , entity.name ).tableInfo( $.proxy( function(response){
+			new TableDataProvider( ws.dataSchema , entity.name +"_view" ).tableInfo( $.proxy( function(response){
 				this.samplingUnitTableInfo = response;
 				if(callback){
 					callback();

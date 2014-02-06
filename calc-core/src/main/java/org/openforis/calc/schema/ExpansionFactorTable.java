@@ -7,7 +7,6 @@ import java.math.BigDecimal;
 import org.jooq.Record;
 import org.jooq.Schema;
 import org.jooq.TableField;
-import org.jooq.UniqueKey;
 import org.openforis.calc.metadata.AoiLevel;
 import org.openforis.calc.psql.Psql;
 
@@ -22,9 +21,12 @@ public class ExpansionFactorTable extends AbstractTable {
 	private static final long serialVersionUID = 1L;
 	private static final String TABLE_NAME = "_%s_expf";
 	
-	public final TableField<Record,Integer> STRATUM = createField("stratum", INTEGER, this);
-	public final TableField<Record,Integer> AOI_ID = createField("aoi_id", INTEGER, this);
-	public final TableField<Record,BigDecimal> EXPF = createField("expf", Psql.DOUBLE_PRECISION, this);
+	public final TableField<Record,Integer> STRATUM = createField( "stratum", INTEGER, this );
+	public final TableField<Record,Integer> AOI_ID; //= createField( "aoi_id", INTEGER, this );
+	public final TableField<Record,BigDecimal> WEIGHT = createField( "su_weight", Psql.DOUBLE_PRECISION, this );
+	public final TableField<Record,BigDecimal> PROPORTION = createField("proportion", Psql.DOUBLE_PRECISION, this );
+	public final TableField<Record,BigDecimal> AREA = createField( "area", Psql.DOUBLE_PRECISION, this );
+	public final TableField<Record,BigDecimal> EXPF = createField( "expf", Psql.DOUBLE_PRECISION, this );
 	
 	private AoiLevel aoiLevel;
 	
@@ -38,11 +40,13 @@ public class ExpansionFactorTable extends AbstractTable {
 	protected ExpansionFactorTable(AoiLevel level, Schema schema) {
 		super( String.format(TABLE_NAME, level.getNormalizedName()), schema);
 		this.aoiLevel = level;
+		AOI_ID = createField( level.getFkColumn(), INTEGER, this );
 	}
 	
 	@Deprecated
 	protected ExpansionFactorTable(Schema schema) {
 		super(TABLE_NAME, schema);
+		AOI_ID = createField( "null", INTEGER, this );
 	}
 
 	public AoiLevel getAoiLevel() {

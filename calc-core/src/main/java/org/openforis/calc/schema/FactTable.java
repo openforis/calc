@@ -36,8 +36,6 @@ public class FactTable extends DataTable {
 	private static final String DIMENSION_ID_COLUMN_FORMAT = "%s_id";
 
 	protected Map<VariableAggregate, Field<BigDecimal>> measureFields;
-	protected Map<CategoricalVariable<?>, Field<Integer>> dimensionIdFields;
-	
 	private Field<Integer> stratumIdField;
 	private OutputTable sourceOutputTable;
 	private FactTable parentTable;
@@ -53,7 +51,7 @@ public class FactTable extends DataTable {
 		this.sourceOutputTable = sourceOutputTable;
 		this.parentTable = parentTable;
 		
-		this.dimensionIdFields = new HashMap<CategoricalVariable<?>, Field<Integer>>();
+//		this.dimensionIdFields = new HashMap<CategoricalVariable<?>, Field<Integer>>();
 		this.measureFields = new HashMap<VariableAggregate, Field<BigDecimal>>();
 		this.aggregateTables = new HashMap<AoiHierarchy, List<AggregateTable>>();
 		
@@ -86,13 +84,13 @@ public class FactTable extends DataTable {
 		}
 	}
 
-	protected void createDimensionIdField(CategoricalVariable<?> var) {
-		if ( !var.isDegenerateDimension() && var.isDisaggregate() ) {
-			String fieldName = String.format(DIMENSION_ID_COLUMN_FORMAT, var.getName());
-			Field<Integer> fld = createField(fieldName, SQLDataType.INTEGER, this);
-			dimensionIdFields.put(var, fld);
-		}
-	}
+//	protected void createDimensionIdField(CategoricalVariable<?> var) {
+//		if ( !var.isDegenerateDimension() && var.isDisaggregate() ) {
+//			String fieldName = String.format(DIMENSION_ID_COLUMN_FORMAT, var.getName());
+//			Field<Integer> fld = createField(fieldName, SQLDataType.INTEGER, this);
+//			dimensionIdFields.put(var, fld);
+//		}
+//	}
 
 	protected void createMeasureFields(Entity entity) {
 		List<VariableAggregate> aggregates = entity.getVariableAggregates();
@@ -110,7 +108,7 @@ public class FactTable extends DataTable {
 			
 			for ( AoiHierarchy aoiHierarchy : workspace.getAoiHierarchies() ) {
 				for ( AoiLevel level : aoiHierarchy.getLevels() ) {
-					AggregateTable aggregateTable = new AggregateTable(this, level);
+					AggregateTable aggregateTable = null;// new AggregateTable(this, level);
 					addAggregateTable(aoiHierarchy, aggregateTable);
 				}
 			}
@@ -134,13 +132,13 @@ public class FactTable extends DataTable {
 		return measureFields.get(aggregate);
 	}
 
-	public Field<Integer> getDimensionIdField(CategoricalVariable<?> variable) {
-		return dimensionIdFields.get(variable);
-	}
+//	public Field<Integer> getDimensionIdField(CategoricalVariable<?> variable) {
+//		return dimensionIdFields.get(variable);
+//	}
 
-	public Collection<Field<Integer>> getDimensionIdFields() {
-		return Collections.unmodifiableCollection(dimensionIdFields.values());
-	}
+//	public Collection<Field<Integer>> getDimensionIdFields() {
+//		return Collections.unmodifiableCollection(dimensionIdFields.values());
+//	}
 	
 	protected void createStratumIdField() {
 		this.stratumIdField = createField("_stratum_id", INTEGER, this);

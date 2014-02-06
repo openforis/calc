@@ -11,6 +11,7 @@ import org.openforis.calc.chain.InvalidProcessingChainException;
 import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.chain.ProcessingChainDao;
 import org.openforis.calc.chain.post.PublishRolapSchemaTask;
+import org.openforis.calc.engine.CalcJob;
 import org.openforis.calc.engine.CalculationEngine;
 import org.openforis.calc.engine.CalculationStepTask;
 import org.openforis.calc.engine.DataRecord;
@@ -32,7 +33,7 @@ import org.springframework.test.context.junit4.AbstractTransactionalJUnit4Spring
  * @author M. Togna
  *
  */
-@ContextConfiguration(locations = { "classpath:applicationContext.xml" })
+@ContextConfiguration(locations = { "classpath:applicationContext.xml" , "classpath:applicationContext-config.xml" } )
 public class ProcessingChainTest 
 //{ 	
 extends AbstractTransactionalJUnit4SpringContextTests {
@@ -47,6 +48,27 @@ extends AbstractTransactionalJUnit4SpringContextTests {
 	private CalculationStepDao calculationStepDao;
 	@Autowired
 	private WorkspaceService workspaceService;
+	
+	@Test
+	public void testDefaultChain() throws WorkspaceLockedException, InvalidProcessingChainException {
+		Workspace workspace = workspaceService.getActiveWorkspace();
+		CalcJob job = taskManager.createDefaultCalcJob(workspace, true);
+		
+		taskManager.startJob(job);
+		job.waitFor(5000);
+	}
+	
+//	@Test
+	public void testPreporcessingChain() throws WorkspaceLockedException, InvalidProcessingChainException {
+		Workspace workspace = workspaceService.getActiveWorkspace();
+		Job job = taskManager.createPreProcessingJob(workspace);
+		
+		taskManager.startJob(job);
+		job.waitFor(5000);
+	}
+	
+	
+	
 	
 //	@Test
 	public void testTasks() throws WorkspaceLockedException, InvalidProcessingChainException {

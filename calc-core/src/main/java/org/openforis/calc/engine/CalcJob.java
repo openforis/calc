@@ -292,20 +292,23 @@ public class CalcJob extends Job {
 			
 			addTask(writeResultsTask);
 
-			if( aggregates && entity.isAggregable() ) {
-//			CreateFactTablesTask task = new CreateFactTablesTask();
-//			((AutowireCapableBeanFactory) beanFactory).autowireBean(task);
-//			addTask( task );
-				
-				CreateAggregateTablesTask aggTask = new CreateAggregateTablesTask(entity);
-				((AutowireCapableBeanFactory) beanFactory).autowireBean(aggTask);
-				addTask( aggTask );
-			}
+			
 			
 		}
 		
 		// 9. close connection
 		closeConnection();
+		
+		
+		if( aggregates ) {
+//			CreateFactTablesTask task = new CreateFactTablesTask();
+//			((AutowireCapableBeanFactory) beanFactory).autowireBean(task);
+//			addTask( task );
+				
+				CreateAggregateTablesTask aggTask = new CreateAggregateTablesTask();
+				((AutowireCapableBeanFactory) beanFactory).autowireBean(aggTask);
+				addTask( aggTask );
+			}
 	}
 
 	protected void closeConnection() {

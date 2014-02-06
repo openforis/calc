@@ -1,5 +1,8 @@
 package org.openforis.calc.metadata;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -133,6 +136,10 @@ public class SamplingDesign extends Identifiable {
 		return phase1JoinSettings;
 	}
 
+	public TableJoin getPhase1Join() {
+		return new TableJoin( phase1JoinSettings );
+	}
+	
 	public void setPhase1JoinSettings(ParameterMap phase1JoinSettings) {
 		this.phase1JoinSettings = phase1JoinSettings;
 	}
@@ -218,8 +225,64 @@ public class SamplingDesign extends Identifiable {
 	}
 	
 	public class TableJoin {
+		private Table left;
+		private Table right;
+		
 		TableJoin(ParameterMap map) {
+			 this.left = new Table( map.getMap("leftTable") );
+			 this.right = new Table( map.getMap("rightTable") );
+			 
+			 List<ParameterMap> list = map.getList("columns");
+			 for (ParameterMap parameterMap : list) {
+				 this.left.addColumnJoin( parameterMap.getString("left") );
+				 this.right.addColumnJoin( parameterMap.getString("right") );
+			 }
+		}
+		
+		public Table getLeft() {
+			return left;
+		}
+		
+		public Table getRight() {
+			return right;
+		}
+		
+		public int getColumnJoinSize(){
+			return this.left.columnJoins.size();
+		}
+		
+		public class Table {
 			
+			private String schema;
+			private String table;
+			private List<ColumnJoin> columnJoins;
+			
+			public Table(ParameterMap map) {
+				if( map != null ) {
+					this.schema = map.getString("schema");
+					this.table = map.getString("table");
+					
+				}
+				this.columnJoins = new ArrayList<SamplingDesign.ColumnJoin>();
+			}
+			public String getSchema() {
+				return schema;
+			}
+			public String getTable() {
+				return table;
+			}
+			
+			public List<ColumnJoin> getColumnJoins() {
+				return columnJoins;
+			}
+			
+			private void addColumnJoin( String column ){
+				ColumnJoin columnJoin = new ColumnJoin(null);
+				columnJoin.schema = this.schema;
+				columnJoin.table = this.table;
+				columnJoin.column = column;
+				this.columnJoins.add(columnJoin);
+			}
 		}
 	}
 	

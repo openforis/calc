@@ -79,7 +79,7 @@ public final class CreateFactTablesTask extends Task {
 		}
 
 		// add plot area
-		TableField<Record, BigDecimal> plotAreaField = factTable.getPlotAreaField();
+		Field<BigDecimal> plotAreaField = factTable.getPlotAreaField();
 		if (plotAreaField != null) {
 			select.addSelect(dataTable.field(plotAreaField));
 		}

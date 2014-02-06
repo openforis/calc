@@ -1,13 +1,9 @@
 package org.openforis.calc.schema;
 
-import static org.jooq.impl.SQLDataType.BIGINT;
 import static org.jooq.impl.SQLDataType.INTEGER;
 
 import java.math.BigDecimal;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.jooq.Field;
 import org.jooq.Record;
@@ -23,45 +19,56 @@ import org.openforis.calc.psql.Psql;
 
 /**
  * 
- * @author Mino Togna
+ * @author G. Miceli
+ * @author M. Togna
  * 
  */
-public class PlotAggregateTable extends NewFactTable {
+public class AoiAggregateTable extends AggregateTable {
 
 	private static final long serialVersionUID = 1L;
+	private static final String TABLE_NAME_FORMAT = "_%s_%s_agg";
 	private static final String AGG_FACT_CNT_COLUMN = "_agg_cnt";
 	
 //	private AoiLevel aoiHierarchyLevel;
 	private TableField<Record, Integer> aggregateFactCountField;
-	private NewFactTable sourceFactTable;
+	private DataTable sourceTable;
+	private AoiLevel aoiLevel;
 
-	PlotAggregateTable(NewFactTable factTable) {
-		super(factTable.getEntity(), getName(factTable), factTable.getSchema());
+	AoiAggregateTable(DataTable sourceTable, AoiLevel aoiLevel) {
+		super(sourceTable, getName(sourceTable.getEntity(), aoiLevel) );
+		
+//		this.aoiHierarchyLevel = level;
+		this.sourceTable = sourceTable;
+		this.aoiLevel = aoiLevel;
+		
+		initFields();
+	}
+	
+	private static String getName(Entity entity, AoiLevel aoiLevel) {
+		return String.format(TABLE_NAME_FORMAT, entity.getName(), aoiLevel.getNormalizedName() );
+	}
 
-		this.sourceFactTable = factTable;
+	//	@Override
+	protected void initFields() {
+		// TODO Auto-generated method stub
 //		dimensionIdFields = new HashMap<CategoricalVariable<?>, Field<Integer>>();
 //		measureFields = new HashMap<VariableAggregate, Field<BigDecimal>>();
 		
-		Entity entity = factTable.getEntity();
+		Entity entity = getEntity();
 		
-		this.categoryIdFields = factTable.categoryIdFields;
+//		this.categoryIdFields = factTable.categoryIdFields;
 		
-		createPrimaryKeyField();
+//		createPrimaryKeyField();
 		createDimensionFieldsRecursive(entity);
-//		createStratumIdField();
-//		createAoiIdFields(level);
-		createMeasureFields(entity);
+		createStratumField();
+		createAoiIdFields(this.aoiLevel);
+		createOutputQuantityFields(entity);
+//		createQuantityFields(false, true);
+		
 		createAggregateFactCountField();
 	}
 	
-	@SuppressWarnings("unchecked")
-	@Override
-	protected void createPrimaryKeyField() {
-		setIdField( createField(getEntity().getParentIdColumn(), BIGINT, this) );
-		setPrimaryKey( KeyFactory.newUniqueKey(this, getIdField()) );
-	}
-
-	private void createMeasureFields(Entity entity) {
+	private void createOutputQuantityFields(Entity entity) {
 		// create measure for each aggregate
 		for (QuantitativeVariable variable : entity.getOutputVariables() ) {
 			
@@ -76,27 +83,29 @@ public class PlotAggregateTable extends NewFactTable {
 		}
 		
 	}
-
-	private static String getName(DataTable factTable) {
-		String entityName = factTable.getEntity().getName();
-		return String.format( "_%s_plot_agg", entityName);
+	
+	private void createAggregateFactCountField() {
+		aggregateFactCountField = createField(AGG_FACT_CNT_COLUMN, INTEGER, this);
 	}
+	
+//	private static String getName(DataTable factTable, AoiLevel level) {
+//		String entityName = factTable.getEntity().getName();
+//		String levelName = level.getName();
+//		return String.format(TABLE_NAME_FORMAT, entityName, levelName);
+//	}
 
 //	public AoiLevel getAoiHierarchyLevel() {
 //		return aoiHierarchyLevel;
 //	}
 
-	private void createAggregateFactCountField() {
-		aggregateFactCountField = createField(AGG_FACT_CNT_COLUMN, INTEGER, this);
-	}
-
+//
 //	@Override
 //	protected void createBinaryCategoryValueField(BinaryVariable var, String valueColumn) {
 //		if ( var.isDisaggregate() ) {
 //			super.createBinaryCategoryValueField(var, valueColumn);
 //		}
 //	}
-//	
+	
 //	@Override
 //	protected void createCategoryValueField(MultiwayVariable var, String valueColumn) {
 //		if ( var.isDisaggregate() ) {
@@ -115,7 +124,11 @@ public class PlotAggregateTable extends NewFactTable {
 		return aggregateFactCountField;
 	}
 
-//	public FactTable getSourceFactTable() {
-//		return sourceFactTable;
-//	}
+	public DataTable getSourceTable() {
+		return sourceTable;
+	}
+	
+	public AoiLevel getAoiLevel() {
+		return aoiLevel;
+	}
 }

@@ -75,6 +75,24 @@ public class TaskManager {
 		autowire(job);
 		return job;
 	}
+	/**
+	 * Create a job with tasks 
+	 * @param workspace
+	 * @param processingChain
+	 * @return
+	 */
+	public CalcJob createDefaultCalcJob(Workspace workspace, boolean aggregates) {
+		CalcJob job = new CalcJob(workspace, dataSource, this.beanFactory);
+		
+		ProcessingChain processingChain = workspace.getDefaultProcessingChain();
+		List<CalculationStep> steps = processingChain.getCalculationSteps();
+		job.addCalculationStep(steps);
+		job.setAggregates(aggregates);
+		
+		autowire(job);
+		
+		return job;
+	}
 	
 	public Job createPreProcessingJob(Workspace workspace) {
 		Job job = createJob(workspace);

@@ -144,6 +144,10 @@ public class Entity extends NamedUserObject {
 		return dataTable;
 	}
 
+	public String getDataView() {
+		return String.format( "%s_view", getName() );
+	}
+
 	public void setDataTable(String table) {
 		this.dataTable = table;
 	}
@@ -280,7 +284,9 @@ public class Entity extends NamedUserObject {
 
 	@JsonIgnore	
 	public boolean isGeoreferenced() {
-		return ((xColumn != null && yColumn != null) || locationColumn != null);
+		// right now only if this is sampling unit or parent entity is sampling unit
+		return ( this.isSamplingUnit() ) || ( this.parent!=null && this.parent.isSamplingUnit() ); 
+//		return ((xColumn != null && yColumn != null) || locationColumn != null);
 	}
 
 	public String getIdColumn() {
@@ -645,7 +651,12 @@ public class Entity extends NamedUserObject {
 	}
 
 	// returns true if at least one quantitative variable or output variable has an aggregate function associated
+	// or if this is the sampling unit
 	public boolean isAggregable() {
+		if( this.isSamplingUnit() ){
+			return true;
+		}
+		
 		for (QuantitativeVariable var : getQuantitativeVariables()) {
 			if( var.getAggregates().size() > 0 ){
 				return true;

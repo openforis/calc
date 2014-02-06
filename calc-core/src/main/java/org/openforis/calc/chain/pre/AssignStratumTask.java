@@ -1,4 +1,4 @@
-package org.openforis.calc.chain.post;
+package org.openforis.calc.chain.pre;
 
 import static org.openforis.calc.persistence.jooq.Tables.SAMPLING_UNIT;
 
@@ -18,12 +18,12 @@ import org.openforis.calc.schema.FactTable;
 import org.openforis.calc.schema.OutputSchema;
 
 /**
- * Assign stratum id to fact tables 
+ * Assign stratum to data tables 
  * 
  * @author G. Miceli
  *
  */
-public class AssignStratumIdsTask extends Task {
+public class AssignStratumTask extends Task {
 
 	@Override
 	protected void execute() throws Throwable {

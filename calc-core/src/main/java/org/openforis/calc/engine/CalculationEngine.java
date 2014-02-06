@@ -4,7 +4,6 @@ import org.openforis.calc.chain.InvalidProcessingChainException;
 import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.chain.ProcessingChainDao;
 import org.openforis.calc.chain.post.AssignDimensionIdsTask;
-import org.openforis.calc.chain.post.AssignStratumIdsTask;
 import org.openforis.calc.chain.post.CalculateExpansionFactorsTask;
 import org.openforis.calc.chain.post.CreateAggregateTablesTask;
 import org.openforis.calc.chain.post.CreateFactTablesTask;
@@ -12,6 +11,7 @@ import org.openforis.calc.chain.post.PublishRolapSchemaTask;
 import org.openforis.calc.chain.pre.ApplyDefaultsTask;
 import org.openforis.calc.chain.pre.AssignAoiColumnsTask;
 import org.openforis.calc.chain.pre.AssignLocationColumnsTask;
+import org.openforis.calc.chain.pre.AssignStratumTask;
 import org.openforis.calc.chain.pre.CreateAoiDimensionTablesTask;
 import org.openforis.calc.chain.pre.CreateCategoryDimensionTablesTask;
 import org.openforis.calc.chain.pre.CreateOutputTablesTask;
@@ -52,7 +52,7 @@ public class CalculationEngine {
 
 	public static final Class<?>[] POSTPROCESSING_TASKS = {
 			CreateFactTablesTask.class,
-			AssignStratumIdsTask.class,
+			AssignStratumTask.class,
 			AssignDimensionIdsTask.class,
 			CalculateExpansionFactorsTask.class,
 			CreateAggregateTablesTask.class,

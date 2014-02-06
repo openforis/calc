@@ -1,7 +1,9 @@
 package org.openforis.calc.engine;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -42,10 +44,14 @@ public class ParameterHashMap implements ParameterMap {
 		map.remove(name);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public ParameterMap getMap(String name) {
 		Object value = map.get(name);
+		return toParameterMap(value);
+	}
+
+	@SuppressWarnings("unchecked")
+	private ParameterMap toParameterMap(Object value) {
 		if ( value == null ) {
 			return null;
 		} else if ( value instanceof ParameterMap ) {
@@ -56,7 +62,30 @@ public class ParameterHashMap implements ParameterMap {
 			throw new IllegalStateException("Unknown value "+value.getClass());
 		}
 	}
+	
+	@Override
+	public List<ParameterMap> getList(String name) {
+		Object value = map.get(name);
+		if( value == null ){
+			return null;
+		} else if( value instanceof List ){
+			
+			List<ParameterMap> list = new ArrayList<ParameterMap>();
+			for (Object object : (List<?>)value) {
+				ParameterMap parameterMap = toParameterMap(object);
+				list.add(parameterMap);
+			}
+			return list;
+			
+		} else {
+			throw new IllegalStateException("Unknown value "+value.getClass());			
+		}
+	}
 
+	@Override
+	public void setList(String name, List<ParameterMap> value) {
+		map.put(name, value);
+	}
 	/**
 	 * WARNING: Does not defensively copy the map; 
 	 * Changes to this map value pass through to the 

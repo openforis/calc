@@ -56,8 +56,11 @@ public abstract class DataTable extends AbstractTable {
 	
 	private Map<AoiLevel, Field<Integer>> aoiIdFields;
 	private Map<QuantitativeVariable, Field<BigDecimal>> quantityFields;
+	
+	// are these used?
 	private Map<CategoricalVariable<?>, Field<?>> categoryValueFields;
 	protected Map<CategoricalVariable<?>, Field<Integer>> categoryIdFields;
+	
 	private Map<VariableAggregate, Field<BigDecimal>> variableAggregateFields;
 	private Map<TextVariable, Field<String>> textFields;
 	
@@ -67,6 +70,9 @@ public abstract class DataTable extends AbstractTable {
 	private Field<BigDecimal> yField;
 	private Field<String> srsIdField;
 	private Field<Long> parentIdField;
+
+	private Map<CategoricalVariable<?>, Field<Integer>> dimensionIdFields;
+	private Field<Integer> stratumField;
 	
 	protected DataTable(Entity entity, String name, Schema schema) {
 		super(name, schema);
@@ -77,6 +83,7 @@ public abstract class DataTable extends AbstractTable {
 		this.categoryIdFields = new HashMap<CategoricalVariable<?>, Field<Integer>>();
 		this.variableAggregateFields = new HashMap<VariableAggregate, Field<BigDecimal>>();
 		this.textFields = new HashMap<TextVariable, Field<String>>();
+		this.dimensionIdFields = new HashMap<CategoricalVariable<?>, Field<Integer>>();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -232,7 +239,7 @@ public abstract class DataTable extends AbstractTable {
 	}
 	
 	protected void createAoiIdFields(AoiLevel lowestLevel) {
-		if ( isGeoreferenced() || entity.isSamplingUnit() ) {
+		if ( isGeoreferenced() ) {
 			Workspace workspace = entity.getWorkspace();
 			List<AoiHierarchy> aoiHierarchies = workspace.getAoiHierarchies();
 			for ( AoiHierarchy hierarchy : aoiHierarchies ) {
@@ -341,6 +348,55 @@ public abstract class DataTable extends AbstractTable {
 
 	public boolean isGeoreferenced() {
 		return getEntity().isGeoreferenced();
+	}
+
+	protected void createDimensionFieldsRecursive(Entity entity) {
+//		this.dimensionIdFields = new HashMap<CategoricalVariable<?>, Field<Integer>>();
+		
+		Entity parent = entity.getParent();
+		// it stops if the entity is the sampling unit. cannot aggregate at higher level
+		if ( parent != null && !entity.isSamplingUnit() ) {
+			createDimensionFieldsRecursive(parent);
+		}
+		createDimensionIdFields(entity);
+		createCategoryValueFields(entity, false);
+	}
+
+	private void createDimensionIdFields(Entity entity) {
+		List<CategoricalVariable<?>> variables = entity.getCategoricalVariables();
+		for ( CategoricalVariable<?> var : variables ) {
+			createDimensionIdField(var);
+		}
+	}
+
+	protected void createDimensionIdField(CategoricalVariable<?> var) {
+		if ( !var.isDegenerateDimension() && var.isDisaggregate() ) {
+			if( var instanceof MultiwayVariable){
+				String fieldName = ((MultiwayVariable) var).getInputCategoryIdColumn();  // String.format(DIMENSION_ID_COLUMN_FORMAT, var.getName());
+				Field<Integer> fld = createField(fieldName, SQLDataType.INTEGER, this);
+				dimensionIdFields.put(var, fld);
+			}
+		}
+	}
+
+	protected void createStratumField() {
+		if( getEntity().getWorkspace().getSamplingDesign().getStratified() ){
+//			if( this instanceof AggregateTable || getEntity().isSamplingUnit() ) {
+				this.stratumField = createField("_stratum", INTEGER, this);
+//			}
+		}
+	}
+	
+	public Collection<Field<Integer>> getDimensionIdFields() {
+		return Collections.unmodifiableCollection(dimensionIdFields.values());
+	}
+	
+	public Field<Integer> getDimensionIdField(CategoricalVariable<?> variable) {
+		return dimensionIdFields.get(variable);
+	}
+
+	public Field<Integer> getStratumField() {
+		return stratumField;
 	}
 }
 

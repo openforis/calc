@@ -8,6 +8,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+import org.jooq.Record;
+import org.jooq.impl.DynamicTable;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.AoiLevel;
@@ -115,7 +118,7 @@ public class InputSchema extends RelationalSchema {
 
 	public NewFactTable getFactTable(Entity entity) {
 		if (entity.isAggregable()) {
-			NewFactTable factTable = new NewFactTable(entity, this, getDataView(entity), null);
+			NewFactTable factTable = new NewFactTable(entity, this);
 			return factTable;
 		}
 		return null;
@@ -128,7 +131,7 @@ public class InputSchema extends RelationalSchema {
 	public DataAoiTable getSamplingUnitAoiTable() {
 		Entity su = workspace.getSamplingUnit();
 		if( su != null ){
-			return new DataAoiTable(su.getDataTable(), this);
+			return new DataAoiTable( "_" + su.getDataTable()+"_aoi", this );
 		}
 		return null;
 	}
@@ -167,6 +170,16 @@ public class InputSchema extends RelationalSchema {
 	
 	public ExpansionFactorTable getExpansionFactorTable(AoiLevel aoiLevel) {
 		return this.expansionFactorTables.get(aoiLevel);
+	}
+
+	public DynamicTable<Record> getPhase1Table() {
+		String phase1PlotTable = workspace.getPhase1PlotTable();
+		
+		if( StringUtils.isNotBlank(phase1PlotTable) ) {
+			return new DynamicTable<Record>( phase1PlotTable, "calc" );
+		}
+		
+		return null;
 	}
 	
 }

@@ -208,7 +208,7 @@ public class Cube {
 
 		private void createAggLevels() {
 			aggLevels = new ArrayList<AggLevel>();
-			AoiLevel aggTableLevel = aggregateTable.getAoiHierarchyLevel();
+			AoiLevel aggTableLevel = null;// TODO aggregateTable.getAoiHierarchyLevel();
 			AoiHierarchy aoiHierarchy = aggTableLevel.getHierarchy();
 			AoiDimension aoiDim = getAoiDimension(aoiHierarchy);
 			for ( AoiLevel level : aoiHierarchy.getLevels() ) {

@@ -1,5 +1,6 @@
 package org.openforis.calc.engine;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -25,6 +26,9 @@ public interface ParameterMap {
 	ParameterMap getMap(String name);
 	void setMap(String name, ParameterMap value);
 
+	List<ParameterMap> getList(String name);
+	void setList(String name, List<ParameterMap> value);
+	
 	void remove(String name);
 	
 	String toJsonString();

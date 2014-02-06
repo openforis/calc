@@ -3,28 +3,20 @@
  */
 package org.openforis.calc.schema;
 
-import static org.jooq.impl.SQLDataType.INTEGER;
-
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.jooq.Field;
 import org.jooq.Record;
-import org.jooq.Schema;
 import org.jooq.TableField;
-import org.jooq.impl.SQLDataType;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.AoiLevel;
-import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
-import org.openforis.calc.metadata.MultiwayVariable;
-import org.openforis.calc.metadata.VariableAggregate;
 import org.openforis.calc.psql.Psql;
 import org.openforis.commons.collection.CollectionUtils;
 
@@ -35,30 +27,36 @@ public class NewFactTable extends DataTable {
 
 	private static final long serialVersionUID = 1L;
 	private static final String TABLE_NAME_FORMAT = "_%s_fact";
-	private static final String DIMENSION_ID_COLUMN_FORMAT = "%s_id";
+//	private static final String DIMENSION_ID_COLUMN_FORMAT = "%s_id";
 
-//	protected Map<VariableAggregate, Field<BigDecimal>> measureFields;
-	protected Map<CategoricalVariable<?>, Field<Integer>> dimensionIdFields;
+//	private NewFactTable parentTable;
+	private Map<AoiLevel, AoiAggregateTable> aoiAggregateTables;
+	private SamplingUnitAggregateTable samplingUnitAggregateTable;
 	
-	private Field<Integer> stratumIdField;
-	private NewFactTable parentTable;
-//	private Map<AoiHierarchy, List<AggregateTable>> aggregateTables;
 	private EntityDataView entityView;
-	private TableField<Record, BigDecimal> plotAreaField;
+	private Field<BigDecimal> plotAreaField;
+	private InputSchema schema;
 
 //	protected NewFactTable(Entity entity, String name, Schema schema, DataTable sourceTable, NewFactTable parentTable) {
 //		super(entity, name, schema);
 //	}
-	NewFactTable(Entity entity , String name, Schema schema){
-		super(entity, name, schema);
-		
-		this.dimensionIdFields = new HashMap<CategoricalVariable<?>, Field<Integer>>();
+//	NewFactTable(Entity entity , String name, InputSchema schema){
+//		super(entity, name, schema);
+//	}
+	NewFactTable(Entity entity, InputSchema schema) {
+		this( entity, getName(entity), schema );
 	}
 	
-	NewFactTable(Entity entity, Schema schema, EntityDataView entityView, NewFactTable parentTable) {
-		this(entity, getName(entity), schema);
-		
-		this.entityView = entityView;
+	NewFactTable(Entity entity, String name, InputSchema schema) {
+		super(entity, name, schema);
+		this.schema = schema;
+		this.entityView = schema.getDataView(entity);
+
+		initFields();
+	}
+
+	protected void initFields() {
+		Entity entity = entityView.getEntity();	
 		TableField<Record, BigDecimal> plotArea = entityView.getPlotAreaField();
 		
 		if (plotArea != null) {
@@ -73,42 +71,12 @@ public class NewFactTable extends DataTable {
 //		
 		createPrimaryKeyField();
 		createDimensionFieldsRecursive(entity);
-//		createStratumIdField();
+		createStratumField();
 		createAoiIdFields();
 		createQuantityFields(false, true);
 //		createMeasureFields(entity);
 		createParentIdField();
-//		createAggregateTables();
-	}
-
-//	/**
-//	 * Recursively up to root unit of analysis
-//	 */
-	protected void createDimensionFieldsRecursive(Entity entity) {
-		Entity parent = entity.getParent();
-		// it stops if the entity is the sampling unit. cannot aggretate at higher level
-		if ( parent != null && !entity.isSamplingUnit() ) {
-			createDimensionFieldsRecursive(parent);
-		}
-		createDimensionIdFields(entity);
-		createCategoryValueFields(entity, false);
-	}
-
-	private void createDimensionIdFields(Entity entity) {
-		List<CategoricalVariable<?>> variables = entity.getCategoricalVariables();
-		for ( CategoricalVariable<?> var : variables ) {
-			createDimensionIdField(var);
-		}
-	}
-
-	protected void createDimensionIdField(CategoricalVariable<?> var) {
-		if ( !var.isDegenerateDimension() && var.isDisaggregate() ) {
-			if( var instanceof MultiwayVariable){
-				String fieldName = ((MultiwayVariable) var).getInputCategoryIdColumn();  // String.format(DIMENSION_ID_COLUMN_FORMAT, var.getName());
-				Field<Integer> fld = createField(fieldName, SQLDataType.INTEGER, this);
-				dimensionIdFields.put(var, fld);
-			}
-		}
+		createAggregateTables();
 	}
 
 //	protected void createMeasureFields(Entity entity) {
@@ -119,9 +87,21 @@ public class NewFactTable extends DataTable {
 //		}
 //	}
 //	
-//	protected void createAggregateTables() {
-//		Entity entity = getEntity();
-//	
+	protected void createAggregateTables() {
+		Entity entity = getEntity();
+	
+		DataTable sourceTable = null;
+		if( entity.getParent().isSamplingUnit() ){
+			this.samplingUnitAggregateTable = new SamplingUnitAggregateTable(this);
+			sourceTable = this.samplingUnitAggregateTable;
+		}
+		
+		if( this.isGeoreferenced() ) {
+			sourceTable = sourceTable == null ? this : sourceTable;
+			this.aoiAggregateTables = new LinkedHashMap<AoiLevel, AoiAggregateTable>();
+			createAoiAggregateTables( sourceTable );
+		}
+		
 //		if ( entity.isSamplingUnit() ) {
 //			Workspace workspace = entity.getWorkspace();
 //			
@@ -132,8 +112,24 @@ public class NewFactTable extends DataTable {
 //				}
 //			}
 //		}
-//	}
-//	
+	}
+
+	private void createAoiAggregateTables(DataTable sourceTable) {
+		Workspace workspace = getEntity().getWorkspace();
+		for ( AoiHierarchy aoiHierarchy : workspace.getAoiHierarchies() ) {
+			
+			for ( AoiLevel aoiLevel : aoiHierarchy.getLevels() ) {
+				AoiAggregateTable aggTable = new AoiAggregateTable(sourceTable, aoiLevel);
+				this.aoiAggregateTables.put(aoiLevel, aggTable);
+			}
+			
+		}
+	}
+
+	public SamplingUnitAggregateTable getSamplingUnitAggregateTable() {
+		return samplingUnitAggregateTable;
+	}
+	
 //	private void addAggregateTable(AoiHierarchy aoiHierarchy, AggregateTable aggregateTable) {
 //		List<AggregateTable> aggTables = this.aggregateTables.get(aoiHierarchy);
 //		if( aggTables == null ){
@@ -155,17 +151,7 @@ public class NewFactTable extends DataTable {
 //		return dimensionIdFields.get(variable);
 //	}
 //
-	public Collection<Field<Integer>> getDimensionIdFields() {
-		return Collections.unmodifiableCollection(dimensionIdFields.values());
-	}
-//	
-//	protected void createStratumIdField() {
-//		this.stratumIdField = createField("_stratum_id", INTEGER, this);
-//	}
-//
-//	public Field<Integer> getStratumIdField() {
-//		return stratumIdField;
-//	}
+	
 //
 //	public OutputTable getSourceOutputTable() {
 //		return sourceOutputTable;
@@ -187,19 +173,27 @@ public class NewFactTable extends DataTable {
 //		return Collections.unmodifiableCollection(tables);
 //	}
 
-	public TableField<Record, BigDecimal> getPlotAreaField() {
+	public Field<BigDecimal> getPlotAreaField() {
 		return plotAreaField;
 	}
 	
 	public EntityDataView getEntityView() {
 		return entityView;
 	}
-	
-	public PlotAggregateTable getPlotAggregateTable() {
+
+	public SamplingUnitAggregateTable getPlotAggregateTable() {
 		if( getEntity().getParent().isSamplingUnit() ){
-			return new PlotAggregateTable(this);
+			return new SamplingUnitAggregateTable(this);
 		}
 		return null;
+	}
+
+	public Collection<AoiAggregateTable> getAoiAggregateTables() {
+		return CollectionUtils.unmodifiableCollection( aoiAggregateTables.values() );
+	}
+	
+	public InputSchema getDataSchema() {
+		return schema;
 	}
 
 }

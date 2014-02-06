@@ -4,10 +4,10 @@
 package org.openforis.calc.schema;
 
 import static org.jooq.impl.SQLDataType.BIGINT;
-import static org.jooq.impl.SQLDataType.INTEGER;
 import static org.jooq.impl.SQLDataType.VARCHAR;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +35,7 @@ public class DataAoiTable extends AbstractTable {
 	
 	protected Map<AoiLevel, Field<Long>> aoiIdFields;
 	protected Map<AoiLevel, Field<String>> aoiCaptionFields;
+	protected Map<AoiLevel, Field<String>> aoiCodeFields;
 	protected Map<AoiLevel, Field<BigDecimal>> aoiAreaFields;
 	private TableField<Record, Long> idField;
 
@@ -79,6 +80,7 @@ public class DataAoiTable extends AbstractTable {
 		
 		this.aoiIdFields = new HashMap<AoiLevel, Field<Long>>();
 		this.aoiCaptionFields = new HashMap<AoiLevel, Field<String>>();
+		this.aoiCodeFields = new HashMap<AoiLevel, Field<String>>();
 		this.aoiAreaFields = new HashMap<AoiLevel, Field<BigDecimal>>();
 		
 		List<AoiHierarchy> aoiHierarchies = workspace.getAoiHierarchies();
@@ -90,6 +92,9 @@ public class DataAoiTable extends AbstractTable {
 				
 				Field<String> aoiField1 = createField( level.getCaptionColumn(), VARCHAR, this );
 				aoiCaptionFields.put(level, aoiField1);
+				
+				Field<String> aoiCodeField = createField( level.getCodeColumn(), VARCHAR, this );
+				aoiCodeFields.put(level, aoiCodeField);
 				
 				Field<BigDecimal> area = createField( level.getAreaColumn(), Psql.DOUBLE_PRECISION, this );
 				aoiAreaFields.put(level, area);
@@ -107,13 +112,33 @@ public class DataAoiTable extends AbstractTable {
 		return aoiIdFields.get(level);
 	}
 
+	public Collection<Field<Long>> getAoiIdFields() {
+		return aoiIdFields.values();
+	}	
+	
 	public Field<String> getAoiCaptionField(AoiLevel level) {
 		return aoiCaptionFields.get(level);
 	}
+	
+	public Collection<Field<String>> getAoiCaptionFields() {
+		return aoiCaptionFields.values();
+	}
+	
+	public Field<String> getAoiCodeField(AoiLevel level) {
+		return aoiCodeFields.get(level);
+	}
+	
+	public Collection<Field<String>> getAoiCodeFields() {
+		return aoiCodeFields.values();
+	}
 
+	
 	public Field<BigDecimal> getAoiAreaField(AoiLevel level) {
 		return aoiAreaFields.get(level);
 	}
 	
+	public Collection<Field<BigDecimal>> getAoiAreaFields() {
+		return aoiAreaFields.values();
+	}
 
 }

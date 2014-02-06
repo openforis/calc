@@ -6,9 +6,13 @@ package org.jooq.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jooq.Condition;
 import org.jooq.DataType;
 import org.jooq.Field;
 import org.jooq.Record;
+import org.openforis.calc.metadata.SamplingDesign.ColumnJoin;
+import org.openforis.calc.metadata.SamplingDesign.TableJoin;
+import org.openforis.calc.schema.DataTable;
 
 /**
  * @author Mino Togna
@@ -67,5 +71,23 @@ public class DynamicTable<R extends Record> extends TableImpl<R> {
 	
 	public Field<Long> getIdField(){
 		return getLongField( "id" );
+	}
+
+	@SuppressWarnings("unchecked")
+	public Condition getJoinConditions(DataTable joinWithTable, TableJoin joinSettins) {
+		Condition conditions = null;
+		for ( int i =0; i < joinSettins.getColumnJoinSize(); i++ ) {
+			ColumnJoin leftColumn = joinSettins.getLeft().getColumnJoins().get(i);
+			ColumnJoin rightJoin = joinSettins.getRight().getColumnJoins().get(i);
+			Field<String> leftField = this.getVarcharField(leftColumn.getColumn());				
+			Field<String> rightField = (Field<String>) joinWithTable.field(rightJoin.getColumn());
+			
+			if( conditions == null ) {
+				conditions = leftField.eq( rightField );
+			} else {
+				conditions = conditions.and( leftField.eq( rightField) );
+			}
+		}
+		return conditions;
 	}
 }

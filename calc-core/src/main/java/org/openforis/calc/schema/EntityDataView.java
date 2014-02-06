@@ -30,7 +30,7 @@ public class EntityDataView extends DataTable {
 	private TableField<Record, BigDecimal> plotAreaField;
 
 	public EntityDataView(Entity entity, InputSchema schema) {
-		super(entity, getViewName(entity), schema);
+		super(entity, entity.getDataView(), schema);
 		this.schema = schema;
 		createPrimaryKeyField();
 		createParentIdField();
@@ -114,10 +114,6 @@ public class EntityDataView extends DataTable {
 			createTextFields(currentEntity);
 			currentEntity = currentEntity.getParent();
 		}
-	}
-
-	public static String getViewName(Entity entity) {
-		return entity.getDataTable() + "_view";
 	}
 
 	public Select<?> getSelect() {

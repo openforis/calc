@@ -106,17 +106,18 @@ public class JobController {
 		return job;
 	}
 
+	/**
+	 * Execute defualt processing chain
+	 * @return
+	 * @throws InvalidProcessingChainException
+	 * @throws WorkspaceLockedException
+	 */
 	@RequestMapping(value = "/execute.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	synchronized Job execute() throws InvalidProcessingChainException, WorkspaceLockedException {
 		Workspace workspace = workspaceService.getActiveWorkspace();
 		
-		CalcJob job = taskManager.createCalcJob(workspace);
-		//TODO right now it loads all steps. change it so only steps for active workspace are loaded
-		List<CalculationStep> steps = calculationStepDao.loadAll("stepNo");
-		job.addCalculationStep(steps);
-		job.setAggregates(true);
-		
+		CalcJob job = taskManager.createDefaultCalcJob( workspace , true );
 		
 		taskManager.startJob(job);
 
