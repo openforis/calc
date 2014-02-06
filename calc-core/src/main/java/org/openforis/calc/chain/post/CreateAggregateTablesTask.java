@@ -8,21 +8,16 @@ import org.jooq.Condition;
 import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.SelectQuery;
-import org.jooq.TableField;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DynamicTable;
 import org.openforis.calc.engine.Job;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.metadata.AoiLevel;
-import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
-import org.openforis.calc.metadata.VariableAggregate;
-import org.openforis.calc.metadata.SamplingDesign.ColumnJoin;
 import org.openforis.calc.metadata.SamplingDesign.TableJoin;
 import org.openforis.calc.psql.CreateTableStep.AsStep;
 import org.openforis.calc.psql.Psql;
 import org.openforis.calc.psql.Psql.Privilege;
-import org.openforis.calc.schema.AggregateTable;
 import org.openforis.calc.schema.AoiAggregateTable;
 import org.openforis.calc.schema.DataAoiTable;
 import org.openforis.calc.schema.DataTable;
@@ -30,7 +25,6 @@ import org.openforis.calc.schema.EntityDataView;
 import org.openforis.calc.schema.ExpansionFactorTable;
 import org.openforis.calc.schema.InputSchema;
 import org.openforis.calc.schema.NewFactTable;
-import org.openforis.calc.schema.OutputSchema;
 import org.openforis.calc.schema.SamplingUnitAggregateTable;
 import org.openforis.calc.schema.Schemas;
 
@@ -59,9 +53,7 @@ public final class CreateAggregateTablesTask extends Task {
 		InputSchema schema = getDataSchema();
 		
 		List<NewFactTable> factTables = schema.getFactTables();
-		
 		for (NewFactTable factTable : factTables) {
-			
 			// create fact table
 			createFactTable(factTable);
 		
@@ -70,25 +62,12 @@ public final class CreateAggregateTablesTask extends Task {
 			if( suAggregateTable != null ){
 				createSamplingUnitAggregateTable(suAggregateTable);
 			}
-			// create aggregation tables for each aoi level if specified
+			// create aggregation tables for each aoi level if there are
 			createAoiAggregateTables( factTable );
 			
 			incrementItemsProcessed();
 		}
-//		}
-//		for (Entity entity : getWorkspace().getEntities()) {
-//			ResultTable resultTable = schema.getResultTable(entity);
-//			if( resultTable != null ){
-//				// aggregate based on the sampling design
-//				if( entity.getParent().isSamplingUnit() ){
-//					resultTable.getPlotAggregateTable();
-//				} else {
-//					// nothing for now
-//				}
-//			}
-//		}
 		
-//		job.get
 	}
 
 	protected InputSchema getDataSchema() {
@@ -107,9 +86,10 @@ public final class CreateAggregateTablesTask extends Task {
 			
 			select.addFrom( sourceTable );
 			
-//			select.addSelect( sourceTable.getParentIdField() );
-//			select.addGroupBy( sourceTable.getParentIdField() );
-			select.addSelect( sourceTable.getDimensionIdFields() );
+//			select.addSelect( sourceTable.getDimensionIdFields() );
+			for (Field<Integer> dimField : sourceTable.getDimensionIdFields()) {
+				select.addSelect( DSL.coalesce(dimField,-1).as( dimField.getName() ) );
+			}
 			select.addGroupBy( sourceTable.getDimensionIdFields() );
 			
 			Collection<Field<Integer>> aoiIdFields = aggTable.getAoiIdFields();
@@ -135,23 +115,16 @@ public final class CreateAggregateTablesTask extends Task {
 			select.addJoin( expfTable, conditions );
 			select.addGroupBy( expfTable.EXPF );
 			
-			// add quantity * expf
-			List<QuantitativeVariable> vars = factTable.getEntity().getQuantitativeVariables();
+			// add sum( quantity * expf )
 			// for now quantity fields. check if it needs to be done for each variable aggregate
 			for ( QuantitativeVariable var : sourceTable.getEntity().getOutputVariables() ) {
-				Field<BigDecimal> quantityField = sourceTable.getQuantityField(var);
+				Field<BigDecimal> quantityField = sourceTable.getQuantityField(var);				
+				Field<BigDecimal> aggregateField = quantityField.mul( expfTable.EXPF ).sum();
 				
-				Field<BigDecimal> aggregateField = quantityField.mul( expfTable.EXPF ).sum(); 
-//					DSL.sum(
-//						DSL.decode()
-//						.when( plotArea.notEqual(BigDecimal.ZERO), quantityField.div(plotArea) )
-//						.otherwise( BigDecimal.ZERO )
-//					).as( quantityField.getName() );
-
 				select.addSelect( aggregateField.as(quantityField.getName() ) );
 			}
 			
-			// aggegate count field (used by mondrian)
+			// aggregate count field (used by mondrian)
 			select.addSelect( DSL.count().as(aggTable.getAggregateFactCountField().getName()) );
 			
 			psql()
@@ -175,7 +148,10 @@ public final class CreateAggregateTablesTask extends Task {
 		
 		select.addSelect( sourceTable.getParentIdField() );
 		select.addGroupBy( sourceTable.getParentIdField() );
-		select.addSelect( sourceTable.getDimensionIdFields() );
+//		select.addSelect( sourceTable.getDimensionIdFields() );
+		for (Field<Integer> dimField : sourceTable.getDimensionIdFields()) {
+			select.addSelect( DSL.coalesce(dimField,-1).as( dimField.getName() ) );
+		}
 		select.addGroupBy( sourceTable.getDimensionIdFields() );
 		select.addSelect( sourceTable.getAoiIdFields() );
 		select.addGroupBy( sourceTable.getAoiIdFields() );
@@ -293,66 +269,66 @@ public final class CreateAggregateTablesTask extends Task {
 	}
 	
 //	@Override
-	protected void oldExecute() throws Throwable {
-		// TODO threshold
-		OutputSchema outputSchema = getOutputSchema();
-		Collection<AggregateTable> aggTables = outputSchema.getAggregateTables();
-		ExpansionFactorTable expf = outputSchema.getExpansionFactorTable();
-		for (AggregateTable aggTable : aggTables) {
-			AoiLevel level = null;// aggTable.getAoiHierarchyLevel();
-			NewFactTable f = (NewFactTable) aggTable.getSourceTable();
-			Field<Integer> aoiId = f.getAoiIdField(level);
-			Field<Integer> stratumId = f.getStratumField();
-			Entity entity = aggTable.getEntity();
-			Integer entityId = entity.getId();
-			
-			SelectQuery<?> select = new Psql().selectQuery(f);
-			select.addSelect(f.getCategoryValueFields());
-			select.addSelect(f.getDimensionIdFields());
-			select.addSelect(stratumId);
-			
-			// Select AOI ID columns
-			Collection<Field<Integer>> aoiIdFields = aggTable.getAoiIdFields();
-			for (Field<Integer> aoiIdField : aoiIdFields) {
-				select.addSelect(f.field(aoiIdField));
-			}
-			
-			select.addGroupBy( select.getSelect() );
-			select.addGroupBy( expf.EXPF );
-			
-			// Add aggregate columns
-			List<VariableAggregate> variableAggregates = entity.getVariableAggregates();
-			for (VariableAggregate varAgg : variableAggregates) {
-				if( !varAgg.isVirtual() ){
-					String formula = varAgg.getAggregateFormula();
-					String aggCol = varAgg.getAggregateColumn();
-					select.addSelect(DSL.field(formula).as(aggCol));
-				}
-			}
-			
-			//add aggregate fact count column
-			select.addSelect(DSL.count().as(aggTable.getAggregateFactCountField().getName()));
-			
-			if ( isDebugMode() ) {
-				psql()
-					.dropTableIfExists(aggTable)
-					.execute();
-				
-
-			select.addJoin(expf, stratumId.eq(expf.STRATUM_ID)
-				  .and(aoiId.eq(expf.AOI_ID))
-				  .and(expf.ENTITY_ID.eq(entityId)));
-
-			psql().createTable(aggTable).as(select).execute();
-
-			// Grant access to system user
-			psql()
-				.grant(Privilege.ALL)
-				.on(aggTable)
-				.to(getSystemUser())
-				.execute();
-				
-			}
-		}
-	}
+//	protected void oldExecute() throws Throwable {
+//		// TODO threshold
+//		OutputSchema outputSchema = getOutputSchema();
+//		Collection<AggregateTable> aggTables = outputSchema.getAggregateTables();
+//		ExpansionFactorTable expf = outputSchema.getExpansionFactorTable();
+//		for (AggregateTable aggTable : aggTables) {
+//			AoiLevel level = null;// aggTable.getAoiHierarchyLevel();
+//			NewFactTable f = (NewFactTable) aggTable.getSourceTable();
+//			Field<Integer> aoiId = f.getAoiIdField(level);
+//			Field<Integer> stratumId = f.getStratumField();
+//			Entity entity = aggTable.getEntity();
+//			Integer entityId = entity.getId();
+//			
+//			SelectQuery<?> select = new Psql().selectQuery(f);
+//			select.addSelect(f.getCategoryValueFields());
+//			select.addSelect(f.getDimensionIdFields());
+//			select.addSelect(stratumId);
+//			
+//			// Select AOI ID columns
+//			Collection<Field<Integer>> aoiIdFields = aggTable.getAoiIdFields();
+//			for (Field<Integer> aoiIdField : aoiIdFields) {
+//				select.addSelect(f.field(aoiIdField));
+//			}
+//			
+//			select.addGroupBy( select.getSelect() );
+//			select.addGroupBy( expf.EXPF );
+//			
+//			// Add aggregate columns
+//			List<VariableAggregate> variableAggregates = entity.getVariableAggregates();
+//			for (VariableAggregate varAgg : variableAggregates) {
+//				if( !varAgg.isVirtual() ){
+//					String formula = varAgg.getAggregateFormula();
+//					String aggCol = varAgg.getAggregateColumn();
+//					select.addSelect(DSL.field(formula).as(aggCol));
+//				}
+//			}
+//			
+//			//add aggregate fact count column
+//			select.addSelect(DSL.count().as(aggTable.getAggregateFactCountField().getName()));
+//			
+//			if ( isDebugMode() ) {
+//				psql()
+//					.dropTableIfExists(aggTable)
+//					.execute();
+//				
+//
+//			select.addJoin(expf, stratumId.eq(expf.STRATUM_ID)
+//				  .and(aoiId.eq(expf.AOI_ID))
+//				  .and(expf.ENTITY_ID.eq(entityId)));
+//
+//			psql().createTable(aggTable).as(select).execute();
+//
+//			// Grant access to system user
+//			psql()
+//				.grant(Privilege.ALL)
+//				.on(aggTable)
+//				.to(getSystemUser())
+//				.execute();
+//				
+//			}
+//		}
+//	}
 }
