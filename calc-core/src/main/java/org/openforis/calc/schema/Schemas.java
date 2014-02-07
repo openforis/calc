@@ -8,6 +8,7 @@ import org.openforis.calc.engine.Workspace;
  *
  */
 public class Schemas {
+	
 	private InputSchema inputSchema;
 	private OutputSchema outputSchema;
 	private RolapSchema rolapSchema;
@@ -15,7 +16,7 @@ public class Schemas {
 	public Schemas(Workspace workspace) {
 		inputSchema = new InputSchema(workspace);
 		outputSchema = new OutputSchema(workspace, inputSchema);
-		rolapSchema = new RolapSchema(workspace, outputSchema);
+		rolapSchema = new RolapSchema(workspace, inputSchema);
 	}
 
 	public InputSchema getInputSchema() {

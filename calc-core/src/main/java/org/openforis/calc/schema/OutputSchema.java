@@ -22,6 +22,7 @@ import org.openforis.calc.metadata.Entity;
  * @author M. Togna
  * 
  */
+@Deprecated
 public class OutputSchema extends RelationalSchema {
 
 	private static final long serialVersionUID = 1L;

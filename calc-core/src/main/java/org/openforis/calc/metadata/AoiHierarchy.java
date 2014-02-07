@@ -1,5 +1,9 @@
 package org.openforis.calc.metadata;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -23,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * 
  * 
  * @author A. Sanchez-Paus Diaz
+ * @author Mino Togna
  */
 @javax.persistence.Entity
 @Table(name = "aoi_hierarchy")
@@ -52,6 +57,14 @@ public class AoiHierarchy extends NamedUserObject {
 		return org.openforis.commons.collection.CollectionUtils.unmodifiableSet( levels );
 	}
 
+	public Collection<AoiLevel> getLevelsReverseOrder() {
+		List<AoiLevel> aoiLevels = new ArrayList<AoiLevel>( this.levels );
+		
+		Collections.reverse(aoiLevels);
+		
+		return org.openforis.commons.collection.CollectionUtils.unmodifiableCollection( aoiLevels );
+	}
+	
 	public void setLevels(Set<AoiLevel> levels) {
 		this.levels = levels;
 	}

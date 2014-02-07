@@ -85,8 +85,8 @@ public class TaskManager {
 		CalcJob job = new CalcJob(workspace, dataSource, this.beanFactory);
 		
 		ProcessingChain processingChain = workspace.getDefaultProcessingChain();
-		List<CalculationStep> steps = processingChain.getCalculationSteps();
-		job.addCalculationStep(steps);
+//		List<CalculationStep> steps = processingChain.getCalculationSteps();
+//		job.addCalculationStep(steps);
 		job.setAggregates(aggregates);
 		
 		autowire(job);

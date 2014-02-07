@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.openforis.calc.engine.Workspace;
-import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.CategoricalVariable;
 
 /**
@@ -28,53 +27,53 @@ public class RolapSchema {
 	private Workspace workspace;
 	// private List<CategoryDimension> categoryDimensions;
 	private List<Cube> cubes;
-	private OutputSchema outputSchema;
+	private InputSchema dataSchema;
 
-	public RolapSchema(Workspace workspace, OutputSchema outputSchema) {
+	public RolapSchema(Workspace workspace, InputSchema schema) {
 		this.name = workspace.getInputSchema();
 
 		this.workspace = workspace;
-		this.outputSchema = outputSchema;
+		this.dataSchema = schema;
 		// this.categoryDimensions = new ArrayList<CategoryDimension>();
 
-		createStratumDimension();
+//		createStratumDimension();
 		createAoiDimensions();
-		createSharedDimensions();
-		createCubes();
+//		createSharedDimensions();
+//		createCubes();
 	}
 
 	private void createStratumDimension() {
-		StratumDimensionTable stratumDimensionTable = outputSchema.getStratumDimensionTable();
-		this.stratumDimension = new StratumDimension(this, stratumDimensionTable);
+//		StratumDimensionTable stratumDimensionTable = dataSchema.getStratumDimensionTable();
+//		this.stratumDimension = new StratumDimension(this, stratumDimensionTable);
 	}
 
 	private void createCubes() {
 		this.cubes = new ArrayList<Cube>();
 
-		Collection<FactTable> factTables = outputSchema.getFactTables();
-		for ( FactTable factTable : factTables ) {
-			Cube cube = new Cube(this, factTable);
-			cubes.add(cube);
-		}
+//		Collection<NewFactTable> factTables = outputSchema.getFactTables();
+//		for ( NewFactTable factTable : factTables ) {
+//			Cube cube = new Cube(this, factTable);
+//			cubes.add(cube);
+//		}
 	}
 
 	private void createSharedDimensions() {
 		sharedDimensions = new HashMap<CategoricalVariable<?>, CategoryDimension>();
 
-		Collection<CategoryDimensionTable> categoryDimensionTables = outputSchema.getCategoryDimensionTables();
-		for ( CategoryDimensionTable categoryDimensionTable : categoryDimensionTables ) {
-			CategoryDimension dimension = new CategoryDimension(this, categoryDimensionTable);
-			CategoricalVariable<?> variable = categoryDimensionTable.getVariable();
-			sharedDimensions.put(variable, dimension);
-		}
+//		Collection<CategoryDimensionTable> categoryDimensionTables = dataSchema.getCategoryDimensionTables();
+//		for ( CategoryDimensionTable categoryDimensionTable : categoryDimensionTables ) {
+//			CategoryDimension dimension = new CategoryDimension(this, categoryDimensionTable);
+//			CategoricalVariable<?> variable = categoryDimensionTable.getVariable();
+//			sharedDimensions.put(variable, dimension);
+//		}
 	}
 
 	private void createAoiDimensions() {
 		aoiDimensions = new ArrayList<AoiDimension>();
 
-		List<AoiHierarchy> aoiHierarchies = workspace.getAoiHierarchies();
-		for ( AoiHierarchy aoiHierarchy : aoiHierarchies ) {
-			AoiDimension aoiDimension = new AoiDimension(this, aoiHierarchy);
+		List<AoiHierarchyFlatTable> aoiHierchyTables = dataSchema.getAoiHierchyTables();
+		for (AoiHierarchyFlatTable table : aoiHierchyTables) {
+			AoiDimension aoiDimension = new AoiDimension( this, table );
 			aoiDimensions.add(aoiDimension);
 		}
 
@@ -117,8 +116,14 @@ public class RolapSchema {
 	// return Collections.unmodifiableList(categoryDimensions);
 	// }
 
+	public InputSchema getDataSchema() {
+		return dataSchema;
+	}
+	
+	@Deprecated
 	public OutputSchema getOutputSchema() {
-		return outputSchema;
+//		return dataSchema;
+		return null;
 	}
 
 	public String getName() {

@@ -3,16 +3,11 @@ package org.openforis.calc.schema;
 import static org.jooq.impl.SQLDataType.INTEGER;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
 
-import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.TableField;
 import org.openforis.calc.metadata.AoiLevel;
-import org.openforis.calc.metadata.BinaryVariable;
-import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
-import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.VariableAggregate;
 import org.openforis.calc.psql.Psql;

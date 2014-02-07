@@ -139,7 +139,7 @@ public final class CreateAggregateTablesTask extends Task {
 		
 	}
 
-	private void createSamplingUnitAggregateTable(SamplingUnitAggregateTable suAggTable ) {
+	private void createSamplingUnitAggregateTable( SamplingUnitAggregateTable suAggTable ) {
 //		SamplingUnitAggregateTable plotAgg = factTable.getPlotAggregateTable();
 		DataTable sourceTable = suAggTable.getSourceTable();
 		SelectQuery<Record> select = psql().selectQuery();

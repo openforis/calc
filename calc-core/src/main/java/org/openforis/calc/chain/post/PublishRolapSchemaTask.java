@@ -27,6 +27,7 @@ import javax.xml.bind.Marshaller;
 
 import org.jooq.Field;
 import org.openforis.calc.engine.Task;
+import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.mondrian.DimensionUsage;
 import org.openforis.calc.mondrian.Hierarchy;
 import org.openforis.calc.mondrian.Hierarchy.Level;
@@ -46,6 +47,7 @@ import org.openforis.calc.schema.Dimension;
 import org.openforis.calc.schema.RolapSchema;
 import org.openforis.calc.schema.StratumDimension;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 
 /**
  * 
@@ -60,35 +62,53 @@ public class PublishRolapSchemaTask extends Task {
 	@Value("${calc.rolapSchemaOutputFile}")
 	private String rolapSchemaOutputFile;
 
+	@Value("${saiku.home}")
+//	@PropertySource("file:${catalina.home}/conf/application.properties")
+	private String saikuHome;
+	
 	@Override
 	protected void execute() throws Throwable {
+		Workspace workspace = getWorkspace();
+//		String catalinaHome = System.getProperty("catalina.home");
+		
 		RolapSchema rolapSchema = getRolapSchema();
 
 		// create schema
 		Schema schema = createSchema(rolapSchema.getName());
 
 		// create stratum dimension
-		createStratumDimension(rolapSchema, schema);
+//		createStratumDimension(rolapSchema, schema);
 
 		// create aoi dimensions
 		createAoiDimensions(rolapSchema, schema);
 
 		// create shared dimensions
-		createSharedDimensions(rolapSchema, schema);
+//		createSharedDimensions(rolapSchema, schema);
 
 		// create cubes for each fact table
-		createCubes(rolapSchema, schema);
+//		createCubes(rolapSchema, schema);
 
 		JAXBContext jaxbContext = JAXBContext.newInstance(Schema.class);
 		Marshaller marshaller = jaxbContext.createMarshaller();
 		marshaller.setProperty("jaxb.formatted.output", true);
 
-		File f = new File(rolapSchemaOutputFile);
+		File mdxPath = getWorkspaceMdxPath(); // new File(saikuHome, "WEB-INF/classes/"+workspace.getName()+"/"+workspace.getName()+".xml" );
+		File f = new File( mdxPath, workspace.getName()+".xml" );
 		if ( f.exists() ) {
 			f.delete();
 		}
+		
 		marshaller.marshal(schema, f);
 
+	}
+
+	private File getWorkspaceMdxPath() {
+		String dir = String.format( "WEB-INF/classes/%s", getWorkspace().getName() ); 
+		File mdxPath = new File( saikuHome , dir );
+		if( !mdxPath.exists() ){
+			mdxPath.mkdirs();
+		}
+		return mdxPath;
 	}
 
 	private void createCubes(RolapSchema rolapSchema, Schema schema) {

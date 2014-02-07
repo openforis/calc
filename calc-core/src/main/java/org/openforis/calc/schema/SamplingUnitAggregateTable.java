@@ -1,25 +1,5 @@
 package org.openforis.calc.schema;
 
-import static org.jooq.impl.SQLDataType.BIGINT;
-import static org.jooq.impl.SQLDataType.INTEGER;
-
-import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.jooq.Field;
-import org.jooq.Record;
-import org.jooq.TableField;
-import org.openforis.calc.metadata.AoiLevel;
-import org.openforis.calc.metadata.BinaryVariable;
-import org.openforis.calc.metadata.CategoricalVariable;
-import org.openforis.calc.metadata.Entity;
-import org.openforis.calc.metadata.MultiwayVariable;
-import org.openforis.calc.metadata.QuantitativeVariable;
-import org.openforis.calc.metadata.VariableAggregate;
-import org.openforis.calc.psql.Psql;
 
 /**
  * 
@@ -29,7 +9,7 @@ import org.openforis.calc.psql.Psql;
 public class SamplingUnitAggregateTable extends AggregateTable {
 
 	private static final long serialVersionUID = 1L;
-	private static final String AGG_FACT_CNT_COLUMN = "_agg_cnt";
+//	private static final String AGG_FACT_CNT_COLUMN = "_agg_cnt";
 	
 //	private AoiLevel aoiHierarchyLevel;
 //	private TableField<Record, Integer> aggregateFactCountField;

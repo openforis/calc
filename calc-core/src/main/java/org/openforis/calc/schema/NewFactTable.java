@@ -6,9 +6,7 @@ package org.openforis.calc.schema;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.jooq.Field;
 import org.jooq.Record;
