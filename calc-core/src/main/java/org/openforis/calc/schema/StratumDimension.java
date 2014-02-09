@@ -4,7 +4,7 @@
 package org.openforis.calc.schema;
 
 import org.openforis.calc.schema.Hierarchy.Level;
-import org.openforis.calc.schema.Hierarchy.Table;
+import org.openforis.calc.schema.Hierarchy.View;
 
 /**
  * @author G. Miceli
@@ -26,14 +26,14 @@ public class StratumDimension extends Dimension {
 	}
 
 	private void createHierarchy() {
-		Hierarchy hierarchy = new Hierarchy(STRATUM);
+		Hierarchy hierarchy = new Hierarchy( STRATUM );
 
-		Table t = new Table(table.getSchema().getName(), table.getName());
-		hierarchy.setTable(t);
-
-		Level level = new Level(STRATUM, table.ID.getName(), table.CAPTION.getName());
-		hierarchy.addLevel(level);
-
+		View view = new View( STRATUM, this.table.getSelect().toString() );
+		hierarchy.setView( view );
+		
+		Level level = new Level( STRATUM, this.table.getStratumNo().getName(), this.table.getCaption().getName() );
+		hierarchy.addLevel( level );
+		
 		setHierarchy(hierarchy);
 	}
 

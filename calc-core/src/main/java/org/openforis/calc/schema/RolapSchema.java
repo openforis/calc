@@ -36,15 +36,17 @@ public class RolapSchema {
 		this.dataSchema = schema;
 		// this.categoryDimensions = new ArrayList<CategoryDimension>();
 
-//		createStratumDimension();
 		createAoiDimensions();
+		createStratumDimension();
 //		createSharedDimensions();
 //		createCubes();
 	}
 
 	private void createStratumDimension() {
-//		StratumDimensionTable stratumDimensionTable = dataSchema.getStratumDimensionTable();
-//		this.stratumDimension = new StratumDimension(this, stratumDimensionTable);
+		StratumDimensionTable stratumDimensionTable = dataSchema.getStratumDimensionTable();
+		if( stratumDimensionTable != null ){
+			this.stratumDimension = new StratumDimension( this, stratumDimensionTable );
+		}
 	}
 
 	private void createCubes() {

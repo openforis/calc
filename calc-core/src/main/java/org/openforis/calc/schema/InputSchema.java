@@ -37,6 +37,8 @@ public class InputSchema extends RelationalSchema {
 	
 	private List<AoiHierarchyFlatTable> aoiHierchyTables;
 	private Map<AoiLevel, ExpansionFactorTable> expansionFactorTables;
+
+	private StratumDimensionTable stratumDimensionTable;
 	
 	public InputSchema(Workspace workspace) {
 		super(workspace.getInputSchema());
@@ -52,8 +54,16 @@ public class InputSchema extends RelationalSchema {
 		initAoiHirerchyTables();
 		
 		initExpansionFactorTables();
+		
+		initStratumDimensionTable();
 	}
 	
+	private void initStratumDimensionTable() {
+		if( this.workspace.getSamplingDesign().getStratified() ){
+			this.stratumDimensionTable = new StratumDimensionTable(workspace);
+		}
+	}
+
 	private void initDataTables() {
 		this.dataTables = new HashMap<Integer, InputTable>();
 		for ( Entity entity : workspace.getEntities() ) {
@@ -180,6 +190,10 @@ public class InputSchema extends RelationalSchema {
 		}
 		
 		return null;
+	}
+
+	public StratumDimensionTable getStratumDimensionTable() {
+		return this.stratumDimensionTable;
 	}
 	
 }

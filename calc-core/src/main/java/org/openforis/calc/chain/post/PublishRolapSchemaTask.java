@@ -59,28 +59,26 @@ import org.springframework.core.io.Resource;
  */
 public class PublishRolapSchemaTask extends Task {
 
-	@Value("${calc.rolapSchemaOutputFile}")
-	private String rolapSchemaOutputFile;
+//	@Value("${calc.rolapSchemaOutputFile}")
+//	private String rolapSchemaOutputFile;
 
 	@Value("${saiku.home}")
-//	@PropertySource("file:${catalina.home}/conf/application.properties")
 	private String saikuHome;
 	
 	@Override
 	protected void execute() throws Throwable {
 		Workspace workspace = getWorkspace();
-//		String catalinaHome = System.getProperty("catalina.home");
 		
 		RolapSchema rolapSchema = getRolapSchema();
 
 		// create schema
 		Schema schema = createSchema(rolapSchema.getName());
 
-		// create stratum dimension
-//		createStratumDimension(rolapSchema, schema);
-
 		// create aoi dimensions
 		createAoiDimensions(rolapSchema, schema);
+
+		// create stratum dimension
+		createStratumDimension(rolapSchema, schema);
 
 		// create shared dimensions
 //		createSharedDimensions(rolapSchema, schema);
@@ -207,8 +205,34 @@ public class PublishRolapSchemaTask extends Task {
 
 	private void createStratumDimension(RolapSchema rolapSchema, Schema schema) {
 		StratumDimension stratumDimension = rolapSchema.getStratumDimension();
-		SharedDimension stratumSharedDimension = createDimension(stratumDimension);
-		schema.getDimension().add(stratumSharedDimension);
+		if( stratumDimension != null ) {
+			
+			org.openforis.calc.schema.Hierarchy hierarchy = stratumDimension.getHierarchy();
+			org.openforis.calc.schema.Hierarchy.View view = hierarchy.getView();
+			SharedDimension dim = new SharedDimension();
+			
+			dim.setName(stratumDimension.getName());
+			dim.setType(DIMENSION_TYPE_STANDARD);
+			
+			Hierarchy h = new Hierarchy();
+			h.setName(hierarchy.getName());
+			h.setHasAll(false);
+			
+			List<org.openforis.calc.schema.Hierarchy.Level> levels = hierarchy.getLevels();
+			for ( org.openforis.calc.schema.Hierarchy.Level level : levels ) {
+				Level l = createLevel(level.getName(), level.getColumn(), level.getNameColumn());
+				h.getLevel().add(l);
+			}
+
+			View v = createSqlView(view.getAlias(), view.getSql());
+			h.setView(v);
+
+			dim.getHierarchy().add(h);
+
+//			return dim;
+//			SharedDimension stratumSharedDimension = createDimension(stratumDimension);
+			schema.getDimension().add(dim);
+		}
 	}
 
 	private SharedDimension createDimension(Dimension dimension) {

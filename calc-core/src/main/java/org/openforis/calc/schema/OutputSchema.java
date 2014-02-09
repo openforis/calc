@@ -96,7 +96,7 @@ public class OutputSchema extends RelationalSchema {
 	}
 
 	private void initStratumDimensionTable() {
-		this.stratumDimensionTable = new StratumDimensionTable(this);
+//		this.stratumDimensionTable = new StratumDimensionTable(this);
 	}
 
 	private void initOutputTables() {
