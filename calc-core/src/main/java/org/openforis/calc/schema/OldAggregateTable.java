@@ -21,7 +21,7 @@ import org.openforis.calc.metadata.VariableAggregate;
  * @author M. Togna
  * 
  */
-public class OldAggregateTable extends FactTable {
+public class OldAggregateTable extends OldFactTable {
 
 	private static final long serialVersionUID = 1L;
 	private static final String TABLE_NAME_FORMAT = "_%s_%s_stratum_agg";
@@ -29,9 +29,9 @@ public class OldAggregateTable extends FactTable {
 	
 	private AoiLevel aoiHierarchyLevel;
 	private TableField<Record, Integer> aggregateFactCountField;
-	private FactTable sourceFactTable;
+	private OldFactTable sourceFactTable;
 
-	OldAggregateTable(FactTable factTable, AoiLevel level) {
+	OldAggregateTable(OldFactTable factTable, AoiLevel level) {
 		super(factTable.getEntity(), getName(factTable, level), factTable.getSchema(), factTable, null);
 		this.aoiHierarchyLevel = level;
 		this.sourceFactTable = factTable;
@@ -87,7 +87,7 @@ public class OldAggregateTable extends FactTable {
 		return aggregateFactCountField;
 	}
 
-	public FactTable getSourceFactTable() {
+	public OldFactTable getSourceFactTable() {
 		return sourceFactTable;
 	}
 }

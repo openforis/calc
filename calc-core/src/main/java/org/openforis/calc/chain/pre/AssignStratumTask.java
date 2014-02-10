@@ -14,7 +14,7 @@ import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.persistence.jooq.tables.SamplingUnitTable;
 import org.openforis.calc.psql.Psql;
-import org.openforis.calc.schema.FactTable;
+import org.openforis.calc.schema.OldFactTable;
 import org.openforis.calc.schema.OutputSchema;
 
 /**
@@ -28,9 +28,9 @@ public class AssignStratumTask extends Task {
 	@Override
 	protected void execute() throws Throwable {
 		OutputSchema outputSchema = getOutputSchema();
-		Collection<FactTable> factTables = outputSchema.getFactTables();
-		for (FactTable factTable : factTables) {
-			FactTable f = factTable;
+		Collection<OldFactTable> factTables = outputSchema.getFactTables();
+		for (OldFactTable factTable : factTables) {
+			OldFactTable f = factTable;
 			while ( f != null ){
 				Entity entity = f.getEntity();
 				Variable<?> clusterVar = entity.getClusterVariable();
@@ -51,7 +51,7 @@ public class AssignStratumTask extends Task {
 		}
 	}
 
-	private void assignStratumIds(FactTable factTable, String clusterColumn, String plotColumn) {
+	private void assignStratumIds(OldFactTable factTable, String clusterColumn, String plotColumn) {
 		Entity entity = factTable.getEntity();
 		Integer entityId = entity.getId();
 		Field<Integer> stratumId = factTable.getStratumIdField();
@@ -84,7 +84,7 @@ public class AssignStratumTask extends Task {
 		psql().updateWith(su, update, cond).execute();
 	}
 
-	private Field<String> getAsVarchar(FactTable factTable, String colName) {
+	private Field<String> getAsVarchar(OldFactTable factTable, String colName) {
 		Field<?> fld = factTable.field(colName);
 		if ( fld == null ) {
 			throw new IllegalStateException(colName+" not defined in "+factTable);

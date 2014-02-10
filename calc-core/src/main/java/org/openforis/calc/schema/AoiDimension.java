@@ -32,52 +32,21 @@ public class AoiDimension extends Dimension {
 	}
 
 	private void createHierarchy() {
-		
-		SelectQuery<Record> select = aoiHierarchyFlatTable.getSelectQuery();
-		
-		
-//		OutputSchema outputSchema = getRolapSchema().getOutputSchema();
-		
 		String aoiHierarchyName = aoiHierarchy.getName();
 		Hierarchy hierarchy = new Hierarchy(aoiHierarchyName);
 
 		Collection<AoiLevel> levels = aoiHierarchy.getLevelsReverseOrder();
 		for (AoiLevel aoiLevel : levels) {
-			
-			String aoiLevelName = aoiLevel.getNormalizedName();
+
+			String aoiLevelName = aoiLevel.getName();
 			String aliasIdColumn = aoiHierarchyFlatTable.getAoiIdField(aoiLevel).getName();
 			String aliasCaptionColumn = aoiHierarchyFlatTable.getAoiCaptionField(aoiLevel).getName();
-			
-			Level level = new Level( aoiLevelName, aliasIdColumn, aliasCaptionColumn);
-			hierarchy.addLevel(0, level);	
+
+			Level level = new Level( aoiLevelName, aliasIdColumn, aliasCaptionColumn );
+			hierarchy.addLevel(0, level);
 		}
-		
-		
-//		for ( int i = aoiLevels.size() - 1 ; i >= 0 ; i-- ) {
-//			AoiLevel aoiLevel = aoiLevels.get(i);
-//			AoiDimensionTable aoiDimTable = outputSchema.getAoiDimensionTable(aoiLevel);
-//
-//			String aoiLevelName = aoiLevel.getName();
-//
-//			String aliasIdColumn = aoiLevelName + "_id";
-//			String aliasCaptionColumn = aoiLevelName + "_caption";
-//
-//			select.addSelect(aoiDimTable.ID.as(aliasIdColumn));
-//			select.addSelect(aoiDimTable.CAPTION.as(aliasCaptionColumn));
-//
-//			if ( i == aoiLevels.size() - 1 ) {
-//				select.addFrom(aoiDimTable);
-//			} else {
-//				AoiLevel childLevel = aoiLevels.get(i + 1);
-//				AoiDimensionTable childAoiDimTable = outputSchema.getAoiDimensionTable(childLevel);
-//
-//				select.addJoin(aoiDimTable, childAoiDimTable.PARENT_AOI_ID.eq(aoiDimTable.ID));
-//			}
 
-//			Level level = new Level(aoiLevelName, aliasIdColumn, aliasCaptionColumn);
-//			hierarchy.addLevel(0, level);
-//		}
-
+		SelectQuery<Record> select = aoiHierarchyFlatTable.getSelectQuery();
 		View view = new View(aoiHierarchyName, select.toString());
 		hierarchy.setView(view);
 

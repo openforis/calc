@@ -85,8 +85,8 @@ public class TaskManager {
 		CalcJob job = new CalcJob(workspace, dataSource, this.beanFactory);
 		
 		ProcessingChain processingChain = workspace.getDefaultProcessingChain();
-//		List<CalculationStep> steps = processingChain.getCalculationSteps();
-//		job.addCalculationStep(steps);
+		List<CalculationStep> steps = processingChain.getCalculationSteps();
+		job.addCalculationStep(steps);
 		job.setAggregates(aggregates);
 		
 		autowire(job);
@@ -100,7 +100,7 @@ public class TaskManager {
 		CalculateSamplingUnitWeightTask weightTask = new CalculateSamplingUnitWeightTask( job.newREnvironment() );
 		autowire(weightTask);
 		
-		job.addTask(weightTask);
+		job.addTask( weightTask );
 		job.addTask( createTask(AssignAoiColumnsTask.class) );
 		job.addTask( createTask(CalculateExpansionFactorsTask.class) );
 		

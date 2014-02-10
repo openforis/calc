@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 
 import org.jooq.Record;
 import org.jooq.TableField;
+import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.AoiLevel;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
@@ -26,9 +27,10 @@ public class AoiAggregateTable extends AggregateTable {
 	
 //	private AoiLevel aoiHierarchyLevel;
 	private TableField<Record, Integer> aggregateFactCountField;
+	
 	private DataTable sourceTable;
 	private AoiLevel aoiLevel;
-
+	
 	AoiAggregateTable(DataTable sourceTable, AoiLevel aoiLevel) {
 		super(sourceTable, getName(sourceTable.getEntity(), aoiLevel) );
 		
@@ -125,5 +127,9 @@ public class AoiAggregateTable extends AggregateTable {
 	
 	public AoiLevel getAoiLevel() {
 		return aoiLevel;
+	}
+	
+	public AoiHierarchy getAoiHierarchy() {
+		return this.aoiLevel.getHierarchy();
 	}
 }

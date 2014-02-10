@@ -1,24 +1,34 @@
 package org.openforis.calc.schema;
 
-import org.openforis.calc.metadata.CategoricalVariable;
+import org.jooq.impl.SQLDataType;
+import org.openforis.calc.metadata.MultiwayVariable;
 
 /**
  * 
- * @author G. Miceli
+ * @author Mino Togna
  * @author S. Ricci
- *
  */
 public class CategoryDimensionTable extends DimensionTable {
 
 	private static final long serialVersionUID = 1L;
-	private CategoricalVariable<?> variable;
-	
-	CategoryDimensionTable(RelationalSchema schema, CategoricalVariable<?> variable) {
+
+	private MultiwayVariable variable;
+
+	CategoryDimensionTable(RelationalSchema schema, MultiwayVariable variable) {
 		super(variable.getDimensionTable(), schema);
+
 		this.variable = variable;
+
+		initFields();
 	}
 
-	public CategoricalVariable<?> getVariable() {
+	public MultiwayVariable getVariable() {
 		return variable;
+	}
+
+	@Override
+	protected void initFields() {
+		setIdField( createField(this.variable.getInputCategoryIdColumn(), SQLDataType.INTEGER, this) );
+		setCaptionField( createField(this.variable.getName() + "_label", SQLDataType.VARCHAR, this) );
 	}
 }

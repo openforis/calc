@@ -24,7 +24,7 @@ import org.openforis.calc.schema.DataTable;
 import org.openforis.calc.schema.EntityDataView;
 import org.openforis.calc.schema.ExpansionFactorTable;
 import org.openforis.calc.schema.InputSchema;
-import org.openforis.calc.schema.NewFactTable;
+import org.openforis.calc.schema.FactTable;
 import org.openforis.calc.schema.SamplingUnitAggregateTable;
 import org.openforis.calc.schema.Schemas;
 
@@ -45,15 +45,15 @@ public final class CreateAggregateTablesTask extends Task {
 	@Override
 	protected long countTotalItems() {
 		Schemas schemas = getJob().getSchemas();
-		List<NewFactTable> factTables = schemas.getInputSchema().getFactTables();
+		List<FactTable> factTables = schemas.getInputSchema().getFactTables();
 		return factTables.size();
 	}
 	
 	protected void execute() throws Throwable {
 		InputSchema schema = getDataSchema();
 		
-		List<NewFactTable> factTables = schema.getFactTables();
-		for (NewFactTable factTable : factTables) {
+		List<FactTable> factTables = schema.getFactTables();
+		for (FactTable factTable : factTables) {
 			// create fact table
 			createFactTable(factTable);
 		
@@ -77,7 +77,7 @@ public final class CreateAggregateTablesTask extends Task {
 		return schema;
 	}
 
-	private void createAoiAggregateTables(NewFactTable factTable) {
+	private void createAoiAggregateTables(FactTable factTable) {
 		Collection<AoiAggregateTable> aggregateTables = factTable.getAoiAggregateTables();
 		for ( AoiAggregateTable aggTable : aggregateTables ) {
 			
@@ -159,7 +159,7 @@ public final class CreateAggregateTablesTask extends Task {
 		select.addGroupBy( sourceTable.getStratumField() );
 		
 		// for now quantity fields. check if it needs to be done for each variable aggregate
-		Field<BigDecimal> plotArea = ((NewFactTable)sourceTable) .getPlotAreaField();
+		Field<BigDecimal> plotArea = ((FactTable)sourceTable) .getPlotAreaField();
 		for ( QuantitativeVariable var : sourceTable.getEntity().getOutputVariables() ) {
 			Field<BigDecimal> quantityField = sourceTable.getQuantityField(var);
 			
@@ -187,7 +187,7 @@ public final class CreateAggregateTablesTask extends Task {
 	
 	
 	
-	private void createFactTable(NewFactTable factTable) {
+	private void createFactTable(FactTable factTable) {
 		EntityDataView dataTable = factTable.getEntityView();
 //		Entity entity = dataTable.getEntity();
 		

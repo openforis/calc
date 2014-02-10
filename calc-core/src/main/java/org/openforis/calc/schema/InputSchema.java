@@ -4,6 +4,8 @@
 package org.openforis.calc.schema;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +16,9 @@ import org.jooq.impl.DynamicTable;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.AoiLevel;
+import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.MultiwayVariable;
 
 /**
  * @author G. Miceli
@@ -35,10 +39,11 @@ public class InputSchema extends RelationalSchema {
 	
 	private Phase1AoiTable phase1AoiTable;
 	
+	// output tables
 	private List<AoiHierarchyFlatTable> aoiHierchyTables;
 	private Map<AoiLevel, ExpansionFactorTable> expansionFactorTables;
-
 	private StratumDimensionTable stratumDimensionTable;
+	private Map<MultiwayVariable, CategoryDimensionTable> categoryDimensionTables;
 	
 	public InputSchema(Workspace workspace) {
 		super(workspace.getInputSchema());
@@ -51,18 +56,13 @@ public class InputSchema extends RelationalSchema {
 		
 		this.phase1AoiTable = new Phase1AoiTable(this);
 		
-		initAoiHirerchyTables();
-		
+		// output tables
+		initAoiHirerchyTables();		
 		initExpansionFactorTables();
-		
 		initStratumDimensionTable();
+		initCategoryDimensionTables();
 	}
 	
-	private void initStratumDimensionTable() {
-		if( this.workspace.getSamplingDesign().getStratified() ){
-			this.stratumDimensionTable = new StratumDimensionTable(workspace);
-		}
-	}
 
 	private void initDataTables() {
 		this.dataTables = new HashMap<Integer, InputTable>();
@@ -114,21 +114,27 @@ public class InputSchema extends RelationalSchema {
 	public EntityDataView getDataView(Entity entity) {
 		return dataViews.get(entity.getId());
 	}
+
+	/*
+	 * ==================================
+	 * 			Output tables
+	 * ==================================
+	 */
 	
-	public List<NewFactTable> getFactTables() {
-		List<NewFactTable> tables = new ArrayList<NewFactTable>();
+	public List<FactTable> getFactTables() {
+		List<FactTable> tables = new ArrayList<FactTable>();
 		for ( Entity entity : workspace.getEntities() ) {
 			if( entity.isAggregable() ) {
-				NewFactTable factTable = getFactTable(entity);
+				FactTable factTable = getFactTable(entity);
 				tables.add(factTable);
 			}
 		}
 		return tables;
 	}
 
-	public NewFactTable getFactTable(Entity entity) {
+	public FactTable getFactTable(Entity entity) {
 		if (entity.isAggregable()) {
-			NewFactTable factTable = new NewFactTable(entity, this);
+			FactTable factTable = new FactTable(entity, this);
 			return factTable;
 		}
 		return null;
@@ -192,8 +198,44 @@ public class InputSchema extends RelationalSchema {
 		return null;
 	}
 
+	private void initStratumDimensionTable() {
+		if( this.workspace.getSamplingDesign().getStratified() ){
+			this.stratumDimensionTable = new StratumDimensionTable(workspace);
+		}
+	}
+	
 	public StratumDimensionTable getStratumDimensionTable() {
 		return this.stratumDimensionTable;
 	}
+	
+	private void initCategoryDimensionTables() {
+		this.categoryDimensionTables = new HashMap<MultiwayVariable, CategoryDimensionTable>();
+		List<Entity> entities = workspace.getEntities();
+		for ( Entity entity : entities ) {
+			if( entity.isAggregable() ) {
+				
+				// Add dimensions for categorical variables
+				for (CategoricalVariable<?> var : entity.getCategoricalVariables()) {
+					if( var instanceof MultiwayVariable ){
+						MultiwayVariable multiVar = (MultiwayVariable) var;
+						if ( ! var.isDegenerateDimension() ) {
+							CategoryDimensionTable table = new CategoryDimensionTable( this, multiVar );
+							addTable(table);
+							categoryDimensionTables.put( multiVar, table );
+						}
+					}
+				}
+				
+			}
+		}
+	}
+	
+	public Collection<CategoryDimensionTable> getCategoryDimensionTables() {
+		return Collections.unmodifiableCollection(categoryDimensionTables.values());
+	}
+	public CategoryDimensionTable getCategoryDimensionTable(MultiwayVariable variable) {
+		return categoryDimensionTables.get(variable);
+	}
+
 	
 }

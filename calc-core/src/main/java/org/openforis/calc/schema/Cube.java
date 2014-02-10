@@ -2,8 +2,6 @@ package org.openforis.calc.schema;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +13,7 @@ import org.openforis.calc.metadata.AoiLevel;
 import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
-import org.openforis.calc.metadata.VariableAggregate;
+import org.openforis.commons.collection.CollectionUtils;
 
 /**
  * 
@@ -31,6 +29,7 @@ public class Cube {
 	private Map<Measure, Field<BigDecimal>> measures;
 
 	private RolapSchema rolapSchema;
+//	private FactTable factTable;
 	private FactTable factTable;
 
 	private String name;
@@ -41,29 +40,21 @@ public class Cube {
 	Cube(RolapSchema rolapSchema, FactTable factTable) {
 		this.name = factTable.getEntity().getName();
 
-		this.rolapSchema = rolapSchema;
 		this.factTable = factTable;
+		this.rolapSchema = rolapSchema;
+//		this.factTable = factTable;
 
 		this.table = factTable.getName();
-		OutputSchema outputSchema = rolapSchema.getOutputSchema();
-		this.schema = outputSchema.getName();
+//		OutputSchema outputSchema = rolapSchema.getOutputSchema();
+		this.schema = rolapSchema.getDataSchema().getName();
 
-		createDimensionUsages();
 		createAoiDimensionUsages();
+		createDimensionUsages();
 		createMeasures();
 		createAggNames();
 	}
 
-	private void createAggNames() {
-		this.aggNames = new ArrayList<AggName>();
-		if ( factTable.isGeoreferenced() ) {
-			Collection<AggregateTable> aggregateTables = factTable.getAggregateTables();
-			for ( AggregateTable aggregateTable : aggregateTables ) {
-				AggName aggName = new AggName(aggregateTable);
-				this.aggNames.add(aggName);
-			}
-		}
-	}
+
 
 	private AoiDimension getAoiDimension(AoiHierarchy aoiHierarchy) {
 		for ( AoiDimension aoiDimension : aoiDimensionUsages.keySet() ) {
@@ -72,19 +63,6 @@ public class Cube {
 			}
 		}
 		throw new IllegalArgumentException("Unable to find aoi dimension for aoi hierarchy " + aoiHierarchy.getName());
-	}
-
-	private void createMeasures() {
-		measures = new HashMap<Measure, Field<BigDecimal>>();
-		Entity entity = factTable.getEntity();
-
-		for ( QuantitativeVariable var : entity.getQuantitativeVariables() ) {
-			for ( VariableAggregate varAgg : var.getAggregates() ) {
-				Field<BigDecimal> measureField = factTable.getMeasureField(varAgg);
-				Measure measure = new Measure(getRolapSchema(), this, varAgg);
-				measures.put(measure, measureField);
-			}
-		}
 	}
 
 	private void createAoiDimensionUsages() {
@@ -115,8 +93,43 @@ public class Cube {
 		}
 	}
 
-	public Field<Integer> getStratumIdField() {
-		return factTable.getStratumIdField();
+	private void createMeasures() {
+		measures = new HashMap<Measure, Field<BigDecimal>>();
+		Entity entity = factTable.getEntity();
+
+		for ( QuantitativeVariable var : entity.getOutputVariables() ) {
+			Field<BigDecimal> measureField = factTable.getMeasureField(var);
+			Measure measure = new Measure(getRolapSchema(), this, var);
+			measures.put(measure, measureField);
+			
+			
+//			for ( VariableAggregate varAgg : var.getAggregates() ) {
+//				Field<BigDecimal> measureField = factTable.getMeasureField(varAgg);
+//				Measure measure = new Measure(getRolapSchema(), this, varAgg);
+//				measures.put(measure, measureField);
+//			}
+		}
+	}
+	
+	private void createAggNames() {
+	this.aggNames = new ArrayList<AggName>();
+	
+	for (AoiAggregateTable aggTable : factTable.getAoiAggregateTables()) {
+		AggName aggName = new AggName( aggTable );
+		this.aggNames.add(aggName);
+	}
+	
+//	if ( factTable.isGeoreferenced() ) {
+//		Collection<AggregateTable> aggregateTables = factTable.getAggregateTables();
+//		for ( AggregateTable aggregateTable : aggregateTables ) {
+//			AggName aggName = new AggName(aggregateTable);
+//			this.aggNames.add(aggName);
+//		}
+//	}
+}
+	
+	public Field<Integer> getStratumField() {
+		return factTable.getStratumField();
 	}
 
 	public StratumDimension getStratumDimension() {
@@ -124,15 +137,15 @@ public class Cube {
 	}
 
 	public Map<Dimension, Field<Integer>> getDimensionUsages() {
-		return Collections.unmodifiableMap(dimensionUsages);
+		return CollectionUtils.unmodifiableMap(dimensionUsages);
 	}
 
 	public Map<AoiDimension, Field<Integer>> getAoiDimensionUsages() {
-		return Collections.unmodifiableMap(aoiDimensionUsages);
+		return CollectionUtils.unmodifiableMap(aoiDimensionUsages);
 	}
 
 	public Map<Measure, Field<BigDecimal>> getMeasures() {
-		return Collections.unmodifiableMap(measures);
+		return CollectionUtils.unmodifiableMap(measures);
 	}
 
 	public RolapSchema getRolapSchema() {
@@ -158,6 +171,8 @@ public class Cube {
 	public List<AggName> getAggNames() {
 		return aggNames;
 	}
+	
+	
 
 	public class AggName {
 
@@ -165,9 +180,9 @@ public class Cube {
 		private List<AggMeasure> aggMeasures;
 		private List<AggLevel> aggLevels;
 
-		private AggregateTable aggregateTable;
+		private AoiAggregateTable aggregateTable;
 
-		public AggName(AggregateTable aggregateTable) {
+		public AggName(AoiAggregateTable aggregateTable) {
 			this.aggregateTable = aggregateTable;
 
 			createAggForeignKeys();
@@ -208,8 +223,9 @@ public class Cube {
 
 		private void createAggLevels() {
 			aggLevels = new ArrayList<AggLevel>();
-			AoiLevel aggTableLevel = null;// TODO aggregateTable.getAoiHierarchyLevel();
-			AoiHierarchy aoiHierarchy = aggTableLevel.getHierarchy();
+			AoiLevel aggTableLevel = this.aggregateTable.getAoiLevel();
+			AoiHierarchy aoiHierarchy = this.aggregateTable.getAoiHierarchy();
+			
 			AoiDimension aoiDim = getAoiDimension(aoiHierarchy);
 			for ( AoiLevel level : aoiHierarchy.getLevels() ) {
 				if ( level.getRank() <= aggTableLevel.getRank() ) {

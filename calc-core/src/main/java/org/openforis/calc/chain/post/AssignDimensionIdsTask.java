@@ -17,7 +17,7 @@ import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.psql.Psql;
 import org.openforis.calc.psql.PsqlPart;
 import org.openforis.calc.schema.CategoryDimensionTable;
-import org.openforis.calc.schema.FactTable;
+import org.openforis.calc.schema.OldFactTable;
 import org.openforis.calc.schema.OutputSchema;
 
 /**
@@ -31,8 +31,8 @@ public final class AssignDimensionIdsTask extends Task {
 	@Override
 	protected void execute() throws Throwable {
 		OutputSchema outputSchema = getOutputSchema();
-		Collection<FactTable> factTables = outputSchema.getFactTables();
-		for (FactTable factTable : factTables) {
+		Collection<OldFactTable> factTables = outputSchema.getFactTables();
+		for (OldFactTable factTable : factTables) {
 			Entity entity = factTable.getEntity();
 			List<CategoricalVariable<?>> vars = entity.getCategoricalVariables();
 			for (CategoricalVariable<?> var : vars) {
@@ -48,22 +48,22 @@ public final class AssignDimensionIdsTask extends Task {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void assignBinaryDimensionIds(FactTable factTable, BinaryVariable var) {
+	private void assignBinaryDimensionIds(OldFactTable factTable, BinaryVariable var) {
 		OutputSchema outputSchema = (OutputSchema) factTable.getSchema();
 		CategoryDimensionTable dim = outputSchema.getCategoryDimensionTable(var);
 		Field<Integer> id = factTable.getDimensionIdField(var);
 		if ( dim != null && id != null ) {
 			Table<?> cursor = new Psql()
-				.select(dim.ID, dim.VALUE)
+				.select(dim.getIdField(), dim.getValueField())
 				.from(dim)
 				.asTable("dim");
 	
-			Field<BigDecimal> dimValue = cursor.field(dim.VALUE);
+			Field<BigDecimal> dimValue = cursor.field(dim.getValueField());
 			Field<Boolean> factValue = (Field<Boolean>) factTable.getCategoryValueField(var);
 	
 			Update<?> update = new Psql()
 				.update(factTable)
-				.set(id, cursor.field(dim.ID));
+				.set(id, cursor.field(dim.getIdField()));
 			
 			PsqlPart joinCondition = new Psql()
 					.decode()
@@ -79,22 +79,22 @@ public final class AssignDimensionIdsTask extends Task {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void assignCategoricalDimensionIds(FactTable factTable, MultiwayVariable var) {
+	private void assignCategoricalDimensionIds(OldFactTable factTable, MultiwayVariable var) {
 		OutputSchema outputSchema = (OutputSchema) factTable.getSchema();
 		CategoryDimensionTable dim = outputSchema.getCategoryDimensionTable(var);
 		Field<Integer> id = factTable.getDimensionIdField(var);
 		if ( dim != null && id != null ) {
 			Table<?> cursor = new Psql()
-				.select(dim.ID, dim.CODE)
+				.select(dim.getIdField(), dim.getCodeField())
 				.from(dim)
 				.asTable("dim");
 	
 			Update<?> update = new Psql()
 				.update(factTable)
-				.set(id, cursor.field(dim.ID));						
+				.set(id, cursor.field(dim.getIdField()));						
 	
 			Field<String> value = (Field<String>) factTable.getCategoryValueField(var);
-			Condition joinCondition = value.eq(cursor.field(dim.CODE));
+			Condition joinCondition = value.eq(cursor.field(dim.getCodeField()));
 			
 			psql()
 				.updateWith(cursor, update, joinCondition)

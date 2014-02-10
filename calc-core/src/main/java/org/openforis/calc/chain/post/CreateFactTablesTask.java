@@ -1,6 +1,5 @@
 package org.openforis.calc.chain.post;
 
-import java.awt.ItemSelectable;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
@@ -21,9 +20,9 @@ import org.openforis.calc.psql.Psql;
 import org.openforis.calc.psql.Psql.Privilege;
 import org.openforis.calc.schema.DataTable;
 import org.openforis.calc.schema.EntityDataView;
-import org.openforis.calc.schema.FactTable;
+import org.openforis.calc.schema.OldFactTable;
 import org.openforis.calc.schema.InputSchema;
-import org.openforis.calc.schema.NewFactTable;
+import org.openforis.calc.schema.FactTable;
 import org.openforis.calc.schema.OutputSchema;
 import org.openforis.calc.schema.OutputTable;
 
@@ -42,9 +41,9 @@ public final class CreateFactTablesTask extends Task {
 
 	protected void execute() throws Throwable {
 		InputSchema schema = getInputSchema();
-		List<NewFactTable> factTables = schema.getFactTables();
+		List<FactTable> factTables = schema.getFactTables();
 
-		for (NewFactTable factTable : factTables) {
+		for (FactTable factTable : factTables) {
 			createFactTable(factTable);
 
 			incrementItemsProcessed();
@@ -52,7 +51,7 @@ public final class CreateFactTablesTask extends Task {
 
 	}
 
-	private void createFactTable(NewFactTable factTable) {
+	private void createFactTable(FactTable factTable) {
 		EntityDataView dataTable = factTable.getEntityView();
 
 		SelectQuery<?> select = new Psql().selectQuery(dataTable);
@@ -65,7 +64,8 @@ public final class CreateFactTablesTask extends Task {
 		}
 
 		// select measure
-		List<QuantitativeVariable> vars = factTable.getEntity().getQuantitativeVariables();
+//		List<QuantitativeVariable> vars = factTable.getEntity().getQuantitativeVariables();
+		Collection<QuantitativeVariable> vars = factTable.getEntity().getOutputVariables();
 		for (QuantitativeVariable var : vars) {
 			Field<BigDecimal> fld = dataTable.getQuantityField(var);
 			select.addSelect(fld);
@@ -102,9 +102,9 @@ public final class CreateFactTablesTask extends Task {
 	// @Override
 	protected void old_execute() throws Throwable {
 		OutputSchema outputSchema = getOutputSchema();
-		Collection<FactTable> factTables = outputSchema.getFactTables();
+		Collection<OldFactTable> factTables = outputSchema.getFactTables();
 
-		for (FactTable factTable : factTables) {
+		for (OldFactTable factTable : factTables) {
 			OutputTable outputTable = (OutputTable) factTable.getSourceOutputTable();
 
 			SelectQuery<?> select = new Psql().selectQuery(outputTable);
@@ -133,7 +133,7 @@ public final class CreateFactTablesTask extends Task {
 		}
 	}
 
-	private void addStratumId(SelectQuery<?> select, FactTable factTable) {
+	private void addStratumId(SelectQuery<?> select, OldFactTable factTable) {
 		// OutputSchema outputSchema = (OutputSchema) factTable.getSchema();
 		// select.addSelect(SAMPLING_UNIT.STRATUM_ID.as(factTable.getStratumIdField().getName()));
 		// Condition cond = SAMPLING_UNIT.CLUSTER.eq(DSL.field(""))
@@ -151,7 +151,7 @@ public final class CreateFactTablesTask extends Task {
 		}
 	}
 
-	private void selectMeasures(SelectQuery<?> select, FactTable factTable) {
+	private void selectMeasures(SelectQuery<?> select, OldFactTable factTable) {
 		Entity entity = factTable.getEntity();
 		List<VariableAggregate> aggs = entity.getVariableAggregates();
 		OutputTable outputDataTable = (OutputTable) factTable.getSourceOutputTable();
@@ -166,7 +166,7 @@ public final class CreateFactTablesTask extends Task {
 		}
 	}
 
-	private void selectDimensionsRecursive(SelectQuery<?> select, FactTable factTable, OutputTable outputTable) {
+	private void selectDimensionsRecursive(SelectQuery<?> select, OldFactTable factTable, OutputTable outputTable) {
 		Entity entity = outputTable.getEntity();
 		OutputTable parentTable = (OutputTable) outputTable.getParentTable();
 		if (parentTable != null) {

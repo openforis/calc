@@ -16,14 +16,10 @@ import static org.openforis.calc.mondrian.Rolap.createSharedDimension;
 import static org.openforis.calc.mondrian.Rolap.createSqlView;
 import static org.openforis.calc.mondrian.Rolap.createTable;
 
-import java.io.File;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
 
 import org.jooq.Field;
 import org.openforis.calc.engine.Task;
@@ -41,13 +37,13 @@ import org.openforis.calc.mondrian.Table.AggName.AggForeignKey;
 import org.openforis.calc.mondrian.Table.AggName.AggLevel;
 import org.openforis.calc.mondrian.Table.AggName.AggMeasure;
 import org.openforis.calc.mondrian.View;
+import org.openforis.calc.saiku.Saiku;
 import org.openforis.calc.schema.AoiDimension;
 import org.openforis.calc.schema.CategoryDimension;
 import org.openforis.calc.schema.Dimension;
 import org.openforis.calc.schema.RolapSchema;
 import org.openforis.calc.schema.StratumDimension;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * 
@@ -59,16 +55,17 @@ import org.springframework.core.io.Resource;
  */
 public class PublishRolapSchemaTask extends Task {
 
-//	@Value("${calc.rolapSchemaOutputFile}")
-//	private String rolapSchemaOutputFile;
-
-	@Value("${saiku.home}")
-	private String saikuHome;
+	@Autowired
+	private Saiku saiku;
 	
+	public PublishRolapSchemaTask() {
+		super();
+	}
+
 	@Override
 	protected void execute() throws Throwable {
-		Workspace workspace = getWorkspace();
 		
+		Workspace workspace = getWorkspace();
 		RolapSchema rolapSchema = getRolapSchema();
 
 		// create schema
@@ -81,32 +78,14 @@ public class PublishRolapSchemaTask extends Task {
 		createStratumDimension(rolapSchema, schema);
 
 		// create shared dimensions
-//		createSharedDimensions(rolapSchema, schema);
+		createSharedDimensions(rolapSchema, schema);
 
 		// create cubes for each fact table
-//		createCubes(rolapSchema, schema);
+		createCubes(rolapSchema, schema);
 
-		JAXBContext jaxbContext = JAXBContext.newInstance(Schema.class);
-		Marshaller marshaller = jaxbContext.createMarshaller();
-		marshaller.setProperty("jaxb.formatted.output", true);
-
-		File mdxPath = getWorkspaceMdxPath(); // new File(saikuHome, "WEB-INF/classes/"+workspace.getName()+"/"+workspace.getName()+".xml" );
-		File f = new File( mdxPath, workspace.getName()+".xml" );
-		if ( f.exists() ) {
-			f.delete();
-		}
 		
-		marshaller.marshal(schema, f);
-
-	}
-
-	private File getWorkspaceMdxPath() {
-		String dir = String.format( "WEB-INF/classes/%s", getWorkspace().getName() ); 
-		File mdxPath = new File( saikuHome , dir );
-		if( !mdxPath.exists() ){
-			mdxPath.mkdirs();
-		}
-		return mdxPath;
+		// write xml schema
+		this.saiku.writeSchema(workspace, schema);
 	}
 
 	private void createCubes(RolapSchema rolapSchema, Schema schema) {
@@ -131,9 +110,13 @@ public class PublishRolapSchemaTask extends Task {
 
 	private void createCubeMembers(org.openforis.calc.schema.Cube rolapCube, Cube cube) {
 		// add stratum dimension usage
-		Field<Integer> stratumField = rolapCube.getStratumIdField();
-		DimensionUsage stratumDimUsage = createDimensionUsage(rolapCube.getStratumDimension().getName(), stratumField.getName());
-		cube.getDimensionUsageOrDimension().add(stratumDimUsage);
+		StratumDimension stratumDimension = rolapCube.getStratumDimension();
+		if( stratumDimension != null ) {
+			Field<Integer> stratumField =  rolapCube.getStratumField();
+			DimensionUsage stratumDimUsage = createDimensionUsage( stratumDimension.getName(), stratumField.getName() );
+			
+			cube.getDimensionUsageOrDimension().add(stratumDimUsage);
+		}
 
 		// add aoi dimension usages
 		Map<AoiDimension, Field<Integer>> aoiDimensionUsages = rolapCube.getAoiDimensionUsages();
@@ -187,7 +170,7 @@ public class PublishRolapSchemaTask extends Task {
 		}
 	}
 
-	private void createSharedDimensions(RolapSchema rolapSchema, Schema schema) {
+	private void createSharedDimensions( RolapSchema rolapSchema, Schema schema ) {
 		Collection<CategoryDimension> sharedDimensions = rolapSchema.getSharedDimensions();
 		for ( CategoryDimension categoryDimension : sharedDimensions ) {
 			SharedDimension dim = createDimension(categoryDimension);
@@ -216,7 +199,7 @@ public class PublishRolapSchemaTask extends Task {
 			
 			Hierarchy h = new Hierarchy();
 			h.setName(hierarchy.getName());
-			h.setHasAll(false);
+			h.setHasAll(true);
 			
 			List<org.openforis.calc.schema.Hierarchy.Level> levels = hierarchy.getLevels();
 			for ( org.openforis.calc.schema.Hierarchy.Level level : levels ) {
@@ -270,5 +253,5 @@ public class PublishRolapSchemaTask extends Task {
 
 		return dim;
 	}
-
+	
 }

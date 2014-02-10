@@ -381,9 +381,12 @@ public abstract class DataTable extends AbstractTable {
 
 	protected void createStratumField() {
 		if( getEntity().getWorkspace().getSamplingDesign().getStratified() ){
-//			if( this instanceof AggregateTable || getEntity().isSamplingUnit() ) {
+		
+			Entity parent = this.entity.getParent();
+			if( entity.isSamplingUnit() || (parent != null && parent.isSamplingUnit()) ) {
 				this.stratumField = createField("_stratum", INTEGER, this);
-//			}
+			}
+
 		}
 	}
 	

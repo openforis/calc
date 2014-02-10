@@ -30,12 +30,12 @@ public final class CreateCategoryDimensionTablesTask extends Task {
 				Integer varId = var.getId();
 				
 				Select<?> select = psql()
-					.select(CATEGORY.ID			.as(t.ID.getName()), 
-							CATEGORY.CODE		.as(t.CODE.getName()),
-							CATEGORY.CAPTION	.as(t.CAPTION.getName()),
-							CATEGORY.DESCRIPTION.as(t.DESCRIPTION.getName()), 
-							CATEGORY.SORT_ORDER	.as(t.SORT_ORDER.getName()),
-							CATEGORY.VALUE      .as(t.VALUE.getName()))
+					.select(CATEGORY.ID			.as(t.getIdField().getName()), 
+							CATEGORY.CODE		.as(t.getCodeField().getName()),
+							CATEGORY.CAPTION	.as(t.getCaptionField().getName()),
+							CATEGORY.DESCRIPTION.as(t.getDescriptionField().getName()), 
+							CATEGORY.SORT_ORDER	.as(t.getSortOrderField().getName()),
+							CATEGORY.VALUE      .as(t.getValueField().getName()))
 					.from(CATEGORY)
 					.where(CATEGORY.VARIABLE_ID.eq(varId));
 				

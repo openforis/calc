@@ -27,7 +27,7 @@ public class CategoryDimension extends Dimension {
 		Table t = new Table(table.getSchema().getName(), table.getName());
 		hierarchy.setTable(t);
 				
-		Level level = new Level(table.getVariable().getName(), table.ID.getName(), table.CAPTION.getName());
+		Level level = new Level(table.getVariable().getName(), table.getIdField().getName(), table.getCaptionField().getName());
 		hierarchy.addLevel(level);
 		
 		setHierarchy(hierarchy);

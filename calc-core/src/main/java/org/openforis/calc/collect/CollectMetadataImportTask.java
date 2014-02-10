@@ -26,6 +26,7 @@ import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.Variable.Scale;
 import org.openforis.calc.metadata.VariableDao;
 import org.openforis.collect.model.CollectSurvey;
+import org.openforis.collect.relational.model.CodeTable;
 import org.openforis.collect.relational.model.CodeValueFKColumn;
 import org.openforis.collect.relational.model.DataColumn;
 import org.openforis.collect.relational.model.DataTable;
@@ -326,6 +327,10 @@ public class CollectMetadataImportTask extends Task {
 				if ( fk != null ) {
 					multiwayVar.setInputCategoryIdColumn(fk.getName());
 				}
+				
+				CodeTable codeListTable = inputRelationalSchema.getCodeListTable( list, codeAttrDefn.getListLevelIndex() );
+				
+				multiwayVar.setDimensionTable( codeListTable.getName() );
 			}
 		} else if ( attrDefn instanceof DateAttributeDefinition ) {
 			v = new TextVariable();

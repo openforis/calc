@@ -38,8 +38,8 @@ public class RolapSchema {
 
 		createAoiDimensions();
 		createStratumDimension();
-//		createSharedDimensions();
-//		createCubes();
+		createSharedDimensions();
+		createCubes();
 	}
 
 	private void createStratumDimension() {
@@ -52,22 +52,23 @@ public class RolapSchema {
 	private void createCubes() {
 		this.cubes = new ArrayList<Cube>();
 
-//		Collection<NewFactTable> factTables = outputSchema.getFactTables();
-//		for ( NewFactTable factTable : factTables ) {
-//			Cube cube = new Cube(this, factTable);
-//			cubes.add(cube);
-//		}
+		List<FactTable> factTables = dataSchema.getFactTables();
+		for (FactTable factTable : factTables) {
+			Cube cube = new Cube(this, factTable);
+			cubes.add(cube);
+		}
+		
 	}
 
 	private void createSharedDimensions() {
 		sharedDimensions = new HashMap<CategoricalVariable<?>, CategoryDimension>();
 
-//		Collection<CategoryDimensionTable> categoryDimensionTables = dataSchema.getCategoryDimensionTables();
-//		for ( CategoryDimensionTable categoryDimensionTable : categoryDimensionTables ) {
-//			CategoryDimension dimension = new CategoryDimension(this, categoryDimensionTable);
-//			CategoricalVariable<?> variable = categoryDimensionTable.getVariable();
-//			sharedDimensions.put(variable, dimension);
-//		}
+		Collection<CategoryDimensionTable> categoryDimensionTables = dataSchema.getCategoryDimensionTables();
+		for ( CategoryDimensionTable categoryDimensionTable : categoryDimensionTables ) {
+			CategoryDimension dimension = new CategoryDimension( this, categoryDimensionTable );
+			CategoricalVariable<?> variable = categoryDimensionTable.getVariable();
+			sharedDimensions.put( variable, dimension );
+		}
 	}
 
 	private void createAoiDimensions() {

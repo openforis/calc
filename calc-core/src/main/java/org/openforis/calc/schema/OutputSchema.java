@@ -32,7 +32,7 @@ public class OutputSchema extends RelationalSchema {
 	private StratumDimensionTable stratumDimensionTable;
 	private ExpansionFactorTable expansionFactorTable;
 	private Map<Entity, OutputTable> outputTables;
-	private Map<Entity, FactTable> factTables;
+	private Map<Entity, OldFactTable> factTables;
 	private Map<CategoricalVariable<?>, CategoryDimensionTable> categoryDimensionTables;
 	private Map<AoiLevel, AoiDimensionTable> aoiDimensionTables;
 
@@ -54,22 +54,22 @@ public class OutputSchema extends RelationalSchema {
 	}
 
 	private void initCategoryDimensionTables() {
-		this.categoryDimensionTables = new HashMap<CategoricalVariable<?>, CategoryDimensionTable>();
-		List<Entity> entities = workspace.getEntities();
-		for ( Entity entity : entities ) {
-			// Add dimensions for categorical variables
-			for (CategoricalVariable<?> var : entity.getCategoricalVariables()) {
-				if ( ! var.isDegenerateDimension() ) {
-					CategoryDimensionTable table = new CategoryDimensionTable(this, var);
-					addTable(table);
-					categoryDimensionTables.put(var, table);
-				}
-			}
-		}
+//		this.categoryDimensionTables = new HashMap<CategoricalVariable<?>, CategoryDimensionTable>();
+//		List<Entity> entities = workspace.getEntities();
+//		for ( Entity entity : entities ) {
+//			// Add dimensions for categorical variables
+//			for (CategoricalVariable<?> var : entity.getCategoricalVariables()) {
+//				if ( ! var.isDegenerateDimension() ) {
+//					CategoryDimensionTable table = new CategoryDimensionTable(this, var);
+//					addTable(table);
+//					categoryDimensionTables.put(var, table);
+//				}
+//			}
+//		}
 	}
 
 	private void initFactTables() {
-		this.factTables = new HashMap<Entity, FactTable>();
+		this.factTables = new HashMap<Entity, OldFactTable>();
 		List<Entity> entities = workspace.getEntities();
 		for ( Entity entity : entities ) {
 			initFactTables(entity, null);
@@ -79,10 +79,10 @@ public class OutputSchema extends RelationalSchema {
 	/**
 	 * Recursively initialize fact tables
 	 */
-	private void initFactTables(Entity entity, FactTable parentFact) {
+	private void initFactTables(Entity entity, OldFactTable parentFact) {
 		if ( entity.isUnitOfAnalysis() ) {
 			OutputTable outputTable = outputTables.get(entity);
-			FactTable factTable = new FactTable(entity, this, outputTable, parentFact);
+			OldFactTable factTable = new OldFactTable(entity, this, outputTable, parentFact);
 			addTable(factTable);
 			factTables.put(entity, factTable);
 			
@@ -151,9 +151,6 @@ public class OutputSchema extends RelationalSchema {
 		return Collections.unmodifiableCollection(outputTables.values());
 	}
 
-	public Collection<CategoryDimensionTable> getCategoryDimensionTables() {
-		return Collections.unmodifiableCollection(categoryDimensionTables.values());
-	}
 
 	public Collection<AoiDimensionTable> getAoiDimensionTables() {
 		return Collections.unmodifiableCollection(aoiDimensionTables.values());
@@ -163,11 +160,14 @@ public class OutputSchema extends RelationalSchema {
 		return aoiDimensionTables.get(aoiHierarchyLevel);
 	}
 
+	public Collection<CategoryDimensionTable> getCategoryDimensionTables() {
+		return Collections.unmodifiableCollection(categoryDimensionTables.values());
+	}
 	public CategoryDimensionTable getCategoryDimensionTable(CategoricalVariable<?> variable) {
 		return categoryDimensionTables.get(variable);
 	}
 
-	public Collection<FactTable> getFactTables() {
+	public Collection<OldFactTable> getFactTables() {
 		return Collections.unmodifiableCollection(factTables.values());
 	}
 	
@@ -177,7 +177,7 @@ public class OutputSchema extends RelationalSchema {
 
 	public Collection<AggregateTable> getAggregateTables() {
 		Collection<AggregateTable> tables = new ArrayList<AggregateTable>();
-		for (FactTable table : factTables.values()) {
+		for (OldFactTable table : factTables.values()) {
 			tables.addAll(table.getAggregateTables());
 		}
 		return Collections.unmodifiableCollection(tables);
