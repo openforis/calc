@@ -235,6 +235,36 @@ estimateTreeVolume <- function(trees) {
   return (trees);
 }
 
+# *********************************************************
+#  this function adds a column agbTobgb 
+#  that represents the ratio of below-ground biomass to above-ground biomass
+# (IPCC 2006 guidelines http://www.ipcc-nggip.iges.or.jp/public/gpglulucf/gpglulucf_contents.html ) 
+# *********************************************************
+setAboveGroungBiomassToBelowGroundBiomassConversionFactor <- function( data ){
+  
+  data$agbTobgb <- 
+    with(
+      data,
+      ifelse( vegetation_type == '102' , 0.37,
+              ifelse( vegetation_type == '101' , 0.27,
+                      ifelse( vegetation_type %in% c('301','302','303','304','305','306') , 0.40,
+                              ifelse( vegetation_type %in% c('202','203','401','402','403','404','503','504','505','506','601','602','603','701','702','703','800') , 0.37,        
+                                      ifelse( vegetation_type %in% c('103','201','501','502') , 0.28, 
+                                              ifelse( vegetation_type == '104' , 0.20,
+                                                      NA
+                                              )
+                                      )                    
+                              )            
+                      )        
+              )
+      )
+      
+    );
+  
+  return (data);
+}
+
+
 estimateTreeBiomass <- function(trees) {
   # C = cf(AGB + BGB + DWD)
   #  trees$aboveground_biomass_per_ha <- with(trees,
@@ -266,36 +296,13 @@ estimateTreeBiomass <- function(trees) {
   #convert from kg to tonnes
   trees$aboveground_biomass <- trees$aboveground_biomass * 0.001;
   
-  trees$belowground_biomass <- trees$aboveground_biomass * 0.28;
+  trees <- setAboveGroungBiomassToBelowGroundBiomassConversionFactor( trees );  
+  trees$belowground_biomass <- trees$aboveground_biomass * trees$agbTobgb;
   
   #trees$avg_aboveground_biomass  <- trees$aboveground_biomass / trees$inclusion_area;
   #trees$avg_belowground_biomass  <- trees$belowground_biomass / trees$inclusion_area;
   
   return (trees);
-}
-
-setCarbonRootShootRatio <- function( data ){
-  
-  data$carbonCf <- 
-    with(
-      data,
-      ifelse( vegetation_type == '102' , 0.37,
-              ifelse( vegetation_type == '101' , 0.27,
-                      ifelse( vegetation_type %in% c('301','302','303','304','305','306') , 0.40,
-                              ifelse( vegetation_type %in% c('202','203','401','402','403','404','503','504','505','506','601','602','603','701','702','703','800') , 0.37,        
-                                      ifelse( vegetation_type %in% c('103','201','501','502') , 0.28, 
-                                              ifelse( vegetation_type == '104' , 0.20,
-                                                      NA
-                                              )
-                                      )                    
-                              )            
-                      )        
-              )
-      )
-      
-    );
-  
-  return (data);
 }
 
 estimateDeadWoodVolume <- function( data ){
@@ -378,8 +385,8 @@ trees <- estimateTreeBiomass( trees=trees );
 
 #==================================
 # 5. carbon
-trees <- setCarbonRootShootRatio( trees );
-trees$carbon <- with(trees, carbonCf * (aboveground_biomass + belowground_biomass) );
+#trees <- setCarbonRootShootRatio( trees );
+trees$carbon <- with(trees, 0.47 * (aboveground_biomass + belowground_biomass) );
 
 #==================================
 # 5.1 basal_area
@@ -404,8 +411,8 @@ deadWoods <- subset( deadWoods, !is.na(aboveground_biomass) & !is.na(belowground
 
 #==================================
 # 8. deadwood carbon
-deadWoods <- setCarbonRootShootRatio( deadWoods );
-deadWoods$carbon <- with(deadWoods, carbonCf * (aboveground_biomass + belowground_biomass) );
+#deadWoods <- setCarbonRootShootRatio( deadWoods );
+deadWoods$carbon <- with(deadWoods, 0.47 * (aboveground_biomass + belowground_biomass) );
 
 #==================================
 # 8. deadwood inclusion area
