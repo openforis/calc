@@ -58,11 +58,13 @@ public class Hierarchy {
 		private String name;
 		private String column;
 		private String nameColumn;
+		private String caption;
 
-		Level(String name, String column, String nameColumn) {
+		Level(String name, String column, String nameColumn, String caption) {
 			this.name = name;
 			this.column = column;
 			this.nameColumn = nameColumn;
+			this.caption = caption;
 		}
 
 		public String getName() {
@@ -75,6 +77,10 @@ public class Hierarchy {
 
 		public String getNameColumn() {
 			return nameColumn;
+		}
+		
+		public String getCaption() {
+			return caption;
 		}
 	}
 

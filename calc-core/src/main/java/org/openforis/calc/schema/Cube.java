@@ -29,7 +29,6 @@ public class Cube {
 	private Map<Measure, Field<BigDecimal>> measures;
 
 	private RolapSchema rolapSchema;
-//	private FactTable factTable;
 	private FactTable factTable;
 
 	private String name;
@@ -38,14 +37,16 @@ public class Cube {
 	private List<AggName> aggNames;
 
 	Cube(RolapSchema rolapSchema, FactTable factTable) {
-		this.name = factTable.getEntity().getName();
-
+		Entity entity = factTable.getEntity();
+		this.name = entity.getName();
+		if( entity.getParent() != null && entity.getParent().isSamplingUnit() ){
+			this.name += "_"; 
+		}
+		
 		this.factTable = factTable;
 		this.rolapSchema = rolapSchema;
-//		this.factTable = factTable;
 
 		this.table = factTable.getName();
-//		OutputSchema outputSchema = rolapSchema.getOutputSchema();
 		this.schema = rolapSchema.getDataSchema().getName();
 
 		createAoiDimensionUsages();
@@ -99,7 +100,7 @@ public class Cube {
 
 		for ( QuantitativeVariable var : entity.getOutputVariables() ) {
 			Field<BigDecimal> measureField = factTable.getMeasureField(var);
-			Measure measure = new Measure(getRolapSchema(), this, var);
+			Measure measure = new Measure( getRolapSchema(), this, var );
 			measures.put(measure, measureField);
 			
 			
@@ -230,7 +231,7 @@ public class Cube {
 			for ( AoiLevel level : aoiHierarchy.getLevels() ) {
 				if ( level.getRank() <= aggTableLevel.getRank() ) {
 					Field<Integer> field = aggregateTable.getAoiIdField(level);
-					AggLevel aggLevel = new AggLevel(aoiDim.getName(), level.getName(), field.getName());
+					AggLevel aggLevel = new AggLevel(aoiDim.getHierarchy().getName(), level.getName(), field.getName());
 					aggLevels.add(aggLevel);
 				}
 			}

@@ -1,20 +1,6 @@
 package org.openforis.calc.chain.post;
 
-import static org.openforis.calc.mondrian.Rolap.DATA_TYPE_NUMERIC;
-import static org.openforis.calc.mondrian.Rolap.DIMENSION_TYPE_STANDARD;
-import static org.openforis.calc.mondrian.Rolap.NUMBER_FORMAT_STRING;
-import static org.openforis.calc.mondrian.Rolap.createAggForeignKey;
-import static org.openforis.calc.mondrian.Rolap.createAggLevel;
-import static org.openforis.calc.mondrian.Rolap.createAggMeasure;
-import static org.openforis.calc.mondrian.Rolap.createAggregateName;
-import static org.openforis.calc.mondrian.Rolap.createCube;
-import static org.openforis.calc.mondrian.Rolap.createDimensionUsage;
-import static org.openforis.calc.mondrian.Rolap.createLevel;
-import static org.openforis.calc.mondrian.Rolap.createMeasure;
-import static org.openforis.calc.mondrian.Rolap.createSchema;
-import static org.openforis.calc.mondrian.Rolap.createSharedDimension;
-import static org.openforis.calc.mondrian.Rolap.createSqlView;
-import static org.openforis.calc.mondrian.Rolap.createTable;
+import static org.openforis.calc.mondrian.Rolap.*;
 
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -24,12 +10,18 @@ import java.util.Map;
 import org.jooq.Field;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
+import org.openforis.calc.mondrian.CalculatedMember;
 import org.openforis.calc.mondrian.DimensionUsage;
 import org.openforis.calc.mondrian.Hierarchy;
 import org.openforis.calc.mondrian.Hierarchy.Level;
 import org.openforis.calc.mondrian.Schema;
 import org.openforis.calc.mondrian.Schema.Cube;
 import org.openforis.calc.mondrian.Schema.Cube.Measure;
+import org.openforis.calc.mondrian.Schema.VirtualCube;
+import org.openforis.calc.mondrian.Schema.VirtualCube.CubeUsages;
+import org.openforis.calc.mondrian.Schema.VirtualCube.CubeUsages.CubeUsage;
+import org.openforis.calc.mondrian.Schema.VirtualCube.VirtualCubeDimension;
+import org.openforis.calc.mondrian.Schema.VirtualCube.VirtualCubeMeasure;
 import org.openforis.calc.mondrian.SharedDimension;
 import org.openforis.calc.mondrian.Table;
 import org.openforis.calc.mondrian.Table.AggName;
@@ -83,13 +75,15 @@ public class PublishRolapSchemaTask extends Task {
 		// create cubes for each fact table
 		createCubes(rolapSchema, schema);
 
+		// create virtual cubes
+		createVirtualCubes(rolapSchema, schema);
 		
 		// write xml schema
 		this.saiku.writeSchema(workspace, schema);
 	}
 
 	private void createCubes(RolapSchema rolapSchema, Schema schema) {
-		List<org.openforis.calc.schema.Cube> cubes = rolapSchema.getCubes();
+		Collection<org.openforis.calc.schema.Cube> cubes = rolapSchema.getCubes();
 		for ( org.openforis.calc.schema.Cube rolapCube : cubes ) {
 
 			Cube cube = createCube(rolapCube.getName());
@@ -104,10 +98,39 @@ public class PublishRolapSchemaTask extends Task {
 
 			// add members to cube
 			createCubeMembers(rolapCube, cube);
-
 		}
 	}
 
+	private void createVirtualCubes(RolapSchema rolapSchema, Schema schema) {
+		for ( org.openforis.calc.schema.VirtualCube calcCube : rolapSchema.getVirtualCubes() ) {
+			VirtualCube virtualCube = createVirtualCube( calcCube.getName() );
+			schema.getVirtualCube().add( virtualCube );
+			
+			CubeUsages cubeUsages = new CubeUsages();
+			virtualCube.setCubeUsages( cubeUsages );
+			for( org.openforis.calc.schema.VirtualCube.CubeUsage u : calcCube.getCubeUsages() ) {
+				CubeUsage cubeUsage = createCubeUsage( u.getCubeName() );
+				cubeUsages.getCubeUsage().add( cubeUsage  );
+			}
+			
+			for (org.openforis.calc.schema.VirtualCube.VirtualCubeDimension d : calcCube.getVirtualCubeDimensions()) {
+				VirtualCubeDimension virtualDimension = createVirtualCubeDimension( d.getCubeName() , d.getName() );
+				virtualCube.getVirtualCubeDimension().add( virtualDimension );
+			}
+			
+			for ( org.openforis.calc.schema.VirtualCube.VirtualCubeMeasure m : calcCube.getVirtualCubeMeasures() ) {
+				VirtualCubeMeasure virtualMeasure = createVirtualCubeMeasure( m.getCubeName() , m.getName(), m.isVisible() );
+				virtualCube.getVirtualCubeMeasure().add( virtualMeasure  );
+			}
+			
+			for ( org.openforis.calc.schema.VirtualCube.CalculatedMember m : calcCube.getCalculatedMembers() ) {
+				CalculatedMember calculatedMember = createCalculatedMember( m.getDimension(), m.getName(), m.getCaption(), m.getFormula(), m.isVisible() );
+				virtualCube.getCalculatedMember().add( calculatedMember );
+			}
+			
+		}
+	}
+	
 	private void createCubeMembers(org.openforis.calc.schema.Cube rolapCube, Cube cube) {
 		// add stratum dimension usage
 		StratumDimension stratumDimension = rolapCube.getStratumDimension();
@@ -203,7 +226,7 @@ public class PublishRolapSchemaTask extends Task {
 			
 			List<org.openforis.calc.schema.Hierarchy.Level> levels = hierarchy.getLevels();
 			for ( org.openforis.calc.schema.Hierarchy.Level level : levels ) {
-				Level l = createLevel(level.getName(), level.getColumn(), level.getNameColumn());
+				Level l = createLevel(level.getName(), level.getColumn(), level.getNameColumn(), level.getCaption() );
 				h.getLevel().add(l);
 			}
 
@@ -223,7 +246,7 @@ public class PublishRolapSchemaTask extends Task {
 		org.openforis.calc.schema.Hierarchy.Table table = hierarchy.getTable();
 		org.openforis.calc.schema.Hierarchy.Level level = hierarchy.getLevels().get(0);
 
-		SharedDimension dim = createSharedDimension(dimension.getName(), table.getName(), table.getSchema(), level.getColumn(), level.getNameColumn());
+		SharedDimension dim = createSharedDimension(dimension.getName(), table.getName(), table.getSchema(), level.getColumn(), level.getNameColumn(), level.getCaption() );
 		return dim;
 	}
 
@@ -242,7 +265,7 @@ public class PublishRolapSchemaTask extends Task {
 
 		List<org.openforis.calc.schema.Hierarchy.Level> levels = hierarchy.getLevels();
 		for ( org.openforis.calc.schema.Hierarchy.Level level : levels ) {
-			Level l = createLevel(level.getName(), level.getColumn(), level.getNameColumn());
+			Level l = createLevel( level.getName(), level.getColumn(), level.getNameColumn() , level.getCaption() );
 			h.getLevel().add(l);
 		}
 

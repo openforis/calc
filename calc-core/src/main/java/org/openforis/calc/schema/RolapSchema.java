@@ -9,6 +9,8 @@ import java.util.Map;
 
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.CategoricalVariable;
+import org.openforis.calc.metadata.Entity;
+import org.openforis.commons.collection.CollectionUtils;
 
 /**
  * @author G. Miceli
@@ -26,8 +28,10 @@ public class RolapSchema {
 
 	private Workspace workspace;
 	// private List<CategoryDimension> categoryDimensions;
-	private List<Cube> cubes;
+	private Map<Integer, Cube> cubes;
 	private InputSchema dataSchema;
+
+	private List<VirtualCube> virtualCubes;
 
 	public RolapSchema(Workspace workspace, InputSchema schema) {
 		this.name = workspace.getInputSchema();
@@ -40,6 +44,7 @@ public class RolapSchema {
 		createStratumDimension();
 		createSharedDimensions();
 		createCubes();
+		createVirtualCubes();
 	}
 
 	private void createStratumDimension() {
@@ -50,12 +55,33 @@ public class RolapSchema {
 	}
 
 	private void createCubes() {
-		this.cubes = new ArrayList<Cube>();
-
+		this.cubes = new HashMap<Integer, Cube>();
+		
 		List<FactTable> factTables = dataSchema.getFactTables();
 		for (FactTable factTable : factTables) {
 			Cube cube = new Cube(this, factTable);
-			cubes.add(cube);
+			
+			this.cubes.put(factTable.getEntity().getId(), cube);
+		}
+	}
+
+	private void createVirtualCubes() {
+		this.virtualCubes = new ArrayList<VirtualCube>();
+		
+		Entity samplingUnit = this.workspace.getSamplingUnit();
+		if( samplingUnit != null ) {
+			Cube suCube = cubes.get( samplingUnit.getId() );
+			
+			for ( Entity child : samplingUnit.getChildren() ) {
+				Cube cube = cubes.get( child.getId() );
+				
+				// if cube is defined then it creates a virtual cube to join with sampling unit cube (used to calculate per ha measures)
+				if( cube != null ) {
+					VirtualCube virtualCube = new VirtualCube( suCube, cube );
+					this.virtualCubes.add( virtualCube );
+				}
+				
+			}
 		}
 		
 	}
@@ -110,10 +136,14 @@ public class RolapSchema {
 	// cubes.add(cube);
 	// }
 
-	public List<Cube> getCubes() {
-		return Collections.unmodifiableList(cubes);
+	public Collection<Cube> getCubes() {
+		return CollectionUtils.unmodifiableCollection( this.cubes.values() );
 	}
 
+	public Collection<VirtualCube> getVirtualCubes() {
+		return CollectionUtils.unmodifiableCollection( this.virtualCubes ); 
+	}
+	
 	//
 	// public List<CategoryDimension> getCategoryDimensions() {
 	// return Collections.unmodifiableList(categoryDimensions);

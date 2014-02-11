@@ -1,5 +1,7 @@
 package org.openforis.calc.schema;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.WordUtils;
 import org.openforis.calc.schema.Hierarchy.Level;
 import org.openforis.calc.schema.Hierarchy.Table;
 
@@ -26,8 +28,13 @@ public class CategoryDimension extends Dimension {
 		
 		Table t = new Table(table.getSchema().getName(), table.getName());
 		hierarchy.setTable(t);
-				
-		Level level = new Level(table.getVariable().getName(), table.getIdField().getName(), table.getCaptionField().getName());
+		
+		String caption = table.getVariable().getCaption();
+		if ( StringUtils.isBlank(caption) ) {
+			caption = WordUtils.capitalize( table.getVariable().getName() );
+		}
+		
+		Level level = new Level(table.getVariable().getName(), table.getIdField().getName(), table.getCaptionField().getName() , caption );
 		hierarchy.addLevel(level);
 		
 		setHierarchy(hierarchy);

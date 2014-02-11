@@ -1,5 +1,6 @@
 package org.openforis.calc.schema;
 
+import org.apache.commons.lang3.StringUtils;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.VariableAggregate;
 
@@ -23,24 +24,12 @@ public class Measure extends Member {
 	}
 	
 	Measure(RolapSchema rolapSchema, Cube cube, String name, String caption, String aggregator) {
-		super(rolapSchema);
+		super( rolapSchema );
+		
 		this.cube = cube;
-		this.name = name;
-		this.caption = caption;
+		this.name = capitalize( name );
+		this.caption = ( StringUtils.isBlank(caption) ) ? this.name : capitalize( caption );
 		this.aggregator = aggregator;
-	}
-
-	// not used now
-	@Deprecated
-	Measure(RolapSchema rolapSchema, Cube cube, VariableAggregate aggregate) {
-		this (rolapSchema, cube, aggregate.getName(), aggregate.getCaption(), aggregate.getAggregateFunction() );
-//		super(rolapSchema);
-//		this.cube = cube;
-		this.aggregate = aggregate;
-
-//		this.name = aggregate.getName();
-//		this.caption = aggregate.getCaption();
-//		this.aggregator = aggregate.getAggregateFunction();
 	}
 
 	public Cube getCube() {

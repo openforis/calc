@@ -29,7 +29,7 @@ public class Dimension extends Member {
 	}
 
 	void setName(String name) {
-		this.name = name;
+		this.name = capitalize( name );
 	}
 
 	public String getCaption() {

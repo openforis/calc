@@ -31,7 +31,7 @@ public class StratumDimension extends Dimension {
 		View view = new View( STRATUM, this.table.getSelect().toString() );
 		hierarchy.setView( view );
 		
-		Level level = new Level( STRATUM, this.table.getStratumNo().getName(), this.table.getCaption().getName() );
+		Level level = new Level( STRATUM, this.table.getStratumNo().getName(), this.table.getCaption().getName(), STRATUM );
 		hierarchy.addLevel( level );
 		
 		setHierarchy(hierarchy);

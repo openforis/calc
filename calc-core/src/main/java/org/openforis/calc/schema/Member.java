@@ -1,5 +1,7 @@
 package org.openforis.calc.schema;
 
+import org.apache.commons.lang3.text.WordUtils;
+
 /**
  * 
  * @author G. Miceli
@@ -16,6 +18,10 @@ public class Member {
 	
 	RolapSchema getRolapSchema() {
 		return rolapSchema;
+	}
+	
+	protected String capitalize(String string) {
+		return WordUtils.capitalize(string);
 	}
 	
 }

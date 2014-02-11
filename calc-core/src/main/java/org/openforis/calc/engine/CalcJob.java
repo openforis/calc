@@ -302,18 +302,15 @@ public class CalcJob extends Job {
 		
 		
 		if( aggregates ) {
-//			CreateFactTablesTask task = new CreateFactTablesTask();
-//			((AutowireCapableBeanFactory) beanFactory).autowireBean(task);
-//			addTask( task );
 				
-				CreateAggregateTablesTask aggTask = new CreateAggregateTablesTask();
-				((AutowireCapableBeanFactory) beanFactory).autowireBean(aggTask);
-				addTask( aggTask );
-				
-				PublishRolapSchemaTask publishRolapSchemaTask = new PublishRolapSchemaTask();
-				((AutowireCapableBeanFactory) beanFactory).autowireBean(publishRolapSchemaTask);
-				addTask( publishRolapSchemaTask );
-			}
+			CreateAggregateTablesTask aggTask = new CreateAggregateTablesTask();
+			((AutowireCapableBeanFactory) beanFactory).autowireBean(aggTask);
+			addTask( aggTask );
+			
+			PublishRolapSchemaTask publishRolapSchemaTask = new PublishRolapSchemaTask();
+			((AutowireCapableBeanFactory) beanFactory).autowireBean(publishRolapSchemaTask);
+			addTask( publishRolapSchemaTask );
+		}
 	}
 
 	protected void closeConnection() {

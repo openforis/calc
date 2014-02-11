@@ -6,6 +6,8 @@ import java.math.BigDecimal;
 
 import org.jooq.Record;
 import org.jooq.TableField;
+import org.openforis.calc.metadata.AoiHierarchy;
+import org.openforis.calc.metadata.AoiLevel;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.VariableAggregate;
@@ -23,35 +25,31 @@ public class AggregateTable extends DataTable {
 //	private static final String TABLE_NAME_FORMAT = "_%s_%s_stratum_agg";
 	private static final String AGG_FACT_CNT_COLUMN = "_agg_cnt";
 	
-//	private AoiLevel aoiHierarchyLevel;
+	private AoiLevel aoiLevel;
 	private TableField<Record, Integer> aggregateFactCountField;
 	private DataTable sourceTable;
 
-	AggregateTable(DataTable sourceTable, String name) {
+	AggregateTable(DataTable sourceTable, String name, AoiLevel aoiLevel) {
 		super(sourceTable.getEntity(), name, sourceTable.getSchema());
-//		this.aoiHierarchyLevel = level;
+		
 		this.sourceTable = sourceTable;
+		this.aoiLevel = aoiLevel;
 		
 		initFields();
 	}
 	
+	AggregateTable(DataTable sourceTable, String name) {
+		this( sourceTable, name, null );
+	}
+	
 //	@Override
 	protected void initFields() {
-		// TODO Auto-generated method stub
-//		dimensionIdFields = new HashMap<CategoricalVariable<?>, Field<Integer>>();
-//		measureFields = new HashMap<VariableAggregate, Field<BigDecimal>>();
-		
 		Entity entity = getEntity();
 		
-//		this.categoryIdFields = factTable.categoryIdFields;
-		
-//		createPrimaryKeyField();
 		createDimensionFieldsRecursive(entity);
 		createStratumField();
-		createAoiIdFields();
+		createAoiIdFields( aoiLevel );
 		createOutputQuantityFields(entity);
-//		createQuantityFields(false, true);
-		
 		createAggregateFactCountField();
 	}
 	
@@ -114,4 +112,13 @@ public class AggregateTable extends DataTable {
 	public DataTable getSourceTable() {
 		return sourceTable;
 	}
+	
+	public AoiLevel getAoiLevel() {
+		return aoiLevel;
+	}
+	
+	public AoiHierarchy getAoiHierarchy() {
+		return this.aoiLevel.getHierarchy();
+	}
+
 }

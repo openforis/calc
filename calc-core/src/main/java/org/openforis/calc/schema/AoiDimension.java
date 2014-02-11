@@ -32,7 +32,8 @@ public class AoiDimension extends Dimension {
 	}
 
 	private void createHierarchy() {
-		String aoiHierarchyName = aoiHierarchy.getName();
+		String aoiHierarchyName = getName();
+		
 		Hierarchy hierarchy = new Hierarchy(aoiHierarchyName);
 
 		Collection<AoiLevel> levels = aoiHierarchy.getLevelsReverseOrder();
@@ -42,7 +43,7 @@ public class AoiDimension extends Dimension {
 			String aliasIdColumn = aoiHierarchyFlatTable.getAoiIdField(aoiLevel).getName();
 			String aliasCaptionColumn = aoiHierarchyFlatTable.getAoiCaptionField(aoiLevel).getName();
 
-			Level level = new Level( aoiLevelName, aliasIdColumn, aliasCaptionColumn );
+			Level level = new Level( aoiLevelName, aliasIdColumn, aliasCaptionColumn , aoiLevel.getCaption() );
 			hierarchy.addLevel(0, level);
 		}
 

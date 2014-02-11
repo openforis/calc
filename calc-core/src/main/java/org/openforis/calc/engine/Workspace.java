@@ -355,8 +355,9 @@ public class Workspace extends UserObject {
 
 	@JsonIgnore
 	public Entity getSamplingUnit() {
-		if( this.getSamplingDesign() != null ){
-			return this.getSamplingDesign().getSamplingUnit();
+		SamplingDesign sd = this.getSamplingDesign();
+		if( sd != null ){
+			return sd.getSamplingUnit();
 		}
 		
 		return null;

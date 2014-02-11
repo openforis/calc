@@ -5,9 +5,14 @@ package org.openforis.calc.mondrian;
 
 import java.math.BigInteger;
 
+import org.apache.commons.lang3.StringUtils;
 import org.openforis.calc.mondrian.Hierarchy.Level;
 import org.openforis.calc.mondrian.Schema.Cube;
 import org.openforis.calc.mondrian.Schema.Cube.Measure;
+import org.openforis.calc.mondrian.Schema.VirtualCube;
+import org.openforis.calc.mondrian.Schema.VirtualCube.CubeUsages.CubeUsage;
+import org.openforis.calc.mondrian.Schema.VirtualCube.VirtualCubeDimension;
+import org.openforis.calc.mondrian.Schema.VirtualCube.VirtualCubeMeasure;
 import org.openforis.calc.mondrian.Table.AggName;
 import org.openforis.calc.mondrian.Table.AggName.AggForeignKey;
 import org.openforis.calc.mondrian.Table.AggName.AggLevel;
@@ -19,7 +24,7 @@ import org.openforis.calc.mondrian.Table.AggName.AggMeasure;
  */
 public class Rolap {
 
-	private static final String MEASURES = "Measures";
+	public static final String MEASURES = "Measures";
 
 	public static final String DIMENSION_TYPE_STANDARD = "StandardDimension";
 	public static final String NUMBER_FORMAT_STRING = "#,###.##";
@@ -79,6 +84,7 @@ public class Rolap {
 		return cube;
 	}
 
+	
 	public static Measure createMeasure(String name, String caption, String column, String aggregator, String dataType, String formatString) {
 		Measure m = new Measure();
 		m.setName(name);
@@ -100,7 +106,7 @@ public class Rolap {
 		return dim;
 	}
 
-	public static SharedDimension createSharedDimension(String name, String table, String schema, String column, String nameColumn) {
+	public static SharedDimension createSharedDimension(String name, String table, String schema, String column, String nameColumn, String caption) {
 		SharedDimension dim = new SharedDimension();
 		dim.setType(DIMENSION_TYPE_STANDARD);
 		dim.setName(name);
@@ -112,21 +118,13 @@ public class Rolap {
 		Table t = createTable(schema, table);
 		h.setTable(t);
 
-		Level l = createLevel(name, table, column, nameColumn);
+		Level l = createLevel(table, name, column, nameColumn, caption);
 		h.getLevel().add(l);
 
 		dim.getHierarchy().add(h);
 		return dim;
 	}
 
-	private static Level createLevel(String name, String table, String column, String nameColumn) {
-		Level l = new Level();
-		l.setName(name);
-		l.setTable(table);
-		l.setColumn(column);
-		l.setNameColumn(nameColumn);
-		return l;
-	}
 
 	public static View createSqlView(String alias, String sql) {
 		View v = new View();
@@ -137,16 +135,82 @@ public class Rolap {
 		return v;
 	}
 
-	public static Level createLevel(String name, String column, String nameColumn) {
+	public static Level createLevel( String name, String column, String nameColumn , String caption ) {
+		return createLevel(null, name, column, nameColumn, caption);
+	}
+
+	public static Level createLevel( String table, String name, String column, String nameColumn , String caption ) {
 		Level l = new Level();
+		if( StringUtils.isNotBlank(table) ){
+			l.setTable(table);
+		}
 		l.setName(name);
 		l.setColumn(column);
 		l.setNameColumn(nameColumn);
+		l.setCaption(caption);
 		return l;
+	}
+	
+	
+	// =====================================
+	// virtual cube methods
+	// =====================================
+	public static VirtualCube createVirtualCube(String name) {
+		VirtualCube cube = new VirtualCube();
+		cube.setEnabled(true);
+		cube.setName(name);
+		return cube;
+	}
+	
+	public static CubeUsage createCubeUsage( String name ){
+		CubeUsage cubeUsage = new CubeUsage();
+		cubeUsage.setCubeName(name);
+		cubeUsage.setIgnoreUnrelatedDimensions( true );
+		return cubeUsage;
+	}
+	
+	public static VirtualCubeDimension createVirtualCubeDimension( String cubeName, String name ){
+		VirtualCubeDimension virtualCubeDimension = new VirtualCubeDimension();
+		virtualCubeDimension.setCubeName( cubeName );
+		virtualCubeDimension.setName( name );
+		return virtualCubeDimension;
+	}
+	
+	public static VirtualCubeMeasure createVirtualCubeMeasure(String cubeName, String name, boolean visible) {
+		VirtualCubeMeasure m = new VirtualCubeMeasure();
+		m.setCubeName(cubeName);
+		m.setName( getMdxMeasureName(name) );
+		m.setVisible(visible);
+		return m;
+	}
+	
+	public static CalculatedMember createCalculatedMember( String dimension, String name, String caption, String formula , boolean visible ) {
+		CalculatedMember m = new CalculatedMember();
+		m.setName( name );
+		m.setCaption( caption );
+		m.setVisible( visible );
+		m.setFormula( formula );
+		m.setDimension( dimension );
+		return m;
+	}
+
+	// =====================================
+	// utility methods
+	// =====================================
+	public static String validMeasure(String value) {
+		StringBuilder s = new StringBuilder();
+		s.append( "ValidMeasure(" );
+		s.append( value );
+		s.append( ")" );
+		return s.toString();
 	}
 
 	public static String getMdxMeasureName(String name) {
-		return toMdx(MEASURES, name);
+		if( name.startsWith("[" + MEASURES + "]") ){
+			return name ;
+		} else {
+			return toMdx(MEASURES, name);
+		}
 	}
 
 	public static String toMdx(String prefix, String postfix) {
