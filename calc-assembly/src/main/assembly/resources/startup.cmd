@@ -26,4 +26,7 @@ if "%JRE_HOME%"=="" (
 	set JRE_HOME
 	cd tomcat/bin
 	startup.bat
+	
+	echo Opening Calc on default web browser
+	start http://localhost:8080/calc
 )
