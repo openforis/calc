@@ -13,9 +13,11 @@ import org.openforis.calc.chain.InvalidProcessingChainException;
 import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.chain.pre.AssignAoiColumnsTask;
 import org.openforis.calc.chain.pre.CalculateExpansionFactorsTask;
+import org.openforis.calc.collect.CollectDataImportJob;
 import org.openforis.calc.module.ModuleRegistry;
 import org.openforis.calc.module.Operation;
 import org.openforis.calc.schema.Schemas;
+import org.openforis.collect.model.CollectSurvey;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
@@ -97,13 +99,24 @@ public class TaskManager {
 	public Job createPreProcessingJob(Workspace workspace) {
 		Job job = createJob(workspace);
 		
+		addPreProcessingTasks(job);
+		
+		return job;
+	}
+
+	public void addPreProcessingTasks(Job job) {
 		CalculateSamplingUnitWeightTask weightTask = new CalculateSamplingUnitWeightTask( job.newREnvironment() );
 		autowire(weightTask);
 		
 		job.addTask( weightTask );
 		job.addTask( createTask(AssignAoiColumnsTask.class) );
 		job.addTask( createTask(CalculateExpansionFactorsTask.class) );
-		
+	}
+	
+	public Job createCollectImportJob(Workspace workspace, CollectSurvey survey) {
+		Job job = new CollectDataImportJob(workspace, getDataSource(), survey);
+		job.setSchemas( new Schemas(workspace) );
+		autowire(job);
 		return job;
 	}
 	
@@ -211,5 +224,5 @@ public class TaskManager {
 	protected DataSource getDataSource() {
 		return dataSource;
 	}
-
+	
 }

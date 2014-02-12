@@ -35,7 +35,7 @@ Workspace.prototype.getEntityById = function(id) {
 Workspace.prototype.getAggregableEntities = function(entityId) {
 	var entities = [];
 	$.each(this.entities, function(i, e){
-		if(e.parentId == entityId && e.quantitativeVariables.length > 0) {
+		if( e.parentId == entityId && e.isAggregable() ) {
 			entities.push(e);
 		}
 	});
@@ -63,5 +63,5 @@ Workspace.prototype.isSamplingUnit = function(entity) {
 		var suId = this.samplingDesign.samplingUnitId;
 		result = ( suId === entity.id);
 	}
-	return result;
+    return result;
 };

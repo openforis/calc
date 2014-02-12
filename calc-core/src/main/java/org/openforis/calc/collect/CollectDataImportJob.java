@@ -8,7 +8,7 @@ import org.openforis.collect.model.CollectSurvey;
 /**
  * 
  * @author S. Ricci
- *
+ * 
  */
 public class CollectDataImportJob extends CollectJob {
 
@@ -16,9 +16,8 @@ public class CollectDataImportJob extends CollectJob {
 	public String getName() {
 		return "Collect data import";
 	}
-	
-	public CollectDataImportJob(Workspace workspace, DataSource dataSource,
-			CollectSurvey survey) {
+
+	public CollectDataImportJob(Workspace workspace, DataSource dataSource, CollectSurvey survey) {
 		super(workspace, dataSource, survey);
 	}
 
