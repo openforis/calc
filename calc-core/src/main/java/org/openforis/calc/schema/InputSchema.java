@@ -199,7 +199,7 @@ public class InputSchema extends RelationalSchema {
 	}
 
 	private void initStratumDimensionTable() {
-		if( this.workspace.getSamplingDesign().getStratified() ){
+		if( this.workspace.hasSamplingDesign() && this.workspace.getSamplingDesign().getStratified() ) {
 			this.stratumDimensionTable = new StratumDimensionTable(workspace);
 		}
 	}
