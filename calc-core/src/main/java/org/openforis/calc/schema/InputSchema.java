@@ -104,7 +104,8 @@ public class InputSchema extends RelationalSchema {
 	}
 
 	public ResultTable getResultTable(Entity entity, boolean temporary) {
-		if( entity.getOutputVariables().size() > 0 || entity.isSamplingUnit() ){
+//		/|| entity.isSamplingUnit()
+		if( entity.getOutputVariables().size() > 0 ) {
 			ResultTable table = new ResultTable(entity, this, temporary);
 			return table;
 		}
@@ -199,7 +200,7 @@ public class InputSchema extends RelationalSchema {
 	}
 
 	private void initStratumDimensionTable() {
-		if( this.workspace.hasSamplingDesign() && this.workspace.getSamplingDesign().getStratified() ) {
+		if( this.workspace.hasStratifiedSamplingDesign() ) {
 			this.stratumDimensionTable = new StratumDimensionTable(workspace);
 		}
 	}

@@ -293,10 +293,10 @@ WorkspaceManager.prototype = (function(){
 	 * Private function to
 	 * Set the active workspace and calls the callback function if present
 	 */
-	var setActiveWorkspace = function(data, callback) {
+	var setActiveWorkspace = function( data, callback ) {
 		var $this = this;
 		$this._activeWorkspace = data ? new Workspace( data ) : null;
-		if(callback) {
+		if( callback ) {
 			callback($this._activeWorkspace);
 		}
 	};

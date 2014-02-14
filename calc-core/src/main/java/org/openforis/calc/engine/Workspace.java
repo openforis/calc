@@ -194,16 +194,6 @@ public class Workspace extends UserObject {
 		return samplingDesign;
 	}
 	
-	public boolean isSamplingUnit(int entityId) {
-		if( this.samplingDesign != null ){
-			Integer samplingUnitId = this.samplingDesign.getSamplingUnitId();
-			if( samplingUnitId != null ){
-				return samplingUnitId.equals( entityId );
-			}
-		}
-		return false;
-	}
-	
 	public void setSamplingDesign(SamplingDesign samplingDesign) {
 		this.samplingDesign = samplingDesign;
 	}
@@ -353,6 +343,20 @@ public class Workspace extends UserObject {
 		return null;
 	}
 
+	/** =====================================
+	 * 		Sampling Desing utility methods
+	 * 	=====================================
+	 */
+	public boolean isSamplingUnit(int entityId) {
+		if( this.samplingDesign != null ){
+			Integer samplingUnitId = this.samplingDesign.getSamplingUnitId();
+			if( samplingUnitId != null ){
+				return samplingUnitId.equals( entityId );
+			}
+		}
+		return false;
+	}
+	
 	@JsonIgnore
 	public Entity getSamplingUnit() {
 		SamplingDesign sd = this.getSamplingDesign();
@@ -365,6 +369,10 @@ public class Workspace extends UserObject {
 	@JsonIgnore
 	public boolean hasSamplingDesign() {
 		return getSamplingUnit() != null;
+	}
+	
+	public boolean hasStratifiedSamplingDesign() {
+		return this.hasSamplingDesign() && getSamplingDesign().getStratified();
 	}
 
 }

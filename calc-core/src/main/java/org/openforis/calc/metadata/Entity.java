@@ -653,23 +653,27 @@ public class Entity extends NamedUserObject {
 	// returns true if at least one quantitative variable or output variable has an aggregate function associated
 	// or if this is the sampling unit
 	public boolean isAggregable() {
-		if( this.isSamplingUnit() ){
-			return true;
-		}
-		
-		for (QuantitativeVariable var : getQuantitativeVariables()) {
-			if( var.getAggregates().size() > 0 ){
-				return true;
-			}
-			QuantitativeVariable variablePerHa = var.getVariablePerHa();
-			if( variablePerHa != null ){
-				if( variablePerHa.getAggregates().size() >0 ){
-					return true;
-				}
-			}
-		}
-		
-		return false;
+		// for now only if output variables have been defined
+		return getOutputVariables().size() > 0 ;
+//		
+//		if( this.isSamplingUnit() ) {
+//			return true;
+//		}
+//		
+//		
+//		for (QuantitativeVariable var : getQuantitativeVariables()) {
+//			if( var.getAggregates().size() > 0 ){
+//				return true;
+//			}
+//			QuantitativeVariable variablePerHa = var.getVariablePerHa();
+//			if( variablePerHa != null ){
+//				if( variablePerHa.getAggregates().size() >0 ){
+//					return true;
+//				}
+//			}
+//		}
+//		
+//		return false;
 	}
 
 	public QuantitativeVariable getOutputVariable(String variable) {

@@ -84,6 +84,7 @@ public class FactTable extends DataTable {
 	}
 
 	protected void createAggregateTables() {
+		this.aoiAggregateTables = new LinkedHashMap<AoiLevel, AoiAggregateTable>();
 		Entity entity = getEntity();
 
 		DataTable sourceTable = null;
@@ -94,7 +95,6 @@ public class FactTable extends DataTable {
 
 		if (this.isGeoreferenced()) {
 			sourceTable = sourceTable == null ? this : sourceTable;
-			this.aoiAggregateTables = new LinkedHashMap<AoiLevel, AoiAggregateTable>();
 			createAoiAggregateTables(sourceTable);
 		}
 	}

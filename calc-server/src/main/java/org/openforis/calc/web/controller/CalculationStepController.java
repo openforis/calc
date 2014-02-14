@@ -3,6 +3,7 @@
  */
 package org.openforis.calc.web.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -89,10 +90,20 @@ public class CalculationStepController {
 		return response;
 	}
 
+	/**
+	 * Load all calculation steps for active workspace
+	 * @return
+	 */
 	@RequestMapping(value = "/load.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	List<CalculationStep> loadAll() {
-		return calculationStepDao.loadAll("stepNo");
+		Workspace workspace = workspaceService.getActiveWorkspace();
+		if( workspace != null && workspace.getDefaultProcessingChain() != null ) {
+			return workspace.getDefaultProcessingChain().getCalculationSteps();
+		} else {
+			// empty list
+			return new ArrayList<CalculationStep>();
+		}
 	}
 
 	@RequestMapping(value = "/{stepId}/load.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

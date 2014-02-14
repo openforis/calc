@@ -56,18 +56,18 @@ public class InventorySettingsController {
 
 		SamplingDesign samplingDesign = parseSamplingDesignFromJsonString(workspace, samplingDesignParam);
 		if (samplingDesign != null) {
-			samplingDesignDao.save(samplingDesign);
-			workspace.setSamplingDesign(samplingDesign);
 			
 			Entity samplingUnit = samplingDesign.getSamplingUnit();
 			// add weight variable to sampling unit if it doesnt exist
 			String weightVariable = samplingDesign.getWeightVariable();
 			QuantitativeVariable weightVar = samplingUnit.getOutputVariable( weightVariable );
 			if( weightVar == null ){
-				workspaceService.resetResultTable(samplingUnit);
 				workspaceService.addOutputVariable( samplingUnit, weightVariable );
+				workspaceService.resetResultTable(samplingUnit);
 			}
 			
+			samplingDesignDao.save(samplingDesign);
+			workspace.setSamplingDesign(samplingDesign);
 			response.addField("samplingDesign", samplingDesign);
 		}
 

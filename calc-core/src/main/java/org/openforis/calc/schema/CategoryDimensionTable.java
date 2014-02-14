@@ -28,7 +28,7 @@ public class CategoryDimensionTable extends DimensionTable {
 
 	@Override
 	protected void initFields() {
-		setIdField( createField(this.variable.getInputCategoryIdColumn(), SQLDataType.INTEGER, this) );
-		setCaptionField( createField(this.variable.getName() + "_label", SQLDataType.VARCHAR, this) );
+		setIdField( createField(this.variable.getDimensionTableIdColumn(), SQLDataType.INTEGER, this) );
+		setCaptionField( createField(this.variable.getDimensionTable() + "_label", SQLDataType.VARCHAR, this) );
 	}
 }

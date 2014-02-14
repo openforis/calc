@@ -105,7 +105,7 @@ public final class CreateAggregateTablesTask extends Task {
 
 			Field<Integer> aoiField = sourceTable.getAoiIdField(aoiLevel);
 			Condition conditions = expfTable.AOI_ID.eq( aoiField );
-			if( getWorkspace().getSamplingDesign().getStratified() ){
+			if( getWorkspace().hasStratifiedSamplingDesign() ) {
 				
 				conditions = conditions.and( expfTable.STRATUM.eq( sourceTable.getStratumField() ) );
 
@@ -230,7 +230,7 @@ public final class CreateAggregateTablesTask extends Task {
 		}
 		
 		// add stratum column if sampling design is stratified
-		if( getWorkspace().getSamplingDesign().getStratified() ){
+		if( getWorkspace().hasStratifiedSamplingDesign() ){
 			Field<Integer> stratumField = null;
 			String stratumColumn = getWorkspace().getSamplingDesign().getStratumJoin().getColumn();
 			

@@ -380,7 +380,7 @@ public abstract class DataTable extends AbstractTable {
 	}
 
 	protected void createStratumField() {
-		if( getEntity().getWorkspace().getSamplingDesign().getStratified() ){
+		if( getEntity().getWorkspace().hasStratifiedSamplingDesign() ){
 		
 			Entity parent = this.entity.getParent();
 			if( entity.isSamplingUnit() || (parent != null && parent.isSamplingUnit()) ) {

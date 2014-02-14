@@ -167,22 +167,25 @@ public class WorkspaceService {
 		
 		// get result table
 		InputSchema schema = new Schemas( entity.getWorkspace() ).getInputSchema();
-		ResultTable originalTable = schema.getResultTable(entity);
-		
+		ResultTable originalResultTable = schema.getResultTable(entity);
 		QuantitativeVariable variable = createQuantitativeVariable(name);
 
 		entity.addVariable(variable);
-
-		variableDao.save(variable);
-
+		ResultTable resultTable = schema.getResultTable(entity);
+		
+		
 //		addVariableColumn(variable);
 		
 		// add column to results table and update entity view
-		ResultTable resultTable = schema.getResultTable(entity);
-		if( originalTable == null) { 
-			CreateTableWithFieldsStep createTable = new Psql(dataSource)
-				.createTable(resultTable, resultTable.fields());
-				createTable.execute();
+		if( originalResultTable == null) { 
+			try {
+				CreateTableWithFieldsStep createTable = new Psql(dataSource)
+					.createTable(resultTable, resultTable.fields());
+					createTable.execute();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} else {
 			new Psql(dataSource)
 				.alterTable(resultTable)
@@ -190,6 +193,8 @@ public class WorkspaceService {
 				.execute();
 		}
 		
+		
+		variableDao.save(variable);
 		updateEntityView(variable);
 
 		return variable;
@@ -488,10 +493,13 @@ public class WorkspaceService {
 
 	public void resetResultTable(Entity entity){
 		InputSchema schema = new Schemas( entity.getWorkspace() ).getInputSchema();
+		EntityDataView dataView = schema.getDataView(entity);
 		ResultTable resultsTable = schema.getResultTable(entity);
 		InputTable dataTable = schema.getDataTable(entity);
 		
 		if( resultsTable != null ){
+			//drop data view first
+			entityDataViewDao.drop(dataView);
 			
 			new Psql(dataSource)
 				.dropTableIfExists(resultsTable)
@@ -509,6 +517,8 @@ public class WorkspaceService {
 							.from(dataTable)
 					);
 			insert.execute();
+			
+			entityDataViewDao.createOrUpdateView(entity);
 		}
 	}
 	

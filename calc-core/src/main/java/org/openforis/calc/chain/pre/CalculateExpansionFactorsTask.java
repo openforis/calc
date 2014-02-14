@@ -185,7 +185,7 @@ public final class CalculateExpansionFactorsTask extends Task {
 		EntityDataView dataView = getInputSchema().getDataView( getSamplingDesign().getSamplingUnit() );
 		
 		AoiLevel aoiLevel = expf.getAoiLevel();
-		boolean stratified = getSamplingDesign().getStratified();
+		boolean stratified = getWorkspace().hasStratifiedSamplingDesign();
 		
 		Field<Long> aoiIdField = dataAoiTable.getAoiIdField(aoiLevel);
 		Field<BigDecimal> aoiAreaField = dataAoiTable.getAoiAreaField(aoiLevel);
@@ -248,7 +248,7 @@ public final class CalculateExpansionFactorsTask extends Task {
 		DynamicTable<Record> phase1Table = new DynamicTable<Record>( getWorkspace().getPhase1PlotTable(), "calc" );
 		Phase1AoiTable phase1AoiTable = getInputSchema().getPhase1AoiTable();
 		AoiLevel aoiLevel = expf.getAoiLevel();
-		boolean stratified = getSamplingDesign().getStratified();
+		boolean stratified = getWorkspace().hasStratifiedSamplingDesign();
 		
 		Field<Long> aoiIdField = phase1AoiTable.getAoiIdField(aoiLevel);
 		Field<BigDecimal> aoiAreaField = phase1AoiTable.getAoiAreaField(aoiLevel);
