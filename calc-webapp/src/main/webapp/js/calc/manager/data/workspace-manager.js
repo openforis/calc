@@ -29,6 +29,7 @@ WorkspaceManager.prototype = (function(){
 				$.proxy(setActiveWorkspace, $this)( workspace, success );
 				if ( ! workspace ) {
 					//TODO show metadata import page
+					success();
 				}
 				UI.unlock();
 			});

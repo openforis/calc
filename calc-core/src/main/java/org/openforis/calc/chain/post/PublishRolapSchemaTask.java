@@ -78,8 +78,8 @@ public class PublishRolapSchemaTask extends Task {
 		// create virtual cubes
 		createVirtualCubes(rolapSchema, schema);
 		
-		// write xml schema
-		this.saiku.writeSchema(workspace, schema);
+		// publish schema
+		this.saiku.publishSchema(workspace, schema);
 	}
 
 	private void createCubes(RolapSchema rolapSchema, Schema schema) {
@@ -275,6 +275,11 @@ public class PublishRolapSchemaTask extends Task {
 		dim.getHierarchy().add(h);
 
 		return dim;
+	}
+	
+	@Override
+	public String getName() {
+		return "Publish rolap schema to saiku repository";
 	}
 	
 }

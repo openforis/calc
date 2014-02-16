@@ -19,7 +19,8 @@ function DataTable($container) {
 	// pagination buttons
 	this.nextButton = this.container.find(".data-table-buttons .next");
 	this.prevButton = this.container.find(".data-table-buttons .prev");
-
+	this.nextButton.hide();
+	this.prevButton.hide();
 	
 	// data provider
 	this.dataProvider = null;
@@ -74,11 +75,16 @@ DataTable.prototype = (function(){
 	// hide
 	var hide = function() {
 		this.container.hide();
+		this.nextButton.hide();
+		this.prevButton.hide();
 	};
 	
 	// show
 	var show =  function() {
 		this.container.fadeIn();
+		this.nextButton.show();
+		this.prevButton.show();
+		
 		// in case it's still empty, gets the data
 		if( this.totalItems < 0 ) {
 			$.proxy(start, this)();

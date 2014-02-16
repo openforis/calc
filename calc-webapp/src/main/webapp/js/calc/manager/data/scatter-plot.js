@@ -18,7 +18,7 @@ function ScatterPlot(container) {
 	optionsSection.find(".progress,.percent").hide();
 	//chart container
 	this.chartContainer = this.container.find(".chart");
-	this.chartContainer.attr('id', 'scatter-chart');
+	this.chartContainer.attr( 'id', 'scatter-chart-' + new Date().getTime() );
 //	this.chart = null;
 	
 	// data provider

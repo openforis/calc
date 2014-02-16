@@ -55,15 +55,21 @@ public class Saiku {
 	}
 	
 	/**
-	 * Write the mdx schema to a file
-	 * It also creates the dataSource file linked to it 
+	 * Publishes the given schema into saiku repository.
+	 * 1. write mondrian schema
+	 * 2. wrtite saiku datasource
 	 * 
 	 * @param workspace
 	 * @param schema
-	 * 
-	 * @throws IOException 
-	 * @throws JAXBException 
+	 * @throws IOException
+	 * @throws JAXBException
 	 */
+	public void publishSchema(Workspace workspace, Schema schema) throws IOException, JAXBException {
+		writeSchema(workspace, schema);
+		
+		writeDataSource(workspace);
+	}
+	
 	public void writeSchema(Workspace workspace, Schema schema) throws IOException, JAXBException {
 		// write xml file
 		JAXBContext jaxbContext = JAXBContext.newInstance(Schema.class);
@@ -77,9 +83,6 @@ public class Saiku {
 			f.delete();
 		}
 		marshaller.marshal( schema, f );
-		
-		
-		writeDataSource( workspace );
 	}
 	
 	public void writeDataSource(Workspace workspace) throws IOException {

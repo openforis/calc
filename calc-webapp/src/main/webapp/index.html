@@ -105,11 +105,11 @@
 <!-- 	  	</div> -->
 	  	
 	  	<div class="section-home data" id="data">
-	  		<div class="page-section">
-		  		<div class="row row1"></div>
-		 		<div class="row row2">
-		  		</div>
-		  		<div class="row row3"></div>
+	  		<div class="page-section data-vis">
+<!-- 		  		<div class="row row1"></div> -->
+<!-- 		 		<div class="row row2"> -->
+<!-- 		  		</div> -->
+<!-- 		  		<div class="row row3"></div> -->
 	  		</div>
 	  	</div>
 	  	
@@ -229,68 +229,110 @@
 	
 	<!--  ==== data visualization component ==== -->
 	<div class="data-visualization" id="data-visualization">
-		
-		<div class="row data-visualization-header-buttons">
-			<div class="col-md-4"></div>
-			<div class="col-md-2 no-padding">
-				<button class="btn blue-btn table-btn">Table</button>
+		<div class="row height100 no-margin">
+			
+			<div class="col-md-2 height100">
+				<!-- accordion selection -->
+				<div class="data-vis-options height100">
+					  <div class="heading height5">
+					      <button class="btn blue-btn table-btn">Data table</button>
+					  </div>
+					  <div class="data-table-options collapse in" >
+					  	<div class="entity-select width100">
+							<select class="form-control"></select>
+					  	</div>
+					  	<div class="width100">
+					  		<button class="btn blue-btn" name="q-btn">Q</button>
+					  		<button class="btn blue-btn" name="c-btn">C</button>
+					  	</div>
+					  	<div class="quantities width100"></div>
+					  	<div class="categories width100"></div>
+					  	<div class="view-results-btn">
+					  		<button class="btn btn-default">View</button>
+					  	</div>
+					  </div>
+					  
+					  <div class="heading height5">
+					      <button class="btn blue-btn scatter-btn">Scatter chart</button>
+					  </div>
+					  <div class="scatter-options collapse">
+					    <div class="entity-select width100" >
+							<select class="form-control"></select>
+					  	</div>
+					  	<div class="quantities width100"></div>
+					  	<div class="view-results-btn">
+					  		<button class="btn btn-default">View</button>
+					  	</div>
+					  </div>
+				</div>
+				
 			</div>
-			<div class="col-md-2 no-padding">
-				<button class="btn blue-btn scatter-plot-btn">Scatter plot</button>
-			</div>
-		</div>
-		
-		<div class="row data-table">
-			<!-- pagination -->
-			<div class="row">
-				<div class="col-md-3 col-md-offset-8 data-table-pagination">
-				</div>
-				<div class="col-md-1 data-table-buttons no-padding">
-					<button class="btn default-btn prev"><i class="icon-angle-left"></i></button>
-					<button class="btn default-btn next"><i class="icon-angle-right"></i></button>			
-				</div>
-			</div>
-			<!-- data table -->
-			<div class="row">
-				<div class="col-md-12 no-padding">
-					<table class="table table-results">
-				        <thead>
-				        </thead>
-				        <tbody>
-				        </tbody>
-			      	</table>
-	      		</div>
-			</div>
-		</div>
-		
-		<div class="row scatter-plot">
-			<div class="options row no-margin">
-				<div class="col-md-1 col-md-offset-1">
-						<label class="control-label">X</label>
-				</div>
-				<div class="col-md-2">
-					<select class="form-control" name="x"></select>
-				</div>
-				<div class="col-md-1">
-					<label class="control-label">Y</label>
-				</div>
-				<div class="col-md-2">
-					<select class="form-control" name="y"></select>
-				</div>
-				<div class="col-md-1">
-					<button name="refresh" class="btn no-background refresh"><i class="icon-refresh"></i></button>
-				</div>
-				<div class="col-md-2 col-md-offset-1"> 
-					<div class="progress">
-						<div class="progress-bar"></div>
+			
+			<div class="col-md-10 height100">
+<!-- 				<div class="row data-visualization-header-buttons"> -->
+<!-- 					<div class="col-md-4"></div> -->
+<!-- 					<div class="col-md-2 no-padding"> -->
+<!-- 						<button class="btn blue-btn table-btn">Table</button> -->
+<!-- 					</div> -->
+<!-- 					<div class="col-md-2 no-padding"> -->
+<!-- 						<button class="btn blue-btn scatter-plot-btn">Scatter plot</button> -->
+<!-- 					</div> -->
+<!-- 				</div> -->
+				
+				<div class="row data-table no-margin">
+					<!-- pagination -->
+					<div class="row no-margin">
+						<div class="col-md-3 col-md-offset-7 data-table-pagination">
+						</div>
+						<div class="col-md-2 data-table-buttons no-padding">
+							<button class="btn default-btn prev"><i class="icon-angle-left"></i></button>
+							<button class="btn default-btn next"><i class="icon-angle-right"></i></button>			
+						</div>
+					</div>
+					<!-- data table -->
+					<div class="row no-margin">
+						<div class="col-md-12 no-padding">
+							<table class="table table-results">
+						        <thead>
+						        </thead>
+						        <tbody>
+						        </tbody>
+					      	</table>
+			      		</div>
 					</div>
 				</div>
-				<div class="col-md-1">
-					<div class="percent"></div>
+				
+				<div class="row scatter-plot">
+<!-- 					<div class="options row no-margin"> -->
+<!-- 						<div class="col-md-1 col-md-offset-1"> -->
+<!-- 								<label class="control-label">X</label> -->
+<!-- 						</div> -->
+<!-- 						<div class="col-md-2"> -->
+<!-- 							<select class="form-control" name="x"></select> -->
+<!-- 						</div> -->
+<!-- 						<div class="col-md-1"> -->
+<!-- 							<label class="control-label">Y</label> -->
+<!-- 						</div> -->
+<!-- 						<div class="col-md-2"> -->
+<!-- 							<select class="form-control" name="y"></select> -->
+<!-- 						</div> -->
+<!-- 						<div class="col-md-1"> -->
+<!-- 							<button name="refresh" class="btn no-background refresh"><i class="icon-refresh"></i></button> -->
+<!-- 						</div> -->
+<!-- 						<div class="col-md-2 col-md-offset-1">  -->
+<!-- 							<div class="progress"> -->
+<!-- 								<div class="progress-bar"></div> -->
+<!-- 							</div> -->
+<!-- 						</div> -->
+<!-- 						<div class="col-md-1"> -->
+<!-- 							<div class="percent"></div> -->
+<!-- 						</div> -->
+<!-- 					</div> -->
+					<div class="row chart"></div>
 				</div>
 			</div>
-			<div class="row chart"></div>
 		</div>
+		
 	</div>
 
 	<!-- ===================================================== -->
@@ -325,6 +367,8 @@
 	<script src="./js/bootstrap/dropdown.js"></script>
 	<script src="./js/bootstrap/modal.js"></script>
 	<script src="./js/bootstrap/tooltip.js"></script>
+	<script src="./js/bootstrap/collapse.js"></script>
+	<script src="./js/bootstrap/transition.js"></script>
 	<script src="./js/bootstrap/plugin/bootstrap-combobox.js"></script>
 	
 	<!-- d3 -->
@@ -375,6 +419,7 @@
 	<script src="./js/calc/manager/ui/calculation-step-edit-manager.js"></script>
 	<script src="./js/calc/manager/ui/calculation-step-exec-manager.js"></script>
 	<script src="./js/calc/manager/ui/calculation-step-results-manager.js"></script>
+	<script src="./js/calc/manager/ui/home-data-manager.js"></script>
 	<!-- settings  -->
 	<script src="./js/calc/manager/ui/sampling-design-manager.js"></script>
 	<script src="./js/calc/manager/ui/aggregation-manager.js"></script>

@@ -16,12 +16,13 @@ html, body {
 	box-sizing: border-box;
 	letter-spacing:0.1em;
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+/* 	overflow: hidden; */
 }
 
 #container {
 	width: 100%; 
 /* 	position: fixed; */
-/* 	overflow: auto; */
+/* 	overflow: hidden; */
 }
 
 
@@ -168,8 +169,8 @@ button.option-btn-selected:hover {
 	border-color: #4d6b89;
 }
 .data {
-	background-color: #502c43;
-	border-color: #502c43;
+	background-color: #47253b;
+	border-color: #47253b;
 }
 .settings {
 	background-color: #44454d;
@@ -383,6 +384,7 @@ formula editor
 }
 .data-visualization .data-table {
 	height: 95%;
+	font-size: 0.9em;
 }
 .data-visualization .scatter-plot { 
 	display: none;
@@ -431,11 +433,39 @@ formula editor
 	border-top: 1px solid #ecf0f1;
 	
 }
+/**
+Data vis options
+**/
+.data-vis-options {
 
-
-
-
-
+}
+.data-vis-options .heading {
+	padding: 2px;
+}
+.data-vis-options .heading button {
+	width:90%;
+}
+.data-vis-options .entity-select {
+	padding: 1.6em;
+}
+.data-vis-options .quantities ,
+.data-vis-options .categories {
+	width: 100%;
+	margin: 0.3em 0px;
+}
+.data-vis-options .quantities button ,
+.data-vis-options .categories button {
+	width: 80%;
+	margin: 0.1em 0px;
+	font-size: 0.9em;
+	font-weight: 200;
+}
+.data-vis-options .view-results-btn {
+	padding: 2em 0px;
+}
+.data-vis-options .view-results-btn button {
+	width: 50%;
+}
 /**
 * == common styles
 */
@@ -885,6 +915,9 @@ table.import-csv-table input[type=checkbox] {
 .width100 {
 	width: 100%;	
 }
+.height5 {
+	height: 5%;
+}
 .height10 {
 	height: 10%;
 }
@@ -900,8 +933,14 @@ table.import-csv-table input[type=checkbox] {
 .height75 {
 	height: 75%;
 }
+.height80 {
+	height: 80%;
+}
 .height90 {
 	height: 90%;
+}
+.height95 {
+	height: 95%;
 }
 .height100 {
 	height: 100%;

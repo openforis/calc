@@ -152,8 +152,8 @@ $(document).ready(function() {
 	
 	// when page is loaded init function is called
 	init = function() {
-		homeCalculationManager = new HomeCalculationManager($("#calculation"));
-		
+		homeCalculationManager = new HomeCalculationManager( $("#calculation") );
+		var homeDataManager = new HomeDataManager( $("#data") );
 		//load all calculation steps
 		homeCalculationManager.updateSteps();
 		
