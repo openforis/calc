@@ -300,7 +300,7 @@
   }
 
   , clearElement: function () {
-    this.$element.val('').focus();
+    this.$element.val(''); //.focus()
   }
 
   , clearTarget: function () {
