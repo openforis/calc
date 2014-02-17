@@ -25,7 +25,7 @@
 		<postgres-driver.version>9.1-901-1.jdbc4</postgres-driver.version>
 		<sqlite-driver.version>3.7.2</sqlite-driver.version>
 		<jooq.version>3.1.0</jooq.version>
-		<collect.version>3.0-Alpha17</collect.version>
+		<collect.version>3.0-Alpha20</collect.version>
 <!-- 		<commons-vfs.version>2.0-20090205</commons-vfs.version> -->
 		<mondrian.version>3.5.0</mondrian.version>	
 		<of-commons-version>0.0.5</of-commons-version>
