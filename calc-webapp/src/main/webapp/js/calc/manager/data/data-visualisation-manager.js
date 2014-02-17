@@ -17,24 +17,24 @@ function DataVisualisationManager($container) {
 	
 	// table options ui
 	this.tableDataProvider 		= null;
-	this.tableOptions 			= this.dataVisOptions.find('.data-table-options');
-	this.tableEntityCombo 		= this.tableOptions.find('.entity-select select').combobox();
+	this.tableOptions 		= this.dataVisOptions.find( '.data-table-options' );
+	this.tableEntityCombo 		= this.tableOptions.find( '.entity-select select' ).combobox();
 	this.tableQuantities 		= this.tableOptions.find( ".quantities" );
 	this.tableCategories 		= this.tableOptions.find( ".categories" );
-	this.qBtn 					= this.tableOptions.find( "[name=q-btn]" ); 
-	this.cBtn 					= this.tableOptions.find( "[name=c-btn]" ); 
+	this.qBtn 			= this.tableOptions.find( "[name=q-btn]" ); 
+	this.cBtn 			= this.tableOptions.find( "[name=c-btn]" ); 
 	this.tableViewResultsBtn 	= this.tableOptions.find( ".view-results-btn button" ); 
 
 	// scatter chart options ui
 	this.scatterDataProvider 	= null;
-	this.scatterOptions 		= this.dataVisOptions.find('.scatter-options');
-	this.scatterEntityCombo 	= this.scatterOptions.find('.entity-select select').combobox();
+	this.scatterOptions 		= this.dataVisOptions.find( '.scatter-options' );
+	this.scatterEntityCombo 	= this.scatterOptions.find( '.entity-select select' ).combobox();
 	this.scatterQuantities 		= this.scatterOptions.find( ".quantities" );
 	this.scatterViewResultsBtn 	= this.scatterOptions.find( ".view-results-btn button" ); 
 	
 	// accordion option buttons
-	this.dataTableBtn 		=	this.dataVisOptions.find(".table-btn");
-	this.scatterPlotBtn 	=	this.dataVisOptions.find('.scatter-btn');
+	this.dataTableBtn 	= this.dataVisOptions.find(".table-btn");
+	this.scatterPlotBtn	= this.dataVisOptions.find('.scatter-btn');
 	
 	
 	this.dataTable 		= new DataTable( this.container.find(".data-table") );
@@ -78,31 +78,8 @@ DataVisualisationManager.prototype.init = function() {
 			WorkspaceManager.getInstance().activeWorkspace(function(ws){
 				var entity = ws.getEntityById( entityId );
 				
-				$.each(entity.quantitativeVariables, function(i, v) {
-					var btn = $( '<button class="btn option-btn"></button>' );
-					btn.html( v.name );
-					$this.tableQuantities.append( btn );
-					var optBtn = new OptionButton( btn );
-					optBtn.select(function(e){
-						$this.tableDataProvider.addVariable( v.name );
-					});
-					optBtn.deselect(function(e){
-						$this.tableDataProvider.deleteVariable( v.name );
-					});
-				});
-				
-				$.each(entity.categoricalVariables, function(i, v) {
-					var btn = $( '<button class="btn option-btn"></button>' );
-					btn.html( v.name );
-					$this.tableCategories.append( btn );
-					var optBtn = new OptionButton( btn );
-					optBtn.select(function(e){
-						$this.tableDataProvider.addVariable( v.name );
-					});
-					optBtn.deselect(function(e){
-						$this.tableDataProvider.deleteVariable( v.name );
-					});
-				});
+				$this.addVariableOptionButtons( entity.quantitativeVariables , $this.tableQuantities , $this.tableDataProvider );
+				$this.addVariableOptionButtons( entity.categoricalVariables , $this.tableCategories , $this.tableDataProvider );
 			});
 
 		}
@@ -136,24 +113,17 @@ DataVisualisationManager.prototype.init = function() {
 			WorkspaceManager.getInstance().activeWorkspace(function(ws){
 				var entity = ws.getEntityById( entityId );
 				
-				$.each(entity.quantitativeVariables, function(i, v) {
-					var btn = $( '<button class="btn option-btn"></button>' );
-					btn.html( v.name );
-					$this.scatterQuantities.append( btn );
-					var optBtn = new OptionButton( btn );
-					optBtn.select(function(e) {
-						if( $this.scatterDataProvider.variables.length == 2 ) {
-							UI.showError( "You can select max two variables", true );
-							optBtn.deselect();
-						} else {
-							$this.scatterDataProvider.addVariable( v.name );
-						}
-					});
-					optBtn.deselect(function(e){
-						$this.scatterDataProvider.deleteVariable( v.name );
-					});
-				});
+				var select = function( v , optBtn ) {
+					if( $this.scatterDataProvider.variables.length == 2 ) {
+						UI.showError( "You can select max two variables", true );
+						optBtn.deselect();
+					} else {
+						$this.scatterDataProvider.addVariable( v.name );
+					}
+				};
 				
+				$this.addVariableOptionButtons( entity.quantitativeVariables , $this.scatterQuantities , $this.scatterDataProvider , select );
+
 			});
 
 		}
@@ -165,6 +135,44 @@ DataVisualisationManager.prototype.init = function() {
 		$this.showScatterPlot();
 	});
 };
+
+DataVisualisationManager.prototype.addVariableOptionButtons = function( variables , uiContainer, dataProvider , select ) {
+    for( var i in variables ) {
+	var v = variables[i];
+	
+	var div = $( '<div class="width100 clearfix"></div>' );
+	var divVarBtn = $( '<div class="width90 float-left"></div>' );
+	var divFilterBtn = $( '<div class="width10 float-left"></div>' );
+	div.append( divVarBtn );
+	div.append( divFilterBtn );
+	uiContainer.append( div );
+	
+	var btn = $( '<button class="btn option-btn"></button>' );
+	btn.html( v.name );
+	divVarBtn.append( btn );
+	
+	var optBtn = new OptionButton( btn );
+	var selectFunction = ( select ) ? select : function( v , optBtn ) {
+		dataProvider.addVariable( v.name );
+	};
+	var deselectFunction = function( v ) {
+		dataProvider.deleteVariable( v.name );
+	};
+	optBtn.select( selectFunction , v  , optBtn );
+	optBtn.deselect( deselectFunction , v );
+	
+	
+	var filterBtn = $( '<button class="btn no-background filter-btn"><i class="fa fa-filter"></i></button>' );
+	divFilterBtn.append( filterBtn );
+	filterBtn.popover({ 
+	    html : true,
+	    content: function() {
+	      return "<div style='width:400px'> testing popover <button onclick='javascript:alert(\"a\")'>click</button></div>";
+	    }
+	  });
+    }
+};
+
 /**
  * Refresh ui states
  */
@@ -210,4 +218,12 @@ DataVisualisationManager.prototype.showScatterPlot = function() {
 DataVisualisationManager.prototype.showDataTable = function() {
 	this.scatterPlot.hide();
 	this.dataTable.show();
+};
+
+DataVisualisationManager.prototype.hideOptions = function(){
+    this.dataVisOptions.hide();
+};
+
+DataVisualisationManager.prototype.showOptions = function(){
+    this.dataVisOptions.show();
 };

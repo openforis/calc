@@ -103,6 +103,22 @@ button.option-btn-selected:hover {
 	border-radius: 1px; 
 }
 
+/**
+Filter button 
+*/
+button.filter-btn ,
+button.filter-btn:focus {
+	color: #888889;
+	background: transparent;
+	border: none;
+}
+button.no-background:hover {
+	color: #758677;
+	background-color: transparent;
+	border: none;
+}
+
+
 /** Home Sections*/
 .section-home, .page-section {
 	overflow: auto;
@@ -444,9 +460,10 @@ Data vis options
 }
 .data-vis-options .heading button {
 	width:90%;
+	padding: 0.3em;
 }
 .data-vis-options .entity-select {
-	padding: 1.6em;
+	padding: 1em;
 }
 .data-vis-options .quantities ,
 .data-vis-options .categories {
@@ -455,10 +472,11 @@ Data vis options
 }
 .data-vis-options .quantities button ,
 .data-vis-options .categories button {
-	width: 80%;
+	width: 100%;
 	margin: 0.1em 0px;
-	font-size: 0.9em;
+	font-size: 0.7em;
 	font-weight: 200;
+	padding: 1em 0.4em;
 }
 .data-vis-options .view-results-btn {
 	padding: 2em 0px;
@@ -466,6 +484,12 @@ Data vis options
 .data-vis-options .view-results-btn button {
 	width: 50%;
 }
+
+.clearfix:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
+.clearfix { display: inline-block; }
+* html .clearfix { height: 1%; } /* Hides from IE-mac \*/
+.clearfix { display: block; }
+
 /**
 * == common styles
 */
@@ -912,6 +936,18 @@ table.import-csv-table input[type=checkbox] {
 }
 
 
+.width10 {
+	width: 10%;	
+}
+.width20 {
+	width: 20%;	
+}
+.width80 {
+	width: 80%;	
+}
+.width90 {
+	width: 90%;	
+}
 .width100 {
 	width: 100%;	
 }
@@ -945,7 +981,9 @@ table.import-csv-table input[type=checkbox] {
 .height100 {
 	height: 100%;
 }
-
+.float-left {
+	float: left;
+}
 /**
 * Dialog
 */
