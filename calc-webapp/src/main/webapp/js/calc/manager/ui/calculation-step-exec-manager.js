@@ -65,6 +65,7 @@ CalculationStepExecManager.prototype = (function() {
 						
 						// once completed hide this and shows results section
 						$this.hide();
+						$this.calculationStepResultsManager.showDataVisOptions();
 						$this.calculationStepResultsManager.show(dataProvider);
 					}
 					, true
@@ -145,6 +146,7 @@ CalculationStepExecManager.prototype = (function() {
 			
 			// once completed hide this and shows results section
 			$this.hide();
+			$this.calculationStepResultsManager.hideDataVisOptions();
 			$this.calculationStepResultsManager.show(dataProvider);
 		});
 	};

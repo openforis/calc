@@ -444,6 +444,7 @@ Data vis options
 }
 .data-vis-options .heading button {
 	width:90%;
+	padding: 0.3em;
 }
 .data-vis-options .entity-select {
 	padding: 1.6em;
@@ -455,10 +456,11 @@ Data vis options
 }
 .data-vis-options .quantities button ,
 .data-vis-options .categories button {
-	width: 80%;
+	width: 100%;
 	margin: 0.1em 0px;
-	font-size: 0.9em;
+	font-size: 0.7em;
 	font-weight: 200;
+	padding: 1em 0.4em;
 }
 .data-vis-options .view-results-btn {
 	padding: 2em 0px;

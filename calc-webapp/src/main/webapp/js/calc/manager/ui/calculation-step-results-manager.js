@@ -13,29 +13,23 @@ function CalculationStepResultsManager(container) {
 	this.dataManager = new DataVisualisationManager(resultsContainer);
 };
 
-CalculationStepResultsManager.prototype = (function() {
+/**
+ * show results section and set the data provider to the data visualization manager
+ */
+CalculationStepResultsManager.prototype.show = function(dataProvider) {
+	//show main container
+	this.dataManager.show(dataProvider);
+	this.container.fadeIn(400);
+};
 	
-	/**
-	 * show results section and set the data provider to the data visualization manager
-	 */
-	var show = function(dataProvider) {
-		//show main container
-		this.dataManager.show(dataProvider);
-		this.container.fadeIn(400);
-	};
-	
-	var hide = function () {
-		this.container.hide();
-	};
-	
-	//prototype
-	return {
-		constructor : CalculationStepResultsManager
-		,	
-		//show / hide 
-		show : show
-		,
-		hide : hide
-		
-	};
-})();
+CalculationStepResultsManager.prototype.hide = function () {
+	this.container.hide();
+};	
+
+CalculationStepResultsManager.prototype.showDataVisOptions = function() {
+    this.dataManager.showOptions();
+};
+
+CalculationStepResultsManager.prototype.hideDataVisOptions = function() {
+    this.dataManager.hideOptions();
+};

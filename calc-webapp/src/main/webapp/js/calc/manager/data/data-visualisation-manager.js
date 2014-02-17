@@ -17,24 +17,24 @@ function DataVisualisationManager($container) {
 	
 	// table options ui
 	this.tableDataProvider 		= null;
-	this.tableOptions 			= this.dataVisOptions.find('.data-table-options');
-	this.tableEntityCombo 		= this.tableOptions.find('.entity-select select').combobox();
+	this.tableOptions 		= this.dataVisOptions.find( '.data-table-options' );
+	this.tableEntityCombo 		= this.tableOptions.find( '.entity-select select' ).combobox();
 	this.tableQuantities 		= this.tableOptions.find( ".quantities" );
 	this.tableCategories 		= this.tableOptions.find( ".categories" );
-	this.qBtn 					= this.tableOptions.find( "[name=q-btn]" ); 
-	this.cBtn 					= this.tableOptions.find( "[name=c-btn]" ); 
+	this.qBtn 			= this.tableOptions.find( "[name=q-btn]" ); 
+	this.cBtn 			= this.tableOptions.find( "[name=c-btn]" ); 
 	this.tableViewResultsBtn 	= this.tableOptions.find( ".view-results-btn button" ); 
 
 	// scatter chart options ui
 	this.scatterDataProvider 	= null;
-	this.scatterOptions 		= this.dataVisOptions.find('.scatter-options');
-	this.scatterEntityCombo 	= this.scatterOptions.find('.entity-select select').combobox();
+	this.scatterOptions 		= this.dataVisOptions.find( '.scatter-options' );
+	this.scatterEntityCombo 	= this.scatterOptions.find( '.entity-select select' ).combobox();
 	this.scatterQuantities 		= this.scatterOptions.find( ".quantities" );
 	this.scatterViewResultsBtn 	= this.scatterOptions.find( ".view-results-btn button" ); 
 	
 	// accordion option buttons
-	this.dataTableBtn 		=	this.dataVisOptions.find(".table-btn");
-	this.scatterPlotBtn 	=	this.dataVisOptions.find('.scatter-btn');
+	this.dataTableBtn 	= this.dataVisOptions.find(".table-btn");
+	this.scatterPlotBtn	= this.dataVisOptions.find('.scatter-btn');
 	
 	
 	this.dataTable 		= new DataTable( this.container.find(".data-table") );
@@ -210,4 +210,12 @@ DataVisualisationManager.prototype.showScatterPlot = function() {
 DataVisualisationManager.prototype.showDataTable = function() {
 	this.scatterPlot.hide();
 	this.dataTable.show();
+};
+
+DataVisualisationManager.prototype.hideOptions = function(){
+    this.dataVisOptions.hide();
+};
+
+DataVisualisationManager.prototype.showOptions = function(){
+    this.dataVisOptions.show();
 };
