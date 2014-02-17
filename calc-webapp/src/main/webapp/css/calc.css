@@ -16,13 +16,13 @@ html, body {
 	box-sizing: border-box;
 	letter-spacing:0.1em;
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-/* 	overflow: hidden; */
+	overflow: hidden;
 }
 
 #container {
 	width: 100%; 
 /* 	position: fixed; */
-/* 	overflow: hidden; */
+	overflow: hidden;
 }
 
 

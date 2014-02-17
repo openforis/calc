@@ -261,7 +261,7 @@ HomeCalculationManager.prototype = (function() {
 			homeButtonClick(event);
 		}
 	};
-	
+
 	// prototype
 	return {
 		constructor : HomeCalculationManager,

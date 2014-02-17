@@ -48,16 +48,35 @@ $(document).ready(function() {
 	
 	resizeContainer = function() {
 		var containerHeight = $(window).height() - $footer.height();
-		$("#container").css({"height":containerHeight+"px"});
+		$container.css({"height":containerHeight+"px"});
 	};
 	
 	$footer.find(".links button").click(function(event){
 		event.preventDefault();
-		var target = $(this).attr("href");
 
-		$('html, body').stop().animate({
-	        scrollTop: $(target).offset().top
-	    }, 800);
+		var target = $( $(this).attr("href") );
+		
+		//show all siblings temporarly during scrolling
+		target.siblings().andSelf().visible();
+		
+		//enable container scrolling during animation
+		$container.css('overflow','auto');
+
+		var onAnimationComplete = function(){
+			//remove scrollbar when animation ends
+			$container.css('overflow','hidden');
+			//make siblings invisible (block focus of hidden sections)
+			target.siblings().invisible();
+		};
+
+		//scroll to target with an animation
+		$container.stop().animate({
+	        scrollTop: target[0].offsetTop
+	    }, 
+	    800, 
+	    "easeOutQuart",
+	    onAnimationComplete
+	    );
 	});
 
 	// event handler for home button click
@@ -152,16 +171,21 @@ $(document).ready(function() {
 	
 	// when page is loaded init function is called
 	init = function() {
-		homeCalculationManager = new HomeCalculationManager( $("#calculation") );
+		var calculation = $("#calculation");
+		
+		//hide other sections to avoid focus on their elements
+		calculation.siblings().invisible();
+		
+		homeCalculationManager = new HomeCalculationManager( calculation );
 		var homeDataManager = new HomeDataManager( $("#data") );
 		//load all calculation steps
 		homeCalculationManager.updateSteps();
 		
 		JobManager.getInstance().checkJobStatus();
+		
 		//on load, the footer buttons is positioned to the bottom of the page
 		resizeContainer();
 		positionFooter();
-		
 	};
 	
 	init();
