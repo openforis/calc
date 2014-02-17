@@ -67,6 +67,14 @@ public abstract class Variable<T> extends NamedUserObject {
 	private String dimensionTableIdColumn;
 
 	@JsonIgnore	
+	@Column(name = "dimension_table_code_column")
+	private String dimensionTableCodeColumn;
+
+	@JsonIgnore	
+	@Column(name = "dimension_table_caption_column")
+	private String dimensionTableCaptionColumn;
+
+	@JsonIgnore	
 	@Column(name = "override")
 	private boolean override;
 	
@@ -123,6 +131,30 @@ public abstract class Variable<T> extends NamedUserObject {
 	public void setDimensionTable(String dimensionTable) {
 		this.dimensionTable = dimensionTable;
 	}
+	
+	public String getDimensionTableIdColumn() {
+		return dimensionTableIdColumn;
+	}
+
+	public void setDimensionTableIdColumn(String dimensionTableIdColumn) {
+		this.dimensionTableIdColumn = dimensionTableIdColumn;
+	}
+	
+	public String getDimensionTableCodeColumn() {
+		return dimensionTableCodeColumn;
+	}
+
+	public void setDimensionTableCodeColumn(String dimensionTableCodeColumn) {
+		this.dimensionTableCodeColumn = dimensionTableCodeColumn;
+	}
+
+	public String getDimensionTableCaptionColumn() {
+		return dimensionTableCaptionColumn;
+	}
+
+	public void setDimensionTableCaptionColumn(String dimensionTableCaptionColumn) {
+		this.dimensionTableCaptionColumn = dimensionTableCaptionColumn;
+	}
 
 	@JsonIgnore
 	public boolean isInput() {
@@ -161,9 +193,17 @@ public abstract class Variable<T> extends NamedUserObject {
 				+ ((dimensionTable == null) ? 0 : dimensionTable.hashCode());
 		result = prime
 				* result
+				+ ((dimensionTableCaptionColumn == null) ? 0
+						: dimensionTableCaptionColumn.hashCode());
+		result = prime
+				* result
+				+ ((dimensionTableCodeColumn == null) ? 0
+						: dimensionTableCodeColumn.hashCode());
+		result = prime
+				* result
 				+ ((dimensionTableIdColumn == null) ? 0
 						: dimensionTableIdColumn.hashCode());
-		result = prime * result + ((entity == null) ? 0 : entity.hashCode());
+//		result = prime * result + ((entity == null) ? 0 : entity.hashCode());
 		result = prime
 				* result
 				+ ((inputValueColumn == null) ? 0 : inputValueColumn.hashCode());
@@ -193,16 +233,28 @@ public abstract class Variable<T> extends NamedUserObject {
 				return false;
 		} else if (!dimensionTable.equals(other.dimensionTable))
 			return false;
+		if (dimensionTableCaptionColumn == null) {
+			if (other.dimensionTableCaptionColumn != null)
+				return false;
+		} else if (!dimensionTableCaptionColumn
+				.equals(other.dimensionTableCaptionColumn))
+			return false;
+		if (dimensionTableCodeColumn == null) {
+			if (other.dimensionTableCodeColumn != null)
+				return false;
+		} else if (!dimensionTableCodeColumn
+				.equals(other.dimensionTableCodeColumn))
+			return false;
 		if (dimensionTableIdColumn == null) {
 			if (other.dimensionTableIdColumn != null)
 				return false;
 		} else if (!dimensionTableIdColumn.equals(other.dimensionTableIdColumn))
 			return false;
-		if (entity == null) {
-			if (other.entity != null)
-				return false;
-		} else if (!entity.equals(other.entity))
-			return false;
+//		if (entity == null) {
+//			if (other.entity != null)
+//				return false;
+//		} else if (!entity.equals(other.entity))
+//			return false;
 		if (inputValueColumn == null) {
 			if (other.inputValueColumn != null)
 				return false;
@@ -226,70 +278,5 @@ public abstract class Variable<T> extends NamedUserObject {
 			return false;
 		return true;
 	}
-
-	public String getDimensionTableIdColumn() {
-		return dimensionTableIdColumn;
-	}
-
-	public void setDimensionTableIdColumn(String dimensionTableIdColumn) {
-		this.dimensionTableIdColumn = dimensionTableIdColumn;
-	}
-
-//	@Override
-//	public int hashCode() {
-//		final int prime = 31;
-//		int result = super.hashCode();
-//		result = prime * result
-//				+ ((dimensionTable == null) ? 0 : dimensionTable.hashCode());
-//		result = prime
-//				* result
-//				+ ((inputValueColumn == null) ? 0 : inputValueColumn.hashCode());
-//		result = prime * result
-//				+ ((originalId == null) ? 0 : originalId.hashCode());
-//		result = prime
-//				* result
-//				+ ((outputValueColumn == null) ? 0 : outputValueColumn
-//						.hashCode());
-//		result = prime * result + (override ? 1231 : 1237);
-//		result = prime * result + ((scale == null) ? 0 : scale.hashCode());
-//		return result;
-//	}
-//
-//	@Override
-//	public boolean equals(Object obj) {
-//		if (this == obj)
-//			return true;
-//		if (!super.equals(obj))
-//			return false;
-//		if (getClass() != obj.getClass())
-//			return false;
-//		Variable<?> other = (Variable<?>) obj;
-//		if (dimensionTable == null) {
-//			if (other.dimensionTable != null)
-//				return false;
-//		} else if (!dimensionTable.equals(other.dimensionTable))
-//			return false;
-//		if (inputValueColumn == null) {
-//			if (other.inputValueColumn != null)
-//				return false;
-//		} else if (!inputValueColumn.equals(other.inputValueColumn))
-//			return false;
-//		if (originalId == null) {
-//			if (other.originalId != null)
-//				return false;
-//		} else if (!originalId.equals(other.originalId))
-//			return false;
-//		if (outputValueColumn == null) {
-//			if (other.outputValueColumn != null)
-//				return false;
-//		} else if (!outputValueColumn.equals(other.outputValueColumn))
-//			return false;
-//		if (override != other.override)
-//			return false;
-//		if (scale != other.scale)
-//			return false;
-//		return true;
-//	}
-	
 	
 }

@@ -26,13 +26,12 @@ import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.Variable.Scale;
 import org.openforis.calc.metadata.VariableDao;
 import org.openforis.collect.model.CollectSurvey;
-import org.openforis.collect.relational.model.CodeTable;
 import org.openforis.collect.relational.model.CodeValueFKColumn;
-import org.openforis.collect.relational.model.Column;
 import org.openforis.collect.relational.model.DataColumn;
 import org.openforis.collect.relational.model.DataTable;
 import org.openforis.collect.relational.model.PrimaryKeyColumn;
 import org.openforis.collect.relational.model.RelationalSchema;
+import org.openforis.collect.relational.util.CodeListTables;
 import org.openforis.idm.metamodel.AttributeDefinition;
 import org.openforis.idm.metamodel.BooleanAttributeDefinition;
 import org.openforis.idm.metamodel.CodeAttributeDefinition;
@@ -210,6 +209,8 @@ public class CollectMetadataImportTask extends Task {
 			v1.setInputCategoryIdColumn(v2.getInputCategoryIdColumn());
 			v1.setDimensionTable(v2.getDimensionTable());
 			v1.setDimensionTableIdColumn(v2.getDimensionTableIdColumn());
+			v1.setDimensionTableCodeColumn(v2.getDimensionTableCodeColumn());
+			v1.setDimensionTableCaptionColumn(v2.getDimensionTableCaptionColumn());
 		}
 	}
 
@@ -332,12 +333,13 @@ public class CollectMetadataImportTask extends Task {
 				if ( fk != null ) {
 					multiwayVar.setInputCategoryIdColumn(fk.getName());
 				}
-				CodeTable codeListTable = inputRelationalSchema.getCodeListTable( list, codeAttrDefn.getListLevelIndex() );
+				String codeListTableName = CodeListTables.getTableName(list, codeAttrDefn.getListLevelIndex());
+				
 				//dimension table
-				multiwayVar.setDimensionTable( codeListTable.getName() );
-				//dimension table id column
-				Column<?> codeListTablePKColumn = codeListTable.getPrimaryKeyConstraint().getColumns().get(0);
-				multiwayVar.setDimensionTableIdColumn(codeListTablePKColumn.getName());
+				multiwayVar.setDimensionTable( codeListTableName );
+				multiwayVar.setDimensionTableIdColumn(CodeListTables.getIdColumnName(codeListTableName));
+				multiwayVar.setDimensionTableCodeColumn(CodeListTables.getCodeColumnName(codeListTableName));
+				multiwayVar.setDimensionTableCaptionColumn(CodeListTables.getLabelColumnName(codeListTableName));
 			}
 		} else if ( attrDefn instanceof DateAttributeDefinition ) {
 			v = new TextVariable();
