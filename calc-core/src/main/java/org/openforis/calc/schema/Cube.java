@@ -208,6 +208,12 @@ public class Cube {
 				AggForeignKey aggFK = new AggForeignKey(field.getName(), field.getName());
 				aggForeignKeys.add(aggFK);
 			}
+			
+			Field<Integer> stratumField = Cube.this.getStratumField();
+			if ( stratumField != null ) {
+				AggForeignKey aggFK = new AggForeignKey( stratumField.getName(), stratumField.getName() );
+				aggForeignKeys.add(aggFK);
+			}
 		}
 
 		private void createAggMeasures() {

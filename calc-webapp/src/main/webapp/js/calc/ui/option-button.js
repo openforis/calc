@@ -23,29 +23,40 @@ OptionButton = function(button) {
 			}
 		}
 	};
+	
 	this.button.click( click );
 	
 };
 
-OptionButton.prototype.select = function(select) {
+OptionButton.prototype.select = function( select ) {
+	var args = Array.prototype.slice.call( arguments );
+	if ( args.length > 1 ) { 
+	    args.shift(); 
+	}
+	
 	var $this = this;
 	this.select = function(){
 		$this.button.removeClass("option-btn");
 		$this.button.addClass("option-btn-selected");
 		
-		if(select) {
-			select();
+		if( select ) {
+			select.apply( this , args );
 		} 		
 	}; 
 };
 
-OptionButton.prototype.deselect = function(deselect) {
+OptionButton.prototype.deselect = function( deselect ) {
+    	var args = Array.prototype.slice.call( arguments );
+	if ( args.length > 1 ) { 
+	    args.shift(); 
+	}
+	
 	var $this = this;
 	this.deselect = function(){
 		$this.button.removeClass("option-btn-selected");
 		$this.button.addClass("option-btn");
-		if(deselect) {
-			deselect();
+		if( deselect ) {
+			deselect.apply( this , args );
 		}
 	};
 };
