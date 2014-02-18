@@ -47,10 +47,10 @@ public class DataController {
 		Entity entity = workspace.getEntityById(entityId);
 		
 		//set limit to 5000 for the query
-		if(numberOfRows==null) {
+		if( numberOfRows == null ) {
 			numberOfRows = 5000;
 		}
-		if(excludeNull == null){
+		if( excludeNull == null ) {
 			excludeNull = false;
 		}
 		

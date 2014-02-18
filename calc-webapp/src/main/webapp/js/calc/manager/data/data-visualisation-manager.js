@@ -39,7 +39,11 @@ function DataVisualisationManager($container) {
 	
 	this.dataTable 		= new DataTable( this.container.find(".data-table") );
 	this.scatterPlot 	= new ScatterPlot( this.container.find('.scatter-plot') );
-
+	
+	// variable filter options
+	this.tableFilters 	= new VariableFilterButton();
+	this.scatterFilters 	= new VariableFilterButton();
+	
 	this.init();
 };
 
@@ -78,8 +82,8 @@ DataVisualisationManager.prototype.init = function() {
 			WorkspaceManager.getInstance().activeWorkspace(function(ws){
 				var entity = ws.getEntityById( entityId );
 				
-				$this.addVariableOptionButtons( entity.quantitativeVariables , $this.tableQuantities , $this.tableDataProvider );
-				$this.addVariableOptionButtons( entity.categoricalVariables , $this.tableCategories , $this.tableDataProvider );
+				$this.addVariableOptionButtons( entity.quantitativeVariables , $this.tableQuantities , $this.tableDataProvider , $this.tableFilters );
+				$this.addVariableOptionButtons( entity.categoricalVariables , $this.tableCategories , $this.tableDataProvider , $this.tableFilters );
 			});
 
 		}
@@ -122,7 +126,7 @@ DataVisualisationManager.prototype.init = function() {
 					}
 				};
 				
-				$this.addVariableOptionButtons( entity.quantitativeVariables , $this.scatterQuantities , $this.scatterDataProvider , select );
+				$this.addVariableOptionButtons( entity.quantitativeVariables , $this.scatterQuantities , $this.scatterDataProvider , $this.scatterFilters, select );
 
 			});
 
@@ -136,13 +140,13 @@ DataVisualisationManager.prototype.init = function() {
 	});
 };
 
-DataVisualisationManager.prototype.addVariableOptionButtons = function( variables , uiContainer, dataProvider , select ) {
+DataVisualisationManager.prototype.addVariableOptionButtons = function( variables , uiContainer, dataProvider , filters , select ) {
     for( var i in variables ) {
 	var v = variables[i];
 	
 	var div = $( '<div class="width100 clearfix"></div>' );
 	var divVarBtn = $( '<div class="width90 float-left"></div>' );
-	var divFilterBtn = $( '<div class="width10 float-left"></div>' );
+	var divFilterBtn = $( '<div class="width10 float-left filter-div"></div>' );
 	div.append( divVarBtn );
 	div.append( divFilterBtn );
 	uiContainer.append( div );
@@ -161,15 +165,17 @@ DataVisualisationManager.prototype.addVariableOptionButtons = function( variable
 	optBtn.select( selectFunction , v  , optBtn );
 	optBtn.deselect( deselectFunction , v );
 	
-	
-	var filterBtn = $( '<button class="btn no-background filter-btn"><i class="fa fa-filter"></i></button>' );
-	divFilterBtn.append( filterBtn );
-	filterBtn.popover({ 
-	    html : true,
-	    content: function() {
-	      return "<div style='width:400px'> testing popover <button onclick='javascript:alert(\"a\")'>click</button></div>";
-	    }
-	  });
+	var addFilterBtn = function() {
+	    var filterBtn = $( '<button class="btn no-background filter-btn"><i class="fa fa-filter"></i></button>' );  
+	    filterBtn.data( "variable" , v );
+	    
+	    filterBtn.click( function(e) {
+		filters.show( filterBtn );
+	    });
+		    
+	    divFilterBtn.append( filterBtn );
+	};
+	addFilterBtn();
     }
 };
 

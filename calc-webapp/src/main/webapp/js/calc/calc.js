@@ -69,7 +69,7 @@ $(document).ready(function() {
 			target.siblings().invisible();
 		};
 		//scroll to target with an animation
-		$container.stop().animate({scrollTop: target[0].offsetTop}, 800, "easeOutQuart", onAnimationComplete);
+		$container.stop().animate( {scrollTop: target[0].offsetTop}, 800, "easeOutQuart", onAnimationComplete );
 	});
 
 	// event handler for home button click

@@ -86,12 +86,12 @@ button.option-btn {
 }
 button.option-btn:hover {
 	color: white;
-	background-color: #758677;
+	background-color: #6a916f;
 /* 	border: 1px solid #7c977f; */
 	border-radius: 1px; 
 }
 button.option-btn-selected {
-	background-color: #758677;
+	background-color: #6a916f;
 /* 	border: 1px solid #838596; */
 	border-radius: 1px; 
 	color : white;
@@ -111,12 +111,30 @@ button.filter-btn:focus {
 	color: #888889;
 	background: transparent;
 	border: none;
+	height: 30px;
 }
-button.no-background:hover {
-	color: #758677;
+button.filter-btn:hover {
+	color: #6a916f;
+	background: transparent;
+	border: none;
+	height: 30px;
+}
+
+button.filter-btn-selected ,
+button.filter-btn-selected:focus {
+	color: #FFFFFF;
+	background-color: #6a916f;
+	border: 1px solid #888889;
+	border-radius: 0px;
+	height: 30px;
+}
+button.filter-btn-selected:hover {
+	color: #888889;
 	background-color: transparent;
 	border: none;
+	color : #6a916f;
 }
+
 
 
 /** Home Sections*/
@@ -942,6 +960,12 @@ table.import-csv-table input[type=checkbox] {
 .width20 {
 	width: 20%;	
 }
+.width25 {
+	width: 25%;	
+}
+.width50 {
+	width: 50%;	
+}
 .width80 {
 	width: 80%;	
 }
@@ -1175,4 +1199,62 @@ ul.ui-sortable li {
 /*    font-size: 0.9em; */
    font-weight: 200;
   fill: rgb(236, 240, 241);
+}
+
+
+
+
+
+
+
+/**
+*	Variable filter popover 
+*/
+.variable-filter-popover {
+	display: none;
+	position: absolute;
+	color : #888889;
+	min-width: 300px;
+	width: auto;
+}
+
+.variable-filter-popover .arrow {
+	top: 52%;
+	position: absolute;
+	display: block;
+/* 	width: 0; */
+	height: 0;
+	width: 10px;
+	text-align: right;
+	border: none;
+	font-size: 1.3em;
+}
+
+.filter-div {
+	padding-top: 3px;
+	padding-bottom: 3px;
+}
+
+.variable-filter-popover .content {
+	border: 1px solid #888889;
+	background-color : #888889;
+	padding: 9px 14px;
+	position: absolute;
+	left: 8px;
+	color: #FFF;
+	font-size: 0.8em;
+}
+.variable-filter-popover .buttons {
+	text-align: center;
+}
+.variable-filter-popover .buttons button {
+	font-size: 0.8em;
+	padding: 7px 10px;
+	width: 98%;
+}
+
+.variable-filter-popover .conditions select {
+	height: 25px;
+	padding-top : 3px;
+	padding-bottom: 3px;  
 }
