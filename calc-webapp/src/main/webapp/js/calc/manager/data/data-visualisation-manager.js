@@ -72,7 +72,7 @@ DataVisualisationManager.prototype.init = function() {
 		$this.tableCategories.empty();
 		if ( entityId ){
 			// create data provider
-			$this.tableDataProvider = new DataViewProvider( entityId );
+			$this.tableDataProvider = new DataViewProvider( entityId, null, true );
 			
 			// update variable sections
 			WorkspaceManager.getInstance().activeWorkspace(function(ws){

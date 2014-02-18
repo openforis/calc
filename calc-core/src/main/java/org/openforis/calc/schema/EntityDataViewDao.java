@@ -53,6 +53,14 @@ public class EntityDataViewDao extends AbstractJooqDao {
 		Long count = psql().selectCount().from(view).fetchOne(0, Long.class);
 		return count;
 	}
+
+	public List<DataRecord> query(Workspace workspace, Entity entity, String... fields) {
+		return query(workspace, entity, false, fields);
+	}
+	
+	public List<DataRecord> query(Workspace workspace, Entity entity, boolean excludeNull, String... fields) {
+		return query((DataRecordVisitor) null, workspace, 0, Integer.MAX_VALUE, entity, excludeNull, fields);
+	}
 	
 	public List<DataRecord> query(Workspace workspace, Integer offset, Integer numberOfRows, Entity entity, String... fields) {
 		return query(null, workspace, offset, numberOfRows, entity, false, fields);
@@ -61,6 +69,7 @@ public class EntityDataViewDao extends AbstractJooqDao {
 	public List<DataRecord> query(Workspace workspace, Integer offset, Integer numberOfRows, Entity entity, boolean excludeNull, String... fields) {
 		return query(null, workspace, offset, numberOfRows, entity, excludeNull, fields);
 	}
+	
 	public List<DataRecord> query(DataRecordVisitor visitor, Workspace workspace, Integer offset, Integer numberOfRows, Entity entity, String... fields){
 		return query(visitor, workspace, offset, numberOfRows, entity, false, fields);
 	}

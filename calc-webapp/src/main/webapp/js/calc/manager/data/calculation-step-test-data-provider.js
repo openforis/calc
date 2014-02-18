@@ -10,6 +10,7 @@ function CalculationStepTestDataProvider(jobId, entityId, variables) {
 	this.jobId = jobId;
 	this.entityId = entityId;
 	this.variables = variables;
+	this.exportEnabled = false;
 }
 
 CalculationStepTestDataProvider.prototype = (function() {
