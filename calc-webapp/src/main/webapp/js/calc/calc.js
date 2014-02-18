@@ -56,7 +56,7 @@ $(document).ready(function() {
 
 		var target = $( $(this).attr("href") );
 		
-		//show all siblings temporarly during scrolling
+		//show all siblings temporarily during scrolling
 		target.siblings().andSelf().visible();
 		
 		//enable container scrolling during animation
@@ -68,15 +68,8 @@ $(document).ready(function() {
 			//make siblings invisible (block focus of hidden sections)
 			target.siblings().invisible();
 		};
-
 		//scroll to target with an animation
-		$container.stop().animate({
-	        scrollTop: target[0].offsetTop
-	    }, 
-	    800, 
-	    "easeOutQuart",
-	    onAnimationComplete
-	    );
+		$container.stop().animate({scrollTop: target[0].offsetTop}, 800, "easeOutQuart", onAnimationComplete);
 	});
 
 	// event handler for home button click
@@ -106,8 +99,6 @@ $(document).ready(function() {
 			/**
 			 * hide home and shows loaded page
 			 */
-			//remove scrollbar
-			$("body").css('overflow','hidden');
 			//fade out footer links
 			$footerHomeLinks.fadeOut(500);
 			//move the home section buttons out of the screen towards left
@@ -115,8 +106,6 @@ $(document).ready(function() {
 			setTimeout(function(){
 				//hide the home section buttons
 				$homeSection.hide();
-				// hide all other home sections of the page
-				$section.siblings('.section-home').fadeOut();
 				//append and show the loaded page to the current home section
 				$section.append($page);
 				$page.show();
@@ -137,30 +126,18 @@ $(document).ready(function() {
 		var $extSection = $section.find(".page-section:nth-child(2)");
 		
 		//fade out loaded content and back button
-		$extSection.fadeOut(500);
-		$backHomeButton.fadeOut(500);
+		var duration = 500;
+		$extSection.fadeOut(duration);
+		$backHomeButton.fadeOut(duration);
 		//remove loaded page from the document
 		setTimeout(function(){
 			$extSection.remove();
-		},500);
+		}, duration);
 		
 		//show home section and footer buttons
-		//remove scroll when adding the item to the page
-		$btnSection.parent().css('overflow','hidden');
 		$btnSection.show();
-		$btnSection.animate({left:"0px"}, 1000,'easeOutExpo');
+		$btnSection.animate({left:"0px"}, 1000, 'easeOutExpo');
 		$footerHomeLinks.fadeIn(500);
-		
-		//show home sections
-		$section.siblings('.section-home').fadeIn();
-		$('html, body').stop().animate({
-	        scrollTop: $section.offset().top
-	    }, 0);
-		setTimeout(function(){
-			//reset scroll bars
-			$btnSection.parent().css('overflow','auto');
-			$("body").css('overflow','auto');
-		}, 800);
 	});
 	
 	// on resize window
