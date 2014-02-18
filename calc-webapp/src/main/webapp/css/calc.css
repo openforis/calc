@@ -452,6 +452,9 @@ formula editor
 	text-align: right;
 	padding-right: 5px;
 }
+.data-table .data-table-buttons .csv-export {
+	width: 100%;
+}
 .data-table table thead > tr > th {
 	text-align: center;
 	background-color: #ecf0f1;

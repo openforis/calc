@@ -4,14 +4,14 @@
  * @author Mino Togna
  *
  */
-DataViewProvider = function( entityId, variables ) {
+DataViewProvider = function( entityId, variables, exportEnabled ) {
 	// base context path for rest call
 	this.contextPath = "rest/data/entity/";
 
 	// current entity to query
 	this.entityId = entityId;
 	this.variables = ( variables ) ? variables : [] ;
-	
+	this.exportEnabled = exportEnabled == true;
 };
 
 /**
@@ -61,4 +61,14 @@ DataViewProvider.prototype.deleteVariable = function( variable ) {
 			this.variables.splice(i, 1);
 		}
 	}
+};
+
+DataViewProvider.prototype.exportToCsv = function(excludeNulls) {
+	var url = this.contextPath + this.entityId + "/data.csv";
+	var params = $.param({
+		fields: this.variables.join(','),
+		excludeNulls: this.excludeNulls == true
+	});
+	url = url + "?" + params;
+	window.open(url, '_blank');
 };

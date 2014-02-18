@@ -51,25 +51,44 @@ $(document).ready(function() {
 		$container.css({"height":containerHeight+"px"});
 	};
 	
+	var scrollToSection = function (animate) {
+		//calculate the scroll offset
+		var scrollTop = $section[0].offsetTop;
+		
+		if ( animate ) {
+			//show all siblings temporarily during scrolling
+			$section.siblings().andSelf().visible();
+			
+			//enable container scrolling during animation
+			$container.css('overflow','auto');
+			
+			var onAnimationComplete = function(){
+				//remove scrollbar when animation ends
+				$container.css('overflow','hidden');
+				//make siblings invisible (block focus of hidden sections)
+				$section.siblings().invisible();
+			};
+			//scroll to the current section offset
+			$container.stop().animate({scrollTop: scrollTop}, 800, "easeOutQuart", onAnimationComplete);
+		} else {
+			//scroll to the current section offset
+			$container.css('overflow','auto');
+			$container[0].scrollTop = scrollTop;
+			$container.css('overflow','hidden');
+		}
+	};
+
 	$footer.find(".links button").click(function(event){
 		event.preventDefault();
 
 		var target = $( $(this).attr("href") );
 		
-		//show all siblings temporarily during scrolling
-		target.siblings().andSelf().visible();
+		//set current home section
+		if( $section.attr("id") != target.attr("id") ){
+		    $section = target ;
+		    scrollToSection(true);
+		}
 		
-		//enable container scrolling during animation
-		$container.css('overflow','auto');
-
-		var onAnimationComplete = function(){
-			//remove scrollbar when animation ends
-			$container.css('overflow','hidden');
-			//make siblings invisible (block focus of hidden sections)
-			target.siblings().invisible();
-		};
-		//scroll to target with an animation
-		$container.stop().animate( {scrollTop: target[0].offsetTop}, 800, "easeOutQuart", onAnimationComplete );
 	});
 
 	// event handler for home button click
@@ -144,11 +163,15 @@ $(document).ready(function() {
 	$( window ).resize(function() {
 		positionFooter();
 		resizeContainer();
+		scrollToSection(false);
 	});
 	
 	// when page is loaded init function is called
 	init = function() {
 		var calculation = $("#calculation");
+		
+		//set current home section to calculation
+		$section = calculation;
 		
 		//hide other sections to avoid focus on their elements
 		calculation.siblings().invisible();

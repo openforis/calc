@@ -22,6 +22,10 @@ function DataTable($container) {
 	this.nextButton.hide();
 	this.prevButton.hide();
 	
+	// export button
+	this.csvExportButton = this.container.find(".csv-export");
+	this.csvExportButton.hide();
+
 	// data provider
 	this.dataProvider = null;
 	
@@ -52,7 +56,10 @@ DataTable.prototype = (function(){
 			$this.offset = $this.offset -= $this.rows;
 			$.proxy(updateData , $this)();
 		});
-	
+		this.csvExportButton.click(function(e) {
+			e.preventDefault();
+			$this.dataProvider.exportToCsv();
+		});
 	};
 	
 	// set data provider and reset data table
@@ -75,6 +82,7 @@ DataTable.prototype = (function(){
 	// hide
 	var hide = function() {
 		this.container.hide();
+		this.csvExportButton.hide();
 		this.nextButton.hide();
 		this.prevButton.hide();
 	};
@@ -82,6 +90,11 @@ DataTable.prototype = (function(){
 	// show
 	var show =  function() {
 		this.container.fadeIn();
+		if ( this.dataProvider && this.dataProvider.exportEnabled ) {
+			this.csvExportButton.show();
+		} else {
+			this.csvExportButton.hide();
+		}
 		this.nextButton.show();
 		this.prevButton.show();
 		

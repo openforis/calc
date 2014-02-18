@@ -30,6 +30,21 @@ VariableFilterButton = function( filters ) {
     this.variable 	= null;
     // current filter button
     this.filterBtn 	= null;
+    
+    
+    
+    $(document).click( $.proxy( function() {
+//	    alert('clicked outside');
+	if( this.container ) {
+	    this.container.hide();
+	}
+    } , this ) );
+
+	this.container.click(function(event) {
+	    //alert('clicked inside');
+	    event.stopPropagation();
+	});
+    
 };
 
 VariableFilterButton.prototype.show = function( element ) {

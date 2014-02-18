@@ -61,7 +61,7 @@ CalculationStepExecManager.prototype = (function() {
 						// create instance of data provider
 						var entityId = $this.calculationStep.outputEntityId;
 						var variables  = $this.calculationStep.variables;
-						var dataProvider = new DataViewProvider(entityId , variables);
+						var dataProvider = new DataViewProvider(entityId, variables, true);
 						
 						// once completed hide this and shows results section
 						$this.hide();
