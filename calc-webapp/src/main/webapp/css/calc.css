@@ -1217,7 +1217,7 @@ ul.ui-sortable li {
 	display: none;
 	position: absolute;
 	color : #888889;
-	min-width: 300px;
+	min-width: 19em;
 	width: auto;
 }
 
@@ -1249,15 +1249,22 @@ ul.ui-sortable li {
 }
 .variable-filter-popover .buttons {
 	text-align: center;
+	margin-top: 25px;
 }
 .variable-filter-popover .buttons button {
 	font-size: 0.8em;
 	padding: 7px 10px;
 	width: 98%;
 }
-
-.variable-filter-popover .conditions select {
+.variable-filter-popover .conditions .form-item {
+	padding: 0.2em;
+}
+.variable-filter-popover .conditions select ,
+.variable-filter-popover .conditions input {
 	height: 25px;
 	padding-top : 3px;
-	padding-bottom: 3px;  
+	padding-bottom: 3px;
+/* 	margin: 0px 0.1em; */
+	font-size: 0.8em;
+	width: 100%;
 }

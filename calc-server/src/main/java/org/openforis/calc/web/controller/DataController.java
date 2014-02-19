@@ -13,9 +13,12 @@ import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.simple.JSONArray;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.openforis.calc.engine.DataRecord;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceService;
@@ -56,9 +59,9 @@ public class DataController {
 	@Autowired
 	private TableDataDao tableDataDao;
 	
-	@RequestMapping(value = "/entity/{entityId}/query.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/entity/{entityId}/query.json", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
-	List<DataRecord> queryByEntity(@PathVariable int entityId, @RequestParam String fields, @RequestParam int offset, @RequestParam(value = "numberOfRows" , required=false) Integer numberOfRows, @RequestParam(required=false) Boolean excludeNull) {
+	List<DataRecord> queryByEntity(@PathVariable int entityId, @RequestParam String fields, @RequestParam int offset, @RequestParam(value = "numberOfRows" , required=false) Integer numberOfRows, @RequestParam(required=false) Boolean excludeNull, @RequestParam(required=false) String filters) throws ParseException {
 		Workspace workspace = workspaceService.getActiveWorkspace();
 		Entity entity = workspace.getEntityById(entityId);
 		
@@ -70,7 +73,12 @@ public class DataController {
 			excludeNull = false;
 		}
 		
-		List<DataRecord> records = entityDao.query(workspace, offset, numberOfRows, entity, excludeNull, fields.split(","));
+		JSONArray arrayFilters = null;
+		if( StringUtils.isNotBlank(filters) ) {
+			arrayFilters = (JSONArray) new JSONParser().parse(filters);
+		}
+		
+		List<DataRecord> records = entityDao.query(workspace, offset, numberOfRows, entity, excludeNull, arrayFilters, fields.split(","));
 		
 		return records;
 	}
@@ -122,7 +130,7 @@ public class DataController {
 		if(numberOfRows==null) {
 			numberOfRows = 5000;
 		}
-		if(excludeNull == null){
+		if( excludeNull == null ) {
 			excludeNull = false;
 		}
 		
@@ -132,11 +140,17 @@ public class DataController {
 	}
 
 	@RequestMapping(value = "/entity/{entityId}/data.csv", method = RequestMethod.GET)
-	public void exportToCSV(HttpServletResponse response, @PathVariable int entityId, @RequestParam String fields, @RequestParam(required=false) Boolean excludeNull) {
+	public void exportToCSV(HttpServletResponse response, @PathVariable int entityId, @RequestParam String fields, @RequestParam(required=false) Boolean excludeNull , @RequestParam(required=false) String filters) throws ParseException {
 		String[] fieldNames = fields.split(",");
 		Workspace workspace = workspaceService.getActiveWorkspace();
 		Entity entity = workspace.getEntityById(entityId);
-		List<DataRecord> records = entityDao.query(workspace, entity, fieldNames);
+		
+		JSONArray arrayFilters = null;
+		if( StringUtils.isNotBlank(filters) ){
+			arrayFilters = (JSONArray) new JSONParser().parse(filters);
+		}
+		
+		List<DataRecord> records = entityDao.query(workspace, entity, arrayFilters, fieldNames);
 		try {
 			//prepare response header
 			SimpleDateFormat dateFormat = new SimpleDateFormat(EXPORTED_FILE_DATE_FORMAT);

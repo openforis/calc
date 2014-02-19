@@ -11,6 +11,7 @@ import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.Select;
 import org.jooq.SelectQuery;
+import org.json.simple.JSONArray;
 import org.openforis.calc.engine.DataRecord;
 import org.openforis.calc.engine.DataRecordVisitor;
 import org.openforis.calc.engine.Workspace;
@@ -27,54 +28,49 @@ public class EntityDataViewDao extends AbstractJooqDao {
 
 	public void createOrUpdateView(Entity entity) {
 		Workspace ws = entity.getWorkspace();
-		
+
 		Schemas schemas = new Schemas(ws);
 		InputSchema inputSchema = schemas.getInputSchema();
 		EntityDataView view = inputSchema.getDataView(entity);
-		
+
 		drop(view);
-		
-		//create view
+
+		// create view
 		Select<?> select = view.getSelect();
-		psql()
-			.createView(view)
-			.as(select)
-			.execute();
+		psql().createView(view).as(select).execute();
 	}
 
 	public void drop(EntityDataView view) {
-		psql()
-			.dropViewIfExists(view)
-			.execute();
+		psql().dropViewIfExists(view).execute();
 	}
-	
-	public long count(Entity entity){
+
+	public long count(Entity entity) {
 		EntityDataView view = getDataView(entity.getWorkspace(), entity);
 		Long count = psql().selectCount().from(view).fetchOne(0, Long.class);
 		return count;
 	}
 
-	public List<DataRecord> query(Workspace workspace, Entity entity, String... fields) {
-		return query(workspace, entity, false, fields);
+	public List<DataRecord> query(Workspace workspace, Entity entity, JSONArray filters, String... fields) {
+		return query(workspace, entity, false, filters, fields);
 	}
-	
-	public List<DataRecord> query(Workspace workspace, Entity entity, boolean excludeNull, String... fields) {
-		return query((DataRecordVisitor) null, workspace, 0, Integer.MAX_VALUE, entity, excludeNull, fields);
+
+	public List<DataRecord> query(Workspace workspace, Entity entity, boolean excludeNull, JSONArray filters, String... fields) {
+		return query((DataRecordVisitor) null, workspace, 0, Integer.MAX_VALUE, entity, excludeNull, filters, fields);
 	}
-	
-	public List<DataRecord> query(Workspace workspace, Integer offset, Integer numberOfRows, Entity entity, String... fields) {
-		return query(null, workspace, offset, numberOfRows, entity, false, fields);
+
+//	public List<DataRecord> query(Workspace workspace, Integer offset, Integer numberOfRows, Entity entity, String... fields) {
+//		return query(null, workspace, offset, numberOfRows, entity, false, fields);
+//	}
+
+	public List<DataRecord> query(Workspace workspace, Integer offset, Integer numberOfRows, Entity entity, boolean excludeNull, JSONArray filters, String... fields) {
+		return query(null, workspace, offset, numberOfRows, entity, excludeNull, filters, fields);
 	}
-	
-	public List<DataRecord> query(Workspace workspace, Integer offset, Integer numberOfRows, Entity entity, boolean excludeNull, String... fields) {
-		return query(null, workspace, offset, numberOfRows, entity, excludeNull, fields);
-	}
-	
-	public List<DataRecord> query(DataRecordVisitor visitor, Workspace workspace, Integer offset, Integer numberOfRows, Entity entity, String... fields){
-		return query(visitor, workspace, offset, numberOfRows, entity, false, fields);
-	}
-	
-	public List<DataRecord> query(DataRecordVisitor visitor, Workspace workspace, Integer offset, Integer numberOfRows, Entity entity, boolean excludeNull, String... fields) {
+
+//	public List<DataRecord> query(DataRecordVisitor visitor, Workspace workspace, Integer offset, Integer numberOfRows, Entity entity, String... fields) {
+//		return query(visitor, workspace, offset, numberOfRows, entity, false, fields);
+//	}
+
+	public List<DataRecord> query(DataRecordVisitor visitor, Workspace workspace, Integer offset, Integer numberOfRows, Entity entity, boolean excludeNull, JSONArray filters, String... fields) {
 		if (fields == null || fields.length == 0) {
 			throw new IllegalArgumentException("fields must be specifed");
 		}
@@ -90,13 +86,13 @@ public class EntityDataViewDao extends AbstractJooqDao {
 		for (String field : fields) {
 			Field<?> f = view.field(field);
 			select.addSelect(f);
-			if(excludeNull) {
+			if (excludeNull) {
 				select.addConditions(f.isNotNull());
 			}
 		}
 		// add order by id -- important?!
-		select.addOrderBy( view.getIdField() );
-		
+		select.addOrderBy(view.getIdField());
+
 		// add offset to query
 		if (offset != null && numberOfRows != null) {
 			select.addLimit(offset, numberOfRows);
@@ -105,7 +101,7 @@ public class EntityDataViewDao extends AbstractJooqDao {
 		} else if (offset != null && numberOfRows == null) {
 			select.addLimit(offset);
 		}
-		
+
 		// execute the query
 		Result<Record> result = select.fetch();
 

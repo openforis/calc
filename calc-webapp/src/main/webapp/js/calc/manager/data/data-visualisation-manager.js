@@ -41,8 +41,8 @@ function DataVisualisationManager($container) {
 	this.scatterPlot 	= new ScatterPlot( this.container.find('.scatter-plot') );
 	
 	// variable filter options
-	this.tableFilters 	= new VariableFilterButton();
-	this.scatterFilters 	= new VariableFilterButton();
+//	this.tableFilters 	= new VariableFilters();
+//	this.scatterFilters 	= new VariableFilters();
 	
 	this.init();
 };
@@ -82,8 +82,8 @@ DataVisualisationManager.prototype.init = function() {
 			WorkspaceManager.getInstance().activeWorkspace(function(ws){
 				var entity = ws.getEntityById( entityId );
 				
-				$this.addVariableOptionButtons( entity.quantitativeVariables , $this.tableQuantities , $this.tableDataProvider , $this.tableFilters );
-				$this.addVariableOptionButtons( entity.categoricalVariables , $this.tableCategories , $this.tableDataProvider , $this.tableFilters );
+				$this.addVariableOptionButtons( entity.quantitativeVariables , $this.tableQuantities , $this.tableDataProvider );
+				$this.addVariableOptionButtons( entity.categoricalVariables , $this.tableCategories , $this.tableDataProvider );
 			});
 
 		}
@@ -126,7 +126,7 @@ DataVisualisationManager.prototype.init = function() {
 					}
 				};
 				
-				$this.addVariableOptionButtons( entity.quantitativeVariables , $this.scatterQuantities , $this.scatterDataProvider , $this.scatterFilters, select );
+				$this.addVariableOptionButtons( entity.quantitativeVariables , $this.scatterQuantities , $this.scatterDataProvider , select );
 
 			});
 
@@ -140,7 +140,8 @@ DataVisualisationManager.prototype.init = function() {
 	});
 };
 
-DataVisualisationManager.prototype.addVariableOptionButtons = function( variables , uiContainer, dataProvider , filters , select ) {
+DataVisualisationManager.prototype.addVariableOptionButtons = function( variables , uiContainer, dataProvider , select ) {
+//    var filters  = ;
     for( var i in variables ) {
 	var v = variables[i];
 	
@@ -171,7 +172,7 @@ DataVisualisationManager.prototype.addVariableOptionButtons = function( variable
 	    
 	    filterBtn.click( function(e) {
 		e.stopPropagation();
-		filters.show( filterBtn );
+		dataProvider.filters.show( filterBtn );
 	    });
 		    
 	    divFilterBtn.append( filterBtn );

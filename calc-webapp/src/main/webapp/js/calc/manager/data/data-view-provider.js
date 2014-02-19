@@ -12,6 +12,8 @@ DataViewProvider = function( entityId, variables, exportEnabled ) {
 	this.entityId = entityId;
 	this.variables = ( variables ) ? variables : [] ;
 	this.exportEnabled = exportEnabled == true;
+	
+	this.filters 	= new VariableFilters(); 
 };
 
 /**
@@ -34,17 +36,20 @@ DataViewProvider.prototype.data = function(offset , numberOfItems , excludeNulls
 	// prepare request parameters
 	var vars = (variables) ? variables : this.variables;
 	var params = { offset:offset, fields:vars.join(',') };
+	params.filters = this.filters.getConditions();
+	
 	if(numberOfItems) {
 		params.numberOfRows = numberOfItems;
 	}
-	if(excludeNulls){
+	if(excludeNulls) {
 		params.excludeNulls = excludeNulls;
 	}
 	
 	$.ajax({
-		url : this.contextPath + this.entityId + "/query.json" ,
-		dataType : "json",
-		data : params
+		url 		: this.contextPath + this.entityId + "/query.json" ,
+		dataType 	: "json",
+		data 		: params,
+		method 		: "POST"
 	}).done(function(response) {
 		success(response);
 	});
@@ -66,9 +71,16 @@ DataViewProvider.prototype.deleteVariable = function( variable ) {
 DataViewProvider.prototype.exportToCsv = function(excludeNulls) {
 	var url = this.contextPath + this.entityId + "/data.csv";
 	var params = $.param({
-		fields: this.variables.join(','),
-		excludeNulls: this.excludeNulls == true
+		fields		: this.variables.join(','),
+		excludeNulls	: this.excludeNulls == true,
+		filters 	: this.filters.getConditions()
 	});
 	url = url + "?" + params;
-	window.open(url, '_blank');
+//	window.open(url, '_blank');
+	
+	var iFrame = $( "<iframe src='" + url + "' style='display: none;' ></iframe>" ); 
+	$( "body" ).append( iFrame );
+	setTimeout( function(){ 
+	    iFrame.remove(); 
+	} , 10000 );
 };
