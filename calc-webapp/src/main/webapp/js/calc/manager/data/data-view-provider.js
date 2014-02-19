@@ -70,17 +70,10 @@ DataViewProvider.prototype.deleteVariable = function( variable ) {
 
 DataViewProvider.prototype.exportToCsv = function(excludeNulls) {
 	var url = this.contextPath + this.entityId + "/data.csv";
-	var params = $.param({
-		fields		: this.variables.join(','),
-		excludeNulls	: this.excludeNulls == true,
-		filters 	: this.filters.getConditions()
-	});
-	url = url + "?" + params;
-//	window.open(url, '_blank');
-	
-	var iFrame = $( "<iframe src='" + url + "' style='display: none;' ></iframe>" ); 
-	$( "body" ).append( iFrame );
-	setTimeout( function(){ 
-	    iFrame.remove(); 
-	} , 10000 );
+	var data = {
+			fields		: this.variables.join(','),
+			excludeNulls	: this.excludeNulls == true,
+			filters 	: this.filters.getConditions()
+	};
+	UI.Form.download(url, data);
 };

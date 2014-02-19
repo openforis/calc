@@ -139,7 +139,7 @@ public class DataController {
 		return records;
 	}
 
-	@RequestMapping(value = "/entity/{entityId}/data.csv", method = RequestMethod.GET)
+	@RequestMapping(value = "/entity/{entityId}/data.csv", method = RequestMethod.POST)
 	public void exportToCSV(HttpServletResponse response, @PathVariable int entityId, @RequestParam String fields, @RequestParam(required=false) Boolean excludeNull , @RequestParam(required=false) String filters) throws ParseException {
 		String[] fieldNames = fields.split(",");
 		Workspace workspace = workspaceService.getActiveWorkspace();

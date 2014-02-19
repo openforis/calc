@@ -289,3 +289,31 @@ UI.Form.validation.greaterThan = function($field, label, value) {
 		return false;
 	}
 };
+
+/**
+ * Sends a "download file" request to the server (The output file should be written in the response output stream).
+ * The parameters are passed in a post using a form and an iFrame is used as target
+ * so that opening a new web browser tab is not required
+ */
+UI.Form.download = function(url, data) {
+	
+	var iFrame = $( "<iframe id='_exportIframe' style='display: none;' ></iframe>" ); 
+	$( "body" ).append( iFrame );
+	
+	var form = $("<form target='_exportIframe' method='post' action='" + url + "'></form>");
+
+	//add an hidden field to the form for each parameter
+	$.each(data, function(fieldName, value) {
+		form.append($("<input type='hidden' name='" + fieldName + "' value='"+ value + "' />"));
+	});
+	
+	$( "body" ).append( form );
+	
+	form.submit();
+	
+	//remove the elements at the end
+	setTimeout( function(){ 
+	    iFrame.remove();
+	    form.remove();
+	} , 10000 );
+};
