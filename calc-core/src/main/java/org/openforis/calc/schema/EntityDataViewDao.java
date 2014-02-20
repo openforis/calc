@@ -3,19 +3,28 @@
  */
 package org.openforis.calc.schema;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jooq.Condition;
 import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.Select;
 import org.jooq.SelectQuery;
+import org.jooq.impl.DSL;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.openforis.calc.engine.DataRecord;
 import org.openforis.calc.engine.DataRecordVisitor;
+import org.openforis.calc.engine.ParameterHashMap;
+import org.openforis.calc.engine.ParameterMap;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.MultiwayVariable;
+import org.openforis.calc.metadata.QuantitativeVariable;
+import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.persistence.jooq.AbstractJooqDao;
 import org.springframework.stereotype.Repository;
 
@@ -26,7 +35,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class EntityDataViewDao extends AbstractJooqDao {
 
-	public void createOrUpdateView(Entity entity) {
+	public void createOrUpdateView( Entity entity ) {
 		Workspace ws = entity.getWorkspace();
 
 		Schemas schemas = new Schemas(ws);
@@ -40,13 +49,23 @@ public class EntityDataViewDao extends AbstractJooqDao {
 		psql().createView(view).as(select).execute();
 	}
 
-	public void drop(EntityDataView view) {
+	public void drop( EntityDataView view ) {
 		psql().dropViewIfExists(view).execute();
 	}
 
-	public long count(Entity entity) {
+	public long count( Entity entity , JSONArray filters ) {
 		EntityDataView view = getDataView(entity.getWorkspace(), entity);
-		Long count = psql().selectCount().from(view).fetchOne(0, Long.class);
+		
+		SelectQuery<Record> select = psql().selectQuery();
+		select.addSelect( DSL.count() );
+		select.addFrom( view );
+
+		// add filters to query
+		if( filters != null ) { 
+			addQueryFilters(select, view, filters);
+		}
+		
+		Long count = select.fetchOne(0, Long.class);
 		return count;
 	}
 
@@ -102,6 +121,11 @@ public class EntityDataViewDao extends AbstractJooqDao {
 			select.addLimit(offset);
 		}
 
+		// add filters to query
+		if( filters != null ) { 
+			addQueryFilters(select, view, filters);
+		}
+		
 		// execute the query
 		Result<Record> result = select.fetch();
 
@@ -124,6 +148,84 @@ public class EntityDataViewDao extends AbstractJooqDao {
 			records.add(dataRecord);
 		}
 		return records;
+	}
+
+	@SuppressWarnings("unchecked")
+	private void addQueryFilters(SelectQuery<Record> select, EntityDataView view, JSONArray filters) {
+		
+		for ( Object o : filters ) {
+			if ( o instanceof JSONObject ) {
+				ParameterHashMap conditionParams = new ParameterHashMap( (JSONObject) o );
+				Variable<?> variable = view.getEntity().getVariable( conditionParams.getString("variable") );
+				
+				if( variable instanceof MultiwayVariable ) {
+					Field<String> field = (Field<String>) view.getCategoryValueField( (MultiwayVariable) variable );
+					addFieldConditions( select, field, conditionParams , String.class );
+				} else if( variable instanceof QuantitativeVariable ) {
+					Field<BigDecimal> field = view.getQuantityField( (QuantitativeVariable) variable );
+					addFieldConditions( select, field, conditionParams , BigDecimal.class );
+				}
+			}
+		}
+		
+	}
+
+//	 "=" , "!=" , "<" , "<=" , ">" , ">=" , "LIKE" , "NOT LIKE" , "BETWEEN" , "NOT BETWEEN" , "IS NULL" , "IS NOT NULL" 	
+	@SuppressWarnings("unchecked")
+	private <T> void addFieldConditions( SelectQuery<Record> select, Field<T> field, ParameterHashMap conditionParams , Class<T> fieldType) {
+		Condition condition = null;
+		for (ParameterMap conditionParam : conditionParams.getList("conditions")) {
+			
+			T value1 = null; 
+			T value2 = null;
+			if( String.class.isAssignableFrom( fieldType ) ) {
+				value1 = (T) conditionParam.getString("value1");
+				value2 = (T) conditionParam.getString("value2");
+			} else if( Number.class.isAssignableFrom( fieldType ) ) {
+				value1 = (T) conditionParam.getNumber("value1");
+				value2 = (T) conditionParam.getNumber("value2");
+			} else {
+				throw new IllegalArgumentException( "Data type " + fieldType.getName() + " not yet supported" );
+			}
+			
+			String conditionString = conditionParam.getString("condition");
+			Condition c = null;
+			if ("=".equals(conditionString)) {
+				c = field.eq( value1 );
+			} else if ("!=".equals(conditionString)) {
+				c = field.notEqual( value1 );
+			} else if ( "<".equals(conditionString) ) {
+				c = field.lessThan(value1);
+			} else if ( "<=".equals(conditionString)) {
+				c = field.lessOrEqual( value1 );
+			} else if ( ">".equals(conditionString)) {
+				c = field.greaterThan( value1 );
+			} else if ( ">=".equals(conditionString)) {
+				c = field.greaterOrEqual( value1 );
+			} else if ( "LIKE".equals(conditionString)) {
+				c = field.like( value1.toString() );
+			} else if ( "NOT LIKE".equals(conditionString)) {
+				c = field.notLike( value1.toString() );
+			} else if ("BETWEEN".equals(conditionString)) {
+				c = field.between( value1 , value2 );
+			} else if ("NOT BETWEEN".equals(conditionString)) {
+				c = field.notBetween( value1 , value2 );
+			} else if ("IS NULL".equals(conditionString)) {
+				c = field.isNull();
+			} else if ("IS NOT NULL".equals(conditionString)) {
+				c = field.isNotNull();
+			} else if ("IN".equals(conditionString)) {
+				// right now only string with IN clause is working
+				JSONArray valuesList = (JSONArray) conditionParam.get("values");
+				c = field.in( valuesList );
+			}
+			if( condition == null ) {
+				condition = c;
+			} else {
+				condition.and( c );
+			}
+		}
+		select.addConditions( condition );
 	}
 
 	private EntityDataView getDataView(Workspace workspace, Entity entity) {

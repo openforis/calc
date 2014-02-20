@@ -30,5 +30,6 @@ public class CategoryDimensionTable extends DimensionTable {
 	protected void initFields() {
 		setIdField( createField(this.variable.getDimensionTableIdColumn(), SQLDataType.INTEGER, this) );
 		setCaptionField( createField(this.variable.getDimensionTableCaptionColumn() , SQLDataType.VARCHAR, this) );
+		setCodeField( createField(this.variable.getDimensionTableCodeColumn() , SQLDataType.VARCHAR, this) );
 	}
 }

@@ -73,28 +73,36 @@ public class DataController {
 			excludeNull = false;
 		}
 		
-		JSONArray arrayFilters = null;
-		if( StringUtils.isNotBlank(filters) ) {
-			arrayFilters = (JSONArray) new JSONParser().parse(filters);
-		}
+		JSONArray arrayFilters = filtersToJsonArray(filters);
 		
 		List<DataRecord> records = entityDao.query(workspace, offset, numberOfRows, entity, excludeNull, arrayFilters, fields.split(","));
 		
 		return records;
+	}
+
+	private JSONArray filtersToJsonArray(String filters) throws ParseException {
+		JSONArray arrayFilters = null;
+		if( StringUtils.isNotBlank(filters) ) {
+			arrayFilters = (JSONArray) new JSONParser().parse(filters);
+		}
+		return arrayFilters;
 	}
 	
 	/**
 	 * Returns a {@link Response} object containing the total number of rows for the given entity
 	 * @param entityId
 	 * @return
+	 * @throws ParseException 
 	 */
-	@RequestMapping(value = "/entity/{entityId}/count.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/entity/{entityId}/count.json", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody 
-	Response getEntityCount(@PathVariable int entityId) {
+	Response getEntityCount( @PathVariable int entityId , @RequestParam(required=false) String filters ) throws ParseException {
 		Workspace workspace = workspaceService.getActiveWorkspace();
 		Entity entity = workspace.getEntityById(entityId);
 		
-		long count = entityDao.count(entity);
+		JSONArray arrayFilters = filtersToJsonArray( filters );
+		
+		long count = entityDao.count( entity , arrayFilters );
 		Response response = new Response();
 		response.addField("count", count);
 		return response;
@@ -145,10 +153,7 @@ public class DataController {
 		Workspace workspace = workspaceService.getActiveWorkspace();
 		Entity entity = workspace.getEntityById(entityId);
 		
-		JSONArray arrayFilters = null;
-		if( StringUtils.isNotBlank(filters) ){
-			arrayFilters = (JSONArray) new JSONParser().parse(filters);
-		}
+		JSONArray arrayFilters = filtersToJsonArray(filters);
 		
 		List<DataRecord> records = entityDao.query(workspace, entity, arrayFilters, fieldNames);
 		try {

@@ -301,11 +301,13 @@ UI.Form.download = function(url, data) {
 	$( "body" ).append( iFrame );
 	
 	var form = $("<form target='_exportIframe' method='post' action='" + url + "'></form>");
-
-	//add an hidden field to the form for each parameter
-	$.each(data, function(fieldName, value) {
+	
+	if( data ) {
+	    //add an hidden field to the form for each parameter
+	    $.each(data, function(fieldName, value) {
 		form.append($("<input type='hidden' name='" + fieldName + "' value='"+ value + "' />"));
-	});
+	    });
+	}
 	
 	$( "body" ).append( form );
 	

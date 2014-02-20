@@ -58,7 +58,7 @@ VariableFilters.prototype.show = function( element ) {
 	this.container.fadeIn( 300 );
 	this.updateConditions( );
 	
-	setTimeout( 
+	setTimeout(
 		$.proxy( function(){
 		    this.container.stop().animate( {top: btnOffset.top}, 100, "easeOutQuart" );
 		    this.container.css( "opacity" , 0.97  );
@@ -75,48 +75,67 @@ VariableFilters.prototype.updateConditions = function( ) {
     
     var name 		= this.variable.name;
     var conditions 	= this.conditions[ name ];
-//    var condition 	= null;
     
     if( conditions && conditions.length > 0 ) {
-	// right now only 1 condition per variable is managed
-	this.condition = conditions[0];
+    	// right now only 1 condition per variable is managed
+    	this.condition = conditions[0];
+    	this.condition.appendUIElements( this.uiConditions );
     } else {
-	// init conditions for the given variable
-	this.condition = new VariableQueryCondition( this.uiConditions );
+    	if( this.variable.type === "CATEGORICAL" ) {
+    		
+    		var progressBar = $( '<div class="progress progress-striped active"><div class="progress-bar progress-bar-info width100"></div></div>' );
+    		this.uiConditions.append( progressBar );
+    		VariableManager.getInstance().getCategories( this.variable.id , $.proxy( function(categories) {
+    			
+    			progressBar.fadeOut();
+				progressBar.remove();
+    			
+    			if( categories ) {
+    				this.condition = new CategoricalVariableQueryCondition( categories );
+    				$( this.condition ).data( "categories" , categories );
+    			} else {
+    				this.condition = new VariableQueryCondition();
+    			}
+    			
+    			this.condition.appendUIElements( this.uiConditions );
+    			
+    		} , this ) );
+    		
+    	} else {
+    		
+    		// 	init conditions for the given variable
+    		this.condition = new VariableQueryCondition();
+    		this.condition.appendUIElements( this.uiConditions );
+    	}
+    	
     }
     
-//    this.addCondition( condition );
-    this.condition.appendUIElements( this.uiConditions );
     this.uiConditions.fadeIn();
 };
 
 
 VariableFilters.prototype.apply = function() {
-    var name = this.variable.name;
-//    var condition = this.conditions[ name ] [0];
-    
-    if( this.condition.validate( this.variable ) ) {
-	this.conditions[ name ] = [];
-	this.conditions[ name ].push( this.condition );
-	
-	this.filterBtn.removeClass( "filter-btn" );
-	this.filterBtn.addClass( "filter-btn-selected" );
-	
-	this.container.fadeOut( 200 );
-    }
+	var name = this.variable.name;
+	// var condition = this.conditions[ name ] [0];
+
+	if ( this.condition.validate(this.variable) ) {
+		this.conditions[name] = [];
+		this.conditions[name].push(this.condition);
+
+		this.filterBtn.removeClass("filter-btn");
+		this.filterBtn.addClass("filter-btn-selected");
+
+		this.container.fadeOut(200);
+	}
 };
 
 VariableFilters.prototype.reset = function() {
     var name 			= this.variable.name;
-//    this.conditions[ name ] 	= null;
     for( var i in this.conditions ){
-//	console.log( i );
-//	console.log( this.conditions[i] ); 
-	if( i === name ){
-	    delete this.conditions[ name ];
-	}
+		if( i === name ){
+		    delete this.conditions[ name ];
+		}
     }
-    
     
     this.filterBtn.removeClass( "filter-btn-selected" );
     this.filterBtn.addClass( "filter-btn" );
@@ -127,10 +146,10 @@ VariableFilters.prototype.reset = function() {
 VariableFilters.prototype.getConditions = function() {
     var conditions = [];
     for( var variable in this.conditions ) {
-	var obj = {};
-	obj.variable = variable;
-	obj.conditions = this.conditions[variable] ;
-	conditions.push( obj );
+		var obj = {};
+		obj.variable = variable;
+		obj.conditions = this.conditions[variable] ;
+		conditions.push( obj );
     }
     
     return JSON.stringify( conditions );
@@ -138,10 +157,9 @@ VariableFilters.prototype.getConditions = function() {
 
 /**
  * Single condition element
- * @param container
  * @returns
  */
-VariableQueryCondition = function( container ) {
+VariableQueryCondition = function() {
     
     this.condition 	= VariableQueryCondition.availableConditions[0];
     this.value1 	= "";
@@ -154,11 +172,11 @@ VariableQueryCondition.prototype.appendUIElements = function( container ) {
     var select = $( '<select class="form-control"></select>' );
     
     for( var i in  VariableQueryCondition.availableConditions ) {
-	var variableCondition = VariableQueryCondition.availableConditions[ i ];
-	var opt = $( "<option></option>");
-	opt.val( variableCondition );
-	opt.html( variableCondition );
-	select.append( opt );
+		var variableCondition = VariableQueryCondition.availableConditions[ i ];
+		var opt = $( "<option></option>");
+		opt.val( variableCondition );
+		opt.html( variableCondition );
+		select.append( opt );
     }
     
     var div = $( '<div class="form-item width50 float-left"></div>' );
@@ -177,30 +195,28 @@ VariableQueryCondition.prototype.appendUIElements = function( container ) {
     div.append( input2 );
     container.append( div );
     
-    
-    
     select.change( $.proxy( function(){
 	this.condition = select.val();
 	this.updateButtonsState( input1 , input2 );
     } , this ) );
     
     input1.change( $.proxy( function(){
-	this.value1 = input1.val();
+    	this.value1 = input1.val();
     } , this ) );
     
     input2.change( $.proxy( function(){
-	this.value2 = input2.val();
+    	this.value2 = input2.val();
     } , this ) );
     
     
     if( this.condition !== "" ) {
-	select.val( this.condition );
+    	select.val( this.condition );
     }
     if( this.value1 !== "" ) {
-	input1.val( this.value1 );
+    	input1.val( this.value1 );
     }
     if( this.value2 !== "" ) {
-	input2.val( this.value2 );
+    	input2.val( this.value2 );
     }
     
     this.updateButtonsState( input1 , input2 );
@@ -258,14 +274,75 @@ VariableQueryCondition.prototype.validate = function( variable ) {
 	}
     
     if( !valid ) {
-	UI.showError( "Conditions not valid" , true );
+    	UI.showError( "Conditions not valid" , true );
     }
     
     return valid;
 };
 
 VariableQueryCondition.availableConditions = [ "=" , "!=" , "<" , "<=" , ">" , ">=" , "LIKE" , "NOT LIKE" , "BETWEEN" , "NOT BETWEEN" , "IS NULL" , "IS NOT NULL" ];
-//VariableQueryCondition.availableConditions = {};
-//VariableQueryCondition.availableConditions[ "QUANTITATIVE" ] = [ " = " , " != " , " < " , " <= " , " > " , " >= "  , " IS NULL " , " IS NOT NULL "];
-//VariableQueryCondition.availableConditions[ "CATEGORICAL" ] = [ " = " , " != " , " < " , " <= " , " > " , " >= "  , " LIKE " , " NOT LIKE " ,  " BETWEEN " , " NOT BETWEEN " , " IS NULL " , " IS NOT NULL "];
+
+
+
+
+CategoricalVariableQueryCondition = function() {
+	this.condition = "IN";
+	this.values 	= [];
+};
+
+CategoricalVariableQueryCondition.prototype.appendUIElements = function( container ) {
+	var categoriesContainer = $( '<div class="width100 float-left"></div>');
+	container.append( categoriesContainer );
+	
+	var $this = this;
+	var categories = $( this ).data( "categories" );
+	for( var i in categories ){
+		var category	= categories[ i ];
+		
+		var addButton = function() {
+			var code 		= category.code;
+			var caption 	= category.caption;
+			
+			var div = $( '<div class="float-left width25" style="padding: 0.1em 0.1em;"></div>');
+			categoriesContainer.append( div );
+			var btn = $( '<button class="btn option-btn width100" style="font-size: 0.8em;">' );
+			btn.html( code );
+			div.append( btn );
+			
+			// enable caption tooltip
+			btn.tooltip({ title: caption, delay: { show: 200, hide: 100 }});
+			
+			var optionBtn = new OptionButton( btn );
+			
+			optionBtn.select( function(){
+				$this.values.push( code );
+			} );
+			
+			optionBtn.deselect( function() {
+				for( var i in $this.values ) {
+					var c = $this.values[i]; 
+					if( c === code ){
+						$this.values.splice( i , 1 );
+						return;
+					}
+				}
+			}  );
+			
+			// select button
+			if( $.inArray( code , $this.values) > -1  ) {
+				optionBtn.select();
+			}
+		};
+		
+		addButton();
+	}
+};
+
+CategoricalVariableQueryCondition.prototype.validate = function( variable ) {
+	if( this.values.length <= 0 ){
+		UI.showError( "At least one category must be selected" , true );
+		return false;
+	}
+	return true;
+}
 

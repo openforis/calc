@@ -159,7 +159,7 @@ public class Entity extends NamedUserObject {
 	}
 	
 	public List<Variable<?>> getVariables() {
-		return Collections.unmodifiableList(variables);
+		return org.openforis.commons.collection.CollectionUtils.unmodifiableList( variables );
 	}
 
 	public Variable<?> getVariableByOriginalId(int id) {
@@ -168,6 +168,15 @@ public class Entity extends NamedUserObject {
 				if ( var.getOriginalId() != null && var.getOriginalId().equals(id) ) {
 					return var;
 				}
+			}
+		}
+		return null;
+	}
+	
+	public Variable<?> getVariableById( int id ) {
+		for ( Variable<?> var : getVariables() ) {
+			if ( var.getId().equals(id) ) {
+				return var;
 			}
 		}
 		return null;

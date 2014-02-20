@@ -111,13 +111,13 @@ button.filter-btn:focus {
 	color: #888889;
 	background: transparent;
 	border: none;
-	height: 30px;
+/* 	height: 30px; */
 }
 button.filter-btn:hover {
 	color: #6a916f;
 	background: transparent;
 	border: none;
-	height: 30px;
+/* 	height: 30px; */
 }
 
 button.filter-btn-selected ,
@@ -126,7 +126,7 @@ button.filter-btn-selected:focus {
 	background-color: #6a916f;
 	border: 1px solid #888889;
 	border-radius: 0px;
-	height: 30px;
+/* 	height: 30px; */
 }
 button.filter-btn-selected:hover {
 	color: #888889;
@@ -489,18 +489,23 @@ Data vis options
 .data-vis-options .quantities ,
 .data-vis-options .categories {
 	width: 100%;
-	margin: 0.3em 0px;
+	padding: 0.3em 0px;
+}
+.data-vis-options .quantities>div,
+.data-vis-options .categories>div {
+	padding-bottom: 2px;
 }
 .data-vis-options .quantities button ,
 .data-vis-options .categories button {
 	width: 100%;
-	margin: 0.1em 0px;
+/* 	margin: 0.1em 0px; */
 	font-size: 0.7em;
 	font-weight: 200;
-	padding: 1em 0.4em;
+/* 	padding: 1em 0.4em; */
+	padding: 0.5em 0em;
 }
 .data-vis-options .view-results-btn {
-	padding: 2em 0px;
+	padding: 1em 0px;
 }
 .data-vis-options .view-results-btn button {
 	width: 50%;
@@ -966,6 +971,9 @@ table.import-csv-table input[type=checkbox] {
 .width25 {
 	width: 25%;	
 }
+.width33 {
+	width: 33%;	
+}
 .width50 {
 	width: 50%;	
 }
@@ -1217,7 +1225,7 @@ ul.ui-sortable li {
 	display: none;
 	position: absolute;
 	color : #888889;
-	min-width: 19em;
+	min-width: 25em;
 	width: auto;
 }
 
@@ -1233,10 +1241,10 @@ ul.ui-sortable li {
 	font-size: 1.3em;
 }
 
-.filter-div {
-	padding-top: 3px;
-	padding-bottom: 3px;
-}
+/* .filter-div { */
+/* 	padding-top: 3px; */
+/* 	padding-bottom: 3px; */
+/* } */
 
 .variable-filter-popover .content {
 	border: 1px solid #888889;
@@ -1255,6 +1263,7 @@ ul.ui-sortable li {
 	font-size: 0.8em;
 	padding: 7px 10px;
 	width: 98%;
+	height: 100%;
 }
 .variable-filter-popover .conditions .form-item {
 	padding: 0.2em;

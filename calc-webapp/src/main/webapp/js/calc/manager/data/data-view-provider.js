@@ -20,9 +20,14 @@ DataViewProvider = function( entityId, variables, exportEnabled ) {
  * 
  */
 DataViewProvider.prototype.count = function(success) {
+    	var params 	= {};
+    	params.filters 	= this.filters.getConditions();
+    	
 	$.ajax({
-		url : this.contextPath + this.entityId + "/count.json",
-		dataType : "json"
+		url	: this.contextPath + this.entityId + "/count.json",
+		dataType: "json",
+		data	: params,
+		method	: "POST"
 	}).done(function(response) {
 		var cnt = response.fields.count;
 		success(cnt);

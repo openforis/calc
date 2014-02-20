@@ -118,9 +118,9 @@ public class InventorySettingsController {
 	}
 
 	@SuppressWarnings("unchecked")
-	private ParameterMap getParameterMapValue(JSONObject json, String property) throws ParseException {
+	private ParameterMap getParameterMapValue( JSONObject json, String property ) throws ParseException {
 		ParameterMap paramMap = null;
-		Object object = json.get(property);
+		Object object = json.get( property );
 		if( object != null) {
 			JSONParser parser = new JSONParser();
 			Object obj = parser.parse( object.toString() );

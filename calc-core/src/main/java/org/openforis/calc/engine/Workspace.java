@@ -342,6 +342,17 @@ public class Workspace extends UserObject {
 		}
 		return null;
 	}
+	
+	public Variable<?> getVariableById( int id ) {
+		List<Entity> entities = getEntities();
+		for (Entity entity : entities) {
+			Variable<?> v = entity.getVariableById(id);
+			if (v != null) {
+				return v;
+			}
+		}
+		return null;
+	}
 
 	/** =====================================
 	 * 		Sampling Desing utility methods
