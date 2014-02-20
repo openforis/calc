@@ -20,13 +20,14 @@ Workspace = function(object) {
  */
 Workspace.prototype.getEntityById = function(id) {
 	if( id ) {
-		for(var i in this.entities) {
+		for( var i in this.entities ) {
 			var entity = this.entities[i];
 			if( entity.id.toString() == id.toString() ) {
 				return entity;
 			}
 		}
 	}
+	return null;
 };
 
 /**

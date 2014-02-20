@@ -33,8 +33,10 @@ import org.openforis.calc.schema.Schemas;
 import org.openforis.commons.io.csv.CsvReader;
 import org.openforis.commons.io.flat.FlatRecord;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.WebApplicationContext;
 
 /**
  * Manages {@link Workspace} instances.
@@ -43,6 +45,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author M. Togna
  */
 @Service
+@Scope( WebApplicationContext.SCOPE_SESSION )
 public class WorkspaceService {
 
 	@Autowired
@@ -80,6 +83,8 @@ public class WorkspaceService {
 	
 	private Map<Integer, SimpleLock> locks;
 
+	private Workspace activeWorkspace;
+
 	public WorkspaceService() {
 		this.locks = new HashMap<Integer, SimpleLock>();
 	}
@@ -115,15 +120,29 @@ public class WorkspaceService {
 	 * @return
 	 */
 	public Workspace getActiveWorkspace() {
-		Workspace workspace = workspaceDao.fetchActive();
-		if ( workspace != null ) {
-			List<AoiHierarchy> aoiHierarchies = workspace.getAoiHierarchies();
-			// set root aoi to each aoiHierarchy linked to the workspace
-			for (AoiHierarchy aoiHierarchy : aoiHierarchies) {
-				aoiDao.assignRootAoi(aoiHierarchy);
+		if( activeWorkspace == null ){
+			activeWorkspace = workspaceDao.fetchActive();
+			
+			if ( activeWorkspace != null ) {
+				List<AoiHierarchy> aoiHierarchies = activeWorkspace.getAoiHierarchies();
+				// set root aoi to each aoiHierarchy linked to the workspace
+				for (AoiHierarchy aoiHierarchy : aoiHierarchies) {
+					aoiDao.assignRootAoi(aoiHierarchy);
+				}
 			}
 		}
-		return workspace;
+		return activeWorkspace;
+		
+//			Workspace workspace = workspaceDao.fetchActive();
+//			
+//			if ( workspace != null ) {
+//				List<AoiHierarchy> aoiHierarchies = workspace.getAoiHierarchies();
+//				// set root aoi to each aoiHierarchy linked to the workspace
+//				for (AoiHierarchy aoiHierarchy : aoiHierarchies) {
+//					aoiDao.assignRootAoi(aoiHierarchy);
+//				}
+//			}
+//		return workspace;
 	}
 
 	synchronized public SimpleLock lock(int workspaceId) throws WorkspaceLockedException {
@@ -160,6 +179,8 @@ public class WorkspaceService {
 
 		processingChainService.createDefaultProcessingChain(ws);
 
+		setActiveWorkspace(ws);
+		
 		return ws;
 	}
 
@@ -209,13 +230,13 @@ public class WorkspaceService {
 		return variable;
 	}
 
-	private void addVariableColumn(QuantitativeVariable variable){
-		inputSchemaDao.addUserDefinedVariableColumn(variable);
-	}
-
-	private void dropVariableColumn(QuantitativeVariable variable){
-		inputSchemaDao.dropUserDefinedVariableColumn(variable);
-	}
+//	private void addVariableColumn(QuantitativeVariable variable){
+//		inputSchemaDao.addUserDefinedVariableColumn(variable);
+//	}
+//
+//	private void dropVariableColumn(QuantitativeVariable variable){
+//		inputSchemaDao.dropUserDefinedVariableColumn(variable);
+//	}
 	
 	private void updateEntityView(QuantitativeVariable variable) {
 		Entity entity = getEntity(variable);
@@ -261,8 +282,11 @@ public class WorkspaceService {
 		workspaceDao.deactivateAll();
 		ws.setActive(true);
 		workspaceDao.save(ws);
+		
+		setActiveWorkspace(ws);
 	}
-
+	
+	
 	public void createViews(Workspace ws) {
 		for (Entity entity : ws.getEntities()) {
 			entityDataViewDao.createOrUpdateView(entity);
@@ -522,4 +546,7 @@ public class WorkspaceService {
 		}
 	}
 	
+	private void setActiveWorkspace(Workspace activeWorkspace) {
+		this.activeWorkspace = activeWorkspace;
+	}
 }

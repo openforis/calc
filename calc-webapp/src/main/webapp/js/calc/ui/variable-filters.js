@@ -34,14 +34,12 @@ VariableFilters = function( filters ) {
     
     
     $(document).click( $.proxy( function() {
-//	    alert('clicked outside');
-	if( this.container ) {
-	    this.container.hide();
-	}
+		if( this.container ) {
+		    this.container.hide();
+		}
     } , this ) );
 
 	this.container.click(function(event) {
-	    //alert('clicked inside');
 	    event.stopPropagation();
 	});
     
@@ -50,23 +48,37 @@ VariableFilters = function( filters ) {
 VariableFilters.prototype.show = function( element ) {
     var variable = element.data( 'variable' );
     if( variable ) {
-	this.variable = variable;
-	this.filterBtn = element;
+		this.variable = variable;
+		this.filterBtn = element;
+		
+		var btnOffset = element.offset();
+		this.container.css( "left" , ( btnOffset.left + 20 )  );
+		this.container.fadeIn( 300 );
+		this.updateConditions( );
+		
+		setTimeout(
+			$.proxy( function(){
+			    this.container.stop().animate( {top: btnOffset.top}, 100, "easeOutQuart" );
+			    this.container.css( "opacity" , 0.97  );
+			} , this)
+			, 150 
+		);
+		
+		// on window resize reposition it
+//		$( document ).on( "scroll", this.updateWindowPosition );
+//		$( window ).scroll( function(){
+//			console.log("?!!!");
+//		} );
+    }
+};
+VariableFilters.prototype.updateWindowPosition = function() {
 	
-	var btnOffset = element.offset();
+	var btnOffset = this.filterBtn.offset();
 	this.container.css( "left" , ( btnOffset.left + 20 )  );
-	this.container.fadeIn( 300 );
-	this.updateConditions( );
 	
-	setTimeout(
 		$.proxy( function(){
 		    this.container.stop().animate( {top: btnOffset.top}, 100, "easeOutQuart" );
-		    this.container.css( "opacity" , 0.97  );
-		} , this)
-		, 150 
-	);
-	
-    }
+		} , this);
 };
 
 VariableFilters.prototype.updateConditions = function( ) {

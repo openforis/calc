@@ -103,7 +103,7 @@ Entity.prototype.deleteVariable = function( id ) {
  * Returns parent entity
  */
 Entity.prototype.parent = function() {
-    return this.workspace.getEntityById(this.parentId);
+    return this.workspace.getEntityById( this.parentId );
 };
 
 /**

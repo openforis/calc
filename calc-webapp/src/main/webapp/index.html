@@ -243,9 +243,9 @@
 					  	</div>
 					  	<div class="width100">
 					  		<button class="btn blue-btn" name="q-btn" 
-					  			data-toggle="tooltip" data-placement="top" title="Quantitative variables" data-animation="true" data-delay="1">Q</button>
+					  			data-toggle="tooltip" data-placement="top" title="Quantitative variables"  data-trigger="hover" data-animation="false" data-delay="0">Q</button>
 					  		<button class="btn blue-btn" name="c-btn"
-					  			data-toggle="tooltip" data-placement="top" title="Categorical variables">C</button>
+					  			data-toggle="tooltip" data-placement="top" title="Categorical variables"  data-animation="true" data-delay="0">C</button>
 					  	</div>
 					  	<div class="quantities width100"></div>
 					  	<div class="categories width100"></div>
@@ -257,15 +257,31 @@
 					  <div class="heading height5">
 					      <button class="btn blue-btn scatter-btn">Scatter chart</button>
 					  </div>
-					  <div class="scatter-options collapse">
-					    <div class="entity-select col-md-12">
+					  <div class="scatter-options collapse" >
+					  	<div class="entity-select col-md-12">
 							<select class="form-control"></select>
 					  	</div>
+					  	<div class="width100">
+					  		<button class="btn blue-btn" name="q-btn" 
+					  			data-toggle="tooltip" data-placement="top" title="Quantitative variables" data-animation="true" data-delay="0">Q</button>
+					  		<button class="btn blue-btn" name="c-btn"
+					  			data-toggle="tooltip" data-placement="top" title="Categorical variables"  data-animation="true" data-delay="0">C</button>
+					  	</div>
 					  	<div class="quantities width100"></div>
+					  	<div class="categories width100"></div>
 					  	<div class="view-results-btn">
 					  		<button class="btn btn-default">View <i class="fa fa-caret-right"></i></button>
 					  	</div>
 					  </div>
+<!-- 					  <div class="scatter-options collapse"> -->
+<!-- 					    <div class="entity-select col-md-12"> -->
+<!-- 							<select class="form-control"></select> -->
+<!-- 					  	</div> -->
+<!-- 					  	<div class="quantities width100"></div> -->
+<!-- 					  	<div class="view-results-btn"> -->
+<!-- 					  		<button class="btn btn-default">View <i class="fa fa-caret-right"></i></button> -->
+<!-- 					  	</div> -->
+<!-- 					  </div> -->
 				</div>
 				
 			</div>
@@ -428,6 +444,7 @@
 	<script src="./js/calc/manager/data/job-manager.js"></script>
 	<!-- data manipulation managers -->
 	<script src="./js/calc/manager/data/data-visualisation-manager.js"></script>
+	<script src="./js/calc/manager/data/data-visualisation-options.js"></script>
 	<script src="./js/calc/manager/data/data-table.js"></script>
 	<script src="./js/calc/manager/data/scatter-plot.js"></script>
 	<script src="./js/calc/manager/data/data-view-provider.js"></script>

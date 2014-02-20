@@ -1,1 +1,1 @@
-set JAVA_OPTS=-Xmx1024m
+set JAVA_OPTS=-Xms256m -Xmx1024m -XX:MaxPermSize=256m
