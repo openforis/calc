@@ -156,7 +156,7 @@ public class EntityDataViewDao extends AbstractJooqDao {
 		for ( Object o : filters ) {
 			if ( o instanceof JSONObject ) {
 				ParameterHashMap conditionParams = new ParameterHashMap( (JSONObject) o );
-				Variable<?> variable = view.getEntity().getVariable( conditionParams.getString("variable") );
+				Variable<?> variable = view.getEntity().findVariable( conditionParams.getString("variable") );
 				
 				if( variable instanceof MultiwayVariable ) {
 					Field<String> field = (Field<String>) view.getCategoryValueField( (MultiwayVariable) variable );

@@ -417,8 +417,9 @@ formula editor
 /* 	border: 1px solid #2c3e50; */
 }
 .data-visualization .data-table {
-	height: 95%;
-	font-size: 0.9em;
+	height: 100%;
+	font-size: 0.8em;
+	padding: 0.1em 0px;
 }
 .data-visualization .scatter-plot { 
 	display: none;
@@ -488,7 +489,9 @@ Data vis options
 }
 .data-vis-options .quantities ,
 .data-vis-options .categories {
-	width: 100%;
+	width	: 100%;
+	height 	: 75%;
+	overflow: auto;
 	padding: 0.3em 0px;
 }
 .data-vis-options .quantities>div,

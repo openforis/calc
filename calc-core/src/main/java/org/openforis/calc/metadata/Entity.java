@@ -195,6 +195,27 @@ public class Entity extends NamedUserObject {
 		}
 	}
 	
+	/**
+	 * Find the variable with the given name in the hierarchy up to root entity
+	 * @param name
+	 * @return
+	 */
+	public Variable<?> findVariable(String name) {
+		Entity entity = this;
+
+		while( entity != null ){
+			Variable<?> variable = entity.getVariable(name);
+		
+			if( variable != null ){
+				return variable;
+			}
+			
+			entity = entity.getParent();
+		}
+		
+		return null;
+	}
+	
 	@JsonIgnore
 	public List<VariableAggregate> getVariableAggregates() {
 		List<VariableAggregate> aggs = new ArrayList<VariableAggregate>();

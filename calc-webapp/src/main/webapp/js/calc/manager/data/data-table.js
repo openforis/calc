@@ -32,7 +32,7 @@ function DataTable($container) {
 	/*
 	 * used for table settings
 	 */
-	this.rows = 50; // max number of rows
+	this.rows = 20; // max number of rows
 	this.offset = 0; // starting point for querying
 	this.totalItems = -1; // total items to process
 	
@@ -198,6 +198,11 @@ DataTable.prototype = (function(){
 			setTimeout(function() {
 				$tr.fadeIn(100);
 			}, (delay += 50) );
+			
+			$tr.click( function(e){
+				var scrollTop = $tr.offset().top;
+				$this.tbody.stop().animate({scrollTop: scrollTop}, 800, "easeOutQuart");
+			});
 		});
 		
 	};

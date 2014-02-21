@@ -30,7 +30,25 @@ DataVisualisationOptions = function ( container ) {
 
 DataVisualisationOptions.prototype.init = function() {
 	var $this = this;
-	$this.categories.hide();
+	
+	this.categories.hide();
+	this.container.css( {"height":"88%"} );
+	
+	this.container.on( "show.bs.collapse" , function(e) {
+		e.stopPropagation();
+		$this.container.hide();
+//		$this.container.css( {"height":"90%"} );
+	});
+	this.container.on( "shown.bs.collapse" , function(e) {
+		e.stopPropagation();
+
+		$this.container.css( {"height":"88%"} );
+		setTimeout( function(){
+			$this.container.fadeIn( 200 );
+		} , 50 );
+	});
+		
+	
 	// event handlers
 	this.entityCombo.change( function(e){
 		var entityId = $this.entityCombo.val();
@@ -135,6 +153,7 @@ DataVisualisationOptions.prototype.addVariableOptionButtons = function( variable
 		    
 		    filterBtn.click( function(e) {
 		    	e.stopPropagation();
+		    	filterBtn.data( "container" , uiContainer );
 		    	$this.dataProvider.filters.show( filterBtn );
 		    });
 			    

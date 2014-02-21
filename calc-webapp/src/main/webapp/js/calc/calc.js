@@ -4,6 +4,15 @@
  *  @author Mino Togna
  */
 
+
+/**
+ * Main calc instance
+ */
+Calc = {};
+
+//current working section
+Calc.section = null;
+
 /**
  * Global variables
  */
@@ -18,8 +27,6 @@ $dataVisualization = $("#data-visualization");
  */
 $container = $("#container");
 
-//current working section
-$section  = null;
 /*
  * Home page sections 
 */
@@ -53,11 +60,11 @@ $(document).ready(function() {
 	
 	var scrollToSection = function (animate) {
 		//calculate the scroll offset
-		var scrollTop = $section[0].offsetTop;
+		var scrollTop = Calc.section[0].offsetTop;
 		
 		if ( animate ) {
 			//show all siblings temporarily during scrolling
-			$section.siblings().andSelf().visible();
+			Calc.section.siblings().andSelf().visible();
 			
 			//enable container scrolling during animation
 			$container.css('overflow','auto');
@@ -66,7 +73,7 @@ $(document).ready(function() {
 				//remove scrollbar when animation ends
 				$container.css('overflow','hidden');
 				//make siblings invisible (block focus of hidden sections)
-				$section.siblings().invisible();
+				Calc.section.siblings().invisible();
 			};
 			//scroll to the current section offset
 			$container.stop().animate({scrollTop: scrollTop}, 800, "easeOutQuart", onAnimationComplete);
@@ -84,8 +91,8 @@ $(document).ready(function() {
 		var target = $( $(this).attr("href") );
 		
 		//set current home section
-		if( $section.attr("id") != target.attr("id") ){
-		    $section = target ;
+		if( Calc.section.attr("id") != target.attr("id") ){
+		    Calc.section = target ;
 		    scrollToSection(true);
 		}
 		
@@ -98,13 +105,14 @@ $(document).ready(function() {
 		
 		sectionUrl = $button.attr("href");
 		//set the current working section (calculation,results,data or settings)
-		$section = $button.parents(".section-home");
+		Calc.section = $button.parents(".section-home");
 		//home page section (contains the button links to the external pages)
-		$homeSection = $section.find(".page-section");
+		$homeSection = Calc.section.find(".page-section");
 		if(!sectionUrl) {
 			var msg = " Calc error. Section url is undefinded";		
 			throw msg;
 		}
+		
 		$.ajax({
 			url: sectionUrl,
 			dataType: "html"
@@ -126,7 +134,7 @@ $(document).ready(function() {
 				//hide the home section buttons
 				$homeSection.hide();
 				//append and show the loaded page to the current home section
-				$section.append($page);
+				Calc.section.append($page);
 				$page.show();
 				//show the back home button
 				$backHomeButton.fadeIn(500);
@@ -141,8 +149,8 @@ $(document).ready(function() {
 	$backHomeButton.click(function(event){
 		event.preventDefault();
 		
-		var $btnSection = $section.find(".page-section:nth-child(1)");
-		var $extSection = $section.find(".page-section:nth-child(2)");
+		var $btnSection = Calc.section.find(".page-section:nth-child(1)");
+		var $extSection = Calc.section.find(".page-section:nth-child(2)");
 		
 		//fade out loaded content and back button
 		var duration = 500;
@@ -171,7 +179,7 @@ $(document).ready(function() {
 		var calculation = $("#calculation");
 		
 		//set current home section to calculation
-		$section = calculation;
+		Calc.section = calculation;
 		
 		//hide other sections to avoid focus on their elements
 		calculation.siblings().invisible();

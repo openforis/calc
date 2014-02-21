@@ -46,13 +46,16 @@ VariableFilters = function( filters ) {
 };
 
 VariableFilters.prototype.show = function( element ) {
+	var $this = this;
     var variable = element.data( 'variable' );
+    var container = element.data( 'container' );
+    
     if( variable ) {
 		this.variable = variable;
 		this.filterBtn = element;
 		
 		var btnOffset = element.offset();
-		this.container.css( "left" , ( btnOffset.left + 20 )  );
+		this.container.css( "left" , ( btnOffset.left + 15 )  );
 		this.container.fadeIn( 300 );
 		this.updateConditions( );
 		
@@ -64,21 +67,16 @@ VariableFilters.prototype.show = function( element ) {
 			, 150 
 		);
 		
-		// on window resize reposition it
-//		$( document ).on( "scroll", this.updateWindowPosition );
-//		$( window ).scroll( function(){
-//			console.log("?!!!");
-//		} );
+		// on container scroll, it hides the popup
+		if( container ) {
+			var scroll = function(e){
+				e.stopPropagation();
+				$this.container.fadeOut( 225 );
+				container.off( "scroll" , scroll );
+			};
+			container.scroll( scroll );
+		}
     }
-};
-VariableFilters.prototype.updateWindowPosition = function() {
-	
-	var btnOffset = this.filterBtn.offset();
-	this.container.css( "left" , ( btnOffset.left + 20 )  );
-	
-		$.proxy( function(){
-		    this.container.stop().animate( {top: btnOffset.top}, 100, "easeOutQuart" );
-		} , this);
 };
 
 VariableFilters.prototype.updateConditions = function( ) {
