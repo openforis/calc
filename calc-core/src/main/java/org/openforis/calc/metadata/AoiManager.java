@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.management.RuntimeErrorException;
 import javax.sql.DataSource;
 
 import org.jooq.Field;
@@ -166,6 +167,7 @@ public class AoiManager {
 			}
 		} catch(Exception e){
 			transactionManager.rollback(transaction);
+			throw new RuntimeException("Error while importing areas of interest", e);
 		}
 		
 		
