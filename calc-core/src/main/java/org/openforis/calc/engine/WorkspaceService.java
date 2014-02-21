@@ -1,9 +1,7 @@
 package org.openforis.calc.engine;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.sql.DataSource;
 
@@ -81,12 +79,9 @@ public class WorkspaceService {
 	@Autowired
 	private StratumDao stratumDao;
 	
-	private Map<Integer, SimpleLock> locks;
-
 	private Workspace activeWorkspace;
 
 	public WorkspaceService() {
-		this.locks = new HashMap<Integer, SimpleLock>();
 	}
 
 	@Transactional
@@ -145,27 +140,6 @@ public class WorkspaceService {
 //		return workspace;
 	}
 
-	synchronized public SimpleLock lock(int workspaceId) throws WorkspaceLockedException {
-		SimpleLock lock = locks.get(workspaceId);
-		if (lock == null) {
-			lock = new SimpleLock();
-			locks.put(workspaceId, lock);
-		}
-		if (!lock.tryLock()) {
-			throw new WorkspaceLockedException();
-		}
-		return lock;
-	}
-
-	synchronized public boolean isLocked(int workspaceId) {
-		SimpleLock lock = locks.get(workspaceId);
-		if (lock == null) {
-			return false;
-		} else {
-			return lock.isLocked();
-		}
-	}
-
 	public Workspace createAndActivate(String name, String uri, String schema) {
 		workspaceDao.deactivateAll();
 
@@ -175,7 +149,7 @@ public class WorkspaceService {
 		ws.setInputSchema(schema);
 		ws.setName(name);
 		ws.setCaption(name);
-		workspaceDao.save(ws);
+		ws = workspaceDao.save(ws);
 
 		processingChainService.createDefaultProcessingChain(ws);
 
@@ -280,6 +254,7 @@ public class WorkspaceService {
 	
 	public void activate(Workspace ws) {
 		workspaceDao.deactivateAll();
+		
 		ws.setActive(true);
 		workspaceDao.save(ws);
 		

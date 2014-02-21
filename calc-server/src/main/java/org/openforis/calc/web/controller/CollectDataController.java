@@ -44,7 +44,7 @@ public class CollectDataController {
 
 	@RequestMapping(value = "/data.json", method = RequestMethod.POST, produces = "application/json")
 	public @ResponseBody
-	String importCollectData(@ModelAttribute("file") MultipartFile file) {
+	Job importCollectData(@ModelAttribute("file") MultipartFile file) {
 		try {
 			
 			// upload file
@@ -66,7 +66,9 @@ public class CollectDataController {
 			Job job = collectTaskService.createImportJob(ws, survey, tempFile);
 			taskManager.startJob(job);
 			
-			return Boolean.TRUE.toString();
+//			workspaceService.activate(ws);
+			
+			return job;
 		} catch (Exception e) {
 			throw new RuntimeException("Error while uploading file", e);
 		}

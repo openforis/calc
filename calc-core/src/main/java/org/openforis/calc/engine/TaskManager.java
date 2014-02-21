@@ -54,15 +54,16 @@ public class TaskManager {
 	private ModuleRegistry moduleRegistry;
 
 	private Map<Integer, Job> jobs;
+	private Map<Integer, SimpleLock> locks;
 
 //	private Map<String, Job> jobsById;
 
 	public TaskManager() {
 		jobs = new HashMap<Integer, Job>();
-//		jobsById = new HashMap<String, Job>();
+		this.locks = new HashMap<Integer, SimpleLock>();
 	}
 
-	// TODO move to.. where?
+	// TODO move to.. where??? REMOVE
 	protected boolean isDebugMode() {
 		String mode = ((ConfigurableBeanFactory) beanFactory).resolveEmbeddedValue("${calc.debugMode}");
 		return "true".equals(mode);
@@ -186,7 +187,8 @@ public class TaskManager {
 	synchronized public void startJob(final Job job) throws WorkspaceLockedException {
 		job.init();
 		final Workspace ws = job.getWorkspace();
-		final SimpleLock lock = workspaceService.lock(ws.getId());
+		final SimpleLock lock = lock( ws.getId() );
+		
 		jobs.put(ws.getId(), job);
 //		jobsById.put(job.getId().toString(), job);
 		taskExecutor.execute(new Runnable() {
@@ -224,5 +226,27 @@ public class TaskManager {
 	protected DataSource getDataSource() {
 		return dataSource;
 	}
+	
+	synchronized public SimpleLock lock(int workspaceId) throws WorkspaceLockedException {
+		SimpleLock lock = locks.get(workspaceId);
+		if (lock == null) {
+			lock = new SimpleLock();
+			locks.put(workspaceId, lock);
+		}
+		if (!lock.tryLock()) {
+			throw new WorkspaceLockedException();
+		}
+		return lock;
+	}
+
+	synchronized public boolean isLocked(int workspaceId) {
+		SimpleLock lock = locks.get(workspaceId);
+		if (lock == null) {
+			return false;
+		} else {
+			return lock.isLocked();
+		}
+	}
+
 	
 }

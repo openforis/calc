@@ -337,7 +337,8 @@ public class Entity extends NamedUserObject {
 
 	public boolean isSamplingUnit() {
 		if( this.getId() == null ){
-			throw new IllegalStateException("Id cannot be null");
+//			throw new IllegalStateException("Id cannot be null");
+			return false;
 		}
 		return getWorkspace().isSamplingUnit(getId());
 	}

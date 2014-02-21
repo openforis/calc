@@ -153,7 +153,7 @@ public class WorkspaceController {
 	public @ResponseBody
 	Response activeWorkspaceIsLocked() {
 		Workspace workspace = workspaceService.getActiveWorkspace();
-		boolean locked = workspaceService.isLocked(workspace.getId());
+		boolean locked = ( workspace == null ) ? false : taskManager.isLocked(workspace.getId()) ;
 
 		Response response = new Response();
 		response.addField("locked", locked);
