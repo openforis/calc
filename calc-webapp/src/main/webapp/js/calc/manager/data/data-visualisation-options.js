@@ -25,6 +25,8 @@ DataVisualisationOptions = function ( container ) {
 	// disable category  (e.g. scatter plot only qty vars can be selected)
 	this.disableCategories = false;
 	
+	this.optionButtonsHeight = "90%";
+	
 	this.init();
 };
 
@@ -32,7 +34,7 @@ DataVisualisationOptions.prototype.init = function() {
 	var $this = this;
 	
 	this.categories.hide();
-	this.container.css( {"height":"88%"} );
+	this.container.css( {"height" : this.optionButtonsHeight } );
 	
 	this.container.on( "show.bs.collapse" , function(e) {
 		e.stopPropagation();
@@ -42,7 +44,7 @@ DataVisualisationOptions.prototype.init = function() {
 	this.container.on( "shown.bs.collapse" , function(e) {
 		e.stopPropagation();
 
-		$this.container.css( {"height":"88%"} );
+		$this.container.css( {"height": $this.optionButtonsHeight } );
 		setTimeout( function(){
 			$this.container.fadeIn( 200 );
 		} , 50 );

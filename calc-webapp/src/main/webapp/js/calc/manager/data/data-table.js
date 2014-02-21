@@ -199,10 +199,6 @@ DataTable.prototype = (function(){
 				$tr.fadeIn(100);
 			}, (delay += 50) );
 			
-			$tr.click( function(e){
-				var scrollTop = $tr.offset().top;
-				$this.tbody.stop().animate({scrollTop: scrollTop}, 800, "easeOutQuart");
-			});
 		});
 		
 	};

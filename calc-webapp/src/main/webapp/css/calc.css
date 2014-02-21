@@ -508,7 +508,7 @@ Data vis options
 	padding: 0.5em 0em;
 }
 .data-vis-options .view-results-btn {
-	padding: 1em 0px;
+	padding: 0.2em 0px;
 }
 .data-vis-options .view-results-btn button {
 	width: 50%;
@@ -519,6 +519,10 @@ Data vis options
 	padding-left: 20%;
 	padding-top: 2%;
 	font-weight: 100;
+}
+.data-vis-options .variable-type-selector button {
+	padding: 0.1em 0.2em;
+	width: 30%;
 }
 
 
