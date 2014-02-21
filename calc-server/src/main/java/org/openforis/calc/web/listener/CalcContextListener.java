@@ -40,12 +40,15 @@ public class CalcContextListener implements ServletContextListener {
 	private void initDatabase(ServletContext context) throws DatabaseInitializationException {
 		String driver = getParameter(context, "calc.jdbc.driver");
 		String url = getParameter(context, "calc.jdbc.url");
+		String db = getParameter(context, "calc.jdbc.db");
 		String host = getParameter(context, "calc.jdbc.host");
 		String port = getParameter(context, "calc.jdbc.port");
-		String username = getParameter(context, "calc.jdbc.adminuser");
-		String password = getParameter(context, "calc.jdbc.adminpassword");
+		String username = getParameter(context, "calc.jdbc.username");
+		String password = getParameter(context, "calc.jdbc.password");
+		String adminUsername = getParameter(context, "calc.jdbc.adminuser");
+		String adminPassword = getParameter(context, "calc.jdbc.adminpassword");
 		
-		DatabaseInitializer dbInitializer = new DatabaseInitializer(driver, url, host, port, username, password);
+		DatabaseInitializer dbInitializer = new DatabaseInitializer(driver, url, db, host, port, username, password, adminUsername, adminPassword);
 		if ( ! dbInitializer.isDBInitialized() ) {
 			dbInitializer.initDB();
 		}
