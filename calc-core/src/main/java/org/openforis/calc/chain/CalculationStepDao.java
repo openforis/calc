@@ -1,14 +1,17 @@
 package org.openforis.calc.chain;
 
+import java.util.List;
+
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import org.openforis.calc.persistence.jpa.AbstractJpaDao;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * 
  * @author S. Ricci
+ * @author Mino Togna
  */
 @Repository
 public class CalculationStepDao extends AbstractJpaDao<CalculationStep> {
@@ -33,4 +36,15 @@ public class CalculationStepDao extends AbstractJpaDao<CalculationStep> {
 		getEntityManager().createQuery(query).executeUpdate();
 	}
 	
+	@Transactional
+	public List<CalculationStep> findByProcessingChain( int chainId ) {
+		String select = "select a from CalculationStep a where processingChain.id = :chainId order by stepNo" ;
+		TypedQuery<CalculationStep> q = getEntityManager().createQuery( select, CalculationStep.class );
+		q.setParameter( "chainId", chainId );
+//		q.setHint("org.hibernate.cacheable", true);
+
+		List<CalculationStep> list = q.getResultList();
+		return list;
+	}
+
 }

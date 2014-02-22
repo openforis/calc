@@ -98,8 +98,9 @@ public class CalculationStepController {
 	public @ResponseBody
 	List<CalculationStep> loadAll() {
 		Workspace workspace = workspaceService.getActiveWorkspace();
-		if( workspace != null && workspace.getDefaultProcessingChain() != null ) {
-			return workspace.getDefaultProcessingChain().getCalculationSteps();
+		if( workspace != null ) {
+			ProcessingChain chain = workspace.getDefaultProcessingChain();
+			return calculationStepDao.findByProcessingChain( chain.getId() ) ;
 		} else {
 			// empty list
 			return new ArrayList<CalculationStep>();

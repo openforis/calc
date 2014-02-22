@@ -162,7 +162,7 @@ public class AoiManager {
 				} else {
 					break;
 				}
-				
+				transactionManager.commit(transaction);	
 				aoiDao.assignRootAoi(aoiHierarchy);
 			}
 		} catch(Exception e){
