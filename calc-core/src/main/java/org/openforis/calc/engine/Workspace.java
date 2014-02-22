@@ -159,6 +159,9 @@ public class Workspace extends UserObject {
 	}
 	
 	public void addAoiHierarchy(AoiHierarchy aoiHierarchy) {
+		if (aoiHierarchies == null ){
+			aoiHierarchies = new ArrayList<AoiHierarchy>();
+		}
 		this.aoiHierarchies.add(aoiHierarchy);
 	}
 	

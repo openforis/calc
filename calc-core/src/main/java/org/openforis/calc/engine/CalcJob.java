@@ -229,23 +229,6 @@ public class CalcJob extends Job {
 
 			writeResultsTask.addScript(r().dbSendQuery(connection, alterPkey));
 
-//			SelectQuery<Record> selectResults = new Psql().selectQuery();
-//			selectResults.addFrom(resultTable);
-//			selectResults.addSelect(resultTable.getIdField());
-//			Collection<String> outputVariables = group.getOutputVariables(entityId);
-//			for (String var : outputVariables ) {
-//				selectResults.addSelect(resultTable.field(var));
-//			}
-//			Table<?> cursor = selectResults.asTable("r");
-//
-//			UpdateQuery<Record> updateResults = new Psql().updateQuery(table);
-//			for (String var : outputVariables) {
-//				updateResults.addValue((Field<BigDecimal>) table.field(var), (Field<BigDecimal>) cursor.field(var));
-//			}
-//
-//			UpdateWithStep update = new Psql().updateWith(cursor, updateResults, table.getIdField().eq((Field<Long>) cursor.field(resultTable.getIdField().getName())));
-//
-//			writeResultsTask.addScript(r().dbSendQuery(connection, update));
 
 			// update tree view if it's not temporary results 
 			if( tempResults ) {
@@ -277,8 +260,6 @@ public class CalcJob extends Job {
 				writeResultsTask.addScript(r().dbSendQuery(connection, update));
 				
 				
-//			} else{
-//				getWorkspace().
 				
 			}
 			
@@ -289,11 +270,8 @@ public class CalcJob extends Job {
 			Select<?> selectView = view.getSelect(true);
 			AsStep createView = new Psql().createView(view).as(selectView);
 			writeResultsTask.addScript(r().dbSendQuery( connection, createView ));
-	//			}
 			
 			addTask(writeResultsTask);
-
-			
 			
 		}
 		

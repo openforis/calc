@@ -44,46 +44,6 @@ public class JobController {
 	private TaskManager taskManager;
 
 	/**
-	 * Returns the job associated with the stepId if present for the current
-	 * workspace
-	 * 
-	 * @param stepId
-	 * @return
-	 * @throws InvalidProcessingChainException
-	 * @throws WorkspaceLockedException
-	 */
-//	@RequestMapping(value = "/{id}.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-//	public @ResponseBody
-//	synchronized Job getJob(@PathVariable String id) throws InvalidProcessingChainException, WorkspaceLockedException {
-//		Job job = taskManager.getJobById(id);
-//
-//		return job;
-//	}
-
-	/**
-	 * Returns the results for a job
-	 * 
-	 * @param id
-	 * @param offset
-	 * @param numberOfRows
-	 * @return
-	 * @throws InvalidProcessingChainException
-	 * @throws WorkspaceLockedException
-	 */
-//	@RequestMapping(value = "/{id}/results.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-//	public @ResponseBody
-//	synchronized List<DataRecord> getResults(@PathVariable String id, @RequestParam int offset, @RequestParam(required = false) Integer numberOfRows) throws InvalidProcessingChainException,
-//			WorkspaceLockedException {
-//		Job job = taskManager.getJobById(id);
-//		CustomRTask task = (CustomRTask) job.tasks().get(0);
-//		if (numberOfRows == null) {
-//			numberOfRows = (int) task.getItemsProcessed();
-//		}
-//		List<DataRecord> results = task.getResults(offset, offset + numberOfRows);
-//		return results;
-//	}
-
-	/**
 	 * Execute a job for the given calculation step id
 	 * 
 	 * @param stepId

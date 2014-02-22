@@ -10,6 +10,6 @@ HomeDataManager = function( container ) {
 	this.dataVisManager.show();
 };
 
-HomeDataManager.prototype.init = function() {
-	
+HomeDataManager.prototype.refresh = function() {
+	this.dataVisManager.refresh();
 };

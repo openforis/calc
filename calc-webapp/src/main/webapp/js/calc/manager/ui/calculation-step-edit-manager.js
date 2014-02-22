@@ -173,7 +173,7 @@ CalculationStepEditManager.prototype = (function() {
 		    		$this.currentCalculationStep = response.fields.calculationStep;
 		    		$.proxy(updateForm, $this)();
 			    	
-		    		homeCalculationManager.updateStep($this.currentCalculationStep);
+		    		Calc.homeCalculationManager.updateStep($this.currentCalculationStep);
 			    	
 		    		if(successCallback) {
 			    		successCallback($this.currentCalculationStep);
@@ -295,7 +295,7 @@ CalculationStepEditManager.prototype = (function() {
 		if ( entityId ) {
 			$this.workspaceManager.activeWorkspace(function(ws) {
 				var entity = ws.getEntityById(entityId);
-				var variables = entity.quantitativeVariables;
+				var variables = entity.outputVariables();
 				
 				$this.$variableCombo.data(variables, "id", "name");
 				$this.$variableCombo.val(value);

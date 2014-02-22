@@ -118,3 +118,16 @@ Entity.prototype.isAggregable = function() {
     }
     return false;
 };
+/**
+ * Returns user defined quantitative variables
+ */
+Entity.prototype.outputVariables = function() {
+	var vars = [];
+	for( var i in this.quantitativeVariables ){
+		var v = this.quantitativeVariables[ i ];
+		if( v.userDefined === true ){
+			vars.push( v );
+		}
+	}
+	return vars;
+};

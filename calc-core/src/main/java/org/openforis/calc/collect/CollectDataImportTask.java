@@ -111,36 +111,36 @@ public class CollectDataImportTask extends Task {
 	}
 	
 	private void resetResults() {
-//		this.workspaceService.resetResults( getWorkspace() );
-		Workspace ws = getWorkspace();
-		
-		InputSchema schema = new Schemas(ws).getInputSchema();
-		
-		List<Entity> entities = ws.getEntities();
-		for (Entity entity : entities) {
-			ResultTable resultsTable = schema.getResultTable(entity);
-			InputTable dataTable = schema.getDataTable(entity);
-			
-			if( resultsTable != null ) {
-				psql()
-					.dropTableIfExists(resultsTable)
-					.execute();
-				
-				psql()
-					.createTable(resultsTable, resultsTable.fields())
-					.execute();
-				
-				Insert<Record> insert = psql()
-					.insertInto(resultsTable, resultsTable.getIdField() )
-					.select(
-							psql()
-							.select( dataTable.getIdField() )
-							.from(dataTable)							
-						);
-				
-				insert.execute();
-			}	
-		}
+		this.workspaceService.resetResults( getWorkspace() );
+//		Workspace ws = getWorkspace();
+//		
+//		InputSchema schema = new Schemas(ws).getInputSchema();
+//		
+//		List<Entity> entities = ws.getEntities();
+//		for (Entity entity : entities) {
+//			ResultTable resultsTable = schema.getResultTable(entity);
+//			InputTable dataTable = schema.getDataTable(entity);
+//			
+//			if( resultsTable != null ) {
+//				psql()
+//					.dropTableIfExists(resultsTable)
+//					.execute();
+//				
+//				psql()
+//					.createTable(resultsTable, resultsTable.fields())
+//					.execute();
+//				
+//				Insert<Record> insert = psql()
+//					.insertInto(resultsTable, resultsTable.getIdField() )
+//					.select(
+//							psql()
+//							.select( dataTable.getIdField() )
+//							.from(dataTable)							
+//						);
+//				
+//				insert.execute();
+//			}	
+//		}
 	}
 	
 	public File getDataFile() {

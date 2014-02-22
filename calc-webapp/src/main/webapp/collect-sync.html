@@ -56,7 +56,8 @@ $(function(){
 	    },
 	    success: function ( job ) {
 	    	JobManager.getInstance().start( job , function() {
-	    		homeCalculationManager.updateSteps();
+// 	    		homeCalculationManager.updateSteps();
+				Calc.workspaceChange();
 	    	});
 	    },
 	    error: function (e) {

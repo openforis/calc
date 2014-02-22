@@ -4,57 +4,56 @@
  *  @author Mino Togna
  */
 
-
-/**
- * Main calc instance
- */
-Calc = {};
-
-//current working section
-Calc.section = null;
-
-/**
- * Global variables
- */
-home = "home.html";
-$footer = $("#footer");
-$footerHomeLinks = $("#footer .links");
-$backHomeButton = $("#footer button.back");
-$dataVisualization = $("#data-visualization");
+$dataVisualization 	= $( "#data-visualization" );
 
 /**
  * main html container
  */
-$container = $("#container");
-
-/*
- * Home page sections 
-*/
-$page = $("#page");
-$nav = $(".container ul.breadcrumb");
-
-/**
- * Global variables
- * 
- * Managers
- */
-homeCalculationManager = null;
-
-/**
- * Global functions
- * 
- * 
- */
+$container 			= $("#container");
 
 $(document).ready(function() {
 	
+	/**
+	 * Main calc instance
+	 */
+	Calc = {};
+
+	/**
+	 * current working section
+	 */
+	Calc.section = null;
+	
+	/**
+	 * Ui managers
+	 */
+	Calc.homeCalculationManager = new HomeCalculationManager( $("#calculation") );
+	Calc.homeDataManager 		= new HomeDataManager( $("#data") );
+
+	/**
+	 * Ui elements
+	 */
+	Calc.footer 			= $( "#footer" );
+	Calc.footerHomeLinks 	= Calc.footer.find( ".links" );
+	Calc.backHomeBtn 		= Calc.footer.find( "button.back" );
+	
+	
+	/**
+	 * Function to be called when active workspace change
+	 */
+	Calc.workspaceChange = function() {
+		Calc.homeCalculationManager.updateSteps();
+		Calc.homeDataManager.refresh();
+	};
+	
+	
+	
 	positionFooter = function() {
-		$(".footer-placeholder").css("height", $footer.height());
-		$footer.animate({top:$(window).height()- $footer.height() }, 400);
+		$(".footer-placeholder").css("height", Calc.footer.height());
+		Calc.footer.animate({top:$(window).height()- Calc.footer.height() }, 400);
 	};
 	
 	resizeContainer = function() {
-		var containerHeight = $(window).height() - $footer.height();
+		var containerHeight = $(window).height() - Calc.footer.height();
 		$container.css({"height":containerHeight+"px"});
 	};
 	
@@ -85,7 +84,7 @@ $(document).ready(function() {
 		}
 	};
 
-	$footer.find(".links button").click(function(event){
+	Calc.footer.find(".links button").click(function(event){
 		event.preventDefault();
 
 		var target = $( $(this).attr("href") );
@@ -105,10 +104,10 @@ $(document).ready(function() {
 		
 		sectionUrl = $button.attr("href");
 		//set the current working section (calculation,results,data or settings)
-		Calc.section = $button.parents(".section-home");
+		Calc.section = $button.parents( ".section-home" );
 		//home page section (contains the button links to the external pages)
-		$homeSection = Calc.section.find(".page-section");
-		if(!sectionUrl) {
+		$homeSection = Calc.section.find( ".page-section" );
+		if( !sectionUrl ) {
 			var msg = " Calc error. Section url is undefinded";		
 			throw msg;
 		}
@@ -118,26 +117,26 @@ $(document).ready(function() {
 			dataType: "html"
 //				,
 //			data:{"r":Math.random()}
-		}).done(function(response){
-			var $page = $(response);
+		}).done(function( response ) {
+			var page = $( response );
 			
 			//hide loaded page
-			$page.hide();
+			page.hide();
 			/**
 			 * hide home and shows loaded page
 			 */
 			//fade out footer links
-			$footerHomeLinks.fadeOut(500);
+			Calc.footerHomeLinks.fadeOut(500);
 			//move the home section buttons out of the screen towards left
-			$homeSection.animate({left:"-="+$(document).width()}, 1000,'easeInOutExpo');
-			setTimeout(function(){
+			$homeSection.animate( {left:"-="+$(document).width()} , 1000 , 'easeInOutExpo' );
+			setTimeout( function(){
 				//hide the home section buttons
 				$homeSection.hide();
 				//append and show the loaded page to the current home section
-				Calc.section.append($page);
-				$page.show();
+				Calc.section.append( page );
+				page.show();
 				//show the back home button
-				$backHomeButton.fadeIn(500);
+				Calc.backHomeBtn.fadeIn(500);
 			},500);
 		});
 		
@@ -146,7 +145,7 @@ $(document).ready(function() {
 	
 	$(".section-home button.btn-home, .section-home button.btn-home-plus").click(homeButtonClick);
 	
-	$backHomeButton.click(function(event){
+	Calc.backHomeBtn.click(function(event){
 		event.preventDefault();
 		
 		var $btnSection = Calc.section.find(".page-section:nth-child(1)");
@@ -155,7 +154,7 @@ $(document).ready(function() {
 		//fade out loaded content and back button
 		var duration = 500;
 		$extSection.fadeOut(duration);
-		$backHomeButton.fadeOut(duration);
+		Calc.backHomeBtn.fadeOut(duration);
 		//remove loaded page from the document
 		setTimeout(function(){
 			$extSection.remove();
@@ -164,7 +163,7 @@ $(document).ready(function() {
 		//show home section and footer buttons
 		$btnSection.show();
 		$btnSection.animate({left:"0px"}, 1000, 'easeOutExpo');
-		$footerHomeLinks.fadeIn(500);
+		Calc.footerHomeLinks.fadeIn(500);
 	});
 	
 	// on resize window
@@ -176,19 +175,16 @@ $(document).ready(function() {
 	
 	// when page is loaded init function is called
 	init = function() {
-		var calculation = $("#calculation");
-		
+
 		//set current home section to calculation
+		var calculation = $("#calculation");
 		Calc.section = calculation;
-		
 		//hide other sections to avoid focus on their elements
 		calculation.siblings().invisible();
 		
-		homeCalculationManager = new HomeCalculationManager( calculation );
-		var homeDataManager = new HomeDataManager( $("#data") );
-		//load all calculation steps
-		homeCalculationManager.updateSteps();
+		Calc.workspaceChange();
 		
+		// check if there's a job currently running
 		JobManager.getInstance().checkJobStatus();
 		
 		//on load, the footer buttons is positioned to the bottom of the page
