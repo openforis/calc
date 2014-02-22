@@ -148,6 +148,7 @@ public class Rolap {
 		l.setColumn(column);
 		l.setNameColumn(nameColumn);
 		l.setCaption(caption);
+		l.setType("Integer");
 		return l;
 	}
 	

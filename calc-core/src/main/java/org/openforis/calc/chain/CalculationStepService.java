@@ -50,6 +50,10 @@ public class CalculationStepService {
 		}
 		return deletedVariable;
 	}
+	
+	/**
+	 * TODO varible must be accessed always with activeworksapce  
+	 */
 
 	private void deleteOutputVariable(int variableId) {
 		Variable<?> variable = variableDao.find(variableId);

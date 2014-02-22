@@ -43,7 +43,7 @@ import org.springframework.web.context.WebApplicationContext;
  * @author M. Togna
  */
 @Service
-@Scope( WebApplicationContext.SCOPE_SESSION )
+//@Scope( WebApplicationContext.SCOPE_SESSION )
 public class WorkspaceService {
 
 	@Autowired
@@ -79,7 +79,7 @@ public class WorkspaceService {
 	@Autowired
 	private StratumDao stratumDao;
 	
-	private Workspace activeWorkspace;
+//	private Workspace activeWorkspace;
 
 	public WorkspaceService() {
 	}
@@ -115,29 +115,29 @@ public class WorkspaceService {
 	 * @return
 	 */
 	public Workspace getActiveWorkspace() {
-		if( activeWorkspace == null ){
-			activeWorkspace = workspaceDao.fetchActive();
-			
-			if ( activeWorkspace != null ) {
-				List<AoiHierarchy> aoiHierarchies = activeWorkspace.getAoiHierarchies();
-				// set root aoi to each aoiHierarchy linked to the workspace
-				for (AoiHierarchy aoiHierarchy : aoiHierarchies) {
-					aoiDao.assignRootAoi(aoiHierarchy);
-				}
-			}
-		}
-		return activeWorkspace;
-		
-//			Workspace workspace = workspaceDao.fetchActive();
+//		if( activeWorkspace == null ){
+//			activeWorkspace = workspaceDao.fetchActive();
 //			
-//			if ( workspace != null ) {
-//				List<AoiHierarchy> aoiHierarchies = workspace.getAoiHierarchies();
+//			if ( activeWorkspace != null ) {
+//				List<AoiHierarchy> aoiHierarchies = activeWorkspace.getAoiHierarchies();
 //				// set root aoi to each aoiHierarchy linked to the workspace
 //				for (AoiHierarchy aoiHierarchy : aoiHierarchies) {
 //					aoiDao.assignRootAoi(aoiHierarchy);
 //				}
 //			}
-//		return workspace;
+//		}
+//		return activeWorkspace;
+		
+			Workspace workspace = workspaceDao.fetchActive();
+			
+			if ( workspace != null ) {
+				List<AoiHierarchy> aoiHierarchies = workspace.getAoiHierarchies();
+				// set root aoi to each aoiHierarchy linked to the workspace
+				for (AoiHierarchy aoiHierarchy : aoiHierarchies) {
+					aoiDao.assignRootAoi(aoiHierarchy);
+				}
+			}
+		return workspace;
 	}
 
 	public Workspace createAndActivate(String name, String uri, String schema) {
@@ -174,9 +174,12 @@ public class WorkspaceService {
 		// add column to results table and update entity view
 		if( originalResultTable == null) { 
 			try {
-				CreateTableWithFieldsStep createTable = new Psql(dataSource)
-					.createTable(resultTable, resultTable.fields());
-					createTable.execute();
+//				CreateTableWithFieldsStep createTable = new Psql(dataSource)
+//					.createTable(resultTable, resultTable.fields());
+//					createTable.execute();
+					
+					resetResultTable(resultTable, schema.getDataTable(entity) );
+					
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -278,23 +281,27 @@ public class WorkspaceService {
 			ResultTable resultsTable = schema.getResultTable(entity);
 			InputTable dataTable = schema.getDataTable(entity);
 			
-			if( resultsTable != null ) {
-				new Psql(dataSource)
-					.dropTableIfExists(resultsTable)
-					.execute();
-				
-				new Psql(dataSource)
-					.createTable(resultsTable, resultsTable.fields())
-					.execute();
-				
-				Insert<Record> insert = new Psql(dataSource)
-					.insertInto(resultsTable, resultsTable.getIdField() )
-					.select( new Psql().select(dataTable.getIdField()).from(dataTable) );
-				
-				insert.execute();
-			}	
+			resetResultTable(resultsTable, dataTable);	
 		}
 		
+	}
+
+	protected void resetResultTable(ResultTable resultsTable, InputTable dataTable) {
+		if( resultsTable != null ) {
+			new Psql(dataSource)
+				.dropTableIfExists(resultsTable)
+				.execute();
+			
+			new Psql(dataSource)
+				.createTable(resultsTable, resultsTable.fields())
+				.execute();
+			
+			Insert<Record> insert = new Psql(dataSource)
+				.insertInto(resultsTable, resultsTable.getIdField() )
+				.select( new Psql().select(dataTable.getIdField()).from(dataTable) );
+			
+			insert.execute();
+		}
 	}
 
 	@Transactional
@@ -522,6 +529,6 @@ public class WorkspaceService {
 	}
 	
 	private void setActiveWorkspace(Workspace activeWorkspace) {
-		this.activeWorkspace = activeWorkspace;
+//		this.activeWorkspace = activeWorkspace;
 	}
 }

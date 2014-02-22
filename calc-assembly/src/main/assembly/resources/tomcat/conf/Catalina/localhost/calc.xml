@@ -14,4 +14,5 @@
 	<Parameter name="calc.jdbc.maxActive" 		value="10" />
 	<Parameter name="calc.jdbc.minIdle" 		value="5" />
 	
+	<Parameter name="saiku.home" 				value="${catalina.home}/webapps/saiku" />
 </Context>

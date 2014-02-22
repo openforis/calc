@@ -27,10 +27,6 @@ import org.openforis.commons.io.csv.CsvReader;
 import org.openforis.commons.io.flat.FlatRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 /**
  * @author Mino Togna
@@ -51,19 +47,20 @@ public class AoiManager {
 	@Autowired
 	private DataSource dataSource;
 
-	@Autowired
-	private PlatformTransactionManager transactionManager;
+//	@Autowired
+//	private PlatformTransactionManager transactionManager;
 	
 	@SuppressWarnings("unchecked")
+//	@Transactional
 	public Workspace csvImport(Workspace workspace, String filepath, String[] levelNames) throws IOException {
 		CsvReader csvReader = new CsvReader(filepath);
 		csvReader.readHeaders();
 
 		// transaction begin
-		DefaultTransactionDefinition definition = new DefaultTransactionDefinition();
-		definition.setName("txName");
-		definition.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
-		TransactionStatus transaction = transactionManager.getTransaction(definition);
+//		DefaultTransactionDefinition definition = new DefaultTransactionDefinition();
+//		definition.setName("txName");
+//		definition.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+//		TransactionStatus transaction = transactionManager.getTransaction(definition);
 		try{
 			// create (for now only admin unit) aoi hierarchy
 			AoiHierarchy aoiHierarchy = null;
@@ -130,7 +127,7 @@ public class AoiManager {
 			} while (record != null);
 
 			// commit before updating areas
-			transactionManager.commit(transaction);
+//			transactionManager.commit(transaction);
 			
 			// update areas for non leaf aois
 			Iterator<AoiLevel> iterator = new LinkedList<AoiLevel>(levels).descendingIterator();
@@ -161,11 +158,11 @@ public class AoiManager {
 				} else {
 					break;
 				}
-				transactionManager.commit(transaction);	
+//				transactionManager.commit(transaction);	
 				aoiDao.assignRootAoi(aoiHierarchy);
 			}
 		} catch(Exception e){
-			transactionManager.rollback(transaction);
+//			transactionManager.rollback(transaction);
 			throw new RuntimeException("Error while importing areas of interest", e);
 		}
 		
