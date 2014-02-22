@@ -48,7 +48,9 @@ public class GrantStep extends PsqlPart {
 			public ToStep(String user) {
 				super(OnStep.this);
 				append("to ");
+				append("\"");
 				append(user);
+				append("\"");
 			}
 		}
 	}
