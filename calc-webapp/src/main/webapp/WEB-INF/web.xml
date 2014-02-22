@@ -126,9 +126,8 @@
 <!-- 		<session-timeout>60</session-timeout> -->
 <!-- 	</session-config> -->
 
-
-
-
+	
+	<!-- ===================== (tmp) Used for the live demo ================ -->
 <!-- 	<security-constraint> -->
 <!-- 		<web-resource-collection> -->
 <!-- 			<web-resource-name>Open Foris Calc</web-resource-name> -->

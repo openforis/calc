@@ -279,15 +279,15 @@ public class WorkspaceService {
 			InputTable dataTable = schema.getDataTable(entity);
 			
 			if( resultsTable != null ) {
-				new Psql()
+				new Psql(dataSource)
 					.dropTableIfExists(resultsTable)
 					.execute();
 				
-				new Psql()
+				new Psql(dataSource)
 					.createTable(resultsTable, resultsTable.fields())
 					.execute();
 				
-				Insert<Record> insert = new Psql()
+				Insert<Record> insert = new Psql(dataSource)
 					.insertInto(resultsTable, resultsTable.getIdField() )
 					.select( new Psql().select(dataTable.getIdField()).from(dataTable) );
 				
