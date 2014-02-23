@@ -67,7 +67,7 @@ DataViewProvider.prototype.addVariable = function( variable ) {
 DataViewProvider.prototype.deleteVariable = function( variable ) {
 	for( var i in this.variables ){
 		var v = this.variables[i];
-		if( v === variable ){
+		if( v === variable ) {
 			this.variables.splice(i, 1);
 		}
 	}

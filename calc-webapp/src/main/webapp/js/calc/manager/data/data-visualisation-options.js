@@ -39,7 +39,6 @@ DataVisualisationOptions.prototype.init = function() {
 	this.container.on( "show.bs.collapse" , function(e) {
 		e.stopPropagation();
 		$this.container.hide();
-//		$this.container.css( {"height":"90%"} );
 	});
 	this.container.on( "shown.bs.collapse" , function(e) {
 		e.stopPropagation();
@@ -94,23 +93,18 @@ DataVisualisationOptions.prototype.init = function() {
 };
 
 DataVisualisationOptions.prototype.addVariableOptions = function( entity ) {
-//	var $this = this;
-//	WorkspaceManager.getInstance().activeWorkspace(function(ws){
-		
-		while( entity ) {
-			var header = $( '<div class="width100 float-left entity-header"></div>' );
-			header.html( entity.name );
+	while( entity ) {
+		var header = $( '<div class="width100 float-left entity-header"></div>' );
+		header.html( entity.name );
 
-			this.quantities.append( header );
-			this.categories.append( header.clone() );
-			
-			this.addVariableOptionButtons( entity.quantitativeVariables , this.quantities );
-			this.addVariableOptionButtons( entity.categoricalVariables , this.categories );
-			
-			entity = entity.parent();
-		}
+		this.quantities.append( header );
+		this.categories.append( header.clone() );
 		
-//	});
+		this.addVariableOptionButtons( entity.quantitativeVariables , this.quantities );
+		this.addVariableOptionButtons( entity.categoricalVariables , this.categories );
+		
+		entity = entity.parent();
+	}
 };
 
 DataVisualisationOptions.prototype.addVariableOptionButtons = function( variables , uiContainer ) {
@@ -133,11 +127,10 @@ DataVisualisationOptions.prototype.addVariableOptionButtons = function( variable
 		var optBtn = new OptionButton( btn );
 		var selectFunction =  function( v , optBtn ) {
 			var valid = true;
-			if( $this.maxVariables ) {
-				if( $this.dataProvider.variables.length == $this.maxVariables ) {
-					UI.showError( "Max "+ $this.maxVariables +" variables are allowed", true );
-					optBtn.deselect();
-				}
+			if( $this.maxVariables &&  ( $this.dataProvider.variables.length == $this.maxVariables ) ) {
+				valid = false;
+				UI.showError( "Max "+ $this.maxVariables +" variables are allowed", true );
+				optBtn.deselect();
 			}
 			if( valid ){
 				$this.dataProvider.addVariable( v.name );
