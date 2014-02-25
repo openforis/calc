@@ -1,20 +1,17 @@
 package org.openforis.calc.persistence;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.StrSubstitutor;
+import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.log4j.Logger;
+import org.jooq.Record;
+import org.jooq.Record1;
+import org.jooq.Result;
+import org.jooq.Select;
+import org.jooq.impl.DSL;
+import org.openforis.calc.psql.Psql;
 
 /**
  * 
@@ -22,8 +19,6 @@ import org.apache.log4j.Logger;
  * 
  */
 public class DatabaseInitializer {
-
-	private static final String DB_INIT_SCRIPT_TEMPLATE = "org/openforis/calc/db/init_template.sql";
 
 	static Logger log = Logger.getLogger(DatabaseInitializer.class);
 
@@ -89,65 +84,74 @@ public class DatabaseInitializer {
 		}
 	}
 
-	/**
-	 * Initializes the PostgreSQL database by running the initialization script in the psql process.
-	 */
 	private void initPostgresDB() throws DatabaseInitializationException {
-		String connectionInfo = String.format("user=%s password=%s host=%s port=%s", adminUsername, adminPassword, host, port);
-
+		BasicDataSource dataSource = null;
 		try {
-			File initScriptFile = createInitScriptFile();
+			//connect to postgres database
+			String postgresDBUrl = String.format("jdbc:postgresql://%s:%s/postgres", host, port);
+			dataSource = createDataSource(driver, adminUsername, adminPassword, postgresDBUrl);
 			
-			String filePath = initScriptFile.getAbsolutePath();
-			
-			log.info("Trying to execute init script in: " + filePath);
-			
-			ProcessBuilder pb = new ProcessBuilder("psql", connectionInfo, "-q", "-v", "ON_ERROR_STOP=1", "-f", filePath);
-			
-			Process p = pb.start();
-			p.waitFor();
-			InputStream errorStream = p.getErrorStream();
-			StringWriter writer = new StringWriter();
-			IOUtils.copy(errorStream, writer, "UTF-8");
-			String error = writer.toString();
-
-			if (StringUtils.isBlank(error)) {
-				log.info(String.format("Database created successfully: host=%s port=%s url=%s", host, port, url));
-			} else {
-				throw new DatabaseInitializationException(error);
+			Psql psql = new Psql(dataSource);
+			if ( ! isRoleDefined(psql, username) ) {
+				//create role
+				String createRoleSql = String.format("CREATE USER \"%s\" WITH PASSWORD '%s'", username, password);
+				psql.execute(createRoleSql);
 			}
-		} catch (IOException e) {
-			throw new DatabaseInitializationException(e);
-		} catch (InterruptedException e) {
-			throw new DatabaseInitializationException(e);
+			//create database
+			String createDatabaseSql = String.format("CREATE DATABASE \"%s\" ENCODING 'UTF8' OWNER \"%s\"", db, username);
+			psql.execute(createDatabaseSql);
+		} catch ( Exception e ) {
+			throw new RuntimeException("Error initializing database", e);
+		} finally {
+			close(dataSource);
+		}
+		createSchema();
+	}
+
+	private BasicDataSource createDataSource(String driver, String username, String password, String url) {
+		BasicDataSource dataSource;
+		dataSource = new BasicDataSource();
+		dataSource.setDriverClassName(driver);
+		dataSource.setUsername(username);
+		dataSource.setPassword(password);
+		dataSource.setUrl(url);
+		return dataSource;
+	}
+
+	protected boolean isRoleDefined(Psql psql, String roleName) {
+		Select<Record1<Integer>> select = psql
+			.select(DSL.count())
+			.from("pg_roles")
+			.where(String.format("rolname='%s'", roleName));
+		Result<Record1<Integer>> result = select.fetch();
+		if ( result != null && ! result.isEmpty() ) {
+			Record record = result.get(0);
+			Integer count = (Integer) record.getValue(0);
+			return count > 0;
+		} else {
+			return false;
+		}
+	}
+	
+	private void createSchema() {
+		BasicDataSource dataSource = null;
+		try {
+			dataSource = createDataSource(driver, username, password, url);
+			
+			Psql psql = new Psql(dataSource);
+			String createSchemaSql = String.format("CREATE SCHEMA \"calc\" AUTHORIZATION \"%s\"", username);
+			psql.execute(createSchemaSql);
+		} finally {
+			close(dataSource);
 		}
 	}
 
-	private File createInitScriptFile() throws IOException {
-		String initScriptTemplate = getInitScriptTemplate();
-		
-		//substitute parameters in template
-		Map<String, String> parameters = new HashMap<String, String>();
-		parameters.put("calc.jdbc.db", db);
-		parameters.put("calc.jdbc.username", username);
-		parameters.put("calc.jdbc.password", password);
-		
-		StrSubstitutor sub = new StrSubstitutor(parameters, "%{", "}");
-		String initScript = sub.replace(initScriptTemplate);
-		
-		log.info("Trying to execute db init script:\n" + initScript);
-		
-		//create temp file with init script
-		File initScriptFile = File.createTempFile("openforis_calc", "db_init_script.sql");
-		FileUtils.writeStringToFile(initScriptFile, initScript, "UTF-8");
-		return initScriptFile;
-	}
-
-	private String getInitScriptTemplate() throws IOException {
-		InputStream is = this.getClass().getClassLoader().getResourceAsStream(DB_INIT_SCRIPT_TEMPLATE);
-		StringWriter writer = new StringWriter();
-		IOUtils.copy(is, writer, "UTF-8");
-		return writer.toString();
+	private void close(BasicDataSource dataSource) {
+		try {
+			dataSource.close();
+		} catch (SQLException e) {
+			log.warn("Error closing connection to postgres database", e);
+		}
 	}
 
 	public static class DatabaseInitializationException extends Exception {

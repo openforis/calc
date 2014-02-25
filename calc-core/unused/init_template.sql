@@ -4,5 +4,4 @@ CREATE DATABASE "%{calc.jdbc.db}" ENCODING 'UTF8' OWNER "%{calc.jdbc.username}";
 
 \connect "%{calc.jdbc.db}";
 
-CREATE SCHEMA "calc";
-ALTER SCHEMA "calc" OWNER TO "%{calc.jdbc.username}";
+CREATE SCHEMA "calc" AUTHORIZATION "%{calc.jdbc.username}";
