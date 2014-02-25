@@ -11,6 +11,7 @@ import org.jooq.Record1;
 import org.jooq.Result;
 import org.jooq.Select;
 import org.jooq.impl.DSL;
+import org.jooq.impl.SchemaImpl;
 import org.openforis.calc.psql.Psql;
 
 /**
@@ -19,6 +20,8 @@ import org.openforis.calc.psql.Psql;
  * 
  */
 public class DatabaseInitializer {
+
+	private static final String POSTGRESQL_DRIVER_NAME = "org.postgresql.Driver";
 
 	static Logger log = Logger.getLogger(DatabaseInitializer.class);
 
@@ -77,14 +80,17 @@ public class DatabaseInitializer {
 	 * Initializes the database by running the initialization sql script in the proper process
 	 */
 	public void initDB() throws DatabaseInitializationException {
-		if ("org.postgresql.Driver".equals(driver)) {
+		if (POSTGRESQL_DRIVER_NAME.equals(driver)) {
 			initPostgresDB();
 		} else {
 			throw new IllegalArgumentException("Unsupported database driver: " + driver);
 		}
+		//create schema using "normal" database user
+		createSchema();
 	}
 
 	private void initPostgresDB() throws DatabaseInitializationException {
+		//create database using "admin" user
 		BasicDataSource dataSource = null;
 		try {
 			//connect to postgres database
@@ -104,8 +110,23 @@ public class DatabaseInitializer {
 			throw new RuntimeException("Error initializing database", e);
 		} finally {
 			close(dataSource);
+			dataSource = null;
 		}
-		createSchema();
+	}
+
+	private void createSchema() {
+		BasicDataSource dataSource = null;
+		try {
+			dataSource = createDataSource(driver, username, password, url);
+			
+			Psql psql = new Psql(dataSource);
+			psql
+				.createSchema(new SchemaImpl("calc"))
+				.authorization(username)
+				.execute();
+		} finally {
+			close(dataSource);
+		}
 	}
 
 	private BasicDataSource createDataSource(String driver, String username, String password, String url) {
@@ -133,19 +154,6 @@ public class DatabaseInitializer {
 		}
 	}
 	
-	private void createSchema() {
-		BasicDataSource dataSource = null;
-		try {
-			dataSource = createDataSource(driver, username, password, url);
-			
-			Psql psql = new Psql(dataSource);
-			String createSchemaSql = String.format("CREATE SCHEMA \"calc\" AUTHORIZATION \"%s\"", username);
-			psql.execute(createSchemaSql);
-		} finally {
-			close(dataSource);
-		}
-	}
-
 	private void close(BasicDataSource dataSource) {
 		try {
 			dataSource.close();

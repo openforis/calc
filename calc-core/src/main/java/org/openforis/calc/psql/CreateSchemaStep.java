@@ -13,4 +13,19 @@ public class CreateSchemaStep extends ExecutablePsqlPart {
 		append("create schema ");
 		append(schema);
 	}
+	
+	public AuthorizationStep authorization(String user) {
+		return new AuthorizationStep(user);
+	}
+	
+	public class AuthorizationStep extends ExecutablePsqlPart {
+
+		public AuthorizationStep(String user) {
+			super(CreateSchemaStep.this);
+			append("AUTHORIZATION ");
+			append("\"");
+			append(user);
+			append("\"");
+		}
+	}
 }
