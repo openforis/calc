@@ -67,7 +67,7 @@ public class JobController {
 	}
 
 	/**
-	 * Execute defualt processing chain
+	 * Execute default processing chain
 	 * @return
 	 * @throws InvalidProcessingChainException
 	 * @throws WorkspaceLockedException

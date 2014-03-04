@@ -279,7 +279,7 @@ public class PublishRolapSchemaTask extends Task {
 	
 	@Override
 	public String getName() {
-		return "Publish rolap schema to saiku repository";
+		return "Publish schema to saiku repository";
 	}
 	
 }

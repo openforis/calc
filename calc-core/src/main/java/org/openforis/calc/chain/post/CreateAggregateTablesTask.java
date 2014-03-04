@@ -194,27 +194,20 @@ public final class CreateAggregateTablesTask extends Task {
 		SelectQuery<?> select = new Psql().selectQuery(dataTable);
 		select.addSelect(dataTable.getIdField());
 		select.addSelect(dataTable.getParentIdField());
-		// select.addSelect(dataTable.getAoiIdFields());
+		
+		// add dimensions to select
 		for (Field<Integer> field : factTable.getDimensionIdFields()) {
-			// todo add dim fields to entitydataview
 			select.addSelect(dataTable.field(field));
 		}
 
-		// select measure
+		// add quantities to select
 		List<QuantitativeVariable> vars = factTable.getEntity().getQuantitativeVariables();
 		for (QuantitativeVariable var : vars) {
 			Field<BigDecimal> fld = dataTable.getQuantityField(var);
 			select.addSelect(fld);
-
-			// for (VariableAggregate agg : var.getAggregates()) {
-			// Field<BigDecimal> measureFld = factTable.getVariableAggregateField(agg);
-			// Field<BigDecimal> valueFld = dataTable.getQuantityField(var);
-			// select.addSelect( valueFld.as(measureFld.getName()) );
-			// // }
-			// }
 		}
 
-		// add plot area
+		// add plot area to select
 		Field<BigDecimal> plotAreaField = factTable.getPlotAreaField();
 		if (plotAreaField != null) {
 			select.addSelect( dataTable.field(plotAreaField) );
@@ -229,25 +222,46 @@ public final class CreateAggregateTablesTask extends Task {
 			select.addJoin(aoiTable, joinField.eq(aoiTable.getIdField()) );
 		}
 		
-		// add stratum column if sampling design is stratified
-		if( getWorkspace().hasStratifiedSamplingDesign() ){
-			Field<Integer> stratumField = null;
-			String stratumColumn = getWorkspace().getSamplingDesign().getStratumJoin().getColumn();
+		// add stratum and cluster columns to fact table based on the sampling design
+		if( getWorkspace().getSamplingDesign().getTwoPhases() ){
 			
-			if( getWorkspace().getSamplingDesign().getTwoPhases() ){
-				
-				DynamicTable<Record> phase1Table = factTable.getDataSchema().getPhase1Table();
-				TableJoin phase1Join = getWorkspace().getSamplingDesign().getPhase1Join();
-				Condition conditions = phase1Table.getJoinConditions( dataTable, phase1Join );
-				select.addJoin(phase1Table, conditions);
-				
-				stratumField = phase1Table.getIntegerField( stratumColumn ).cast(Integer.class).as( factTable.getStratumField().getName() ) ;
-			} else {
-				stratumField = dataTable.field( stratumColumn ).cast(Integer.class).as( factTable.getStratumField().getName() ) ;
+			// add join in case of two phase sampling
+			DynamicTable<Record> phase1Table = factTable.getDataSchema().getPhase1Table();
+			TableJoin phase1Join = getWorkspace().getSamplingDesign().getPhase1Join();
+			Condition conditions = phase1Table.getJoinConditions( dataTable, phase1Join );
+			select.addJoin(phase1Table, conditions);
+			
+			// add stratum column
+			if( getWorkspace().hasStratifiedSamplingDesign() ) {
+				String stratumColumn = getWorkspace().getSamplingDesign().getStratumJoin().getColumn();
+				Field<Integer> stratumField = phase1Table.getIntegerField( stratumColumn ).cast(Integer.class).as( factTable.getStratumField().getName() ) ;
+				select.addSelect( stratumField );
+			}
+			// add cluster column
+			if( getWorkspace().hasClusterSamplingDesign() ) {
+				String clusterColumn = getWorkspace().getSamplingDesign().getClusterColumn().getColumn();
+				Field<String> clusterField = phase1Table.getVarcharField( clusterColumn ).as( factTable.getClusterField().getName() ) ;
+				select.addSelect( clusterField );
+			}
+		} else {
+			// one phase sampling
+			
+			if( getWorkspace().hasStratifiedSamplingDesign() ) {
+				// add stratum column
+				String stratumColumn = getWorkspace().getSamplingDesign().getStratumJoin().getColumn();
+				Field<Integer> stratumField = dataTable.field( stratumColumn ).cast(Integer.class).as( factTable.getStratumField().getName() ) ;
+				select.addSelect( stratumField );
 			}
 			
-			select.addSelect( stratumField );
+			// add cluster column
+			if( getWorkspace().hasClusterSamplingDesign() ) {
+				String clusterColumn = getWorkspace().getSamplingDesign().getClusterColumn().getColumn();
+				Field<String> clusterField = dataTable.field( clusterColumn ).cast(String.class).as( factTable.getClusterField().getName() ) ;
+				select.addSelect( clusterField );
+			}
 		}
+			
+
 		
 		
 		// drop table

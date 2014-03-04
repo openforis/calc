@@ -13,6 +13,7 @@ import java.util.Map;
 import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.TableField;
+import org.jooq.impl.SQLDataType;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.AoiLevel;
@@ -37,7 +38,8 @@ public class FactTable extends DataTable {
 	private Field<BigDecimal> plotAreaField;
 	private InputSchema schema;
 	private Map<QuantitativeVariable, Field<BigDecimal>> measureFields;
-
+	private Field<String> clusterField; 
+	
 	FactTable(Entity entity, InputSchema schema) {
 		this(entity, getName(entity), schema);
 	}
@@ -68,6 +70,12 @@ public class FactTable extends DataTable {
 		createMeasureFields();
 		createParentIdField();
 		createAggregateTables();
+		createClusterField();
+	}
+
+	private void createClusterField() {
+		this.clusterField = createField( "_cluster", SQLDataType.VARCHAR, this );
+		
 	}
 
 	protected void createMeasureFields() {
@@ -127,6 +135,10 @@ public class FactTable extends DataTable {
 		return plotAreaField;
 	}
 
+	public Field<String> getClusterField() {
+		return clusterField;
+	}
+	
 	public EntityDataView getEntityView() {
 		return entityView;
 	}
@@ -145,5 +157,6 @@ public class FactTable extends DataTable {
 	public InputSchema getDataSchema() {
 		return schema;
 	}
+	
 
 }

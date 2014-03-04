@@ -389,4 +389,8 @@ public class Workspace extends UserObject {
 		return this.hasSamplingDesign() && getSamplingDesign().getStratified();
 	}
 
+	public boolean hasClusterSamplingDesign() {
+		return this.hasSamplingDesign() && getSamplingDesign().getCluster();
+	}
+
 }

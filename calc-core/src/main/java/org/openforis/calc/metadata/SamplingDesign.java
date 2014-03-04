@@ -164,6 +164,11 @@ public class SamplingDesign extends Identifiable {
 	public void setClusterColumnSettings(ParameterMap clusterColumnSettings) {
 		this.clusterColumnSettings = clusterColumnSettings;
 	}
+	
+	@JsonIgnore
+	public ColumnJoin getClusterColumn() {
+		return new ColumnJoin( clusterColumnSettings );
+	}
 
 	public ParameterMap getAoiJoinSettings() {
 		return aoiJoinSettings;
