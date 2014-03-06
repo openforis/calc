@@ -44,7 +44,8 @@ Mac Os X
 		sudo R
 		install.packages("RPostgreSQL")
 	 	install.packages("rJava")
-	
+		install.packages("sqldf")
+		
 	- set R_HOME environment variable
 		1. add to the file /etc/launchd.con (sudo vi /etc/launchd.conf) the following line:
 			setenv R_HOME /Library/Frameworks/R.framework/Resources
@@ -83,7 +84,7 @@ UBUNTU
 		
 		sudo R
 			install.packages("RPostgreSQL")
-	
+			install.packages("sqldf")
 	
 - Install rJava
 	 	install.packages("rJava")
@@ -148,7 +149,8 @@ Windows
 				
 				install.packages("RPostgreSQL")
 				install.packages("rJava")
-		
+				install.packages("sqldf")
+				
 	- Check that rJava is properly installed.
 		Inside R terminal type:
 			

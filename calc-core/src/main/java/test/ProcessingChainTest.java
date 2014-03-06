@@ -63,9 +63,10 @@ extends AbstractTransactionalJUnit4SpringContextTests {
 		}
 	}
 	
-//	@Test
+	@Test
 	public void testPreporcessingChain() throws WorkspaceLockedException, InvalidProcessingChainException {
 		Workspace workspace = workspaceService.getActiveWorkspace();
+		workspaceService.resetResults(workspace);
 		Job job = taskManager.createPreProcessingJob(workspace);
 		
 		taskManager.startJob(job);
