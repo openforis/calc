@@ -13,7 +13,7 @@ library("sqldf");
 # driver is SQLLite in order to read from dataframe , otherwise it uses PostgreSQL
 # https://code.google.com/p/sqldf/#Troubleshooting
 options(
-  gsubfn.engine = "R" , 
+  #gsubfn.engine = "R" , 
   sqldf.driver = "SQLite"
 );
 
@@ -25,16 +25,19 @@ dbSendQuery(conn=connection, statement='set search_path to "naforma1", "public"'
 # === Input parameters (must be passed by CALC)
 workspaceId <- 1;
 aoiId <- 821;
-entityId <- 13;
-categories <- c( "land_use_code_id" );
-quantity = "volume";
+
+category <- "vegetation_type_code_id";
+classes <- c(957,958,959,960,961,962,963)
+
+# categories <- c( "land_use_code_id" );
+#entityId <- 13;
+# quantity = "volume";
 
 # === Read data 
-# == TODO create unique combinations of strata/categories (use merge function)
 
 # strata
-select <- "SELECT s.id , s.stratum_no AS stratum, s.caption, e.area 
-            FROM
+select <- "select s.id , s.stratum_no as stratum, s.caption, e.area 
+            from
               calc.stratum s
             join
               naforma1._level_1_expf    e
@@ -49,7 +52,13 @@ aoi <- dbGetQuery( conn=connection , statement=select ) ;
 
 # plots in area of interest
 select <-  'select _stratum as stratum , _cluster as cluster , weight';
-select <- paste( select , categories , sep = " , " );
+select <- paste( select , "case 
+                              when vegetation_type_code_id in(957,958,959,960,961,962,963) 
+                                then 1
+                              else 
+                                0
+                            end as class   " , 
+                 sep = " , " );
 select <- paste( select , "from _plot_fact p join naforma1._plot_aoi a on p._plot_id = a.id" , sep = " " );
 select <- paste( select , "where a._administrative_unit_level_1_id =" , sep = " " );
 select <- paste( select , aoiId , sep = " " );
@@ -59,7 +68,8 @@ plots <- dbGetQuery( conn=connection , statement = select );
 clusters <- sqldf( "select distinct 
                       stratum ,  
                       cluster ,
-                      sum(weight) as noPlots 
+                      sum(weight) as noPlots ,
+                      sum(class * weight) as noPlotsInClass
                    from 
                     plots
                    group by
@@ -69,11 +79,12 @@ clusters <- sqldf( "select distinct
 # add no of plots to strata
 strata <- sqldf( "select 
                       s.*, 
-                      p.noPlots 
+                      p.noPlots,
+                      p.noPlotsInClass
                   from 
                     strata s 
                   left outer join 
-                    (select stratum,  sum(weight) as noPlots from plots group by stratum) as p
+                    (select stratum,  sum(weight) as noPlots, sum(class * weight) as noPlotsInClass from plots group by stratum) as p
                   on 
                     p.stratum = s.stratum");
 
@@ -87,77 +98,34 @@ strata <- sqldf( "select
                     (select stratum, count(*) as noClusters from clusters group by stratum) as c
                   on 
                     c.stratum = s.stratum");
+# == (1)
+strata$propInClass <- strata$noPlotsInClass / strata$noPlots;
+
+# == (2)
+strata$areaInClass <- strata$propInClass * strata$area;
+
+# == (3)
+clusters <- sqldf("select c.*, s.propInClass 
+                  from clusters c
+                  join strata s
+                  on s.stratum = c.stratum");
+#clusters$propInClass <-  (clusters$noPlotsInClass / clusters$noPlots);
+clusters$x <- (clusters$noPlotsInClass - clusters$propInClass * clusters$noPlots ) ^ 2;
+
+strata <- sqldf( "select 
+                      s.*, 
+                      sum(c.x) as x 
+                   from strata s
+                   left outer join clusters c
+                   on s.stratum = c.stratum
+                  group by s.stratum");
+strata$var <- strata$noClusters / (strata$noClusters -1 ) * strata$x / strata$noPlots
+# == (4)
+strata$areaVar <- strata$area^2 * strata$var;
+round( 100 * sqrt( strata$var ) / strata$areaInClass , 6)
 
 
-# create unique combinations of each category/strata/cluster 
-select <- "select stratum , cluster, sum(weight) as noPlots";
-select <- paste( select , categories , sep = " , " );
-select <- paste( select , "from plots group by stratum, cluster" , sep = "  " );
-select <- paste( select , categories , sep = " , " );
-strataCategory <- sqldf( select );
 
-# add total number of plots per cluster
-strataCategory <- sqldf("select s.*, c.noPlots as noPlotsInCluster 
-                          from 
-                            strataCategory as s
-                          join 
-                            clusters as c
-                          on c.cluster = s.cluster");
 
-# c.noPlots = Pi(f)
-# c.prop = (1)
-# c.area = (2)
-# == (1) AND (2)
-strataCategory <- sqldf( "select 
-                            c.* , 
-                            c.noPlots / s.noPlots as prop ,
-                            s.area * (c.noPlots / s.noPlots) as area
-                         from 
-                            strataCategory c 
-                         join 
-                            strata s 
-                         on c.stratum = s.stratum" );
-
-#== sql lite doesn't support neither ^ operator nor pow() function
-select <- "select             
-            stratum , 
-            sum( area ) as area ,
-            sum( (noPlots - prop *  noPlotsInCluster) * (noPlots - prop *  noPlotsInCluster) ) as x";
-select <- paste( select, categories , sep = " , " );
-select <- paste( select,  
-                "from  
-                    strataCategory 
-                 group by             
-                    stratum"
-                , sep = " ");
-select <- paste( select, categories , sep = " , " );
-tmp <- sqldf( select );
-
-#== (3)
-#select <- "select s.*,  1/cast(s.noPlots as real) , s.noClusters, s.noClusters - 1, ( s.noClusters / cast(s.noClusters-1 as real) ), t.x";
-select <- "select s.stratum , t.area";
-for( c in categories ) {
-  select <- paste( select , " ,  t." , c , sep = "");
-}
-select <- paste( select , "1/cast(s.noPlots as real) * ( s.noClusters / cast(s.noClusters-1 as real) ) * t.x as var" , sep = " , " );
-select <- paste( select , "from 
-                            tmp t
-                          join strata s
-                            on t.stratum = s.stratum
-                          ");  
-stratumVariance <- sqldf( select );
-
-# === (4)
-select <- "select v.stratum , v.area";
-select <- paste( select , categories , sep =" , ");
-select <- paste( select , " , ( s.area * s.area ) * v.var as var                  
-                            from 
-                              stratumVariance v
-                           join strata s
-                            on v.stratum = s.stratum" ,
-                sep = " ");
-
-areaVariance <- sqldf( select );
-( sqrt( areaVariance$var) * 100 ) / areaVariance$area
 # === Close db connection
 dbDisconnect(connection);
