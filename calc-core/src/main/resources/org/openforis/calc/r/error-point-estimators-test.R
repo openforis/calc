@@ -84,39 +84,10 @@ data <- dbGetQuery(conn=connection, statement=select);
 data <- sqldf( "select d.*, p.weight from data d join plots p on d.plot_id = p.plot_id" );
 
 
-results <- calcualteAreaVariance(plots=plots , strata=strata);
-strata <-sqldf( "select s.* , 
-                    r.areaInClass , 
-                    r.areaVar, 
-                    r.seArea 
-                  from 
-                    strata s 
-                  join 
-                    results as r 
-                  on 
-                    r.stratum = s.stratum" )
-
-results <- calculateQuantityVariance(data=data , plots=plots , strata=strata);
-strata <-sqldf( "select 
-                    s.* , 
-                    r.varMeanQuantity , 
-                    r.varTotalQuantity , 
-                    r.totalQuantity ,
-                    r.seMeanQuantity,
-                    r.seTotalQuantity
-                  from 
-                    strata s 
-                  join 
-                    results as r 
-                  on 
-                    r.stratum = s.stratum" );
 
 
-#== error
-propInClass <- sum(strata$totalQuantity)/sum(strata$areaInClass);
-# == (12)
-varMeanQuantity <- ( sum( strata$varTotalQuantity ) - propInClass^2 * sum(strata$areaVar) ) / sum( strata$areaInClass ) ^ 2 ;
-sqrt( varMeanQuantity )
+areaError <- calculateAreaError( plots=plots , strata=strata );
+qtyError <- calculateQuantityError( data=data , plots=plots , strata=strata );
 
 # === Close db connection
 dbDisconnect(connection);

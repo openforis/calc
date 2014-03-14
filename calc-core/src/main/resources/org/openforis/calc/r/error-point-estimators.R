@@ -26,7 +26,7 @@ getClusters <- function( data ) {
 };
 
 # ====
-# add no plots and clusters to all strata 
+# add no. plots and no. clusters to all strata 
 # ====
 addStratumCounts <- function( strata , clusters , plots ) {
   # add no of plots to strata
@@ -54,7 +54,7 @@ addStratumCounts <- function( strata , clusters , plots ) {
   return ( strata );
 };
 
-calcualteAreaVariance <- function( plots , strata ){
+calcualteStratumAreaVariances <- function( plots , strata ){
   clusters <- getClusters( plots );
   strata <- addStratumCounts( strata , clusters , plots );
   
@@ -89,8 +89,33 @@ calcualteAreaVariance <- function( plots , strata ){
   return (strata);
 };
 
+calculateAreaError <- function(  plots , strata  ) {  
+  results <- calcualteStratumAreaVariances(plots=plots , strata=strata);
+  strata <-sqldf( "select s.* , 
+                    r.areaInClass , 
+                    r.areaVar, 
+                    r.seArea 
+                  from 
+                    strata s 
+                  join 
+                    results as r 
+                  on 
+                    r.stratum = s.stratum" );
+  
+  
+  
+  errors <- data.frame( matrix(nrow=1, ncol=3) );
+  names(errors) <- c( 'variance' , 'absolute' , 'relative' );
+  
+  errors$variance <- sum( strata$areaVar );
+  errors$absolute <- sqrt( errors$variance );
+  errors$relative <- 100 * sqrt( errors$absolute ) / sum( strata$areaInClass );
+  
+  return ( errors );
+};
 
-calculateQuantityVariance <- function( data , plots , strata ) {  
+
+calculateStratumQuantityVariances <- function( data , plots , strata ) {  
   clusters <- getClusters( data );  
   strata <- addStratumCounts( strata , clusters , plots );
   
@@ -130,4 +155,51 @@ calculateQuantityVariance <- function( data , plots , strata ) {
   strata$seTotalQuantity <- sqrt( strata$seMeanQuantity^2 + strata$seArea^2 );
   
   return (strata);
+};
+
+
+
+calculateQuantityError <- function( data , plots , strata ) {  
+    
+  results <- calcualteStratumAreaVariances(plots=plots , strata=strata);
+  strata <-sqldf( "select s.* , 
+                    r.areaInClass , 
+                    r.areaVar, 
+                    r.seArea 
+                  from 
+                    strata s 
+                  join 
+                    results as r 
+                  on 
+                    r.stratum = s.stratum" );
+  
+  results <- calculateStratumQuantityVariances(data=data , plots=plots , strata=strata);
+  strata <-sqldf( "select 
+                    s.* , 
+                    r.propInClass,
+                    r.varMeanQuantity , 
+                    r.varTotalQuantity , 
+                    r.totalQuantity ,
+                    r.seMeanQuantity,
+                    r.seTotalQuantity
+                  from 
+                    strata s 
+                  join 
+                    results as r 
+                  on 
+                    r.stratum = s.stratum" );
+  
+  errors <- data.frame( matrix(nrow=1, ncol=6) );
+  names(errors) <- c( 'variance_total' , 'variance_mean' ,'absolute_total' , 'relative_total' , 'absolute_mean' , 'relative_mean');
+  
+  errors$variance_total <- sum( strata$varTotalQuantity );
+  errors$variance_mean <- errors$variance_total / sum( strata$area ) ^ 2 ;
+  
+  errors$absolute_mean <- sqrt( errors$variance_mean );
+  errors$relative_mean <- 100 * errors$absolute_mean / sum( strata$propInClass);
+                                                            
+  errors$absolute_total <- sqrt( errors$variance_total );
+  errors$relative_total <- 100 * sqrt( errors$absolute_total ) / sum( strata$areaInClass );
+  
+  return ( errors );
 };
