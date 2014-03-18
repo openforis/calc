@@ -14,20 +14,20 @@ options(
 # === Open db connection
 driver <- dbDriver("PostgreSQL");
 connection <- dbConnect(driver, host="localhost", dbname="calc", user="calc", password="calc", port=5432);
-dbSendQuery(conn=connection, statement='set search_path to "naforma1", "public"');
+dbSendQuery(conn=connection, statement='set search_path to "laputa", "public"');
 
 # ============================== Read data =========================
 # ==== Input parameters (must be passed by CALC)
-workspaceId <- 1;
+workspaceId <- 3;
 #aoiId <- 1;
-aoiId <- 821;
+aoiId <- 1000;
 
 # ======= strata
 select <- "select s.id , s.stratum_no as stratum, s.caption, e.area 
       from
       calc.stratum s
       join
-      naforma1._level_1_expf    e
+      laputa._level_1_expf    e
       on e.stratum = s.stratum_no";
 select <- paste( select , "and e._administrative_unit_level_1_id =", aoiId , sep = " " );
 select <- paste( select , "and s.workspace_id = ", workspaceId , sep = " " );
@@ -46,7 +46,7 @@ select <- paste( select , "case
                                 0
                             end as class   " , 
                  sep = " , " );
-select <- paste( select , "from _plot_fact p join naforma1._plot_aoi a on p._plot_id = a.id" , sep = " " );
+select <- paste( select , "from _plot_fact p join laputa._plot_aoi a on p._plot_id = a.id" , sep = " " );
 select <- paste( select , "where a._administrative_unit_level_1_id =" , sep = " " );
 select <- paste( select , aoiId , sep = " " );
 plots <- dbGetQuery( conn=connection , statement = select );
@@ -67,7 +67,7 @@ select <- "SELECT distinct
 FROM
     _tree_fact t 
 JOIN
-    naforma1._plot_aoi a
+    laputa._plot_aoi a
 ON
     t._plot_id = a.id
 WHERE
