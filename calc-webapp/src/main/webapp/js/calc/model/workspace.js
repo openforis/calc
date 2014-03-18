@@ -35,8 +35,9 @@ Workspace.prototype.getEntityById = function(id) {
  */
 Workspace.prototype.getAggregableEntities = function(entityId) {
 	var entities = [];
-	$.each(this.entities, function(i, e){
-		if( e.parentId == entityId && e.isAggregable() ) {
+	$.each(this.entities, function(i, e) {
+		if( e.parentId == entityId  ) {
+			//&& e.isAggregable()
 			entities.push(e);
 		}
 	});

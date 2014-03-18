@@ -172,7 +172,8 @@ calculateQuantityError <- function( data , plots , strata ) {
                     results as r 
                   on 
                     r.stratum = s.stratum" );
-  
+  # add plot weight to data
+  data <- sqldf("select d.*, p.weight from data d inner join plots p on d.plot_id = p.plot_id");
   results <- calculateStratumQuantityVariances(data=data , plots=plots , strata=strata);
   strata <-sqldf( "select 
                     s.* , 
