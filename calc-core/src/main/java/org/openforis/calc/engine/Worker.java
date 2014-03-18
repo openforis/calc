@@ -62,7 +62,7 @@ public abstract class Worker {
 	}
 
 	public synchronized void run() {
-		if (!isPending()) {
+		if ( !isPending() ) {
 			throw new IllegalStateException("Already run");
 		}
 		try {
@@ -71,10 +71,11 @@ public abstract class Worker {
 			execute();
 			this.status = Status.COMPLETED;
 		} catch (Throwable t) {
+//			String stackTrace = ExceptionUtils.getStackTrace(t);
 			this.status = Status.FAILED;
 			this.lastException = t;
 			logger.warn("Task failed");
-			t.printStackTrace();
+			log().error("Error while executing task", t);
 		} finally {
 			this.endTime = System.currentTimeMillis();
 			notifyAll();
