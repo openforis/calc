@@ -105,7 +105,6 @@ public class Entity extends NamedUserObject {
 	@OneToMany(mappedBy = "entity", fetch = FetchType.EAGER, cascade = javax.persistence.CascadeType.ALL, orphanRemoval = true)
 	@OrderBy("sortOrder")
 	@Fetch(FetchMode.SUBSELECT) 
-	@Cascade(CascadeType.ALL)
 	private List<Variable<?>> variables = new ArrayList<Variable<?>>();
 
 	@JsonIgnore
@@ -349,6 +348,21 @@ public class Entity extends NamedUserObject {
 	
 	public List<Entity> getChildren() {
 		return Collections.unmodifiableList(children);
+	}
+	
+	public void addChild(Entity entity) {
+		if ( children == null ) {
+			children = new ArrayList<Entity>();
+		}
+		entity.setParent(this);
+		children.add(entity);
+	}
+	
+	public void removeChild(Entity entity) {
+		if ( CollectionUtils.isNotEmpty(children) ) {
+			entity.setParent(null);
+			children.remove(entity);
+		}
 	}
 
 	public boolean isUnitOfAnalysis() {

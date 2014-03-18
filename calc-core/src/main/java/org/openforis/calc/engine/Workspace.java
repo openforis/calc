@@ -66,8 +66,7 @@ public class Workspace extends UserObject {
 	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER, cascade = javax.persistence.CascadeType.ALL, orphanRemoval = true)
 	@OrderBy("name")
 	@Fetch(FetchMode.SUBSELECT)
-	@Cascade(CascadeType.ALL)
-	private List<Entity> entities;
+   	private List<Entity> entities;
 
 	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER)
 	@OrderBy("name")
@@ -280,8 +279,22 @@ public class Workspace extends UserObject {
 		if (CollectionUtils.isEmpty(this.entities) || CollectionUtils.isEmpty(entities)) {
 			return;
 		} else {
-			this.entities.removeAll(entities);
+			for (Entity entity : entities) {
+				removeEntity(entity);
+			}
 		}
+	}
+
+	/**
+	 * Removes the specified entity and all the dependencies to it
+	 */
+	public void removeEntity(Entity entity) {
+		Entity p = entity.getParent();
+		if ( p != null ) {
+			p.removeChild(entity);
+		}
+		this.entities.remove(entity);
+		//TODO remove descendants
 	}
 
 	public Collection<Entity> removeNotOverriddenEntities() {

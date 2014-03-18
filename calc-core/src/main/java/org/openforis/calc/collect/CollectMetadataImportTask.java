@@ -137,9 +137,22 @@ public class CollectMetadataImportTask extends Task {
 			Entity oldEntity = ws.getEntityByOriginalId(newEntity.getOriginalId());
 			if ( oldEntity == null ) {
 				ws.addEntity(newEntity);
+				
+				//replace parent with the one in the workspace having the same originalId
+				Entity newParent = newEntity.getParent();
+				if ( newParent != null ) {
+					Integer originalId = newParent.getOriginalId();
+					Entity storedParent = ws.getEntityByOriginalId(originalId);
+					if ( storedParent == null ) {
+						throw new IllegalArgumentException(String.format("Cannot find persisted parent with original id %d for entity %s", 
+								newParent.getOriginalId(), newEntity.getName()));
+					} else {
+						newEntity.setParent(storedParent);
+					}
+				}
 			}
 		}
-		
+
 		//save workspace
 		workspaceDao.save(ws);
 		
