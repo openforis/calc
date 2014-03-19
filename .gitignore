@@ -3,6 +3,7 @@ target
 !.gitignore
 dev.properties
 .Rproj.user
+*.Rproj
 *.vpp~[0-9]*
 *.vpp.working
 
