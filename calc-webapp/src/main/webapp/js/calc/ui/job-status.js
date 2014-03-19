@@ -55,6 +55,7 @@ JobStatus.prototype = (function() {
 			if( task.totalItems <= 0 ) {
 				switch(task.status) {
 					case "PENDING":
+						progressBar.reset();
 						break;
 					case "RUNNING":
 						progressBar.progressStriped();

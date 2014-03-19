@@ -154,11 +154,13 @@ public class CollectMetadataImportTask extends Task {
 		}
 
 		//save workspace
-		workspaceDao.save(ws);
+		ws = workspaceDao.save(ws);
 		
 		//TODO children entity ids not updated after save...check this
-		Workspace reloaded = workspaceDao.find(ws.getId());
-		ws.setEntities(reloaded.getEntities());
+//		Workspace reloaded = workspaceDao.find(ws.getId());
+//		ws.setEntities(reloaded.getEntities());
+		
+		( (CollectBackupImportJob)getJob() ).refreshWorkspace( ws );
 	}
 
 	private void applyChangesToEntity(Entity oldEntity, Entity newEntity) {

@@ -13,7 +13,7 @@ import org.openforis.calc.chain.InvalidProcessingChainException;
 import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.chain.pre.AssignAoiColumnsTask;
 import org.openforis.calc.chain.pre.CalculateExpansionFactorsTask;
-import org.openforis.calc.collect.CollectDataImportJob;
+import org.openforis.calc.collect.CollectBackupImportJob;
 import org.openforis.calc.module.ModuleRegistry;
 import org.openforis.calc.module.Operation;
 import org.openforis.calc.schema.Schemas;
@@ -115,7 +115,7 @@ public class TaskManager {
 	}
 	
 	public Job createCollectImportJob(Workspace workspace, CollectSurvey survey) {
-		Job job = new CollectDataImportJob(workspace, getDataSource(), survey);
+		Job job = new CollectBackupImportJob(workspace, getDataSource(), survey);
 		job.setSchemas( new Schemas(workspace) );
 		autowire(job);
 		return job;

@@ -60,6 +60,10 @@ ProgressBar.prototype = (function() {
 		this.progressBar.addClass("progress-bar");
 		this.progressBar.parent().removeClass();
 		this.progressBar.parent().addClass("progress");
+		this.progressBar.width("0%");
+		if( this.percentSection ){
+			this.percentSection.text("");
+		}
 	};
 	
 	// utility methos

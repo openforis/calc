@@ -43,8 +43,9 @@ public class Job extends Worker implements Iterable<Task> {
 	@Autowired
 	@JsonIgnore
 	R r;
-//	@JsonIgnore
-//	protected REnvironment rEnvironment;
+
+	// @JsonIgnore
+	// protected REnvironment rEnvironment;
 
 	protected Job(Workspace workspace, DataSource dataSource) {
 		this.currentTaskIndex = -1;
@@ -58,7 +59,7 @@ public class Job extends Worker implements Iterable<Task> {
 		this.debugMode = debugMode;
 	}
 
-	void setSchemas(Schemas schemas) {
+	protected void setSchemas(Schemas schemas) {
 		this.schemas = schemas;
 	}
 
@@ -72,9 +73,9 @@ public class Job extends Worker implements Iterable<Task> {
 	public void init() {
 		super.init();
 		log().debug("Initializing");
-		for (Worker task : tasks) {
-			task.init();
-		}
+		// for (Worker task : tasks) {
+		// task.init();
+		// }
 	}
 
 	@Override
@@ -102,6 +103,7 @@ public class Job extends Worker implements Iterable<Task> {
 		this.currentTaskIndex = -1;
 		for (Task task : tasks) {
 			this.currentTaskIndex += 1;
+			task.init();
 			task.run();
 			if (task.isFailed()) {
 				throw task.getLastException();
@@ -173,6 +175,10 @@ public class Job extends Worker implements Iterable<Task> {
 		return this.workspace;
 	}
 
+	protected void setWorkspace(Workspace workspace) {
+		this.workspace = workspace;
+	}
+
 	public boolean isDebugMode() {
 		return debugMode;
 	}
@@ -203,4 +209,5 @@ public class Job extends Worker implements Iterable<Task> {
 			throw new IllegalStateException("Unable to create new r environment", e);
 		}
 	}
+
 }
