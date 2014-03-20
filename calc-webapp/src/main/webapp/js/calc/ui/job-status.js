@@ -69,11 +69,22 @@ JobStatus.prototype = (function() {
 					default:
 				}
 			}
-//			else {
+			
 			if(task.status == "FAILED") {
 				progressBar.progressDanger();
+				
+				var div = $('<div></div>');
+				div.hide();
+				div.text( "Error in '" + task.name + "' \n " + task.errorStackTrace );
+				$this.log.append(div);
+				div.fadeIn(300);
+				// scroll to the end of the log section
+				setTimeout(function(){
+					$this.log.stop().animate({
+						scrollTop: div.offset().top
+					}, 0);
+				}, 1000);
 			}
-//			}
 
 		});
 		
@@ -169,7 +180,7 @@ JobStatus.prototype = (function() {
 		});
 		
 		// init r logger if calcjob
-		if( $this.job.rlogger ) {
+//		if( $this.job.rlogger ) {
 			// show log section
 			$this.logSection.show();
 //			if( $this.logBtn.hasClass("option-btn-selected") ){
@@ -186,7 +197,8 @@ JobStatus.prototype = (function() {
 				}	
 			};
 			$this.logBtn.on("click", clickFunction);
-		}
+//		}
+		
 		$(window).on("resize", $.proxy(adjustSize, $this));
 		
 		$.proxy(showLog, $this)();

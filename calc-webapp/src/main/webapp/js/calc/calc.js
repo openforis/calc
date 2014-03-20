@@ -50,14 +50,20 @@ $(document).ready(function() {
 	 */
 	Calc.error = function( jqXHR , textStatus , errorThrown ) {
 		var message = $( "<div class='width100'></div>" );
+		
 		if( jqXHR.status ) {
 			textStatus += " " + jqXHR.status; 
 		}
 		message.append( "<div class='width100'>" + textStatus + "</div>" );
-		message.append( "<div class='width100'>" + errorThrown + "</div>" );
+		
+		if( errorThrown ){
+			message.append( "<div class='width100'>" + errorThrown + "</div>" );
+		}
+		
 		if( jqXHR.responseText ) {
 			message.append( "<div class='width100'>" + jqXHR.responseText + "</div>" );
 		}
+		
 		UI.showError( message, false );
 	};
 	
