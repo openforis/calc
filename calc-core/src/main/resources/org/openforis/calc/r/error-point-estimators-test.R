@@ -18,9 +18,8 @@ dbSendQuery(conn=connection, statement='set search_path to "laputa", "public"');
 
 # ============================== Read data =========================
 # ==== Input parameters (must be passed by CALC)
-workspaceId <- 3;
-#aoiId <- 1;
-aoiId <- 1000;
+workspaceId <- dbGetQuery(conn=connection, statement="select w.id from calc.workspace w where w.name = 'laputa'")$id;
+aoiId <- dbGetQuery(conn=connection, statement="select a.id from calc.aoi a where lower(a.caption) = 'laputa'")$id;
 
 # ======= strata
 select <- "select s.id , s.stratum_no as stratum, s.caption, e.area 
@@ -81,13 +80,27 @@ select <- paste( select , "group by
                  sep = " " );
 data <- dbGetQuery(conn=connection, statement=select);
 #== add weight to data from join with plots
-data <- sqldf( "select d.*, p.weight from data d join plots p on d.plot_id = p.plot_id" );
+data <- sqldf("select d.*, p.weight from data d join plots p on d.plot_id = p.plot_id" );
 
 
-
+# write.csv( plots,file="~/Desktop/metla-data/calc/plots.csv",row.names=F )
+# write.csv( data , file="~/Desktop/metla-data/calc/trees.csv", row.names=F )
+# write.csv( strata , file="~/Desktop/metla-data/calc/strata.csv", row.names=F )
 
 areaError <- calculateAreaError( plots=plots , strata=strata );
 qtyError <- calculateQuantityError( data=data , plots=plots , strata=strata );
 
 # === Close db connection
 dbDisconnect(connection);
+
+
+test_bpdata <- read.table( file="~/Desktop/metla-data/test_bpdata.txt" );
+test_bpdata$plot_id <- test_bpdata$plotid;
+test_bpdata$stratum <- 1;
+test_bpdata$class <- ifelse( test_bpdata$cl==12 , 1, 0 );
+test_bpdata$weight <- 1;
+strata <- data.frame( stratum=c(1), area=c(234234) );
+
+calcualteStratumAreaVariances( plots=test_bpdata, strata=strata );
+
+calculateAreaError( plots=test_bpdata, strata=strata );

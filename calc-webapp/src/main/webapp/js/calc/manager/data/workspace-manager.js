@@ -18,7 +18,7 @@ WorkspaceManager.prototype = (function(){
 	var activeWorkspace = function(success) {
 		$this = this;
 		if($this._activeWorkspace) {
-			success($this._activeWorkspace);
+			success( $this._activeWorkspace );
 		} else {
 			UI.lock();
 			$.ajax({
@@ -32,6 +32,8 @@ WorkspaceManager.prototype = (function(){
 					success();
 				}
 				UI.unlock();
+			}).error( function() {
+				Calc.error.apply( this , arguments );
 			});
 		}
 	};
@@ -49,6 +51,8 @@ WorkspaceManager.prototype = (function(){
 				method:"POST"
 			}).done(function(response){
 				$.proxy(setActiveWorkspace, $this)( response, success );
+			}).error( function() {
+				Calc.error.apply( this , arguments );
 			});
 			
 		});
@@ -82,6 +86,8 @@ WorkspaceManager.prototype = (function(){
 				// replace old qty variable with the new one
 				variableToUpdate = entity.replaceVariable(variableToUpdate);
 				success(variableToUpdate);
+			}).error( function() {
+				Calc.error.apply( this , arguments );
 			});
 			
 		});
@@ -123,6 +129,8 @@ WorkspaceManager.prototype = (function(){
 					success(variableToUpdate);
 				});
 				
+			}).error( function() {
+				Calc.error.apply( this , arguments );
 			});
 		});
 	};
@@ -148,10 +156,8 @@ WorkspaceManager.prototype = (function(){
 				success(response);
 			}
 		})
-		.error(function(e) {
-			if ( error ) {
-				error(e);
-			}
+		.error( function() {
+			Calc.error.apply( this , arguments );
 		})
 		.complete(function() {
 			if ( complete ) {
@@ -177,6 +183,8 @@ WorkspaceManager.prototype = (function(){
 				var entity = new Entity(ws, response);
 				ws.updateEntity(entity);
 				success(ws);
+			}).error( function() {
+				Calc.error.apply( this , arguments );
 			});
 			
 		});
@@ -196,6 +204,8 @@ WorkspaceManager.prototype = (function(){
 			}).done(function(response) {
 				var locked = response.fields.locked;
 				complete(locked);
+			}).error( function() {
+				Calc.error.apply( this , arguments );
 			});
 			
 		});
@@ -218,6 +228,8 @@ WorkspaceManager.prototype = (function(){
 				ws.aoiHierarchies[0] = response;
 				complete(ws);
 				UI.unlock();
+			}).error( function() {
+				Calc.error.apply( this , arguments );
 			});
 			
 		});
@@ -240,6 +252,8 @@ WorkspaceManager.prototype = (function(){
 				ws.strata = strata;
 				complete(ws);
 				UI.unlock();
+			}).error( function() {
+				Calc.error.apply( this , arguments );
 			});
 			
 		});
@@ -260,6 +274,8 @@ WorkspaceManager.prototype = (function(){
 			}).done(function(response) {
 //				var ws = response;
 				$.proxy(setActiveWorkspace, $this)( response, success );
+			}).error( function() {
+				Calc.error.apply( this , arguments );
 			});
 			
 		});
@@ -285,6 +301,8 @@ WorkspaceManager.prototype = (function(){
 				ws.samplingDesign = sd;
 				success( ws );
 				UI.unlock();
+			}).error( function() {
+				Calc.error.apply( this , arguments );
 			});
 			
 		});

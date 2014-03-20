@@ -26,6 +26,8 @@ CalculationStepTestDataProvider.prototype = (function() {
 		}).done(function(response) {
 			var cnt = response.fields.count;
 			success(cnt);
+		}).error( function() {
+			Calc.error.apply( this , arguments );
 		});
 	};
 	
@@ -48,6 +50,8 @@ CalculationStepTestDataProvider.prototype = (function() {
 			data : data
 		}).done(function(response) {
 			success(response);
+		}).error( function() {
+			Calc.error.apply( this , arguments );
 		});
 	};
 	

@@ -41,8 +41,8 @@ Phase1Manager.prototype.init = function(){
 	    success: function ( response ) {
 	    	$this.showImport( response.fields.filepath, response.fields.headers );
 	    },
-	    error: function (e) {
-	    	alert('Error uploading file' + e);
+	    error: function () {
+			Calc.error.apply( this , arguments );
 	    },
 	    complete: function() {
 	    	// reset upload form

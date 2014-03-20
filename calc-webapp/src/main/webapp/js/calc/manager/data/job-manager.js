@@ -26,9 +26,8 @@ JobManager.prototype.executeCalculationStep = function(stepId, complete, hideOnC
 		$this.start(response, complete, hideOnComplete);
 //		$.proxy(start, $this)(response, complete, hideOnComplete);
 	})
-	.error(function(e){
-		console.log("error!!! on exec");
-		console.log(e);
+	.error( function() {
+		Calc.error.apply( this , arguments );
 	});
 };
 	
@@ -47,9 +46,8 @@ JobManager.prototype.executeCalculationStepTest = function(stepId, complete, var
 //		$.proxy(start, $this)(response, complete, hideOnComplete);
 		$this.start(response, complete, hideOnComplete);
 	})
-	.error(function(e){
-		console.log("error!!! on exec");
-		console.log(e);
+	.error( function() {
+		Calc.error.apply( this , arguments );
 	});
 };
 	
@@ -138,9 +136,8 @@ JobManager.prototype.updateJobStatus = function(complete, hideOnComplete) {
 		}
 		
 	})
-	.error(function(e) {
-		//TODO
-		console.log(e);
+	.error( function() {
+		Calc.error.apply( this , arguments );
 	});
 		
 };

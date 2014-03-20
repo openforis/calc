@@ -59,8 +59,8 @@ AoiManager.prototype.init = function(){
 	    	$this.uploadProgressBar.progressSuccess();
 	    	$this.showImport(response);
 	    },
-	    error: function (e) {
-	    	alert('Error uploading file' + e);
+	    error: function () {
+			Calc.error.apply( this , arguments );
 	    },
 	    complete: function() {
 	    	// reset upload form

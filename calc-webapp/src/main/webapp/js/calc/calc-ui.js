@@ -14,18 +14,18 @@ UI.messageContainerClosBtn.click(function(e){
 /**
  * Shows application error message
  */
-UI.showError = function(message, hide){
+UI.showError = function( message, hide ) {
 	// Add div if not defined
 	
 	UI.messageContainer.removeClass("alert-success");
-	UI.messageContainer.addClass("alert-danger");		
+	UI.messageContainer.addClass("alert-danger");
 	
-	UI.messageContainer.find("span").html( message );
+	UI.messageContainer.find("span").append( message );
 	
 	UI.messageContainer.fadeIn( 400 );
 	
 	// fade out after 2 seconds
-	if(hide == true) {
+	if( hide == true ) {
 		UI.messageContainer.delay( 2000 ).fadeOut( 800 );
 	}
 };	

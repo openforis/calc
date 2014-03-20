@@ -22,7 +22,10 @@ TableDataProvider.prototype.tableInfo = function(success) {
 		data : { "schema":this.schema, "table":this.table }
 	}).done( $.proxy( function(response) {
 		success(response);
-	} , this ) );
+	} , this ) )
+	.error( function() {
+		Calc.error.apply( this , arguments );
+	});
 };
 
 TableDataProvider.prototype.count = function(success) {
@@ -67,5 +70,7 @@ TableDataProvider.prototype.data = function(offset , numberOfItems , excludeNull
 		data : params
 	}).done(function(response) {
 		success(response);
+	}).error( function() {
+		Calc.error.apply( this , arguments );
 	});
 };

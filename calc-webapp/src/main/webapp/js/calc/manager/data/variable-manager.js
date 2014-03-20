@@ -23,11 +23,12 @@ VariableManager.prototype.getCategories = function( variableId , success ) {
 		}).done( function(response) {
 		    var categories = response.fields.categories;
 		    success( categories );
-		}); 
+		})
+		.error( function() {
+			Calc.error.apply( this , arguments );
+		});
 		
-	    } , this )
-	    
-    );
+    } , this ));
     
 };
 	

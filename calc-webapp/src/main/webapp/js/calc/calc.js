@@ -45,14 +45,29 @@ $(document).ready(function() {
 		Calc.homeDataManager.refresh();
 	};
 	
+	/**
+	 * Functions used to show rest call errors
+	 */
+	Calc.error = function( jqXHR , textStatus , errorThrown ) {
+		var message = $( "<div class='width100'></div>" );
+		if( jqXHR.status ) {
+			textStatus += " " + jqXHR.status; 
+		}
+		message.append( "<div class='width100'>" + textStatus + "</div>" );
+		message.append( "<div class='width100'>" + errorThrown + "</div>" );
+		if( jqXHR.responseText ) {
+			message.append( "<div class='width100'>" + jqXHR.responseText + "</div>" );
+		}
+		UI.showError( message, false );
+	};
 	
 	
-	positionFooter = function() {
+	var positionFooter = function() {
 		$(".footer-placeholder").css("height", Calc.footer.height());
 		Calc.footer.animate({top:$(window).height()- Calc.footer.height() }, 400);
 	};
 	
-	resizeContainer = function() {
+	var resizeContainer = function() {
 		var containerHeight = $(window).height() - Calc.footer.height();
 		$container.css({"height":containerHeight+"px"});
 	};
@@ -84,7 +99,7 @@ $(document).ready(function() {
 		}
 	};
 
-	Calc.footer.find(".links button").click(function(event){
+	Calc.footer.find(".links button").click( function(event){
 		event.preventDefault();
 
 		var target = $( $(this).attr("href") );
@@ -114,9 +129,8 @@ $(document).ready(function() {
 		
 		$.ajax({
 			url: sectionUrl,
-			dataType: "html"
-//				,
-//			data:{"r":Math.random()}
+			dataType: "html",
+			data:{ "t" : new Date().getTime() }
 		}).done(function( response ) {
 			var page = $( response );
 			
@@ -138,6 +152,8 @@ $(document).ready(function() {
 				//show the back home button
 				Calc.backHomeBtn.fadeIn(500);
 			},500);
+		}).error( function() {
+			Calc.error.apply( this , arguments );
 		});
 		
 		
