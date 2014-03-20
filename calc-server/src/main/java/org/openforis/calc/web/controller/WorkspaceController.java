@@ -58,8 +58,7 @@ public class WorkspaceController {
 		Workspace workspace = workspaceService.getActiveWorkspace();
 		Response response = new Response();
 		response.addField("workspace", workspace);
-//		return response;
-		throw new RuntimeException("errorororororo");
+		return response;
 	}
 
 	// TODO change rest call /active/job.json
