@@ -13,6 +13,7 @@ import org.openforis.calc.schema.AbstractTable;
  * @author S. Ricci
  *
  */
+@Deprecated
 public class CollectCodeListTable extends AbstractTable {
 
 	private static final long serialVersionUID = 1L;
