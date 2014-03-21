@@ -94,13 +94,13 @@ qtyError <- calculateQuantityError( data=data , plots=plots , strata=strata );
 dbDisconnect(connection);
 
 
-test_bpdata <- read.table( file="~/Desktop/metla-data/test_bpdata.txt" );
-test_bpdata$plot_id <- test_bpdata$plotid;
-test_bpdata$stratum <- 1;
-test_bpdata$class <- ifelse( test_bpdata$cl==12 , 1, 0 );
-test_bpdata$weight <- 1;
-strata <- data.frame( stratum=c(1), area=c(234234) );
-
-calcualteStratumAreaVariances( plots=test_bpdata, strata=strata );
-
-calculateAreaError( plots=test_bpdata, strata=strata );
+# test_bpdata <- read.table( file="~/Desktop/metla-data/test_bpdata.txt" );
+# test_bpdata$plot_id <- test_bpdata$plotid;
+# test_bpdata$stratum <- 1;
+# test_bpdata$class <- ifelse( test_bpdata$cl==12 , 1, 0 );
+# test_bpdata$weight <- 1;
+# strata <- data.frame( stratum=c(1), area=c(234234) );
+# 
+# calcualteStratumAreaVariances( plots=test_bpdata, strata=strata );
+# 
+# calculateAreaError( plots=test_bpdata, strata=strata );

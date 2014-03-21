@@ -45,12 +45,6 @@ ProgressBar.prototype = (function() {
 		// if completed add success class
 		if( completed == total ) {
 			this.progressSuccess();
-//			this.progressBar.removeClass();
-//			this.progressBar.addClass("progress-bar progress-bar-success");
-//			this.progressBar.width("100%");
-			if( this.percentSection ){
-				this.percentSection.text("100%");
-			}
 		}
 	};
 	
@@ -78,6 +72,10 @@ ProgressBar.prototype = (function() {
 		this.reset();
 		this.progressBar.addClass("progress-bar progress-bar-success");
 		this.progressBar.width("100%");
+		
+		if( this.percentSection ) {
+			this.percentSection.text( "100%" );
+		}
 	};
 	
 	var progressDanger = function() {
