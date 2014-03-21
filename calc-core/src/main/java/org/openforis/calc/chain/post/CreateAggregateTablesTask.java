@@ -10,6 +10,7 @@ import org.jooq.Record;
 import org.jooq.SelectQuery;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DynamicTable;
+import org.openforis.calc.engine.CalculationException;
 import org.openforis.calc.engine.Job;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.metadata.AoiLevel;
@@ -160,6 +161,9 @@ public final class CreateAggregateTablesTask extends Task {
 		
 		// for now quantity fields. check if it needs to be done for each variable aggregate
 		Field<BigDecimal> plotArea = ((FactTable)sourceTable) .getPlotAreaField();
+		if( plotArea == null ){
+			throw new CalculationException( "Plot area script has not been defined for entity " + sourceTable.getEntity().getName()+ ". Unable to aggregate this entity at plot level" );
+		}
 		for ( QuantitativeVariable var : sourceTable.getEntity().getOutputVariables() ) {
 			Field<BigDecimal> quantityField = sourceTable.getQuantityField(var);
 			

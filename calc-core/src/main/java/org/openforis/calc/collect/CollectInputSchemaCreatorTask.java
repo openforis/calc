@@ -33,7 +33,7 @@ public class CollectInputSchemaCreatorTask extends Task {
 	
 	@Override
 	public String getName() {
-		return "Create relational schema";
+		return "Create database";
 	}
 	
 	@Override

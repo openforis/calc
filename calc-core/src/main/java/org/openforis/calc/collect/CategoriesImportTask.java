@@ -61,7 +61,7 @@ public class CategoriesImportTask extends Task {
 	
 	@Override
 	public String getName() {
-		return "Import categories";
+		return "Import code lists";
 	}
 	
 	@Override
