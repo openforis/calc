@@ -19,8 +19,6 @@ import org.openforis.collect.persistence.xml.DataUnmarshaller.ParseRecordResult;
 import org.openforis.collect.relational.CollectRdbException;
 import org.openforis.collect.relational.DatabaseExporter;
 import org.openforis.collect.relational.model.RelationalSchema;
-import org.openforis.idm.metamodel.EntityDefinition;
-import org.openforis.idm.metamodel.Schema;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -47,18 +45,15 @@ public class CollectDataImportTask extends Task {
 	protected long countTotalItems() {
 		long totalRecords = 0;
 		CollectSurvey survey = ((CollectJob) getJob()).getSurvey();
-		Schema schema = survey.getSchema();
-		for (EntityDefinition rootEntityDefn : schema.getRootEntityDefinitions()) {
-			BackupDataExtractor recordExtractor = null;
-			try {
-				recordExtractor = new BackupDataExtractor(survey, dataFile, rootEntityDefn.getName(), step);
-				recordExtractor.init();
-				totalRecords += recordExtractor.countRecords();
-			} catch (Exception e) {
-				throw new RuntimeException("Error calculating total number of records", e);
-			} finally {
-				IOUtils.closeQuietly(recordExtractor);
-			}
+		BackupDataExtractor recordExtractor = null;
+		try {
+			recordExtractor = new BackupDataExtractor(survey, dataFile, step);
+			recordExtractor.init();
+			totalRecords += recordExtractor.countRecords();
+		} catch (Exception e) {
+			throw new RuntimeException("Error calculating total number of records", e);
+		} finally {
+			IOUtils.closeQuietly(recordExtractor);
 		}
 		return totalRecords;
 	}
@@ -80,27 +75,24 @@ public class CollectDataImportTask extends Task {
 		
 		int recordId = 1;
 		CollectSurvey survey = ((CollectJob) getJob()).getSurvey();
-		Schema schema = survey.getSchema();
-		for (EntityDefinition rootEntityDefn : schema.getRootEntityDefinitions()) {
-			BackupDataExtractor recordExtractor = null;
-			try {
-				recordExtractor = new BackupDataExtractor(survey, dataFile, rootEntityDefn.getName(), step);
-				recordExtractor.init();
-				ParseRecordResult parseRecordResult = recordExtractor.nextRecord();
-				while ( parseRecordResult != null ) {
-					incrementItemsProcessed();
-					if ( parseRecordResult.isSuccess()) {
-						CollectRecord record = parseRecordResult.getRecord();
-						record.setId(recordId++);
-						databaseExporter.insertData(targetSchema, record);
-					} else {
-						log().error("Error importing file: " + parseRecordResult.getMessage());
-					}
-					parseRecordResult = recordExtractor.nextRecord();
-				} 
-			} finally {
-				IOUtils.closeQuietly(recordExtractor);
-			}
+		BackupDataExtractor recordExtractor = null;
+		try {
+			recordExtractor = new BackupDataExtractor(survey, dataFile, step);
+			recordExtractor.init();
+			ParseRecordResult parseRecordResult = recordExtractor.nextRecord();
+			while ( parseRecordResult != null ) {
+				incrementItemsProcessed();
+				if ( parseRecordResult.isSuccess()) {
+					CollectRecord record = parseRecordResult.getRecord();
+					record.setId(recordId++);
+					databaseExporter.insertData(targetSchema, record);
+				} else {
+					log().error("Error importing file: " + parseRecordResult.getMessage());
+				}
+				parseRecordResult = recordExtractor.nextRecord();
+			} 
+		} finally {
+			IOUtils.closeQuietly(recordExtractor);
 		}
 	}
 
