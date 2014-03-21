@@ -365,13 +365,17 @@ public class CollectMetadataImportTask extends Task {
 			v.setScale(Scale.RATIO);
 			//TODO set unit...
 		} else if ( attrDefn instanceof TaxonAttributeDefinition &&
-				(columnNodeDefnNam.equals(TaxonAttributeDefinition.CODE_FIELD_NAME) ||
-					columnNodeDefnNam.equals(TaxonAttributeDefinition.SCIENTIFIC_NAME_FIELD_NAME) ) ) {
+				(columnNodeDefnNam.equals(TaxonAttributeDefinition.CODE_FIELD_NAME) ) ) {
 			v = new MultiwayVariable();
-			v.setScale(Scale.NOMINAL);
-			String name = column.getName();
-			v.setName(generateVariableName(entityName, name));
-			((MultiwayVariable) v).setDegenerateDimension(true);
+			MultiwayVariable multiwayVar = (MultiwayVariable) v;
+			multiwayVar.setScale(Scale.NOMINAL);
+			multiwayVar.setMultipleResponse(attrDefn.isMultiple());
+			
+			SpeciesCodeTable speciesCodeTable = new SpeciesCodeTable(((TaxonAttributeDefinition) attrDefn).getTaxonomy(), getInputSchema().getName());
+			multiwayVar.setDimensionTable( speciesCodeTable.getName() );
+			multiwayVar.setDimensionTableIdColumn(speciesCodeTable.getIdField().getName());
+			multiwayVar.setDimensionTableCodeColumn(speciesCodeTable.getCodeField().getName());
+			multiwayVar.setDimensionTableCaptionColumn(speciesCodeTable.getScientificNameField().getName());
 		} else if ( attrDefn instanceof TextAttributeDefinition && 
 				((TextAttributeDefinition) attrDefn).getType() == TextAttributeDefinition.Type.SHORT ) {
 			v = new TextVariable();
