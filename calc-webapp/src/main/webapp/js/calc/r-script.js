@@ -145,6 +145,9 @@ RScript.prototype = (function() {
 			if ( callback ) {
 				callback(response);
 			}
+		})
+		.error( function() {
+			Calc.error.apply( this , arguments );
 		});
 	};
 	

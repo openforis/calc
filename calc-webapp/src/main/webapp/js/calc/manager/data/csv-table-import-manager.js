@@ -74,6 +74,8 @@ CsvTableImport.prototype.init = function(){
 			}, true );
 			
 			UI.unlock();
+		}).error( function() {
+			Calc.error.apply( this , arguments );
 		});
 		
 	});

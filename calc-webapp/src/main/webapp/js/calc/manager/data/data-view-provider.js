@@ -31,6 +31,8 @@ DataViewProvider.prototype.count = function(success) {
 	}).done(function(response) {
 		var cnt = response.fields.count;
 		success(cnt);
+	}).error( function() {
+		Calc.error.apply( this , arguments );
 	});
 };
 
@@ -57,6 +59,8 @@ DataViewProvider.prototype.data = function(offset , numberOfItems , excludeNulls
 		method 		: "POST"
 	}).done(function(response) {
 		success(response);
+	}).error( function() {
+		Calc.error.apply( this , arguments );
 	});
 };
 

@@ -2,6 +2,7 @@ package org.openforis.calc.engine;
 
 import java.util.UUID;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.openforis.calc.r.RScript;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +30,8 @@ public abstract class Worker {
 	// TODO can use 'transient' Java keyword instead?
 	@JsonIgnore
 	private Logger logger;
+	
+	private String errorStackTrace;
 
 	public enum Status {
 		PENDING, RUNNING, COMPLETED, FAILED, ABORTED;
@@ -71,7 +74,7 @@ public abstract class Worker {
 			execute();
 			this.status = Status.COMPLETED;
 		} catch (Throwable t) {
-//			String stackTrace = ExceptionUtils.getStackTrace(t);
+			this.errorStackTrace = ExceptionUtils.getStackTrace(t);
 			this.status = Status.FAILED;
 			this.lastException = t;
 			logger.warn("Task failed");
@@ -170,6 +173,10 @@ public abstract class Worker {
 		return id;
 	}
 
+	public String getErrorStackTrace() {
+		return errorStackTrace;
+	}
+	
 	protected final Logger log() {
 		return this.logger;
 	}

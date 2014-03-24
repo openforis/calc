@@ -18,6 +18,8 @@ CalculationStepManager.prototype = (function() {
 			dataType:"json"
 		}).done(function(response){
 			callback(response);
+		}).error( function() {
+			Calc.error.apply( this , arguments );
 		});
 	};
 	
@@ -33,6 +35,8 @@ CalculationStepManager.prototype = (function() {
 			if ( callback ) {
 				callback(response);
 			}
+		}).error( function() {
+			Calc.error.apply( this , arguments );
 		});
 	};
 	
@@ -52,6 +56,7 @@ CalculationStepManager.prototype = (function() {
     		};
 		})
 		.error(function(e) {
+			Calc.error.apply( this , arguments );
 			if ( errorCallback ) {
 				errorCallback(e);
 			}
@@ -78,6 +83,8 @@ CalculationStepManager.prototype = (function() {
 			if ( callback ) {
 				callback(response);
 			}
+		}).error( function() {
+			Calc.error.apply( this , arguments );
 		});
 	};
 	
@@ -94,6 +101,9 @@ CalculationStepManager.prototype = (function() {
 			if ( callback ) {
 				callback(response);
 			}
+		})
+		.error( function() {
+			Calc.error.apply( this , arguments );
 		});
 	};
 	
@@ -113,9 +123,8 @@ CalculationStepManager.prototype = (function() {
 				success(job);
 			}
 		})
-		.error(function(e){
-			console.log("error!!! on test calculation step");
-			console.log(e);
+		.error( function() {
+			Calc.error.apply( this , arguments );
 		});
 	};
 	

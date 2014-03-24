@@ -36,7 +36,7 @@ StratumManager.prototype.init = function(){
 	    	$this.import( response.fields.filepath );
 	    },
 	    error: function (e) {
-	    	alert('Error uploading file' + e);
+			Calc.error.apply( this , arguments );
 	    	UI.unlock();
 	    },
 	    complete: function() {
