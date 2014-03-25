@@ -138,18 +138,7 @@ public class CollectMetadataImportTask extends Task {
 			if ( oldEntity == null ) {
 				ws.addEntity(newEntity);
 				
-				//replace parent with the one in the workspace having the same originalId
-				Entity newParent = newEntity.getParent();
-				if ( newParent != null ) {
-					Integer originalId = newParent.getOriginalId();
-					Entity storedParent = ws.getEntityByOriginalId(originalId);
-					if ( storedParent == null ) {
-						throw new IllegalArgumentException(String.format("Cannot find persisted parent with original id %d for entity %s", 
-								newParent.getOriginalId(), newEntity.getName()));
-					} else {
-						newEntity.setParent(storedParent);
-					}
-				}
+				replaceParentEntityWithPersistedOne(newEntity);
 			}
 		}
 
@@ -161,6 +150,20 @@ public class CollectMetadataImportTask extends Task {
 //		ws.setEntities(reloaded.getEntities());
 		
 		( (CollectBackupImportJob)getJob() ).refreshWorkspace( ws );
+	}
+
+	protected void replaceParentEntityWithPersistedOne(Entity newEntity) {
+		Workspace ws = newEntity.getWorkspace();
+		Entity newParent = newEntity.getParent();
+		if ( newParent != null ) {
+			Integer parentOriginalId = newParent.getOriginalId();
+			if ( parentOriginalId != null ) {
+				Entity persistedParent = ws.getEntityByOriginalId(parentOriginalId);
+				if ( persistedParent != null ) {
+					newEntity.setParent(persistedParent);
+				}
+			}
+		}
 	}
 
 	private void applyChangesToEntity(Entity oldEntity, Entity newEntity) {
