@@ -1,4 +1,5 @@
 library( "RPostgreSQL" );
+
 library( "sqldf" );
 
 source( "error-point-estimators.R" );
@@ -86,6 +87,15 @@ data <- sqldf("select d.*, p.weight from data d join plots p on d.plot_id = p.pl
 # write.csv( plots,file="~/Desktop/metla-data/calc/plots.csv",row.names=F )
 # write.csv( data , file="~/Desktop/metla-data/calc/trees.csv", row.names=F )
 # write.csv( strata , file="~/Desktop/metla-data/calc/strata.csv", row.names=F )
+
+sum(strata$area)
+p <- read.csv( file='~/Desktop/metla-data/calc-test-data/plots.csv')
+p$stratum <- 1;
+t <- read.csv( file='~/Desktop/metla-data/calc-test-data/trees.csv')
+t$stratum <- 1;
+s <- data.frame( stratum=1, area<-1000000)
+data<-t;plots<-p;strata<-s;
+qtyError <- calculateStratumQuantityVariances( data=d , plots=p , strata=s );
 
 areaError <- calculateAreaError( plots=plots , strata=strata );
 qtyError <- calculateQuantityError( data=data , plots=plots , strata=strata );
