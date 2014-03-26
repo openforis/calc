@@ -15,7 +15,6 @@ import org.openforis.collect.io.BackupFileExtractor;
 import org.openforis.collect.io.metadata.species.SpeciesBackupCSVReader;
 import org.openforis.collect.io.metadata.species.SpeciesBackupLine;
 import org.openforis.commons.io.csv.CsvReader;
-import org.openforis.idm.model.species.Taxon.TaxonRank;
 
 /**
  * 
@@ -73,7 +72,7 @@ public class SpeciesImportTask extends Task {
 					int recordId = 1;
 					while ( isRunning() ) {
 						SpeciesBackupLine line = reader.readNextLine();
-						if ( line != null && line.getRank() == TaxonRank.SPECIES ) {
+						if ( line != null ) {
 							insertRecord(table, recordId ++, line);
 						}
 						incrementItemsProcessed();
