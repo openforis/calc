@@ -117,6 +117,7 @@ public class CalculationStepController {
 	public @ResponseBody Response delete(@PathVariable int stepId) {
 		Response response = new Response();
 		Integer variableId = calculationStepService.delete(stepId);
+		response.addField( "deletedStep" , stepId );
 		response.addField("deletedVariable", variableId);
 		return response;
 	}

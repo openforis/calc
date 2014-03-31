@@ -14,6 +14,7 @@ import org.hibernate.annotations.DiscriminatorFormula;
 import org.openforis.calc.common.NamedUserObject;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * Base class for Calc variables.  Variables may be either categorical or quantitative.  Note that binary classes are special cases of categorical
@@ -185,6 +186,11 @@ public abstract class Variable<T> extends NamedUserObject {
 
 	public abstract void setDefaultValue(T defaultValue);
 
+	@JsonInclude
+	public Integer getEntityId() {
+		return entity.getId();
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

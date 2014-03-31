@@ -17,12 +17,11 @@ Entity = function( workspace , object ) {
 Entity.prototype.getQuantitativeVariableById = function( variableId ) {
     var vars = this.quantitativeVariables;
     for ( var i in vars) {
-	var variable = vars[i];
-	if (variable.id.toString() == variableId.toString()) {
-	    return variable;
-	}
-    }
-    ;
+		var variable = vars[i];
+		if (variable.id.toString() == variableId.toString()) {
+		    return variable;
+		}
+    };
     return null;
 };
 
@@ -32,10 +31,10 @@ Entity.prototype.getQuantitativeVariableById = function( variableId ) {
 Entity.prototype.replaceVariable = function( variable ) {
     var $this = this;
     $.each($this.quantitativeVariables, function( i , variableToReplace ) {
-	if (variableToReplace.id.toString() == variable.id.toString()) {
-	    $this.quantitativeVariables[i] = variable;
-	    return false;
-	}
+		if (variableToReplace.id.toString() == variable.id.toString()) {
+		    $this.quantitativeVariables[i] = variable;
+		    return false;
+		}
     });
     return variable;
 };
@@ -78,14 +77,15 @@ Entity.prototype.getAncestorsVariables = function() {
 };
 
 /**
- * Returns the quantitative variable with the given id
+ * Returns the variable with the given id
  */
 Entity.prototype.getVariableById = function( id ) {
-    for (var i = 0; i < this.quantitativeVariables.length; i++) {
-	var variable = this.quantitativeVariables[i];
-	if (variable.id == id) {
-	    return variable;
-	}
+	var variables = this.getVariables();
+    for (var i = 0; i < variables.length; i++) {
+    	var variable = variables[i];
+		if (variable.id == id) {
+		    return variable;
+		}
     }
     return null;
 };

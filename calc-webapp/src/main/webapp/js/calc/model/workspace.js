@@ -13,6 +13,7 @@ Workspace = function(object) {
 		var newEntity = new Entity($this, entity);
 		$this.entities[i] = newEntity;
 	});
+	
 };
 
 /**
@@ -29,6 +30,22 @@ Workspace.prototype.getEntityById = function(id) {
 	}
 	return null;
 };
+/**
+ * Returns the variable with the id passed as argument if there is.
+ */
+Workspace.prototype.getVariableById = function(id) {
+	if( id ) {
+		for( var i in this.entities ) {
+			var entity = this.entities[i];
+			var variable = entity.getVariableById( id );
+			if( variable ) {
+				return variable;
+			}
+		}
+	}
+	return null;
+};
+
 
 /**
  * Returns the entities that contains at least one aggregable measure (quantitative var) children of the entity passed as parameter
@@ -66,4 +83,29 @@ Workspace.prototype.isSamplingUnit = function(entity) {
 		result = ( suId === entity.id);
 	}
     return result;
+};
+
+Workspace.prototype.getAdminUnitFlatAois = function() {
+	var addAoi = function( aoi , aois , captionPrefix ) {
+		var a = {};
+		a.caption = aoi.caption;
+		if ( captionPrefix != "" ) {
+			a.caption = captionPrefix + a.caption;
+		}
+		a.id = aoi.id;
+		aois.push( a );
+		
+		if( aoi.children ) {
+			for( var i in aoi.children ) {
+				var child = aoi.children[i];
+				addAoi( child, aois , (a.caption + " -> ") );
+			}
+		}
+	};
+	var aois = [];
+	if( this.aoiHierarchies && this.aoiHierarchies.length >0 ) {
+		var aoi = this.aoiHierarchies[0].rootAoi;
+		addAoi( aoi, aois , "" );
+	}
+	return aois;
 };

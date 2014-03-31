@@ -1012,6 +1012,9 @@ table.import-csv-table input[type=checkbox] {
 .height10 {
 	height: 10%;
 }
+.height20 {
+	height: 20%;
+}
 .height25 {
 	height: 25%;
 }
@@ -1020,6 +1023,12 @@ table.import-csv-table input[type=checkbox] {
 }
 .height50 {
 	height: 50%;
+}
+.height60 {
+	height: 60%;
+}
+.height70 {
+	height: 70%;
 }
 .height75 {
 	height: 75%;
