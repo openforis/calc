@@ -929,8 +929,6 @@ table.import-csv-table input[type=checkbox] {
 **/
 .button-bar-left ,
 .button-bar-right {
-	
-	height: 6em;
 	border:1px solid #2c3e50; 
 	display: block;
 /* 	background-color: #496d7e; */
@@ -943,16 +941,23 @@ table.import-csv-table input[type=checkbox] {
 	width: 16em ;
 	float:left; 
 }
+.button-bar-left , .button-bar-left .button-bar-inner{
+	height: 12em;
+}
 .button-bar-right {
 	width: 8em ;
-	float: right; 
+	float: right;
+	height: 6em; 
+}
+.button-bar-right , .button-bar-right .button-bar-inner{
+	height: 6em;	
 }
 .button-bar-inner {
 	margin: -0.2em;
 	background-color: #496d7e;
 	position: fixed; 
 	width: 16em ;
-	height: 6em;
+/* 	height: 100%; */
 /* 	font-size: 2em; */
 }
 .button-bar-right .button-bar-inner {

@@ -20,7 +20,7 @@ UI.showError = function( message, hide ) {
 	UI.messageContainer.removeClass("alert-success");
 	UI.messageContainer.addClass("alert-danger");
 	
-	UI.messageContainer.find("span").append( message );
+	UI.messageContainer.find("span").html( message );
 	
 	UI.messageContainer.fadeIn( 400 );
 	

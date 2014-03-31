@@ -7,6 +7,7 @@ import javax.sql.DataSource;
 
 import org.jooq.Insert;
 import org.jooq.Record;
+import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.metadata.AoiDao;
 import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.Entity;
@@ -161,36 +162,36 @@ public class WorkspaceService {
 	public QuantitativeVariable addOutputVariable(Entity entity, String name) {
 		
 		// get result table
-		InputSchema schema = new Schemas( entity.getWorkspace() ).getInputSchema();
-		ResultTable originalResultTable = schema.getResultTable(entity);
+//		InputSchema schema = new Schemas( entity.getWorkspace() ).getInputSchema();
+//		ResultTable originalResultTable = schema.getResultTable(entity);
 		QuantitativeVariable variable = createQuantitativeVariable(name);
 
 		entity.addVariable(variable);
-		ResultTable resultTable = schema.getResultTable(entity);
+//		ResultTable resultTable = schema.getResultTable(entity);
 		
 		
 //		addVariableColumn(variable);
 		
 		// add column to results table and update entity view
-		if( originalResultTable == null) { 
-			try {
-//				CreateTableWithFieldsStep createTable = new Psql(dataSource)
-//					.createTable(resultTable, resultTable.fields());
-//					createTable.execute();
-					
-					resetResultTable(resultTable, schema.getDataTable(entity) );
-					
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} else {
-			new Psql(dataSource)
-				.alterTable(resultTable)
-				.addColumn( resultTable.getQuantityField(variable) )
-				.execute();
-		}
-		
+//		if( originalResultTable == null) { 
+//			try {
+////				CreateTableWithFieldsStep createTable = new Psql(dataSource)
+////					.createTable(resultTable, resultTable.fields());
+////					createTable.execute();
+//					
+//					resetResultTable(resultTable, schema.getDataTable(entity) );
+//					
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		} else {
+//			new Psql(dataSource)
+//				.alterTable(resultTable)
+//				.addColumn( resultTable.getQuantityField(variable) )
+//				.execute();
+//		}
+//		
 		
 		variableDao.save(variable);
 		updateEntityView(variable);
@@ -198,6 +199,48 @@ public class WorkspaceService {
 		return variable;
 	}
 
+	public void updateResultTable( CalculationStep calculationStep ){
+		QuantitativeVariable variable = (QuantitativeVariable) calculationStep.getOutputVariable();
+		Entity entity = variable.getEntity();
+		
+		// get result table
+		InputSchema schema = new Schemas( entity.getWorkspace() ).getInputSchema();
+		ResultTable originalResultTable = schema.getResultTable(entity);
+//			QuantitativeVariable variable = createQuantitativeVariable(name);
+
+//			entity.addVariable(variable);
+		ResultTable resultTable = schema.getResultTable(entity);
+			
+			
+//			addVariableColumn(variable);
+			
+			// add column to results table and update entity view
+			if( originalResultTable == null) { 
+				try {
+//					CreateTableWithFieldsStep createTable = new Psql(dataSource)
+//						.createTable(resultTable, resultTable.fields());
+//						createTable.execute();
+						
+						resetResultTable(resultTable, schema.getDataTable(entity) );
+						
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			} else {
+				new Psql(dataSource)
+					.alterTable(resultTable)
+					.addColumn( resultTable.getQuantityField(variable) )
+					.execute();
+			}
+			
+			
+//			variableDao.save(variable);
+			updateEntityView(variable);
+
+//			return variable;
+	}
+	
 	private QuantitativeVariable createQuantitativeVariable(String name) {
 		QuantitativeVariable variable = new QuantitativeVariable();
 		variable.setName(name);
@@ -265,7 +308,7 @@ public class WorkspaceService {
 	}
 	
 	
-	public void createViews(Workspace ws) {
+	public void resetDataViews(Workspace ws) {
 		for (Entity entity : ws.getEntities()) {
 			entityDataViewDao.createOrUpdateView(entity);
 		}
@@ -275,13 +318,25 @@ public class WorkspaceService {
 	 * Remove all results table and recreates them empty
 	 */
 	public void resetResults(Workspace ws) {
+		
+//		resetDataViews( ws );
+		
 		InputSchema schema = new Schemas(ws).getInputSchema();
 		List<Entity> entities = ws.getEntities();
 		for (Entity entity : entities) {
+			
+			// first drop the view
+			EntityDataView view = schema.getDataView(entity);
+			entityDataViewDao.drop(view);
+			
 			ResultTable resultsTable = schema.getResultTable(entity);
 			InputTable dataTable = schema.getDataTable(entity);
+			// then it creates the result table
+			resetResultTable(resultsTable, dataTable);
 			
-			resetResultTable(resultsTable, dataTable);	
+			// last it recreates the views
+			entityDataViewDao.create(view);
+			
 		}
 		
 	}

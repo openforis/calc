@@ -56,6 +56,7 @@ public class JobController {
 	synchronized Job executeCalculationStep(@PathVariable int stepId) throws InvalidProcessingChainException, WorkspaceLockedException {
 		Workspace workspace = workspaceService.getActiveWorkspace();
 		CalculationStep step = calculationStepDao.find(stepId);
+		workspaceService.updateResultTable( step );
 		
 		CalcJob job = taskManager.createCalcJob(workspace);
 		job.addCalculationStep(step);
@@ -78,6 +79,7 @@ public class JobController {
 		Workspace workspace = workspaceService.getActiveWorkspace();
 		
 		CalcJob job = taskManager.createDefaultCalcJob( workspace , true );
+		workspaceService.resetResults(workspace);
 		
 		taskManager.startJob(job);
 

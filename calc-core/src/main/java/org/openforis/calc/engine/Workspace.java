@@ -228,7 +228,7 @@ public class Workspace extends UserObject {
 		}
 		throw new IllegalStateException("Deafault processing chain not found");
 	}
-
+	
 	public ProcessingChain getProcessingChainById(int processingChainId) {
 		for (ProcessingChain chain : processingChains) {
 			if (chain.getId() == processingChainId) {

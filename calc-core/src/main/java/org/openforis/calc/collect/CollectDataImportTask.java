@@ -106,7 +106,7 @@ public class CollectDataImportTask extends Task {
 
 	
 	private void createViews() {
-		workspaceService.createViews(getWorkspace());
+		workspaceService.resetDataViews(getWorkspace());
 //		incrementItemsProcessed();
 	}
 	

@@ -23,6 +23,8 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.openforis.calc.chain.CalculationStep;
+import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.common.NamedUserObject;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.r.RScript;
@@ -493,6 +495,34 @@ public class Entity extends NamedUserObject {
 				return ((QuantitativeVariable)object).getOriginalId() == null;
 			}
 		});
+	}
+	
+	/**
+	 * Returns the output variables linked to the entity associated to the default processing chain
+	 * @param entity
+	 * @return 
+	 */
+	@JsonIgnore
+	public List<QuantitativeVariable> getDefaultProcessingChainOutputVariables() {
+		List<QuantitativeVariable> variables = new ArrayList<QuantitativeVariable>();
+		
+		ProcessingChain processingChain = getWorkspace().getDefaultProcessingChain();
+		List<CalculationStep> steps = processingChain.getCalculationSteps();
+		for (CalculationStep step : steps) {
+			QuantitativeVariable variable = (QuantitativeVariable) step.getOutputVariable();
+			Entity outputEntity = variable.getEntity();
+			if( outputEntity.getId().equals( this.getId() ) ){
+				variables.add( variable );
+			}
+		}
+		if( this.isSamplingUnit() ){
+			QuantitativeVariable weightVar = getOutputVariable("weight");
+			if( weightVar != null ) {
+				variables.add( weightVar);
+			}
+		}
+		
+		return variables;
 	}
 	
 	private Collection<Variable<?>> getVariables(Predicate predicate) {
