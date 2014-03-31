@@ -138,18 +138,7 @@ public class CollectMetadataImportTask extends Task {
 			if ( oldEntity == null ) {
 				ws.addEntity(newEntity);
 				
-				//replace parent with the one in the workspace having the same originalId
-				Entity newParent = newEntity.getParent();
-				if ( newParent != null ) {
-					Integer originalId = newParent.getOriginalId();
-					Entity storedParent = ws.getEntityByOriginalId(originalId);
-					if ( storedParent == null ) {
-						throw new IllegalArgumentException(String.format("Cannot find persisted parent with original id %d for entity %s", 
-								newParent.getOriginalId(), newEntity.getName()));
-					} else {
-						newEntity.setParent(storedParent);
-					}
-				}
+				replaceParentEntityWithPersistedOne(newEntity);
 			}
 		}
 
@@ -161,6 +150,20 @@ public class CollectMetadataImportTask extends Task {
 //		ws.setEntities(reloaded.getEntities());
 		
 		( (CollectBackupImportJob)getJob() ).refreshWorkspace( ws );
+	}
+
+	protected void replaceParentEntityWithPersistedOne(Entity newEntity) {
+		Workspace ws = newEntity.getWorkspace();
+		Entity newParent = newEntity.getParent();
+		if ( newParent != null ) {
+			Integer parentOriginalId = newParent.getOriginalId();
+			if ( parentOriginalId != null ) {
+				Entity persistedParent = ws.getEntityByOriginalId(parentOriginalId);
+				if ( persistedParent != null ) {
+					newEntity.setParent(persistedParent);
+				}
+			}
+		}
 	}
 
 	private void applyChangesToEntity(Entity oldEntity, Entity newEntity) {
@@ -365,13 +368,17 @@ public class CollectMetadataImportTask extends Task {
 			v.setScale(Scale.RATIO);
 			//TODO set unit...
 		} else if ( attrDefn instanceof TaxonAttributeDefinition &&
-				(columnNodeDefnNam.equals(TaxonAttributeDefinition.CODE_FIELD_NAME) ||
-					columnNodeDefnNam.equals(TaxonAttributeDefinition.SCIENTIFIC_NAME_FIELD_NAME) ) ) {
+				(columnNodeDefnNam.equals(TaxonAttributeDefinition.CODE_FIELD_NAME) ) ) {
 			v = new MultiwayVariable();
-			v.setScale(Scale.NOMINAL);
-			String name = column.getName();
-			v.setName(generateVariableName(entityName, name));
-			((MultiwayVariable) v).setDegenerateDimension(true);
+			MultiwayVariable multiwayVar = (MultiwayVariable) v;
+			multiwayVar.setScale(Scale.NOMINAL);
+			multiwayVar.setMultipleResponse(attrDefn.isMultiple());
+			
+			SpeciesCodeTable speciesCodeTable = new SpeciesCodeTable(((TaxonAttributeDefinition) attrDefn).getTaxonomy(), getInputSchema().getName());
+			multiwayVar.setDimensionTable( speciesCodeTable.getName() );
+			multiwayVar.setDimensionTableIdColumn(speciesCodeTable.getIdField().getName());
+			multiwayVar.setDimensionTableCodeColumn(speciesCodeTable.getCodeField().getName());
+			multiwayVar.setDimensionTableCaptionColumn(speciesCodeTable.getScientificNameField().getName());
 		} else if ( attrDefn instanceof TextAttributeDefinition && 
 				((TextAttributeDefinition) attrDefn).getType() == TextAttributeDefinition.Type.SHORT ) {
 			v = new TextVariable();

@@ -23,6 +23,7 @@ import org.openforis.collect.persistence.xml.DataUnmarshaller.ParseRecordResult;
  * @author S. Ricci
  *
  */
+@Deprecated
 public class CollectBackupRecordExtractor implements Closeable {
 
 	protected static final String IDML_FILE_NAME = "idml.xml";

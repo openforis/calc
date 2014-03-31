@@ -9,6 +9,7 @@ import org.openforis.calc.collect.CategoriesImportTask;
 import org.openforis.calc.collect.CollectDataImportTask;
 import org.openforis.calc.collect.CollectInputSchemaCreatorTask;
 import org.openforis.calc.collect.CollectMetadataImportTask;
+import org.openforis.calc.collect.SpeciesImportTask;
 import org.openforis.collect.model.CollectRecord.Step;
 import org.openforis.collect.model.CollectSurvey;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ public class CollectTaskService {
 	 * @param survey
 	 */
 
-	public Job createImportJob(Workspace workspace, CollectSurvey survey, File dataFile) {
+	public Job createImportJob(Workspace workspace, CollectSurvey survey, File backupFile) {
 		Job job = taskManager.createCollectImportJob( workspace , survey );
 		
 		job.setDebugMode(taskManager.isDebugMode());
@@ -44,9 +45,13 @@ public class CollectTaskService {
 
 		CategoriesImportTask categoriesImportTask = taskManager.createTask(CategoriesImportTask.class);
 		job.addTask(categoriesImportTask);
-
+		
+		SpeciesImportTask speciesImportTask = taskManager.createTask(SpeciesImportTask.class);
+		speciesImportTask.setBackupFile(backupFile);
+		job.addTask(speciesImportTask);
+		
 		CollectDataImportTask dataImportTask = taskManager.createTask(CollectDataImportTask.class);
-		dataImportTask.setDataFile(dataFile);
+		dataImportTask.setDataFile(backupFile);
 		dataImportTask.setStep(Step.ANALYSIS);
 		job.addTask(dataImportTask);
 		
