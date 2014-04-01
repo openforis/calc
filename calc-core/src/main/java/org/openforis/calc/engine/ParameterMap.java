@@ -17,6 +17,9 @@ public interface ParameterMap {
 	Number getNumber(String name);
 	void setNumber(String name, Number value);
 	
+	Integer getInteger(String name);
+	void setInteger(String name, Integer value);
+	
 	String getString(String name);
 	void setString(String name, String value);
 

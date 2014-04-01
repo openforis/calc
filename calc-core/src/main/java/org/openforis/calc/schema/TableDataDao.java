@@ -76,7 +76,11 @@ public class TableDataDao extends AbstractJooqDao {
 		return array;
 	}
 	
-	public List<DataRecord> query(String schema, String table, Integer offset, Integer numberOfRows, boolean excludeNull, String... fields) {
+	public List<DataRecord> selectAll( Table<?> table , List<String> fields ) {
+		return query( table.getSchema().getName() , table.getName() , null , null  , null , fields.toArray(new String[]{}) );
+	}
+	
+	public List<DataRecord> query(String schema, String table, Integer offset, Integer numberOfRows, Boolean excludeNull, String... fields) {
 		if (fields == null || fields.length == 0) {
 			throw new IllegalArgumentException("fields must be specifed");
 		}
@@ -87,13 +91,16 @@ public class TableDataDao extends AbstractJooqDao {
 		DynamicTable<Record> dbTable = new DynamicTable<Record>(table, schema);
 		SelectQuery<Record> select = psql().selectQuery();
 		select.addFrom(dbTable);
-		for (String field : fields) {
-			Field<?> f = dbTable.field(field);
-			select.addSelect(f);
-			if(excludeNull) {
-				select.addConditions(f.isNotNull());
+		if( fields != null && fields.length >0 ) {
+			for (String field : fields) {
+				Field<?> f = dbTable.field(field);
+				select.addSelect(f);
+				if( excludeNull != null && excludeNull ) {
+					select.addConditions(f.isNotNull());
+				}
 			}
 		}
+		
 		// add order by id -- important?!
 		
 		// add offset to query

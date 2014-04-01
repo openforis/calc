@@ -82,4 +82,16 @@ public class AoiHierarchy extends NamedUserObject {
 		this.rootAoi = rootAoi;
 	}
 
+	public Aoi getAoiById( int aoiId ) {
+		for( AoiLevel aoiLevel : this.getLevels() ) {
+			Set<Aoi> aois = aoiLevel.getAois();
+			for( Aoi aoi : aois ) {
+				if( aoi.getId().equals(aoiId) ) {
+					return aoi;
+				}
+			}
+		}
+		return null;
+	}
+	
 }

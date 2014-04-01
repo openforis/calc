@@ -20,7 +20,6 @@ import org.openforis.calc.metadata.Variable.Scale;
 import org.openforis.calc.metadata.VariableAggregate;
 import org.openforis.calc.metadata.VariableAggregateDao;
 import org.openforis.calc.metadata.VariableDao;
-import org.openforis.calc.psql.CreateTableWithFieldsStep;
 import org.openforis.calc.psql.Psql;
 import org.openforis.calc.schema.EntityDataView;
 import org.openforis.calc.schema.EntityDataViewDao;
@@ -32,10 +31,8 @@ import org.openforis.calc.schema.Schemas;
 import org.openforis.commons.io.csv.CsvReader;
 import org.openforis.commons.io.flat.FlatRecord;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.WebApplicationContext;
 
 /**
  * Manages {@link Workspace} instances.
@@ -325,17 +322,20 @@ public class WorkspaceService {
 		List<Entity> entities = ws.getEntities();
 		for (Entity entity : entities) {
 			
-			// first drop the view
-			EntityDataView view = schema.getDataView(entity);
-			entityDataViewDao.drop(view);
-			
-			ResultTable resultsTable = schema.getResultTable(entity);
-			InputTable dataTable = schema.getDataTable(entity);
-			// then it creates the result table
-			resetResultTable(resultsTable, dataTable);
-			
-			// last it recreates the views
-			entityDataViewDao.create(view);
+			// if not sampling unit
+			if( ! entity.isSamplingUnit() ) {
+				// first drop the view
+				EntityDataView view = schema.getDataView(entity);
+				entityDataViewDao.drop(view);
+				
+				ResultTable resultsTable = schema.getResultTable(entity);
+				InputTable dataTable = schema.getDataTable(entity);
+				// then it creates the result table
+				resetResultTable(resultsTable, dataTable);
+				
+				// last it recreates the views
+				entityDataViewDao.create(view);
+			}
 			
 		}
 		

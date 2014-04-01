@@ -1,17 +1,5 @@
 library( "RPostgreSQL" );
 
-library( "sqldf" );
-
-source( "error-point-estimators.R" );
-
-# sqldf options. 
-# driver is SQLLite in order to read from dataframe , otherwise it uses PostgreSQL
-# https://code.google.com/p/sqldf/#Troubleshooting
-options(
-  #gsubfn.engine = "R" , 
-  sqldf.driver = "SQLite"
-);
-
 # === Open db connection
 driver <- dbDriver("PostgreSQL");
 connection <- dbConnect(driver, host="localhost", dbname="calc", user="calc", password="calc", port=5432);

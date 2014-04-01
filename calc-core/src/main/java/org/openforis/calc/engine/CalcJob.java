@@ -57,8 +57,6 @@ public class CalcJob extends Job {
 	
 	
 	@JsonIgnore
-	// private List<CalculationStep> calculationSteps;
-//	private Map<Integer, List<CalculationStep>> calculationSteps;
 	private CalcJobEntityGroup group;
 	
 	@Autowired

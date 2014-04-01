@@ -79,7 +79,7 @@ public class JobController {
 		Workspace workspace = workspaceService.getActiveWorkspace();
 		
 		CalcJob job = taskManager.createDefaultCalcJob( workspace , true );
-		workspaceService.resetResults(workspace);
+		workspaceService.resetResults( workspace );
 		
 		taskManager.startJob(job);
 

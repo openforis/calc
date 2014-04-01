@@ -42,7 +42,7 @@ public class StratumDimensionTable extends AbstractTable {
 //		createField( Tables.STRATUM.STRATUM_NO, type, table)
 	}
 	
-	public Select<?> getSelect(){
+	public Select<?> getSelect() {
 		SelectQuery<Record> select = new Psql().selectQuery();
 		
 		select.addSelect( stratumNo );
@@ -59,5 +59,9 @@ public class StratumDimensionTable extends AbstractTable {
 	
 	public TableField<Record, String> getCaption() {
 		return caption;
+	}
+	
+	public TableField<Record, Integer> getWorkspaceId() {
+		return workspaceId;
 	}
 }

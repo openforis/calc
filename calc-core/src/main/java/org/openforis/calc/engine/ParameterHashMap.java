@@ -118,6 +118,26 @@ public class ParameterHashMap implements ParameterMap {
 	}
 
 	@Override
+	public Integer getInteger(String name) {
+		Object value = map.get(name);
+		if ( value == null ) {
+			return null;
+		} else if ( value instanceof Number ) {
+			return ( (Number) value ).intValue();
+		} else if ( value instanceof String ) {
+			int result = Integer.parseInt( (String) value );
+			return result;
+		} else {
+			throw new IllegalStateException("Exptected Integer, found: " + value.getClass().getName());
+		}
+	}
+	
+	@Override
+	public void setInteger(String name, Integer value) {
+		setNumber(name, value);
+	}
+	
+	@Override
 	public String getString(String name) {
 		return (String) map.get(name);
 	}

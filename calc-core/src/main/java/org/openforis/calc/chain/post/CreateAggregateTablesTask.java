@@ -203,6 +203,9 @@ public final class CreateAggregateTablesTask extends Task {
 		for (Field<Integer> field : factTable.getDimensionIdFields()) {
 			select.addSelect(dataTable.field(field));
 		}
+		for (Field<?> field : factTable.getCategoryValueFields() ) {
+			select.addSelect( dataTable.field(field) );
+		}
 
 		// add quantities to select
 		Collection<QuantitativeVariable> vars = factTable.getEntity().getOriginalQuantitativeVariables();

@@ -8,7 +8,7 @@ ErrorCalculationManager = function( container ) {
 	
 	this.container = $( container );
 	
-	// UI components
+	// UI Form components
 	this.aoi		= this.container.find( ".aoi" );
 	this.aoiSelect	= this.aoi.find( "select" ).combobox();;
 	this.quantity	= this.container.find( ".quantity" );
@@ -16,7 +16,9 @@ ErrorCalculationManager = function( container ) {
 	this.classes	= this.container.find( ".classes" );
 	this.viewBtn 	= this.container.find( ".view-btn button" );
 	
-	this.result 	= this.container.find( ".result" );
+	// UI result components
+	this.result 		= this.container.find( ".result" );
+	this.resultTable 	= this.result.find( "table" );
 	
 	// form parameters
 	this.params 			= {};
@@ -63,18 +65,20 @@ ErrorCalculationManager.prototype.bindEvents = function() {
 			$this.category.hide();
 			$this.classes.hide();
 			$this.viewBtn.hide();
+			
+			$this.result.hide();
 		}
 	});
 	
 	this.viewBtn.click( function(e){
 		var params = JSON.stringify( $this.params );
-		console.log( params );
 		UI.lock();
 		$.ajax({
 			url		: "rest/error/execute.json",
 			dataType: "json",
 			data	: { "arguments" : params}	
-		}).done( function(response){
+		}).done( function(response) {
+			$this.showResults( response );
 			UI.unlock();
 		}).error( function() {
 			UI.unlock();
@@ -89,6 +93,8 @@ ErrorCalculationManager.prototype.resetUi = function() {
 	this.category.hide();
 	this.classes.hide();
 	this.viewBtn.hide();
+	
+	this.result.hide();
 	
 };
 
@@ -147,6 +153,8 @@ ErrorCalculationManager.prototype.showQuantity = function() {
 							$this.category.hide();
 							$this.classes.hide();
 							$this.viewBtn.hide();
+							
+							$this.result.hide();
 						};
 						
 						optBtn.select( selectFunction , variableId );
@@ -216,6 +224,8 @@ ErrorCalculationManager.prototype.showCategory = function( vId ) {
 						
 						$this.classes.hide();
 						$this.viewBtn.hide();
+						
+						$this.result.hide();
 					};
 					
 					optBtn.select( selectFunction , variableId );
@@ -270,6 +280,7 @@ ErrorCalculationManager.prototype.showClasses = function( vId ) {
 							$this.viewBtn.fadeIn();
 						} else {
 							$this.viewBtn.fadeOut();
+							$this.result.hide();
 						}
 					} , code );
 					
@@ -283,6 +294,7 @@ ErrorCalculationManager.prototype.showClasses = function( vId ) {
 							$this.viewBtn.fadeIn();
 						} else {
 							$this.viewBtn.fadeOut();
+							$this.result.hide();
 						}
 					} , code  );
 					
@@ -299,5 +311,45 @@ ErrorCalculationManager.prototype.showClasses = function( vId ) {
 		
 		UI.unlock();	
 	});
+	
+};
+
+
+ErrorCalculationManager.prototype.showResults = function( results ) {
+	var thead = this.resultTable.find( "thead" ); 
+	var tbody = this.resultTable.find( "tbody" );
+	var formatNumber = d3.format(".4n");
+	
+	thead.empty();
+	tbody.empty();
+	
+	var fieldNames = results[0].fieldNames;
+	
+	var tr = $( "<tr></tr>" );
+	thead.append(tr);
+	$.each( fieldNames , function(i,field) {
+		var th = $( "<th></th>" );
+		th.html( field );
+		tr.append( th );
+	});
+	
+	
+	$.each( results, function( i , record ) {
+		var tr = $( "<tr></tr>" );		
+		tbody.append( tr );
+		
+		$.each( fieldNames, function( j , f ) {
+			var value = record.fields[ f ];
+			// format only numbers with decimal points
+			var field = ( typeof value === "number" && value % 1 !== 0 ) ? formatNumber( value ) : value;
+			var td = $( "<td></td>" );
+			td.html( field );
+			tr.append( td );
+		});
+
+		
+	});
+	
+	this.result.fadeIn();
 	
 };

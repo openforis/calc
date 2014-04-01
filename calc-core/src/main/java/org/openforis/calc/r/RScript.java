@@ -39,7 +39,7 @@ public class RScript {
 	private Set<String> variables;
 
 	public RScript() {
-		this((Collection<Variable<?>>)null);
+		this( (Collection<Variable<?>>)null );
 	}
 
 	public RScript(Collection<Variable<?>> variables) {
@@ -150,6 +150,14 @@ public class RScript {
 		return new CheckError(this, variable, connection);
 	}
 
+	public CalculateQuantityError calculateQuantityError( RVariable data, RVariable plots , RVariable strata ) {
+		return new CalculateQuantityError( this, data , plots , strata );
+	}
+	
+	public CalculateAreaError calculateAreaError(  RVariable plots , RVariable strata ) {
+		return new CalculateAreaError( this, plots , strata );
+	}
+
 	// simple text passed as script. no parsing done here. it's assumed that the
 	// script is correct
 	public RScript rScript(String script) {
@@ -247,6 +255,22 @@ public class RScript {
 
 	public static RScript getCalcRScript() {
 		InputStream stream = RScript.class.getClassLoader().getResourceAsStream("org/openforis/calc/r/functions.R");
+		try {
+			String string = IOUtils.toString(stream);
+			RScript rScript = new RScript().rScript( string );
+			return rScript;
+		} catch (IOException e) {
+			throw new IllegalStateException("unable to find org/openforis/calc/r/functions.R", e);
+		} finally {
+			try {
+				stream.close();
+			} catch (IOException e) {
+			}
+		}
+	}
+	
+	public static RScript getErrorEstimation() {
+		InputStream stream = RScript.class.getClassLoader().getResourceAsStream("org/openforis/calc/r/error-point-estimators.R");
 		try {
 			String string = IOUtils.toString(stream);
 			RScript rScript = new RScript().rScript(string);

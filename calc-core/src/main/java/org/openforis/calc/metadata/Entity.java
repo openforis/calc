@@ -216,6 +216,26 @@ public class Entity extends NamedUserObject {
 		
 		return null;
 	}
+
+	/**
+	 * Find the variable with the given id in the hierarchy up to root entity
+	 * @param name
+	 * @return
+	 */
+	public Variable<?> findVariable( int id ) {
+		Entity entity = this;
+
+		while( entity != null ) {
+			Variable<?> variable = entity.getVariableById( id );
+			if( variable != null ){
+				return variable;
+			}
+			entity = entity.getParent();
+		}
+		
+		return null;
+	}
+
 	
 	@JsonIgnore
 	public List<VariableAggregate> getVariableAggregates() {
