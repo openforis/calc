@@ -500,10 +500,10 @@ public class WorkspaceService {
 		entityDataViewDao.drop(view);
 		
 		// drop column from results table
-		new Psql(dataSource)
-			.alterTable(originalResultsTable)
-			.dropColumn( originalResultsTable.getQuantityField(variable) )
-			.execute();
+//		new Psql(dataSource)
+//			.alterTable(originalResultsTable)
+//			.dropColumn( originalResultsTable.getQuantityField(variable) )
+//			.execute();
 		
 		// delete variable
 		variableDao.delete(variable.getId());
