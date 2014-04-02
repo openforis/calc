@@ -24,9 +24,9 @@ import org.openforis.calc.chain.CalculationStepDao;
 import org.openforis.calc.chain.InvalidProcessingChainException;
 import org.openforis.calc.engine.DataRecord;
 import org.openforis.calc.engine.ParameterHashMap;
+import org.openforis.calc.engine.SessionManager;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceLockedException;
-import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.Aoi;
 import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.CategoricalVariable;
@@ -34,7 +34,6 @@ import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.psql.Psql;
 import org.openforis.calc.r.DbConnect;
-import org.openforis.calc.r.Library;
 import org.openforis.calc.r.R;
 import org.openforis.calc.r.REnvironment;
 import org.openforis.calc.r.RException;
@@ -50,12 +49,14 @@ import org.openforis.calc.schema.StratumDimensionTable;
 import org.openforis.calc.schema.TableDataDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.WebApplicationContext;
 
 /**
  * Error calculation controller
@@ -64,12 +65,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * 
  */
 @Controller
+@Scope( WebApplicationContext.SCOPE_SESSION )
 @RequestMapping(value = "/rest/error")
 public class ErrorCalculationController {
 	
 	@Autowired
-	private WorkspaceService workspaceService;
-
+	private SessionManager sessionManager;
+	
 	@Autowired
 	private CalculationStepDao calculationStepDao;
 
@@ -94,7 +96,7 @@ public class ErrorCalculationController {
 	public @ResponseBody
 	@SuppressWarnings("unchecked")
 	synchronized Object execute(@RequestParam String arguments) throws InvalidProcessingChainException, WorkspaceLockedException, ParseException, RException {
-		Workspace workspace = workspaceService.getActiveWorkspace();
+		Workspace workspace = sessionManager.getWorkspace();
 
 		ParameterHashMap parameterMap = new ParameterHashMap( (JSONObject) new JSONParser().parse( arguments ) );
 		

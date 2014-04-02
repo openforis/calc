@@ -2,8 +2,7 @@ package test;
 
 //import java.util.List;
 
-import java.util.List;
-
+import org.junit.Before;
 import org.junit.Test;
 import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.CalculationStepDao;
@@ -14,11 +13,8 @@ import org.openforis.calc.chain.post.CreateAggregateTablesTask;
 import org.openforis.calc.chain.post.PublishRolapSchemaTask;
 import org.openforis.calc.engine.CalcJob;
 import org.openforis.calc.engine.CalculationEngine;
-import org.openforis.calc.engine.CalculationStepTask;
-import org.openforis.calc.engine.DataRecord;
 import org.openforis.calc.engine.Job;
 import org.openforis.calc.engine.TaskManager;
-import org.openforis.calc.engine.Worker;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceLockedException;
 import org.openforis.calc.engine.WorkspaceService;
@@ -50,10 +46,16 @@ extends AbstractTransactionalJUnit4SpringContextTests {
 	@Autowired
 	private WorkspaceService workspaceService;
 	
+	private Workspace workspace;
+	
+	@Before
+	public void init() {
+		workspace = workspaceService.fetchActiveWorkspace();		
+	}
+	
 //	@Test
 	public void testDefaultChain() throws WorkspaceLockedException, InvalidProcessingChainException {
 		try {
-			Workspace workspace = workspaceService.getActiveWorkspace();
 			CalcJob job = taskManager.createDefaultCalcJob(workspace, true);
 			
 			taskManager.startJob(job);
@@ -65,7 +67,6 @@ extends AbstractTransactionalJUnit4SpringContextTests {
 	
 	@Test
 	public void testPreporcessingChain() throws WorkspaceLockedException, InvalidProcessingChainException {
-		Workspace workspace = workspaceService.getActiveWorkspace();
 		workspaceService.resetResults(workspace);
 		Job job = taskManager.createPreProcessingJob(workspace);
 		
@@ -76,7 +77,6 @@ extends AbstractTransactionalJUnit4SpringContextTests {
 	
 //	@Test
 	public void testTasks() throws WorkspaceLockedException, InvalidProcessingChainException {
-		Workspace workspace = workspaceService.getActiveWorkspace();
 		Job job = taskManager.createJob(workspace);
 		
 //		// Preprocessing steps
@@ -120,8 +120,6 @@ extends AbstractTransactionalJUnit4SpringContextTests {
 
 //	@Test
 	public void testStep() throws InvalidProcessingChainException, WorkspaceLockedException {
-		Workspace workspace = workspaceService.getActiveWorkspace();
-		
 		CalculationStep step = calculationStepDao.find(1);
 		CustomRTask task = (CustomRTask) taskManager.createCalculationStepTask(step);
 //		task.setMaxItems(18000);

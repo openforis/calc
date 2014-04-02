@@ -42,9 +42,6 @@ public class TaskManager {
 	private Executor taskExecutor;
 
 	@Autowired
-	private WorkspaceService workspaceService;
-
-	@Autowired
 	private BeanFactory beanFactory;
 
 	@Autowired

@@ -1,9 +1,9 @@
 package org.openforis.calc.chain;
 
+import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.Variable;
-import org.openforis.calc.metadata.VariableDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,9 +22,6 @@ public class CalculationStepService {
 	private CalculationStepDao calculationStepDao;
 
 	@Autowired
-	private VariableDao variableDao;
-	
-	@Autowired
 	private WorkspaceService workspaceService;
 	
 	/**
@@ -34,48 +31,38 @@ public class CalculationStepService {
 	 * @param stepId
 	 */
 	@Transactional
-	public Integer delete(int stepId) {
-		CalculationStep step = calculationStepDao.find(stepId);
-		Integer deletedVariable = null;
-		Variable<?> outputVariable = step.getOutputVariable();
+	public Integer delete(Workspace ws, int stepId) {
+		ProcessingChain processingChain = ws.getDefaultProcessingChain();
+		CalculationStep step = processingChain.getCalculationStep(stepId);
+		processingChain.removeStepById(stepId);
 		calculationStepDao.delete(stepId);
-		Integer chainId = step.getProcessingChain().getId();
-		calculationStepDao.decrementFollowingStepNumbers(chainId, step.getStepNo());
-		if ( outputVariable.isUserDefined() ) {
-			int variableId = outputVariable.getId();
-			if ( calculationStepDao.countOutputVariableSteps(variableId) == 0) {
-				deletedVariable = variableId;
-				deleteOutputVariable(variableId);
+		Variable<?> outputVariable = step.getOutputVariable();
+		if ( outputVariable instanceof QuantitativeVariable ) {
+			Integer deletedVariableId = null;
+			if ( outputVariable.isUserDefined() ) {
+				int variableId = outputVariable.getId();
+				if ( calculationStepDao.countOutputVariableSteps(variableId) == 0) {
+					workspaceService.deleteOutputVariable((QuantitativeVariable) outputVariable, true);
+					deletedVariableId = variableId;
+				}
 			}
-		}
-		return deletedVariable;
-	}
-	
-	/**
-	 * TODO varible must be accessed always with activeworksapce  
-	 */
-
-	private void deleteOutputVariable(int variableId) {
-		Variable<?> variable = variableDao.find(variableId);
-		if ( variable instanceof QuantitativeVariable ) {
-			workspaceService.deleteOutputVariable((QuantitativeVariable) variable, true);
+			return deletedVariableId;
 		} else {
 			String errorMessage = String.format("Quantitative variable expected associated, found %s", 
-					variable.getClass().getName());
+					outputVariable.getClass().getName());
 			throw new IllegalArgumentException(errorMessage);
 		}
 	}
-
+	
 	@Transactional
-	public void updateStepNumber(int stepId, int stepNo) {
-		CalculationStep step = calculationStepDao.find(stepId);
-		ProcessingChain processingChain = step.getProcessingChain();
-		Integer chainId = processingChain.getId();
-		int oldStepNo = step.getStepNo();
-		calculationStepDao.decrementFollowingStepNumbers(chainId, oldStepNo);
-		calculationStepDao.incrementFollowingStepNumbers(chainId, stepNo);
-		step.setStepNo(stepNo);
-		calculationStepDao.update(step);
+	public void updateStepNumber(Workspace ws, int stepId, int stepNo) {
+		ProcessingChain processingChain = ws.getDefaultProcessingChain();
+		CalculationStep step = processingChain.getCalculationStep(stepId);
+		processingChain.shiftStep(step, stepNo);
+		//persist calculation step updates
+		for (CalculationStep s : processingChain.getCalculationSteps()) {
+			calculationStepDao.save(s);
+		}
 	}
 
 }

@@ -41,8 +41,10 @@ $(document).ready(function() {
 	 * Function to be called when active workspace change
 	 */
 	Calc.workspaceChange = function() {
-		Calc.homeCalculationManager.updateSteps();
-		Calc.homeDataManager.refresh();
+		WorkspaceManager.getInstance().refreshActiveWorkspace( function(ws){
+			Calc.homeCalculationManager.updateSteps();
+			Calc.homeDataManager.refresh();			
+		});
 	};
 	
 	/**

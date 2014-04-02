@@ -110,8 +110,8 @@ public class CalculationStep extends UserObject {
 		return this.operationName;
 	}
 
-	public void setStepNo(int index) {
-		this.stepNo = index;
+	public void setStepNo(int stepNo) {
+		this.stepNo = stepNo;
 	}
 
 	public int getStepNo() {

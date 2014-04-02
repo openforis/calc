@@ -10,6 +10,7 @@ import org.openforis.calc.engine.Job;
 import org.openforis.calc.engine.ParameterHashMap;
 import org.openforis.calc.engine.ParameterMap;
 import org.openforis.calc.engine.SamplingDesignDao;
+import org.openforis.calc.engine.SessionManager;
 import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceLockedException;
@@ -18,11 +19,13 @@ import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.SamplingDesign;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.WebApplicationContext;
 
 /**
  * Rest controller for the settings section
@@ -31,12 +34,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * 
  */
 @Controller
+@Scope( WebApplicationContext.SCOPE_SESSION )
 @RequestMapping(value = "/rest/workspace/active")
 public class InventorySettingsController {
-
+	
+	@Autowired
+	private SessionManager sessionManager;
+	
 	@Autowired
 	private WorkspaceService workspaceService;
-	//
+	
 	// @Autowired
 	// private AoiManager aoiManager;
 
@@ -50,7 +57,7 @@ public class InventorySettingsController {
 	public @ResponseBody
 	Response setSamplingDesign(@RequestParam(value = "samplingDesign", required = false) String samplingDesignParam) throws IOException, ParseException, WorkspaceLockedException {
 		Response response = new Response();
-		Workspace workspace = workspaceService.getActiveWorkspace();
+		Workspace workspace = sessionManager.getWorkspace();
 		workspace.setSamplingDesign(null);
 		samplingDesignDao.deleteByWorkspace(workspace.getId());
 

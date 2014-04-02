@@ -12,19 +12,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
-import org.openforis.calc.chain.CalculationStepDao;
+import org.openforis.calc.engine.SessionManager;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
-import org.openforis.calc.engine.WorkspaceDao;
+import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.BinaryVariable;
 import org.openforis.calc.metadata.Entity;
-import org.openforis.calc.metadata.EntityDao;
 import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.TextVariable;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.Variable.Scale;
-import org.openforis.calc.metadata.VariableDao;
 import org.openforis.collect.model.CollectSurvey;
 import org.openforis.collect.relational.model.CodeValueFKColumn;
 import org.openforis.collect.relational.model.DataColumn;
@@ -62,16 +60,10 @@ public class CollectMetadataImportTask extends Task {
 //	private static final String DIMENSION_TABLE_FORMAT = "%s_%s_dim";
 
 	@Autowired
-	private WorkspaceDao workspaceDao;
+	private WorkspaceService workspaceService;
 	
 	@Autowired
-	private EntityDao entityDao;
-	
-	@Autowired
-	private VariableDao variableDao;
-	
-	@Autowired
-	private CalculationStepDao calculationStepDao;
+	private SessionManager sessionManager;
 	
 	@Override
 	public String getName() {
@@ -109,7 +101,6 @@ public class CollectMetadataImportTask extends Task {
 		applyChangesToWorkspace(newEntities);
 		
 		printToLog(newEntities);
-		
 	}
 
 	private void applyChangesToWorkspace(List<Entity> newEntities) {
@@ -143,13 +134,15 @@ public class CollectMetadataImportTask extends Task {
 		}
 
 		//save workspace
-		ws = workspaceDao.save(ws);
+		ws = workspaceService.save(ws);
 		
 		//TODO children entity ids not updated after save...check this
 //		Workspace reloaded = workspaceDao.find(ws.getId());
 //		ws.setEntities(reloaded.getEntities());
 		
-		( (CollectBackupImportJob)getJob() ).refreshWorkspace( ws );
+		sessionManager.setWorkspace(ws);
+		
+		( (CollectBackupImportJob) getJob() ).refreshWorkspace( ws );
 	}
 
 	protected void replaceParentEntityWithPersistedOne(Entity newEntity) {

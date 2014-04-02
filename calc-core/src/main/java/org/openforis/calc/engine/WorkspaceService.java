@@ -39,9 +39,9 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  * @author G. Miceli
  * @author M. Togna
+ * @author S. Ricci
  */
 @Service
-//@Scope( WebApplicationContext.SCOPE_SESSION )
 public class WorkspaceService {
 
 	@Autowired
@@ -77,11 +77,6 @@ public class WorkspaceService {
 	@Autowired
 	private StratumDao stratumDao;
 	
-//	private Workspace activeWorkspace;
-
-	public WorkspaceService() {
-	}
-
 	@Transactional
 	public Workspace get(int workspaceId) {
 		return workspaceDao.find(workspaceId);
@@ -99,43 +94,27 @@ public class WorkspaceService {
 
 	@Transactional
 	public Workspace save(Workspace workspace) {
-		return workspaceDao.save(workspace);
+		Workspace ws = workspaceDao.save(workspace);
+		return ws;
 	}
 
 	@Transactional
 	public List<Workspace> loadAll() {
 		return workspaceDao.loadAll();
 	}
-
-	/**
-	 * It returns the active workspace
-	 * 
-	 * @return
-	 */
-	public Workspace getActiveWorkspace() {
-//		if( activeWorkspace == null ){
-//			activeWorkspace = workspaceDao.fetchActive();
-//			
-//			if ( activeWorkspace != null ) {
-//				List<AoiHierarchy> aoiHierarchies = activeWorkspace.getAoiHierarchies();
-//				// set root aoi to each aoiHierarchy linked to the workspace
-//				for (AoiHierarchy aoiHierarchy : aoiHierarchies) {
-//					aoiDao.assignRootAoi(aoiHierarchy);
-//				}
-//			}
-//		}
-//		return activeWorkspace;
+	
+	@Transactional
+	public Workspace fetchActiveWorkspace() {
+		Workspace ws = workspaceDao.fetchActive();
 		
-			Workspace workspace = workspaceDao.fetchActive();
-			
-			if ( workspace != null ) {
-				List<AoiHierarchy> aoiHierarchies = workspace.getAoiHierarchies();
-				// set root aoi to each aoiHierarchy linked to the workspace
-				for (AoiHierarchy aoiHierarchy : aoiHierarchies) {
-					aoiDao.assignRootAoi(aoiHierarchy);
-				}
+		if ( ws != null ) {
+			List<AoiHierarchy> aoiHierarchies = ws.getAoiHierarchies();
+			// set root aoi to each aoiHierarchy linked to the workspace
+			for (AoiHierarchy aoiHierarchy : aoiHierarchies) {
+				aoiDao.assignRootAoi(aoiHierarchy);
 			}
-		return workspace;
+		}
+		return ws;
 	}
 
 	public Workspace createAndActivate(String name, String uri, String schema) {
@@ -151,8 +130,6 @@ public class WorkspaceService {
 
 		processingChainService.createDefaultProcessingChain(ws);
 
-		setActiveWorkspace(ws);
-		
 		return ws;
 	}
 
@@ -300,10 +277,7 @@ public class WorkspaceService {
 		
 		ws.setActive(true);
 		workspaceDao.save(ws);
-		
-		setActiveWorkspace(ws);
 	}
-	
 	
 	public void resetDataViews(Workspace ws) {
 		for (Entity entity : ws.getEntities()) {
@@ -360,20 +334,20 @@ public class WorkspaceService {
 	}
 
 	@Transactional
-	public Workspace setActiveWorkspaceSamplingUnit(Integer entityId) {
-		Workspace workspace = getActiveWorkspace();
-		SamplingDesign samplingDesign = workspace.getSamplingDesign();
+	public Workspace setActiveWorkspaceSamplingUnit(Workspace ws, Integer entityId) {
+		SamplingDesign samplingDesign = ws.getSamplingDesign();
 		if (samplingDesign == null) {
 			samplingDesign = new SamplingDesign();
 		} 
 		
-		Entity samplingUnit = workspace.getEntityById(entityId);
+		Entity samplingUnit = ws.getEntityById(entityId);
 		samplingDesign.setSamplingUnit(samplingUnit);
 		samplingDesignDao.save(samplingDesign);
-		workspace.setSamplingDesign(samplingDesign);
+		ws.setSamplingDesign(samplingDesign);
 		
-		workspace = workspaceDao.save(workspace);
-		return workspace;
+		ws = workspaceDao.save(ws);
+		
+		return ws;
 	}
 
 	@Transactional
@@ -583,7 +557,4 @@ public class WorkspaceService {
 		}
 	}
 	
-	private void setActiveWorkspace(Workspace activeWorkspace) {
-//		this.activeWorkspace = activeWorkspace;
-	}
 }

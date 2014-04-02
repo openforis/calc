@@ -355,7 +355,6 @@
 			<artifactId>junit</artifactId>
 		</dependency>
 
-		
 		<!-- Derby -->
 <!-- 		<dependency> -->
 <!-- 			<groupId>org.apache.derby</groupId> -->

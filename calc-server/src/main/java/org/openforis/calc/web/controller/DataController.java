@@ -20,6 +20,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.openforis.calc.engine.DataRecord;
+import org.openforis.calc.engine.SessionManager;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.Entity;
@@ -27,6 +28,7 @@ import org.openforis.calc.schema.EntityDataViewDao;
 import org.openforis.calc.schema.TableDataDao;
 import org.openforis.commons.io.csv.CsvWriter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.WebApplicationContext;
 
 /**
  * Rest controller for querying the data 
@@ -43,6 +46,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * 
  */
 @Controller
+@Scope( WebApplicationContext.SCOPE_SESSION )
 @RequestMapping(value = "/rest/data")
 public class DataController {
 	
@@ -50,6 +54,9 @@ public class DataController {
 
 	private static final Log log = LogFactory.getLog(DataController.class);
 
+	@Autowired
+	private SessionManager sessionManager;
+	
 	@Autowired
 	private WorkspaceService workspaceService;
 
@@ -62,7 +69,7 @@ public class DataController {
 	@RequestMapping(value = "/entity/{entityId}/query.json", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	List<DataRecord> queryByEntity(@PathVariable int entityId, @RequestParam String fields, @RequestParam int offset, @RequestParam(value = "numberOfRows" , required=false) Integer numberOfRows, @RequestParam(required=false) Boolean excludeNull, @RequestParam(required=false) String filters) throws ParseException {
-		Workspace workspace = workspaceService.getActiveWorkspace();
+		Workspace workspace = sessionManager.getWorkspace();
 		Entity entity = workspace.getEntityById(entityId);
 		
 		//set limit to 5000 for the query
@@ -97,7 +104,8 @@ public class DataController {
 	@RequestMapping(value = "/entity/{entityId}/count.json", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody 
 	Response getEntityCount( @PathVariable int entityId , @RequestParam(required=false) String filters ) throws ParseException {
-		Workspace workspace = workspaceService.getActiveWorkspace();
+		Workspace workspace = sessionManager.getWorkspace();
+		
 		Entity entity = workspace.getEntityById(entityId);
 		
 		JSONArray arrayFilters = filtersToJsonArray( filters );
@@ -150,7 +158,8 @@ public class DataController {
 	@RequestMapping(value = "/entity/{entityId}/data.csv", method = RequestMethod.POST)
 	public void exportToCSV(HttpServletResponse response, @PathVariable int entityId, @RequestParam String fields, @RequestParam(required=false) Boolean excludeNull , @RequestParam(required=false) String filters) throws ParseException {
 		String[] fieldNames = fields.split(",");
-		Workspace workspace = workspaceService.getActiveWorkspace();
+		Workspace workspace = sessionManager.getWorkspace();
+		
 		Entity entity = workspace.getEntityById(entityId);
 		
 		JSONArray arrayFilters = filtersToJsonArray(filters);

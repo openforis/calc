@@ -2,19 +2,16 @@ package org.openforis.calc.web.controller;
 
 import java.util.List;
 
-import javax.sql.DataSource;
-
 import org.json.simple.JSONObject;
-import org.openforis.calc.engine.CollectTaskService;
-import org.openforis.calc.engine.TaskManager;
+import org.openforis.calc.engine.SessionManager;
 import org.openforis.calc.engine.Workspace;
-import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.VariableDao;
 import org.openforis.calc.schema.CategoryDimensionTable;
 import org.openforis.calc.schema.Schemas;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.WebApplicationContext;
 
 /**
  * 
@@ -29,31 +27,24 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * 
  */
 @Controller
+@Scope( WebApplicationContext.SCOPE_SESSION )
 @RequestMapping(value = "/rest/workspace/active/variable")
 public class VariableController {
 
 	@Autowired
-	private WorkspaceService workspaceService;
-
-	@Autowired
-	private TaskManager taskManager;
-
-	@Autowired
-	private CollectTaskService collectTaskManager;
+	private SessionManager sessionManager;
 	
 	@Autowired
 	private VariableDao variableDao;
 	
-	@Autowired
-	private DataSource dataSource; 
-
 
 	@RequestMapping(value = "/{variableId}/categories.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody 
 	Response getCategories( @PathVariable int variableId , @RequestParam(required=false) Integer max ) {
 		Response response = new Response();
 		
-		Workspace workspace = workspaceService.getActiveWorkspace();
+		Workspace workspace = sessionManager.getWorkspace();
+		
 		Variable<?> variable = workspace.getVariableById( variableId );
 		if( variable instanceof MultiwayVariable ) {
 

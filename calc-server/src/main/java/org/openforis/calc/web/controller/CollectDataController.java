@@ -6,16 +6,19 @@ import org.apache.commons.io.FileUtils;
 import org.openforis.calc.collect.CollectBackupIdmExtractor;
 import org.openforis.calc.engine.CollectTaskService;
 import org.openforis.calc.engine.Job;
+import org.openforis.calc.engine.SessionManager;
 import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.collect.model.CollectSurvey;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -24,12 +27,16 @@ import org.springframework.web.multipart.MultipartFile;
  * 
  */
 @Controller
+@Scope( WebApplicationContext.SCOPE_SESSION )
 @RequestMapping(value = "/rest/collect")
 public class CollectDataController {
 
 	private static final String TEMP_FILE_PREFIX = "collect";
 	private static final String TEMP_FILE_SUFFIX = "metadata";
 
+	@Autowired
+	private SessionManager sessionManager;
+	
 	@Autowired
 	private CollectBackupIdmExtractor idmExtractor;
 
@@ -61,6 +68,7 @@ public class CollectDataController {
 			} else {
 				workspaceService.activate(ws);
 			}
+			sessionManager.setWorkspace(ws);
 
 			// start import job
 			Job job = collectTaskService.createImportJob(ws, survey, tempFile);

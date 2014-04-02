@@ -6,19 +6,21 @@ package org.openforis.calc.web.controller;
 import java.util.List;
 
 import org.openforis.calc.chain.CalculationStep;
-import org.openforis.calc.chain.CalculationStepDao;
 import org.openforis.calc.chain.InvalidProcessingChainException;
+import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.engine.CalcJob;
 import org.openforis.calc.engine.CalcTestJob;
 import org.openforis.calc.engine.DataRecord;
 import org.openforis.calc.engine.Job;
 import org.openforis.calc.engine.ParameterMap;
+import org.openforis.calc.engine.SessionManager;
 import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceLockedException;
 import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.json.ParameterMapJsonParser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,19 +28,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.WebApplicationContext;
 
 /**
  * @author Mino Togna
  * 
  */
 @Controller
+@Scope( WebApplicationContext.SCOPE_SESSION )
 @RequestMapping(value = "/rest/job")
 public class JobController {
+	
+	@Autowired
+	private SessionManager sessionManager;
+	
 	@Autowired
 	private WorkspaceService workspaceService;
-
-	@Autowired
-	private CalculationStepDao calculationStepDao;
 
 	@Autowired
 	private TaskManager taskManager;
@@ -54,8 +59,10 @@ public class JobController {
 	@RequestMapping(value = "/step/{stepId}/execute.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	synchronized Job executeCalculationStep(@PathVariable int stepId) throws InvalidProcessingChainException, WorkspaceLockedException {
-		Workspace workspace = workspaceService.getActiveWorkspace();
-		CalculationStep step = calculationStepDao.find(stepId);
+		Workspace workspace = sessionManager.getWorkspace();
+
+		ProcessingChain processingChain = workspace.getDefaultProcessingChain();
+		CalculationStep step = processingChain.getCalculationStep(stepId);
 		workspaceService.updateResultTable( step );
 		
 		CalcJob job = taskManager.createCalcJob(workspace);
@@ -76,7 +83,7 @@ public class JobController {
 	@RequestMapping(value = "/execute.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	synchronized Job execute() throws InvalidProcessingChainException, WorkspaceLockedException {
-		Workspace workspace = workspaceService.getActiveWorkspace();
+		Workspace workspace = sessionManager.getWorkspace();
 		
 		CalcJob job = taskManager.createDefaultCalcJob( workspace , true );
 		workspaceService.resetResults( workspace );
@@ -98,9 +105,11 @@ public class JobController {
 	@RequestMapping(value = "/test/execute.json", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	synchronized Job testCalculationStep(@RequestParam int stepId, @RequestParam String variables) throws InvalidProcessingChainException, WorkspaceLockedException {
-		Workspace workspace = workspaceService.getActiveWorkspace();
-
-		CalculationStep step = calculationStepDao.find(stepId);
+		Workspace workspace = sessionManager.getWorkspace();
+		
+		ProcessingChain processingChain = workspace.getDefaultProcessingChain();
+		CalculationStep step = processingChain.getCalculationStep(stepId);
+		
 		ParameterMap parameterMap = new ParameterMapJsonParser().parse(variables);
 
 		CalcTestJob job = taskManager.createCalcTestJob(workspace, step, parameterMap);
@@ -133,7 +142,8 @@ public class JobController {
 	}
 	
 	private CalcTestJob getTestJob(String jobId) {
-		Workspace workspace = workspaceService.getActiveWorkspace();
+		Workspace workspace = sessionManager.getWorkspace();
+		
 		Job job = taskManager.getJob(workspace.getId());
 		
 		if( job == null || ! job.getId().toString().equals(jobId) ){

@@ -2,6 +2,7 @@ package org.openforis.calc.chain;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -51,7 +52,7 @@ public class ProcessingChain extends UserObject {
 		this.steps = new ArrayList<CalculationStep>();
 	}
 	
-	public List<CalculationStep> getCalculationSteps() {
+	public synchronized List<CalculationStep> getCalculationSteps() {
 		return Collections.unmodifiableList(steps);
 	}
 	
@@ -67,24 +68,30 @@ public class ProcessingChain extends UserObject {
 		this.workspace = workspace;
 	}
 	
-	public void addCalculationStep(CalculationStep step) {
+	public synchronized void addCalculationStep(CalculationStep step) {
 		step.setProcessingChain(this);
 		steps.add(step);
 	}
 	
-	public CalculationStep getCalculationStep( int stepId ){
-		CalculationStep step = null;
-		
-		for ( CalculationStep tmpStep : steps ) {
-			int id = Integer.valueOf(stepId);
-			if( tmpStep.getId().equals(id)){
-				step = tmpStep;
-				break;
+	public synchronized CalculationStep getCalculationStep( int stepId ) {
+		for ( CalculationStep s : steps ) {
+			if ( s.getId().equals(stepId) ){
+				return s;
 			}
 		}
-		return step;
+		return null;
 	}
 	
+	public synchronized void removeStepById(int stepId) {
+		Iterator<CalculationStep> it = steps.iterator();
+		while ( it.hasNext() ) {
+			CalculationStep s = it.next();
+			if ( s.getId().equals(stepId) ) {
+				it.remove();
+			}
+		}
+	}
+
 	public int getNextStepNo() {
 		int result = 0;
 		for (CalculationStep calculationStep : getCalculationSteps()) {
@@ -93,6 +100,21 @@ public class ProcessingChain extends UserObject {
 		}
 		return result + 1;
 	}
+	
+	public void shiftStep(CalculationStep step, int stepNo) {
+		int oldStepNo = step.getStepNo();
 
+		for ( CalculationStep s : steps ) {
+			if ( s.getStepNo() > oldStepNo ) {
+				s.setStepNo(s.getStepNo() - 1);
+			}
+		}
+		for ( CalculationStep s : steps ) {
+			if ( s.getStepNo() >= stepNo ) {
+				s.setStepNo(s.getStepNo() + 1);
+			}
+		}
+		step.setStepNo(stepNo);
+	}
 
 }
