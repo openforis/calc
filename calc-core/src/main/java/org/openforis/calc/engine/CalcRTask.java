@@ -98,7 +98,7 @@ public class CalcRTask extends Task {
 		addScript(r().library("RPostgreSQL"));
 		
 		// common functions //org/openforis/calc/r/functions.R
-		addScript(RScript.getCalcRScript());
+		addScript(RScript.getCalcCommonScript());
 		// create driver
 		RVariable driver = r().variable("driver");
 		addScript(r().setValue(driver, r().dbDriver("PostgreSQL")));

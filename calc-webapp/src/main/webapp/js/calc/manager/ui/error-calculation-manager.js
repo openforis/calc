@@ -76,7 +76,7 @@ ErrorCalculationManager.prototype.bindEvents = function() {
 		$.ajax({
 			url		: "rest/error/execute.json",
 			dataType: "json",
-			data	: { "arguments" : params}	
+			data	: { "params" : params }
 		}).done( function(response) {
 			$this.showResults( response );
 			UI.unlock();

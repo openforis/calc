@@ -302,7 +302,7 @@ public class CalcJob extends Job {
 //		initTask.addScript(r().library("lmfor"));
 		initTask.addScript(r().library("RPostgreSQL"));
 		// common functions //org/openforis/calc/r/functions.R
-		initTask.addScript(RScript.getCalcRScript());
+		initTask.addScript(RScript.getCalcCommonScript());
 		// create driver
 		RVariable driver = r().variable("driver");
 		initTask.addScript(r().setValue(driver, r().dbDriver("PostgreSQL")));

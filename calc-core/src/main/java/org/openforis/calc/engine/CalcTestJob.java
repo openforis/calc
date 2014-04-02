@@ -93,7 +93,7 @@ public class CalcTestJob extends CalcJob {
 		protected void execute() throws Throwable {
 			REnvironment rEnvironment = getrEnvironment();
 			
-			addScript(RScript.getCalcRScript());
+			addScript(RScript.getCalcCommonScript());
 			
 			//generate the data frame using all possible combinations according to the provided variable settings
 			RDataFrame dataFrame = new CombinationsGenerator().generateCombinations();

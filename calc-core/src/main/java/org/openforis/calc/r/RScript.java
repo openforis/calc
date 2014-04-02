@@ -31,6 +31,11 @@ public class RScript {
 	protected static final String NEW_LINE = "\n";
 	protected static final String NULL = "NULL";
 	protected static final String NOT = "!";
+	
+	// common static R scripts
+	private static RScript CALC_COMMON_SCRIPT;
+	private static RScript ERROR_ESTIMATION_SCRIPT;
+	
 	// previous r script
 	private RScript previous;
 	// stringbuilder that contains the script
@@ -253,30 +258,28 @@ public class RScript {
 		}
 	}
 
-	public static RScript getCalcRScript() {
-		InputStream stream = RScript.class.getClassLoader().getResourceAsStream("org/openforis/calc/r/functions.R");
-		try {
-			String string = IOUtils.toString(stream);
-			RScript rScript = new RScript().rScript( string );
-			return rScript;
-		} catch (IOException e) {
-			throw new IllegalStateException("unable to find org/openforis/calc/r/functions.R", e);
-		} finally {
-			try {
-				stream.close();
-			} catch (IOException e) {
-			}
+	public static RScript getCalcCommonScript() {
+		if( CALC_COMMON_SCRIPT == null ) {
+			CALC_COMMON_SCRIPT = loadScript( "org/openforis/calc/r/functions.R" );
 		}
+		return CALC_COMMON_SCRIPT;
 	}
 	
-	public static RScript getErrorEstimation() {
-		InputStream stream = RScript.class.getClassLoader().getResourceAsStream("org/openforis/calc/r/error-point-estimators.R");
+	public static RScript getErrorEstimationScript() {
+		if( ERROR_ESTIMATION_SCRIPT == null ) {
+			ERROR_ESTIMATION_SCRIPT = loadScript( "org/openforis/calc/r/error-point-estimators.R" );
+		}
+		return ERROR_ESTIMATION_SCRIPT;
+	}
+
+	private static RScript loadScript( String filePath ) {
+		InputStream stream = RScript.class.getClassLoader().getResourceAsStream( filePath );
 		try {
 			String string = IOUtils.toString(stream);
 			RScript rScript = new RScript().rScript(string);
 			return rScript;
 		} catch (IOException e) {
-			throw new IllegalStateException("unable to find org/openforis/calc/r/functions.R", e);
+			throw new IllegalStateException( "unable to find " + filePath, e );
 		} finally {
 			try {
 				stream.close();
