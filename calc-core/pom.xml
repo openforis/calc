@@ -15,11 +15,13 @@
 	<properties>
 		<mondrian-source-files-dir>${project.build.directory}/generated-sources/mondrian</mondrian-source-files-dir>
 		<jooq-codegen.target.directory>src/generated/java</jooq-codegen.target.directory>
-		<jooq-codegen.target.package>org.openforis.calc.persistence.jooq</jooq-codegen.target.package>
+		<jooq-codegen.target.package>org.openforis.calc.persistence.test.jooq</jooq-codegen.target.package>
+<!-- 		<jooq-codegen.target.package>org.openforis.calc.persistence.jooq</jooq-codegen.target.package> -->
 	</properties>
 	
 	<build>
 		<plugins>
+		
 			<!-- Read dev properties -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -40,10 +42,9 @@
 					<quiet>true</quiet>
 				</configuration>
 			</plugin>
-				
+			
+			<!-- Jooq settings -->		
 			<plugin>
-		
-				<!-- Specify the maven code generator plugin -->
 				<groupId>org.jooq</groupId>
 				<artifactId>jooq-codegen-maven</artifactId>
 				<version>${jooq.version}</version>
@@ -53,16 +54,9 @@
 						<artifactId>postgresql</artifactId>
 						<version>${postgres-driver.version}</version>
 					</dependency>
-					<dependency>
-						<groupId>org.openforis.build-tools</groupId>
-						<artifactId>jooq-codegen</artifactId>
-						<version>1.0-SNAPSHOT</version>
-					</dependency>
 				</dependencies>
 		
-				<!-- Specify the plugin configuration -->
 				<configuration>
-		
 					<!-- JDBC connection parameters -->
 					<jdbc>
 						<driver>${calc.jdbc.driver}</driver>
@@ -73,7 +67,8 @@
 		
 					<!-- Generator parameters -->
 					<generator>
-						<name>org.jooq.util.DefaultGenerator</name>
+<!-- 						<name>org.jooq.util.DefaultGenerator</name> -->
+							<name>org.openforis.jooq.codegen.CustomGenerator</name>
 						<strategy>
 							<name>org.openforis.jooq.codegen.CustomGeneratorStrategy</name>
 						</strategy>
@@ -87,6 +82,8 @@
 							<relations>true</relations>
 							<records>false</records>
 							<deprecated>false</deprecated>
+							<daos>true</daos>
+							<pojos>true</pojos>
 						</generate>
 						<target>
 							<packageName>${jooq-codegen.target.package}</packageName>
@@ -289,6 +286,11 @@
 			<groupId>org.jooq</groupId>
 			<artifactId>jooq</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.jooq</groupId>
+			<artifactId>jooq-codegen-maven</artifactId>
+			<scope>runtime</scope>
+	  	</dependency>
 		<dependency>
 			<groupId>javax.annotation</groupId>
 			<artifactId>jsr250-api</artifactId>
