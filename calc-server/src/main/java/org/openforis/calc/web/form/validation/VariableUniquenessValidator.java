@@ -7,8 +7,8 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 import org.hibernate.validator.internal.engine.constraintvalidation.ConstraintValidatorContextImpl;
-import org.openforis.calc.engine.SessionManager;
 import org.openforis.calc.engine.Workspace;
+import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.web.form.VariableForm;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ public class VariableUniquenessValidator implements ConstraintValidator<Variable
 	private static final String UNIQUE_NAME_MESSAGE = "must be unique";
 	
 	@Autowired
-	private SessionManager sessionManager;
+	private WorkspaceService workspaceService;
 	
 	@Override
 	public void initialize(VariableUniquenessConstraint constraintAnnotation) {
@@ -45,7 +45,7 @@ public class VariableUniquenessValidator implements ConstraintValidator<Variable
 	}
 	
 	private boolean isNameUnique(Integer id, String name) {
-		Workspace ws = sessionManager.getWorkspace();
+		Workspace ws = workspaceService.getActiveWorkspace();
 		Variable<?> v = ws.getVariableByName(name);
 		return v == null || v.getId().equals(id);
 	}

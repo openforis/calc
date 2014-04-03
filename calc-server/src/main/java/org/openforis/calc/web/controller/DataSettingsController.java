@@ -3,7 +3,6 @@ package org.openforis.calc.web.controller;
 import java.io.IOException;
 import java.util.List;
 
-import org.openforis.calc.engine.SessionManager;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.AoiHierarchy;
@@ -30,9 +29,6 @@ import org.springframework.web.context.WebApplicationContext;
 public class DataSettingsController {
 
 	@Autowired
-	private SessionManager sessionManager;
-	
-	@Autowired
 	private WorkspaceService workspaceService;
 
 	@Autowired
@@ -41,7 +37,7 @@ public class DataSettingsController {
 	@RequestMapping(value = "/aoi/import.json", method = RequestMethod.POST, produces = "application/json")
 	public @ResponseBody
 	AoiHierarchy aoisCsvImport(@RequestParam("filepath") String filepath, @RequestParam("captions") String[] captions) throws IOException {
-		Workspace workspace = sessionManager.getWorkspace();
+		Workspace workspace = workspaceService.getActiveWorkspace();
 		
 		aoiManager.csvImport(workspace, filepath, captions);
 		
@@ -53,7 +49,7 @@ public class DataSettingsController {
 	@RequestMapping(value = "/strata/import.json", method = RequestMethod.POST, produces = "application/json")
 	public @ResponseBody
 	List<Stratum> strataCsvImport(@RequestParam("filepath") String filepath) throws IOException {
-		Workspace workspace = sessionManager.getWorkspace();
+		Workspace workspace = workspaceService.getActiveWorkspace();
 		
 		workspaceService.importStrata(workspace, filepath);
 		
@@ -63,7 +59,7 @@ public class DataSettingsController {
 	@RequestMapping(value = "/phase1plotstable.json", method = RequestMethod.POST, produces = "application/json")
 	public @ResponseBody
 	Workspace setPhase1PlotsTable(@RequestParam("table") String table) throws IOException {
-		Workspace workspace = sessionManager.getWorkspace();
+		Workspace workspace = workspaceService.getActiveWorkspace();
 		
 		workspace.setPhase1PlotTable(table);
 		

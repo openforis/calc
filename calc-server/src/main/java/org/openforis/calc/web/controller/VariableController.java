@@ -3,8 +3,8 @@ package org.openforis.calc.web.controller;
 import java.util.List;
 
 import org.json.simple.JSONObject;
-import org.openforis.calc.engine.SessionManager;
 import org.openforis.calc.engine.Workspace;
+import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.VariableDao;
@@ -32,7 +32,7 @@ import org.springframework.web.context.WebApplicationContext;
 public class VariableController {
 
 	@Autowired
-	private SessionManager sessionManager;
+	private WorkspaceService workspaceService;
 	
 	@Autowired
 	private VariableDao variableDao;
@@ -43,7 +43,7 @@ public class VariableController {
 	Response getCategories( @PathVariable int variableId , @RequestParam(required=false) Integer max ) {
 		Response response = new Response();
 		
-		Workspace workspace = sessionManager.getWorkspace();
+		Workspace workspace = workspaceService.getActiveWorkspace();
 		
 		Variable<?> variable = workspace.getVariableById( variableId );
 		if( variable instanceof MultiwayVariable ) {

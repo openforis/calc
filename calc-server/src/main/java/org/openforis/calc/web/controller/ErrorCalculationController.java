@@ -27,6 +27,7 @@ import org.openforis.calc.engine.ParameterHashMap;
 import org.openforis.calc.engine.SessionManager;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceLockedException;
+import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.Aoi;
 import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.CategoricalVariable;
@@ -70,7 +71,7 @@ import org.springframework.web.context.WebApplicationContext;
 public class ErrorCalculationController {
 	
 	@Autowired
-	private SessionManager sessionManager;
+	private WorkspaceService workspaceService;
 	
 	@Autowired
 	private CalculationStepDao calculationStepDao;
@@ -96,7 +97,7 @@ public class ErrorCalculationController {
 	public @ResponseBody
 	@SuppressWarnings("unchecked")
 	synchronized Object execute(@RequestParam String arguments) throws InvalidProcessingChainException, WorkspaceLockedException, ParseException, RException {
-		Workspace workspace = sessionManager.getWorkspace();
+		Workspace workspace = workspaceService.getActiveWorkspace();
 
 		ParameterHashMap parameterMap = new ParameterHashMap( (JSONObject) new JSONParser().parse( arguments ) );
 		

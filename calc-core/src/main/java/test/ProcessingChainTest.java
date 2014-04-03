@@ -50,7 +50,7 @@ extends AbstractTransactionalJUnit4SpringContextTests {
 	
 	@Before
 	public void init() {
-		workspace = workspaceService.fetchActiveWorkspace();		
+		workspace = workspaceService.getActiveWorkspace();		
 	}
 	
 //	@Test

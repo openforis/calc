@@ -36,7 +36,7 @@ public class WorkInProgressTest extends AbstractTransactionalJUnit4SpringContext
 
 	@Test
 	public void testStep() throws InvalidProcessingChainException, WorkspaceLockedException {
-		Workspace workspace = workspaceService.fetchActiveWorkspace();
+		Workspace workspace = workspaceService.getActiveWorkspace();
 		
 		
 		CalcJob job = taskManager.createCalcJob(workspace);

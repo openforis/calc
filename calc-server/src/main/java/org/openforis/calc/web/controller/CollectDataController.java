@@ -6,7 +6,6 @@ import org.apache.commons.io.FileUtils;
 import org.openforis.calc.collect.CollectBackupIdmExtractor;
 import org.openforis.calc.engine.CollectTaskService;
 import org.openforis.calc.engine.Job;
-import org.openforis.calc.engine.SessionManager;
 import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceService;
@@ -34,9 +33,6 @@ public class CollectDataController {
 	private static final String TEMP_FILE_PREFIX = "collect";
 	private static final String TEMP_FILE_SUFFIX = "metadata";
 
-	@Autowired
-	private SessionManager sessionManager;
-	
 	@Autowired
 	private CollectBackupIdmExtractor idmExtractor;
 
@@ -68,13 +64,10 @@ public class CollectDataController {
 			} else {
 				workspaceService.activate(ws);
 			}
-			sessionManager.setWorkspace(ws);
 
 			// start import job
 			Job job = collectTaskService.createImportJob(ws, survey, tempFile);
 			taskManager.startJob(job);
-			
-//			workspaceService.activate(ws);
 			
 			return job;
 		} catch (Exception e) {

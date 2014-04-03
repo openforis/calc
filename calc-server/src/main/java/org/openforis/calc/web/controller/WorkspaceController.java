@@ -13,7 +13,6 @@ import org.json.simple.parser.ParseException;
 import org.openforis.calc.engine.CollectTaskService;
 import org.openforis.calc.engine.CsvDataImportTask;
 import org.openforis.calc.engine.Job;
-import org.openforis.calc.engine.SessionManager;
 import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceLockedException;
@@ -55,14 +54,11 @@ public class WorkspaceController {
 	@Autowired
 	private DataSource dataSource; 
 	
-	@Autowired
-	private SessionManager sessionManager;
-
-	
 	@RequestMapping(value = "/active.json", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	Response getActiveWorkspace() {
-		Workspace workspace = sessionManager.getWorkspace();
+		Workspace workspace = workspaceService.getActiveWorkspace();
+		
 		Response response = new Response();
 		response.addField("workspace", workspace);
 		return response;
@@ -72,7 +68,7 @@ public class WorkspaceController {
 	@RequestMapping(value = "/job.json", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	Job getJob() {
-		Workspace workspace = sessionManager.getWorkspace();
+		Workspace workspace = workspaceService.getActiveWorkspace();
 		if (workspace == null) {
 			return null;
 		} else {
@@ -90,16 +86,16 @@ public class WorkspaceController {
 	@RequestMapping(value = "/active/samplingDesign/samplingUnit/{entityId}.json", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	Workspace activeWorkspaceSetSamplingUnit(@PathVariable Integer entityId) {
-		Workspace workspace = sessionManager.getWorkspace();
+		Workspace workspace = workspaceService.getActiveWorkspace();
 		workspace = workspaceService.setActiveWorkspaceSamplingUnit(workspace, entityId);
-		sessionManager.setWorkspace(workspace);
+//		sessionManager.setWorkspace(workspace);
 		return workspace;
 	}
 
 	@RequestMapping(value = "/active/entity/{entityId}/variable/{variableId}/aggregates/{agg}.json", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	QuantitativeVariable activeWorkspaceCreateVariableAggregate(@PathVariable int entityId, @PathVariable int variableId, @PathVariable String agg) {
-		Workspace workspace = sessionManager.getWorkspace();
+		Workspace workspace = workspaceService.getActiveWorkspace();
 		QuantitativeVariable variable = workspaceService.createVariableAggregate(workspace, entityId, variableId, agg);
 		return variable;
 	}
@@ -107,7 +103,7 @@ public class WorkspaceController {
 	@RequestMapping(value = "/active/entity/{entityId}/variable/{variableId}/aggregates/{agg}.json", method = RequestMethod.DELETE, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	QuantitativeVariable activeWorkspaceDeleteVariableAggregate(@PathVariable int entityId, @PathVariable int variableId, @PathVariable String agg) {
-		Workspace workspace = sessionManager.getWorkspace();
+		Workspace workspace = workspaceService.getActiveWorkspace();
 		QuantitativeVariable variable = workspaceService.deleteVariableAggregate(workspace, entityId, variableId, agg);
 		return variable;
 	}
@@ -116,7 +112,7 @@ public class WorkspaceController {
 	@RequestMapping(value = "/active/entity/{entityId}/variable/{variableId}/variable-per-ha", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	QuantitativeVariable activeWorkspaceAddVariablePerHa(@PathVariable int entityId, @PathVariable int variableId) {
-		Workspace workspace = sessionManager.getWorkspace();
+		Workspace workspace = workspaceService.getActiveWorkspace();
 		Entity entity = workspace.getEntityById(entityId);
 		QuantitativeVariable variable = entity.getQtyVariableById(variableId);
 		variable = workspaceService.addVariablePerHa(variable);
@@ -126,7 +122,7 @@ public class WorkspaceController {
 	@RequestMapping(value = "/active/entity/{entityId}/variable/{variableId}/variable-per-ha", method = RequestMethod.DELETE, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	QuantitativeVariable activeWorkspaceDeleteVariablePerHa(@PathVariable int entityId, @PathVariable int variableId) {
-		Workspace workspace = sessionManager.getWorkspace();
+		Workspace workspace = workspaceService.getActiveWorkspace();
 		Entity entity = workspace.getEntityById(entityId);
 		QuantitativeVariable variable = entity.getQtyVariableById(variableId);
 		variable = workspaceService.deleteVariablePerHa(variable);
@@ -138,7 +134,7 @@ public class WorkspaceController {
 	Response activeWorkspaceAddQuantitativeVariable(@PathVariable int entityId, @Valid VariableForm form, BindingResult result) {
 		Response response = new Response(result.getAllErrors());
 		if (!response.hasErrors()) {
-			Workspace ws = sessionManager.getWorkspace();
+			Workspace ws = workspaceService.getActiveWorkspace();
 			Entity entity = ws.getEntityById(entityId);
 			String variableName = form.getName();
 			QuantitativeVariable variable = workspaceService.addOutputVariable(entity, variableName);
@@ -151,7 +147,7 @@ public class WorkspaceController {
 	@RequestMapping(value = "/active/entity/{entityId}/plot-area.json", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	Entity activeWorkspaceSetEntityPlotAreaScript(@PathVariable int entityId, @RequestParam(required=false, value="plot-area-script") String plotAreaScript) {
-		Workspace workspace = sessionManager.getWorkspace();
+		Workspace workspace = workspaceService.getActiveWorkspace();
 		Entity entity = workspace.getEntityById(entityId);
 		entity = workspaceService.setEntityPlotAreaScript(entity, plotAreaScript);
 		return entity;
@@ -160,7 +156,7 @@ public class WorkspaceController {
 	@RequestMapping(value = "/active/locked.json", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	Response activeWorkspaceIsLocked() {
-		Workspace workspace = sessionManager.getWorkspace();
+		Workspace workspace = workspaceService.getActiveWorkspace();
 		boolean locked = ( workspace == null ) ? false : taskManager.isLocked(workspace.getId()) ;
 
 		Response response = new Response();
@@ -173,7 +169,7 @@ public class WorkspaceController {
 	Job importTable(@RequestParam("filepath") String filepath, @RequestParam("table") String tableName, @RequestParam("columns") String columnOptions) throws ParseException,
 			IOException, WorkspaceLockedException {
 		
-		Workspace workspace = sessionManager.getWorkspace();
+		Workspace workspace = workspaceService.getActiveWorkspace();
 
 		Job job = taskManager.createJob(workspace);
 

@@ -13,7 +13,6 @@ import org.openforis.calc.engine.CalcTestJob;
 import org.openforis.calc.engine.DataRecord;
 import org.openforis.calc.engine.Job;
 import org.openforis.calc.engine.ParameterMap;
-import org.openforis.calc.engine.SessionManager;
 import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceLockedException;
@@ -40,9 +39,6 @@ import org.springframework.web.context.WebApplicationContext;
 public class JobController {
 	
 	@Autowired
-	private SessionManager sessionManager;
-	
-	@Autowired
 	private WorkspaceService workspaceService;
 
 	@Autowired
@@ -59,7 +55,7 @@ public class JobController {
 	@RequestMapping(value = "/step/{stepId}/execute.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	synchronized Job executeCalculationStep(@PathVariable int stepId) throws InvalidProcessingChainException, WorkspaceLockedException {
-		Workspace workspace = sessionManager.getWorkspace();
+		Workspace workspace = workspaceService.getActiveWorkspace();
 
 		ProcessingChain processingChain = workspace.getDefaultProcessingChain();
 		CalculationStep step = processingChain.getCalculationStep(stepId);
@@ -83,7 +79,7 @@ public class JobController {
 	@RequestMapping(value = "/execute.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	synchronized Job execute() throws InvalidProcessingChainException, WorkspaceLockedException {
-		Workspace workspace = sessionManager.getWorkspace();
+		Workspace workspace = workspaceService.getActiveWorkspace();
 		
 		CalcJob job = taskManager.createDefaultCalcJob( workspace , true );
 		workspaceService.resetResults( workspace );
@@ -105,7 +101,7 @@ public class JobController {
 	@RequestMapping(value = "/test/execute.json", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	synchronized Job testCalculationStep(@RequestParam int stepId, @RequestParam String variables) throws InvalidProcessingChainException, WorkspaceLockedException {
-		Workspace workspace = sessionManager.getWorkspace();
+		Workspace workspace = workspaceService.getActiveWorkspace();
 		
 		ProcessingChain processingChain = workspace.getDefaultProcessingChain();
 		CalculationStep step = processingChain.getCalculationStep(stepId);
@@ -142,7 +138,7 @@ public class JobController {
 	}
 	
 	private CalcTestJob getTestJob(String jobId) {
-		Workspace workspace = sessionManager.getWorkspace();
+		Workspace workspace = workspaceService.getActiveWorkspace();
 		
 		Job job = taskManager.getJob(workspace.getId());
 		

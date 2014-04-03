@@ -31,8 +31,10 @@ import org.openforis.calc.schema.Schemas;
 import org.openforis.commons.io.csv.CsvReader;
 import org.openforis.commons.io.flat.FlatRecord;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.WebApplicationContext;
 
 /**
  * Manages {@link Workspace} instances.
@@ -42,8 +44,10 @@ import org.springframework.transaction.annotation.Transactional;
  * @author S. Ricci
  */
 @Service
+@Scope( WebApplicationContext.SCOPE_SESSION )
 public class WorkspaceService {
-
+	private static final String WORKSPACE_SESSION_ATTR = "workspace";
+	
 	@Autowired
 	private WorkspaceDao workspaceDao;
 
@@ -77,6 +81,9 @@ public class WorkspaceService {
 	@Autowired
 	private StratumDao stratumDao;
 	
+	@Autowired
+	private SessionManager sessionManager;
+	
 	@Transactional
 	public Workspace get(int workspaceId) {
 		return workspaceDao.find(workspaceId);
@@ -103,8 +110,21 @@ public class WorkspaceService {
 		return workspaceDao.loadAll();
 	}
 	
+	public Workspace getActiveWorkspace() {
+		Workspace workspace = (Workspace) sessionManager.getObject(WORKSPACE_SESSION_ATTR);
+		if ( workspace == null ) {
+			workspace = fetchActiveWorkspace();
+			updateSessionWorkspace(workspace);
+		}
+		return workspace;
+	}
+
+	public void updateSessionWorkspace(Workspace workspace) {
+		sessionManager.setObject( WORKSPACE_SESSION_ATTR , workspace);
+	}
+	
 	@Transactional
-	public Workspace fetchActiveWorkspace() {
+	protected Workspace fetchActiveWorkspace() {
 		Workspace ws = workspaceDao.fetchActive();
 		
 		if ( ws != null ) {
@@ -118,15 +138,13 @@ public class WorkspaceService {
 	}
 
 	public Workspace createAndActivate(String name, String uri, String schema) {
-		workspaceDao.deactivateAll();
-
 		Workspace ws = new Workspace();
-		ws.setActive(true);
 		ws.setCollectSurveyUri(uri);
 		ws.setInputSchema(schema);
 		ws.setName(name);
 		ws.setCaption(name);
-		ws = workspaceDao.save(ws);
+		
+		activate( ws );
 
 		processingChainService.createDefaultProcessingChain(ws);
 
@@ -277,6 +295,8 @@ public class WorkspaceService {
 		
 		ws.setActive(true);
 		workspaceDao.save(ws);
+		
+		updateSessionWorkspace( ws );
 	}
 	
 	public void resetDataViews(Workspace ws) {
@@ -346,6 +366,8 @@ public class WorkspaceService {
 		ws.setSamplingDesign(samplingDesign);
 		
 		ws = workspaceDao.save(ws);
+		
+		updateSessionWorkspace(ws);
 		
 		return ws;
 	}
@@ -556,5 +578,5 @@ public class WorkspaceService {
 			entityDataViewDao.createOrUpdateView(entity);
 		}
 	}
-	
+
 }

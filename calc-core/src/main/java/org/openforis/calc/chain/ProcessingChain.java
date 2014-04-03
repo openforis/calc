@@ -39,7 +39,7 @@ public class ProcessingChain extends UserObject {
 	private Workspace workspace;
 	
 	@OneToMany(mappedBy = "processingChain", fetch = FetchType.EAGER)
-	@Fetch(value = FetchMode.SELECT)
+	@Fetch(FetchMode.SELECT)
 	@OrderBy("stepNo")
 	private List<CalculationStep> steps;
 	
@@ -49,7 +49,10 @@ public class ProcessingChain extends UserObject {
 
 	public ProcessingChain() {
 		this.parameters = new ParameterHashMap();
-		this.steps = new ArrayList<CalculationStep>();
+	}
+	
+	public List<CalculationStep> getSteps() {
+		return steps;
 	}
 	
 	public synchronized List<CalculationStep> getCalculationSteps() {
@@ -69,6 +72,9 @@ public class ProcessingChain extends UserObject {
 	}
 	
 	public synchronized void addCalculationStep(CalculationStep step) {
+		if ( steps == null ) {
+			this.steps = new ArrayList<CalculationStep>();
+		}
 		step.setProcessingChain(this);
 		steps.add(step);
 	}

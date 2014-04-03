@@ -40,7 +40,7 @@ function DataVisualisationManager( container ) {
 DataVisualisationManager.prototype.init = function() {
 	var $this = this;
 	
-	this.refresh();
+	//this.refresh();
 	
 	// events handlers
 	this.dataTableBtn.click(function(e) {

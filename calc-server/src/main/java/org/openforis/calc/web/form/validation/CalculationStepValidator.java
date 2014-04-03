@@ -11,8 +11,8 @@ import javax.validation.ConstraintValidatorContext;
 import org.hibernate.validator.internal.engine.constraintvalidation.ConstraintValidatorContextImpl;
 import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.ProcessingChain;
-import org.openforis.calc.engine.SessionManager;
 import org.openforis.calc.engine.Workspace;
+import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.web.form.CalculationStepForm;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -26,7 +26,7 @@ public class CalculationStepValidator implements ConstraintValidator<Calculation
 	private static final String UNIQUE_CAPTION_MESSAGE = "must be unique";
 	
 	@Autowired
-	private SessionManager sessionManager;
+	private WorkspaceService workspaceService;
 	
 	@Override
 	public void initialize(CalculationStepContraint constraintAnnotation) {
@@ -45,7 +45,7 @@ public class CalculationStepValidator implements ConstraintValidator<Calculation
 	}
 
 	private boolean isCaptionUnique(Integer calculationStepId, String caption) {
-		Workspace ws = sessionManager.getWorkspace();
+		Workspace ws = workspaceService.getActiveWorkspace();
 		ProcessingChain processingChain = ws.getDefaultProcessingChain();
 		List<CalculationStep> steps = processingChain.getCalculationSteps();
 		for (CalculationStep step : steps) {

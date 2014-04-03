@@ -527,7 +527,7 @@ public class Entity extends NamedUserObject {
 		List<QuantitativeVariable> variables = new ArrayList<QuantitativeVariable>();
 		
 		ProcessingChain processingChain = getWorkspace().getDefaultProcessingChain();
-		List<CalculationStep> steps = processingChain.getCalculationSteps();
+		List<CalculationStep> steps = processingChain.getSteps();
 		for (CalculationStep step : steps) {
 			QuantitativeVariable variable = (QuantitativeVariable) step.getOutputVariable();
 			Entity outputEntity = variable.getEntity();

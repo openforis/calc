@@ -12,7 +12,6 @@ import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.CalculationStepDao;
 import org.openforis.calc.chain.CalculationStepService;
 import org.openforis.calc.chain.ProcessingChain;
-import org.openforis.calc.engine.SessionManager;
 import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceService;
@@ -42,9 +41,6 @@ import org.springframework.web.context.WebApplicationContext;
 public class CalculationStepController {
 
 	@Autowired
-	private SessionManager sessionManager;
-	
-	@Autowired
 	private WorkspaceService workspaceService;
 	
 	@Autowired
@@ -61,7 +57,7 @@ public class CalculationStepController {
 	Response save(@Valid CalculationStepForm form, BindingResult result) {
 		Response response = validate(form, result);
 		if (!response.hasErrors()) {
-			Workspace ws = sessionManager.getWorkspace();
+			Workspace ws = workspaceService.getActiveWorkspace();
 			ProcessingChain chain = ws.getDefaultProcessingChain();
 			CalculationStep step;
 			Integer stepId = form.getId();
@@ -101,7 +97,7 @@ public class CalculationStepController {
 	@RequestMapping(value = "/load.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	List<CalculationStep> loadAll() {
-		Workspace workspace = sessionManager.getWorkspace();
+		Workspace workspace = workspaceService.getActiveWorkspace();
 		if( workspace != null ) {
 			ProcessingChain chain = workspace.getDefaultProcessingChain();
 			return calculationStepDao.findByProcessingChain( chain.getId() ) ;
@@ -120,7 +116,7 @@ public class CalculationStepController {
 	@RequestMapping(value = "/{stepId}/delete.json", method = RequestMethod.POST)
 	public @ResponseBody Response delete(@PathVariable int stepId) {
 		Response response = new Response();
-		Workspace ws = sessionManager.getWorkspace();
+		Workspace ws = workspaceService.getActiveWorkspace();
 		Integer variableId = calculationStepService.delete(ws, stepId);
 		response.addField( "deletedStep" , stepId );
 		response.addField("deletedVariable", variableId);
@@ -130,7 +126,7 @@ public class CalculationStepController {
 	@RequestMapping(value = "/{stepId}/stepno/{stepNo}.json", method = RequestMethod.POST)
 	public @ResponseBody Response updateStepNo(@PathVariable int stepId, @PathVariable int stepNo) {
 		Response response = new Response();
-		Workspace ws = sessionManager.getWorkspace();
+		Workspace ws = workspaceService.getActiveWorkspace();
 		calculationStepService.updateStepNumber(ws, stepId, stepNo);
 		return response;
 	}

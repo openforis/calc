@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
-import org.openforis.calc.engine.SessionManager;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceService;
@@ -61,9 +60,6 @@ public class CollectMetadataImportTask extends Task {
 
 	@Autowired
 	private WorkspaceService workspaceService;
-	
-	@Autowired
-	private SessionManager sessionManager;
 	
 	@Override
 	public String getName() {
@@ -135,12 +131,12 @@ public class CollectMetadataImportTask extends Task {
 
 		//save workspace
 		ws = workspaceService.save(ws);
-		
+		workspaceService.updateSessionWorkspace( ws );
 		//TODO children entity ids not updated after save...check this
 //		Workspace reloaded = workspaceDao.find(ws.getId());
 //		ws.setEntities(reloaded.getEntities());
 		
-		sessionManager.setWorkspace(ws);
+//		sessionManager.setWorkspace(ws);
 		
 		( (CollectBackupImportJob) getJob() ).refreshWorkspace( ws );
 	}

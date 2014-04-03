@@ -20,7 +20,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.openforis.calc.engine.DataRecord;
-import org.openforis.calc.engine.SessionManager;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.Entity;
@@ -55,9 +54,6 @@ public class DataController {
 	private static final Log log = LogFactory.getLog(DataController.class);
 
 	@Autowired
-	private SessionManager sessionManager;
-	
-	@Autowired
 	private WorkspaceService workspaceService;
 
 	@Autowired
@@ -69,7 +65,7 @@ public class DataController {
 	@RequestMapping(value = "/entity/{entityId}/query.json", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	List<DataRecord> queryByEntity(@PathVariable int entityId, @RequestParam String fields, @RequestParam int offset, @RequestParam(value = "numberOfRows" , required=false) Integer numberOfRows, @RequestParam(required=false) Boolean excludeNull, @RequestParam(required=false) String filters) throws ParseException {
-		Workspace workspace = sessionManager.getWorkspace();
+		Workspace workspace = workspaceService.getActiveWorkspace();
 		Entity entity = workspace.getEntityById(entityId);
 		
 		//set limit to 5000 for the query
@@ -104,7 +100,7 @@ public class DataController {
 	@RequestMapping(value = "/entity/{entityId}/count.json", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody 
 	Response getEntityCount( @PathVariable int entityId , @RequestParam(required=false) String filters ) throws ParseException {
-		Workspace workspace = sessionManager.getWorkspace();
+		Workspace workspace = workspaceService.getActiveWorkspace();
 		
 		Entity entity = workspace.getEntityById(entityId);
 		
@@ -158,7 +154,7 @@ public class DataController {
 	@RequestMapping(value = "/entity/{entityId}/data.csv", method = RequestMethod.POST)
 	public void exportToCSV(HttpServletResponse response, @PathVariable int entityId, @RequestParam String fields, @RequestParam(required=false) Boolean excludeNull , @RequestParam(required=false) String filters) throws ParseException {
 		String[] fieldNames = fields.split(",");
-		Workspace workspace = sessionManager.getWorkspace();
+		Workspace workspace = workspaceService.getActiveWorkspace();
 		
 		Entity entity = workspace.getEntityById(entityId);
 		

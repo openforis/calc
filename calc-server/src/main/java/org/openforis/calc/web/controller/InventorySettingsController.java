@@ -10,7 +10,6 @@ import org.openforis.calc.engine.Job;
 import org.openforis.calc.engine.ParameterHashMap;
 import org.openforis.calc.engine.ParameterMap;
 import org.openforis.calc.engine.SamplingDesignDao;
-import org.openforis.calc.engine.SessionManager;
 import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceLockedException;
@@ -39,9 +38,6 @@ import org.springframework.web.context.WebApplicationContext;
 public class InventorySettingsController {
 	
 	@Autowired
-	private SessionManager sessionManager;
-	
-	@Autowired
 	private WorkspaceService workspaceService;
 	
 	// @Autowired
@@ -57,7 +53,7 @@ public class InventorySettingsController {
 	public @ResponseBody
 	Response setSamplingDesign(@RequestParam(value = "samplingDesign", required = false) String samplingDesignParam) throws IOException, ParseException, WorkspaceLockedException {
 		Response response = new Response();
-		Workspace workspace = sessionManager.getWorkspace();
+		Workspace workspace = workspaceService.getActiveWorkspace();
 		workspace.setSamplingDesign(null);
 		samplingDesignDao.deleteByWorkspace(workspace.getId());
 
