@@ -54,7 +54,7 @@ public class CollectDataController {
 			// extract survey from xml file and creates it if it doesn't exist in the db
 			CollectSurvey survey = idmExtractor.extractSurvey(tempFile);
 			String surveyUri = survey.getUri();
-			Workspace ws = workspaceService.fetchCollectSurveyUri(surveyUri);
+			Workspace ws = workspaceService.fetchByCollectSurveyUri(surveyUri);
 			if (ws == null) {
 				String name = extractName(surveyUri);
 				ws = workspaceService.createAndActivate(name, surveyUri, name);

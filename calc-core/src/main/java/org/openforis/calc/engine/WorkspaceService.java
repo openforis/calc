@@ -20,6 +20,7 @@ import org.openforis.calc.metadata.Variable.Scale;
 import org.openforis.calc.metadata.VariableAggregate;
 import org.openforis.calc.metadata.VariableAggregateDao;
 import org.openforis.calc.metadata.VariableDao;
+import org.openforis.calc.persistence.jooq.tables.daos.WorkspaceDao;
 import org.openforis.calc.psql.Psql;
 import org.openforis.calc.schema.EntityDataView;
 import org.openforis.calc.schema.EntityDataViewDao;
@@ -47,6 +48,9 @@ public class WorkspaceService {
 	@Autowired
 	private WorkspaceDao workspaceDao;
 
+	@Autowired
+	private WorkspaceManager workspaceManager;
+	
 	@Autowired
 	private EntityDao entityDao;
 
@@ -82,29 +86,25 @@ public class WorkspaceService {
 	public WorkspaceService() {
 	}
 
-	@Transactional
-	public Workspace get(int workspaceId) {
-		return workspaceDao.find(workspaceId);
+	public Workspace get( int workspaceId ) {
+		return workspaceManager.find( workspaceId );
 	}
 
-	@Transactional
-	public Workspace fetchByName(String name) {
-		return workspaceDao.fetchByName(name);
+//	@Transactional
+//	public Workspace fetchByName(String name) {
+//		return workspaceDao.fetchByName(name);
+//	}
+
+	public Workspace fetchByCollectSurveyUri( String uri ) {
+		return workspaceManager.fetchByCollectSurveyUri( uri );
 	}
 
-	@Transactional
-	public Workspace fetchCollectSurveyUri(String uri) {
-		return workspaceDao.fetchByCollectSurveyUri(uri);
-	}
-
-	@Transactional
 	public Workspace save(Workspace workspace) {
-		return workspaceDao.save(workspace);
+		return workspaceManager.save( workspace );
 	}
 
-	@Transactional
 	public List<Workspace> loadAll() {
-		return workspaceDao.loadAll();
+		return workspaceManager.loadAll();
 	}
 
 	/**
@@ -113,33 +113,20 @@ public class WorkspaceService {
 	 * @return
 	 */
 	public Workspace getActiveWorkspace() {
-//		if( activeWorkspace == null ){
-//			activeWorkspace = workspaceDao.fetchActive();
-//			
-//			if ( activeWorkspace != null ) {
-//				List<AoiHierarchy> aoiHierarchies = activeWorkspace.getAoiHierarchies();
-//				// set root aoi to each aoiHierarchy linked to the workspace
-//				for (AoiHierarchy aoiHierarchy : aoiHierarchies) {
-//					aoiDao.assignRootAoi(aoiHierarchy);
-//				}
-//			}
-//		}
-//		return activeWorkspace;
-		
-			Workspace workspace = workspaceDao.fetchActive();
+		Workspace workspace = workspaceManager.fetchActive();
 			
-			if ( workspace != null ) {
-				List<AoiHierarchy> aoiHierarchies = workspace.getAoiHierarchies();
-				// set root aoi to each aoiHierarchy linked to the workspace
-				for (AoiHierarchy aoiHierarchy : aoiHierarchies) {
-					aoiDao.assignRootAoi(aoiHierarchy);
-				}
+		if ( workspace != null ) {
+			List<AoiHierarchy> aoiHierarchies = workspace.getAoiHierarchies();
+			// set root aoi to each aoiHierarchy linked to the workspace
+			for (AoiHierarchy aoiHierarchy : aoiHierarchies) {
+				aoiDao.assignRootAoi(aoiHierarchy);
 			}
+		}
 		return workspace;
 	}
 
 	public Workspace createAndActivate(String name, String uri, String schema) {
-		workspaceDao.deactivateAll();
+		workspaceManager.deactivateAll();
 
 		Workspace ws = new Workspace();
 		ws.setActive(true);
@@ -147,7 +134,7 @@ public class WorkspaceService {
 		ws.setInputSchema(schema);
 		ws.setName(name);
 		ws.setCaption(name);
-		ws = workspaceDao.save(ws);
+		ws = workspaceManager.save(ws);
 
 		processingChainService.createDefaultProcessingChain(ws);
 
@@ -296,12 +283,8 @@ public class WorkspaceService {
 //	}
 	
 	public void activate(Workspace ws) {
-		workspaceDao.deactivateAll();
-		
-		ws.setActive(true);
-		workspaceDao.save(ws);
-		
-		setActiveWorkspace(ws);
+		workspaceManager.activate( ws );
+		setActiveWorkspace( ws );
 	}
 	
 	
@@ -372,7 +355,7 @@ public class WorkspaceService {
 		samplingDesignDao.save(samplingDesign);
 		workspace.setSamplingDesign(samplingDesign);
 		
-		workspace = workspaceDao.save(workspace);
+		workspace = save(workspace);
 		return workspace;
 	}
 

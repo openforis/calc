@@ -15,6 +15,7 @@
 		<module>calc-server</module>
 		<module>calc-webapp</module>
 		<module>calc-assembly</module>
+		<module>calc-jooq-code-gen</module>
 	</modules>
 
 	<properties>
@@ -24,7 +25,7 @@
 		<kettle.version>4.4.0-stable</kettle.version>
 		<postgres-driver.version>9.1-901-1.jdbc4</postgres-driver.version>
 		<sqlite-driver.version>3.7.2</sqlite-driver.version>
-		<jooq.version>3.1.0</jooq.version>
+		<jooq.version>3.3.1</jooq.version>
 		<collect.version>3.0.1-Alpha3</collect.version>
 <!-- 		<commons-vfs.version>2.0-20090205</commons-vfs.version> -->
 		<mondrian.version>3.5.0</mondrian.version>	

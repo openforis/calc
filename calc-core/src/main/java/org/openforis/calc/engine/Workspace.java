@@ -7,25 +7,16 @@ import java.util.HashSet;
 import java.util.List;
 
 import javax.persistence.Column;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.openforis.calc.chain.ProcessingChain;
-import org.openforis.calc.common.UserObject;
 import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.SamplingDesign;
 import org.openforis.calc.metadata.Stratum;
 import org.openforis.calc.metadata.Variable;
+import org.openforis.calc.persistence.jooq.tables.pojos.WorkspaceBase;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -38,59 +29,40 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * @author G. Miceli
  * @author M. Togna
  */
-@javax.persistence.Entity
-@Table(name = "workspace")
-@org.hibernate.annotations.Cache(usage = org.hibernate.annotations.CacheConcurrencyStrategy.READ_WRITE)
-public class Workspace extends UserObject {
+public class Workspace extends WorkspaceBase {
+
+	private static final long serialVersionUID = 1L;
 
 	static final String DEFAULT_CHAIN_CAPTION = "default";
 
-	@Column(name = "name")
-	private String name;
-
-	@JsonIgnore
-	@Column(name = "collect_survey_uri")
-	private String collectSurveyUri;
-	
-	@JsonIgnore
-	@Column(name = "input_schema")
-	private String inputSchema;
-
-	@JsonIgnore
-	@Column(name = "output_schema")
-	private String outputSchema;
-
-	@Column(name = "active")
-	private boolean active;
-
-	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER, cascade = javax.persistence.CascadeType.ALL, orphanRemoval = true)
-	@OrderBy("name")
-	@Fetch(FetchMode.SUBSELECT)
+//	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER, cascade = javax.persistence.CascadeType.ALL, orphanRemoval = true)
+//	@OrderBy("name")
+//	@Fetch(FetchMode.SUBSELECT)
    	private List<Entity> entities;
 
-	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER)
-	@OrderBy("name")
-	@Fetch(FetchMode.SUBSELECT)
-	@Cascade(CascadeType.ALL)
+//	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER)
+//	@OrderBy("name")
+//	@Fetch(FetchMode.SUBSELECT)
+//	@Cascade(CascadeType.ALL)
 	private List<AoiHierarchy> aoiHierarchies;
 
-	@JsonIgnore
-	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER, cascade = javax.persistence.CascadeType.ALL, orphanRemoval = true)
-	@OrderBy("id")
-	@Fetch(FetchMode.SUBSELECT)
-	@Cascade(CascadeType.ALL)
+//	@JsonIgnore
+//	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER, cascade = javax.persistence.CascadeType.ALL, orphanRemoval = true)
+//	@OrderBy("id")
+//	@Fetch(FetchMode.SUBSELECT)
+//	@Cascade(CascadeType.ALL)
 	private List<ProcessingChain> processingChains;
 
 	
-	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER)
-	@OrderBy("stratum_no")
-	@Fetch(FetchMode.SUBSELECT)
-	@Cascade(CascadeType.ALL)
+//	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER)
+//	@OrderBy("stratum_no")
+//	@Fetch(FetchMode.SUBSELECT)
+//	@Cascade(CascadeType.ALL)
 	private List<Stratum> strata;
 	
-	@OneToOne(mappedBy = "workspace", fetch = FetchType.EAGER)
-//	@Fetch(FetchMode.SUBSELECT)
-	@Cascade(CascadeType.ALL)	
+//	@OneToOne(mappedBy = "workspace", fetch = FetchType.EAGER)
+////	@Fetch(FetchMode.SUBSELECT)
+//	@Cascade(CascadeType.ALL)	
 	private SamplingDesign samplingDesign;
 	
 	@Column(name = "phase1_plot_table")
@@ -100,30 +72,6 @@ public class Workspace extends UserObject {
 		this.processingChains = new ArrayList<ProcessingChain>();
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getCollectSurveyUri() {
-		return collectSurveyUri;
-	}
-
-	public void setCollectSurveyUri(String collectSurveyUri) {
-		this.collectSurveyUri = collectSurveyUri;
-	}
-
-	public void setInputSchema(String inputSchema) {
-		this.inputSchema = inputSchema;
-	}
-
-	public String getInputSchema() {
-		return this.inputSchema;
-	}
-	
 	/**
 	 * TODO remove getInputSchema and replace it with getDataSchema
 	 * @return
@@ -133,16 +81,8 @@ public class Workspace extends UserObject {
 		return getInputSchema();
 	} 
 
-	public void setOutputSchema(String outputSchema) {
-		this.outputSchema = outputSchema;
-	}
-
-	public String getOutputSchema() {
-		return this.outputSchema;
-	}
-
 	public List<Entity> getEntities() {
-		return org.openforis.commons.collection.CollectionUtils.unmodifiableList(entities);
+		return org.openforis.commons.collection.CollectionUtils.unmodifiableList( entities );
 	}
 
 	public void setEntities(List<Entity> entities) {
@@ -150,7 +90,7 @@ public class Workspace extends UserObject {
 	}
 
 	public List<AoiHierarchy> getAoiHierarchies() {
-		return org.openforis.commons.collection.CollectionUtils.unmodifiableList(aoiHierarchies);
+		return org.openforis.commons.collection.CollectionUtils.unmodifiableList( aoiHierarchies );
 	}
 
 	public void setAoiHierarchies(List<AoiHierarchy> aoiHierarchies) {
@@ -165,19 +105,11 @@ public class Workspace extends UserObject {
 	}
 	
 	public List<ProcessingChain> getProcessingChains() {
-		return org.openforis.commons.collection.CollectionUtils.unmodifiableList(processingChains);
-	}
-
-	public boolean isActive() {
-		return active;
-	}
-
-	public void setActive(boolean active) {
-		this.active = active;
+		return org.openforis.commons.collection.CollectionUtils.unmodifiableList( processingChains );
 	}
 
 	public List<Stratum> getStrata() {
-		return strata;
+		return org.openforis.commons.collection.CollectionUtils.unmodifiableList( strata );
 	}
 	
 	public void setStrata(List<Stratum> strata) {
@@ -304,7 +236,7 @@ public class Workspace extends UserObject {
 	}
 
 	public Entity getEntityById(int id) {
-		if (name != null && CollectionUtils.isNotEmpty(entities)) {
+		if (getName() != null && CollectionUtils.isNotEmpty(entities)) {
 			for (Entity e : entities) {
 				if (e.getId().equals(id)) {
 					return e;
@@ -359,7 +291,10 @@ public class Workspace extends UserObject {
 		return null;
 	}
 	
-	public Variable<?> getVariableById( int id ) {
+	public Variable<?> getVariableById( Integer id ) {
+		if( id == null ){
+			return null;
+		}
 		List<Entity> entities = getEntities();
 		for (Entity entity : entities) {
 			Variable<?> v = entity.getVariableById(id);

@@ -1,6 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	
 	<modelVersion>4.0.0</modelVersion>
+	
 	<parent>
 		<groupId>org.openforis.calc</groupId>
 		<artifactId>calc</artifactId>
@@ -15,8 +17,7 @@
 	<properties>
 		<mondrian-source-files-dir>${project.build.directory}/generated-sources/mondrian</mondrian-source-files-dir>
 		<jooq-codegen.target.directory>src/generated/java</jooq-codegen.target.directory>
-		<jooq-codegen.target.package>org.openforis.calc.persistence.test.jooq</jooq-codegen.target.package>
-<!-- 		<jooq-codegen.target.package>org.openforis.calc.persistence.jooq</jooq-codegen.target.package> -->
+		<jooq-codegen.target.package>org.openforis.calc.persistence.jooq</jooq-codegen.target.package>
 	</properties>
 	
 	<build>
@@ -54,6 +55,11 @@
 						<artifactId>postgresql</artifactId>
 						<version>${postgres-driver.version}</version>
 					</dependency>
+					<dependency>
+						<groupId>org.openforis.calc</groupId>
+						<artifactId>calc-jooq-code-gen</artifactId>
+						<version>${project.version}</version>
+					</dependency>
 				</dependencies>
 		
 				<configuration>
@@ -67,17 +73,51 @@
 		
 					<!-- Generator parameters -->
 					<generator>
-<!-- 						<name>org.jooq.util.DefaultGenerator</name> -->
-							<name>org.openforis.jooq.codegen.CustomGenerator</name>
+						<name>org.openforis.jooq.codegen.CustomGenerator</name>
 						<strategy>
 							<name>org.openforis.jooq.codegen.CustomGeneratorStrategy</name>
 						</strategy>
+						
 						<database>
 							<name>org.jooq.util.postgres.PostgresDatabase</name>
-							<includes>.*</includes>
-							<excludes></excludes>
+<!-- 							<includes>.*</includes> -->
+							<excludes>_.*|sampling_unit.*|srs|databasechangelog.*|category.*</excludes>
 							<inputSchema>calc</inputSchema>
+							
+						  	<customTypes>
+								<customType>
+									<name>org.openforis.calc.engine.ParameterMap</name>
+									<converter>org.openforis.calc.persistence.jooq.ParameterMapConverter</converter>
+								</customType>
+							</customTypes>
+							<forcedTypes>
+								<forcedType>
+									<name>org.openforis.calc.engine.ParameterMap</name>
+									<expression>.*\.sampling_design\.phase1_join_settings</expression>
+								</forcedType>
+								<forcedType>
+									<name>org.openforis.calc.engine.ParameterMap</name>
+									<expression>.*\.sampling_design\.stratum_join_settings</expression>
+								</forcedType>
+								<forcedType>
+									<name>org.openforis.calc.engine.ParameterMap</name>
+									<expression>.*\.sampling_design\.cluster_column_settings</expression>
+								</forcedType>
+								<forcedType>
+									<name>org.openforis.calc.engine.ParameterMap</name>
+									<expression>.*\.sampling_design\.aoi_join_settings</expression>
+								</forcedType>
+								<forcedType>
+									<name>org.openforis.calc.engine.ParameterMap</name>
+									<expression>.*\.calculation_step\.parameters</expression>
+								</forcedType>
+								<forcedType>
+									<name>org.openforis.calc.engine.ParameterMap</name>
+									<expression>.*\.processing_chain\.parameters</expression>
+								</forcedType>
+							</forcedTypes>
 						</database>
+						
 						<generate>
 							<relations>true</relations>
 							<records>false</records>
@@ -85,10 +125,12 @@
 							<daos>true</daos>
 							<pojos>true</pojos>
 						</generate>
+						
 						<target>
 							<packageName>${jooq-codegen.target.package}</packageName>
 							<directory>${jooq-codegen.target.directory}</directory>
 						</target>
+						
 					</generator>
 				</configuration>
 			</plugin>
@@ -287,11 +329,6 @@
 			<artifactId>jooq</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.jooq</groupId>
-			<artifactId>jooq-codegen-maven</artifactId>
-			<scope>runtime</scope>
-	  	</dependency>
-		<dependency>
 			<groupId>javax.annotation</groupId>
 			<artifactId>jsr250-api</artifactId>
 		</dependency>
@@ -337,6 +374,7 @@
 	    	<groupId>net.rforge.rjava</groupId>
 	    	<artifactId>jri</artifactId>
 	    </dependency>
+	    
 		<!-- Logging -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -356,23 +394,6 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 		</dependency>
-
 		
-		<!-- Derby -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.apache.derby</groupId> -->
-<!-- 			<artifactId>derby</artifactId> -->
-<!-- 			<version>10.10.1.1</version> -->
-<!-- 		</dependency> -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.apache.derby</groupId> -->
-<!-- 			<artifactId>derbytools</artifactId> -->
-<!-- 			<version>10.10.1.1</version> -->
-<!-- 		</dependency> -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.apache.derby</groupId> -->
-<!-- 			<artifactId>derbyclient</artifactId> -->
-<!-- 			<version>10.10.1.1</version> -->
-<!-- 		</dependency> -->
 	</dependencies>
 </project>

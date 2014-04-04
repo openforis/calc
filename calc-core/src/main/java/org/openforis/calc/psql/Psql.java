@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.lang3.StringUtils;
 import org.jooq.DataType;
 import org.jooq.Field;
 import org.jooq.SQLDialect;
@@ -35,7 +34,8 @@ public final class Psql extends DefaultDSLContext {
 
 	public static final Schema PUBLIC = DSL.schemaByName("public");
 
-	private Logger log;
+	@SuppressWarnings("unused")
+	private static final Logger log = LoggerFactory.getLogger( Psql.class );
 
 	public enum Privilege {
 
@@ -46,19 +46,20 @@ public final class Psql extends DefaultDSLContext {
 		};
 	};
 
+//	@Deprecated
 	public Psql() {
 		super(SQLDialect.POSTGRES);
 		init();
 	}
 
+//	@Deprecated
 	public Psql(DataSource dataSource) {
 		super(dataSource, SQLDialect.POSTGRES);
 		init();
 	}
 
 	private void init() {
-		this.log = LoggerFactory.getLogger(getClass());
-		configuration().set(new DefaultExecuteListenerProvider(new LogSqlListener(this)));
+		configuration().set(new DefaultExecuteListenerProvider(new LogSqlListener()));
 	}
 
 	static String[] names(Field<?>[] fields) {
@@ -121,14 +122,6 @@ public final class Psql extends DefaultDSLContext {
 
 	public CreateTableWithFieldsStep createTable(Table<?> table, Field<?>... fields) {
 		return new CreateTableWithFieldsStep(this, table, fields);
-	}
-
-	void logSql(String sql, Object... bindings) {
-		if (bindings.length == 0) {
-			log.debug(sql + ";");
-		} else {
-			log.debug(sql + "; -- Parameters: " + StringUtils.join(bindings) + "");
-		}
 	}
 
 	public static <T> Field<T> typedNull(DataType<T> type) {

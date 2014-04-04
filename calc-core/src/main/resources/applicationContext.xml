@@ -87,44 +87,5 @@
     	<constructor-arg ref="collectSurveyContext"/>
     </bean>
 	<!-- END Of OF Collect bean definitions -->
-
 	
-	<!-- Database -->
-	<bean id="dataSource" destroy-method="close" class="org.apache.commons.dbcp.BasicDataSource">
-    	<property name="driverClassName" value="${calc.jdbc.driver}"/>
-    	<property name="url" value="${calc.jdbc.url}"/>
-    	<property name="username" value="${calc.jdbc.username}"/>
-    	<property name="password" value="${calc.jdbc.password}"/>
-		<property name="maxActive" value="${calc.jdbc.maxActive:10}"/> 
-    	<property name="minIdle" value="${calc.jdbc.minIdle:5}"/> 	
-	</bean>
-		
-<!--     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager"> -->
-<!--     	<property name="dataSource" ref="dataSource"/> -->
-<!--     </bean> -->
-    
-    <bean class="org.springframework.orm.jpa.JpaTransactionManager" id="transactionManager">
-    	<property name="entityManagerFactory" ref="entityManagerFactory"/>
-	</bean>
-    
-    <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
-    
-    <bean id="transactionAwareDataSource"
-        class="org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy">
-        <constructor-arg ref="dataSource" />
-    </bean>
-    
-    <!-- Bridging Spring JDBC data sources to jOOQ's ConnectionProvider -->
-    <bean class="org.jooq.impl.DataSourceConnectionProvider" name="connectionProvider">
-        <constructor-arg ref="transactionAwareDataSource" />
-    </bean>
-
-    <bean id="dsl" class="org.jooq.impl.DefaultDSLContext">
-        <constructor-arg ref="config" />
-    </bean>
-
-    <bean class="org.openforis.calc.persistence.jooq.DialectAwareJooqConfiguration" name="config">
-        <constructor-arg ref="connectionProvider" />
-    </bean>
-    
 </beans>

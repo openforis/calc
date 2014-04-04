@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  */
 @Repository
-public class WorkspaceDao extends AbstractJpaDao<Workspace> {
+public class WorkspaceDaoOld extends AbstractJpaDao<Workspace> {
 
 	@Transactional
 	public Workspace fetchByName(String name) {

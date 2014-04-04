@@ -18,6 +18,7 @@ import org.openforis.calc.chain.pre.CreateOutputTablesTask;
 import org.openforis.calc.chain.pre.CreateStratumDimensionTableTask;
 import org.openforis.calc.chain.pre.ResetOutputSchemaTask;
 import org.openforis.calc.metadata.task.UpdateSamplingUnitAoisTask;
+import org.openforis.calc.persistence.jooq.tables.daos.WorkspaceDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
