@@ -17,6 +17,7 @@ import org.openforis.calc.metadata.SamplingDesign;
 import org.openforis.calc.metadata.Stratum;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.persistence.jooq.tables.pojos.WorkspaceBase;
+import org.openforis.calc.schema.AoiAggregateTable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -35,10 +36,8 @@ public class Workspace extends WorkspaceBase {
 
 	static final String DEFAULT_CHAIN_CAPTION = "default";
 
-//	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER, cascade = javax.persistence.CascadeType.ALL, orphanRemoval = true)
-//	@OrderBy("name")
-//	@Fetch(FetchMode.SUBSELECT)
    	private List<Entity> entities;
+	private List<Stratum> strata;
 
 //	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER)
 //	@OrderBy("name")
@@ -54,11 +53,6 @@ public class Workspace extends WorkspaceBase {
 	private List<ProcessingChain> processingChains;
 
 	
-//	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER)
-//	@OrderBy("stratum_no")
-//	@Fetch(FetchMode.SUBSELECT)
-//	@Cascade(CascadeType.ALL)
-	private List<Stratum> strata;
 	
 //	@OneToOne(mappedBy = "workspace", fetch = FetchType.EAGER)
 ////	@Fetch(FetchMode.SUBSELECT)
@@ -101,6 +95,7 @@ public class Workspace extends WorkspaceBase {
 		if (aoiHierarchies == null ){
 			aoiHierarchies = new ArrayList<AoiHierarchy>();
 		}
+		aoiHierarchy.setWorkspace( this );
 		this.aoiHierarchies.add(aoiHierarchy);
 	}
 	
@@ -121,7 +116,11 @@ public class Workspace extends WorkspaceBase {
 	}
 	
 	public void addStratum(Stratum stratum) {
+		if( this.strata == null ){
+			emptyStrata();
+		}
 		this.strata.add(stratum);
+		stratum.setWorkspace(this);
 	}
 	
 	public SamplingDesign getSamplingDesign() {
@@ -186,7 +185,7 @@ public class Workspace extends WorkspaceBase {
 			@Override
 			public boolean evaluate(Object object) {
 				Entity e = (Entity) object;
-				return !(e.isOverride() || e.hasOverriddenVariables() || e.hasOverriddenDescendants());
+				return !(e.getOverride() || e.hasOverriddenVariables() || e.hasOverriddenDescendants());
 			}
 		});
 	}
@@ -204,6 +203,7 @@ public class Workspace extends WorkspaceBase {
 		if (entities == null) {
 			entities = new ArrayList<Entity>();
 		}
+		entity.setWorkspace( this );
 		entities.add(entity);
 	}
 
@@ -283,7 +283,7 @@ public class Workspace extends WorkspaceBase {
 	public Variable<?> getVariableByName(String name) {
 		List<Entity> entities = getEntities();
 		for (Entity entity : entities) {
-			Variable<?> v = entity.getVariable(name);
+			Variable<?> v = entity.getVariableByName(name);
 			if (v != null) {
 				return v;
 			}

@@ -30,7 +30,7 @@ public class AddWeightVariableTask extends Task {
 		boolean changed = false;
 		for (Entity entity : ws.getEntities()) {
 			if ( entity.isSamplingUnit() ) {
-				Variable<?> oldWeightVar = entity.getVariable(WEIGHT_VAR_NAME);
+				Variable<?> oldWeightVar = entity.getVariableByName(WEIGHT_VAR_NAME);
 				if ( oldWeightVar == null ) {
 					QuantitativeVariable weightVar = new QuantitativeVariable();
 					weightVar.setName(WEIGHT_VAR_NAME);

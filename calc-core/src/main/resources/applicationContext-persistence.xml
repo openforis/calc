@@ -86,7 +86,7 @@
     
     
     <!-- Daos -->
-    <bean name="d" class="org.openforis.calc.persistence.test.jooq.tables.daos.SamplingDesignDao">
+    <bean name="d" class="org.openforis.calc.persistence.jooq.tables.daos.SamplingDesignDao">
     	<constructor-arg ref="config" />
     </bean>
     

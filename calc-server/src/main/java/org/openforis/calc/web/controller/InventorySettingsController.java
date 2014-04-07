@@ -95,7 +95,7 @@ public class InventorySettingsController {
 				SamplingDesign samplingDesign = new SamplingDesign();
 				Entity entity = workspace.getEntityById(Integer.valueOf(suId.toString()));
 
-				samplingDesign.setWorkspace(workspace);
+//				samplingDesign.setWorkspace(workspace);
 				samplingDesign.setSamplingUnit(entity);
 				
 				samplingDesign.setSrs(getBooleanValue(json, "srs"));

@@ -3,21 +3,15 @@ package org.openforis.calc.metadata;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.openforis.calc.common.NamedUserObject;
 import org.openforis.calc.engine.Workspace;
+import org.openforis.calc.persistence.jooq.tables.pojos.AoiHierarchyBase;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -25,21 +19,18 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * Provides metadata about a AOI Hierarchy. A hierarchy might be an "Administrative division" or "Ecological division" of an area. The hierarchy then
  * has several hierarchy levels. e.g. country, region, province, distric for the Administrative division
  * 
- * 
- * @author A. Sanchez-Paus Diaz
  * @author Mino Togna
+ * @author S. Ricci 
  */
-@javax.persistence.Entity
-@Table(name = "aoi_hierarchy")
-public class AoiHierarchy extends NamedUserObject {
-
+public class AoiHierarchy extends AoiHierarchyBase {
+	
+	private static final long serialVersionUID = 1L;
+	
 	@JsonIgnore
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "workspace_id")
 	private Workspace workspace;
 
-	@OneToMany(mappedBy = "hierarchy", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@OrderBy("rank")
+//	@OneToMany(mappedBy = "hierarchy", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+//	@OrderBy("rank")
 	private Set<AoiLevel> levels;
 
 	@Transient
@@ -63,6 +54,14 @@ public class AoiHierarchy extends NamedUserObject {
 		Collections.reverse(aoiLevels);
 		
 		return org.openforis.commons.collection.CollectionUtils.unmodifiableCollection( aoiLevels );
+	}
+	
+	public void addLevel(AoiLevel level) {
+		if( this.levels == null ){
+			this.levels = new HashSet<AoiLevel>();
+		}
+		level.setHierarchy( this );
+		this.levels.add( level );
 	}
 	
 	public void setLevels(Set<AoiLevel> levels) {
@@ -93,5 +92,14 @@ public class AoiHierarchy extends NamedUserObject {
 		}
 		return null;
 	}
-	
+
+	public AoiLevel getLevelById(Integer aoiLevelId) {
+		for (AoiLevel aoiLevel : this.levels) {
+			if( aoiLevel.getId().equals(aoiLevel.getId()) ){
+				return aoiLevel;
+			}
+		}
+		return null;
+	}
+
 }

@@ -1,7 +1,5 @@
 package org.openforis.calc.metadata;
 
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
 
 /**
  * A variable which may take on a single text value (it can be used as degenerate dimension).
@@ -9,11 +7,11 @@ import javax.persistence.DiscriminatorValue;
  * @author M. Togna
  * @author S. Ricci
  */
-@javax.persistence.Entity
-@DiscriminatorValue("T")
 public class TextVariable extends Variable<String> {
 
-	@Column(name = "default_value")
+	private static final long serialVersionUID = 1L;
+	
+	//	@Column(name = "default_value")
 	private String defaultValue;
 	
 	@Override
@@ -22,7 +20,7 @@ public class TextVariable extends Variable<String> {
 	}
 
 	@Override
-	public String getDefaultValue() {
+	public String getDefaultValueTemp() {
 		return defaultValue;
 	}
 

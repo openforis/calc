@@ -36,7 +36,7 @@ public class ApplyDefaultsTask extends Task {
 	}
 	
 	private void applyDefaultValue(OutputTable outputTable, QuantitativeVariable variable) {
-		BigDecimal defaultValue = variable.getDefaultValue();
+		BigDecimal defaultValue = variable.getDefaultValueTemp();
 		if(  defaultValue != null ){
 			Field<BigDecimal> valueField = outputTable.getQuantityField(variable);
 			psql().update( outputTable )
@@ -48,7 +48,7 @@ public class ApplyDefaultsTask extends Task {
 	
 	@SuppressWarnings("unchecked")
 	private void applyDefaultValue(OutputTable outputTable, BinaryVariable variable) {
-		Boolean defaultValue = variable.getDefaultValue();
+		Boolean defaultValue = variable.getDefaultValueTemp();
 		if(  defaultValue != null ) {
 			Field<Boolean> valueField = (Field<Boolean>) outputTable.getCategoryValueField(variable);
 			psql().update( outputTable )
@@ -60,7 +60,7 @@ public class ApplyDefaultsTask extends Task {
 	
 	@SuppressWarnings("unchecked")
 	private void applyDefaultValue(OutputTable outputTable, MultiwayVariable variable) {
-		String defaultValue = variable.getDefaultValue();
+		String defaultValue = variable.getDefaultValueTemp();
 		if(  defaultValue != null ) {
 			Field<String> valueField = (Field<String>) outputTable.getCategoryValueField(variable);
 			psql().update( outputTable )

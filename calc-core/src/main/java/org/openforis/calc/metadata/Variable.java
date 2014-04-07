@@ -1,20 +1,8 @@
 package org.openforis.calc.metadata;
 
-import javax.persistence.Column;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.DiscriminatorFormula;
-import org.openforis.calc.common.NamedUserObject;
+import org.openforis.calc.persistence.jooq.tables.pojos.VariableBase;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * Base class for Calc variables.  Variables may be either categorical or quantitative.  Note that binary classes are special cases of categorical
@@ -23,12 +11,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * @author G. Miceli
  * @author M. Togna
  */
-@javax.persistence.Entity
-@Table(name = "variable")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorFormula("case when scale='TEXT' then 'T' when scale in ('RATIO','INTERVAL','OTHER') then 'Q' when scale='BINARY' then 'B' else 'C' end")
-public abstract class Variable<T> extends NamedUserObject {
+//@DiscriminatorFormula("case when scale='TEXT' then 'T' when scale in ('RATIO','INTERVAL','OTHER') then 'Q' when scale='BINARY' then 'B' else 'C' end")
+public abstract class Variable<T> extends VariableBase {
 	
+	private static final long serialVersionUID = 1L;
+
 	public enum Type {
 		QUANTITATIVE, CATEGORICAL, BINARY, TEXT;
 	}
@@ -37,52 +24,13 @@ public abstract class Variable<T> extends NamedUserObject {
 		NOMINAL, ORDINAL, BINARY, RATIO, INTERVAL, OTHER, TEXT;
 	}
 
-	@JsonIgnore
-	@Column(name = "sort_order")
-	private int sortOrder;
 
 	@JsonIgnore
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "entity_id")
 	private Entity entity;
 
-	@JsonIgnore	
-	@Enumerated(EnumType.STRING)
-	@Column(name = "scale")
-	private Scale scale;
-
-	@JsonIgnore	
-	@Column(name = "input_value_column")
-	private String inputValueColumn;
-
-	@JsonIgnore	
-	@Column(name = "output_value_column")
-	private String outputValueColumn;
-
-	@JsonIgnore	
-	@Column(name = "dimension_table")
-	private String dimensionTable;
-
-	@JsonIgnore	
-	@Column(name = "dimension_table_id_column")
-	private String dimensionTableIdColumn;
-
-	@JsonIgnore	
-	@Column(name = "dimension_table_code_column")
-	private String dimensionTableCodeColumn;
-
-	@JsonIgnore	
-	@Column(name = "dimension_table_caption_column")
-	private String dimensionTableCaptionColumn;
-
-	@JsonIgnore	
-	@Column(name = "override")
-	private boolean override;
-	
-	@JsonIgnore	
-	@Column(name = "original_id")
-	private Integer originalId;
-
+//	@JsonIgnore	
+//	private Scale scale;
+//
 	public abstract Variable.Type getType();
 
 	public Entity getEntity() {
@@ -93,196 +41,65 @@ public abstract class Variable<T> extends NamedUserObject {
 		this.entity = entity;
 	}
 
-	public Scale getScale() {
-		return this.scale;
-	}
-
-	public void setScale(Scale scale) {
-		this.scale = scale;
-	}
-
-	public int getSortOrder() {
-		return sortOrder;
-	}
-
-	public void setSortOrder(int sortOrder) {
-		this.sortOrder = sortOrder;
-	}
-
-	public String getInputValueColumn() {
-		return inputValueColumn;
-	}
-
-	public void setInputValueColumn(String inputValueColumn) {
-		this.inputValueColumn = inputValueColumn;
-	}
-
-	public String getOutputValueColumn() {
-		return outputValueColumn;
-	}
-
-	public void setOutputValueColumn(String outputValueColumn) {
-		this.outputValueColumn = outputValueColumn;
-	}
-
-	public String getDimensionTable() {
-		return dimensionTable;
-	}
-
-	public void setDimensionTable(String dimensionTable) {
-		this.dimensionTable = dimensionTable;
-	}
-	
-	public String getDimensionTableIdColumn() {
-		return dimensionTableIdColumn;
-	}
-
-	public void setDimensionTableIdColumn(String dimensionTableIdColumn) {
-		this.dimensionTableIdColumn = dimensionTableIdColumn;
-	}
-	
-	public String getDimensionTableCodeColumn() {
-		return dimensionTableCodeColumn;
-	}
-
-	public void setDimensionTableCodeColumn(String dimensionTableCodeColumn) {
-		this.dimensionTableCodeColumn = dimensionTableCodeColumn;
-	}
-
-	public String getDimensionTableCaptionColumn() {
-		return dimensionTableCaptionColumn;
-	}
-
-	public void setDimensionTableCaptionColumn(String dimensionTableCaptionColumn) {
-		this.dimensionTableCaptionColumn = dimensionTableCaptionColumn;
-	}
+//	public Scale getScale() {
+//		return this.scale;
+//	}
+//
+//	public void setScale(Scale scale) {
+//		this.scale = scale;
+//	}
 
 	@JsonIgnore
 	public boolean isInput() {
-		return inputValueColumn != null;
+		return getInputValueColumn() != null;
 	}
 
-	public boolean isOverride() {
-		return override;
-	}
-
-	public void setOverride(boolean override) {
-		this.override = override;
-	}
-
-	public Integer getOriginalId() {
-		return originalId;
-	}
-	
-	public void setOriginalId(Integer originalId) {
-		this.originalId = originalId;
-	}
-	
 	public boolean isUserDefined() {
-		return originalId == null;
+		return getOriginalId() == null;
 	}
 	
-	public abstract T getDefaultValue();
+	public abstract T getDefaultValueTemp();
 
 	public abstract void setDefaultValue(T defaultValue);
 
-	@JsonInclude
-	public Integer getEntityId() {
-		return entity.getId();
-	}
-	
 	@Override
 	public int hashCode() {
+		Integer id = getId();
+		String name = getName();
+		
 		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result
-				+ ((dimensionTable == null) ? 0 : dimensionTable.hashCode());
-		result = prime
-				* result
-				+ ((dimensionTableCaptionColumn == null) ? 0
-						: dimensionTableCaptionColumn.hashCode());
-		result = prime
-				* result
-				+ ((dimensionTableCodeColumn == null) ? 0
-						: dimensionTableCodeColumn.hashCode());
-		result = prime
-				* result
-				+ ((dimensionTableIdColumn == null) ? 0
-						: dimensionTableIdColumn.hashCode());
-//		result = prime * result + ((entity == null) ? 0 : entity.hashCode());
-		result = prime
-				* result
-				+ ((inputValueColumn == null) ? 0 : inputValueColumn.hashCode());
-		result = prime * result
-				+ ((originalId == null) ? 0 : originalId.hashCode());
-		result = prime
-				* result
-				+ ((outputValueColumn == null) ? 0 : outputValueColumn
-						.hashCode());
-		result = prime * result + (override ? 1231 : 1237);
-		result = prime * result + ((scale == null) ? 0 : scale.hashCode());
-		result = prime * result + sortOrder;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
+		Integer id = getId();
+		String name = getName();
+		
 		if (this == obj)
 			return true;
-		if (!super.equals(obj))
+		if (obj == null)
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
 		Variable<?> other = (Variable<?>) obj;
-		if (dimensionTable == null) {
-			if (other.dimensionTable != null)
+		if (id == null) {
+			if (other.getId() != null)
 				return false;
-		} else if (!dimensionTable.equals(other.dimensionTable))
+		} else if (!id.equals(other.getId()))
 			return false;
-		if (dimensionTableCaptionColumn == null) {
-			if (other.dimensionTableCaptionColumn != null)
+		if (name == null) {
+			if (other.getName() != null)
 				return false;
-		} else if (!dimensionTableCaptionColumn
-				.equals(other.dimensionTableCaptionColumn))
-			return false;
-		if (dimensionTableCodeColumn == null) {
-			if (other.dimensionTableCodeColumn != null)
-				return false;
-		} else if (!dimensionTableCodeColumn
-				.equals(other.dimensionTableCodeColumn))
-			return false;
-		if (dimensionTableIdColumn == null) {
-			if (other.dimensionTableIdColumn != null)
-				return false;
-		} else if (!dimensionTableIdColumn.equals(other.dimensionTableIdColumn))
-			return false;
-//		if (entity == null) {
-//			if (other.entity != null)
-//				return false;
-//		} else if (!entity.equals(other.entity))
-//			return false;
-		if (inputValueColumn == null) {
-			if (other.inputValueColumn != null)
-				return false;
-		} else if (!inputValueColumn.equals(other.inputValueColumn))
-			return false;
-		if (originalId == null) {
-			if (other.originalId != null)
-				return false;
-		} else if (!originalId.equals(other.originalId))
-			return false;
-		if (outputValueColumn == null) {
-			if (other.outputValueColumn != null)
-				return false;
-		} else if (!outputValueColumn.equals(other.outputValueColumn))
-			return false;
-		if (override != other.override)
-			return false;
-		if (scale != other.scale)
-			return false;
-		if (sortOrder != other.sortOrder)
+		} else if (!name.equals(other.getName()))
 			return false;
 		return true;
 	}
+	
+	
+	
 	
 }

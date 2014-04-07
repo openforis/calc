@@ -1,7 +1,8 @@
 package org.openforis.calc.metadata;
 
+import java.util.List;
+
 import org.openforis.calc.engine.Workspace;
-import org.openforis.calc.persistence.jpa.AbstractJpaDao;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,20 +12,17 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  */
 @Component
-public class StratumDao extends AbstractJpaDao<Stratum> {
+public class StratumDao extends org.openforis.calc.persistence.jooq.tables.daos.StratumDao {
 
 	/**
 	 * Delete all strata of the given workspace
 	 * @param workspace
 	 */
 	@Transactional
-	public void deleteAll(Workspace workspace){
-		String sql = "delete Stratum where workspace.id = :wsId";
-
-		getEntityManager()
-		.createQuery(sql)
-		.setParameter( "wsId", workspace.getId() )
-		.executeUpdate();
+	public void deleteAll(Workspace workspace) {
+		
+		List<Stratum> strata = workspace.getStrata();
+		delete(strata);
 		
 		workspace.emptyStrata();
 	}
@@ -36,13 +34,13 @@ public class StratumDao extends AbstractJpaDao<Stratum> {
 	 * @param caption
 	 */
 	@Transactional
-	public void add(Workspace workspace, int stratumNo, String caption){
+	public void add( Workspace workspace, int stratumNo, String caption ) {
 		Stratum stratum = new Stratum();
 		stratum.setStratumNo(stratumNo);
 		stratum.setCaption(caption);
 		stratum.setWorkspace(workspace);
 		
-		stratum = this.create(stratum);
+		insert(stratum);
 		workspace.addStratum(stratum);
 	}
 	

@@ -10,9 +10,15 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.ProcessingChain;
+import org.openforis.calc.metadata.AoiHierarchy;
+import org.openforis.calc.metadata.AoiManager;
+import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.Stratum;
+import org.openforis.calc.metadata.VariableDao;
 import org.openforis.calc.persistence.jooq.Tables;
+import org.openforis.calc.persistence.jooq.tables.daos.AoiHierarchyDao;
 import org.openforis.calc.persistence.jooq.tables.daos.CalculationStepDao;
+import org.openforis.calc.persistence.jooq.tables.daos.EntityDao;
 import org.openforis.calc.persistence.jooq.tables.daos.ProcessingChainDao;
 import org.openforis.calc.persistence.jooq.tables.daos.StratumDao;
 import org.openforis.calc.persistence.jooq.tables.daos.WorkspaceDao;
@@ -28,7 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
  *
  */
 @Repository
-public class WorkspaceManager {
+public class MetadataManager {
 
 	@Autowired
 	private WorkspaceDao workspaceDao;
@@ -42,6 +48,15 @@ public class WorkspaceManager {
 	@Autowired
 	private CalculationStepDao calculationStepDao; 
 	
+	@Autowired
+	private EntityDao entityDao; 
+	
+	@Autowired
+	private VariableDao variableDao;
+	
+	@Autowired
+	private AoiManager aoiManager;
+	
 	/*
 	 * ============================
 	 * 	Load workspace methods
@@ -49,7 +64,7 @@ public class WorkspaceManager {
 	 */
 	
 	@Transactional
-	public Workspace find( int workspaceId ) {
+	public Workspace fetchWorkspaceById( int workspaceId ) {
 		Workspace workspace = workspaceDao.findById( workspaceId );
 		
 		loadMetadata( workspace );
@@ -58,7 +73,7 @@ public class WorkspaceManager {
 	}
 	
 	@Transactional
-	public Workspace fetchByCollectSurveyUri( String uri ) {
+	public Workspace fetchWorkspaceByCollectSurveyUri( String uri ) {
 		List<Workspace> list = workspaceDao.fetchByCollectSurveyUri( uri );
 		if( CollectionUtils.isNotEmpty(list) ) {
 			if( list.size() > 1 ){
@@ -72,7 +87,7 @@ public class WorkspaceManager {
 	}
 	
 	@Transactional
-	public List<Workspace> loadAll() {
+	public List<Workspace> findAllWorkspaces() {
 		List<Workspace> list = workspaceDao.findAll();
 		for (Workspace workspace : list) {
 			loadMetadata( workspace );
@@ -81,7 +96,7 @@ public class WorkspaceManager {
 	}
 	
 	@Transactional
-	public Workspace fetchActive() {
+	public Workspace fetchActiveWorkspace() {
 		Workspace workspace = workspaceDao.fetchOne( Tables.WORKSPACE.ACTIVE, true );
 		if( workspace != null ) {
 			loadMetadata( workspace );
@@ -94,8 +109,14 @@ public class WorkspaceManager {
 	 *  Save workspace methods
 	 * ============================
 	 */
+	/**
+	 * Saves the workspace and its metadata
+	 * 
+	 * @param workspace
+	 * @return
+	 */
 	@Transactional
-	public Workspace save( Workspace workspace ) {
+	public Workspace saveWorkspace( Workspace workspace ) {
 		if( workspaceDao.exists(workspace) ) {
 			workspaceDao.update( workspace );
 		} else {
@@ -104,7 +125,7 @@ public class WorkspaceManager {
 		
 		saveMetadata( workspace );
 		
-		return fetchByCollectSurveyUri( workspace.getCollectSurveyUri() );
+		return fetchWorkspaceByCollectSurveyUri( workspace.getCollectSurveyUri() );
 	}
 	
 	/* 
@@ -114,20 +135,42 @@ public class WorkspaceManager {
 	 */
 	@Transactional
 	private void loadMetadata( Workspace workspace ) {
-		// TODO
-		// loadEntities( workspace ); and variables
-		// aoi
+		aoiManager.loadByWorkspace( workspace );
+		
+		loadEntities( workspace );
 		loadStrata( workspace );
 		loadProcessingChains( workspace );
+		loadSamplingDesign( workspace );
+//		initEntityHierarchy( workspace );
 	}
 	
-	@Transactional
+	private void loadSamplingDesign(Workspace workspace) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void loadEntities( Workspace workspace ) {
+		List<Entity> entities = entityDao.fetchByWorkspaceId( workspace.getId() );
+		Collections.sort( entities, new Comparator<Entity>() {
+			@Override
+			public int compare(Entity o1, Entity o2) {
+				return o1.getSortOrder().compareTo( o2.getSortOrder() );
+			}
+		});
+		for (Entity entity : entities) {
+			workspace.addEntity( entity );
+		}
+		variableDao.loadByWorkspace( workspace );
+		
+	}
+
 	private void loadStrata(Workspace workspace) {
 		List<Stratum> strata = stratumDao.fetchByWorkspaceId( workspace.getId() );
-		workspace.setStrata( strata );
+		for (Stratum stratum : strata) {
+			workspace.addStratum(stratum);
+		}
 	}
 	
-	@Transactional
 	private void loadProcessingChains(Workspace workspace) {
 		List<ProcessingChain> chains = processingChainDao.fetchByWorkspaceId( workspace.getId() );
 		for (ProcessingChain chain : chains) {
@@ -182,7 +225,7 @@ public class WorkspaceManager {
 	 * ===========================
 	 */
 	public void deactivateAll() {
-		List<Workspace> list = loadAll();
+		List<Workspace> list = findAllWorkspaces();
 		for (Workspace ws : list) {
 			ws.setActive( false );
 			workspaceDao.update( ws );

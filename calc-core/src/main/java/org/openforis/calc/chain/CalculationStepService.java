@@ -56,7 +56,7 @@ public class CalculationStepService {
 	 */
 
 	private void deleteOutputVariable(int variableId) {
-		Variable<?> variable = variableDao.find(variableId);
+		Variable<?> variable = variableDao.fetchWorkspaceById(variableId);
 		if ( variable instanceof QuantitativeVariable ) {
 			workspaceService.deleteOutputVariable((QuantitativeVariable) variable, true);
 		} else {

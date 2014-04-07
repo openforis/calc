@@ -3,16 +3,6 @@ package org.openforis.calc.metadata;
 import java.math.BigDecimal;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Transient;
-
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.openforis.commons.collection.CollectionUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -24,30 +14,31 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * @author G. Miceli
  * @author M. Togna
  */
-@javax.persistence.Entity
-@DiscriminatorValue("Q")
 public class QuantitativeVariable extends Variable<BigDecimal> {
 
+	private static final long serialVersionUID = 1L;
+
 	@JsonIgnore
-	@Column(name = "default_value")
 	private BigDecimal defaultValue;
 
-	@JsonIgnore
-	@Transient //TODO map to column
-	private transient Unit<?> unit; 
+//	@Transient //TODO map to column
+//	private transient Unit<?> unit; 
 
-	@OneToMany(mappedBy = "variable", fetch = FetchType.EAGER)
-	@Cascade(CascadeType.ALL)
+//	@OneToMany(mappedBy = "variable", fetch = FetchType.EAGER)
+//	@Cascade(CascadeType.ALL)
+	// TODO
 	private List<VariableAggregate> aggregates;
 
 	//variable_per_ha_id
-	@OneToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "variable_per_ha_id")
+//	@OneToOne(fetch = FetchType.EAGER)	
+//	@JoinColumn(name = "variable_per_ha_id")
+	// TODO 
 	private QuantitativeVariable variablePerHa;
 	
 	@JsonIgnore
-	@OneToOne(mappedBy = "variablePerHa")
+//	@OneToOne(mappedBy = "variablePerHa")
 //	@JoinColumn(name = "variable_per_ha_id")
+	// TODO
 	private QuantitativeVariable sourceVariable;
 	
 	public QuantitativeVariable getSourceVariable() {
@@ -56,15 +47,6 @@ public class QuantitativeVariable extends Variable<BigDecimal> {
 	
 	public void setSourceVariable(QuantitativeVariable parentVariable) {
 		this.sourceVariable = parentVariable;
-	}
-	
-	public void setUnit(Unit<?> unit) {
-		this.unit = unit;
-	}
-	
-	@JsonIgnore
-	public Unit<?> getUnit() {
-		return this.unit;
 	}
 	
 	@Override
@@ -89,7 +71,7 @@ public class QuantitativeVariable extends Variable<BigDecimal> {
 	}
 
 	@Override
-	public BigDecimal getDefaultValue() {
+	public BigDecimal getDefaultValueTemp() {
 		return defaultValue;
 	}
 

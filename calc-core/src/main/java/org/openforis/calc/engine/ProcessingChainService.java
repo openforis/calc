@@ -19,7 +19,7 @@ public class ProcessingChainService {
 	
 	@Transactional
 	public void saveProcessingChain(ProcessingChain chain) {
-		processingChainDao.save(chain);
+		processingChainDao.saveWorkspace(chain);
 		// TODO update Workspace?
 	}
 	
@@ -28,7 +28,7 @@ public class ProcessingChainService {
 		chain.setCaption(Workspace.DEFAULT_CHAIN_CAPTION);
 		ws.addProcessingChain(chain);
 		
-		processingChainDao.save(chain);
+		processingChainDao.saveWorkspace(chain);
 	}
 	
 }

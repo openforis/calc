@@ -7,30 +7,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Stack;
 
-import javax.persistence.Column;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.functors.InstanceofPredicate;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.ProcessingChain;
-import org.openforis.calc.common.NamedUserObject;
 import org.openforis.calc.engine.Workspace;
+import org.openforis.calc.persistence.jooq.tables.pojos.EntityBase;
 import org.openforis.calc.r.RScript;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * Provides metadata about a particular unit of observation, calculation or
@@ -40,99 +27,30 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * @author G. Miceli
  * @author M. Togna
  */
-@javax.persistence.Entity
-@Table(name = "entity")
-public class Entity extends NamedUserObject {
+public class Entity extends EntityBase {
 	
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "workspace_id")
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@JsonIgnore
 	private Workspace workspace;
-
 	@JsonIgnore
-	@Column(name = "data_table")
-	private String dataTable;
-
-	@JsonIgnore
-	@Column(name = "id_column")
-	private String idColumn;
-
-	@JsonIgnore
-	@Column(name = "parent_id_column")
-	private String parentIdColumn;
-	
-	@JsonIgnore
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "parent_entity_id")
-	@Fetch(FetchMode.SELECT) 
 	private Entity parent;
-	
 	@JsonIgnore
-	@Column(name = "sort_order")
-	private int sortOrder;
-	
-	@JsonIgnore
-	@Column(name = "input")
-	private boolean input;
-	
-	@JsonIgnore
-	@Column(name = "override")
-	private boolean override;
-	
-	@JsonIgnore
-	@Column(name = "x_column")
-	private String xColumn;
-	
-	@JsonIgnore
-	@Column(name = "y_column")
-	private String yColumn;
-	
-	@JsonIgnore
-	@Column(name = "srs_column")
-	private String srsColumn;
-	
-	@JsonIgnore
-	@Column(name = "location_column")
-	private String locationColumn;
-	
-//	@JsonIgnore
-//	@Column(name = "sampling_unit")
-//	private boolean samplingUnit;
-	
-	@JsonIgnore
-	@Column(name = "unit_of_analysis")
-	private boolean unitOfAnalysis;
-
-	@JsonIgnore
-	@OneToMany(mappedBy = "entity", fetch = FetchType.EAGER, cascade = javax.persistence.CascadeType.ALL, orphanRemoval = true)
-	@OrderBy("sortOrder")
-	@Fetch(FetchMode.SUBSELECT) 
+//	@OrderBy("sortOrder")
 	private List<Variable<?>> variables = new ArrayList<Variable<?>>();
-
 	@JsonIgnore
-	@OneToMany(mappedBy = "parent", fetch = FetchType.EAGER)
-	@OrderBy("sortOrder")
-	@Fetch(FetchMode.SUBSELECT) 
-	@Cascade(CascadeType.ALL)
+//	@OrderBy("sortOrder")
 	private List<Entity> children = new ArrayList<Entity>();
 
 	@JsonIgnore
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "cluster_variable_id")
 	private Variable<?> clusterVariable;
-
-	@JsonIgnore
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "unit_no_variable_id")
-	private Variable<?> unitNoVariable;
-
-	@JsonIgnore
-	@Column(name = "original_id")
-	private Integer originalId;
-
-	@Column(name = "plot_area_script")
-	private String plotAreaScript;
 	
+//	@JsonIgnore
+//	private Variable<?> unitNoVariable;
+
 	public Workspace getWorkspace() {
 		return this.workspace;
 	}
@@ -141,29 +59,21 @@ public class Entity extends NamedUserObject {
 		this.workspace = workspace;
 	}
 	
-	public String getDataTable() {
-		return dataTable;
-	}
-
 	public String getDataView() {
 		return String.format( "%s_view", getName() );
 	}
 
-	public void setDataTable(String table) {
-		this.dataTable = table;
-	}
-	
 	public void addVariable(Variable<?> variable) {
-		variable.setEntity(this);
-		variable.setSortOrder(getNextVariableSortOrder());
-		variables.add(variable);
+		variable.setEntity( this );
+//		variable.setSortOrder( getNextVariableSortOrder() );
+		variables.add( variable );
 	}
 	
 	public List<Variable<?>> getVariables() {
 		return org.openforis.commons.collection.CollectionUtils.unmodifiableList( variables );
 	}
 
-	public Variable<?> getVariableByOriginalId(int id) {
+	public Variable<?> getVariableByOriginalId( int id ) {
 		if ( variables != null && ! variables.isEmpty() ) {
 			for (Variable<?> var : variables) {
 				if ( var.getOriginalId() != null && var.getOriginalId().equals(id) ) {
@@ -183,7 +93,7 @@ public class Entity extends NamedUserObject {
 		return null;
 	}
 	
-	public Variable<?> getVariable(String name) {
+	public Variable<?> getVariableByName(String name) {
 		if ( variables == null || variables.isEmpty() ) {
 			return null;
 		} else {
@@ -201,11 +111,11 @@ public class Entity extends NamedUserObject {
 	 * @param name
 	 * @return
 	 */
-	public Variable<?> findVariable(String name) {
+	public Variable<?> findVariableByName(String name) {
 		Entity entity = this;
 
 		while( entity != null ){
-			Variable<?> variable = entity.getVariable(name);
+			Variable<?> variable = entity.getVariableByName(name);
 		
 			if( variable != null ){
 				return variable;
@@ -222,7 +132,7 @@ public class Entity extends NamedUserObject {
 	 * @param name
 	 * @return
 	 */
-	public Variable<?> findVariable( int id ) {
+	public Variable<?> findVariableById( int id ) {
 		Entity entity = this;
 
 		while( entity != null ) {
@@ -259,7 +169,7 @@ public class Entity extends NamedUserObject {
 		stack.addAll(getChildren());
 		while ( ! stack.isEmpty() ) {
 			Entity descendant = stack.pop();
-			if ( descendant.isOverride() || hasOverriddenVariables() ) {
+			if ( descendant.getOverride() || hasOverriddenVariables() ) {
 				return true;
 			}
 			stack.addAll(descendant.getChildren());
@@ -275,64 +185,6 @@ public class Entity extends NamedUserObject {
 		this.parent = parent;
 	}
 	
-	public int getSortOrder() {
-		return sortOrder;
-	}
-	
-	public void setSortOrder(int sortOrder) {
-		this.sortOrder = sortOrder;
-	}
-	
-	public void setInput(boolean input) {
-		this.input = input;
-	}
-	
-	public boolean isInput() {
-		return input;
-	}
-	
-	public void setOverride(boolean override) {
-		this.override = override;
-	}
-	
-	public boolean isOverride() {
-		return override;
-	}
-	
-	public void setXColumn(String xColumn) {
-		this.xColumn = xColumn;
-	}
-
-	@JsonIgnore	
-	public String getXColumn() {
-		return xColumn;
-	}
-
-	public void setYColumn(String yColumn) {
-		this.yColumn = yColumn;
-	}
-	
-	@JsonIgnore	
-	public String getYColumn() {
-		return yColumn;
-	}
-	
-	public void setSrsColumn(String srsColumn) {
-		this.srsColumn = srsColumn;
-	}
-
-	public String getSrsColumn() {
-		return srsColumn;
-	}
-
-	public String getLocationColumn() {
-		return locationColumn;
-	}
-
-	public void setLocationColumn(String locationColumn) {
-		this.locationColumn = locationColumn;
-	}
-
 	@JsonIgnore	
 	public boolean isGeoreferenced() {
 		// right now only if this is sampling unit or parent entity is sampling unit
@@ -340,39 +192,18 @@ public class Entity extends NamedUserObject {
 //		return ((xColumn != null && yColumn != null) || locationColumn != null);
 	}
 
-	public String getIdColumn() {
-		return idColumn;
-	}
-
-	public void setIdColumn(String idColumn) {
-		this.idColumn = idColumn;
-	}
-
-	public String getParentIdColumn() {
-		return parentIdColumn;
-	}
-
-	public void setParentIdColumn(String parentIdColumn) {
-		this.parentIdColumn = parentIdColumn;
-	}
-
 	public boolean isSamplingUnit() {
 		if( this.getId() == null ){
-//			throw new IllegalStateException("Id cannot be null");
 			return false;
 		}
 		return getWorkspace().isSamplingUnit(getId());
 	}
 
-//	public void setSamplingUnit(boolean samplingUnit) {
-//		this.samplingUnit = samplingUnit;
-//	}
-	
 	public List<Entity> getChildren() {
 		return Collections.unmodifiableList(children);
 	}
 	
-	public void addChild(Entity entity) {
+	public void addChild( Entity entity ) {
 		if ( children == null ) {
 			children = new ArrayList<Entity>();
 		}
@@ -387,20 +218,9 @@ public class Entity extends NamedUserObject {
 		}
 	}
 
-	public boolean isUnitOfAnalysis() {
-		return unitOfAnalysis;
-	}
-
-	public void setUnitOfAnalysis(boolean unitOfAnalysis) {
-		this.unitOfAnalysis = unitOfAnalysis;
-	}
-
-	public String getPlotAreaScript() {
-		return plotAreaScript;
-	}
-	
 	public RScript getPlotAreaRScript() {
-		if(StringUtils.isBlank(plotAreaScript)){
+		String plotAreaScript = getPlotAreaScript();
+		if( StringUtils.isBlank(plotAreaScript) ) {
 			return null;
 		} else {
 			RScript plotArea = new RScript().rScript( plotAreaScript , getHierarchyVariables() );
@@ -418,10 +238,6 @@ public class Entity extends NamedUserObject {
 		}
 		
 		return variables;
-	}
-	
-	public void setPlotAreaScript(String plotAreaScript) {
-		this.plotAreaScript = plotAreaScript;
 	}
 	
 	public String getResultsTable() {
@@ -467,7 +283,7 @@ public class Entity extends NamedUserObject {
 		return getVariables(new Predicate() {
 			@Override
 			public boolean evaluate(Object object) {
-				return ((Variable<?>) object).isOverride();
+				return ((Variable<?>) object).getOverride();
 			}
 		});
 	}
@@ -477,7 +293,7 @@ public class Entity extends NamedUserObject {
 		return getVariables(new Predicate() {
 			@Override
 			public boolean evaluate(Object object) {
-				return ! ((Variable<?>) object).isOverride();
+				return ! ((Variable<?>) object).getOverride();
 			}
 		});
 	}
@@ -585,140 +401,6 @@ public class Entity extends NamedUserObject {
 		this.clusterVariable = clusterVariable;
 	}
 
-	public Variable<?> getUnitNoVariable() {
-		return unitNoVariable;
-	}
-
-	public void setUnitNoVariable(Variable<?> plotVariable) {
-		this.unitNoVariable = plotVariable;
-	}
-	
-	public Integer getOriginalId() {
-		return originalId;
-	}
-	
-	public void setOriginalId(Integer originalId) {
-		this.originalId = originalId;
-	}
-	
-	@JsonInclude
-	public Integer getParentId(){
-		if(parent == null){
-			return null;
-		} else {
-			return parent.getId();
-		}
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result
-				+ ((clusterVariable == null) ? 0 : clusterVariable.hashCode());
-		result = prime * result
-				+ ((dataTable == null) ? 0 : dataTable.hashCode());
-		result = prime * result
-				+ ((idColumn == null) ? 0 : idColumn.hashCode());
-		result = prime * result + (input ? 1231 : 1237);
-		result = prime * result
-				+ ((locationColumn == null) ? 0 : locationColumn.hashCode());
-		result = prime * result
-				+ ((originalId == null) ? 0 : originalId.hashCode());
-		result = prime * result + (override ? 1231 : 1237);
-		result = prime * result
-				+ ((parentIdColumn == null) ? 0 : parentIdColumn.hashCode());
-//		result = prime * result + (samplingUnit ? 1231 : 1237);
-		result = prime * result + sortOrder;
-		result = prime * result
-				+ ((srsColumn == null) ? 0 : srsColumn.hashCode());
-		result = prime * result
-				+ ((unitNoVariable == null) ? 0 : unitNoVariable.hashCode());
-		result = prime * result + (unitOfAnalysis ? 1231 : 1237);
-		result = prime * result
-				+ ((variables == null) ? 0 : variables.hashCode());
-		result = prime * result + ((xColumn == null) ? 0 : xColumn.hashCode());
-		result = prime * result + ((yColumn == null) ? 0 : yColumn.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!super.equals(obj))
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Entity other = (Entity) obj;
-		if (clusterVariable == null) {
-			if (other.clusterVariable != null)
-				return false;
-		} else if (!clusterVariable.equals(other.clusterVariable))
-			return false;
-		if (dataTable == null) {
-			if (other.dataTable != null)
-				return false;
-		} else if (!dataTable.equals(other.dataTable))
-			return false;
-		if (idColumn == null) {
-			if (other.idColumn != null)
-				return false;
-		} else if (!idColumn.equals(other.idColumn))
-			return false;
-		if (input != other.input)
-			return false;
-		if (locationColumn == null) {
-			if (other.locationColumn != null)
-				return false;
-		} else if (!locationColumn.equals(other.locationColumn))
-			return false;
-		if (originalId == null) {
-			if (other.originalId != null)
-				return false;
-		} else if (!originalId.equals(other.originalId))
-			return false;
-		if (override != other.override)
-			return false;
-		if (parentIdColumn == null) {
-			if (other.parentIdColumn != null)
-				return false;
-		} else if (!parentIdColumn.equals(other.parentIdColumn))
-			return false;
-//		if (samplingUnit != other.samplingUnit)
-//			return false;
-		if (sortOrder != other.sortOrder)
-			return false;
-		if (srsColumn == null) {
-			if (other.srsColumn != null)
-				return false;
-		} else if (!srsColumn.equals(other.srsColumn))
-			return false;
-		if (unitNoVariable == null) {
-			if (other.unitNoVariable != null)
-				return false;
-		} else if (!unitNoVariable.equals(other.unitNoVariable))
-			return false;
-		if (unitOfAnalysis != other.unitOfAnalysis)
-			return false;
-		if (variables == null) {
-			if (other.variables != null)
-				return false;
-		} else if (!variables.equals(other.variables))
-			return false;
-		if (xColumn == null) {
-			if (other.xColumn != null)
-				return false;
-		} else if (!xColumn.equals(other.xColumn))
-			return false;
-		if (yColumn == null) {
-			if (other.yColumn != null)
-				return false;
-		} else if (!yColumn.equals(other.yColumn))
-			return false;
-		return true;
-	}
-
 	/**
 	 * Returns a quantity variable with the id passed as argument.
 	 * @param variableId
@@ -779,6 +461,44 @@ public class Entity extends NamedUserObject {
 		}
 		return null;
 	}
+	
+	@Override
+	public int hashCode() {
+		Integer id = getId();
+		String name = getName();
+		
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		Integer id = getId();
+		String name = getName();
+		
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Entity other = (Entity) obj;
+		if (id == null) {
+			if (other.getId() != null)
+				return false;
+		} else if (!id.equals(other.getId()))
+			return false;
+		if (name == null) {
+			if (other.getName() != null)
+				return false;
+		} else if (!name.equals(other.getName()))
+			return false;
+		return true;
+	}
+	
 	
 }
 

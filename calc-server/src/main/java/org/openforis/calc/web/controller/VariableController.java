@@ -62,12 +62,12 @@ public class VariableController {
 				
 				boolean readCategories = true;			
 				if( max != null ) {
-					long count = variableDao.countCategories( table );
+					long count = variableDao.countCategoryClasses( table );
 					readCategories = count <= max;
 				}
 				
 				if( readCategories ) {
-					List<JSONObject> categories = variableDao.getCategories( table );
+					List<JSONObject> categories = variableDao.getCategoryClasses( table );
 					response.addField( "categories", categories );
 				}
 			}

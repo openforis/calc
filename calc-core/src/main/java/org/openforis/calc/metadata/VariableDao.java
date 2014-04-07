@@ -6,13 +6,13 @@ package org.openforis.calc.metadata;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.sql.DataSource;
-
+import org.apache.commons.beanutils.BeanUtils;
 import org.jooq.Record2;
 import org.jooq.Result;
 import org.jooq.SelectLimitStep;
 import org.json.simple.JSONObject;
-import org.openforis.calc.persistence.jpa.AbstractJpaDao;
+import org.openforis.calc.engine.Workspace;
+import org.openforis.calc.persistence.jooq.tables.pojos.VariableBase;
 import org.openforis.calc.psql.Psql;
 import org.openforis.calc.schema.CategoryDimensionTable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,16 +23,15 @@ import org.springframework.stereotype.Repository;
  * @author S. Ricci
  *
  */
-@SuppressWarnings("rawtypes")
 @Repository
-public class VariableDao extends AbstractJpaDao<Variable> {
+public class VariableDao extends org.openforis.calc.persistence.jooq.tables.daos.VariableDao {
 	
 	@Autowired
-	private DataSource dataSource;
+	private Psql psql;
 	
-	public long countCategories(CategoryDimensionTable table ){
+	public long countCategoryClasses(CategoryDimensionTable table ){
 		
-		Long count = new Psql(dataSource)
+		Long count = psql
 			.selectCount()
 			.from(table)
 			.fetchOne( 0 , Long.class );
@@ -42,11 +41,11 @@ public class VariableDao extends AbstractJpaDao<Variable> {
 	
 	
 	@SuppressWarnings("unchecked")
-	public List<JSONObject> getCategories(CategoryDimensionTable table ){
+	public List<JSONObject> getCategoryClasses(CategoryDimensionTable table ){
 		
 		List<JSONObject> categories = new ArrayList<JSONObject>(); 
 		
-		 SelectLimitStep<Record2<String, String>> select = new Psql(dataSource)
+		 SelectLimitStep<Record2<String, String>> select = psql
 			.select( table.getCodeField() , table.getCaptionField() )
 			.from( table )
 			.orderBy( table.getIdField() );
@@ -64,5 +63,45 @@ public class VariableDao extends AbstractJpaDao<Variable> {
 		
 		return categories;
 	}
+	
+	
+	public void loadByWorkspace( Workspace workspace ) {
+		List<Entity> entities = workspace.getEntities();
+
+		Integer[] entityIds = new Integer[entities.size()];
+		for ( int i = 0; i < entities.size(); i++ ) {
+			entityIds[i] = entities.get(i).getId();
+		}
+		// "case when scale='TEXT' then 'T' when scale in ( 'RATIO','INTERVAL','OTHER') then 'Q' when scale='BINARY' then 'B' else 'C' end"
+		List<VariableBase> vars = super.fetchByEntityId(entityIds);
+		for (VariableBase variableBase : vars) {
+			Variable<?> variable = null;
+
+			switch (variableBase.getScale()) {
+			case TEXT:
+				variable = new TextVariable();
+				break;
+			case BINARY:
+				variable = new BinaryVariable();
+				break;
+			case NOMINAL:
+				variable = new MultiwayVariable();
+				break;
+			default:
+				variable = new QuantitativeVariable();
+			}
+
+			try {
+				BeanUtils.copyProperties(variable, variableBase);
+			} catch (Exception e) {
+				// it should never happens
+				throw new IllegalStateException( "Unable to load variables" , e );
+			}
+
+			Entity entity = workspace.getEntityById(variable.getEntityId());
+			entity.addVariable(variable);
+		}
+	}
+	
 	
 }

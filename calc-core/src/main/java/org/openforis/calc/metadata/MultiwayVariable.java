@@ -1,12 +1,5 @@
 package org.openforis.calc.metadata;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Transient;
 
 /**
  * A {@link CategoricalVariable} that is not a {@link BinaryVariable}
@@ -14,63 +7,24 @@ import javax.persistence.Transient;
  * @author G. Miceli
  *
  */
-@javax.persistence.Entity
-@DiscriminatorValue("C")
 public class MultiwayVariable extends CategoricalVariable<String> {
 
-	@Column(name = "default_value")
+	
+	private static final long serialVersionUID = 1L;
 	private String defaultValue;
+
+
+//	@Transient // TODO persist
+//	private boolean pivotCategories;
 	
-	@Column(name = "multiple_response")
-	private Boolean multipleResponse;
-
-	@Transient // TODO persist
-	private boolean pivotCategories;
+//	@Transient // TODO persist
+//	private ArrayList<CategoryHierarchy> hierarchies = new ArrayList<CategoryHierarchy>();
 	
-	@Transient // TODO persist
-	private ArrayList<CategoryHierarchy> hierarchies = new ArrayList<CategoryHierarchy>();
 	
-	@Column(name = "input_category_id_column")
-	private String inputCategoryIdColumn;
-
-	@Column(name = "output_category_id_column")
-	private String outputCategoryIdColumn;
-
-	public void setMultipleResponse(boolean multipleResponse) {
-		this.multipleResponse = multipleResponse;
-	}
-	public boolean isMultipleResponse() {
-		return multipleResponse == null || multipleResponse;
-	}
-
-	public void setPivotCategories(boolean pivotCategories) {
-		this.pivotCategories = pivotCategories;
-	}
-
-	public boolean isPivotCategories() {
-		return this.pivotCategories;
-	}
+//	public List<CategoryHierarchy> getHierarchies() {
+//		return Collections.unmodifiableList(hierarchies);
+//	}
 	
-	public List<CategoryHierarchy> getHierarchies() {
-		return Collections.unmodifiableList(hierarchies);
-	}
-	
-	public String getInputCategoryIdColumn() {
-		return inputCategoryIdColumn;
-	}
-
-	public void setInputCategoryIdColumn(String inputCategoryIdColumn) {
-		this.inputCategoryIdColumn = inputCategoryIdColumn;
-	}
-
-	public String getOutputCategoryIdColumn() {
-		return outputCategoryIdColumn;
-	}
-
-	public void setOutputCategoryIdColumn(String outputCategoryIdColumn) {
-		this.outputCategoryIdColumn = outputCategoryIdColumn;
-	}
-
 	@Override
 	public Type getType() {
 		return Type.CATEGORICAL;
@@ -78,7 +32,7 @@ public class MultiwayVariable extends CategoricalVariable<String> {
 	
 	@Override
 	public boolean isInput() {
-		return super.isInput() || inputCategoryIdColumn != null;
+		return super.isInput() || getInputCategoryIdColumn() != null;
 	}
 	
 	/**
@@ -101,7 +55,7 @@ public class MultiwayVariable extends CategoricalVariable<String> {
 	}
 	
 	@Override
-	public String getDefaultValue() {
+	public String getDefaultValueTemp() {
 		return defaultValue;
 	}
 	

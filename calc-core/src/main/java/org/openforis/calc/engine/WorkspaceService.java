@@ -49,7 +49,7 @@ public class WorkspaceService {
 	private WorkspaceDao workspaceDao;
 
 	@Autowired
-	private WorkspaceManager workspaceManager;
+	private MetadataManager workspaceManager;
 	
 	@Autowired
 	private EntityDao entityDao;
@@ -87,7 +87,7 @@ public class WorkspaceService {
 	}
 
 	public Workspace get( int workspaceId ) {
-		return workspaceManager.find( workspaceId );
+		return workspaceManager.fetchWorkspaceById( workspaceId );
 	}
 
 //	@Transactional
@@ -96,15 +96,15 @@ public class WorkspaceService {
 //	}
 
 	public Workspace fetchByCollectSurveyUri( String uri ) {
-		return workspaceManager.fetchByCollectSurveyUri( uri );
+		return workspaceManager.fetchWorkspaceByCollectSurveyUri( uri );
 	}
 
 	public Workspace save(Workspace workspace) {
-		return workspaceManager.save( workspace );
+		return workspaceManager.saveWorkspace( workspace );
 	}
 
 	public List<Workspace> loadAll() {
-		return workspaceManager.loadAll();
+		return workspaceManager.findAllWorkspaces();
 	}
 
 	/**
@@ -113,14 +113,14 @@ public class WorkspaceService {
 	 * @return
 	 */
 	public Workspace getActiveWorkspace() {
-		Workspace workspace = workspaceManager.fetchActive();
+		Workspace workspace = workspaceManager.fetchActiveWorkspace();
 			
 		if ( workspace != null ) {
 			List<AoiHierarchy> aoiHierarchies = workspace.getAoiHierarchies();
 			// set root aoi to each aoiHierarchy linked to the workspace
-			for (AoiHierarchy aoiHierarchy : aoiHierarchies) {
-				aoiDao.assignRootAoi(aoiHierarchy);
-			}
+//			for (AoiHierarchy aoiHierarchy : aoiHierarchies) {
+//				aoiDao.assignRootAoi(aoiHierarchy);
+//			}
 		}
 		return workspace;
 	}
@@ -134,7 +134,7 @@ public class WorkspaceService {
 		ws.setInputSchema(schema);
 		ws.setName(name);
 		ws.setCaption(name);
-		ws = workspaceManager.save(ws);
+		ws = workspaceManager.saveWorkspace(ws);
 
 		processingChainService.createDefaultProcessingChain(ws);
 
@@ -177,7 +177,7 @@ public class WorkspaceService {
 //		}
 //		
 		
-		variableDao.save(variable);
+		variableDao.saveWorkspace(variable);
 		updateEntityView(variable);
 
 		return variable;
@@ -379,12 +379,12 @@ public class WorkspaceService {
 				varAgg.setVariable(variable);
 				varAgg.setAggregateType(agg);
 				varAgg.setAggregateFormula("");
-				variableAggregateDao.save(varAgg);
+				variableAggregateDao.saveWorkspace(varAgg);
 			} else {
 				throw new IllegalArgumentException("Invalild aggregate type: " + agg);
 			}
 		}
-		variable = (QuantitativeVariable) variableDao.find(variableReturnId);
+		variable = (QuantitativeVariable) variableDao.fetchWorkspaceById(variableReturnId);
 		
 //		updateEntityView(variable);
 		
@@ -408,11 +408,11 @@ public class WorkspaceService {
 		VariableAggregate aggregate = variable.getAggregate(agg);
 		if (aggregate != null) {
 			variable.deleteAggregate(agg);
-			variableDao.save(variable);
+			variableDao.saveWorkspace(variable);
 			variableAggregateDao.delete(aggregate.getId());
 		}
 		
-		variable = (QuantitativeVariable) variableDao.find(variableReturnId);
+		variable = (QuantitativeVariable) variableDao.fetchWorkspaceById(variableReturnId);
 		
 //		updateEntityView(variable);
 		
@@ -431,8 +431,8 @@ public class WorkspaceService {
 			
 			variable.setVariablePerHa(variablePerHa);
 			
-			variableDao.save(variablePerHa);			
-			variable = (QuantitativeVariable) variableDao.save(variable);
+			variableDao.saveWorkspace(variablePerHa);			
+			variable = (QuantitativeVariable) variableDao.saveWorkspace(variable);
 			
 //			addVariableColumn(variablePerHa);
 //			updateEntityView(variablePerHa);
@@ -455,7 +455,7 @@ public class WorkspaceService {
 			
 			variable.setVariablePerHa(null);
 			variableDao.delete(variablePerHa.getId());
-			variable = (QuantitativeVariable) variableDao.save(variable);
+			variable = (QuantitativeVariable) variableDao.saveWorkspace(variable);
 			
 //			if ( updateEntityView ) {
 //				updateEntityView(variable);
@@ -514,7 +514,7 @@ public class WorkspaceService {
 	@Transactional
 	public Entity setEntityPlotAreaScript(Entity entity, String plotAreaScript) {
 		entity.setPlotAreaScript(plotAreaScript);
-		Entity updEntity = entityDao.save(entity);
+		Entity updEntity = entityDao.saveWorkspace(entity);
 		return updEntity;
 	}
 

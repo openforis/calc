@@ -90,7 +90,7 @@ extends AbstractTransactionalJUnit4SpringContextTests {
 	
 //	@Test
 	public void testPreProcessing() throws WorkspaceLockedException, InvalidProcessingChainException {
-		ProcessingChain chain = processingChainDao.find(21);
+		ProcessingChain chain = processingChainDao.fetchWorkspaceById(21);
 		Workspace workspace = chain.getWorkspace(); 
 		Job job = taskManager.createJob(workspace);
 		job.addTasks(taskManager.createTasks( CalculationEngine.PREPROCESSING_TASKS) );
@@ -100,7 +100,7 @@ extends AbstractTransactionalJUnit4SpringContextTests {
 	
 //	@Test
 	public void testPostProcessing() throws WorkspaceLockedException, InvalidProcessingChainException {
-		ProcessingChain chain = processingChainDao.find(21);
+		ProcessingChain chain = processingChainDao.fetchWorkspaceById(21);
 		Workspace workspace = chain.getWorkspace(); 
 		Job job = taskManager.createJob(workspace);
 		job.addTasks( taskManager.createTasks(CalculationEngine.POSTPROCESSING_TASKS) );

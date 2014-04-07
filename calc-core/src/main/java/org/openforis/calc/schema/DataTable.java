@@ -370,7 +370,7 @@ public abstract class DataTable extends AbstractTable {
 	}
 
 	protected void createDimensionIdField(CategoricalVariable<?> var) {
-		if ( !var.isDegenerateDimension() && var.isDisaggregate() ) {
+		if ( !var.getDegenerateDimension() && var.getDisaggregate() ) {
 			if( var instanceof MultiwayVariable){
 				String fieldName = ((MultiwayVariable) var).getInputCategoryIdColumn();  // String.format(DIMENSION_ID_COLUMN_FORMAT, var.getName());
 				Field<Integer> fld = createField(fieldName, SQLDataType.INTEGER, this);

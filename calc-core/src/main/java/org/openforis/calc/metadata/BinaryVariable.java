@@ -1,7 +1,5 @@
 package org.openforis.calc.metadata;
 
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
 
 /**
  * A special type of CategoricalVariable which may take only two values (TRUE or FALSE) plus NA.
@@ -12,11 +10,11 @@ import javax.persistence.DiscriminatorValue;
  * @author G. Miceli
  * @author M. Togna
  */
-@javax.persistence.Entity
-@DiscriminatorValue("B")
 public class BinaryVariable extends CategoricalVariable<Boolean> {
 
-	@Column(name = "default_value")
+	private static final long serialVersionUID = 1L;
+	
+//	@Column(name = "default_value")
 	private Boolean defaultValue;
 
 	// TODO implement as subclass of CategoricalVariable?
@@ -37,7 +35,7 @@ public class BinaryVariable extends CategoricalVariable<Boolean> {
 	}
 
 	@Override
-	public Boolean getDefaultValue() {
+	public Boolean getDefaultValueTemp() {
 		return defaultValue;
 	}
 

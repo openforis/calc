@@ -11,56 +11,56 @@ package org.openforis.calc.persistence.jooq.tables.pojos;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class VariableBase implements java.io.Serializable {
 
-	private static final long serialVersionUID = -119647661;
+	private static final long serialVersionUID = 507028313;
 
-	private java.lang.Integer id;
-	private java.lang.Integer entityId;
-	private java.lang.String  inputValueColumn;
-	private java.lang.String  scale;
-	private java.lang.String  name;
-	private java.lang.Integer originalId;
-	private java.lang.String  defaultValue;
-	private java.lang.Boolean multipleResponse;
-	private java.lang.Boolean override;
-	private java.lang.String  dimensionTable;
-	private java.lang.Boolean degenerateDimension;
-	private java.lang.String  inputCategoryIdColumn;
-	private java.lang.Boolean disaggregate;
-	private java.lang.String  outputValueColumn;
-	private java.lang.String  outputCategoryIdColumn;
-	private java.lang.String  caption;
-	private java.lang.String  description;
-	private java.lang.Integer sortOrder;
-	private java.lang.Integer variablePerHaId;
-	private java.lang.String  dimensionTableIdColumn;
-	private java.lang.String  dimensionTableCodeColumn;
-	private java.lang.String  dimensionTableCaptionColumn;
+	private java.lang.Integer                          id;
+	private java.lang.Integer                          entityId;
+	private java.lang.String                           inputValueColumn;
+	private org.openforis.calc.metadata.Variable.Scale scale;
+	private java.lang.String                           name;
+	private java.lang.Integer                          originalId;
+	private java.lang.String                           defaultValue;
+	private java.lang.Boolean                          multipleResponse;
+	private java.lang.Boolean                          override;
+	private java.lang.String                           dimensionTable;
+	private java.lang.Boolean                          degenerateDimension;
+	private java.lang.String                           inputCategoryIdColumn;
+	private java.lang.Boolean                          disaggregate;
+	private java.lang.String                           outputValueColumn;
+	private java.lang.String                           outputCategoryIdColumn;
+	private java.lang.String                           caption;
+	private java.lang.String                           description;
+	private java.lang.Integer                          sortOrder;
+	private java.lang.Integer                          variablePerHaId;
+	private java.lang.String                           dimensionTableIdColumn;
+	private java.lang.String                           dimensionTableCodeColumn;
+	private java.lang.String                           dimensionTableCaptionColumn;
 
 	public VariableBase() {}
 
 	public VariableBase(
-		java.lang.Integer id,
-		java.lang.Integer entityId,
-		java.lang.String  inputValueColumn,
-		java.lang.String  scale,
-		java.lang.String  name,
-		java.lang.Integer originalId,
-		java.lang.String  defaultValue,
-		java.lang.Boolean multipleResponse,
-		java.lang.Boolean override,
-		java.lang.String  dimensionTable,
-		java.lang.Boolean degenerateDimension,
-		java.lang.String  inputCategoryIdColumn,
-		java.lang.Boolean disaggregate,
-		java.lang.String  outputValueColumn,
-		java.lang.String  outputCategoryIdColumn,
-		java.lang.String  caption,
-		java.lang.String  description,
-		java.lang.Integer sortOrder,
-		java.lang.Integer variablePerHaId,
-		java.lang.String  dimensionTableIdColumn,
-		java.lang.String  dimensionTableCodeColumn,
-		java.lang.String  dimensionTableCaptionColumn
+		java.lang.Integer                          id,
+		java.lang.Integer                          entityId,
+		java.lang.String                           inputValueColumn,
+		org.openforis.calc.metadata.Variable.Scale scale,
+		java.lang.String                           name,
+		java.lang.Integer                          originalId,
+		java.lang.String                           defaultValue,
+		java.lang.Boolean                          multipleResponse,
+		java.lang.Boolean                          override,
+		java.lang.String                           dimensionTable,
+		java.lang.Boolean                          degenerateDimension,
+		java.lang.String                           inputCategoryIdColumn,
+		java.lang.Boolean                          disaggregate,
+		java.lang.String                           outputValueColumn,
+		java.lang.String                           outputCategoryIdColumn,
+		java.lang.String                           caption,
+		java.lang.String                           description,
+		java.lang.Integer                          sortOrder,
+		java.lang.Integer                          variablePerHaId,
+		java.lang.String                           dimensionTableIdColumn,
+		java.lang.String                           dimensionTableCodeColumn,
+		java.lang.String                           dimensionTableCaptionColumn
 	) {
 		this.id = id;
 		this.entityId = entityId;
@@ -110,11 +110,11 @@ public class VariableBase implements java.io.Serializable {
 		this.inputValueColumn = inputValueColumn;
 	}
 
-	public java.lang.String getScale() {
+	public org.openforis.calc.metadata.Variable.Scale getScale() {
 		return this.scale;
 	}
 
-	public void setScale(java.lang.String scale) {
+	public void setScale(org.openforis.calc.metadata.Variable.Scale scale) {
 		this.scale = scale;
 	}
 

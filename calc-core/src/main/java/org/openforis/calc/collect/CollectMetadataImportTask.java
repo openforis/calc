@@ -143,7 +143,7 @@ public class CollectMetadataImportTask extends Task {
 		}
 
 		//save workspace
-		ws = workspaceDao.save(ws);
+		ws = workspaceDao.saveWorkspace(ws);
 		
 		//TODO children entity ids not updated after save...check this
 //		Workspace reloaded = workspaceDao.find(ws.getId());
@@ -235,7 +235,7 @@ public class CollectMetadataImportTask extends Task {
 	@SuppressWarnings("unchecked")
 	private <T extends Object> void setDefaultValue(Variable<?> oldVariable,
 			Variable<?> newVariable) {
-		((Variable<T>) oldVariable).setDefaultValue((T) newVariable.getDefaultValue());
+		((Variable<T>) oldVariable).setDefaultValue((T) newVariable.getDefaultValueTemp());
 	}
 
 	private Entity getEntityByOriginalId(List<Entity> entities, int originalId) {

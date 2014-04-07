@@ -1,19 +1,11 @@
 package org.openforis.calc.metadata;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-
-import org.openforis.calc.common.Identifiable;
+import org.openforis.calc.persistence.jooq.tables.pojos.AoiBase;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -23,42 +15,25 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author Mino Togna
  * 
  */
-@javax.persistence.Entity
-@Table(name = "aoi")
-public class Aoi extends Identifiable {
+public class Aoi extends AoiBase {
+
+	private static final long serialVersionUID = 1L;
 
 	@JsonIgnore
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "aoi_level_id")
 	private AoiLevel aoiLevel;
-
-	@Column(name = "code")
-	private String code;
-
-	@Column(name = "land_area")
-	private Double landArea;
-
-	@Column(name = "caption")
-	private String caption;
-
 	@JsonIgnore
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "parent_aoi_id")
 	private Aoi parentAoi;
-
-	@OneToMany(mappedBy = "parentAoi", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@OrderBy("id")
 	private Set<Aoi> children;
 
-	public Aoi(){
+	public Aoi() {
 	}
 	
-	public Aoi(Integer id, String code, String caption, Double landArea) {
+	public Aoi(Integer id, String code, String caption, double landArea) {
 		super();
 		setId(id);
 		setCode(code);
 		setCaption(caption);
-		setLandArea(landArea);
+		setLandArea( new BigDecimal(landArea) );
 	}
 
 	public AoiLevel getAoiLevel() {
@@ -67,30 +42,6 @@ public class Aoi extends Identifiable {
 
 	public void setAoiLevel(AoiLevel aoiLevel) {
 		this.aoiLevel = aoiLevel;
-	}
-
-	public String getCode() {
-		return code;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
-	}
-
-	public Double getLandArea() {
-		return landArea;
-	}
-
-	public void setLandArea(Double landArea) {
-		this.landArea = landArea;
-	}
-
-	public String getCaption() {
-		return caption;
-	}
-
-	public void setCaption(String caption) {
-		this.caption = caption;
 	}
 
 	public Aoi getParentAoi() {

@@ -1,13 +1,7 @@
 package org.openforis.calc.metadata;
 
-import javax.persistence.Column;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
 import org.apache.commons.lang3.StringUtils;
-import org.openforis.calc.common.NamedUserObject;
+import org.openforis.calc.persistence.jooq.tables.pojos.VariableAggregateBase;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -15,9 +9,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * 
  * @author M. Togna
  */
-@javax.persistence.Entity
-@Table(name = "variable_aggregate")
-public class VariableAggregate extends NamedUserObject {
+//@javax.persistence.Entity
+//@Table(name = "variable_aggregate")
+public class VariableAggregate extends VariableAggregateBase {
+
+	private static final long serialVersionUID = 1L;
 
 	public static enum AGGREGATE_TYPE {
 		MIN, MAX, SUM, MEAN, STDDEV, AREA, PER_UNIT_AREA;
@@ -42,20 +38,10 @@ public class VariableAggregate extends NamedUserObject {
 	}
 
 	@JsonIgnore
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "variable_id")
+//	@ManyToOne(fetch = FetchType.EAGER)
+//	@JoinColumn(name = "variable_id")
 	private QuantitativeVariable variable;
 
-	@JsonIgnore
-	@Column(name = "aggregate_column")
-	private String aggregateColumn;
-
-	@Column(name = "aggregate_type")
-	private String aggregateType;
-
-	@JsonIgnore
-	@Column(name = "aggregate_formula")
-	private String aggregateFormula;
 
 	public QuantitativeVariable getVariable() {
 		return variable;
@@ -65,41 +51,13 @@ public class VariableAggregate extends NamedUserObject {
 		this.variable = variable;
 	}
 
-	public String getAggregateColumn() {
-		return aggregateColumn;
-	}
-
-	public void setAggregateName(String aggregateName) {
-		this.aggregateColumn = aggregateName;
-	}
-
-	public String getAggregateType() {
-		return aggregateType;
-	}
-
-	public void setAggregateType(String aggregateType) {
-		this.aggregateType = aggregateType;
-	}
-
-	/**
-	 * Psql expression used for aggregating from single observations to stratum/AOI level
-	 */
-	public String getAggregateFormula() {
-		return aggregateFormula;
-	}
-
-	public void setAggregateFormula(String aggregateFormula) {
-		this.aggregateFormula = aggregateFormula;
-	}
-
-	public void setAggregateColumn(String aggregateColumn) {
-		this.aggregateColumn = aggregateColumn;
-	}
 
 	/**
 	 * Mondrian function used for aggregating across categories
 	 */
 	public String getAggregateFunction() {
+		String aggregateType = getAggregateType();
+		
 		if ( AGGREGATE_TYPE.AREA.equals(aggregateType) ) {
 			return AGGREGATE_TYPE.SUM.toString();
 		} else {
@@ -120,13 +78,15 @@ public class VariableAggregate extends NamedUserObject {
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + ((aggregateType == null) ? 0 : aggregateType.hashCode());
+		result = prime * result + ((getAggregateType() == null) ? 0 : getAggregateType().hashCode());
 		result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
 		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
+		String aggregateType = getAggregateType();
+		
 		if (this == obj)
 			return true;
 		if (!super.equals(obj))
@@ -135,9 +95,9 @@ public class VariableAggregate extends NamedUserObject {
 			return false;
 		VariableAggregate other = (VariableAggregate) obj;
 		if (aggregateType == null) {
-			if (other.aggregateType != null)
+			if (other.getAggregateType() != null)
 				return false;
-		} else if (!aggregateType.equals(other.aggregateType))
+		} else if (!aggregateType.equals(other.getAggregateType()))
 			return false;
 		if (getId() == null) {
 			if (other.getId() != null)

@@ -62,7 +62,7 @@ public class ErrorCalculationController {
 		Entity entity = quantity.getEntity();
 
 		int categoryId = parameterMap.getInteger("category");
-		CategoricalVariable<?> category = (CategoricalVariable<?>) entity.findVariable(categoryId);
+		CategoricalVariable<?> category = (CategoricalVariable<?>) entity.findVariableById(categoryId);
 
 		List<String> classes = (List<String>) parameterMap.get("classes");
 

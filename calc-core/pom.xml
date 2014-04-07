@@ -89,6 +89,10 @@
 									<name>org.openforis.calc.engine.ParameterMap</name>
 									<converter>org.openforis.calc.persistence.jooq.ParameterMapConverter</converter>
 								</customType>
+								<customType>
+									<name>org.openforis.calc.metadata.Variable.Scale</name>
+									<converter>org.openforis.calc.persistence.jooq.VariableScaleConverter</converter>
+								</customType>
 							</customTypes>
 							<forcedTypes>
 								<forcedType>
@@ -114,6 +118,10 @@
 								<forcedType>
 									<name>org.openforis.calc.engine.ParameterMap</name>
 									<expression>.*\.processing_chain\.parameters</expression>
+								</forcedType>
+								<forcedType>
+									<name>org.openforis.calc.metadata.Variable.Scale</name>
+									<expression>.*\.variable\.scale</expression>
 								</forcedType>
 							</forcedTypes>
 						</database>

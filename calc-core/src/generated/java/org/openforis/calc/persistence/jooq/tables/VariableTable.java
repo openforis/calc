@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class VariableTable extends org.jooq.impl.TableImpl<org.openforis.calc.persistence.jooq.tables.records.VariableRecord> {
 
-	private static final long serialVersionUID = 899584444;
+	private static final long serialVersionUID = 588556810;
 
 	/**
 	 * The singleton instance of <code>calc.variable</code>
@@ -44,7 +44,7 @@ public class VariableTable extends org.jooq.impl.TableImpl<org.openforis.calc.pe
 	/**
 	 * The column <code>calc.variable.scale</code>.
 	 */
-	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.VariableRecord, java.lang.String> SCALE = createField("scale", org.jooq.impl.SQLDataType.VARCHAR.length(25).nullable(false).defaulted(true), this, "");
+	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.VariableRecord, org.openforis.calc.metadata.Variable.Scale> SCALE = createField("scale", org.jooq.impl.SQLDataType.VARCHAR.length(25).nullable(false).defaulted(true).asConvertedDataType(new org.openforis.calc.persistence.jooq.VariableScaleConverter()), this, "");
 
 	/**
 	 * The column <code>calc.variable.name</code>.
