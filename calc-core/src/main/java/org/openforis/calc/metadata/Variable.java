@@ -39,6 +39,9 @@ public abstract class Variable<T> extends VariableBase {
 
 	void setEntity(Entity entity) {
 		this.entity = entity;
+		if( entity != null ) {
+			setEntityId( entity.getId() );
+		}
 	}
 
 //	public Scale getScale() {

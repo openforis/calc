@@ -204,7 +204,7 @@ public class Workspace extends WorkspaceBase {
 			entities = new ArrayList<Entity>();
 		}
 		entity.setWorkspace( this );
-		entities.add(entity);
+		entities.add( entity );
 	}
 
 	public void removeEntities(Collection<Entity> entities) {

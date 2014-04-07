@@ -17,6 +17,7 @@ import org.openforis.calc.psql.Psql;
 import org.openforis.calc.schema.CategoryDimensionTable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Mino Togna
@@ -64,7 +65,7 @@ public class VariableDao extends org.openforis.calc.persistence.jooq.tables.daos
 		return categories;
 	}
 	
-	
+	@Transactional
 	public void loadByWorkspace( Workspace workspace ) {
 		List<Entity> entities = workspace.getEntities();
 
@@ -101,6 +102,10 @@ public class VariableDao extends org.openforis.calc.persistence.jooq.tables.daos
 			Entity entity = workspace.getEntityById(variable.getEntityId());
 			entity.addVariable(variable);
 		}
+	}
+	
+	public void save( List<Variable<?>> variables ) {
+		
 	}
 	
 	

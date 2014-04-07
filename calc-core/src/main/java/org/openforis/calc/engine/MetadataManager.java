@@ -3,25 +3,29 @@
  */
 package org.openforis.calc.engine;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.ProcessingChain;
-import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.AoiManager;
 import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.SamplingDesign;
 import org.openforis.calc.metadata.Stratum;
+import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.VariableDao;
 import org.openforis.calc.persistence.jooq.Tables;
-import org.openforis.calc.persistence.jooq.tables.daos.AoiHierarchyDao;
 import org.openforis.calc.persistence.jooq.tables.daos.CalculationStepDao;
 import org.openforis.calc.persistence.jooq.tables.daos.EntityDao;
 import org.openforis.calc.persistence.jooq.tables.daos.ProcessingChainDao;
+import org.openforis.calc.persistence.jooq.tables.daos.SamplingDesignDao;
 import org.openforis.calc.persistence.jooq.tables.daos.StratumDao;
 import org.openforis.calc.persistence.jooq.tables.daos.WorkspaceDao;
+import org.openforis.calc.persistence.jooq.tables.pojos.VariableBase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,9 +54,10 @@ public class MetadataManager {
 	
 	@Autowired
 	private EntityDao entityDao; 
-	
 	@Autowired
 	private VariableDao variableDao;
+	@Autowired
+	private SamplingDesignDao samplingDesignDao;
 	
 	@Autowired
 	private AoiManager aoiManager;
@@ -62,7 +67,6 @@ public class MetadataManager {
 	 * 	Load workspace methods
 	 * ============================
 	 */
-	
 	@Transactional
 	public Workspace fetchWorkspaceById( int workspaceId ) {
 		Workspace workspace = workspaceDao.findById( workspaceId );
@@ -104,30 +108,6 @@ public class MetadataManager {
 		return workspace;
 	}
 	
-	/*
-	 * ============================
-	 *  Save workspace methods
-	 * ============================
-	 */
-	/**
-	 * Saves the workspace and its metadata
-	 * 
-	 * @param workspace
-	 * @return
-	 */
-	@Transactional
-	public Workspace saveWorkspace( Workspace workspace ) {
-		if( workspaceDao.exists(workspace) ) {
-			workspaceDao.update( workspace );
-		} else {
-			workspaceDao.insert( workspace );
-		}
-		
-		saveMetadata( workspace );
-		
-		return fetchWorkspaceByCollectSurveyUri( workspace.getCollectSurveyUri() );
-	}
-	
 	/* 
 	 * ===============================
 	 *  Load metadata methods
@@ -141,12 +121,24 @@ public class MetadataManager {
 		loadStrata( workspace );
 		loadProcessingChains( workspace );
 		loadSamplingDesign( workspace );
-//		initEntityHierarchy( workspace );
+		
+		initEntityHierarchy( workspace );
 	}
 	
+	private void initEntityHierarchy(Workspace workspace) {
+		List<Entity> entities = workspace.getEntities();
+		for (Entity entity : entities) {
+			Integer parentEntityId = entity.getParentEntityId();
+			if( parentEntityId != null ){
+				Entity parent = workspace.getEntityById( parentEntityId );
+				parent.addChild( entity );
+			}
+		}
+	}
+
 	private void loadSamplingDesign(Workspace workspace) {
-		// TODO Auto-generated method stub
-		
+		SamplingDesign samplingDesign = samplingDesignDao.fetchOne( Tables.SAMPLING_DESIGN.WORKSPACE_ID , workspace.getId() );
+		workspace.setSamplingDesign( samplingDesign );
 	}
 
 	private void loadEntities( Workspace workspace ) {
@@ -194,15 +186,63 @@ public class MetadataManager {
 		}
 		
 	}
-
+	/*
+	 * ============================
+	 *  Save workspace methods
+	 * ============================
+	 */
+	/**
+	 * Saves the workspace and its metadata
+	 * 
+	 * @param workspace
+	 * @return
+	 */
+	@Transactional
+	public Workspace saveWorkspace( Workspace workspace ) {
+		if( workspaceDao.exists(workspace) ) {
+			workspaceDao.update( workspace );
+		} else {
+			workspaceDao.insert( workspace );
+		}
+		
+		saveMetadata( workspace );
+		
+		return fetchWorkspaceByCollectSurveyUri( workspace.getCollectSurveyUri() );
+	}
 	/* 
 	 * ===============================
 	 *  Save metadata methods
 	 * ===============================
 	 */
-	
 	@Transactional
-	private void saveMetadata(Workspace workspace) {
+	private void saveMetadata( Workspace workspace ) {
+		
+		List<Entity> entities = workspace.getEntities();
+		for (Entity entity : entities) {
+			Integer id = entity.getId();
+			if( id == null ){
+				//TODO check if entity ids has been set to all variables
+				entityDao.insert( entity );
+			} else {
+				entityDao.update( entity );
+			}
+			// save variables
+			List<Variable<?>> variables = entity.getVariables();
+			for (Variable<?> variable : variables) {
+				VariableBase base = new VariableBase();
+				try {
+					BeanUtils.copyProperties( base , variable );
+				} catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		
 //		saveStrata( workspace );
 //		saveProcessingChains( workspace );
 	}

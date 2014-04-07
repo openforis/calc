@@ -57,6 +57,9 @@ public class Entity extends EntityBase {
 	
 	public void setWorkspace(Workspace workspace) {
 		this.workspace = workspace;
+		if( workspace != null ) {
+			setWorkspaceId( workspace.getId() );
+		}
 	}
 	
 	public String getDataView() {

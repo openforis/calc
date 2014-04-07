@@ -9,7 +9,6 @@ import org.json.simple.parser.ParseException;
 import org.openforis.calc.engine.Job;
 import org.openforis.calc.engine.ParameterHashMap;
 import org.openforis.calc.engine.ParameterMap;
-import org.openforis.calc.engine.SamplingDesignDao;
 import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceLockedException;
@@ -17,6 +16,7 @@ import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.SamplingDesign;
+import org.openforis.calc.persistence.jooq.tables.daos.SamplingDesignDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,8 +51,11 @@ public class InventorySettingsController {
 	Response setSamplingDesign(@RequestParam(value = "samplingDesign", required = false) String samplingDesignParam) throws IOException, ParseException, WorkspaceLockedException {
 		Response response = new Response();
 		Workspace workspace = workspaceService.getActiveWorkspace();
-		workspace.setSamplingDesign(null);
-		samplingDesignDao.deleteByWorkspace(workspace.getId());
+		SamplingDesign sd = workspace.getSamplingDesign();
+		if( sd != null ){
+			samplingDesignDao.delete( sd );
+			workspace.setSamplingDesign(null);
+		}
 
 		SamplingDesign samplingDesign = parseSamplingDesignFromJsonString(workspace, samplingDesignParam);
 		if (samplingDesign != null) {
@@ -66,7 +69,7 @@ public class InventorySettingsController {
 				workspaceService.resetResultTable(samplingUnit);
 			}
 			
-			samplingDesignDao.save(samplingDesign);
+			samplingDesignDao.insert( samplingDesign );
 			workspace.setSamplingDesign(samplingDesign);
 			response.addField("samplingDesign", samplingDesign);
 		}

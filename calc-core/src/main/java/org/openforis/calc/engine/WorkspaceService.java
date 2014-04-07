@@ -282,7 +282,7 @@ public class WorkspaceService {
 //		}
 //	}
 	
-	public void activate(Workspace ws) {
+	public void activate( Workspace ws ) {
 		workspaceManager.activate( ws );
 		setActiveWorkspace( ws );
 	}
