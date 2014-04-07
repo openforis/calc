@@ -3,6 +3,7 @@
  */
 package org.openforis.calc.metadata;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -105,8 +106,22 @@ public class VariableDao extends org.openforis.calc.persistence.jooq.tables.daos
 	}
 	
 	public void save( List<Variable<?>> variables ) {
-		
+		// save variables
+		for (Variable<?> variable : variables) {
+			VariableBase base = new VariableBase();
+			try {
+				BeanUtils.copyProperties( base , variable );
+			} catch (Exception e) {
+				// it should never happens
+				throw new IllegalStateException( "Unable to load variables" , e );
+			}
+			if( base.getId() == null ) {
+				insert( variable );
+			} else {
+				update( variable );
+			}
+		}
+
 	}
-	
 	
 }

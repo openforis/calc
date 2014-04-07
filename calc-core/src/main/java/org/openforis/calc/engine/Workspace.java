@@ -341,4 +341,13 @@ public class Workspace extends WorkspaceBase {
 		return this.hasSamplingDesign() && getSamplingDesign().getCluster();
 	}
 
+	public List<Variable<?>> getVariables() {
+		List<Variable<?>> variables = new ArrayList<Variable<?>>();
+		List<Entity> entities = getEntities();
+		for (Entity entity : entities) {
+			variables.addAll( entity.getVariables() );
+		}
+		return variables;
+	}
+
 }

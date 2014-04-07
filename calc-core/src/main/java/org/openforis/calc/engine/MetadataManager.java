@@ -6,7 +6,9 @@ package org.openforis.calc.engine;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
@@ -19,6 +21,7 @@ import org.openforis.calc.metadata.Stratum;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.VariableDao;
 import org.openforis.calc.persistence.jooq.Tables;
+import org.openforis.calc.persistence.jooq.tables.VariableTable;
 import org.openforis.calc.persistence.jooq.tables.daos.CalculationStepDao;
 import org.openforis.calc.persistence.jooq.tables.daos.EntityDao;
 import org.openforis.calc.persistence.jooq.tables.daos.ProcessingChainDao;
@@ -26,6 +29,7 @@ import org.openforis.calc.persistence.jooq.tables.daos.SamplingDesignDao;
 import org.openforis.calc.persistence.jooq.tables.daos.StratumDao;
 import org.openforis.calc.persistence.jooq.tables.daos.WorkspaceDao;
 import org.openforis.calc.persistence.jooq.tables.pojos.VariableBase;
+import org.openforis.calc.psql.Psql;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,6 +65,9 @@ public class MetadataManager {
 	
 	@Autowired
 	private AoiManager aoiManager;
+	
+	@Autowired
+	private Psql psql;
 	
 	/*
 	 * ============================
@@ -226,20 +233,9 @@ public class MetadataManager {
 			} else {
 				entityDao.update( entity );
 			}
-			// save variables
-			List<Variable<?>> variables = entity.getVariables();
-			for (Variable<?> variable : variables) {
-				VariableBase base = new VariableBase();
-				try {
-					BeanUtils.copyProperties( base , variable );
-				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (InvocationTargetException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
+			
+			variableDao.save( entity.getVariables() );
+			
 		}
 		
 		
@@ -259,6 +255,28 @@ public class MetadataManager {
 //		
 //	}
 	
+	/* 
+	 * ===============================
+	 *  Delete metadata methods
+	 * ===============================
+	 */
+	@Transactional
+	public void deleteVariablesByOriginalId( Workspace workspace , Integer... ids ) {
+		Set<Integer> entityIds = new HashSet<Integer>();
+		List<Entity> entities = workspace.getEntities();
+		for (Entity entity : entities) {
+			entityIds.add( entity.getId() );
+			
+			entity.getVariableByOriginalId( id );
+		}
+		
+		VariableTable T = Tables.VARIABLE;
+		psql
+			.delete( T )
+			.where( T.ORIGINAL_ID.in(ids) )
+			.and( T.ENTITY_ID.in(entityIds) )
+			.execute();
+	}
 	/*
 	 * ===========================
 	 * 	Workspace utility methods
