@@ -94,13 +94,14 @@ public class CollectMetadataImportTask extends Task {
 		entitiesById = new HashMap<Integer, Entity>();
 		variableNames = new HashSet<String>();
 		
-		List<Entity> newEntities = createEntitiesFromSchema();
+		List<Entity> entities = createEntitiesFromSchema();
 
-		Workspace updatedWorkspace = updateEntities(newEntities);
+		Workspace workspace = updateEntities( entities );
+		metadataManager.saveWorkspace( workspace );
 		
-		( (CollectBackupImportJob) getJob() ).refreshWorkspace( updatedWorkspace );
+		( (CollectBackupImportJob) getJob() ).refreshWorkspace( workspace );
 		
-		printToLog(newEntities);
+		printToLog(entities);
 	}
 
 	private List<Entity> createEntitiesFromSchema() throws IdmlParseException {
@@ -396,14 +397,11 @@ public class CollectMetadataImportTask extends Task {
 			Entity oldEntity = ws.getEntityByOriginalId(newEntity.getOriginalId());
 			if ( oldEntity == null ) {
 				replaceParentEntityWithPersistedOne(newEntity);
-				
-				metadataManager.saveEntity(ws, newEntity);
+				ws.addEntity( newEntity );
+//				metadataManager.saveEntity(ws, newEntity);
 			}
 		}
 
-		//TODO children entity ids not updated after save...check this
-//		Workspace reloaded = workspaceDao.find(ws.getId());
-//		ws.setEntities(reloaded.getEntities());
 		return ws;
 	}
 	
@@ -444,21 +442,24 @@ public class CollectMetadataImportTask extends Task {
 		}
 		metadataManager.deleteVariables(variablesToBeRemoved);
 		
-		//apply changes to existing variables
+		// apply changes to existing variables
 		for (Variable<?> oldVariable : oldEntity.getVariables()) {
 			Integer oldVariableOrigId = oldVariable.getOriginalId();
 			if ( oldVariableOrigId != null ) {
 				Variable<?> newVariable = newEntity.getVariableByOriginalId(oldVariableOrigId);
+				
 				applyChangesToVariable(oldVariable, newVariable);
-				metadataManager.saveVariable(oldVariable.getEntity(), oldVariable);
+				
+//				metadataManager.saveVariable(oldVariable.getEntity(), oldVariable);
 			}
 		}
 		
-		//add new variables
+		// add new variables
 		for (Variable<?> newVariable : newEntity.getVariables()) {
 			Variable<?> oldVariable = oldEntity.getVariableByOriginalId(newVariable.getOriginalId());
 			if ( oldVariable == null ) {
-				metadataManager.saveVariable(oldEntity, newVariable);
+				oldEntity.addVariable( newVariable );
+//				metadataManager.saveVariable(oldEntity, newVariable);
 			}
 		}
 	}

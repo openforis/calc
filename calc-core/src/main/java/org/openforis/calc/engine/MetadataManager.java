@@ -225,10 +225,9 @@ public class MetadataManager {
 		for (Entity entity : entities) {
 			
 			Integer id = entity.getId();
-			if( id == null ){
+			if( id == null ) {
 				Long nextval = psql.nextval( Sequences.ENTITY_ID_SEQ );
 				entity.setId( nextval.intValue() );
-				
 				entityDao.insert( entity );
 			} else {
 				entityDao.update( entity );
@@ -237,7 +236,6 @@ public class MetadataManager {
 			List<Variable<?>> varList = entity.getVariables();
 			Variable<?>[] variables = varList.toArray( new Variable<?>[varList.size()] );
 			variableDao.save( variables );
-			
 		}
 	}
 	
@@ -274,9 +272,9 @@ public class MetadataManager {
 			List<Variable<?>> variables = entity.getVariables();
 			deleteVariables(variables);
 			
-			entityDao.delete(entity);
+			entityDao.delete( entity );
 			
-			ws.removeEntity(entity);
+			ws.removeEntity( entity );
 		}
 	}
 	
@@ -285,6 +283,7 @@ public class MetadataManager {
 	 * 	Workspace utility methods
 	 * ===========================
 	 */
+	@Transactional
 	public void deactivateAll() {
 		List<Workspace> list = findAllWorkspaces();
 		for (Workspace ws : list) {
@@ -293,43 +292,11 @@ public class MetadataManager {
 		}
 	}
 
+	@Transactional
 	public void activate(Workspace ws) {
 		deactivateAll();
 		ws.setActive( true );
 		workspaceDao.update( ws );
-	}
-
-	/*
-	 * ========================
-	 * Workspace update methods
-	 * ========================
-	 */
-	public void saveEntity(Workspace ws, Entity entity) {
-		if ( entity.getWorkspace() == null ) {
-			//datached entity
-			ws.addEntity(entity);
-			entityDao.insert(entity);
-			
-			Integer newEntityId = entity.getId();
-			
-			List<Variable<?>> variables = entity.getVariables();
-			for (Variable<?> variable : variables) {
-				variable.setEntityId(newEntityId);
-				variableDao.insert(variable);
-			}
-		} else {
-			entityDao.update(entity);
-		}
-	}
-
-	public void saveVariable(Entity entity, Variable<?> variable) {
-		if ( variable.getEntity() == null ) {
-			//detached variable
-			entity.addVariable(variable);
-			variableDao.insert(variable);
-		} else {
-			variableDao.update(variable);
-		}
 	}
 
 }
