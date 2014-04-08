@@ -39,7 +39,7 @@ public class EntityDataViewDao extends AbstractJooqDao {
 		Workspace ws = entity.getWorkspace();
 
 		Schemas schemas = new Schemas(ws);
-		DataSchema inputSchema = schemas.getDataSchema();
+		InputSchema inputSchema = schemas.getInputSchema();
 		EntityDataView view = inputSchema.getDataView(entity);
 		
 		// drop view
@@ -235,7 +235,7 @@ public class EntityDataViewDao extends AbstractJooqDao {
 
 	private EntityDataView getDataView(Workspace workspace, Entity entity) {
 		Schemas schemas = new Schemas(workspace);
-		EntityDataView view = schemas.getDataSchema().getDataView(entity);
+		EntityDataView view = schemas.getInputSchema().getDataView(entity);
 		return view;
 	}
 

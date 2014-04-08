@@ -1,12 +1,14 @@
 /**
  * 
  */
-package org.openforis.calc.engine;
+package org.openforis.calc.chain.pre;
 
 import org.jooq.Record;
 import org.jooq.Select;
 import org.jooq.SelectQuery;
 import org.jooq.impl.SQLDataType;
+import org.openforis.calc.engine.CalcRTask;
+import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.SamplingDesign;
 import org.openforis.calc.psql.AlterTableStep.AlterColumnStep;
@@ -30,7 +32,7 @@ public class CalculateSamplingUnitWeightTask extends CalcRTask {
 
 	private RLogger rLogger;
 
-	protected CalculateSamplingUnitWeightTask(REnvironment rEnvironment) {
+	public CalculateSamplingUnitWeightTask(REnvironment rEnvironment) {
 		super(rEnvironment, "Calculate sampling unit weight");
 	}
 

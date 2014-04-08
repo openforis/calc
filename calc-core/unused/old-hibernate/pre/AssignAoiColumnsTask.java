@@ -16,7 +16,7 @@ import org.openforis.calc.persistence.jooq.Tables;
 import org.openforis.calc.schema.AoiHierarchyFlatTable;
 import org.openforis.calc.schema.DataAoiTable;
 import org.openforis.calc.schema.EntityDataView;
-import org.openforis.calc.schema.DataSchema;
+import org.openforis.calc.schema.InputSchema;
 import org.openforis.calc.schema.Phase1AoiTable;
 
 /**
@@ -32,7 +32,7 @@ public final class AssignAoiColumnsTask extends Task {
 	protected void execute() throws Throwable {
 
 		Workspace workspace = getWorkspace();
-		DataSchema schema = getInputSchema();
+		InputSchema schema = getInputSchema();
 
 		// only first hierarchy at the moment.
 		List<AoiHierarchyFlatTable> hierchyTables = schema.getAoiHierchyTables();

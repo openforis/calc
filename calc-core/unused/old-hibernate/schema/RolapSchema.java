@@ -29,11 +29,11 @@ public class RolapSchema {
 	private Workspace workspace;
 	// private List<CategoryDimension> categoryDimensions;
 	private Map<Integer, Cube> cubes;
-	private DataSchema dataSchema;
+	private InputSchema dataSchema;
 
 	private List<VirtualCube> virtualCubes;
 
-	public RolapSchema(Workspace workspace, DataSchema schema) {
+	public RolapSchema(Workspace workspace, InputSchema schema) {
 		this.name = workspace.getInputSchema();
 
 		this.workspace = workspace;
@@ -149,15 +149,15 @@ public class RolapSchema {
 	// return Collections.unmodifiableList(categoryDimensions);
 	// }
 
-	public DataSchema getDataSchema() {
+	public InputSchema getDataSchema() {
 		return dataSchema;
 	}
 	
-//	@Deprecated
-//	public OutputSchema getOutputSchema() {
-////		return dataSchema;
-//		return null;
-//	}
+	@Deprecated
+	public OutputSchema getOutputSchema() {
+//		return dataSchema;
+		return null;
+	}
 
 	public String getName() {
 		return name;

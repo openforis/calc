@@ -11,7 +11,6 @@ import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.metadata.AoiDao;
 import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.Entity;
-import org.openforis.calc.metadata.EntityDao;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.SamplingDesign;
 import org.openforis.calc.metadata.StratumDao;
@@ -20,12 +19,14 @@ import org.openforis.calc.metadata.Variable.Scale;
 import org.openforis.calc.metadata.VariableAggregate;
 import org.openforis.calc.metadata.VariableAggregateDao;
 import org.openforis.calc.metadata.VariableDao;
+import org.openforis.calc.persistence.jooq.tables.daos.EntityDao;
+import org.openforis.calc.persistence.jooq.tables.daos.SamplingDesignDao;
 import org.openforis.calc.persistence.jooq.tables.daos.WorkspaceDao;
 import org.openforis.calc.psql.Psql;
 import org.openforis.calc.schema.EntityDataView;
 import org.openforis.calc.schema.EntityDataViewDao;
-import org.openforis.calc.schema.InputSchema;
-import org.openforis.calc.schema.InputSchemaDao;
+import org.openforis.calc.schema.DataSchema;
+import org.openforis.calc.schema.DataSchemaDao;
 import org.openforis.calc.schema.InputTable;
 import org.openforis.calc.schema.ResultTable;
 import org.openforis.calc.schema.Schemas;
@@ -60,11 +61,11 @@ public class WorkspaceService {
 	@Autowired
 	private VariableDao variableDao;
 
-	@Autowired
-	private VariableAggregateDao variableAggregateDao;
+//	@Autowired
+//	private VariableAggregateDao variableAggregateDao;
 
 	@Autowired
-	private InputSchemaDao inputSchemaDao;
+	private DataSchemaDao inputSchemaDao;
 
 	@Autowired
 	private ProcessingChainService processingChainService;
@@ -188,7 +189,7 @@ public class WorkspaceService {
 		Entity entity = variable.getEntity();
 		
 		// get result table
-		InputSchema schema = new Schemas( entity.getWorkspace() ).getInputSchema();
+		DataSchema schema = new Schemas( entity.getWorkspace() ).getDataSchema();
 		ResultTable originalResultTable = schema.getResultTable(entity);
 //			QuantitativeVariable variable = createQuantitativeVariable(name);
 
@@ -301,7 +302,7 @@ public class WorkspaceService {
 		
 //		resetDataViews( ws );
 		
-		InputSchema schema = new Schemas(ws).getInputSchema();
+		DataSchema schema = new Schemas(ws).getDataSchema();
 		List<Entity> entities = ws.getEntities();
 		for (Entity entity : entities) {
 			
@@ -475,7 +476,7 @@ public class WorkspaceService {
 		
 		Entity entity = getEntity(variable);
 		
-		InputSchema schema = new Schemas(entity.getWorkspace()).getInputSchema();
+		DataSchema schema = new Schemas(entity.getWorkspace()).getDataSchema();
 		ResultTable originalResultsTable = schema.getResultTable(entity);
 		EntityDataView view = schema.getDataView(entity);
 
@@ -536,7 +537,7 @@ public class WorkspaceService {
 	}
 
 	public void resetResultTable(Entity entity){
-		InputSchema schema = new Schemas( entity.getWorkspace() ).getInputSchema();
+		DataSchema schema = new Schemas( entity.getWorkspace() ).getDataSchema();
 		EntityDataView dataView = schema.getDataView(entity);
 		ResultTable resultsTable = schema.getResultTable(entity);
 		InputTable dataTable = schema.getDataTable(entity);

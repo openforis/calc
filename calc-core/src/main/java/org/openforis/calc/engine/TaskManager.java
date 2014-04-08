@@ -13,6 +13,7 @@ import org.openforis.calc.chain.InvalidProcessingChainException;
 import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.chain.pre.AssignAoiColumnsTask;
 import org.openforis.calc.chain.pre.CalculateExpansionFactorsTask;
+import org.openforis.calc.chain.pre.CalculateSamplingUnitWeightTask;
 import org.openforis.calc.collect.CollectBackupImportJob;
 import org.openforis.calc.module.ModuleRegistry;
 import org.openforis.calc.module.Operation;
@@ -85,15 +86,14 @@ public class TaskManager {
 	 * @return
 	 */
 	public CalcJob createDefaultCalcJob(Workspace workspace, boolean aggregates) {
-		CalcJob job = new CalcJob(workspace, dataSource, this.beanFactory);
+		CalcJob job = createCalcJob(workspace);
 		
 		ProcessingChain processingChain = workspace.getDefaultProcessingChain();
+		
 		List<CalculationStep> steps = processingChain.getCalculationSteps();
 		job.addCalculationStep(steps);
 		job.setAggregates(aggregates);
-		
-		autowire(job);
-		
+
 		return job;
 	}
 	

@@ -42,7 +42,7 @@ public class AoiHierarchyFlatTable extends AbstractTable {
 	 * @param name
 	 * @param schema
 	 */
-	public AoiHierarchyFlatTable(AoiHierarchy hierarchy, DataSchema schema) {
+	public AoiHierarchyFlatTable(AoiHierarchy hierarchy, InputSchema schema) {
 		super(hierarchy.getName(), schema);
 		
 		this.hierarchy = hierarchy;

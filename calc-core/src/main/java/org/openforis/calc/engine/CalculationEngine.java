@@ -1,26 +1,7 @@
 package org.openforis.calc.engine;
 
-import org.openforis.calc.chain.InvalidProcessingChainException;
-import org.openforis.calc.chain.ProcessingChain;
-//import org.openforis.calc.chain.ProcessingChainDao;
-import org.openforis.calc.chain.post.AssignDimensionIdsTask;
-import org.openforis.calc.chain.post.CalculateExpansionFactorsTask;
-import org.openforis.calc.chain.post.CreateAggregateTablesTask;
-import org.openforis.calc.chain.post.CreateFactTablesTask;
-import org.openforis.calc.chain.post.PublishRolapSchemaTask;
-import org.openforis.calc.chain.pre.ApplyDefaultsTask;
-import org.openforis.calc.chain.pre.AssignAoiColumnsTask;
-import org.openforis.calc.chain.pre.AssignLocationColumnsTask;
-import org.openforis.calc.chain.pre.AssignStratumTask;
-import org.openforis.calc.chain.pre.CreateAoiDimensionTablesTask;
-import org.openforis.calc.chain.pre.CreateCategoryDimensionTablesTask;
-import org.openforis.calc.chain.pre.CreateOutputTablesTask;
-import org.openforis.calc.chain.pre.CreateStratumDimensionTableTask;
-import org.openforis.calc.chain.pre.ResetOutputSchemaTask;
-import org.openforis.calc.metadata.task.UpdateSamplingUnitAoisTask;
-import org.openforis.calc.persistence.jooq.tables.daos.WorkspaceDao;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+//import org.openforis.calc.chain.ProcessingChainDao;
 
 /**
  * 
@@ -29,6 +10,7 @@ import org.springframework.stereotype.Service;
  *
  */
 @Service
+@Deprecated
 public class CalculationEngine {
 	
 //	@Autowired 

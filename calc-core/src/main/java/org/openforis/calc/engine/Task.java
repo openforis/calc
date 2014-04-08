@@ -4,8 +4,7 @@ import javax.sql.DataSource;
 
 import org.openforis.calc.nls.Captionable;
 import org.openforis.calc.psql.Psql;
-import org.openforis.calc.schema.InputSchema;
-import org.openforis.calc.schema.OutputSchema;
+import org.openforis.calc.schema.DataSchema;
 import org.openforis.calc.schema.RolapSchema;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -48,13 +47,13 @@ public abstract class Task extends Worker implements Captionable {
 		return getJob().isDebugMode();
 	}
 
-	@JsonIgnore
-	protected OutputSchema getOutputSchema() {
-		return getJob().getOutputSchema();
-	}
+//	@JsonIgnore
+//	protected OutputSchema getOutputSchema() {
+//		return getJob().getOutputSchema();
+//	}
 	
 	@JsonIgnore
-	protected InputSchema getInputSchema(){
+	protected DataSchema getInputSchema(){
 		return getJob().getInputSchema();
 	}
 

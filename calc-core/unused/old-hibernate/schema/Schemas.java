@@ -9,32 +9,29 @@ import org.openforis.calc.engine.Workspace;
  */
 public class Schemas {
 	
-	private DataSchema inputSchema;
-//	private OutputSchema outputSchema;
+	private InputSchema inputSchema;
+	private OutputSchema outputSchema;
 	private RolapSchema rolapSchema;
-	private Workspace workspace;
 	
 	public Schemas(Workspace workspace) {
-		this.workspace = workspace;
-		
-		inputSchema = new DataSchema(workspace);
-//		outputSchema = new OutputSchema(workspace, inputSchema);
+		inputSchema = new InputSchema(workspace);
+		outputSchema = new OutputSchema(workspace, inputSchema);
 		rolapSchema = new RolapSchema(workspace, inputSchema);
 	}
 
-	public DataSchema getDataSchema() {
+	public InputSchema getInputSchema() {
 		return inputSchema;
 	}
 
-//	public OutputSchema getOutputSchema() {
-//		return outputSchema;
-//	}
+	public OutputSchema getOutputSchema() {
+		return outputSchema;
+	}
 
 	public RolapSchema getRolapSchema() {
 		return rolapSchema;
 	}
 
 	public Workspace getWorkspace() {
-		return this.workspace;
+		return outputSchema.getWorkspace();
 	}
 }

@@ -43,7 +43,7 @@ public class DataAoiTable extends AbstractTable {
 	 * @param name
 	 * @param schema
 	 */
-	public DataAoiTable(String name, DataSchema schema) {
+	public DataAoiTable(String name, InputSchema schema) {
 		super(name, schema);
 		
 		this.workspace = schema.getWorkspace();

@@ -12,8 +12,7 @@ import javax.sql.DataSource;
 import org.openforis.calc.r.R;
 import org.openforis.calc.r.REnvironment;
 import org.openforis.calc.r.RException;
-import org.openforis.calc.schema.InputSchema;
-import org.openforis.calc.schema.OutputSchema;
+import org.openforis.calc.schema.DataSchema;
 import org.openforis.calc.schema.RolapSchema;
 import org.openforis.calc.schema.Schemas;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -192,14 +191,14 @@ public class Job extends Worker implements Iterable<Task> {
 		return schemas.getRolapSchema();
 	}
 
-	@JsonIgnore
-	public OutputSchema getOutputSchema() {
-		return schemas.getOutputSchema();
-	}
+//	@JsonIgnore
+//	public OutputSchema getOutputSchema() {
+//		return schemas.getOutputSchema();
+//	}
 
 	@JsonIgnore
-	public InputSchema getInputSchema() {
-		return schemas.getInputSchema();
+	public DataSchema getInputSchema() {
+		return schemas.getDataSchema();
 	}
 
 	protected REnvironment newREnvironment() {

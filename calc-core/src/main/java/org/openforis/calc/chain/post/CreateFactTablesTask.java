@@ -21,7 +21,7 @@ import org.openforis.calc.psql.Psql.Privilege;
 import org.openforis.calc.schema.DataTable;
 import org.openforis.calc.schema.EntityDataView;
 import org.openforis.calc.schema.OldFactTable;
-import org.openforis.calc.schema.InputSchema;
+import org.openforis.calc.schema.DataSchema;
 import org.openforis.calc.schema.FactTable;
 import org.openforis.calc.schema.OutputSchema;
 import org.openforis.calc.schema.OutputTable;
@@ -40,7 +40,7 @@ public final class CreateFactTablesTask extends Task {
 	}
 
 	protected void execute() throws Throwable {
-		InputSchema schema = getInputSchema();
+		DataSchema schema = getInputSchema();
 		List<FactTable> factTables = schema.getFactTables();
 
 		for (FactTable factTable : factTables) {

@@ -16,7 +16,7 @@ public class InputTable extends DataTable {
 
 	private static final long serialVersionUID = 1L;
 
-	public InputTable(Entity entity, DataSchema schema) {
+	public InputTable(Entity entity, InputSchema schema) {
 		super(entity, entity.getDataTable(), schema);
 		createPrimaryKeyField();
 		createParentIdField();

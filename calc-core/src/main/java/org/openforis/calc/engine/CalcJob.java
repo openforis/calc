@@ -144,8 +144,8 @@ public class CalcJob extends Job {
 		for (Integer entityId : this.group.entityIds() ) {
 //		for (Integer entityId : this.calculationSteps.keySet()) {
 			Entity entity = getWorkspace().getEntityById(entityId);
-			EntityDataView view = getSchemas().getInputSchema().getDataView(entity);
-			InputTable table = getSchemas().getInputSchema().getDataTable(entity);
+			EntityDataView view = getSchemas().getDataSchema().getDataView(entity);
+			InputTable table = getSchemas().getDataSchema().getDataTable(entity);
 			Field<?> primaryKeyField = view.getPrimaryKey().getFields().get(0);
 			String primaryKey = primaryKeyField.getName();
 			RVariable dataFrame = r().variable(entity.getName());
@@ -154,7 +154,7 @@ public class CalcJob extends Job {
 			CalcRTask readDataTask = createTask("Read " + entity.getName() + " data");
 
 			// 1. update output variables to null
-			ResultTable finalResultTable = getSchemas().getInputSchema().getResultTable(entity);
+			ResultTable finalResultTable = getSchemas().getDataSchema().getResultTable(entity);
 			UpdateQuery<Record> upd = new Psql().updateQuery(finalResultTable);// .set(null,
 			for (String field : group.getOutputVariables(entityId) ) {
 				// skip primary key

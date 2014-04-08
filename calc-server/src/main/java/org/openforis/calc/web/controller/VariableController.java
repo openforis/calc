@@ -57,7 +57,7 @@ public class VariableController {
 		Variable<?> variable = workspace.getVariableById( variableId );
 		if( variable instanceof MultiwayVariable ) {
 
-			CategoryDimensionTable table = new Schemas( workspace ).getInputSchema().getCategoryDimensionTable( (MultiwayVariable) variable );
+			CategoryDimensionTable table = new Schemas( workspace ).getDataSchema().getCategoryDimensionTable( (MultiwayVariable) variable );
 			if( table != null ){
 				
 				boolean readCategories = true;			

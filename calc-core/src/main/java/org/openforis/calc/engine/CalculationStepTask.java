@@ -25,7 +25,7 @@ public abstract class CalculationStepTask extends Task {
 	void setCalculationStep(CalculationStep calculationStep) {
 		this.calculationStep = calculationStep;
 		
-		ParameterMap parameterMap = calculationStep.parameters();
+		ParameterMap parameterMap = calculationStep.getParameters();
 		if ( parameterMap == null ) {
 			this.parameters = new ParameterHashMap();			
 		} else {

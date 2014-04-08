@@ -24,7 +24,7 @@ import org.openforis.calc.schema.DataAoiTable;
 import org.openforis.calc.schema.DataTable;
 import org.openforis.calc.schema.EntityDataView;
 import org.openforis.calc.schema.ExpansionFactorTable;
-import org.openforis.calc.schema.InputSchema;
+import org.openforis.calc.schema.DataSchema;
 import org.openforis.calc.schema.FactTable;
 import org.openforis.calc.schema.SamplingUnitAggregateTable;
 import org.openforis.calc.schema.Schemas;
@@ -46,12 +46,12 @@ public final class CreateAggregateTablesTask extends Task {
 	@Override
 	protected long countTotalItems() {
 		Schemas schemas = getJob().getSchemas();
-		List<FactTable> factTables = schemas.getInputSchema().getFactTables();
+		List<FactTable> factTables = schemas.getDataSchema().getFactTables();
 		return factTables.size();
 	}
 	
 	protected void execute() throws Throwable {
-		InputSchema schema = getDataSchema();
+		DataSchema schema = getDataSchema();
 		
 		List<FactTable> factTables = schema.getFactTables();
 		for (FactTable factTable : factTables) {
@@ -71,10 +71,10 @@ public final class CreateAggregateTablesTask extends Task {
 		
 	}
 
-	protected InputSchema getDataSchema() {
+	protected DataSchema getDataSchema() {
 		Job job = getJob();
 		Schemas schemas = job.getSchemas();
-		InputSchema schema = schemas.getInputSchema();
+		DataSchema schema = schemas.getDataSchema();
 		return schema;
 	}
 

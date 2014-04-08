@@ -20,7 +20,7 @@ public class EntityDataView extends DataTable {
 
 	private static final long serialVersionUID = 1L;
 
-	private DataSchema schema;
+	private InputSchema schema;
 
 	/**
 	 * Select to create this view
@@ -29,7 +29,7 @@ public class EntityDataView extends DataTable {
 
 	private TableField<Record, BigDecimal> plotAreaField;
 
-	public EntityDataView(Entity entity, DataSchema schema) {
+	public EntityDataView(Entity entity, InputSchema schema) {
 		super(entity, entity.getDataView(), schema);
 		this.schema = schema;
 		createPrimaryKeyField();

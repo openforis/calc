@@ -16,7 +16,7 @@ public class EntityAoiTable extends DataAoiTable {
 
 	private static final long serialVersionUID = 1L;
 
-	protected EntityAoiTable(Entity entity, DataSchema inputSchema) {
+	protected EntityAoiTable(Entity entity, InputSchema inputSchema) {
 
 		super( getName(entity) , inputSchema);
 	}

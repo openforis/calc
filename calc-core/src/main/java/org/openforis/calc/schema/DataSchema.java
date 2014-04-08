@@ -26,7 +26,7 @@ import org.openforis.calc.metadata.MultiwayVariable;
  * 
  */
 // TODO rename InputSchema to Schema? or DataSchema?
-public class InputSchema extends RelationalSchema {
+public class DataSchema extends RelationalSchema {
 
 	private static final long serialVersionUID = 1L;
 
@@ -45,7 +45,7 @@ public class InputSchema extends RelationalSchema {
 	private StratumDimensionTable stratumDimensionTable;
 	private Map<MultiwayVariable, CategoryDimensionTable> categoryDimensionTables;
 	
-	public InputSchema(Workspace workspace) {
+	public DataSchema(Workspace workspace) {
 		super(workspace.getInputSchema());
 		this.workspace = workspace;
 		
@@ -219,7 +219,7 @@ public class InputSchema extends RelationalSchema {
 				for (CategoricalVariable<?> var : entity.getCategoricalVariables()) {
 					if( var instanceof MultiwayVariable ){
 						MultiwayVariable multiVar = (MultiwayVariable) var;
-						if ( ! var.isDegenerateDimension() ) {
+						if ( ! var.getDegenerateDimension() ) {
 							CategoryDimensionTable table = new CategoryDimensionTable( this, multiVar );
 							addTable(table);
 							categoryDimensionTables.put( multiVar, table );

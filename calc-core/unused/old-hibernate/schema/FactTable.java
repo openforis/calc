@@ -23,7 +23,7 @@ import org.openforis.calc.psql.Psql;
 import org.openforis.commons.collection.CollectionUtils;
 
 /**
- * @author Mino Togna
+ * 
  */
 public class FactTable extends DataTable {
 
@@ -36,15 +36,15 @@ public class FactTable extends DataTable {
 
 	private EntityDataView entityView;
 	private Field<BigDecimal> plotAreaField;
-	private DataSchema schema;
+	private InputSchema schema;
 	private Map<QuantitativeVariable, Field<BigDecimal>> measureFields;
 	private Field<String> clusterField; 
 	
-	FactTable(Entity entity, DataSchema schema) {
+	FactTable(Entity entity, InputSchema schema) {
 		this(entity, getName(entity), schema);
 	}
 
-	FactTable(Entity entity, String name, DataSchema schema) {
+	FactTable(Entity entity, String name, InputSchema schema) {
 		super(entity, name, schema);
 		this.schema = schema;
 		this.entityView = schema.getDataView(entity);
@@ -154,7 +154,7 @@ public class FactTable extends DataTable {
 		return CollectionUtils.unmodifiableCollection(aoiAggregateTables.values());
 	}
 
-	public DataSchema getDataSchema() {
+	public InputSchema getDataSchema() {
 		return schema;
 	}
 	

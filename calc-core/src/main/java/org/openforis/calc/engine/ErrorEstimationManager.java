@@ -31,7 +31,7 @@ import org.openforis.calc.schema.DataTable;
 import org.openforis.calc.schema.EntityAoiTable;
 import org.openforis.calc.schema.ExpansionFactorTable;
 import org.openforis.calc.schema.FactTable;
-import org.openforis.calc.schema.InputSchema;
+import org.openforis.calc.schema.DataSchema;
 import org.openforis.calc.schema.Schemas;
 import org.openforis.calc.schema.StratumDimensionTable;
 import org.openforis.calc.schema.TableDataDao;
@@ -71,7 +71,7 @@ public class ErrorEstimationManager {
 			throws RException {
 		
 		Schemas schemas = new Schemas( workspace );
-		InputSchema schema = schemas.getInputSchema();
+		DataSchema schema = schemas.getDataSchema();
 
 		
 		Select<?> selectStrata = getStratumSelect( aoi, schema );
@@ -139,7 +139,7 @@ public class ErrorEstimationManager {
 		return errors;
 	}
 	
-	private Select<?> getStratumSelect( Aoi aoi , InputSchema schema ) {
+	private Select<?> getStratumSelect( Aoi aoi , DataSchema schema ) {
 		StratumDimensionTable stratumTable = schema.getStratumDimensionTable();
 		ExpansionFactorTable expfTable = schema.getExpansionFactorTable( aoi.getAoiLevel() );
 
@@ -161,7 +161,7 @@ public class ErrorEstimationManager {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private Select<?> getPlotSelect( Aoi aoi , InputSchema schema , CategoricalVariable<?> category , List<String> classes ) {
+	private Select<?> getPlotSelect( Aoi aoi , DataSchema schema , CategoricalVariable<?> category , List<String> classes ) {
 		Workspace workspace = schema.getWorkspace();
 		Entity samplingUnit = workspace.getSamplingUnit();
 		FactTable suFactTable = schema.getFactTable( samplingUnit );
@@ -190,7 +190,7 @@ public class ErrorEstimationManager {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private Select<?> getDataSelect( Aoi aoi , InputSchema schema , QuantitativeVariable quantity , CategoricalVariable<?> category , List<String> classes ) {
+	private Select<?> getDataSelect( Aoi aoi , DataSchema schema , QuantitativeVariable quantity , CategoricalVariable<?> category , List<String> classes ) {
 		Workspace workspace = schema.getWorkspace();
 		Entity samplingUnit = workspace.getSamplingUnit();
 		Entity entity = quantity.getEntity();
