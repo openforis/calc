@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.openforis.calc.engine.ParameterHashMap;
+import org.openforis.calc.engine.ParameterMap;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.persistence.jooq.tables.pojos.ProcessingChainBase;
 
@@ -69,5 +70,11 @@ public class ProcessingChain extends ProcessingChainBase {
 			calculationStep.setStepNo(newStepNo ++);
 		}
 	}
-
+	
+	@Override
+	@JsonIgnore
+	public ParameterMap getParameters() {
+		return super.getParameters();
+	}
+	
 }
