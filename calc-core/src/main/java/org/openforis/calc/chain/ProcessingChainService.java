@@ -47,8 +47,9 @@ public class ProcessingChainService {
 	}
 	
 	@Transactional
-	public void saveCalculationStep(CalculationStep step) {
+	public void saveCalculationStep(ProcessingChain chain, CalculationStep step) {
 		if ( step.getId() == null ) {
+			chain.addCalculationStep(step);
 			calculationStepDao.insert(step);
 		} else {
 			calculationStepDao.update(step);
@@ -77,7 +78,7 @@ public class ProcessingChainService {
 		}
 		if ( outputVariable.isUserDefined() ) {
 			Workspace ws = processingChain.getWorkspace();
-			if ( ws.getVariablesByCalculationStep(step.getId()).isEmpty() ) {
+			if ( ws.getCalculationStepsByVariable(outputVariable.getId()).isEmpty() ) {
 				deletedVariable = outputVariable.getId();
 				workspaceService.deleteOutputVariable(outputVariable, true);
 			}

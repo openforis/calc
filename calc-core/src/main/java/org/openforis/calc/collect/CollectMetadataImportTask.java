@@ -97,6 +97,7 @@ public class CollectMetadataImportTask extends Task {
 		List<Entity> newEntities = createEntitiesFromSchema();
 
 		Workspace updatedWorkspace = updateEntities(newEntities);
+		
 		( (CollectBackupImportJob) getJob() ).refreshWorkspace( updatedWorkspace );
 		
 		printToLog(newEntities);

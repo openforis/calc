@@ -60,15 +60,6 @@ public class ProcessingChain extends ProcessingChainBase {
 		return step;
 	}
 	
-	public int getNextStepNo() {
-		int result = 0;
-		for (CalculationStep calculationStep : getCalculationSteps()) {
-			int stepNo = calculationStep.getStepNo();
-			result = Math.max(result, stepNo);
-		}
-		return result + 1;
-	}
-
 	public void shiftStep(CalculationStep step, int newIndex) {
 		steps.set(newIndex, step);
 		//set step no based on position in calculation step

@@ -56,7 +56,8 @@ public class CalculationStepController {
 			Integer stepId = form.getId();
 			if (stepId == null) {
 				step = new CalculationStep();
-				step.setStepNo(chain.getNextStepNo());
+				int stepNo = chain.getCalculationSteps().size() + 1;
+				step.setStepNo(stepNo);
 			} else {
 				step = chain.getCalculationStep(stepId);
 			}
@@ -67,9 +68,8 @@ public class CalculationStepController {
 			step.setOperationName(CustomROperation.NAME);
 			step.setCaption(form.getCaption());
 			step.setScript(form.getScript());
-			chain.addCalculationStep(step);
 
-			processingChainService.saveCalculationStep(step);
+			processingChainService.saveCalculationStep(chain, step);
 			response.addField("calculationStep", step);
 		}
 		return response;
