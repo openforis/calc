@@ -69,5 +69,13 @@ public class ProcessingChain extends ProcessingChainBase {
 		return result + 1;
 	}
 
+	public void shiftStep(CalculationStep step, int newIndex) {
+		steps.set(newIndex, step);
+		//set step no based on position in calculation step
+		int newStepNo = 1;
+		for ( CalculationStep calculationStep : steps ) {
+			calculationStep.setStepNo(newStepNo ++);
+		}
+	}
 
 }

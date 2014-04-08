@@ -6,8 +6,8 @@ package org.openforis.calc.web.controller;
 import java.util.List;
 
 import org.openforis.calc.chain.CalculationStep;
-import org.openforis.calc.chain.CalculationStepDao;
 import org.openforis.calc.chain.InvalidProcessingChainException;
+import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.engine.CalcJob;
 import org.openforis.calc.engine.CalcTestJob;
 import org.openforis.calc.engine.DataRecord;
@@ -38,9 +38,6 @@ public class JobController {
 	private WorkspaceService workspaceService;
 
 	@Autowired
-	private CalculationStepDao calculationStepDao;
-
-	@Autowired
 	private TaskManager taskManager;
 
 	/**
@@ -55,7 +52,11 @@ public class JobController {
 	public @ResponseBody
 	synchronized Job executeCalculationStep(@PathVariable int stepId) throws InvalidProcessingChainException, WorkspaceLockedException {
 		Workspace workspace = workspaceService.getActiveWorkspace();
-		CalculationStep step = calculationStepDao.find(stepId);
+		
+		ProcessingChain defaultProcessingChain = workspace.getDefaultProcessingChain();
+		
+		CalculationStep step = defaultProcessingChain.getCalculationStep( stepId );
+
 		workspaceService.updateResultTable( step );
 		
 		CalcJob job = taskManager.createCalcJob(workspace);
@@ -99,8 +100,11 @@ public class JobController {
 	public @ResponseBody
 	synchronized Job testCalculationStep(@RequestParam int stepId, @RequestParam String variables) throws InvalidProcessingChainException, WorkspaceLockedException {
 		Workspace workspace = workspaceService.getActiveWorkspace();
+		
+		ProcessingChain defaultProcessingChain = workspace.getDefaultProcessingChain();
+		
+		CalculationStep step = defaultProcessingChain.getCalculationStep(stepId);
 
-		CalculationStep step = calculationStepDao.find(stepId);
 		ParameterMap parameterMap = new ParameterMapJsonParser().parse(variables);
 
 		CalcTestJob job = taskManager.createCalcTestJob(workspace, step, parameterMap);

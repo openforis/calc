@@ -4,6 +4,7 @@
 package org.openforis.calc.collect;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -46,6 +47,7 @@ import org.openforis.idm.metamodel.TextAttributeDefinition;
 import org.openforis.idm.metamodel.TimeAttributeDefinition;
 import org.openforis.idm.metamodel.xml.IdmlParseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author S. Ricci
@@ -66,11 +68,12 @@ public class CollectMetadataImportTask extends Task {
 	}
 	
 	//transient variables
-	private Map<Integer, Entity> entitiesByEntityDefinitionId;
+	private Map<Integer, Entity> entitiesById;
 	private Set<String> variableNames;
 
 	@Override
 	protected long countTotalItems() {
+		//total items = schema nodes count
 		CollectSurvey survey = ((CollectJob) getJob()).getSurvey();
 		Schema schema = survey.getSchema();
 		Stack<NodeDefinition> stack = new Stack<NodeDefinition>();
@@ -88,12 +91,12 @@ public class CollectMetadataImportTask extends Task {
 	
 	@Override
 	protected void execute() throws Throwable {
-		entitiesByEntityDefinitionId = new HashMap<Integer, Entity>();
+		entitiesById = new HashMap<Integer, Entity>();
 		variableNames = new HashSet<String>();
 		
 		List<Entity> newEntities = createEntitiesFromSchema();
 
-		Workspace updatedWorkspace = metadataManager.applyChangesToWorkspace(getWorkspace(), newEntities);
+		Workspace updatedWorkspace = updateEntities(newEntities);
 		( (CollectBackupImportJob) getJob() ).refreshWorkspace( updatedWorkspace );
 		
 		printToLog(newEntities);
@@ -111,13 +114,13 @@ public class CollectMetadataImportTask extends Task {
 			public void visit(NodeDefinition definition) {
 				if ( definition.isMultiple() ) {
 					Entity entity = createEntity(definition, relationalSchema);
-					entity.setSortOrder(entitiesByEntityDefinitionId.size() + 1);
-					entitiesByEntityDefinitionId.put(definition.getId(), entity);
+					entity.setSortOrder(entitiesById.size() + 1);
+					entitiesById.put(definition.getId(), entity);
 				}
 				incrementItemsProcessed();
 			}
 		});
-		return new ArrayList<Entity>(entitiesByEntityDefinitionId.values());
+		return new ArrayList<Entity>(entitiesById.values());
 	}
 
 	private Entity createEntity(NodeDefinition nodeDefinition, RelationalSchema relationalSchema) {
@@ -335,7 +338,7 @@ public class CollectMetadataImportTask extends Task {
 		if( parentDefn == null ) {
 			return null;
 		} else if(parentDefn.isMultiple()){
-			return entitiesByEntityDefinitionId.get( parentDefn.getId() );
+			return entitiesById.get( parentDefn.getId() );
 		} else {
 			return getParentEntity(parentDefn);
 		}
@@ -355,6 +358,148 @@ public class CollectMetadataImportTask extends Task {
 		}
 		variableNames.add(name);
 		return name;
+	}
+	
+	/**
+	 * This method updates the workspace entities: 
+	 * it adds the new entities to the workspace removing the ones not present
+	 * 
+	 * @param ws
+	 * @param newEntities
+	 * @return
+	 */
+	@Transactional
+	public Workspace updateEntities(List<Entity> newEntities) {
+		Workspace ws = getWorkspace();
+		
+		//remove deleted entities
+		Collection<Entity> entitiesToBeRemoved = new HashSet<Entity>();
+		for (Entity oldEntity : ws.getEntities()) {
+			Entity newEntity = getEntityByOriginalId(newEntities, oldEntity.getOriginalId());
+			if ( newEntity == null ) {
+				entitiesToBeRemoved.add(oldEntity);
+			}
+		}
+		metadataManager.deleteEntities(entitiesToBeRemoved);
+		
+		//apply changes to existing entities
+		for (Entity oldEntity : ws.getEntities()) {
+			Entity newEntity = getEntityByOriginalId(newEntities, oldEntity.getOriginalId());
+			if ( newEntity != null ) {
+				applyChangesToEntity(oldEntity, newEntity);
+			}
+		}
+		
+		//add new entities
+		for (Entity newEntity : newEntities) {
+			Entity oldEntity = ws.getEntityByOriginalId(newEntity.getOriginalId());
+			if ( oldEntity == null ) {
+				replaceParentEntityWithPersistedOne(newEntity);
+				
+				metadataManager.saveEntity(ws, newEntity);
+			}
+		}
+
+		//TODO children entity ids not updated after save...check this
+//		Workspace reloaded = workspaceDao.find(ws.getId());
+//		ws.setEntities(reloaded.getEntities());
+		return ws;
+	}
+	
+	private Entity getEntityByOriginalId(List<Entity> entities, int originalId) {
+		for (Entity entity : entities) {
+			if ( originalId == entity.getOriginalId().intValue() )  {
+				return entity;
+			}
+		}
+		return null;
+	}
+	
+	private void applyChangesToEntity(Entity oldEntity, Entity newEntity) {
+		//update entity attributes
+		oldEntity.setCaption(newEntity.getCaption());
+		oldEntity.setDataTable(newEntity.getDataTable());
+		oldEntity.setDescription(newEntity.getDescription());
+		oldEntity.setIdColumn(newEntity.getIdColumn());
+		oldEntity.setLocationColumn(newEntity.getLocationColumn());
+		oldEntity.setName(newEntity.getName());
+		oldEntity.setParentIdColumn(newEntity.getParentIdColumn());
+//		oldEntity.setSamplingUnit(newEntity.isSamplingUnit());
+		oldEntity.setSrsColumn(newEntity.getSrsColumn());
+		oldEntity.setUnitOfAnalysis(newEntity.getUnitOfAnalysis());
+		oldEntity.setXColumn(newEntity.getXColumn());
+		oldEntity.setYColumn(newEntity.getYColumn());
+		
+		//remove deleted variables
+		Collection<Variable<?>> variablesToBeRemoved = new HashSet<Variable<?>>();
+		for (Variable<?> oldVariable : oldEntity.getVariables()) {
+			Integer oldVariableOrigId = oldVariable.getOriginalId();
+			if ( oldVariableOrigId != null ) {
+				Variable<?> newVariable = newEntity.getVariableByOriginalId(oldVariableOrigId);
+				if ( newVariable == null ) {
+					variablesToBeRemoved.add(oldVariable);
+				}
+			}
+		}
+		metadataManager.deleteVariables(variablesToBeRemoved);
+		
+		//apply changes to existing variables
+		for (Variable<?> oldVariable : oldEntity.getVariables()) {
+			Integer oldVariableOrigId = oldVariable.getOriginalId();
+			if ( oldVariableOrigId != null ) {
+				Variable<?> newVariable = newEntity.getVariableByOriginalId(oldVariableOrigId);
+				applyChangesToVariable(oldVariable, newVariable);
+				metadataManager.saveVariable(oldVariable.getEntity(), oldVariable);
+			}
+		}
+		
+		//add new variables
+		for (Variable<?> newVariable : newEntity.getVariables()) {
+			Variable<?> oldVariable = oldEntity.getVariableByOriginalId(newVariable.getOriginalId());
+			if ( oldVariable == null ) {
+				metadataManager.saveVariable(oldEntity, newVariable);
+			}
+		}
+	}
+	
+	private void applyChangesToVariable(Variable<?> oldVariable, Variable<?> newVariable) {
+		oldVariable.setCaption(newVariable.getCaption());
+		setDefaultValue(oldVariable, newVariable);
+		oldVariable.setDescription(newVariable.getDescription());
+		oldVariable.setDimensionTable(newVariable.getDimensionTable());
+		//TODO update variable name and inputValueColumn: handle taxon attribute variables (2 variables per each attribute definition)
+//		oldVariable.setInputValueColumn(newVariable.getInputValueColumn());
+		//oldVariable.setName(newVariable.getName());
+		oldVariable.setOutputValueColumn(newVariable.getOutputValueColumn());
+		if ( newVariable instanceof MultiwayVariable ) {
+			MultiwayVariable v1 = (MultiwayVariable) oldVariable;
+			MultiwayVariable v2 = (MultiwayVariable) newVariable;
+			v1.setInputCategoryIdColumn(v2.getInputCategoryIdColumn());
+			v1.setDimensionTable(v2.getDimensionTable());
+			v1.setDimensionTableIdColumn(v2.getDimensionTableIdColumn());
+			v1.setDimensionTableCodeColumn(v2.getDimensionTableCodeColumn());
+			v1.setDimensionTableCaptionColumn(v2.getDimensionTableCaptionColumn());
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	private <T extends Object> void setDefaultValue(Variable<?> oldVariable,
+			Variable<?> newVariable) {
+		((Variable<T>) oldVariable).setDefaultValue((T) newVariable.getDefaultValueTemp());
+	}
+
+	private void replaceParentEntityWithPersistedOne(Entity newEntity) {
+		Workspace ws = newEntity.getWorkspace();
+		Entity newParent = newEntity.getParent();
+		if ( newParent != null ) {
+			Integer parentOriginalId = newParent.getOriginalId();
+			if ( parentOriginalId != null ) {
+				Entity persistedParent = ws.getEntityByOriginalId(parentOriginalId);
+				if ( persistedParent != null ) {
+					newEntity.setParent(persistedParent);
+				}
+			}
+		}
 	}
 	
 	protected void printToLog(List<Entity> entityList) {
