@@ -10,23 +10,20 @@ import org.jooq.Record;
 import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.ProcessingChainService;
 import org.openforis.calc.metadata.AoiDao;
-import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
-import org.openforis.calc.metadata.SamplingDesign;
 import org.openforis.calc.metadata.StratumDao;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.Variable.Scale;
-import org.openforis.calc.metadata.VariableAggregate;
 import org.openforis.calc.metadata.VariableDao;
 import org.openforis.calc.persistence.jooq.tables.daos.EntityDao;
 import org.openforis.calc.persistence.jooq.tables.daos.SamplingDesignDao;
 import org.openforis.calc.persistence.jooq.tables.daos.WorkspaceDao;
 import org.openforis.calc.psql.Psql;
-import org.openforis.calc.schema.EntityDataView;
-import org.openforis.calc.schema.EntityDataViewDao;
 import org.openforis.calc.schema.DataSchema;
 import org.openforis.calc.schema.DataSchemaDao;
+import org.openforis.calc.schema.EntityDataView;
+import org.openforis.calc.schema.EntityDataViewDao;
 import org.openforis.calc.schema.InputTable;
 import org.openforis.calc.schema.ResultTable;
 import org.openforis.calc.schema.Schemas;
@@ -500,8 +497,8 @@ public class WorkspaceService {
 //			.execute();
 		
 		// delete variable
-		variableDao.delete(variable.getId());
 		entity.removeVariable(variable);
+		variableDao.delete(variable);
 		
 		// drop result table, if there are no more output variables
 		ResultTable newResultTable = schema.getResultTable(entity);
