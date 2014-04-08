@@ -53,6 +53,7 @@ public class CalculationStep extends CalculationStepBase {
 
 	public void setProcessingChain(ProcessingChain chain) {
 		this.processingChain = chain;
+		this.setChainId( chain == null ? null: chain.getId() );
 	}
 
 	@Override
