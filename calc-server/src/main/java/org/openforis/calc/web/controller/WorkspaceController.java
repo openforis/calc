@@ -74,18 +74,18 @@ public class WorkspaceController {
 		}
 	}
 
-	/**
-	 * Set the sampling unit to the workspace
-	 * 
-	 * @return
-	 */
-	@Deprecated
-	@RequestMapping(value = "/active/samplingDesign/samplingUnit/{entityId}.json", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
-	public @ResponseBody
-	Workspace activeWorkspaceSetSamplingUnit(@PathVariable Integer entityId) {
-		Workspace workspace = workspaceService.setActiveWorkspaceSamplingUnit(entityId);
-		return workspace;
-	}
+//	/**
+//	 * Set the sampling unit to the workspace
+//	 * 
+//	 * @return
+//	 */
+//	@Deprecated
+//	@RequestMapping(value = "/active/samplingDesign/samplingUnit/{entityId}.json", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
+//	public @ResponseBody
+//	Workspace activeWorkspaceSetSamplingUnit(@PathVariable Integer entityId) {
+//		Workspace workspace = workspaceService.setActiveWorkspaceSamplingUnit(entityId);
+//		return workspace;
+//	}
 
 	@RequestMapping(value = "/active/entity/{entityId}/variable/{variableId}/aggregates/{agg}.json", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody

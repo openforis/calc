@@ -220,6 +220,7 @@ public class MetadataManager {
 	private void saveMetadata( Workspace workspace ) {
 		List<Entity> entities = workspace.getEntities();
 		for (Entity entity : entities) {
+			
 			Integer id = entity.getId();
 			if( id == null ){
 				//TODO check if entity ids has been set to all variables
@@ -228,10 +229,11 @@ public class MetadataManager {
 				entityDao.update( entity );
 			}
 			
-			variableDao.save( entity.getVariables() );
+			List<Variable<?>> varList = entity.getVariables();
+			Variable<?>[] variables = varList.toArray( new Variable<?>[varList.size()] );
+			variableDao.save( variables );
+			
 		}
-//		saveStrata( workspace );
-//		saveProcessingChains( workspace );
 	}
 	
 //	@Transactional
