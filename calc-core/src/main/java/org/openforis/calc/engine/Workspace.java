@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.Column;
 
@@ -306,13 +305,13 @@ public class Workspace extends WorkspaceBase {
 		return null;
 	}
 	
-	public Set<Variable<?>> getVariablesByCalculationStep(int stepId) {
-		Set<Variable<?>> result = new HashSet<Variable<?>>();
+	public List<CalculationStep> getCalculationStepsByVariable(int variableId) {
+		List<CalculationStep> result = new ArrayList<CalculationStep>();
 		for (ProcessingChain processingChain : getProcessingChains()) {
-			List<CalculationStep> calculationSteps = processingChain.getCalculationSteps();
-			for (CalculationStep calculationStep : calculationSteps) {
-				if ( calculationStep.getId() == stepId ) {
-					result.add(calculationStep.getOutputVariable());
+			for (CalculationStep calculationStep : processingChain.getCalculationSteps()) {
+				Variable<?> outputVariable = calculationStep.getOutputVariable();
+				if ( outputVariable.getId() == variableId ) {
+					result.add(calculationStep);
 				}
 			}
 		}
