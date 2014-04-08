@@ -5,7 +5,6 @@ package org.openforis.calc.engine;
 
 import java.io.File;
 
-import org.openforis.calc.collect.CategoriesImportTask;
 import org.openforis.calc.collect.CollectDataImportTask;
 import org.openforis.calc.collect.CollectInputSchemaCreatorTask;
 import org.openforis.calc.collect.CollectMetadataImportTask;
@@ -43,9 +42,6 @@ public class CollectTaskService {
 		CollectInputSchemaCreatorTask schemaCreatorTask = taskManager.createTask(CollectInputSchemaCreatorTask.class);
 		job.addTask(schemaCreatorTask);
 
-		CategoriesImportTask categoriesImportTask = taskManager.createTask(CategoriesImportTask.class);
-		job.addTask(categoriesImportTask);
-		
 		SpeciesImportTask speciesImportTask = taskManager.createTask(SpeciesImportTask.class);
 		speciesImportTask.setBackupFile(backupFile);
 		job.addTask(speciesImportTask);

@@ -9,14 +9,12 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.openforis.calc.chain.CalculationStep;
-import org.openforis.calc.chain.CalculationStepDao;
-import org.openforis.calc.chain.CalculationStepService;
 import org.openforis.calc.chain.ProcessingChain;
+import org.openforis.calc.chain.ProcessingChainService;
 import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.Variable;
-import org.openforis.calc.metadata.VariableDao;
 import org.openforis.calc.module.r.CalcRModule;
 import org.openforis.calc.module.r.CustomROperation;
 import org.openforis.calc.web.form.CalculationStepForm;
@@ -42,14 +40,8 @@ public class CalculationStepController {
 	private WorkspaceService workspaceService;
 
 	@Autowired
-	private CalculationStepService calculationStepService;
+	private ProcessingChainService processingChainService;
 	
-	@Autowired
-	private VariableDao variableDao;
-
-	@Autowired
-	private CalculationStepDao calculationStepDao;
-
 	@Autowired
 	private TaskManager taskManager;
 
@@ -57,7 +49,7 @@ public class CalculationStepController {
 	public @ResponseBody
 	Response save(@Valid CalculationStepForm form, BindingResult result) {
 		Response response = validate(form, result);
-		if (!response.hasErrors()) {
+		if ( ! response.hasErrors() ) {
 			Workspace ws = workspaceService.getActiveWorkspace();
 			ProcessingChain chain = ws.getDefaultProcessingChain();
 			CalculationStep step;
@@ -68,7 +60,7 @@ public class CalculationStepController {
 			} else {
 				step = chain.getCalculationStep(stepId);
 			}
-			Variable<?> outputVariable = variableDao.find(form.getVariableId());
+			Variable<?> outputVariable = ws.getVariableById(form.getVariableId());
 			step.setOutputVariable(outputVariable);
 			step.setModuleName(CalcRModule.MODULE_NAME);
 			step.setModuleVersion(CalcRModule.VERSION_1);
@@ -77,7 +69,7 @@ public class CalculationStepController {
 			step.setScript(form.getScript());
 			chain.addCalculationStep(step);
 
-			step = calculationStepDao.save(step);
+			processingChainService.saveCalculationStep(step);
 			response.addField("calculationStep", step);
 		}
 		return response;
@@ -100,7 +92,7 @@ public class CalculationStepController {
 		Workspace workspace = workspaceService.getActiveWorkspace();
 		if( workspace != null ) {
 			ProcessingChain chain = workspace.getDefaultProcessingChain();
-			return calculationStepDao.findByProcessingChain( chain.getId() ) ;
+			return chain.getCalculationSteps();
 		} else {
 			// empty list
 			return new ArrayList<CalculationStep>();
@@ -110,13 +102,17 @@ public class CalculationStepController {
 	@RequestMapping(value = "/{stepId}/load.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	CalculationStep load(@PathVariable int stepId) {
-		return calculationStepDao.find(stepId);
+		Workspace workspace = workspaceService.getActiveWorkspace();
+		ProcessingChain defaultProcessingChain = workspace.getDefaultProcessingChain();
+		CalculationStep step = defaultProcessingChain.getCalculationStep(stepId);
+		return step;
 	}
 	
 	@RequestMapping(value = "/{stepId}/delete.json", method = RequestMethod.POST)
 	public @ResponseBody Response delete(@PathVariable int stepId) {
 		Response response = new Response();
-		Integer variableId = calculationStepService.delete(stepId);
+		CalculationStep step = load(stepId);
+		Integer variableId = processingChainService.deleteCalculationStep(step);
 		response.addField( "deletedStep" , stepId );
 		response.addField("deletedVariable", variableId);
 		return response;
@@ -125,7 +121,8 @@ public class CalculationStepController {
 	@RequestMapping(value = "/{stepId}/stepno/{stepNo}.json", method = RequestMethod.POST)
 	public @ResponseBody Response updateStepNo(@PathVariable int stepId, @PathVariable int stepNo) {
 		Response response = new Response();
-		calculationStepService.updateStepNumber(stepId, stepNo);
+		CalculationStep step = load(stepId);
+		processingChainService.shiftCalculationStep(step, stepNo);
 		return response;
 	}
 	

@@ -5,11 +5,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Column;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
+import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.Entity;
@@ -17,7 +19,6 @@ import org.openforis.calc.metadata.SamplingDesign;
 import org.openforis.calc.metadata.Stratum;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.persistence.jooq.tables.pojos.WorkspaceBase;
-import org.openforis.calc.schema.AoiAggregateTable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -34,7 +35,7 @@ public class Workspace extends WorkspaceBase {
 
 	private static final long serialVersionUID = 1L;
 
-	static final String DEFAULT_CHAIN_CAPTION = "default";
+	public static final String DEFAULT_CHAIN_CAPTION = "default";
 
    	private List<Entity> entities;
 	private List<Stratum> strata;
@@ -303,6 +304,19 @@ public class Workspace extends WorkspaceBase {
 			}
 		}
 		return null;
+	}
+	
+	public Set<Variable<?>> getVariablesByCalculationStep(int stepId) {
+		Set<Variable<?>> result = new HashSet<Variable<?>>();
+		for (ProcessingChain processingChain : getProcessingChains()) {
+			List<CalculationStep> calculationSteps = processingChain.getCalculationSteps();
+			for (CalculationStep calculationStep : calculationSteps) {
+				if ( calculationStep.getId() == stepId ) {
+					result.add(calculationStep.getOutputVariable());
+				}
+			}
+		}
+		return result;
 	}
 
 	/** =====================================
