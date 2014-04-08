@@ -4,7 +4,6 @@
 package org.openforis.calc.collect;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -12,19 +11,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
-import org.openforis.calc.chain.CalculationStepDao;
+import org.openforis.calc.engine.MetadataManager;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.BinaryVariable;
 import org.openforis.calc.metadata.Entity;
-import org.openforis.calc.metadata.EntityDao;
 import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.TextVariable;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.Variable.Scale;
-import org.openforis.calc.metadata.VariableDao;
-import org.openforis.calc.persistence.jooq.tables.daos.WorkspaceDao;
 import org.openforis.collect.model.CollectSurvey;
 import org.openforis.collect.relational.model.CodeValueFKColumn;
 import org.openforis.collect.relational.model.DataColumn;
@@ -62,16 +58,7 @@ public class CollectMetadataImportTask extends Task {
 //	private static final String DIMENSION_TABLE_FORMAT = "%s_%s_dim";
 
 	@Autowired
-	private WorkspaceDao workspaceDao;
-	
-	@Autowired
-	private EntityDao entityDao;
-	
-	@Autowired
-	private VariableDao variableDao;
-	
-	@Autowired
-	private CalculationStepDao calculationStepDao;
+	private MetadataManager metadataManager;
 	
 	@Override
 	public String getName() {
@@ -106,145 +93,10 @@ public class CollectMetadataImportTask extends Task {
 		
 		List<Entity> newEntities = createEntitiesFromSchema();
 
-		applyChangesToWorkspace(newEntities);
+		Workspace updatedWorkspace = metadataManager.applyChangesToWorkspace(getWorkspace(), newEntities);
+		( (CollectBackupImportJob) getJob() ).refreshWorkspace( updatedWorkspace );
 		
 		printToLog(newEntities);
-		
-	}
-
-	private void applyChangesToWorkspace(List<Entity> newEntities) {
-		Workspace ws = getWorkspace();
-		//remove deleted entities
-		Collection<Entity> entitiesToBeRemoved = new HashSet<Entity>();
-		for (Entity oldEntity : ws.getEntities()) {
-			Entity newEntity = getEntityByOriginalId(newEntities, oldEntity.getOriginalId());
-			if ( newEntity == null ) {
-				entitiesToBeRemoved.add(oldEntity);
-			}
-		}
-		ws.removeEntities(entitiesToBeRemoved);
-		
-		//apply changes to existing entities
-		for (Entity oldEntity : ws.getEntities()) {
-			Entity newEntity = getEntityByOriginalId(newEntities, oldEntity.getOriginalId());
-			if ( newEntity != null ) {
-				applyChangesToEntity(oldEntity, newEntity);
-			}
-		}
-		
-		//add new entities
-		for (Entity newEntity : newEntities) {
-			Entity oldEntity = ws.getEntityByOriginalId(newEntity.getOriginalId());
-			if ( oldEntity == null ) {
-				ws.addEntity(newEntity);
-				
-				replaceParentEntityWithPersistedOne(newEntity);
-			}
-		}
-
-		//save workspace
-		ws = workspaceDao.saveWorkspace(ws);
-		
-		//TODO children entity ids not updated after save...check this
-//		Workspace reloaded = workspaceDao.find(ws.getId());
-//		ws.setEntities(reloaded.getEntities());
-		
-		( (CollectBackupImportJob)getJob() ).refreshWorkspace( ws );
-	}
-
-	protected void replaceParentEntityWithPersistedOne(Entity newEntity) {
-		Workspace ws = newEntity.getWorkspace();
-		Entity newParent = newEntity.getParent();
-		if ( newParent != null ) {
-			Integer parentOriginalId = newParent.getOriginalId();
-			if ( parentOriginalId != null ) {
-				Entity persistedParent = ws.getEntityByOriginalId(parentOriginalId);
-				if ( persistedParent != null ) {
-					newEntity.setParent(persistedParent);
-				}
-			}
-		}
-	}
-
-	private void applyChangesToEntity(Entity oldEntity, Entity newEntity) {
-		//update entity attributes
-		oldEntity.setCaption(newEntity.getCaption());
-		oldEntity.setDataTable(newEntity.getDataTable());
-		oldEntity.setDescription(newEntity.getDescription());
-		oldEntity.setIdColumn(newEntity.getIdColumn());
-		oldEntity.setLocationColumn(newEntity.getLocationColumn());
-		oldEntity.setName(newEntity.getName());
-		oldEntity.setParentIdColumn(newEntity.getParentIdColumn());
-//		oldEntity.setSamplingUnit(newEntity.isSamplingUnit());
-		oldEntity.setSrsColumn(newEntity.getSrsColumn());
-		oldEntity.setUnitOfAnalysis(newEntity.isUnitOfAnalysis());
-		oldEntity.setXColumn(newEntity.getXColumn());
-		oldEntity.setYColumn(newEntity.getYColumn());
-		
-		//remove deleted variables
-		Collection<Variable<?>> variablesToBeRemoved = new HashSet<Variable<?>>();
-		for (Variable<?> oldVariable : oldEntity.getVariables()) {
-			Integer oldVariableOrigId = oldVariable.getOriginalId();
-			if ( oldVariableOrigId != null ) {
-				Variable<?> newVariable = newEntity.getVariableByOriginalId(oldVariableOrigId);
-				if ( newVariable == null ) {
-					variablesToBeRemoved.add(oldVariable);
-				}
-			}
-		}
-		oldEntity.removeVariables(variablesToBeRemoved);
-		
-		//apply changes to existing variables
-		for (Variable<?> oldVariable : oldEntity.getVariables()) {
-			Integer oldVariableOrigId = oldVariable.getOriginalId();
-			if ( oldVariableOrigId != null ) {
-				Variable<?> newVariable = newEntity.getVariableByOriginalId(oldVariableOrigId);
-				applyChangesToVariable(oldVariable, newVariable);
-			}
-		}
-		
-		//add new variables
-		for (Variable<?> newVariable : newEntity.getVariables()) {
-			Variable<?> oldVariable = oldEntity.getVariableByOriginalId(newVariable.getOriginalId());
-			if ( oldVariable == null ) {
-				oldEntity.addVariable(newVariable);
-			}
-		}
-	}
-	
-	private void applyChangesToVariable(Variable<?> oldVariable, Variable<?> newVariable) {
-		oldVariable.setCaption(newVariable.getCaption());
-		setDefaultValue(oldVariable, newVariable);
-		oldVariable.setDescription(newVariable.getDescription());
-		oldVariable.setDimensionTable(newVariable.getDimensionTable());
-		//TODO update variable name and inputValueColumn: handle taxon attribute variables (2 variables per each attribute definition)
-//		oldVariable.setInputValueColumn(newVariable.getInputValueColumn());
-		//oldVariable.setName(newVariable.getName());
-		oldVariable.setOutputValueColumn(newVariable.getOutputValueColumn());
-		if ( newVariable instanceof MultiwayVariable ) {
-			MultiwayVariable v1 = (MultiwayVariable) oldVariable;
-			MultiwayVariable v2 = (MultiwayVariable) newVariable;
-			v1.setInputCategoryIdColumn(v2.getInputCategoryIdColumn());
-			v1.setDimensionTable(v2.getDimensionTable());
-			v1.setDimensionTableIdColumn(v2.getDimensionTableIdColumn());
-			v1.setDimensionTableCodeColumn(v2.getDimensionTableCodeColumn());
-			v1.setDimensionTableCaptionColumn(v2.getDimensionTableCaptionColumn());
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private <T extends Object> void setDefaultValue(Variable<?> oldVariable,
-			Variable<?> newVariable) {
-		((Variable<T>) oldVariable).setDefaultValue((T) newVariable.getDefaultValueTemp());
-	}
-
-	private Entity getEntityByOriginalId(List<Entity> entities, int originalId) {
-		for (Entity entity : entities) {
-			if ( originalId == entity.getOriginalId().intValue() )  {
-				return entity;
-			}
-		}
-		return null;
 	}
 
 	private List<Entity> createEntitiesFromSchema() throws IdmlParseException {
@@ -341,7 +193,7 @@ public class CollectMetadataImportTask extends Task {
 			CodeList list = codeAttrDefn.getList();
 			multiwayVar.setDegenerateDimension(list.isExternal());
 			
-			if ( ! multiwayVar.isDegenerateDimension() ) {
+			if ( ! multiwayVar.getDegenerateDimension() ) {
 				//set dimension table and input category id column
 				RelationalSchema inputRelationalSchema = ((CollectJob) getJob()).getInputRelationalSchema();
 				

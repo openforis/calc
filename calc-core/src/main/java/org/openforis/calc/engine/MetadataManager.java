@@ -3,32 +3,29 @@
  */
 package org.openforis.calc.engine;
 
-import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.metadata.AoiManager;
 import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.SamplingDesign;
 import org.openforis.calc.metadata.Stratum;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.VariableDao;
 import org.openforis.calc.persistence.jooq.Tables;
-import org.openforis.calc.persistence.jooq.tables.VariableTable;
 import org.openforis.calc.persistence.jooq.tables.daos.CalculationStepDao;
 import org.openforis.calc.persistence.jooq.tables.daos.EntityDao;
 import org.openforis.calc.persistence.jooq.tables.daos.ProcessingChainDao;
 import org.openforis.calc.persistence.jooq.tables.daos.SamplingDesignDao;
 import org.openforis.calc.persistence.jooq.tables.daos.StratumDao;
 import org.openforis.calc.persistence.jooq.tables.daos.WorkspaceDao;
-import org.openforis.calc.persistence.jooq.tables.pojos.VariableBase;
 import org.openforis.calc.psql.Psql;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -261,22 +258,27 @@ public class MetadataManager {
 	 * ===============================
 	 */
 	@Transactional
-	public void deleteVariablesByOriginalId( Workspace workspace , Integer... ids ) {
-		Set<Integer> entityIds = new HashSet<Integer>();
-		List<Entity> entities = workspace.getEntities();
-		for (Entity entity : entities) {
-			entityIds.add( entity.getId() );
-			
-			entity.getVariableByOriginalId( id );
+	public void deleteVariables(Collection<Variable<?>> variables) {
+		for (Variable<?> variable : variables) {
+			Entity entity = variable.getEntity();
+			entity.removeVariable(variable);
+			variableDao.delete(variable);
 		}
-		
-		VariableTable T = Tables.VARIABLE;
-		psql
-			.delete( T )
-			.where( T.ORIGINAL_ID.in(ids) )
-			.and( T.ENTITY_ID.in(entityIds) )
-			.execute();
 	}
+	
+	@Transactional
+	public void deleteEntities(Collection<Entity> entities) {
+		for ( Entity entity : entities ) {
+			Workspace ws = entity.getWorkspace();
+			List<Variable<?>> variables = entity.getVariables();
+			deleteVariables(variables);
+			
+			entityDao.delete(entity);
+			
+			ws.removeEntity(entity);
+		}
+	}
+	
 	/*
 	 * ===========================
 	 * 	Workspace utility methods
@@ -294,6 +296,160 @@ public class MetadataManager {
 		deactivateAll();
 		ws.setActive( true );
 		workspaceDao.update( ws );
+	}
+
+	public void insertEntity(Workspace ws, Entity entity) {
+		ws.addEntity(entity);
+		entityDao.insert(entity);
+		Integer entityId = entity.getId();
+		
+		List<Variable<?>> variables = entity.getVariables();
+		for (Variable<?> variable : variables) {
+			variable.setEntityId(entityId);
+			variableDao.insert(variable);
+		}
+	}
+
+	public void insertVariable(Entity entity, Variable<?> variable) {
+		entity.addVariable(variable);
+		variableDao.insert(variable);
+	}
+	
+	/*
+	 * ========================
+	 * Workspace update methods
+	 * ========================
+	 */
+	@Transactional
+	public Workspace applyChangesToWorkspace(Workspace ws, List<Entity> newEntities) {
+		//remove deleted entities
+		Collection<Entity> entitiesToBeRemoved = new HashSet<Entity>();
+		for (Entity oldEntity : ws.getEntities()) {
+			Entity newEntity = getEntityByOriginalId(newEntities, oldEntity.getOriginalId());
+			if ( newEntity == null ) {
+				entitiesToBeRemoved.add(oldEntity);
+			}
+		}
+		deleteEntities(entitiesToBeRemoved);
+		
+		//apply changes to existing entities
+		for (Entity oldEntity : ws.getEntities()) {
+			Entity newEntity = getEntityByOriginalId(newEntities, oldEntity.getOriginalId());
+			if ( newEntity != null ) {
+				applyChangesToEntity(oldEntity, newEntity);
+			}
+		}
+		
+		//add new entities
+		for (Entity newEntity : newEntities) {
+			Entity oldEntity = ws.getEntityByOriginalId(newEntity.getOriginalId());
+			if ( oldEntity == null ) {
+				replaceParentEntityWithPersistedOne(newEntity);
+				
+				insertEntity(ws, newEntity);
+			}
+		}
+
+		//TODO children entity ids not updated after save...check this
+//		Workspace reloaded = workspaceDao.find(ws.getId());
+//		ws.setEntities(reloaded.getEntities());
+		return ws;
+	}
+
+	protected void replaceParentEntityWithPersistedOne(Entity newEntity) {
+		Workspace ws = newEntity.getWorkspace();
+		Entity newParent = newEntity.getParent();
+		if ( newParent != null ) {
+			Integer parentOriginalId = newParent.getOriginalId();
+			if ( parentOriginalId != null ) {
+				Entity persistedParent = ws.getEntityByOriginalId(parentOriginalId);
+				if ( persistedParent != null ) {
+					newEntity.setParent(persistedParent);
+				}
+			}
+		}
+	}
+
+	private void applyChangesToEntity(Entity oldEntity, Entity newEntity) {
+		//update entity attributes
+		oldEntity.setCaption(newEntity.getCaption());
+		oldEntity.setDataTable(newEntity.getDataTable());
+		oldEntity.setDescription(newEntity.getDescription());
+		oldEntity.setIdColumn(newEntity.getIdColumn());
+		oldEntity.setLocationColumn(newEntity.getLocationColumn());
+		oldEntity.setName(newEntity.getName());
+		oldEntity.setParentIdColumn(newEntity.getParentIdColumn());
+//		oldEntity.setSamplingUnit(newEntity.isSamplingUnit());
+		oldEntity.setSrsColumn(newEntity.getSrsColumn());
+		oldEntity.setUnitOfAnalysis(newEntity.getUnitOfAnalysis());
+		oldEntity.setXColumn(newEntity.getXColumn());
+		oldEntity.setYColumn(newEntity.getYColumn());
+		
+		//remove deleted variables
+		Collection<Variable<?>> variablesToBeRemoved = new HashSet<Variable<?>>();
+		for (Variable<?> oldVariable : oldEntity.getVariables()) {
+			Integer oldVariableOrigId = oldVariable.getOriginalId();
+			if ( oldVariableOrigId != null ) {
+				Variable<?> newVariable = newEntity.getVariableByOriginalId(oldVariableOrigId);
+				if ( newVariable == null ) {
+					variablesToBeRemoved.add(oldVariable);
+				}
+			}
+		}
+		deleteVariables(variablesToBeRemoved);
+		
+		//apply changes to existing variables
+		for (Variable<?> oldVariable : oldEntity.getVariables()) {
+			Integer oldVariableOrigId = oldVariable.getOriginalId();
+			if ( oldVariableOrigId != null ) {
+				Variable<?> newVariable = newEntity.getVariableByOriginalId(oldVariableOrigId);
+				applyChangesToVariable(oldVariable, newVariable);
+				variableDao.update(oldVariable);
+			}
+		}
+		
+		//add new variables
+		for (Variable<?> newVariable : newEntity.getVariables()) {
+			Variable<?> oldVariable = oldEntity.getVariableByOriginalId(newVariable.getOriginalId());
+			if ( oldVariable == null ) {
+				insertVariable(oldEntity, newVariable);
+			}
+		}
+	}
+	
+	private void applyChangesToVariable(Variable<?> oldVariable, Variable<?> newVariable) {
+		oldVariable.setCaption(newVariable.getCaption());
+		setDefaultValue(oldVariable, newVariable);
+		oldVariable.setDescription(newVariable.getDescription());
+		oldVariable.setDimensionTable(newVariable.getDimensionTable());
+		//TODO update variable name and inputValueColumn: handle taxon attribute variables (2 variables per each attribute definition)
+//		oldVariable.setInputValueColumn(newVariable.getInputValueColumn());
+		//oldVariable.setName(newVariable.getName());
+		oldVariable.setOutputValueColumn(newVariable.getOutputValueColumn());
+		if ( newVariable instanceof MultiwayVariable ) {
+			MultiwayVariable v1 = (MultiwayVariable) oldVariable;
+			MultiwayVariable v2 = (MultiwayVariable) newVariable;
+			v1.setInputCategoryIdColumn(v2.getInputCategoryIdColumn());
+			v1.setDimensionTable(v2.getDimensionTable());
+			v1.setDimensionTableIdColumn(v2.getDimensionTableIdColumn());
+			v1.setDimensionTableCodeColumn(v2.getDimensionTableCodeColumn());
+			v1.setDimensionTableCaptionColumn(v2.getDimensionTableCaptionColumn());
+		}
+	}
+	
+	private Entity getEntityByOriginalId(List<Entity> entities, int originalId) {
+		for (Entity entity : entities) {
+			if ( originalId == entity.getOriginalId().intValue() )  {
+				return entity;
+			}
+		}
+		return null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private <T extends Object> void setDefaultValue(Variable<?> oldVariable,
+			Variable<?> newVariable) {
+		((Variable<T>) oldVariable).setDefaultValue((T) newVariable.getDefaultValueTemp());
 	}
 
 }
