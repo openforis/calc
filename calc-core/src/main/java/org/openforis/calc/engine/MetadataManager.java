@@ -231,7 +231,7 @@ public class MetadataManager {
 				entityDao.update( entity );
 			}
 			
-			variableDao.save( entity.getVariables() );
+			variableDao.save( entity.getVariables().toArray(new Variable<?>[]{}) );
 			
 		}
 		

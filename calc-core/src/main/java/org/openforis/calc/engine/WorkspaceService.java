@@ -178,8 +178,8 @@ public class WorkspaceService {
 //		}
 //		
 		
-		variableDao.saveWorkspace(variable);
-		updateEntityView(variable);
+		variableDao.save( variable );
+		updateEntityView( variable );
 
 		return variable;
 	}
