@@ -3,7 +3,7 @@ package org.openforis.calc.metadata;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -29,7 +29,7 @@ public class AoiHierarchy extends AoiHierarchyBase {
 
 //	@OneToMany(mappedBy = "hierarchy", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 //	@OrderBy("rank")
-	private Set<AoiLevel> levels;
+	private List<AoiLevel> levels;
 
 	private Aoi rootAoi;
 	
@@ -41,8 +41,8 @@ public class AoiHierarchy extends AoiHierarchyBase {
 		this.workspace = workspace;
 	}
 
-	public Set<AoiLevel> getLevels() {
-		return org.openforis.commons.collection.CollectionUtils.unmodifiableSet( levels );
+	public List<AoiLevel> getLevels() {
+		return org.openforis.commons.collection.CollectionUtils.unmodifiableList( levels );
 	}
 
 	public Collection<AoiLevel> getLevelsReverseOrder() {
@@ -53,16 +53,25 @@ public class AoiHierarchy extends AoiHierarchyBase {
 		return org.openforis.commons.collection.CollectionUtils.unmodifiableCollection( aoiLevels );
 	}
 	
-	public void addLevel(AoiLevel level) {
-		if( this.levels == null ){
-			this.levels = new HashSet<AoiLevel>();
-		}
-		level.setHierarchy( this );
-		this.levels.add( level );
-	}
+//	public void addLevel(AoiLevel level) {
+//		if( this.levels == null ){
+//			this.levels = new ArrayList<AoiLevel>();
+//		}
+//		level.setHierarchy( this );
+//		this.levels.add( level );
+//	}
 	
-	public void setLevels(Set<AoiLevel> levels) {
+	public void setLevels(List<AoiLevel> levels) {
+		Collections.sort( levels , new Comparator<AoiLevel>() {
+			@Override
+			public int compare(AoiLevel o1, AoiLevel o2) {
+				return o1.getRank().compareTo( o2.getRank() );
+			}
+		} );
 		this.levels = levels;
+		for (AoiLevel aoiLevel : this.levels) {
+			aoiLevel.setHierarchy( this );
+		}
 	}
 	
 	@JsonIgnore
@@ -97,6 +106,10 @@ public class AoiHierarchy extends AoiHierarchyBase {
 			}
 		}
 		return null;
+	}
+
+	public void clearLevels() {
+		this.levels = null;
 	}
 
 }

@@ -8,6 +8,7 @@ import java.util.Set;
 import org.openforis.calc.persistence.jooq.tables.pojos.AoiBase;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Provides metadata about an AOI.
@@ -21,8 +22,11 @@ public class Aoi extends AoiBase {
 
 	@JsonIgnore
 	private AoiLevel aoiLevel;
+	
 	@JsonIgnore
 	private Aoi parentAoi;
+	
+	@JsonProperty
 	private Set<Aoi> children;
 
 	public Aoi() {
@@ -51,7 +55,9 @@ public class Aoi extends AoiBase {
 
 	public void setParentAoi(Aoi parentAoi) {
 		this.parentAoi = parentAoi;
-		setParentAoiId( parentAoi.getId() );
+		
+		Integer parentId = (parentAoi == null) ? null : parentAoi.getId();
+		setParentAoiId( parentId );
 	}
 
 	public Set<Aoi> getChildren() {
@@ -60,6 +66,9 @@ public class Aoi extends AoiBase {
 	
 	void setChildren(Collection<Aoi> children) {
 		this.children = new LinkedHashSet<Aoi>(children);
+		for (Aoi child : children) {
+			child.setParentAoi( this );
+		}
 	}
 	
 }

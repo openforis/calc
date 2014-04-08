@@ -6,7 +6,6 @@ package org.openforis.calc.metadata;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.jooq.Configuration;
 import org.jooq.Record2;
@@ -98,7 +97,7 @@ public class VariableDao extends org.openforis.calc.persistence.jooq.tables.daos
 			}
 
 			try {
-				BeanUtils.copyProperties(variable, variableBase);
+				PropertyUtils.copyProperties(variable, variableBase);
 			} catch (Exception e) {
 				// it should never happens
 				throw new IllegalStateException( "Unable to load variables" , e );
@@ -129,7 +128,7 @@ public class VariableDao extends org.openforis.calc.persistence.jooq.tables.daos
 				try {
 					PropertyUtils.copyProperties( base , variable );
 				} catch (Exception e) {
-					// it should never happens
+					// it should never happen
 					throw new IllegalStateException( "Unable to load variables" , e );
 				}
 				

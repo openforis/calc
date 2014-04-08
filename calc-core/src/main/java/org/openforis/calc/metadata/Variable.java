@@ -52,6 +52,11 @@ public abstract class Variable<T> extends VariableBase {
 //		this.scale = scale;
 //	}
 
+	public boolean isDegenerateDimension() {
+		Boolean degenerateDimension = getDegenerateDimension();
+		return degenerateDimension!=null && degenerateDimension;
+	}
+	
 	@JsonIgnore
 	public boolean isInput() {
 		return getInputValueColumn() != null;

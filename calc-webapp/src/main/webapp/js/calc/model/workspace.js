@@ -53,7 +53,10 @@ Workspace.prototype.getVariableById = function(id) {
 Workspace.prototype.getAggregableEntities = function(entityId) {
 	var entities = [];
 	$.each(this.entities, function(i, e) {
-		if( e.parentId == entityId  ) {
+		console.log( e.parentId );
+		console.log( entityId );
+		console.log( e.parentEntityId === entityId );
+		if( e.parentEntityId === entityId  ) {
 			//&& e.isAggregable()
 			entities.push(e);
 		}

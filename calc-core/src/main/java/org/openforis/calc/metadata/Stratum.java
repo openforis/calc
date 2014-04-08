@@ -24,5 +24,6 @@ public class Stratum extends StratumBase {
 
 	public void setWorkspace(Workspace workspace) {
 		this.workspace = workspace;
+		setWorkspaceId( workspace.getId() );
 	}
 }

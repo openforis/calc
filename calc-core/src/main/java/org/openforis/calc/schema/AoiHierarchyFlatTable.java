@@ -7,11 +7,9 @@ import static org.jooq.impl.SQLDataType.INTEGER;
 import static org.jooq.impl.SQLDataType.VARCHAR;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.jooq.Field;
 import org.jooq.Record;
@@ -55,7 +53,7 @@ public class AoiHierarchyFlatTable extends AbstractTable {
 		createAoiFields();
 	}
 
-	public Set<AoiLevel> getAoiLevels(){
+	public List<AoiLevel> getAoiLevels(){
 		return this.hierarchy.getLevels() ;
 	}
 
@@ -72,7 +70,7 @@ public class AoiHierarchyFlatTable extends AbstractTable {
 	}
 	
 	protected void createAoiFields() {
-		Set<AoiLevel> levels = hierarchy.getLevels();
+		List<AoiLevel> levels = hierarchy.getLevels();
 		for (AoiLevel level : levels) {
 			Field<Integer> aoiField = createField( level.getFkColumn(), INTEGER, this );
 			aoiIdFields.put(level, aoiField);
@@ -87,8 +85,8 @@ public class AoiHierarchyFlatTable extends AbstractTable {
 	
 	public SelectQuery<Record> getSelectQuery(){
 		SelectQuery<Record> select = new Psql().selectQuery();
-		Set<AoiLevel> levels = hierarchy.getLevels();
-		List<AoiLevel> aoiLevels = new ArrayList<AoiLevel>(levels);
+//		List<AoiLevel> levels = hierarchy.getLevels();
+		List<AoiLevel> aoiLevels = hierarchy.getLevels();
 		
 //		AoiTable childAoiTable = null;
 		for ( int i = aoiLevels.size() - 1 ; i >= 0 ; i-- ) {

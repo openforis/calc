@@ -141,7 +141,9 @@ public class MetadataManager {
 
 	private void loadSamplingDesign(Workspace workspace) {
 		SamplingDesign samplingDesign = samplingDesignDao.fetchOne( Tables.SAMPLING_DESIGN.WORKSPACE_ID , workspace.getId() );
-		workspace.setSamplingDesign( samplingDesign );
+		if( samplingDesign != null ){
+			workspace.setSamplingDesign( samplingDesign );
+		}
 	}
 
 	private void loadEntities( Workspace workspace ) {

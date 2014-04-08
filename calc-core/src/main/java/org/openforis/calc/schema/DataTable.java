@@ -14,7 +14,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.jooq.DataType;
@@ -243,7 +242,7 @@ public abstract class DataTable extends AbstractTable {
 			Workspace workspace = entity.getWorkspace();
 			List<AoiHierarchy> aoiHierarchies = workspace.getAoiHierarchies();
 			for ( AoiHierarchy hierarchy : aoiHierarchies ) {
-				Set<AoiLevel> levels = hierarchy.getLevels();
+				List<AoiLevel> levels = hierarchy.getLevels();
 				for ( AoiLevel level : levels ) {
 					if ( lowestLevel == null || level.getRank() <= lowestLevel.getRank() ) {
 						String fkColumn = level.getFkColumn();
@@ -370,7 +369,7 @@ public abstract class DataTable extends AbstractTable {
 	}
 
 	protected void createDimensionIdField(CategoricalVariable<?> var) {
-		if ( !var.getDegenerateDimension() && var.getDisaggregate() ) {
+		if ( !var.isDegenerateDimension() && var.getDisaggregate() ) {
 			if( var instanceof MultiwayVariable){
 				String fieldName = ((MultiwayVariable) var).getInputCategoryIdColumn();  // String.format(DIMENSION_ID_COLUMN_FORMAT, var.getName());
 				Field<Integer> fld = createField(fieldName, SQLDataType.INTEGER, this);

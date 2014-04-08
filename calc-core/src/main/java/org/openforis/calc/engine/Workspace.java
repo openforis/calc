@@ -122,8 +122,11 @@ public class Workspace extends WorkspaceBase {
 		return samplingDesign;
 	}
 	
-	public void setSamplingDesign(SamplingDesign samplingDesign) {
+	public void setSamplingDesign( SamplingDesign samplingDesign ) {
 		this.samplingDesign = samplingDesign;
+		if( samplingDesign != null ){
+			samplingDesign.setWorkspace( this );
+		}
 	}
 	
 	@JsonInclude

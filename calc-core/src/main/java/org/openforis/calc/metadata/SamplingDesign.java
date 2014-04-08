@@ -20,34 +20,65 @@ public class SamplingDesign extends SamplingDesignBase {
 	
 	@JsonIgnore
 	private Entity samplingUnit;
+	@JsonIgnore
+	private Workspace workspace;
 	
 	public Entity getSamplingUnit() {
-		return samplingUnit;
+		if( workspace == null ) {
+			return null;
+		}
+		return workspace.getEntityById( getSamplingUnitId() );
 	}
 
 	public void setSamplingUnit(Entity samplingUnit) {
 		this.samplingUnit = samplingUnit;
-	}
-	@JsonIgnore
-	public Workspace getWorkspace() {
-		return samplingUnit == null ? null : samplingUnit.getWorkspace();
+		setSamplingUnitId( this.samplingUnit.getId() );
 	}
 	
-
+	public Workspace getWorkspace() {
+		return this.workspace;
+	}
+	
+	public void setWorkspace(Workspace workspace) {
+		this.workspace = workspace;
+		setWorkspaceId( workspace.getId() );
+	}
+	
+	@JsonIgnore
+	@Override
+	public ParameterMap getPhase1JoinSettings() {
+		return super.getPhase1JoinSettings();
+	}
+	@JsonIgnore
 	public TableJoin getPhase1Join() {
 		return new TableJoin( getPhase1JoinSettings() );
 	}
 	
+	@JsonIgnore
+	@Override
+	public ParameterMap getStratumJoinSettings() {
+		return super.getStratumJoinSettings();
+	}
 	@JsonIgnore
 	public ColumnJoin getStratumJoin() {
 		return new ColumnJoin( getStratumJoinSettings() );
 	}
 	
 	@JsonIgnore
+	@Override
+	public ParameterMap getClusterColumnSettings() {
+		return super.getClusterColumnSettings();
+	}
+	@JsonIgnore
 	public ColumnJoin getClusterColumn() {
 		return new ColumnJoin( getClusterColumnSettings() );
 	}
-
+	
+	@JsonIgnore
+	@Override
+	public ParameterMap getAoiJoinSettings() {
+		return super.getAoiJoinSettings();
+	}
 	@JsonIgnore
 	public ColumnJoin getAoiJoin() {
 		return new ColumnJoin( getAoiJoinSettings() );

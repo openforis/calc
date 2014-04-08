@@ -219,7 +219,7 @@ public class DataSchema extends RelationalSchema {
 				for (CategoricalVariable<?> var : entity.getCategoricalVariables()) {
 					if( var instanceof MultiwayVariable ){
 						MultiwayVariable multiVar = (MultiwayVariable) var;
-						if ( ! var.getDegenerateDimension() ) {
+						if ( ! var.isDegenerateDimension() ) {
 							CategoryDimensionTable table = new CategoryDimensionTable( this, multiVar );
 							addTable(table);
 							categoryDimensionTables.put( multiVar, table );

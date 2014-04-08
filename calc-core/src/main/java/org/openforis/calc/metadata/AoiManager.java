@@ -5,16 +5,13 @@ package org.openforis.calc.metadata;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.jooq.Field;
 import org.jooq.Table;
@@ -58,7 +55,7 @@ public class AoiManager {
 //	@Autowired
 //	private PlatformTransactionManager transactionManager;
 	
-	@SuppressWarnings({ "unchecked", "null" })
+	@SuppressWarnings( "unchecked" )
 	@Transactional
 	public Workspace csvImport(Workspace workspace, String filepath, String[] levelNames) throws IOException {
 		CsvReader csvReader = new CsvReader(filepath);
@@ -90,18 +87,16 @@ public class AoiManager {
 			}
 
 			// create levels
-			Set<AoiLevel> levels = aoiHierarchy.getLevels();
+			List<AoiLevel> levels = aoiHierarchy.getLevels();
 			if (!levels.isEmpty()) {
 				// remove old levels
-				aoiDao.deleteByLevels( levels );
-				
+				aoiDao.deleteByHierarchy( aoiHierarchy );
 				aoiLevelDao.delete( levels );
-				
 				// remove old levels and aois
-				aoiHierarchy.setLevels(null);
+				aoiHierarchy.clearLevels();
 			}
 
-			levels = new LinkedHashSet<AoiLevel>();
+			levels = new ArrayList<AoiLevel>();
 			int rank = 0;
 			for (String name : levelNames) {
 				AoiLevel level = new AoiLevel();
@@ -118,7 +113,6 @@ public class AoiManager {
 
 				levels.add(level);
 				rank++;
-
 			}
 			aoiHierarchy.setLevels(levels);
 
@@ -190,7 +184,7 @@ public class AoiManager {
 		return workspace;
 	}
 
-	private Aoi getOrCreateAoi(Map<Integer, Map<String, Aoi>> aois, String code, String caption, AoiLevel level, double area, Aoi parentAoi) {
+	private Aoi getOrCreateAoi(Map<Integer, Map<String, Aoi>> aois, String code, String caption, AoiLevel level, Double area, Aoi parentAoi) {
 		Map<String, Aoi> map = aois.get(level.getRank());
 		if (map != null && map.get(code) != null) {
 			return map.get(code);
@@ -207,7 +201,9 @@ public class AoiManager {
 			aoi.setCode(code);
 			aoi.setCaption(caption);
 			aoi.setAoiLevel(level);
-			aoi.setLandArea( new BigDecimal(area) );
+			if( area != null ){
+				aoi.setLandArea( new BigDecimal(area) );
+			}
 			aoi.setParentAoi(parentAoi);
 
 			aoiDao.insert(aoi);
@@ -225,16 +221,8 @@ public class AoiManager {
 			workspace.addAoiHierarchy( aoiHierarchy );
 			
 			List<AoiLevel> aoiLevels = aoiLevelDao.fetchByAoiHierarchyId( aoiHierarchy.getId() );
-			Collections.sort( aoiLevels, new Comparator<AoiLevel>() {
-				@Override
-				public int compare(AoiLevel o1, AoiLevel o2) {
-					return o1.getRank().compareTo( o2.getRank() );
-				}
-			});
 			
-			for (AoiLevel aoiLevel : aoiLevels) {
-				aoiHierarchy.addLevel( aoiLevel );
-			}
+			aoiHierarchy.setLevels( aoiLevels );
 			
 			AoiLevel rootLevel = aoiLevels.get(0);
 			List<Aoi> aois = aoiDao.fetchByAoiLevelId( rootLevel.getId() );
@@ -262,4 +250,5 @@ public class AoiManager {
 		}
 		return aois;
 	}
+	
 }

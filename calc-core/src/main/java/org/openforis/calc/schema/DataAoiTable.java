@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.jooq.Field;
 import org.jooq.Record;
@@ -85,7 +84,7 @@ public class DataAoiTable extends AbstractTable {
 		
 		List<AoiHierarchy> aoiHierarchies = workspace.getAoiHierarchies();
 		for (AoiHierarchy hierarchy : aoiHierarchies) {
-			Set<AoiLevel> levels = hierarchy.getLevels();
+			List<AoiLevel> levels = hierarchy.getLevels();
 			for (AoiLevel level : levels) {
 				Field<Long> aoiField = createField( level.getFkColumn(), BIGINT, this );
 				aoiIdFields.put(level, aoiField);

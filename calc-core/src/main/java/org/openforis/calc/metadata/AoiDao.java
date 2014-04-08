@@ -3,6 +3,10 @@ package org.openforis.calc.metadata;
 import java.util.Collection;
 
 import org.jooq.Configuration;
+import org.openforis.calc.persistence.jooq.Tables;
+import org.openforis.calc.persistence.jooq.tables.AoiTable;
+import org.openforis.calc.psql.Psql;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -12,17 +16,28 @@ import org.springframework.transaction.annotation.Transactional;
  */
 public class AoiDao extends org.openforis.calc.persistence.jooq.tables.daos.AoiDao {
 
+	@Autowired
+	private Psql psql;
+	
 	public AoiDao(Configuration configuration) {
 		super(configuration);
 	}
 
 	@Transactional
-	public void deleteByLevels(Collection<AoiLevel> levels) {
-		for (AoiLevel aoiLevel : levels) {
-			super.delete( aoiLevel.getAois() );
+	public void deleteByHierarchy( AoiHierarchy aoiHierarchy ) {
+		
+		Collection<AoiLevel> levelsReverseOrder = aoiHierarchy.getLevelsReverseOrder();
+		AoiTable T = Tables.AOI;
+		
+		for (AoiLevel aoiLevel : levelsReverseOrder) {
+			psql
+				.delete( T )
+				.where( T.AOI_LEVEL_ID.eq(aoiLevel.getId()) )
+				.execute();
 		}
+		
 	}
-
+	
 //	public void assignRootAoi(AoiHierarchy aoiHierarchy) {
 //		Set<AoiLevel> levels = aoiHierarchy.getLevels();
 //		if(!levels.isEmpty()){

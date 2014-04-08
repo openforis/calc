@@ -538,7 +538,7 @@ public class WorkspaceService {
 			Integer no = record.getValue(0, Integer.class);
 			String caption = record.getValue(1, String.class);
 			
-			stratumDao.add(workspace, no, caption);
+			stratumDao.insert(workspace, no, caption);
 		}
 		
 	}

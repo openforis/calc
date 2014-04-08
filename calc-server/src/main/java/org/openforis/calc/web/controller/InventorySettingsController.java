@@ -16,7 +16,7 @@ import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.SamplingDesign;
-import org.openforis.calc.persistence.jooq.tables.daos.SamplingDesignDao;
+import org.openforis.calc.metadata.SamplingDesignManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,7 +41,7 @@ public class InventorySettingsController {
 	// private AoiManager aoiManager;
 
 	@Autowired
-	private SamplingDesignDao samplingDesignDao;
+	private SamplingDesignManager samplingDesignManager;
 	
 	@Autowired
 	private TaskManager taskManager;
@@ -51,11 +51,8 @@ public class InventorySettingsController {
 	Response setSamplingDesign(@RequestParam(value = "samplingDesign", required = false) String samplingDesignParam) throws IOException, ParseException, WorkspaceLockedException {
 		Response response = new Response();
 		Workspace workspace = workspaceService.getActiveWorkspace();
-		SamplingDesign sd = workspace.getSamplingDesign();
-		if( sd != null ){
-			samplingDesignDao.delete( sd );
-			workspace.setSamplingDesign(null);
-		}
+
+		samplingDesignManager.delete( workspace );
 
 		SamplingDesign samplingDesign = parseSamplingDesignFromJsonString(workspace, samplingDesignParam);
 		if (samplingDesign != null) {
@@ -69,8 +66,8 @@ public class InventorySettingsController {
 				workspaceService.resetResultTable(samplingUnit);
 			}
 			
-			samplingDesignDao.insert( samplingDesign );
-			workspace.setSamplingDesign(samplingDesign);
+			samplingDesignManager.insert( workspace ,  samplingDesign );
+//			workspace.setSamplingDesign(samplingDesign);
 			response.addField("samplingDesign", samplingDesign);
 		}
 
@@ -98,7 +95,7 @@ public class InventorySettingsController {
 				SamplingDesign samplingDesign = new SamplingDesign();
 				Entity entity = workspace.getEntityById(Integer.valueOf(suId.toString()));
 
-//				samplingDesign.setWorkspace(workspace);
+				samplingDesign.setWorkspace(workspace);
 				samplingDesign.setSamplingUnit(entity);
 				
 				samplingDesign.setSrs(getBooleanValue(json, "srs"));
