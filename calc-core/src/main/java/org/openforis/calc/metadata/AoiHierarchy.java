@@ -7,8 +7,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.Transient;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.persistence.jooq.tables.pojos.AoiHierarchyBase;
@@ -33,7 +31,6 @@ public class AoiHierarchy extends AoiHierarchyBase {
 //	@OrderBy("rank")
 	private Set<AoiLevel> levels;
 
-	@Transient
 	private Aoi rootAoi;
 	
 	public Workspace getWorkspace() {

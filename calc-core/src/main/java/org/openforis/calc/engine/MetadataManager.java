@@ -17,6 +17,7 @@ import org.openforis.calc.metadata.SamplingDesign;
 import org.openforis.calc.metadata.Stratum;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.VariableDao;
+import org.openforis.calc.persistence.jooq.Sequences;
 import org.openforis.calc.persistence.jooq.Tables;
 import org.openforis.calc.persistence.jooq.tables.daos.CalculationStepDao;
 import org.openforis.calc.persistence.jooq.tables.daos.EntityDao;
@@ -204,6 +205,8 @@ public class MetadataManager {
 		if( workspaceDao.exists(workspace) ) {
 			workspaceDao.update( workspace );
 		} else {
+			Long nextval = psql.nextval( Sequences.WORKSPACE_ID_SEQ );
+			workspace.setId( nextval.intValue() );
 			workspaceDao.insert( workspace );
 		}
 		
@@ -223,7 +226,9 @@ public class MetadataManager {
 			
 			Integer id = entity.getId();
 			if( id == null ){
-				//TODO check if entity ids has been set to all variables
+				Long nextval = psql.nextval( Sequences.ENTITY_ID_SEQ );
+				entity.setId( nextval.intValue() );
+				
 				entityDao.insert( entity );
 			} else {
 				entityDao.update( entity );

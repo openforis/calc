@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 import javax.sql.DataSource;
 
+import org.jooq.Configuration;
 import org.jooq.DataType;
 import org.jooq.Field;
 import org.jooq.SQLDialect;
@@ -46,7 +47,11 @@ public final class Psql extends DefaultDSLContext {
 		};
 	};
 
-//	@Deprecated
+	public Psql(Configuration configuration) {
+		super(configuration);
+	}
+
+	//	@Deprecated
 	public Psql() {
 		super(SQLDialect.POSTGRES);
 		init();

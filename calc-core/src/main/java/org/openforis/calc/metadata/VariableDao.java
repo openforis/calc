@@ -7,16 +7,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.jooq.Configuration;
 import org.jooq.Record2;
 import org.jooq.Result;
 import org.jooq.SelectLimitStep;
 import org.json.simple.JSONObject;
 import org.openforis.calc.engine.Workspace;
+import org.openforis.calc.persistence.jooq.Sequences;
 import org.openforis.calc.persistence.jooq.tables.pojos.VariableBase;
 import org.openforis.calc.psql.Psql;
 import org.openforis.calc.schema.CategoryDimensionTable;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -24,12 +25,15 @@ import org.springframework.transaction.annotation.Transactional;
  * @author S. Ricci
  *
  */
-@Repository
 public class VariableDao extends org.openforis.calc.persistence.jooq.tables.daos.VariableDao {
 	
 	@Autowired
 	private Psql psql;
-	
+
+	public VariableDao(Configuration configuration) {
+		super(configuration);
+	}
+
 	public long countCategoryClasses(CategoryDimensionTable table ){
 		
 		Long count = psql
@@ -116,9 +120,15 @@ public class VariableDao extends org.openforis.calc.persistence.jooq.tables.daos
 					throw new IllegalStateException( "Unable to load variables" , e );
 				}
 				if( base.getId() == null ) {
-					insert( variable );
+					
+					Long nextval = psql.nextval( Sequences.VARIABLE_ID_SEQ );
+					int varId = nextval.intValue();
+					base.setId( varId );
+					variable.setId( varId );
+					
+					insert( base );
 				} else {
-					update( variable );
+					update( base );
 				}
 			}
 		

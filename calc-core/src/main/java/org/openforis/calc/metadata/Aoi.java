@@ -42,6 +42,7 @@ public class Aoi extends AoiBase {
 
 	public void setAoiLevel(AoiLevel aoiLevel) {
 		this.aoiLevel = aoiLevel;
+		setAoiLevelId( aoiLevel.getId() );
 	}
 
 	public Aoi getParentAoi() {
@@ -50,6 +51,7 @@ public class Aoi extends AoiBase {
 
 	public void setParentAoi(Aoi parentAoi) {
 		this.parentAoi = parentAoi;
+		setParentAoiId( parentAoi.getId() );
 	}
 
 	public Set<Aoi> getChildren() {

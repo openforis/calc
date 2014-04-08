@@ -33,8 +33,9 @@ public class AoiLevel extends AoiLevelBase {
 		return hierarchy;
 	}
 
-	public void setHierarchy(AoiHierarchy aoiHierarchyId) {
-		this.hierarchy = aoiHierarchyId;
+	public void setHierarchy(AoiHierarchy aoiHierarchy) {
+		this.hierarchy = aoiHierarchy;
+		setAoiHierarchyId( aoiHierarchy.getId() );
 	}
 
 	public String getDimensionTable() {

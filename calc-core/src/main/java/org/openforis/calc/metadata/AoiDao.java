@@ -2,7 +2,7 @@ package org.openforis.calc.metadata;
 
 import java.util.Collection;
 
-import org.springframework.stereotype.Component;
+import org.jooq.Configuration;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -10,8 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Mino Togna
  * 
  */
-@Component
 public class AoiDao extends org.openforis.calc.persistence.jooq.tables.daos.AoiDao {
+
+	public AoiDao(Configuration configuration) {
+		super(configuration);
+	}
 
 	@Transactional
 	public void deleteByLevels(Collection<AoiLevel> levels) {

@@ -86,9 +86,35 @@
     
     
     <!-- Daos -->
-    <bean name="d" class="org.openforis.calc.persistence.jooq.tables.daos.SamplingDesignDao">
+    <bean name="samplingDesignDao" class="org.openforis.calc.persistence.jooq.tables.daos.SamplingDesignDao">
     	<constructor-arg ref="config" />
     </bean>
-    
+    <bean name="aoiDao" class="org.openforis.calc.metadata.AoiDao">
+    	<constructor-arg ref="config" />
+    </bean>
+    <bean name="aoiHierarchyDao" class="org.openforis.calc.persistence.jooq.tables.daos.AoiHierarchyDao">
+    	<constructor-arg ref="config" />
+    </bean>
+    <bean name="aoiLevelDao" class="org.openforis.calc.persistence.jooq.tables.daos.AoiLevelDao">
+    	<constructor-arg ref="config" />
+    </bean>
+    <bean name="calcStepDao" class="org.openforis.calc.persistence.jooq.tables.daos.CalculationStepDao">
+    	<constructor-arg ref="config" />
+    </bean>
+    <bean name="entityDao" class="org.openforis.calc.persistence.jooq.tables.daos.EntityDao">
+    	<constructor-arg ref="config" />
+    </bean>
+    <bean name="processingChainDao" class="org.openforis.calc.persistence.jooq.tables.daos.ProcessingChainDao">
+    	<constructor-arg ref="config" />
+    </bean>
+    <bean name="stratumDao" class="org.openforis.calc.metadata.StratumDao">
+    	<constructor-arg ref="config" />
+    </bean>
+    <bean name="variableDao" class="org.openforis.calc.metadata.VariableDao">
+    	<constructor-arg ref="config" />
+    </bean>
+    <bean name="workspaceDao" class="org.openforis.calc.persistence.jooq.tables.daos.WorkspaceDao">
+    	<constructor-arg ref="config" />
+    </bean>
 
 </beans>

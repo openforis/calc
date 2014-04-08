@@ -65,9 +65,11 @@ public class TaskManager {
 	}
 
 	// TODO move to.. where??? REMOVE
+	@Deprecated
 	protected boolean isDebugMode() {
-		String mode = ((ConfigurableBeanFactory) beanFactory).resolveEmbeddedValue("${calc.debugMode}");
-		return "true".equals(mode);
+//		String mode = ((ConfigurableBeanFactory) beanFactory).resolveEmbeddedValue("${calc.debugMode}");
+//		return "true".equals(mode);
+		return false;
 	}
 
 	/**
@@ -136,7 +138,7 @@ public class TaskManager {
 	 */
 	public Job createJob(Workspace workspace) {
 		Job job = new Job(workspace, dataSource);
-		job.setDebugMode(isDebugMode());
+//		job.setDebugMode(isDebugMode());
 		job.setSchemas(new Schemas(workspace));
 		autowire(job);
 		return job;

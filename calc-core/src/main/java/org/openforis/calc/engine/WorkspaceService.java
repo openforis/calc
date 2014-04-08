@@ -47,7 +47,7 @@ public class WorkspaceService {
 	private WorkspaceDao workspaceDao;
 
 	@Autowired
-	private MetadataManager workspaceManager;
+	private MetadataManager metadataManager;
 	
 	@Autowired
 	private EntityDao entityDao;
@@ -85,7 +85,7 @@ public class WorkspaceService {
 	}
 
 	public Workspace get( int workspaceId ) {
-		return workspaceManager.fetchWorkspaceById( workspaceId );
+		return metadataManager.fetchWorkspaceById( workspaceId );
 	}
 
 //	@Transactional
@@ -94,15 +94,15 @@ public class WorkspaceService {
 //	}
 
 	public Workspace fetchByCollectSurveyUri( String uri ) {
-		return workspaceManager.fetchWorkspaceByCollectSurveyUri( uri );
+		return metadataManager.fetchWorkspaceByCollectSurveyUri( uri );
 	}
 
 	public Workspace save(Workspace workspace) {
-		return workspaceManager.saveWorkspace( workspace );
+		return metadataManager.saveWorkspace( workspace );
 	}
 
 	public List<Workspace> loadAll() {
-		return workspaceManager.findAllWorkspaces();
+		return metadataManager.findAllWorkspaces();
 	}
 
 	/**
@@ -111,7 +111,7 @@ public class WorkspaceService {
 	 * @return
 	 */
 	public Workspace getActiveWorkspace() {
-		Workspace workspace = workspaceManager.fetchActiveWorkspace();
+		Workspace workspace = metadataManager.fetchActiveWorkspace();
 			
 //		if ( workspace != null ) {
 //			List<AoiHierarchy> aoiHierarchies = workspace.getAoiHierarchies();
@@ -124,7 +124,7 @@ public class WorkspaceService {
 	}
 
 	public Workspace createAndActivate(String name, String uri, String schema) {
-		workspaceManager.deactivateAll();
+		metadataManager.deactivateAll();
 
 		Workspace ws = new Workspace();
 		ws.setActive(true);
@@ -132,7 +132,7 @@ public class WorkspaceService {
 		ws.setInputSchema(schema);
 		ws.setName(name);
 		ws.setCaption(name);
-		ws = workspaceManager.saveWorkspace(ws);
+		ws = metadataManager.saveWorkspace(ws);
 
 		processingChainService.createDefaultProcessingChain(ws);
 
@@ -281,7 +281,7 @@ public class WorkspaceService {
 //	}
 	
 	public void activate( Workspace ws ) {
-		workspaceManager.activate( ws );
+		metadataManager.activate( ws );
 		setActiveWorkspace( ws );
 	}
 	

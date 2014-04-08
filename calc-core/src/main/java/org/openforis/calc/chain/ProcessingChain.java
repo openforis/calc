@@ -40,6 +40,7 @@ public class ProcessingChain extends ProcessingChainBase {
 	
 	public void setWorkspace(Workspace workspace) {
 		this.workspace = workspace;
+		setWorkspaceId( workspace.getId() );
 	}
 	
 	public void addCalculationStep( CalculationStep step ) {

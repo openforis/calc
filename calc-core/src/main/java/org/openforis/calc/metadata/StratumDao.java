@@ -2,8 +2,8 @@ package org.openforis.calc.metadata;
 
 import java.util.List;
 
+import org.jooq.Configuration;
 import org.openforis.calc.engine.Workspace;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -11,8 +11,11 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Mino Togna
  * 
  */
-@Component
 public class StratumDao extends org.openforis.calc.persistence.jooq.tables.daos.StratumDao {
+	
+	public StratumDao(Configuration configuration) {
+		super(configuration);
+	}
 
 	/**
 	 * Delete all strata of the given workspace

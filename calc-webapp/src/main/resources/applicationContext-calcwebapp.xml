@@ -25,6 +25,7 @@
 	default-lazy-init="true">
 	
 	<import resource="classpath*:/applicationContext.xml" />
+	<import resource="classpath*:/applicationContext-persistence.xml" />
 	
 	<context:component-scan base-package="org.openforis.calc" />
 	<context:annotation-config />

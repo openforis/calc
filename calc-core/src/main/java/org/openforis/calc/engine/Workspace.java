@@ -6,8 +6,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
-import javax.persistence.Column;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.openforis.calc.chain.CalculationStep;
@@ -58,9 +56,6 @@ public class Workspace extends WorkspaceBase {
 ////	@Fetch(FetchMode.SUBSELECT)
 //	@Cascade(CascadeType.ALL)	
 	private SamplingDesign samplingDesign;
-	
-	@Column(name = "phase1_plot_table")
-	private String phase1PlotTable;
 	
 	public Workspace() {
 		this.processingChains = new ArrayList<ProcessingChain>();
@@ -129,14 +124,6 @@ public class Workspace extends WorkspaceBase {
 	
 	public void setSamplingDesign(SamplingDesign samplingDesign) {
 		this.samplingDesign = samplingDesign;
-	}
-	
-	public String getPhase1PlotTable() {
-		return phase1PlotTable;
-	}
-	
-	public void setPhase1PlotTable(String phase1PlotTable) {
-		this.phase1PlotTable = phase1PlotTable;
 	}
 	
 	@JsonInclude

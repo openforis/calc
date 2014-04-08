@@ -34,7 +34,7 @@ public class CollectTaskService {
 	public Job createImportJob(Workspace workspace, CollectSurvey survey, File backupFile) {
 		Job job = taskManager.createCollectImportJob( workspace , survey );
 		
-		job.setDebugMode(taskManager.isDebugMode());
+//		job.setDebugMode(taskManager.isDebugMode());
 
 		CollectMetadataImportTask importTask = taskManager.createTask(CollectMetadataImportTask.class);
 		job.addTask(importTask);

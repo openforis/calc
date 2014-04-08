@@ -33,30 +33,28 @@
 		<property name="concurrencyLimit" value="10"/>
 	</bean>
 	
-	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"> 
-	    <property name="persistenceUnitName" value="calcPersistenceUnit" />
-	    <property name="dataSource" ref="dataSource" />
-	    <property name="jpaVendorAdapter"> 
-	        <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"> 
-	            <property name="databasePlatform" value="org.hibernate.dialect.PostgreSQLDialect" /> 
-	            <property name="showSql" value="true" /> 
-	            <property name="generateDdl" value="false" />
-	        </bean> 
-	    </property>
-		<property name="jpaProperties">
-			<props>
-				<prop key="hibernate.default_schema">calc</prop>
+<!-- 	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">  -->
+<!-- 	    <property name="persistenceUnitName" value="calcPersistenceUnit" /> -->
+<!-- 	    <property name="dataSource" ref="dataSource" /> -->
+<!-- 	    <property name="jpaVendorAdapter">  -->
+<!-- 	        <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">  -->
+<!-- 	            <property name="databasePlatform" value="org.hibernate.dialect.PostgreSQLDialect" />  -->
+<!-- 	            <property name="showSql" value="true" />  -->
+<!-- 	            <property name="generateDdl" value="false" /> -->
+<!-- 	        </bean>  -->
+<!-- 	    </property> -->
+<!-- 		<property name="jpaProperties"> -->
+<!-- 			<props> -->
+<!-- 				<prop key="hibernate.default_schema">calc</prop> -->
 				
-				<prop key="hibernate.cache.use_second_level_cache">true</prop>
-				<prop key="hibernate.cache.use_query_cache">true</prop>
-				<prop key="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory</prop>
+<!-- 				<prop key="hibernate.cache.use_second_level_cache">true</prop> -->
+<!-- 				<prop key="hibernate.cache.use_query_cache">true</prop> -->
+<!-- 				<prop key="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory</prop> -->
 
-<!-- 				<prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop> -->
-<!-- 				<prop key="hibernate.sql.syntax_pgs">true</prop> -->
-			</props>
-		</property>	   
+<!-- 			</props> -->
+<!-- 		</property>	    -->
 		
-	</bean>
+<!-- 	</bean> -->
 	
 	  <bean id="log4jInitializer" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
 		<property name="staticMethod">

@@ -16,15 +16,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.sql.DataSource;
-
 import org.jooq.Field;
 import org.jooq.Table;
 import org.jooq.Update;
 import org.jooq.impl.DSL;
 import org.openforis.calc.engine.Workspace;
+import org.openforis.calc.persistence.jooq.Sequences;
 import org.openforis.calc.persistence.jooq.Tables;
 import org.openforis.calc.persistence.jooq.tables.daos.AoiHierarchyDao;
+import org.openforis.calc.persistence.jooq.tables.daos.AoiLevelDao;
 import org.openforis.calc.psql.Psql;
 import org.openforis.calc.psql.UpdateWithStep;
 import org.openforis.commons.io.csv.CsvReader;
@@ -49,14 +49,17 @@ public class AoiManager {
 	@Autowired
 	private AoiDao aoiDao;
 
-	@Autowired
-	private DataSource dataSource;
+//	@Autowired
+//	private DataSource dataSource;
 
+	@Autowired
+	private Psql psql;
+	
 //	@Autowired
 //	private PlatformTransactionManager transactionManager;
 	
 	@SuppressWarnings({ "unchecked", "null" })
-//	@Transactional
+	@Transactional
 	public Workspace csvImport(Workspace workspace, String filepath, String[] levelNames) throws IOException {
 		CsvReader csvReader = new CsvReader(filepath);
 		csvReader.readHeaders();
@@ -72,11 +75,14 @@ public class AoiManager {
 			List<AoiHierarchy> aoiHierarchies = workspace.getAoiHierarchies();
 			if (aoiHierarchies.size() == 0) {
 				aoiHierarchy = new AoiHierarchy();
+				
+				Long aoiHierId = psql.nextval( Sequences.AOI_HIERARCHY_ID_SEQ );
+				aoiHierarchy.setId( aoiHierId.intValue() );
+				
 				aoiHierarchy.setWorkspace(workspace);
 				aoiHierarchy.setWorkspaceId(workspace.getId());
 				aoiHierarchy.setCaption("Administrative unit");
 				aoiHierarchy.setName("Administrative unit");
-
 				workspace.addAoiHierarchy(aoiHierarchy);
 				aoiHierarchyDao.insert( aoiHierarchy );
 			} else {
@@ -99,6 +105,10 @@ public class AoiManager {
 			int rank = 0;
 			for (String name : levelNames) {
 				AoiLevel level = new AoiLevel();
+				
+				Long nextval = psql.nextval( Sequences.AOI_LEVEL_ID_SEQ );
+				level.setId( nextval.intValue() );
+				
 				level.setName(name);
 				level.setCaption(name);
 				level.setHierarchy(aoiHierarchy);
@@ -156,12 +166,11 @@ public class AoiManager {
 								.asTable("tmp");
 
 					Update<?> update = 
-						new Psql()
+						psql
 							.update(Tables.AOI)
 							.set(Tables.AOI.LAND_AREA, (Field<BigDecimal>) cursor.field(landArea));
 
-					UpdateWithStep updateWith = new Psql(dataSource)
-						.updateWith(cursor, update, Tables.AOI.ID.eq((Field<Integer>) cursor.field(id)));
+					UpdateWithStep updateWith = psql.updateWith(cursor, update, Tables.AOI.ID.eq((Field<Integer>) cursor.field(id)));
 					updateWith.execute();
 				} else {
 					break;
@@ -191,6 +200,10 @@ public class AoiManager {
 				aois.put(level.getRank(), map);
 			}
 			Aoi aoi = new Aoi();
+			
+			Long nextval = psql.nextval( Sequences.AOI_ID_SEQ );
+			aoi.setId( nextval.intValue() );
+			
 			aoi.setCode(code);
 			aoi.setCaption(caption);
 			aoi.setAoiLevel(level);
