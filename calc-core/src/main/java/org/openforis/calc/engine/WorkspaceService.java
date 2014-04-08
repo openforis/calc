@@ -8,6 +8,7 @@ import javax.sql.DataSource;
 import org.jooq.Insert;
 import org.jooq.Record;
 import org.openforis.calc.chain.CalculationStep;
+import org.openforis.calc.chain.ProcessingChainService;
 import org.openforis.calc.metadata.AoiDao;
 import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.Entity;
@@ -17,7 +18,6 @@ import org.openforis.calc.metadata.StratumDao;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.Variable.Scale;
 import org.openforis.calc.metadata.VariableAggregate;
-import org.openforis.calc.metadata.VariableAggregateDao;
 import org.openforis.calc.metadata.VariableDao;
 import org.openforis.calc.persistence.jooq.tables.daos.EntityDao;
 import org.openforis.calc.persistence.jooq.tables.daos.SamplingDesignDao;
@@ -116,13 +116,13 @@ public class WorkspaceService {
 	public Workspace getActiveWorkspace() {
 		Workspace workspace = workspaceManager.fetchActiveWorkspace();
 			
-		if ( workspace != null ) {
-			List<AoiHierarchy> aoiHierarchies = workspace.getAoiHierarchies();
-			// set root aoi to each aoiHierarchy linked to the workspace
+//		if ( workspace != null ) {
+//			List<AoiHierarchy> aoiHierarchies = workspace.getAoiHierarchies();
+//			// set root aoi to each aoiHierarchy linked to the workspace
 //			for (AoiHierarchy aoiHierarchy : aoiHierarchies) {
 //				aoiDao.assignRootAoi(aoiHierarchy);
 //			}
-		}
+//		}
 		return workspace;
 	}
 
@@ -343,127 +343,137 @@ public class WorkspaceService {
 		}
 	}
 
-	@Transactional
-	public Workspace setActiveWorkspaceSamplingUnit(Integer entityId) {
-		Workspace workspace = getActiveWorkspace();
-		SamplingDesign samplingDesign = workspace.getSamplingDesign();
-		if (samplingDesign == null) {
-			samplingDesign = new SamplingDesign();
-		} 
-		
-		Entity samplingUnit = workspace.getEntityById(entityId);
-		samplingDesign.setSamplingUnit(samplingUnit);
-		samplingDesignDao.save(samplingDesign);
-		workspace.setSamplingDesign(samplingDesign);
-		
-		workspace = save(workspace);
-		return workspace;
-	}
+//	@Transactional
+//	public Workspace setActiveWorkspaceSamplingUnit(Integer entityId) {
+//		Workspace workspace = getActiveWorkspace();
+//		SamplingDesign samplingDesign = workspace.getSamplingDesign();
+//		if (samplingDesign == null) {
+//			samplingDesign = new SamplingDesign();
+//		} 
+//		
+//		Entity samplingUnit = workspace.getEntityById(entityId);
+//		samplingDesign.setSamplingUnit(samplingUnit);
+//		samplingDesignDao.save(samplingDesign);
+//		workspace.setSamplingDesign(samplingDesign);
+//		
+//		workspace = save(workspace);
+//		return workspace;
+//	}
 
-	@Transactional
+//	@Transactional
+	@Deprecated
 	public QuantitativeVariable createVariableAggregate(Workspace workspace, int entityId, int variableId, String agg) {
-		Entity entity = workspace.getEntityById(entityId);
-		QuantitativeVariable variable = entity.getQtyVariableById(variableId);
-		
-		int variableReturnId = 0;
-		//the variable id passed is a variable-per-ha linked to another variable
-		if(variable == null) {
-			variable = entity.getQtyVariablePerHaById(variableId);
-			variableReturnId = variable.getSourceVariable().getId();
-		} else {
-			variableReturnId = variable.getId();
-		}
-		
-		if (!variable.hasAggregate(agg)) {
-			if (VariableAggregate.AGGREGATE_TYPE.isValid(agg)) {
-				VariableAggregate varAgg = new VariableAggregate();
-				varAgg.setVariable(variable);
-				varAgg.setAggregateType(agg);
-				varAgg.setAggregateFormula("");
-				variableAggregateDao.saveWorkspace(varAgg);
-			} else {
-				throw new IllegalArgumentException("Invalild aggregate type: " + agg);
-			}
-		}
-		variable = (QuantitativeVariable) variableDao.fetchWorkspaceById(variableReturnId);
-		
-//		updateEntityView(variable);
-		
-		return variable;
+		return null;
+//		Entity entity = workspace.getEntityById(entityId);
+//		QuantitativeVariable variable = entity.getQtyVariableById(variableId);
+//		
+//		int variableReturnId = 0;
+//		//the variable id passed is a variable-per-ha linked to another variable
+//		if(variable == null) {
+//			variable = entity.getQtyVariablePerHaById(variableId);
+//			variableReturnId = variable.getSourceVariable().getId();
+//		} else {
+//			variableReturnId = variable.getId();
+//		}
+//		
+//		if (!variable.hasAggregate(agg)) {
+//			if (VariableAggregate.AGGREGATE_TYPE.isValid(agg)) {
+//				VariableAggregate varAgg = new VariableAggregate();
+//				varAgg.setVariable(variable);
+//				varAgg.setAggregateType(agg);
+//				varAgg.setAggregateFormula("");
+//				variableAggregateDao.saveWorkspace(varAgg);
+//			} else {
+//				throw new IllegalArgumentException("Invalild aggregate type: " + agg);
+//			}
+//		}
+//		variable = (QuantitativeVariable) variableDao.fetchWorkspaceById(variableReturnId);
+//		
+////		updateEntityView(variable);
+//		
+//		return variable;
 	}
 	
 	@Transactional
+	@Deprecated
 	public QuantitativeVariable deleteVariableAggregate(Workspace workspace, int entityId, int variableId, String agg) {
-		Entity entity = workspace.getEntityById(entityId);
-		QuantitativeVariable variable = entity.getQtyVariableById(variableId);
-		
-		int variableReturnId = 0;
-		//the variable id passed is a variable-per-ha linked to another variable
-		if(variable == null) {
-			variable = entity.getQtyVariablePerHaById(variableId);
-			variableReturnId = variable.getSourceVariable().getId();
-		} else {
-			variableReturnId = variable.getId();
-		}
-		
-		VariableAggregate aggregate = variable.getAggregate(agg);
-		if (aggregate != null) {
-			variable.deleteAggregate(agg);
-			variableDao.saveWorkspace(variable);
-			variableAggregateDao.delete(aggregate.getId());
-		}
-		
-		variable = (QuantitativeVariable) variableDao.fetchWorkspaceById(variableReturnId);
-		
-//		updateEntityView(variable);
-		
-		return variable;
+		return null;
+//		Entity entity = workspace.getEntityById(entityId);
+//		QuantitativeVariable variable = entity.getQtyVariableById(variableId);
+//		
+//		int variableReturnId = 0;
+//		//the variable id passed is a variable-per-ha linked to another variable
+//		if(variable == null) {
+//			variable = entity.getQtyVariablePerHaById(variableId);
+//			variableReturnId = variable.getSourceVariable().getId();
+//		} else {
+//			variableReturnId = variable.getId();
+//		}
+//		
+//		VariableAggregate aggregate = variable.getAggregate(agg);
+//		if (aggregate != null) {
+//			variable.deleteAggregate(agg);
+//			variableDao.saveWorkspace(variable);
+//			variableAggregateDao.delete(aggregate.getId());
+//		}
+//		
+//		variable = (QuantitativeVariable) variableDao.fetchWorkspaceById(variableReturnId);
+//		
+////		updateEntityView(variable);
+//		
+//		return variable;
 	}
 
 	@Transactional
+	@Deprecated
 	public QuantitativeVariable addVariablePerHa(QuantitativeVariable variable) {
-		QuantitativeVariable variablePerHa = variable.getVariablePerHa();
-
-		if (variablePerHa == null) {
-			
-			String name = variable.getName() + "_per_ha";
-			variablePerHa = createQuantitativeVariable(name);
-			variablePerHa.setSourceVariable(variable);
-			
-			variable.setVariablePerHa(variablePerHa);
-			
-			variableDao.saveWorkspace(variablePerHa);			
-			variable = (QuantitativeVariable) variableDao.saveWorkspace(variable);
-			
-//			addVariableColumn(variablePerHa);
-//			updateEntityView(variablePerHa);
-		}
-
-		return variable;
+		return null;
+//		QuantitativeVariable variablePerHa = variable.getVariablePerHa();
+//
+//		if (variablePerHa == null) {
+//			
+//			String name = variable.getName() + "_per_ha";
+//			variablePerHa = createQuantitativeVariable(name);
+//			variablePerHa.setSourceVariable(variable);
+//			
+//			variable.setVariablePerHa(variablePerHa);
+//			
+//			variableDao.saveWorkspace(variablePerHa);			
+//			variable = (QuantitativeVariable) variableDao.saveWorkspace(variable);
+//			
+////			addVariableColumn(variablePerHa);
+////			updateEntityView(variablePerHa);
+//		}
+//
+//		return variable;
 	}
 
-	@Transactional
+//	@Transactional
+	@Deprecated
 	public QuantitativeVariable deleteVariablePerHa(QuantitativeVariable variable) {
-		return deleteVariablePerHa(variable, true);
+//		return deleteVariablePerHa(variable, true);
+		return null;
 	}
 
-	@Transactional
+//	@Transactional
+	@Deprecated
 	public QuantitativeVariable deleteVariablePerHa(QuantitativeVariable variable, boolean updateEntityView) {
-		QuantitativeVariable variablePerHa = variable.getVariablePerHa();
-
-		if (variablePerHa != null) {
-//			dropVariableColumn(variablePerHa);
-			
-			variable.setVariablePerHa(null);
-			variableDao.delete(variablePerHa.getId());
-			variable = (QuantitativeVariable) variableDao.saveWorkspace(variable);
-			
-//			if ( updateEntityView ) {
-//				updateEntityView(variable);
-//			}
-		}
-
-		return variable;
+		return null;
+//		QuantitativeVariable variablePerHa = variable.getVariablePerHa();
+//
+//		if (variablePerHa != null) {
+////			dropVariableColumn(variablePerHa);
+//			
+//			variable.setVariablePerHa(null);
+//			variableDao.delete(variablePerHa.getId());
+//			variable = (QuantitativeVariable) variableDao.saveWorkspace(variable);
+//			
+////			if ( updateEntityView ) {
+////				updateEntityView(variable);
+////			}
+//		}
+//
+//		return variable;
 	}
 	
 	@Transactional
@@ -514,9 +524,9 @@ public class WorkspaceService {
 	 */
 	@Transactional
 	public Entity setEntityPlotAreaScript(Entity entity, String plotAreaScript) {
-		entity.setPlotAreaScript(plotAreaScript);
-		Entity updEntity = entityDao.saveWorkspace(entity);
-		return updEntity;
+		entity.setPlotAreaScript( plotAreaScript );
+		entityDao.update( entity );
+		return entity;
 	}
 
 	@Transactional
