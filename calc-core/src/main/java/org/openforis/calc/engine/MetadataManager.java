@@ -221,21 +221,31 @@ public class MetadataManager {
 	 */
 	@Transactional
 	private void saveMetadata( Workspace workspace ) {
-		List<Entity> entities = workspace.getEntities();
-		for (Entity entity : entities) {
-			
-			Integer id = entity.getId();
-			if( id == null ) {
-				Long nextval = psql.nextval( Sequences.ENTITY_ID_SEQ );
-				entity.setId( nextval.intValue() );
-				entityDao.insert( entity );
-			} else {
-				entityDao.update( entity );
-			}
-			
-			List<Variable<?>> varList = entity.getVariables();
-			Variable<?>[] variables = varList.toArray( new Variable<?>[varList.size()] );
-			variableDao.save( variables );
+		Collection<Entity> rootEntities = workspace.getRootEntities();
+		for (Entity entity : rootEntities) {
+			entity.traverse(new Entity.Visitor() {
+				@Override
+				public void visit(Entity entity) {
+					// set parentEntityId
+					Entity parent = entity.getParent();
+					if ( parent != null && entity.getParentEntityId() == null ) {
+						entity.setParentEntityId( parent.getId() );
+					}
+					// insert or update entity
+					Integer id = entity.getId();
+					if( id == null ) {
+						Long nextval = psql.nextval( Sequences.ENTITY_ID_SEQ );
+						entity.setId( nextval.intValue() );
+						entityDao.insert( entity );
+					} else {
+						entityDao.update( entity );
+					}
+					// save variables
+					List<Variable<?>> varList = entity.getVariables();
+					Variable<?>[] variables = varList.toArray( new Variable<?>[varList.size()] );
+					variableDao.save( variables );
+				}
+			});
 		}
 	}
 	

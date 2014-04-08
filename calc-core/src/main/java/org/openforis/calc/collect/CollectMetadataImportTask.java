@@ -148,8 +148,8 @@ public class CollectMetadataImportTask extends Task {
 		}
 
 		Entity parentEntity = getParentEntity(nodeDefinition);
-		if(parentEntity != null) {
-			entity.setParent( parentEntity );
+		if ( parentEntity != null ) {
+			parentEntity.addChild( entity );
 			entity.setParentIdColumn(dataTable.getParentKeyColumn().getName());
 		}
 		

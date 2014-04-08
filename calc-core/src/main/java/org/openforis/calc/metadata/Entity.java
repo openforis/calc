@@ -465,6 +465,34 @@ public class Entity extends EntityBase {
 		return null;
 	}
 	
+	// Pre-order depth-first traversal from here down
+	public void traverse(Visitor visitor) {
+		
+		// Initialize stack with this entity
+		Stack<Entity> stack = new Stack<Entity>();
+		stack.push(this);
+		
+		// While there are still entities to visit
+		while ( ! stack.isEmpty() ) {
+			Entity entity = stack.pop();
+
+			// visit entity
+			visitor.visit(entity);
+
+			// add existing child entities to the stack
+			List<Entity> children = entity.getChildren();
+			for (Entity child : children) {
+				stack.push(child);
+			}
+		}
+	}
+
+	public static interface Visitor {
+
+		void visit(Entity entity);
+
+	}
+	
 	@Override
 	public int hashCode() {
 		Integer id = getId();

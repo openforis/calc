@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.jooq.Configuration;
 import org.jooq.Record2;
 import org.jooq.Result;
@@ -111,14 +112,28 @@ public class VariableDao extends org.openforis.calc.persistence.jooq.tables.daos
 	public void save( Variable<?>... variables ) {
 		if( variables != null ) {
 			
-			for (Variable<?> variable : variables) {
+			for (int i = 0; i < variables.length; i++) {
+				Variable<?> variable = variables[i];
+				// set entityId
+				Entity entity = variable.getEntity();
+				if( entity == null ){
+					throw new IllegalStateException( "Found detached variable" );
+				}
+				variable.setEntityId( entity.getId() );
+
+				// set sortOrder
+				variable.setSortOrder( i + 1 );
+				
+				// copy properties into VariableBase object
 				VariableBase base = new VariableBase();
 				try {
-					BeanUtils.copyProperties( base , variable );
+					PropertyUtils.copyProperties( base , variable );
 				} catch (Exception e) {
 					// it should never happens
 					throw new IllegalStateException( "Unable to load variables" , e );
 				}
+				
+				// insert or update variable
 				if( base.getId() == null ) {
 					
 					Long nextval = psql.nextval( Sequences.VARIABLE_ID_SEQ );
