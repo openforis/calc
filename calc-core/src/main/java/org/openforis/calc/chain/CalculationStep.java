@@ -3,12 +3,15 @@ package org.openforis.calc.chain;
 import java.util.Set;
 
 import org.openforis.calc.engine.ParameterHashMap;
+import org.openforis.calc.engine.ParameterMap;
+import org.openforis.calc.json.ParameterMapJsonSerializer;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.persistence.jooq.tables.pojos.CalculationStepBase;
 import org.openforis.calc.r.RScript;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * A single user-defined step in a {@link ProcessingChain}
@@ -44,13 +47,18 @@ public class CalculationStep extends CalculationStepBase {
 	}
 
 	public Variable<?> getOutputVariable() {
-		return outputVariable;
+		return this.outputVariable;
 	}
 
 	public void setOutputVariable(Variable<?> outputVariable) {
 		this.outputVariable = outputVariable;
+		setOutputVariableId(outputVariable == null ? null: outputVariable.getId());
 	}
-
+	
+	public Integer getOutputEntityId() {
+		return outputVariable == null ? null: outputVariable.getEntityId();
+	}
+	
 	public void setProcessingChain(ProcessingChain chain) {
 		this.processingChain = chain;
 		this.setChainId( chain == null ? null: chain.getId() );
@@ -83,4 +91,11 @@ public class CalculationStep extends CalculationStepBase {
 		variables.add(getOutputVariable().getName());
 		return variables;
 	}
+	
+	@Override
+	@JsonSerialize(using = ParameterMapJsonSerializer.class)
+	public ParameterMap getParameters() {
+		return super.getParameters();
+	}
+	
 }

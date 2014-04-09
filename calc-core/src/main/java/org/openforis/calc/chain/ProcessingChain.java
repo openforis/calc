@@ -44,11 +44,6 @@ public class ProcessingChain extends ProcessingChainBase {
 		setWorkspaceId( workspace.getId() );
 	}
 	
-	public void addCalculationStep( CalculationStep step ) {
-		step.setProcessingChain( this );
-		steps.add( step );
-	}
-	
 	public CalculationStep getCalculationStep( int stepId ){
 		CalculationStep step = null;
 		
@@ -62,9 +57,43 @@ public class ProcessingChain extends ProcessingChainBase {
 		return step;
 	}
 	
-	public void shiftStep(CalculationStep step, int newIndex) {
-		steps.set(newIndex, step);
-		//set step no based on position in calculation step
+	public void addCalculationStep( CalculationStep step ) {
+		step.setProcessingChain( this );
+		steps.add( step );
+	}
+	
+	/**
+	 * Removes the specified calculation step and updates the other steps stepNo
+	 * 
+	 * @param step
+	 */
+	public void removeCalculationStep(CalculationStep step) {
+		steps.remove(step);
+		updateStepNumbers();
+	}
+	
+	/**
+	 * Moves a step into the specified stepNo and updates the other steps stepNo so that it will be consistent.
+	 * 
+	 * @param step
+	 * @param stepNo
+	 */
+	public void shiftStep(CalculationStep step, int stepNo) {
+		int oldIndex = step.getStepNo() - 1;
+		steps.remove(oldIndex);
+		int newIndex = stepNo - 1;
+		if ( newIndex == steps.size() ) {
+			// move step at the end
+			steps.add(step);
+		} else {
+			// move step in the middle
+			steps.add(newIndex, step);
+		}
+		updateStepNumbers();
+	}
+
+	protected void updateStepNumbers() {
+		//set step number based on the position in this chain
 		int newStepNo = 1;
 		for ( CalculationStep calculationStep : steps ) {
 			calculationStep.setStepNo(newStepNo ++);

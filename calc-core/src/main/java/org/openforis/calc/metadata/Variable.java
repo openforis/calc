@@ -57,6 +57,11 @@ public abstract class Variable<T> extends VariableBase {
 		return degenerateDimension!=null && degenerateDimension;
 	}
 	
+	public boolean isDisaggregate() {
+		Boolean disaggregate = getDisaggregate();
+		return disaggregate != null && disaggregate;
+	}
+	
 	@JsonIgnore
 	public boolean isInput() {
 		return getInputValueColumn() != null;

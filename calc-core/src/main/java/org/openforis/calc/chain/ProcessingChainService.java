@@ -1,7 +1,5 @@
 package org.openforis.calc.chain;
 
-import java.util.List;
-
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.QuantitativeVariable;
@@ -76,18 +74,18 @@ public class ProcessingChainService {
 	 */
 	@Transactional
 	public Integer deleteCalculationStep(CalculationStep step) {
-		Integer deletedVariable = null;
-		QuantitativeVariable outputVariable = (QuantitativeVariable) step.getOutputVariable();
-		calculationStepDao.delete(step);
 		ProcessingChain processingChain = step.getProcessingChain();
-		List<CalculationStep> steps = processingChain.getCalculationSteps();
-		for (CalculationStep calculationStep : steps) {
-			Integer stepNo = calculationStep.getStepNo();
-			if ( stepNo > step.getStepNo() ) {
-				calculationStep.setStepNo(stepNo - 1);
-				calculationStepDao.update(calculationStep);
-			}
-		}
+		QuantitativeVariable outputVariable = (QuantitativeVariable) step.getOutputVariable();
+		
+		Integer deletedVariable = null;
+		
+		// remove step from processing chain
+		processingChain.removeCalculationStep(step);
+		calculationStepDao.delete(step);
+		
+		// update steps number in db
+		saveCalculationSteps(processingChain);
+		
 		if ( outputVariable.isUserDefined() ) {
 			Workspace ws = processingChain.getWorkspace();
 			if ( ws.getCalculationStepsByVariable(outputVariable.getId()).isEmpty() ) {
@@ -99,9 +97,14 @@ public class ProcessingChainService {
 	}
 	
 	@Transactional
-	public void shiftCalculationStep(CalculationStep step, int index) {
+	public void shiftCalculationStep(CalculationStep step, int stepNo) {
 		ProcessingChain processingChain = step.getProcessingChain();
-		processingChain.shiftStep(step, index);
+		processingChain.shiftStep(step, stepNo);
+		
+		saveCalculationSteps(processingChain);
+	}
+
+	protected void saveCalculationSteps(ProcessingChain processingChain) {
 		for (CalculationStep calculationStep : processingChain.getCalculationSteps()) {
 			calculationStepDao.update(calculationStep);
 		}

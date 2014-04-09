@@ -68,6 +68,7 @@ public class CalculationStepController {
 			step.setOperationName(CustomROperation.NAME);
 			step.setCaption(form.getCaption());
 			step.setScript(form.getScript());
+			
 			chain.addCalculationStep(step);
 
 			processingChainService.saveCalculationStep(chain, step);
