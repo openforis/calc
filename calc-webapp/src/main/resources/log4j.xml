@@ -56,10 +56,10 @@
 	</category>
 	
 	<category
-		name="org.zkoss"
+		name="liquibase"
 		additivity="false"
 	>
-		<priority value="info" />
+		<priority value="error" />
 		<appender-ref ref="of-calc" />
 	</category>
 	
