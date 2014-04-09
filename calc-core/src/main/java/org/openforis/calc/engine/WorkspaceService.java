@@ -3,8 +3,6 @@ package org.openforis.calc.engine;
 import java.io.IOException;
 import java.util.List;
 
-import javax.sql.DataSource;
-
 import org.jooq.Insert;
 import org.jooq.Record;
 import org.openforis.calc.chain.CalculationStep;
@@ -22,9 +20,9 @@ import org.openforis.calc.persistence.jooq.tables.daos.WorkspaceDao;
 import org.openforis.calc.psql.Psql;
 import org.openforis.calc.schema.DataSchema;
 import org.openforis.calc.schema.DataSchemaDao;
+import org.openforis.calc.schema.DataTable;
 import org.openforis.calc.schema.EntityDataView;
 import org.openforis.calc.schema.EntityDataViewDao;
-import org.openforis.calc.schema.InputTable;
 import org.openforis.calc.schema.ResultTable;
 import org.openforis.calc.schema.Schemas;
 import org.openforis.commons.io.csv.CsvReader;
@@ -70,14 +68,17 @@ public class WorkspaceService {
 	@Autowired
 	private SamplingDesignDao samplingDesignDao;
 
-	@Autowired
-	private DataSource dataSource;
+//	@Autowired
+//	private DataSource dataSource;
 	
 	@Autowired
 	private AoiDao aoiDao;
 
 	@Autowired
 	private StratumDao stratumDao;
+	
+	@Autowired
+	private Psql psql;
 	
 //	private Workspace activeWorkspace;
 
@@ -87,11 +88,6 @@ public class WorkspaceService {
 	public Workspace get( int workspaceId ) {
 		return metadataManager.fetchWorkspaceById( workspaceId );
 	}
-
-//	@Transactional
-//	public Workspace fetchByName(String name) {
-//		return workspaceDao.fetchByName(name);
-//	}
 
 	public Workspace fetchByCollectSurveyUri( String uri ) {
 		return metadataManager.fetchWorkspaceByCollectSurveyUri( uri );
@@ -210,7 +206,7 @@ public class WorkspaceService {
 					e.printStackTrace();
 				}
 			} else {
-				new Psql(dataSource)
+				psql
 					.alterTable(resultTable)
 					.addColumn( resultTable.getQuantityField(variable) )
 					.execute();
@@ -303,36 +299,47 @@ public class WorkspaceService {
 		List<Entity> entities = ws.getEntities();
 		for (Entity entity : entities) {
 			
-			// if not sampling unit
-			if( ! entity.isSamplingUnit() ) {
-				// first drop the view
-				EntityDataView view = schema.getDataView(entity);
-				entityDataViewDao.drop(view);
+			EntityDataView view = schema.getDataView(entity);
+			DataTable dataTable = schema.getDataTable(entity);
+			
+			// if sampling unit recreates the weight column
+			if( entity.isSamplingUnit() ) {
+				psql
+					.alterTable(dataTable)
+					.dropColumnIfExists( dataTable.getWeightField() , true )
+					.execute();
 				
-				ResultTable resultsTable = schema.getResultTable(entity);
-				InputTable dataTable = schema.getDataTable(entity);
+				psql
+					.alterTable(dataTable)
+					.addColumn( dataTable.getWeightField() )
+					.execute();
+			}
+			// first drop the view
+			entityDataViewDao.drop(view);
+			
+			ResultTable resultTable = schema.getResultTable(entity);
+			if( resultTable != null ) {
 				// then it creates the result table
-				resetResultTable(resultsTable, dataTable);
-				
-				// last it recreates the views
-				entityDataViewDao.create(view);
+				resetResultTable(resultTable, dataTable);
 			}
 			
+			// last it recreates the view
+			entityDataViewDao.create(view);
 		}
 		
 	}
 
-	protected void resetResultTable(ResultTable resultsTable, InputTable dataTable) {
+	protected void resetResultTable(ResultTable resultsTable, DataTable dataTable) {
 		if( resultsTable != null ) {
-			new Psql(dataSource)
+			psql
 				.dropTableIfExists(resultsTable)
 				.execute();
 			
-			new Psql(dataSource)
+			psql
 				.createTable(resultsTable, resultsTable.fields())
 				.execute();
 			
-			Insert<Record> insert = new Psql(dataSource)
+			Insert<Record> insert = psql
 				.insertInto(resultsTable, resultsTable.getIdField() )
 				.select( new Psql().select(dataTable.getIdField()).from(dataTable) );
 			
@@ -503,7 +510,7 @@ public class WorkspaceService {
 		// drop result table, if there are no more output variables
 		ResultTable newResultTable = schema.getResultTable(entity);
 		if ( newResultTable == null ) {
-			new Psql(dataSource)
+			psql
 				.dropTableIfExists(originalResultsTable)
 				.execute();
 		}
@@ -547,21 +554,21 @@ public class WorkspaceService {
 		DataSchema schema = new Schemas( entity.getWorkspace() ).getDataSchema();
 		EntityDataView dataView = schema.getDataView(entity);
 		ResultTable resultsTable = schema.getResultTable(entity);
-		InputTable dataTable = schema.getDataTable(entity);
+		DataTable dataTable = schema.getDataTable(entity);
 		
 		if( resultsTable != null ){
 			//drop data view first
 			entityDataViewDao.drop(dataView);
 			
-			new Psql(dataSource)
+			psql
 				.dropTableIfExists(resultsTable)
 				.execute();
 			
-			new Psql(dataSource)
+			psql
 				.createTable(resultsTable, resultsTable.fields())
 				.execute();
 			
-			Insert<Record> insert = new Psql(dataSource)
+			Insert<Record> insert = psql
 					.insertInto(resultsTable, resultsTable.getIdField() )
 					.select(
 							new Psql()

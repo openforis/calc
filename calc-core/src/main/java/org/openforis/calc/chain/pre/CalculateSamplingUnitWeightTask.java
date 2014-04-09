@@ -3,9 +3,16 @@
  */
 package org.openforis.calc.chain.pre;
 
+import java.math.BigDecimal;
+
+import org.jooq.Condition;
+import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Select;
 import org.jooq.SelectQuery;
+import org.jooq.Table;
+import org.jooq.UpdateSetMoreStep;
+import org.jooq.impl.DynamicTable;
 import org.jooq.impl.SQLDataType;
 import org.openforis.calc.engine.CalcRTask;
 import org.openforis.calc.engine.Workspace;
@@ -20,9 +27,8 @@ import org.openforis.calc.r.RLogger;
 import org.openforis.calc.r.RScript;
 import org.openforis.calc.r.RVariable;
 import org.openforis.calc.r.SetValue;
+import org.openforis.calc.schema.DataTable;
 import org.openforis.calc.schema.EntityDataView;
-import org.openforis.calc.schema.InputTable;
-import org.openforis.calc.schema.ResultTable;
 
 /**
  * @author Mino Togna
@@ -32,7 +38,7 @@ public class CalculateSamplingUnitWeightTask extends CalcRTask {
 
 	private RLogger rLogger;
 
-	public CalculateSamplingUnitWeightTask(REnvironment rEnvironment) {
+	public CalculateSamplingUnitWeightTask( REnvironment rEnvironment ) {
 		super(rEnvironment, "Calculate sampling unit weight");
 	}
 
@@ -58,7 +64,7 @@ public class CalculateSamplingUnitWeightTask extends CalcRTask {
 		
 		addCloseConnectionScript();
 	}
-
+	
 	private void addSamplingUnitWeightTask() {
 		Workspace workspace = getWorkspace();
 		
@@ -66,15 +72,14 @@ public class CalculateSamplingUnitWeightTask extends CalcRTask {
 		String samplingUnitWeightScript = samplingDesign.getSamplingUnitWeightScript();
 		Entity samplingUnit = samplingDesign.getSamplingUnit();
 		
-		InputTable table = getInputSchema().getDataTable(samplingUnit);
+		DataTable table = getInputSchema().getDataTable(samplingUnit);
 		EntityDataView view = getInputSchema().getDataView(samplingUnit);
-		ResultTable resultTable = getInputSchema().getResultTable(samplingUnit);
-		
+
 		// add plot weight script
 		
-		RScript weightScript = new RScript().rScript(samplingUnitWeightScript, samplingUnit.getOriginalVariables());
+		RScript weightScript = new RScript().rScript( samplingUnitWeightScript, samplingUnit.getOriginalVariables() );
 		
-		RVariable dataFrame = new RScript().variable(samplingUnit.getName());
+		RVariable dataFrame = new RScript().variable( samplingUnit.getName() );
 		
 		// select data
 		SelectQuery<Record> select = new Psql().selectQuery();
@@ -83,7 +88,7 @@ public class CalculateSamplingUnitWeightTask extends CalcRTask {
 		for (String var : weightScript.getVariables() ) {
 			select.addSelect(table.field(var));
 		}
-		addScript(r().setValue(dataFrame, r().dbGetQuery(getrConnection(), select)));
+		addScript(r().setValue( dataFrame, r().dbGetQuery(getrConnection(), select)) );
 					
 		// execute weight script			
 		RVariable result = r().variable("result");
@@ -91,25 +96,55 @@ public class CalculateSamplingUnitWeightTask extends CalcRTask {
 		addScript(setValue);
 		addScript( r().checkError(result, getrConnection()) );
 		
-		// write results 
-		addScript( r().dbSendQuery(getrConnection(), new Psql().dropTableIfExists(resultTable).cascade()) );
-		addScript(r().dbWriteTable(getrConnection(), resultTable.getName(), dataFrame));
+		// write results
+		
+		// drop weight column if exists
+		addScript( r().dbSendQuery(getrConnection(), new Psql().alterTable( table ).dropColumnIfExists( table.getWeightField(),true ) ));
+		// add weight column to sammpling unit table
+		addScript( r().dbSendQuery(getrConnection(), new Psql().alterTable( table ).addColumn( table.getWeightField() ) ));
+		
+		// temporary results table
+		DynamicTable<Record> resultTable = new DynamicTable<Record>( "_tmp_weight_result" , getInputSchema().getName() );
+		Field<Long> resultTableIdField = resultTable.getLongField( table.getIdField().getName() );
+		Field<BigDecimal> resultTableWeightField = resultTable.getBigDecimalField( table.getWeightField().getName() );
+		
+		// write results to temporary table
+		addScript( r().dbRemoveTable(getrConnection(), resultTable.getName()) );
+		addScript( r().dbWriteTable(getrConnection(), resultTable.getName(), dataFrame) );
+		
 		// convert id datatype from varchar to bigint
 		AlterColumnStep alterPkey = 
 			new Psql()
-				.alterTable(resultTable)
-				.alterColumn(resultTable.getIdField())
-				.type(SQLDataType.BIGINT)
-				.using(resultTable.getIdField().getName() + "::bigint");
+				.alterTable( resultTable )
+				.alterColumn( resultTableIdField )
+				.type( SQLDataType.BIGINT )
+				.using( resultTableIdField.getName() + "::bigint" );
 
-		addScript(r().dbSendQuery(getrConnection(), alterPkey));
+		addScript(r().dbSendQuery( getrConnection(), alterPkey) );
 		
-		// drop view
+		// update plot weight column joining with temp result table
+		Table<Record> cursor = new Psql()
+			.select()
+			.from( resultTable )
+			.asTable( "r" );
+		
+		UpdateSetMoreStep<Record> update = new Psql()
+			.update( table )
+			.set( table.getWeightField() , cursor.field(resultTableWeightField) );
+		
+		Condition joinCondition = table.getIdField().eq( cursor.field(resultTableIdField) );
+		
+		addScript(r().dbSendQuery( getrConnection(), new Psql().updateWith(cursor, update, joinCondition)) );
+		
+		// drop view and recreate
 		DropViewStep dropViewIfExists = new Psql().dropViewIfExists(view);
 		addScript(r().dbSendQuery( getrConnection(), dropViewIfExists ));
 		
 		Select<?> selectView = view.getSelect(true);
 		AsStep createView = new Psql().createView(view).as(selectView);
 		addScript(r().dbSendQuery( getrConnection(), createView ));
+		
+		// remove temporary result table
+		addScript( r().dbRemoveTable(getrConnection(), resultTable.getName()) );
 	}
 }

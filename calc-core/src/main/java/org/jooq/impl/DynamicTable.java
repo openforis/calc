@@ -3,6 +3,7 @@
  */
 package org.jooq.impl;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +13,7 @@ import org.jooq.Field;
 import org.jooq.Record;
 import org.openforis.calc.metadata.SamplingDesign.ColumnJoin;
 import org.openforis.calc.metadata.SamplingDesign.TableJoin;
+import org.openforis.calc.psql.Psql;
 import org.openforis.calc.schema.DataTable;
 
 /**
@@ -67,6 +69,15 @@ public class DynamicTable<R extends Record> extends TableImpl<R> {
 		}
 		
 		return (Field<String>) field;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public Field<BigDecimal> getBigDecimalField(String name) {
+		Field<BigDecimal> field = (Field<BigDecimal>) field(name);
+		if( field == null ){
+			field = addField(name, Psql.DOUBLE_PRECISION);
+		}
+		return field;
 	}
 	
 	public Field<Long> getIdField(){

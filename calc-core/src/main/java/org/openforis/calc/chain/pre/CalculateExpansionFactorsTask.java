@@ -52,8 +52,8 @@ public final class CalculateExpansionFactorsTask extends Task {
 
 		// only one for now
 		AoiHierarchy hierarchy = workspace.getAoiHierarchies().get(0);
-		for (AoiLevel aoiLevel : hierarchy.getLevels()) {
-			ExpansionFactorTable expf = schema.getExpansionFactorTable(aoiLevel);
+		for ( AoiLevel aoiLevel : hierarchy.getLevels() ) {
+			ExpansionFactorTable expf = schema.getExpansionFactorTable( aoiLevel );
 
 			if (samplingDesign.getTwoPhases()) {
 				// create expf table
@@ -154,7 +154,7 @@ public final class CalculateExpansionFactorsTask extends Task {
 		
 		// add weight column
 		psql()
-			.alterTable(expf)
+			.alterTable( expf )
 			.addColumn( expf.WEIGHT )
 			.execute();
 		

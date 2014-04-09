@@ -14,7 +14,6 @@ import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceLockedException;
 import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.Entity;
-import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.SamplingDesign;
 import org.openforis.calc.metadata.SamplingDesignManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,9 +35,6 @@ public class InventorySettingsController {
 
 	@Autowired
 	private WorkspaceService workspaceService;
-	//
-	// @Autowired
-	// private AoiManager aoiManager;
 
 	@Autowired
 	private SamplingDesignManager samplingDesignManager;
@@ -55,16 +51,16 @@ public class InventorySettingsController {
 		samplingDesignManager.delete( workspace );
 
 		SamplingDesign samplingDesign = parseSamplingDesignFromJsonString(workspace, samplingDesignParam);
-		if (samplingDesign != null) {
+		if ( samplingDesign != null ) {
 			
-			Entity samplingUnit = samplingDesign.getSamplingUnit();
+//			Entity samplingUnit = samplingDesign.getSamplingUnit();
 			// add weight variable to sampling unit if it doesnt exist
-			String weightVariable = samplingDesign.getWeightVariable();
-			QuantitativeVariable weightVar = samplingUnit.getOutputVariable( weightVariable );
-			if( weightVar == null ){
-				workspaceService.addOutputVariable( samplingUnit, weightVariable );
-				workspaceService.resetResultTable(samplingUnit);
-			}
+//			String weightVariable = samplingDesign.getWeightVariable();
+//			QuantitativeVariable weightVar = samplingUnit.getOutputVariable( weightVariable );
+//			if( weightVar == null ){
+//				workspaceService.addOutputVariable( samplingUnit, weightVariable );
+//				workspaceService.resetResultTable( samplingUnit );
+//			}
 			
 			samplingDesignManager.insert( workspace ,  samplingDesign );
 //			workspace.setSamplingDesign(samplingDesign);
@@ -72,7 +68,7 @@ public class InventorySettingsController {
 		}
 
 		// execute job
-		Job job = taskManager.createPreProcessingJob(workspace);
+		Job job = taskManager.createPreProcessingJob( workspace );
 		taskManager.startJob(job);
 		response.addField("job", job);
 		

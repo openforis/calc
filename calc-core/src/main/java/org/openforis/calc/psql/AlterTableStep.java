@@ -41,10 +41,18 @@ public class AlterTableStep extends ExecutablePsqlPart {
 		return dropColumn(field, false);
 	}
 
-	public DropColumnStep dropColumn(Field<?> field, boolean cascade) {
-		return new DropColumnStep(field, cascade);
+	public DropColumnStep dropColumn(Field<?> field , boolean cascade) {
+		return dropColumnIfExists( field, cascade );
 	}
 
+	public DropColumnStep dropColumnIfExists(Field<?> field , boolean cascade ) {
+		return new DropColumnStep(field, cascade , true);
+	}
+	
+	public DropColumnStep dropColumnIfExists(Field<?> field) {
+		return dropColumnIfExists(field, false );
+	}
+	
 	public class AddPrimaryKeyStep extends ExecutablePsqlPart {
 		AddPrimaryKeyStep(UniqueKey<?> key) {
 			super(AlterTableStep.this);
@@ -90,13 +98,22 @@ public class AlterTableStep extends ExecutablePsqlPart {
 	
 	public class DropColumnStep extends ExecutablePsqlPart {
 		DropColumnStep(Field<?> field, boolean cascade) {
+			this( field, cascade, false );
+		}
+
+		DropColumnStep(Field<?> field, boolean cascade, boolean ifExists) {
 			super(AlterTableStep.this);
 			append("drop column ");
+			if( ifExists ){
+				append("if exists");
+				append(" ");
+			}
 			append(field.getName());
 			if (cascade) {
 				append(" ");
 				append("cascade");
 			}
+
 		}
 	}
 }

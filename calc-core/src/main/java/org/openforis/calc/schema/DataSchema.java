@@ -95,7 +95,7 @@ public class DataSchema extends RelationalSchema {
 		return workspace;
 	}
 	
-	public InputTable getDataTable(Entity entity) {
+	public DataTable getDataTable(Entity entity) {
 		return dataTables.get(entity.getId());
 	}
 	

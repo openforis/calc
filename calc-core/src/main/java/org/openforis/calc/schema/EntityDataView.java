@@ -48,7 +48,8 @@ public class EntityDataView extends DataTable {
 				this.plotAreaField = super.createField(plotArea.getName(), Psql.DOUBLE_PRECISION, this);
 			}
 		}
-
+		
+		createWeightField();
 	}
 
 	private void createQuantityFields() {
@@ -121,7 +122,7 @@ public class EntityDataView extends DataTable {
 	}
 	
 	public Select<?> getSelect(boolean joinWithResults) {
-		InputTable table = schema.getDataTable(getEntity());
+		DataTable table = schema.getDataTable(getEntity());
 		SelectQuery<Record> select = new Psql().selectQuery();
 		select.addFrom(table);
 //		select.addSelect(table.fields());
@@ -136,12 +137,17 @@ public class EntityDataView extends DataTable {
 			select.addSelect( table.getQuantityField(var) );
 		}
 		
+		if( getEntity().isSamplingUnit() ) {
+			// add weight column
+			select.addSelect( table.getWeightField() );
+		}
+		
 		// for every ancestor, add join condition and select fields
 		Entity currentEntity = getEntity();
 		while (currentEntity.getParent() != null) {
-			InputTable currentTable = schema.getDataTable(currentEntity);
+			DataTable currentTable = schema.getDataTable(currentEntity);
 			Entity parentEntity = currentEntity.getParent();
-			InputTable parentTable = schema.getDataTable(parentEntity);
+			DataTable parentTable = schema.getDataTable(parentEntity);
 
 			select.addSelect( parentTable.getIdField() );
 			select.addSelect( parentTable.getCategoryValueFields() );

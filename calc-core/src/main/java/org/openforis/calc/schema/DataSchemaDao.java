@@ -20,7 +20,7 @@ import org.springframework.stereotype.Repository;
 public class DataSchemaDao extends AbstractJooqDao {
 
 	public void addUserDefinedVariableColumn(QuantitativeVariable v) {
-		InputTable table = getEntityDataTable(v);
+		DataTable table = getEntityDataTable(v);
 
 		Field<BigDecimal> field = table.getQuantityField(v);
 		
@@ -31,7 +31,7 @@ public class DataSchemaDao extends AbstractJooqDao {
 	}
 
 	public void dropUserDefinedVariableColumn(QuantitativeVariable v) {
-		InputTable table = getEntityDataTable(v);
+		DataTable table = getEntityDataTable(v);
 
 		Field<BigDecimal> field = table.getQuantityField(v);
 		
@@ -41,7 +41,7 @@ public class DataSchemaDao extends AbstractJooqDao {
 			.execute();
 	}
 	
-	private InputTable getEntityDataTable(QuantitativeVariable v) {
+	private DataTable getEntityDataTable(QuantitativeVariable v) {
 		Entity entity = v.getEntity();
 		if(entity == null) {
 			entity = v.getSourceVariable().getEntity();
@@ -53,7 +53,7 @@ public class DataSchemaDao extends AbstractJooqDao {
 		DataSchema inputSchema = schemas.getDataSchema();
 		
 		
-		InputTable table = inputSchema.getDataTable(entity);
+		DataTable table = inputSchema.getDataTable(entity);
 		return table;
 	}
 }
