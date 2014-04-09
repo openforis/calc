@@ -71,6 +71,8 @@ public class FactTable extends DataTable {
 		createParentIdField();
 		createAggregateTables();
 		createClusterField();
+		
+		createWeightField();
 	}
 
 	private void createClusterField() {

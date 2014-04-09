@@ -25,6 +25,7 @@ import org.openforis.calc.schema.EntityDataView;
 import org.openforis.calc.schema.EntityDataViewDao;
 import org.openforis.calc.schema.ResultTable;
 import org.openforis.calc.schema.Schemas;
+import org.openforis.calc.schema.TableDataDao;
 import org.openforis.commons.io.csv.CsvReader;
 import org.openforis.commons.io.flat.FlatRecord;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,6 +80,9 @@ public class WorkspaceService {
 	
 	@Autowired
 	private Psql psql;
+	
+	@Autowired
+	private TableDataDao tableDataDao;
 	
 //	private Workspace activeWorkspace;
 
@@ -137,14 +141,15 @@ public class WorkspaceService {
 		return ws;
 	}
 
+	@Transactional
 	public QuantitativeVariable addOutputVariable(Entity entity, String name) {
 		
 		// get result table
 //		InputSchema schema = new Schemas( entity.getWorkspace() ).getInputSchema();
 //		ResultTable originalResultTable = schema.getResultTable(entity);
 		QuantitativeVariable variable = createQuantitativeVariable(name);
-
 		entity.addVariable(variable);
+
 //		ResultTable resultTable = schema.getResultTable(entity);
 		
 		
@@ -189,6 +194,18 @@ public class WorkspaceService {
 //			entity.addVariable(variable);
 		ResultTable resultTable = schema.getResultTable(entity);
 			
+		
+		boolean exists = tableDataDao.exists( resultTable.getSchema().getName() , resultTable.getName() );
+		if( exists ) {
+			psql
+				.alterTable(resultTable)
+				.addColumn( resultTable.getQuantityField(variable) )
+				.execute();
+			
+		} else {
+			
+			resetResultTable(resultTable, schema.getDataTable(entity) );
+		}
 			
 //			addVariableColumn(variable);
 			
@@ -199,17 +216,12 @@ public class WorkspaceService {
 //						.createTable(resultTable, resultTable.fields());
 //						createTable.execute();
 						
-						resetResultTable(resultTable, schema.getDataTable(entity) );
 						
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			} else {
-				psql
-					.alterTable(resultTable)
-					.addColumn( resultTable.getQuantityField(variable) )
-					.execute();
 			}
 			
 			
@@ -288,12 +300,35 @@ public class WorkspaceService {
 		}
 	}
 	
+	@Transactional
+	public void resetWorkspace( Workspace ws ) {
+		resetSamplingUnitWeight( ws );
+		resetCalculationResults( ws );
+	}
+	
+	@Transactional
+	private void resetSamplingUnitWeight(Workspace ws) {
+		Entity samplingUnit = ws.getSamplingUnit();
+		if( samplingUnit != null ) {
+			
+			DataSchema schema = new Schemas(ws).getDataSchema();
+			DataTable dataTable = schema.getDataTable( samplingUnit );
+			psql
+				.alterTable(dataTable)
+				.dropColumnIfExists( dataTable.getWeightField() , true )
+				.execute();
+		
+			psql
+				.alterTable(dataTable)
+				.addColumn( dataTable.getWeightField() )
+				.execute();
+		}
+	}
 	/**
 	 * Remove all results table and recreates them empty
 	 */
-	public void resetResults(Workspace ws) {
-		
-//		resetDataViews( ws );
+	@Transactional
+	public void resetCalculationResults(Workspace ws) {
 		
 		DataSchema schema = new Schemas(ws).getDataSchema();
 		List<Entity> entities = ws.getEntities();
@@ -302,18 +337,6 @@ public class WorkspaceService {
 			EntityDataView view = schema.getDataView(entity);
 			DataTable dataTable = schema.getDataTable(entity);
 			
-			// if sampling unit recreates the weight column
-			if( entity.isSamplingUnit() ) {
-				psql
-					.alterTable(dataTable)
-					.dropColumnIfExists( dataTable.getWeightField() , true )
-					.execute();
-				
-				psql
-					.alterTable(dataTable)
-					.addColumn( dataTable.getWeightField() )
-					.execute();
-			}
 			// first drop the view
 			entityDataViewDao.drop(view);
 			

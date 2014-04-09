@@ -434,7 +434,7 @@ public class Entity extends EntityBase {
 	// or if this is the sampling unit
 	public boolean isAggregable() {
 		// for now only if output variables have been defined
-		return getOutputVariables().size() > 0 ;
+		return isSamplingUnit() || getDefaultProcessingChainOutputVariables().size() > 0 ;
 //		
 //		if( this.isSamplingUnit() ) {
 //			return true;

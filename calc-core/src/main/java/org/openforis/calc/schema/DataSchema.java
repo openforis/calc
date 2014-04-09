@@ -134,7 +134,7 @@ public class DataSchema extends RelationalSchema {
 	}
 
 	public FactTable getFactTable(Entity entity) {
-		if (entity.isAggregable()) {
+		if ( entity.isAggregable() ) {
 			FactTable factTable = new FactTable(entity, this);
 			return factTable;
 		}

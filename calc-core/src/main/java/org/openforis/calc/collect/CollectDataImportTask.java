@@ -62,9 +62,7 @@ public class CollectDataImportTask extends Task {
 	protected void execute() throws Throwable {
 		importData();
 		
-		resetResults();
-		
-		createViews();
+		workspaceService.resetWorkspace( getWorkspace() );
 	}
 
 	private void importData() throws CollectRdbException, ZipException, IOException, Exception {
@@ -97,13 +95,13 @@ public class CollectDataImportTask extends Task {
 	}
 
 	
-	private void createViews() {
-		workspaceService.resetDataViews(getWorkspace());
+//	private void createViews() {
+//		workspaceService.resetDataViews(getWorkspace());
 //		incrementItemsProcessed();
-	}
+//	}
 	
-	private void resetResults() {
-		this.workspaceService.resetResults( getWorkspace() );
+//	private void resetResults() {
+//		this.workspaceService.resetCalculationResults( getWorkspace() );
 //		Workspace ws = getWorkspace();
 //		
 //		InputSchema schema = new Schemas(ws).getInputSchema();
@@ -133,7 +131,7 @@ public class CollectDataImportTask extends Task {
 //				insert.execute();
 //			}	
 //		}
-	}
+//	}
 	
 	public File getDataFile() {
 		return dataFile;
