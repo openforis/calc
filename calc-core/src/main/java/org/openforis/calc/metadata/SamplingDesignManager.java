@@ -31,6 +31,7 @@ public class SamplingDesignManager {
 			Integer id = sd.getId();
 			samplingDesignDao.deleteById( id );
 		}
+		
 		workspace.setSamplingDesign( null );
 	}
 	

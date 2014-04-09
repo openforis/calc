@@ -72,6 +72,8 @@ public abstract class DataTable extends AbstractTable {
 
 	private Map<CategoricalVariable<?>, Field<Integer>> dimensionIdFields;
 	private Field<Integer> stratumField;
+
+	private Field<BigDecimal> weightField;
 	
 	protected DataTable(Entity entity, String name, Schema schema) {
 		super(name, schema);
@@ -339,12 +341,6 @@ public abstract class DataTable extends AbstractTable {
 		return variableAggregateFields.get(variableAggregate);
 	}
 	
-	// TODO HARD-CODED: allow user-configuration of variable to use as weight! 
-	@SuppressWarnings("unchecked")
-	public Field<BigDecimal> getWeightField() {
-		return (Field<BigDecimal>) field(WEIGHT_COLUMN);
-	}
-
 	public boolean isGeoreferenced() {
 		return getEntity().isGeoreferenced();
 	}
@@ -400,6 +396,22 @@ public abstract class DataTable extends AbstractTable {
 	public Field<Integer> getStratumField() {
 		return stratumField;
 	}
+
+	protected void createWeightField() {
+		if( getEntity().isSamplingUnit() ) {
+			weightField = createField( WEIGHT_COLUMN, Psql.DOUBLE_PRECISION, this );
+		}
+	}
+
+	public Field<BigDecimal> getWeightField() {
+		return weightField;
+	}
+	
+	// TODO HARD-CODED: allow user-configuration of variable to use as weight! 
+//		@SuppressWarnings("unchecked")
+//		public Field<BigDecimal> getWeightField() {
+//			return (Field<BigDecimal>) field(WEIGHT_COLUMN);
+//		}
 }
 
 

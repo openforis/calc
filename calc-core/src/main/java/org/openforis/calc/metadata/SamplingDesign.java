@@ -75,7 +75,7 @@ public class SamplingDesign extends SamplingDesignBase {
 	public ColumnJoin getClusterColumn() {
 		return new ColumnJoin( getClusterColumnSettings() );
 	}
-	
+	 
 	@JsonSerialize(using = ParameterMapJsonSerializer.class)
 	@Override
 	public ParameterMap getAoiJoinSettings() {

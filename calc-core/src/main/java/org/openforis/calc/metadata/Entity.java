@@ -354,12 +354,12 @@ public class Entity extends EntityBase {
 				variables.add( variable );
 			}
 		}
-		if( this.isSamplingUnit() ){
-			QuantitativeVariable weightVar = getOutputVariable("weight");
-			if( weightVar != null ) {
-				variables.add( weightVar);
-			}
-		}
+//		if( this.isSamplingUnit() ){
+//			QuantitativeVariable weightVar = getOutputVariable("weight");
+//			if( weightVar != null ) {
+//				variables.add( weightVar);
+//			}
+//		}
 		
 		return variables;
 	}
