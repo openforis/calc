@@ -172,7 +172,13 @@ public class AoiManager {
 //				transactionManager.commit(transaction);	
 //				aoiDao.assignRootAoi(aoiHierarchy);
 				
-				loadByWorkspace(workspace);
+				
+				
+				loadByWorkspace( workspace );
+				// set root aoi to hierarchy
+//				AoiLevel rootLevel = aoiHierarchy.getLevels().get(0);
+//				Aoi rootAoi = rootLevel.getAois().iterator().next();
+//				aoiHierarchy.setRootAoi(rootAoi);
 				
 			}
 		} catch(Exception e){
@@ -213,9 +219,12 @@ public class AoiManager {
 			return aoi;
 		}
 	}
-
+	
 	@Transactional
 	public void loadByWorkspace( Workspace workspace ) {
+		// clear workspace aois first
+		workspace.setAoiHierarchies( null );
+		// then loads them
 		List<AoiHierarchy> list = aoiHierarchyDao.fetchByWorkspaceId( workspace.getId() );
 		for (AoiHierarchy aoiHierarchy : list) {
 			workspace.addAoiHierarchy( aoiHierarchy );
