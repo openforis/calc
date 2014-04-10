@@ -62,6 +62,11 @@ public abstract class Variable<T> extends VariableBase {
 		return disaggregate != null && disaggregate;
 	}
 	
+	public boolean isOverride() {
+		Boolean value = getOverride();
+		return value != null && value;
+	}
+	
 	@JsonIgnore
 	public boolean isInput() {
 		return getInputValueColumn() != null;

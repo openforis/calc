@@ -464,23 +464,25 @@ public class CollectMetadataImportTask extends Task {
 		}
 	}
 	
-	private void applyChangesToVariable(Variable<?> oldVariable, Variable<?> newVariable) {
-		oldVariable.setCaption(newVariable.getCaption());
-		setDefaultValue(oldVariable, newVariable);
-		oldVariable.setDescription(newVariable.getDescription());
-		oldVariable.setDimensionTable(newVariable.getDimensionTable());
+	private void applyChangesToVariable(Variable<?> to, Variable<?> from) {
+		to.setCaption(from.getCaption());
+		setDefaultValue(to, from);
+		to.setDescription(from.getDescription());
+		to.setDimensionTable(from.getDimensionTable());
 		//TODO update variable name and inputValueColumn: handle taxon attribute variables (2 variables per each attribute definition)
 //		oldVariable.setInputValueColumn(newVariable.getInputValueColumn());
 		//oldVariable.setName(newVariable.getName());
-		oldVariable.setOutputValueColumn(newVariable.getOutputValueColumn());
-		if ( newVariable instanceof MultiwayVariable ) {
-			MultiwayVariable v1 = (MultiwayVariable) oldVariable;
-			MultiwayVariable v2 = (MultiwayVariable) newVariable;
-			v1.setInputCategoryIdColumn(v2.getInputCategoryIdColumn());
-			v1.setDimensionTable(v2.getDimensionTable());
-			v1.setDimensionTableIdColumn(v2.getDimensionTableIdColumn());
-			v1.setDimensionTableCodeColumn(v2.getDimensionTableCodeColumn());
-			v1.setDimensionTableCaptionColumn(v2.getDimensionTableCaptionColumn());
+		to.setOutputValueColumn(from.getOutputValueColumn());
+		if ( from instanceof MultiwayVariable ) {
+			MultiwayVariable toVar = (MultiwayVariable) to;
+			MultiwayVariable fromVar = (MultiwayVariable) from;
+			toVar.setDegenerateDimension(fromVar.isDegenerateDimension());
+			toVar.setDisaggregate(fromVar.isDisaggregate());
+			toVar.setInputCategoryIdColumn(fromVar.getInputCategoryIdColumn());
+			toVar.setDimensionTable(fromVar.getDimensionTable());
+			toVar.setDimensionTableIdColumn(fromVar.getDimensionTableIdColumn());
+			toVar.setDimensionTableCodeColumn(fromVar.getDimensionTableCodeColumn());
+			toVar.setDimensionTableCaptionColumn(fromVar.getDimensionTableCaptionColumn());
 		}
 	}
 	
