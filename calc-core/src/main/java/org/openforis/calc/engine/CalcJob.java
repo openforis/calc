@@ -99,7 +99,7 @@ public class CalcJob extends Job {
 	 * @param dataSource
 	 */
 	protected CalcJob(Workspace workspace, DataSource dataSource, BeanFactory beanFactory, boolean aggregates) {
-		super(workspace, dataSource);
+		super();
 		setSchemas(new Schemas(workspace));
 
 		this.rLogger = new RLogger();
@@ -108,6 +108,8 @@ public class CalcJob extends Job {
 		
 		this.tempResults = false;
 		this.aggregates = aggregates;
+		
+		setWorkspace(workspace);
 	}
 
 	// calculation steps are grouped by entity for performance reason

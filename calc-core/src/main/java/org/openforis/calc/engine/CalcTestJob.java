@@ -19,6 +19,9 @@ import org.openforis.calc.r.RVariable;
 import org.openforis.calc.r.RVector;
 import org.openforis.calc.r.Try;
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -81,6 +84,8 @@ public class CalcTestJob extends CalcJob {
 		return Math.min(total, limit);
 	}
 	
+	@Component
+	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	public class TestTask extends CalcRTask {
 
 		protected TestTask() {

@@ -4,7 +4,6 @@ import java.io.File;
 
 import org.apache.commons.io.FileUtils;
 import org.openforis.calc.collect.CollectBackupIdmExtractor;
-import org.openforis.calc.engine.CollectTaskService;
 import org.openforis.calc.engine.Job;
 import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
@@ -37,9 +36,6 @@ public class CollectDataController {
 	private WorkspaceService workspaceService;
 
 	@Autowired
-	private CollectTaskService collectTaskService;
-
-	@Autowired
 	private TaskManager taskManager;
 
 	@RequestMapping(value = "/data.json", method = RequestMethod.POST, produces = "application/json")
@@ -63,7 +59,7 @@ public class CollectDataController {
 			}
 
 			// start import job
-			Job job = collectTaskService.createImportJob(ws, survey, tempFile);
+			Job job = taskManager.createCollectImportJob(ws, survey, tempFile);
 			taskManager.startJob(job);
 			
 //			workspaceService.activate(ws);

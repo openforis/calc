@@ -27,12 +27,17 @@ import org.openforis.calc.schema.EntityDataView;
 import org.openforis.calc.schema.ExpansionFactorTable;
 import org.openforis.calc.schema.DataSchema;
 import org.openforis.calc.schema.Phase1AoiTable;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 /**
  * Task responsible for calculating the expansion factor for each stratum in all AOI levels. Results will be stored in a table called _expf in the output schema
  * 
  * @author M. Togna
  */
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public final class CalculateExpansionFactorsTask extends Task {
 
 	// public static final String EXPF_TABLE = "_expf";

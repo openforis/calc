@@ -15,12 +15,17 @@ import org.openforis.collect.io.BackupFileExtractor;
 import org.openforis.collect.io.metadata.species.SpeciesBackupCSVReader;
 import org.openforis.collect.io.metadata.species.SpeciesBackupLine;
 import org.openforis.commons.io.csv.CsvReader;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 /**
  * 
  * @author S. Ricci
  *
  */
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class SpeciesImportTask extends Task {
 	
 	private File backupFile;

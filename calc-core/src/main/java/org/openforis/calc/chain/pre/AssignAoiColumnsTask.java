@@ -18,6 +18,9 @@ import org.openforis.calc.schema.DataAoiTable;
 import org.openforis.calc.schema.EntityDataView;
 import org.openforis.calc.schema.DataSchema;
 import org.openforis.calc.schema.Phase1AoiTable;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 /**
  * Task responsible for assigning AOI codes and/or ids to an output table based on a Point column. <br/>
@@ -26,6 +29,8 @@ import org.openforis.calc.schema.Phase1AoiTable;
  * @author G. Miceli
  * @author M. Togna
  */
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public final class AssignAoiColumnsTask extends Task {
 	
 	@Override

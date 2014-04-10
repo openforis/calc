@@ -1,5 +1,6 @@
 package org.openforis.calc.engine;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,15 +16,19 @@ import org.openforis.calc.chain.pre.AssignAoiColumnsTask;
 import org.openforis.calc.chain.pre.CalculateExpansionFactorsTask;
 import org.openforis.calc.chain.pre.CalculateSamplingUnitWeightTask;
 import org.openforis.calc.collect.CollectBackupImportJob;
+import org.openforis.calc.collect.CollectDataImportTask;
+import org.openforis.calc.collect.CollectInputSchemaCreatorTask;
+import org.openforis.calc.collect.CollectMetadataImportTask;
+import org.openforis.calc.collect.SpeciesImportTask;
 import org.openforis.calc.module.ModuleRegistry;
 import org.openforis.calc.module.Operation;
 import org.openforis.calc.schema.Schemas;
+import org.openforis.collect.model.CollectRecord.Step;
 import org.openforis.collect.model.CollectSurvey;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.PlatformTransactionManager;
 
 /**
  * Manages execution of tasks and related locking and threads
@@ -34,9 +39,6 @@ import org.springframework.transaction.PlatformTransactionManager;
  */
 @Component
 public class TaskManager {
-
-	@Autowired
-	private PlatformTransactionManager txManager;
 
 	@Autowired
 	private Executor taskExecutor;
@@ -115,10 +117,31 @@ public class TaskManager {
 		job.addTask( createTask(CalculateExpansionFactorsTask.class) );
 	}
 	
-	public Job createCollectImportJob(Workspace workspace, CollectSurvey survey) {
-		Job job = new CollectBackupImportJob(workspace, getDataSource(), survey);
+	public Job createCollectImportJob(Workspace workspace, CollectSurvey survey, File backupFile) {
+		CollectBackupImportJob job = createJob(CollectBackupImportJob.class);
+		job.setWorkspace(workspace);
+		job.setSurvey(survey);
 		job.setSchemas( new Schemas(workspace) );
-		autowire(job);
+		
+		CollectMetadataImportTask importTask = createTask(CollectMetadataImportTask.class);
+		job.addTask(importTask);
+
+		CollectInputSchemaCreatorTask schemaCreatorTask = createTask(CollectInputSchemaCreatorTask.class);
+		job.addTask(schemaCreatorTask);
+
+		SpeciesImportTask speciesImportTask = createTask(SpeciesImportTask.class);
+		speciesImportTask.setBackupFile(backupFile);
+		job.addTask(speciesImportTask);
+		
+		CollectDataImportTask dataImportTask = createTask(CollectDataImportTask.class);
+		dataImportTask.setDataFile(backupFile);
+		dataImportTask.setStep(Step.ANALYSIS);
+		job.addTask(dataImportTask);
+		
+		if( workspace.hasSamplingDesign() ) {
+			addPreProcessingTasks( job );
+		}
+		//autowire(job);
 		return job;
 	}
 	
@@ -136,16 +159,30 @@ public class TaskManager {
 	 * metadata (e.g. importing sampling design, variables)
 	 */
 	public Job createJob(Workspace workspace) {
-		Job job = new Job(workspace, dataSource);
+		//Job job = new Job(workspace, dataSource);
+		Job job = new Job();
+		job.setWorkspace(workspace);
 //		job.setDebugMode(isDebugMode());
 		job.setSchemas(new Schemas(workspace));
 		autowire(job);
 		return job;
 	}
+	
+	protected <J extends Job> J createJob(Class<J> type) {
+		J job = (J) beanFactory.getBean(type);
+		return job;
+	}
 
 	public <T extends Task> T createTask(Class<T> type) {
+		T task = null;
 		try {
-			T task = type.newInstance();
+			task = beanFactory.getBean(type);
+		} catch ( Exception e ) {
+			//no such bean defined
+		}
+		//try to instantiate the task using its default constructor
+		try {
+			task = type.newInstance();
 			autowire(task);
 			return task;
 		} catch (InstantiationException e) {
@@ -155,6 +192,7 @@ public class TaskManager {
 		}
 	}
 
+	@Deprecated
 	protected <T extends Object> void autowire(T object) {
 		((AutowireCapableBeanFactory) beanFactory).autowireBean(object);
 	}
@@ -188,10 +226,12 @@ public class TaskManager {
 	synchronized public void startJob(final Job job) throws WorkspaceLockedException {
 		job.init();
 		final Workspace ws = job.getWorkspace();
+
 		final SimpleLock lock = lock( ws.getId() );
 		
 		jobs.put(ws.getId(), job);
 //		jobsById.put(job.getId().toString(), job);
+		
 		taskExecutor.execute(new Runnable() {
 			@Override
 			public void run() {
@@ -234,7 +274,7 @@ public class TaskManager {
 			lock = new SimpleLock();
 			locks.put(workspaceId, lock);
 		}
-		if (!lock.tryLock()) {
+		if ( ! lock.tryLock() ) {
 			throw new WorkspaceLockedException();
 		}
 		return lock;

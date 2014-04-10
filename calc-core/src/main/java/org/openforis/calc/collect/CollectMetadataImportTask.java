@@ -47,6 +47,9 @@ import org.openforis.idm.metamodel.TextAttributeDefinition;
 import org.openforis.idm.metamodel.TimeAttributeDefinition;
 import org.openforis.idm.metamodel.xml.IdmlParseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -54,6 +57,8 @@ import org.springframework.transaction.annotation.Transactional;
  * @author M. Togna
  *
  */
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class CollectMetadataImportTask extends Task {
 
 //	private static final QName CALC_SAMPLING_UNIT_ANNOTATION = new QName("http://www.openforis.org/calc/1.0/calc", "samplingUnit");
@@ -74,7 +79,7 @@ public class CollectMetadataImportTask extends Task {
 	@Override
 	protected long countTotalItems() {
 		//total items = schema nodes count
-		CollectSurvey survey = ((CollectJob) getJob()).getSurvey();
+		CollectSurvey survey = ((CollectBackupImportJob) getJob()).getSurvey();
 		Schema schema = survey.getSchema();
 		Stack<NodeDefinition> stack = new Stack<NodeDefinition>();
 		stack.addAll(schema.getRootEntityDefinitions());
@@ -105,9 +110,10 @@ public class CollectMetadataImportTask extends Task {
 	}
 
 	private List<Entity> createEntitiesFromSchema() throws IdmlParseException {
-		CollectSurvey survey = ((CollectJob) getJob()).getSurvey();
+		CollectBackupImportJob job = (CollectBackupImportJob) getJob();
+		CollectSurvey survey = job.getSurvey();
 		
-		final RelationalSchema relationalSchema = ((CollectJob) getJob()).getInputRelationalSchema();
+		final RelationalSchema relationalSchema = job.getInputRelationalSchema();
 		
 		Schema schema = survey.getSchema();
 		
@@ -200,7 +206,7 @@ public class CollectMetadataImportTask extends Task {
 			
 			if ( ! multiwayVar.getDegenerateDimension() ) {
 				//set dimension table and input category id column
-				RelationalSchema inputRelationalSchema = ((CollectJob) getJob()).getInputRelationalSchema();
+				RelationalSchema inputRelationalSchema = ((CollectBackupImportJob) getJob()).getInputRelationalSchema();
 				
 				DataTable table = inputRelationalSchema.getDataTable(codeAttrDefn.getParentEntityDefinition());
 				
@@ -232,6 +238,7 @@ public class CollectMetadataImportTask extends Task {
 			multiwayVar.setMultipleResponse(attrDefn.isMultiple());
 			
 			SpeciesCodeTable speciesCodeTable = new SpeciesCodeTable(((TaxonAttributeDefinition) attrDefn).getTaxonomy(), getInputSchema().getName());
+			multiwayVar.setDisaggregate(true);
 			multiwayVar.setDimensionTable( speciesCodeTable.getName() );
 			multiwayVar.setDimensionTableIdColumn(speciesCodeTable.getIdField().getName());
 			multiwayVar.setDimensionTableCodeColumn(speciesCodeTable.getCodeField().getName());

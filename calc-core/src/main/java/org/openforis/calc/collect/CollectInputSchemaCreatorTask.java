@@ -17,12 +17,17 @@ import org.openforis.collect.relational.RelationalSchemaCreator;
 import org.openforis.collect.relational.liquibase.LiquibaseRelationalSchemaCreator;
 import org.openforis.collect.relational.model.RelationalSchema;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.jdbc.datasource.DataSourceUtils;
+import org.springframework.stereotype.Component;
 
 /**
  * @author S. Ricci
  *
  */
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class CollectInputSchemaCreatorTask extends Task {
 
 	@Autowired
@@ -70,7 +75,7 @@ public class CollectInputSchemaCreatorTask extends Task {
 			.execute();
 		DataSourceConnectionProvider connectionProvider = (DataSourceConnectionProvider) config.connectionProvider();
 		DataSource dataSource = connectionProvider.dataSource();
-		RelationalSchema schema = ((CollectJob) getJob()).getInputRelationalSchema();
+		RelationalSchema schema = ((CollectBackupImportJob) getJob()).getInputRelationalSchema();
 		RelationalSchemaCreator relationalSchemaCreator = new LiquibaseRelationalSchemaCreator();
 		Connection connection = DataSourceUtils.getConnection(dataSource);
 		relationalSchemaCreator.createRelationalSchema(schema, connection);

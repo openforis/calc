@@ -19,6 +19,9 @@ public class StratumDao extends org.openforis.calc.persistence.jooq.tables.daos.
 	@Autowired
 	private Psql psql;
 	
+	public StratumDao() {
+	}
+	
 	public StratumDao(Configuration configuration) {
 		super(configuration);
 	}

@@ -13,11 +13,16 @@ import org.openforis.calc.r.REnvironment;
 import org.openforis.calc.r.RScript;
 import org.openforis.calc.r.RVariable;
 import org.openforis.calc.r.SetValue;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 /**
  * @author Mino Togna
  * 
  */
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class CalculationStepRTask extends CalcRTask {
 
 	private CalculationStep calculationStep;

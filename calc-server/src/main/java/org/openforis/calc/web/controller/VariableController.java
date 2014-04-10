@@ -2,10 +2,7 @@ package org.openforis.calc.web.controller;
 
 import java.util.List;
 
-import javax.sql.DataSource;
-
 import org.json.simple.JSONObject;
-import org.openforis.calc.engine.CollectTaskService;
 import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceService;
@@ -39,15 +36,8 @@ public class VariableController {
 	private TaskManager taskManager;
 
 	@Autowired
-	private CollectTaskService collectTaskManager;
-	
-	@Autowired
 	private VariableDao variableDao;
 	
-	@Autowired
-	private DataSource dataSource; 
-
-
 	@RequestMapping(value = "/{variableId}/categories.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody 
 	Response getCategories( @PathVariable int variableId , @RequestParam(required=false) Integer max ) {

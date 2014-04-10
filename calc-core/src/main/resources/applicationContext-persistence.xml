@@ -38,6 +38,9 @@
         <property name="dataSource" ref="dataSource" />
     </bean>
     
+    <!-- enable the configuration of transactional behavior based on annotations -->
+<!--   	<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true" /> -->
+    
     <!-- Configure jOOQ's ConnectionProvider to use Spring's TransactionAwareDataSourceProxy,
          which can dynamically discover the transaction context -->
     <bean id="transactionAwareDataSource" class="org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy">
@@ -86,9 +89,6 @@
     
     
     <!-- Daos -->
-    <bean name="samplingDesignDao" class="org.openforis.calc.persistence.jooq.tables.daos.SamplingDesignDao">
-    	<constructor-arg ref="config" />
-    </bean>
     <bean name="aoiDao" class="org.openforis.calc.metadata.AoiDao">
     	<constructor-arg ref="config" />
     </bean>
@@ -105,6 +105,9 @@
     	<constructor-arg ref="config" />
     </bean>
     <bean name="processingChainDao" class="org.openforis.calc.persistence.jooq.tables.daos.ProcessingChainDao">
+    	<constructor-arg ref="config" />
+    </bean>
+    <bean name="samplingDesignDao" class="org.openforis.calc.persistence.jooq.tables.daos.SamplingDesignDao">
     	<constructor-arg ref="config" />
     </bean>
     <bean name="stratumDao" class="org.openforis.calc.metadata.StratumDao">

@@ -15,6 +15,9 @@ import org.json.simple.JSONArray;
 import org.openforis.calc.psql.Psql;
 import org.openforis.commons.io.csv.CsvReader;
 import org.openforis.commons.io.flat.FlatRecord;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -25,7 +28,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * @author Mino Togna
  * 
  */
-// @Component
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class CsvDataImportTask extends Task {
 
 	private CsvReader csvReader;

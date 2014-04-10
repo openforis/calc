@@ -14,6 +14,9 @@ import org.openforis.calc.r.RException;
 import org.openforis.calc.r.RLogger;
 import org.openforis.calc.r.RScript;
 import org.openforis.calc.r.RVariable;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -21,6 +24,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author Mino Togna
  * 
  */
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class CalcRTask extends Task {
 
 	@JsonIgnore

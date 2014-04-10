@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import javax.sql.DataSource;
 
+import org.openforis.calc.persistence.jooq.tables.daos.WorkspaceDao;
 import org.openforis.calc.r.R;
 import org.openforis.calc.r.REnvironment;
 import org.openforis.calc.r.RException;
@@ -16,6 +17,11 @@ import org.openforis.calc.schema.DataSchema;
 import org.openforis.calc.schema.RolapSchema;
 import org.openforis.calc.schema.Schemas;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -28,13 +34,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author M. Togna
  */
 public class Job extends Worker implements Iterable<Task> {
+	
 	private int currentTaskIndex;
 	private List<Task> tasks;
+	
 	@JsonIgnore
 	private Workspace workspace;
 	@JsonIgnore
 	private boolean debugMode;
 	@JsonIgnore
+	@Autowired
 	private DataSource dataSource;
 	@JsonIgnore
 	private Schemas schemas;
@@ -43,15 +52,16 @@ public class Job extends Worker implements Iterable<Task> {
 	@JsonIgnore
 	R r;
 
+	@Autowired
+	private DataSourceTransactionManager txManager;
+	
 	// @JsonIgnore
 	// protected REnvironment rEnvironment;
 
-	protected Job(Workspace workspace, DataSource dataSource) {
+	protected Job() {
 		this.currentTaskIndex = -1;
 		this.tasks = new ArrayList<Task>();
-		this.workspace = workspace;
 		this.debugMode = false;
-		this.dataSource = dataSource;
 	}
 
 	protected void setDebugMode(boolean debugMode) {
@@ -89,7 +99,22 @@ public class Job extends Worker implements Iterable<Task> {
 	@Override
 	public synchronized void run() {
 		log().debug("Starting job");
+		   
+		// transaction begin
+		DefaultTransactionDefinition definition = new DefaultTransactionDefinition();
+		definition.setName("txName");
+		definition.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+		TransactionStatus transaction = txManager.getTransaction(definition);
+		
 		super.run();
+		
+		// commit or rollback transaction
+		if ( isFailed() || isAborted() ) {
+			txManager.rollback(transaction);
+		} else {
+			txManager.commit(transaction);
+		}
+		
 		log().debug(String.format("Finished in %.1f sec", getDuration() / 1000f));
 	}
 
@@ -209,4 +234,36 @@ public class Job extends Worker implements Iterable<Task> {
 		}
 	}
 
+	public static void main(String[] args) {
+		ClassPathXmlApplicationContext context = null;
+		try {
+			context = new ClassPathXmlApplicationContext("applicationContext.xml", "applicationContext-persistence.xml", "applicationContext-config.xml");
+			
+			DataSourceTransactionManager txManager = context.getBean(DataSourceTransactionManager.class);
+			
+			// transaction begin
+			DefaultTransactionDefinition definition = new DefaultTransactionDefinition();
+			definition.setName("txName");
+			definition.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+			TransactionStatus transaction = txManager.getTransaction(definition);
+	
+			WorkspaceDao dao = context.getBean(WorkspaceDao.class);
+			Workspace ws = new Workspace();
+			ws.setId(100);
+			ws.setName("test");
+			ws.setCaption("test");
+			ws.setInputSchema("test");
+			ws.setActive(false);
+			dao.insert(ws);
+			
+			// commit or rollback transaction
+			txManager.rollback(transaction);
+//			txManager.commit(transaction);
+		} finally {
+			if ( context != null ) {
+				context.close();
+			}
+		}
+	}
+	
 }

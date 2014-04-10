@@ -33,6 +33,9 @@ public class VariableDao extends org.openforis.calc.persistence.jooq.tables.daos
 	@Autowired
 	private Psql psql;
 
+	public VariableDao() {
+	}
+	
 	public VariableDao(Configuration configuration) {
 		super(configuration);
 	}

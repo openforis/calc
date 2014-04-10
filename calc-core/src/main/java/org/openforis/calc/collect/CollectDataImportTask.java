@@ -20,11 +20,16 @@ import org.openforis.collect.relational.CollectRdbException;
 import org.openforis.collect.relational.DatabaseExporter;
 import org.openforis.collect.relational.model.RelationalSchema;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 /**
  * @author S. Ricci
  *
  */
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class CollectDataImportTask extends Task {
 
 	private Step step;
@@ -44,7 +49,7 @@ public class CollectDataImportTask extends Task {
 	@Override
 	protected long countTotalItems() {
 		long totalRecords = 0;
-		CollectSurvey survey = ((CollectJob) getJob()).getSurvey();
+		CollectSurvey survey = ((CollectBackupImportJob) getJob()).getSurvey();
 		BackupDataExtractor recordExtractor = null;
 		try {
 			recordExtractor = new BackupDataExtractor(survey, dataFile, step);
@@ -66,13 +71,13 @@ public class CollectDataImportTask extends Task {
 	}
 
 	private void importData() throws CollectRdbException, ZipException, IOException, Exception {
-		RelationalSchema targetSchema = ((CollectJob) getJob()).getInputRelationalSchema();
+		RelationalSchema targetSchema = ((CollectBackupImportJob) getJob()).getInputRelationalSchema();
 		
 		DatabaseExporter databaseExporter = new CollectDatabaseExporter(config);
 		databaseExporter.insertReferenceData(targetSchema);
 		
 		int recordId = 1;
-		CollectSurvey survey = ((CollectJob) getJob()).getSurvey();
+		CollectSurvey survey = ((CollectBackupImportJob) getJob()).getSurvey();
 		BackupDataExtractor recordExtractor = null;
 		try {
 			recordExtractor = new BackupDataExtractor(survey, dataFile, step);

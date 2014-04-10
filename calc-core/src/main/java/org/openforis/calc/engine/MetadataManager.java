@@ -15,6 +15,7 @@ import org.openforis.calc.metadata.AoiManager;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.SamplingDesign;
 import org.openforis.calc.metadata.Stratum;
+import org.openforis.calc.metadata.StratumDao;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.VariableDao;
 import org.openforis.calc.persistence.jooq.Sequences;
@@ -23,7 +24,6 @@ import org.openforis.calc.persistence.jooq.tables.daos.CalculationStepDao;
 import org.openforis.calc.persistence.jooq.tables.daos.EntityDao;
 import org.openforis.calc.persistence.jooq.tables.daos.ProcessingChainDao;
 import org.openforis.calc.persistence.jooq.tables.daos.SamplingDesignDao;
-import org.openforis.calc.persistence.jooq.tables.daos.StratumDao;
 import org.openforis.calc.persistence.jooq.tables.daos.WorkspaceDao;
 import org.openforis.calc.psql.Psql;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,12 +50,14 @@ public class MetadataManager {
 	private ProcessingChainDao processingChainDao;
 	
 	@Autowired
-	private CalculationStepDao calculationStepDao; 
+	private CalculationStepDao calculationStepDao;
 	
 	@Autowired
-	private EntityDao entityDao; 
+	private EntityDao entityDao;
+	
 	@Autowired
 	private VariableDao variableDao;
+	
 	@Autowired
 	private SamplingDesignDao samplingDesignDao;
 	

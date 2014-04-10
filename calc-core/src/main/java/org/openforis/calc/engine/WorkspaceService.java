@@ -70,9 +70,6 @@ public class WorkspaceService {
 	@Autowired
 	private SamplingDesignDao samplingDesignDao;
 
-//	@Autowired
-//	private DataSource dataSource;
-	
 	@Autowired
 	private AoiDao aoiDao;
 

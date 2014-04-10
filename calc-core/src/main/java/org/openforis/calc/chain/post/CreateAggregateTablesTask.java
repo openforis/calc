@@ -28,12 +28,17 @@ import org.openforis.calc.schema.DataSchema;
 import org.openforis.calc.schema.FactTable;
 import org.openforis.calc.schema.SamplingUnitAggregateTable;
 import org.openforis.calc.schema.Schemas;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 /**
  * Creates and populates aggregate tables for sampling unit entities and descendants. One for each AOI level (at AOI/stratum level) is created.
  * 
  * @author M. Togna
  */
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public final class CreateAggregateTablesTask extends Task {
 	
 //	private Entity entity;

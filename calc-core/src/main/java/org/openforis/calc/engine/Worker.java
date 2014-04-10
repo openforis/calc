@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author G. Miceli
  * 
  */
-public abstract class Worker {
+public abstract class Worker implements Runnable {
 
 	private Status status;
 	private UUID id;
@@ -64,6 +64,7 @@ public abstract class Worker {
 		return getClass().getSimpleName();
 	}
 
+	@Override
 	public synchronized void run() {
 		if ( !isPending() ) {
 			throw new IllegalStateException("Already run");

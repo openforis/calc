@@ -19,6 +19,9 @@ public class AoiDao extends org.openforis.calc.persistence.jooq.tables.daos.AoiD
 	@Autowired
 	private Psql psql;
 	
+	public AoiDao() {
+	}
+	
 	public AoiDao(Configuration configuration) {
 		super(configuration);
 	}

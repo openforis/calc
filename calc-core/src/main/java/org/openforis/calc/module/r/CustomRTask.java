@@ -5,6 +5,9 @@ import org.openforis.calc.r.R;
 import org.openforis.calc.r.REnvironment;
 import org.openforis.calc.r.RException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 /**
  * Runs a user-defined R statement or script.
@@ -12,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author G. Miceli
  * @author M. Togna
  */
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public final class CustomRTask extends CalculationStepTask {
 
 	@Autowired
