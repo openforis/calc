@@ -40,7 +40,7 @@ public class TableDataDao extends AbstractJooqDao {
 				.from(dbTable)
 				.where( "t.table_name = '" + table + "' and t.table_schema = '" + schema + "'" )
 				.fetchOne(0, Long.class);
-		return count >= 0;
+		return count > 0;
 	}
 	
 	public long count(String schema, String table){

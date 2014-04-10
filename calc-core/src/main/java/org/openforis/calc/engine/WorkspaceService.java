@@ -17,6 +17,7 @@ import org.openforis.calc.metadata.VariableDao;
 import org.openforis.calc.persistence.jooq.tables.daos.EntityDao;
 import org.openforis.calc.persistence.jooq.tables.daos.SamplingDesignDao;
 import org.openforis.calc.persistence.jooq.tables.daos.WorkspaceDao;
+import org.openforis.calc.psql.CreateTableWithFieldsStep;
 import org.openforis.calc.psql.Psql;
 import org.openforis.calc.schema.DataSchema;
 import org.openforis.calc.schema.DataSchemaDao;
@@ -142,25 +143,32 @@ public class WorkspaceService {
 	}
 
 	@Transactional
-	public QuantitativeVariable addOutputVariable(Entity entity, String name) {
+	public QuantitativeVariable addOutputVariable( Entity entity, String name ) {
 		
-		// get result table
-//		InputSchema schema = new Schemas( entity.getWorkspace() ).getInputSchema();
-//		ResultTable originalResultTable = schema.getResultTable(entity);
+		// add variable to entity and update entity view
 		QuantitativeVariable variable = createQuantitativeVariable(name);
 		entity.addVariable(variable);
 
-//		ResultTable resultTable = schema.getResultTable(entity);
+		variableDao.save( variable );
 		
+		// get result table
+		DataSchema schema = new Schemas( entity.getWorkspace() ).getDataSchema();
+		ResultTable resultTable = schema.getResultTable(entity);
 		
+		boolean exists = resultTable != null && tableDataDao.exists( resultTable.getSchema().getName() , resultTable.getName() );
+		if( exists ) {
+			psql
+				.alterTable(resultTable)
+				.addColumn( resultTable.getQuantityField(variable) )
+				.execute();
+		} else {
+			resetResultTable( entity );
+		}
 //		addVariableColumn(variable);
 		
 		// add column to results table and update entity view
 //		if( originalResultTable == null) { 
 //			try {
-////				CreateTableWithFieldsStep createTable = new Psql(dataSource)
-////					.createTable(resultTable, resultTable.fields());
-////					createTable.execute();
 //					
 //					resetResultTable(resultTable, schema.getDataTable(entity) );
 //					
@@ -176,12 +184,12 @@ public class WorkspaceService {
 //		}
 //		
 		
-		variableDao.save( variable );
 		updateEntityView( variable );
-
+		
 		return variable;
 	}
 
+	@Deprecated
 	public void updateResultTable( CalculationStep calculationStep ){
 		QuantitativeVariable variable = (QuantitativeVariable) calculationStep.getOutputVariable();
 		Entity entity = variable.getEntity();
@@ -237,6 +245,9 @@ public class WorkspaceService {
 		variable.setInputValueColumn(name);
 		variable.setOutputValueColumn(name);
 		variable.setScale(Scale.RATIO);
+		variable.setOverride( true );
+		variable.setDegenerateDimension(false);
+		variable.setDisaggregate(false);
 		return variable;
 	}
 
@@ -329,29 +340,46 @@ public class WorkspaceService {
 	 */
 	@Transactional
 	public void resetCalculationResults(Workspace ws) {
-		
-		DataSchema schema = new Schemas(ws).getDataSchema();
 		List<Entity> entities = ws.getEntities();
 		for (Entity entity : entities) {
-			
-			EntityDataView view = schema.getDataView(entity);
-			DataTable dataTable = schema.getDataTable(entity);
-			
-			// first drop the view
-			entityDataViewDao.drop(view);
-			
-			ResultTable resultTable = schema.getResultTable(entity);
-			if( resultTable != null ) {
-				// then it creates the result table
-				resetResultTable(resultTable, dataTable);
-			}
-			
-			// last it recreates the view
-			entityDataViewDao.create(view);
+			resetResultTable( entity );
 		}
-		
 	}
-
+	
+	@Transactional
+	private void resetResultTable( Entity entity ) {
+		DataSchema schema = new Schemas( entity.getWorkspace() ).getDataSchema();
+		EntityDataView dataView = schema.getDataView(entity);
+		ResultTable resultsTable = schema.getResultTable(entity);
+		DataTable dataTable = schema.getDataTable(entity);
+		
+		entityDataViewDao.drop( dataView );
+		
+		if( resultsTable != null ) {
+			//drop data view first
+			
+			psql
+				.dropTableIfExists(resultsTable)
+				.execute();
+			
+			psql
+				.createTable(resultsTable, resultsTable.fields())
+				.execute();
+			
+			Insert<Record> insert = psql
+					.insertInto(resultsTable, resultsTable.getIdField() )
+					.select(
+							new Psql()
+							.select( dataTable.getIdField() )
+							.from(dataTable)
+					);
+			insert.execute();
+			
+		}
+		entityDataViewDao.createOrUpdateView( entity );
+	}
+	
+	@Deprecated
 	protected void resetResultTable(ResultTable resultsTable, DataTable dataTable) {
 		if( resultsTable != null ) {
 			psql
@@ -514,32 +542,32 @@ public class WorkspaceService {
 		Entity entity = getEntity(variable);
 		
 		DataSchema schema = new Schemas(entity.getWorkspace()).getDataSchema();
-		ResultTable originalResultsTable = schema.getResultTable(entity);
+		ResultTable resultTable = schema.getResultTable(entity);
 		EntityDataView view = schema.getDataView(entity);
 
 		// drop entity data view
-		entityDataViewDao.drop(view);
+		entityDataViewDao.drop( view );
 		
 		// drop column from results table
-//		new Psql(dataSource)
-//			.alterTable(originalResultsTable)
-//			.dropColumn( originalResultsTable.getQuantityField(variable) )
-//			.execute();
+		psql
+			.alterTable( resultTable )
+			.dropColumn( resultTable.getQuantityField(variable) )
+			.execute();
 		
 		// delete variable
-		entity.removeVariable(variable);
-		variableDao.delete(variable);
+		entity.removeVariable( variable );
+		variableDao.delete( variable );
 		
 		// drop result table, if there are no more output variables
-		ResultTable newResultTable = schema.getResultTable(entity);
-		if ( newResultTable == null ) {
+		resultTable = schema.getResultTable( entity );
+		if ( resultTable == null ) {
 			psql
-				.dropTableIfExists(originalResultsTable)
+				.dropTableIfExists( resultTable )
 				.execute();
 		}
 		
 //		if ( updateEntityView ) {
-			updateEntityView(variable);
+		updateEntityView(variable);
 //		}
 	}
 	
@@ -573,37 +601,6 @@ public class WorkspaceService {
 		
 	}
 
-	public void resetResultTable(Entity entity){
-		DataSchema schema = new Schemas( entity.getWorkspace() ).getDataSchema();
-		EntityDataView dataView = schema.getDataView(entity);
-		ResultTable resultsTable = schema.getResultTable(entity);
-		DataTable dataTable = schema.getDataTable(entity);
-		
-		if( resultsTable != null ){
-			//drop data view first
-			entityDataViewDao.drop(dataView);
-			
-			psql
-				.dropTableIfExists(resultsTable)
-				.execute();
-			
-			psql
-				.createTable(resultsTable, resultsTable.fields())
-				.execute();
-			
-			Insert<Record> insert = psql
-					.insertInto(resultsTable, resultsTable.getIdField() )
-					.select(
-							new Psql()
-							.select( dataTable.getIdField() )
-							.from(dataTable)
-					);
-			insert.execute();
-			
-			entityDataViewDao.createOrUpdateView(entity);
-		}
-	}
-	
 	private void setActiveWorkspace(Workspace activeWorkspace) {
 //		this.activeWorkspace = activeWorkspace;
 	}

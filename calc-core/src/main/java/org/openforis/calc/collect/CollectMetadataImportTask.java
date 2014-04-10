@@ -476,8 +476,8 @@ public class CollectMetadataImportTask extends Task {
 		if ( from instanceof MultiwayVariable ) {
 			MultiwayVariable toVar = (MultiwayVariable) to;
 			MultiwayVariable fromVar = (MultiwayVariable) from;
-			toVar.setDegenerateDimension(fromVar.isDegenerateDimension());
-			toVar.setDisaggregate(fromVar.isDisaggregate());
+			toVar.setDegenerateDimension(fromVar.getDegenerateDimension());
+			toVar.setDisaggregate(fromVar.getDisaggregate());
 			toVar.setInputCategoryIdColumn(fromVar.getInputCategoryIdColumn());
 			toVar.setDimensionTable(fromVar.getDimensionTable());
 			toVar.setDimensionTableIdColumn(fromVar.getDimensionTableIdColumn());

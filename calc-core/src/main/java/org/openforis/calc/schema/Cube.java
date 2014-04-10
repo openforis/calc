@@ -83,7 +83,7 @@ public class Cube {
 	}
 
 	private void createDimensionUsages() {
-		this.dimensionUsages = new HashMap<Dimension, Field<Integer>>();
+ 		this.dimensionUsages = new HashMap<Dimension, Field<Integer>>();
 
 		Map<CategoricalVariable<?>, CategoryDimension> dimensionsMap = rolapSchema.getSharedDimensionsMap();
 		for ( CategoricalVariable<?> var : dimensionsMap.keySet() ) {

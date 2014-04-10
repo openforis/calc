@@ -57,7 +57,7 @@ public class JobController {
 		
 		CalculationStep step = defaultProcessingChain.getCalculationStep( stepId );
 
-		workspaceService.updateResultTable( step );
+//		workspaceService.updateResultTable( step );
 		
 		CalcJob job = taskManager.createCalcJob(workspace);
 		job.addCalculationStep(step);

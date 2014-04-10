@@ -3,9 +3,11 @@
  */
 package org.openforis.calc.metadata;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.jooq.Configuration;
 import org.jooq.Record2;
@@ -13,6 +15,7 @@ import org.jooq.Result;
 import org.jooq.SelectLimitStep;
 import org.json.simple.JSONObject;
 import org.openforis.calc.engine.Workspace;
+import org.openforis.calc.metadata.Variable.Scale;
 import org.openforis.calc.persistence.jooq.Sequences;
 import org.openforis.calc.persistence.jooq.tables.pojos.VariableBase;
 import org.openforis.calc.psql.Psql;
@@ -148,6 +151,24 @@ public class VariableDao extends org.openforis.calc.persistence.jooq.tables.daos
 		
 		}
 
+	}
+	
+	public static void main(String[] args) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+		VariableBase b = new VariableBase();
+		b.setDegenerateDimension(true);
+		b.setName("a");
+		b.setScale( Scale.NOMINAL );
+		
+		MultiwayVariable v = new MultiwayVariable();
+		
+		PropertyUtils.copyProperties(v, b);
+//		BeanUtils.copyProperties(v, b);
+		
+		
+		System.out.println( v.getDegenerateDimension() );
+		
+		
+		
 	}
 	
 }

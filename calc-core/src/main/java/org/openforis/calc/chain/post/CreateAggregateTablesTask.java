@@ -124,6 +124,10 @@ public final class CreateAggregateTablesTask extends Task {
 				
 				select.addSelect( aggregateField.as(quantityField.getName() ) );
 			}
+			Field<BigDecimal> weightField = sourceTable.getWeightField();
+			if( weightField != null ){
+				select.addSelect( weightField.mul( expfTable.EXPF ).sum().as(weightField.getName()) );
+			}
 			
 			// aggregate count field (used by mondrian)
 			select.addSelect( DSL.count().as(aggTable.getAggregateFactCountField().getName()) );
@@ -217,6 +221,11 @@ public final class CreateAggregateTablesTask extends Task {
 		for (QuantitativeVariable var : vars) {
 			Field<BigDecimal> fld = dataTable.getQuantityField(var);
 			select.addSelect(fld);
+		}
+		// in case of sampling unit, it adds the weight (area) measure
+		Field<BigDecimal> weightField = dataTable.getWeightField();
+		if( weightField != null ){
+			select.addSelect( weightField );
 		}
 		
 		// add plot area to select

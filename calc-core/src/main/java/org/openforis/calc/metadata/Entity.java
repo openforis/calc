@@ -286,7 +286,7 @@ public class Entity extends EntityBase {
 		return getVariables(new Predicate() {
 			@Override
 			public boolean evaluate(Object object) {
-				return ((Variable<?>) object).isOverride();
+				return ((Variable<?>) object).getOverride();
 			}
 		});
 	}
@@ -296,7 +296,7 @@ public class Entity extends EntityBase {
 		return getVariables(new Predicate() {
 			@Override
 			public boolean evaluate(Object object) {
-				return ! ((Variable<?>) object).isOverride();
+				return ! ((Variable<?>) object).getOverride();
 			}
 		});
 	}

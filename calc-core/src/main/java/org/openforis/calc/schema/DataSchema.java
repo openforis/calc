@@ -105,7 +105,7 @@ public class DataSchema extends RelationalSchema {
 
 	public ResultTable getResultTable(Entity entity, boolean temporary) {
 //		/|| entity.isSamplingUnit()
-		if( entity.getDefaultProcessingChainOutputVariables().size() > 0 ) {
+		if( entity.getOutputVariables().size() > 0 ) {
 			ResultTable table = new ResultTable(entity, this, temporary);
 			return table;
 		}
@@ -219,7 +219,7 @@ public class DataSchema extends RelationalSchema {
 				for (CategoricalVariable<?> var : entity.getCategoricalVariables()) {
 					if( var instanceof MultiwayVariable ){
 						MultiwayVariable multiVar = (MultiwayVariable) var;
-						if ( ! var.isDegenerateDimension() ) {
+						if ( ! var.getDegenerateDimension() && var.getDisaggregate() ) {
 							CategoryDimensionTable table = new CategoryDimensionTable( this, multiVar );
 							addTable(table);
 							categoryDimensionTables.put( multiVar, table );

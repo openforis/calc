@@ -39,7 +39,7 @@ public class ResultTable extends DataTable {
 	}
 	
 	private void createQuantityFields() {
-		Collection<QuantitativeVariable> quantitativeVariables = getEntity().getDefaultProcessingChainOutputVariables();
+		Collection<QuantitativeVariable> quantitativeVariables = getEntity().getOutputVariables();
 		for (QuantitativeVariable var : quantitativeVariables) {
 			createQuantityField(var, var.getOutputValueColumn());
 		}

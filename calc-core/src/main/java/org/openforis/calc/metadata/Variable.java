@@ -52,21 +52,6 @@ public abstract class Variable<T> extends VariableBase {
 //		this.scale = scale;
 //	}
 
-	public boolean isDegenerateDimension() {
-		Boolean degenerateDimension = getDegenerateDimension();
-		return degenerateDimension!=null && degenerateDimension;
-	}
-	
-	public boolean isDisaggregate() {
-		Boolean disaggregate = getDisaggregate();
-		return disaggregate != null && disaggregate;
-	}
-	
-	public boolean isOverride() {
-		Boolean value = getOverride();
-		return value != null && value;
-	}
-	
 	@JsonIgnore
 	public boolean isInput() {
 		return getInputValueColumn() != null;
