@@ -22,6 +22,7 @@
 				<!-- exclude mondrian.properties file in Saiku webapp -->
 				<exclude>**/webapps/saiku/WEB-INF/classes/mondrian.properties</exclude>
 			</excludes>
+			<directoryMode>777</directoryMode>
 			<fileMode>777</fileMode>
 		</fileSet>
 	    
@@ -32,9 +33,9 @@
 			<includes>
 				<include>**/**</include>
 			</includes>
-			<fileMode>755</fileMode>
+			<directoryMode>777</directoryMode>
+			<fileMode>777</fileMode>
 		</fileSet>
-
 	</fileSets>
 	
 	<dependencySets>
