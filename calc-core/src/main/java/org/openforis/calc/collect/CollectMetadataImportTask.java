@@ -5,10 +5,9 @@ package org.openforis.calc.collect;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
@@ -68,7 +67,7 @@ public class CollectMetadataImportTask extends Task {
 	}
 	
 	//transient variables
-	private Map<Integer, Entity> entitiesById;
+	private LinkedHashMap<Integer, Entity> entitiesByOriginalId;
 	private Set<String> variableNames;
 
 	@Override
@@ -91,7 +90,7 @@ public class CollectMetadataImportTask extends Task {
 	
 	@Override
 	protected void execute() throws Throwable {
-		entitiesById = new HashMap<Integer, Entity>();
+		entitiesByOriginalId = new LinkedHashMap<Integer, Entity>();
 		variableNames = new HashSet<String>();
 		
 		List<Entity> entities = createEntitiesFromSchema();
@@ -116,13 +115,13 @@ public class CollectMetadataImportTask extends Task {
 			public void visit(NodeDefinition definition) {
 				if ( definition.isMultiple() ) {
 					Entity entity = createEntity(definition, relationalSchema);
-					entity.setSortOrder(entitiesById.size() + 1);
-					entitiesById.put(definition.getId(), entity);
+					entity.setSortOrder(entitiesByOriginalId.size() + 1);
+					entitiesByOriginalId.put( definition.getId(), entity);
 				}
 				incrementItemsProcessed();
 			}
 		});
-		return new ArrayList<Entity>(entitiesById.values());
+		return new ArrayList<Entity>(entitiesByOriginalId.values());
 	}
 
 	private Entity createEntity(NodeDefinition nodeDefinition, RelationalSchema relationalSchema) {
@@ -339,8 +338,8 @@ public class CollectMetadataImportTask extends Task {
 		EntityDefinition parentDefn = defn.getParentEntityDefinition();
 		if( parentDefn == null ) {
 			return null;
-		} else if(parentDefn.isMultiple()){
-			return entitiesById.get( parentDefn.getId() );
+		} else if ( parentDefn.isMultiple() ) {
+			return entitiesByOriginalId.get( parentDefn.getId() );
 		} else {
 			return getParentEntity(parentDefn);
 		}
