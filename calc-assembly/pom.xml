@@ -13,6 +13,7 @@
 
 	<properties>
 		<tomcat.version>7.0.47</tomcat.version>
+		<saiku.version>2.5</saiku.version>
 		<output.directory>calc-server</output.directory>
 		<output.finalName>calc-server-${project.version}</output.finalName>
 	</properties>
@@ -34,6 +35,18 @@
 		<dependency>
 			<groupId>postgresql</groupId>
 			<artifactId>postgresql</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>meteorite.bi</groupId>
+			<artifactId>saiku-webapp</artifactId>
+			<version>${saiku.version}</version>
+			<type>war</type>
+		</dependency>
+		<dependency>
+			<groupId>meteorite.bi</groupId>
+			<artifactId>saiku-ui</artifactId>
+			<version>${saiku.version}</version>
+			<type>war</type>
 		</dependency>
 	</dependencies>
 
@@ -62,6 +75,14 @@
 											<type>zip</type>
 											<overWrite>false</overWrite>
 											<outputDirectory>${project.build.directory}/</outputDirectory>
+										</artifactItem>
+										<artifactItem>
+											<groupId>meteorite.bi</groupId>
+											<artifactId>saiku-webapp</artifactId>
+											<version>${saiku.version}</version>
+											<type>war</type>
+											<overWrite>false</overWrite>
+											<outputDirectory>${project.build.directory}/apache-tomcat-${tomcat.version}/webapps/saiku</outputDirectory>
 										</artifactItem>
 									</artifactItems>
 								</configuration>

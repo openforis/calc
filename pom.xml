@@ -38,7 +38,7 @@
 		<repository>
 			<id>openforis-releases</id>
 			<name>Open Foris Releases</name>
-			<url>http://www.openforis.org/nexus/content/groups/public/</url>
+			<url>http://www.openforis.org/nexus/content/repositories/releases/</url>
 			<releases>
 				<enabled>true</enabled>
 			</releases>
@@ -46,10 +46,15 @@
 		<repository>
 			<id>openforis-snapshots</id>
 			<name>Open Foris Snapshots</name>
-			<url>http://www.openforis.org/nexus/content/groups/public/</url>
+			<url>http://www.openforis.org/nexus/content/repositories/snapshots/</url>
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
+		</repository>
+		<repository>
+			<id>openforis-thirdparty</id>
+			<name>Open Foris 3rd Party dependencies</name>
+			<url>http://www.openforis.org/nexus/content/repositories/thirdparty/</url>
 		</repository>
 	</repositories>
 	<pluginRepositories>

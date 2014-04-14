@@ -10,6 +10,7 @@
 	<includeBaseDirectory>false</includeBaseDirectory>
 	
 	<fileSets>
+	    
 		<!-- Include files from unpacked Tomcat distribution -->
 		<fileSet>
 			<directory>${project.build.directory}/apache-tomcat-${tomcat.version}</directory>
@@ -18,30 +19,22 @@
 				<exclude>**/webapps/ROOT/**</exclude>
 				<exclude>**/webapps/docs/**</exclude>
 				<exclude>**/webapps/examples/**</exclude>
-<!-- 				<exclude>bin/*.sh</exclude> -->
+				<!-- exclude mondrian.properties file in Saiku webapp -->
+				<exclude>**/webapps/saiku/WEB-INF/classes/mondrian.properties</exclude>
 			</excludes>
 			<fileMode>777</fileMode>
 		</fileSet>
-		
-		<!-- Include tomcat files -->
+	    
+		<!-- Include custom files -->
 		<fileSet>
-			<directory>${basedir}/src/main/assembly/resources/tomcat/</directory>
-			<outputDirectory>${output.directory}/tomcat/</outputDirectory>
+			<directory>${basedir}/src/main/assembly/resources</directory>
+			<outputDirectory>${output.directory}</outputDirectory>
 			<includes>
 				<include>**/**</include>
 			</includes>
 			<fileMode>755</fileMode>
 		</fileSet>
 
-		<!-- Include startup/shutdown batch files -->
-		<fileSet>
-			<directory>${basedir}/src/main/assembly/resources</directory>
-			<outputDirectory>${output.directory}</outputDirectory>
-			<includes>
-				<include>*</include>
-			</includes>
-			<fileMode>755</fileMode>
-		</fileSet>
 	</fileSets>
 	
 	<dependencySets>
@@ -54,11 +47,19 @@
 				<include>commons-dbcp:commons-dbcp:jar</include>
 			</includes>
 		</dependencySet>
-		<!-- Add the actual Calc webapp (unpacked) -->
+		<!-- Add Calc webapp (unpacked) -->
 		<dependencySet>
 			<outputDirectory>${output.directory}/tomcat/webapps/calc</outputDirectory>
 			<includes>
 				<include>org.openforis.calc:calc-webapp</include>
+			</includes>
+			<unpack>true</unpack>
+		</dependencySet>
+		<!-- Add Saiku UI (unpacked) -->
+		<dependencySet>
+			<outputDirectory>${output.directory}/tomcat/webapps/saiku-ui</outputDirectory>
+			<includes>
+				<include>meteorite.bi:saiku-ui</include>
 			</includes>
 			<unpack>true</unpack>
 		</dependencySet>
