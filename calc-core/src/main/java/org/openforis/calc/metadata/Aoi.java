@@ -6,6 +6,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.openforis.calc.persistence.jooq.tables.pojos.AoiBase;
+import org.openforis.commons.collection.CollectionUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -61,7 +62,7 @@ public class Aoi extends AoiBase {
 	}
 
 	public Set<Aoi> getChildren() {
-		return children;
+		return CollectionUtils.unmodifiableSet( children );
 	}
 	
 	void setChildren(Collection<Aoi> children) {

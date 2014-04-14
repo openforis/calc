@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.openforis.calc.engine.Workspace;
@@ -83,17 +82,31 @@ public class AoiHierarchy extends AoiHierarchyBase {
 		return rootAoi;
 	}
 
-	public void setRootAoi(Aoi rootAoi) {
+	/**
+	 * Set the root aoi and init the levels
+	 * @param rootAoi
+	 */
+	public void setRootAoi( Aoi rootAoi ) {
 		this.rootAoi = rootAoi;
 	}
 
 	public Aoi getAoiById( int aoiId ) {
-		for( AoiLevel aoiLevel : this.getLevels() ) {
-			Set<Aoi> aois = aoiLevel.getAois();
-			for( Aoi aoi : aois ) {
-				if( aoi.getId().equals(aoiId) ) {
-					return aoi;
-				}
+		if( this.rootAoi == null ) {
+			throw new IllegalStateException( "Aoi hierarchy not initialized. Set the root aoi before invoking this method" );
+		}
+		
+		return findAoiById( rootAoi , aoiId );
+	}
+
+	private Aoi findAoiById( Aoi aoi , int aoiId ) {
+		Integer id = aoi.getId();
+		if( id.intValue() == aoiId ) {
+			return aoi;
+		}
+		for ( Aoi child : aoi.getChildren() ) {
+			Aoi a = findAoiById( child, aoiId );
+			if( a != null ) {
+				return a;
 			}
 		}
 		return null;

@@ -235,7 +235,7 @@ public class AoiManager {
 			
 			AoiLevel rootLevel = aoiLevels.get(0);
 			List<Aoi> aois = aoiDao.fetchByAoiLevelId( rootLevel.getId() );
-			if( !aois.isEmpty() ){
+			if( !aois.isEmpty() ) {
 				Aoi root = aois.get(0);
 				
 				root.setAoiLevel( rootLevel );
