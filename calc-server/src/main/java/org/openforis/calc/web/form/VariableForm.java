@@ -7,13 +7,13 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 import org.hibernate.validator.constraints.NotEmpty;
-import org.openforis.calc.web.form.validation.VariableUniquenessConstraint;
+import org.openforis.calc.web.form.validation.VariableNameConstraint;
 
 /**
  * @author S. Ricci
  *
  */
-@VariableUniquenessConstraint
+@VariableNameConstraint
 public class VariableForm {
 
 	private Integer id;
