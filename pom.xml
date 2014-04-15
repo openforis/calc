@@ -29,7 +29,20 @@
 		<geotools.version>2.7.5</geotools.version>
 		<jackson.version>2.1.0</jackson.version>
 	</properties>
-
+	
+	<distributionManagement>
+		<repository>
+			<id>openforis-releases</id>
+			<name>Open Foris Repository</name>
+			<url>http://www.openforis.org/nexus/content/repositories/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>openforis-snapshots</id>
+			<name>Open Foris Snapshots Repository</name>
+			<url>http://www.openforis.org/nexus/content/repositories/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
+	
 	<scm>
 		<connection>scm:git:git@github.com:openforis/calc.git</connection>
 		<url>scm:git:git@github.com:openforis/calc.git</url>
