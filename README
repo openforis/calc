@@ -1,37 +1,14 @@
-Compile with:
+============================================================================
+		OF Calc download link:
+http://www.openforis.org/nexus/service/local/artifact/maven/redirect?r=releases&g=org.openforis.calc&a=calc-assembly&v=LATEST&e=zip
 
-	mvn compile
-   
-Run unit tests with:
-
-	mvn package
-
-Run integration tests with:
-
-	mvn verify
-    
-
-In order to create the database (using PostgreSQL 9.2 or greater) run from command line:
-
-	psql -U postgres -f calc-core/src/main/resources/org/openforis/calc/db/init.sql
+		OF Collect download link:
+http://www.openforis.org/nexus/service/local/artifact/maven/redirect?r=releases&g=org.openforis.collect&a=collect-assembly&v=LATEST&e=zip
+============================================================================
 
 
-Add dev database settings to calc-core/src/main/resources/dev.properties.
+		
 
-Regenerate jOOQ stub classes*: 
-
-	cd calc-core
-	mvn properties:read-project-properties jooq-codegen:generate
-
-* Requires dev database settings in dev.properties.
-
-
-IMPORTANT: When making updates to the database schema, ALWAYS ADD A Liquibase 
-           MIGRATION TO calc-core/design/db/changelog.  These will be automatically run
-           when building during Maven's "process-resources" phase.           
-           See http://www.liquibase.org/quickstart.html for more details.   
-  
- 
 ============================================================================
  				R Installation guide
 ============================================================================
@@ -184,6 +161,4 @@ Windows
 			
 			<Parameter name="saiku.home" 				value="${catalina.home}/webapps/saiku" />
 		</Context>
-	
-	- If Tomcat server uses Eclipse metadata, define these parameters in the context.xml file of the relative server.
-	
+		
