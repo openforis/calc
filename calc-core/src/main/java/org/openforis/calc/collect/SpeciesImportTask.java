@@ -2,19 +2,23 @@ package org.openforis.calc.collect;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.jooq.Batch;
 import org.jooq.InsertQuery;
 import org.jooq.Record;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.psql.CreateTableStep;
+import org.openforis.calc.psql.Psql;
 import org.openforis.collect.io.BackupFileExtractor;
 import org.openforis.collect.io.metadata.species.SpeciesBackupCSVReader;
 import org.openforis.collect.io.metadata.species.SpeciesBackupLine;
 import org.openforis.commons.io.csv.CsvReader;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -27,6 +31,11 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class SpeciesImportTask extends Task {
+	
+	private static final int MAX_BATCH_SIZE = 1000;
+
+	@Autowired
+	private Psql psql;
 	
 	private File backupFile;
 	
@@ -72,18 +81,31 @@ public class SpeciesImportTask extends Task {
 				File tempFile = fileExtractor.extract(entry);
 				SpeciesBackupCSVReader reader = null;
 				try {
+					
 					reader = new SpeciesBackupCSVReader(tempFile);
 					reader.init();
-					int recordId = 1;
+					
+					int nextRecordId = 1;
+					List<InsertQuery<Record>> batchInserts = new ArrayList<InsertQuery<Record>>();
+					
 					while ( isRunning() ) {
 						SpeciesBackupLine line = reader.readNextLine();
 						if ( line != null ) {
-							insertRecord(table, recordId ++, line);
+							InsertQuery<Record> insertQuery = createInsertQuery(table, line, nextRecordId ++);
+							batchInserts.add(insertQuery);
+							
+							if ( batchInserts.size() == MAX_BATCH_SIZE ) {
+								flushBatchInserts(batchInserts);
+							}
 						}
 						incrementItemsProcessed();
 						if ( ! reader.isReady() ) {
 							break;
 						}
+					}
+					if ( ! batchInserts.isEmpty() ) {
+						//flush remaining inserts
+						flushBatchInserts(batchInserts);
 					}
 				} catch(Exception e) {
 					throw new RuntimeException(e);
@@ -96,13 +118,18 @@ public class SpeciesImportTask extends Task {
 		}
 	}
 
-	protected void insertRecord(SpeciesCodeTable table, int recordId,
-			SpeciesBackupLine line) {
-		InsertQuery<Record> insert = psql().insertQuery(table);
-		insert.addValue(table.getIdField(), recordId ++);
+	protected InsertQuery<Record> createInsertQuery(SpeciesCodeTable table, SpeciesBackupLine line, int recordId) {
+		InsertQuery<Record> insert = psql.insertQuery(table);
+		insert.addValue(table.getIdField(), recordId);
 		insert.addValue(table.getCodeField(), line.getCode());
 		insert.addValue(table.getScientificNameField(), line.getScientificName());
-		insert.execute();
+		return insert;
+	}
+	
+	private void flushBatchInserts(List<InsertQuery<Record>> inserts) {
+		Batch batch = psql.batch(inserts);
+		batch.execute();
+		inserts.clear();
 	}
 
 	protected SpeciesCodeTable createTable(String speciesListName) {

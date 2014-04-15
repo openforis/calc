@@ -24,7 +24,13 @@ public abstract class Variable<T> extends VariableBase {
 		NOMINAL, ORDINAL, BINARY, RATIO, INTERVAL, OTHER, TEXT;
 	}
 
-
+	public Variable() {
+		//default values
+		setDisaggregate(false);
+		setDegenerateDimension(false);
+		setOverride(false);
+	}
+	
 	@JsonIgnore
 	private Entity entity;
 

@@ -16,26 +16,34 @@ WorkspaceManager.prototype = (function(){
 	 * It gets loaded from the server if the instance variable is null
 	 */
 	var activeWorkspace = function(success) {
-		$this = this;
+		var $this = this;
 		if($this._activeWorkspace) {
 			success( $this._activeWorkspace );
 		} else {
-			UI.lock();
-			$.ajax({
-				url:"rest/workspace/active.json",
-				dataType:"json"
-			}).done(function(response) {
-				var workspace = response.fields.workspace;
-				$.proxy(setActiveWorkspace, $this)( workspace, success );
-				if ( ! workspace ) {
-					//TODO show metadata import page
-					success();
-				}
-				UI.unlock();
-			}).error( function() {
-				Calc.error.apply( this , arguments );
-			});
+			$.proxy(refreshActiveWorkspace, $this)( success );
 		}
+	};
+	
+	/**
+	 * Loads the active workspace from the server and stores it as instance variable.
+	 */
+	var refreshActiveWorkspace = function(success) {
+		var $this = this;
+		UI.lock();
+		$.ajax({
+			url:"rest/workspace/active.json",
+			dataType:"json"
+		}).done(function(response) {
+			var workspace = response.fields.workspace;
+			$.proxy(setActiveWorkspace, $this)( workspace, success );
+			if ( ! workspace ) {
+				//TODO show metadata import page
+				success();
+			}
+			UI.unlock();
+		}).error( function() {
+			Calc.error.apply( this , arguments );
+		});
 	};
 	
 	/**
@@ -348,6 +356,8 @@ WorkspaceManager.prototype = (function(){
 		activeWorkspaceSetPhase1PlotsTable : activeWorkspaceSetPhase1PlotsTable
 		,
 		activeWorkspaceSetSamplingDesign : activeWorkspaceSetSamplingDesign
+		,
+		refreshActiveWorkspace : refreshActiveWorkspace
 	};
 	
 })();

@@ -1,12 +1,8 @@
-<project
-	xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openforis.calc</groupId>
 	<artifactId>calc</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.0-a2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Open Foris Calc</name>
 
@@ -33,12 +29,32 @@
 		<geotools.version>2.7.5</geotools.version>
 		<jackson.version>2.1.0</jackson.version>
 	</properties>
+	
+	<distributionManagement>
+		<repository>
+			<id>openforis-releases</id>
+			<name>Open Foris Repository</name>
+			<url>http://www.openforis.org/nexus/content/repositories/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>openforis-snapshots</id>
+			<name>Open Foris Snapshots Repository</name>
+			<url>http://www.openforis.org/nexus/content/repositories/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
+	
+	<scm>
+		<connection>scm:git:git@github.com:openforis/calc.git</connection>
+		<url>scm:git:git@github.com:openforis/calc.git</url>
+		<developerConnection>scm:git:git@github.com:openforis/calc.git</developerConnection>
+		<tag>HEAD</tag>
+	</scm>
 
 	<repositories>
 		<repository>
 			<id>openforis-releases</id>
 			<name>Open Foris Releases</name>
-			<url>http://www.openforis.org/nexus/content/groups/public/</url>
+			<url>http://www.openforis.org/nexus/content/repositories/releases/</url>
 			<releases>
 				<enabled>true</enabled>
 			</releases>
@@ -46,10 +62,15 @@
 		<repository>
 			<id>openforis-snapshots</id>
 			<name>Open Foris Snapshots</name>
-			<url>http://www.openforis.org/nexus/content/groups/public/</url>
+			<url>http://www.openforis.org/nexus/content/repositories/snapshots/</url>
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
+		</repository>
+		<repository>
+			<id>openforis-thirdparty</id>
+			<name>Open Foris 3rd Party dependencies</name>
+			<url>http://www.openforis.org/nexus/content/repositories/thirdparty/</url>
 		</repository>
 	</repositories>
 	<pluginRepositories>
