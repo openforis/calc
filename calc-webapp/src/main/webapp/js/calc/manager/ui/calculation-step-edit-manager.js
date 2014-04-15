@@ -100,7 +100,11 @@ CalculationStepEditManager.prototype = (function() {
 			$this.$addVariableForm.find("[name=entityId]").val(selectedEntityId);
 			
 			$this.$addVariableModal.modal({keyboard: true, backdrop: "static"});
-	 		UI.Form.setFocus($this.$addVariableForm);
+			
+			//set focus on first field in form
+			setTimeout(function() {
+				UI.Form.setFocus($this.$addVariableForm);	
+			}, 500);
 		});
 		
 		// add variable form: on save button click, it submits the form
