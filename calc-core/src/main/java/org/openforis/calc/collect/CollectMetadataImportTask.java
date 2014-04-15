@@ -395,7 +395,7 @@ public class CollectMetadataImportTask extends Task {
 		for (Entity newEntity : newEntities) {
 			Entity oldEntity = ws.getEntityByOriginalId(newEntity.getOriginalId());
 			if ( oldEntity == null ) {
-				replaceParentEntityWithPersistedOne(newEntity);
+				addToParentEntity(newEntity);
 				ws.addEntity( newEntity );
 //				metadataManager.saveEntity(ws, newEntity);
 			}
@@ -463,17 +463,17 @@ public class CollectMetadataImportTask extends Task {
 		}
 	}
 	
-	private void applyChangesToVariable(Variable<?> to, Variable<?> from) {
-		to.setCaption(from.getCaption());
-		setDefaultValue(to, from);
-		to.setDescription(from.getDescription());
-		to.setDimensionTable(from.getDimensionTable());
+	private void applyChangesToVariable(Variable<?> dest, Variable<?> from) {
+		dest.setCaption(from.getCaption());
+		setDefaultValue(dest, from);
+		dest.setDescription(from.getDescription());
+		dest.setDimensionTable(from.getDimensionTable());
 		//TODO update variable name and inputValueColumn: handle taxon attribute variables (2 variables per each attribute definition)
 //		oldVariable.setInputValueColumn(newVariable.getInputValueColumn());
 		//oldVariable.setName(newVariable.getName());
-		to.setOutputValueColumn(from.getOutputValueColumn());
+		dest.setOutputValueColumn(from.getOutputValueColumn());
 		if ( from instanceof MultiwayVariable ) {
-			MultiwayVariable toVar = (MultiwayVariable) to;
+			MultiwayVariable toVar = (MultiwayVariable) dest;
 			MultiwayVariable fromVar = (MultiwayVariable) from;
 			toVar.setDegenerateDimension(fromVar.getDegenerateDimension());
 			toVar.setDisaggregate(fromVar.getDisaggregate());
@@ -491,15 +491,15 @@ public class CollectMetadataImportTask extends Task {
 		((Variable<T>) oldVariable).setDefaultValue((T) newVariable.getDefaultValueTemp());
 	}
 
-	private void replaceParentEntityWithPersistedOne(Entity newEntity) {
+	private void addToParentEntity(Entity newEntity) {
 		Workspace ws = newEntity.getWorkspace();
-		Entity newParent = newEntity.getParent();
-		if ( newParent != null ) {
-			Integer parentOriginalId = newParent.getOriginalId();
+		Entity parent = newEntity.getParent();
+		if ( parent != null ) {
+			Integer parentOriginalId = parent.getOriginalId();
 			if ( parentOriginalId != null ) {
 				Entity persistedParent = ws.getEntityByOriginalId(parentOriginalId);
-				if ( persistedParent != null ) {
-					newEntity.setParent(persistedParent);
+				if ( persistedParent != null && persistedParent != parent ) {
+					persistedParent.addChild(newEntity);
 				}
 			}
 		}

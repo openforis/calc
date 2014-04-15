@@ -274,7 +274,7 @@ JobStatus.prototype = (function() {
 		
 		this.job = null;
 		
-		$(window).off("resize", $.proxy(adjustSize, $this));
+		$(window).off("resize", $.proxy(adjustSize, this));
 	};
 	
 	return {

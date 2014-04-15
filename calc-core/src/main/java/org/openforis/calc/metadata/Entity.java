@@ -186,6 +186,7 @@ public class Entity extends EntityBase {
 
 	public void setParent(Entity parent) {
 		this.parent = parent;
+		setParentEntityId(parent == null ? null: parent.getId());
 	}
 	
 	@JsonIgnore	
