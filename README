@@ -12,7 +12,7 @@
 ==============================================================
 		* Calc Installation instructions
 ==============================================================
-1. Install Jdk 1.6 +  
+1. Install Jdk 1.6 +  ( http://www.oracle.com/technetwork/java/javase/downloads/index.html )
 
 1. Install postgres 9.2+ with preferably user and password ‘postgres’
 	http://www.enterprisedb.com/products-services-training/pgdownload
