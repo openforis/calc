@@ -7,6 +7,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Select;
@@ -21,12 +23,16 @@ import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.psql.Psql;
+import org.openforis.calc.r.CheckError;
 import org.openforis.calc.r.DbConnect;
 import org.openforis.calc.r.R;
 import org.openforis.calc.r.REnvironment;
 import org.openforis.calc.r.RException;
+import org.openforis.calc.r.RLogger;
+import org.openforis.calc.r.RLogger.RLoggerLine;
 import org.openforis.calc.r.RScript;
 import org.openforis.calc.r.RVariable;
+import org.openforis.calc.r.SetValue;
 import org.openforis.calc.schema.DataTable;
 import org.openforis.calc.schema.EntityAoiTable;
 import org.openforis.calc.schema.ExpansionFactorTable;
@@ -65,6 +71,8 @@ public class ErrorEstimationManager {
 	private String password;
 	@Value("${calc.jdbc.port}")
 	private int port;
+	
+	private static final Log LOG = LogFactory.getLog( ErrorEstimationManager.class );
 	
 	public synchronized 
 	List<DataRecord> estimateError( Workspace workspace , Aoi aoi , QuantitativeVariable quantity, CategoricalVariable<?> category, List<String> classes ) 
@@ -113,18 +121,23 @@ public class ErrorEstimationManager {
 		DynamicTable<?> errorTable = new DynamicTable<Record>( "_error", schema.getName() );
 		scripts.add( r().dbRemoveTable( connection, errorTable.getName() ) );
 		scripts.add( r().dbWriteTable(connection, errorTable.getName() , error) );
+		scripts.add( r().dbDisconnect(connection) );
 		
-		String script = scriptsToString( scripts );
+		String script = scriptsToString( scripts , connection );
 		
-//		try {
-//			FileUtils.writeStringToFile( new File("/home/minotogna/error.R"), script );
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		
+		RLogger logger = new RLogger();
 		REnvironment rEnvironment = r.newEnvironment();
-		rEnvironment.eval( script );
-		
+		rEnvironment.eval( script , logger );
+		if( LOG.isDebugEnabled() ) {
+			LOG.debug( "======================== Error R script" );
+			LOG.debug( script );
+			List<RLoggerLine> lines = logger.getLines();
+			for (RLoggerLine l : lines) {
+				LOG.debug( l );
+			}
+			LOG.debug( "======================== End Error R script" );
+		}
 		
 		JSONArray tableInfo = tableDataDao.info( schema.getName() , errorTable.getName() );
 		List<String> errorColumns = new ArrayList<String>();
@@ -234,12 +247,14 @@ public class ErrorEstimationManager {
 		return new RScript();
 	}
 	
-	protected String scriptsToString( List<RScript> scripts ) {
+	protected String scriptsToString( List<RScript> scripts, RVariable connection ) {
+		RVariable result = r().variable( "errorResult" );
+		SetValue setValue = r().setValue(result, r().rTry(scripts.toArray(new RScript[scripts.size()])));
+		CheckError checkError = r().checkError(result, connection);
+		
 		StringBuilder sb = new StringBuilder();
-		for ( RScript script : scripts ) {
-			String scriptString = script.toString();
-			sb.append(scriptString);
-		}
+		sb.append(setValue.toString());
+		sb.append(checkError);
 		return sb.toString();
 	}
 }

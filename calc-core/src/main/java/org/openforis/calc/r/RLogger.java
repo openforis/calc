@@ -90,7 +90,7 @@ public class RLogger {
 		return lines;
 	}
 
-	static class RLoggerLine {
+	public static class RLoggerLine {
 
 		private int oType;
 		private StringBuilder sb ;
@@ -124,6 +124,12 @@ public class RLogger {
 		@JsonInclude
 		public String getText() {
 			return this.sb.toString();
+		}
+		
+		@JsonIgnore
+		@Override
+		public String toString() {
+			return getText();
 		}
 	}
 
