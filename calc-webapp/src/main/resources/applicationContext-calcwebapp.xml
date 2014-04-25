@@ -32,9 +32,9 @@
 
 	<mvc:annotation-driven />
 
-	<context:property-placeholder location="classpath:dev.properties" />
+	<context:property-placeholder />
 
-<!-- Resolves view names to protected .jsp resources within the /WEB-INF/views directory -->
+	<!-- Resolves view names to protected .jsp resources within the /WEB-INF/views directory -->
 	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<property name="prefix" value="jsp"/>
 		<property name="suffix" value=".jsp"/>

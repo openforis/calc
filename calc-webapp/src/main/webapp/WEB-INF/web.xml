@@ -13,7 +13,7 @@
 
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
-		<param-value>classpath*:**/applicationContext*.xml</param-value>
+		<param-value>classpath*:**/applicationContext-calcwebapp.xml</param-value>
 	</context-param>
 	
 	<!-- Spring/Jersey JAX-RS Integration Servlet -->
@@ -128,22 +128,22 @@
 
 	
 	<!-- ===================== (tmp) Used for the live demo ================ -->
-	<security-constraint>
-		<web-resource-collection>
-			<web-resource-name>Open Foris Calc</web-resource-name>
-			<url-pattern>/*</url-pattern>
-		</web-resource-collection>
-		<auth-constraint>
-			<role-name>calc</role-name>
-		</auth-constraint>
+<!-- 	<security-constraint> -->
+<!-- 		<web-resource-collection> -->
+<!-- 			<web-resource-name>Open Foris Calc</web-resource-name> -->
+<!-- 			<url-pattern>/*</url-pattern> -->
+<!-- 		</web-resource-collection> -->
+<!-- 		<auth-constraint> -->
+<!-- 			<role-name>calc</role-name> -->
+<!-- 		</auth-constraint> -->
 
-		<user-data-constraint>
-			<transport-guarantee>NONE</transport-guarantee>
-		</user-data-constraint>
-	</security-constraint>
+<!-- 		<user-data-constraint> -->
+<!-- 			<transport-guarantee>NONE</transport-guarantee> -->
+<!-- 		</user-data-constraint> -->
+<!-- 	</security-constraint> -->
 
-	<login-config>
-		<auth-method>BASIC</auth-method>
-	</login-config>
+<!-- 	<login-config> -->
+<!-- 		<auth-method>BASIC</auth-method> -->
+<!-- 	</login-config> -->
 
 </web-app>
