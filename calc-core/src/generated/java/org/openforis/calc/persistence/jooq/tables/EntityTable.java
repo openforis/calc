@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class EntityTable extends org.jooq.impl.TableImpl<org.openforis.calc.persistence.jooq.tables.records.EntityRecord> {
 
-	private static final long serialVersionUID = -1497932551;
+	private static final long serialVersionUID = -1874604169;
 
 	/**
 	 * The singleton instance of <code>calc.entity</code>
@@ -94,12 +94,12 @@ public class EntityTable extends org.jooq.impl.TableImpl<org.openforis.calc.pers
 	/**
 	 * The column <code>calc.entity.sampling_unit</code>.
 	 */
-	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.EntityRecord, java.lang.Boolean> SAMPLING_UNIT = createField("sampling_unit", org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaulted(true), this, "");
+	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.EntityRecord, java.lang.Boolean> SAMPLING_UNIT = createField("sampling_unit", org.jooq.impl.SQLDataType.BOOLEAN.defaulted(true), this, "");
 
 	/**
 	 * The column <code>calc.entity.unit_of_analysis</code>.
 	 */
-	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.EntityRecord, java.lang.Boolean> UNIT_OF_ANALYSIS = createField("unit_of_analysis", org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaulted(true), this, "");
+	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.EntityRecord, java.lang.Boolean> UNIT_OF_ANALYSIS = createField("unit_of_analysis", org.jooq.impl.SQLDataType.BOOLEAN.defaulted(true), this, "");
 
 	/**
 	 * The column <code>calc.entity.cluster_variable_id</code>.

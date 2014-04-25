@@ -122,6 +122,10 @@
 									<name>org.openforis.calc.metadata.Variable.Scale</name>
 									<expression>.*\.variable\.scale</expression>
 								</forcedType>
+								<forcedType>
+									<name>org.openforis.calc.metadata.Variable.Scale</name>
+									<expression>.*\.equation_list\.parameters</expression>
+								</forcedType>
 							</forcedTypes>
 						</database>
 						

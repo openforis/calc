@@ -12,6 +12,7 @@ import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.EquationList;
 import org.openforis.calc.metadata.SamplingDesign;
 import org.openforis.calc.metadata.Stratum;
 import org.openforis.calc.metadata.Variable;
@@ -35,26 +36,15 @@ public class Workspace extends WorkspaceBase {
 	public static final String DEFAULT_CHAIN_CAPTION = "default";
 
    	private List<Entity> entities;
-	private List<Stratum> strata;
 
-//	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER)
-//	@OrderBy("name")
-//	@Fetch(FetchMode.SUBSELECT)
-//	@Cascade(CascadeType.ALL)
+   	private List<Stratum> strata;
+
 	private List<AoiHierarchy> aoiHierarchies;
 
-//	@JsonIgnore
-//	@OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER, cascade = javax.persistence.CascadeType.ALL, orphanRemoval = true)
-//	@OrderBy("id")
-//	@Fetch(FetchMode.SUBSELECT)
-//	@Cascade(CascadeType.ALL)
 	private List<ProcessingChain> processingChains;
 
+	private List<EquationList> equationLists;
 	
-	
-//	@OneToOne(mappedBy = "workspace", fetch = FetchType.EAGER)
-////	@Fetch(FetchMode.SUBSELECT)
-//	@Cascade(CascadeType.ALL)	
 	private SamplingDesign samplingDesign;
 	
 	public Workspace() {
@@ -127,6 +117,26 @@ public class Workspace extends WorkspaceBase {
 		if( samplingDesign != null ){
 			samplingDesign.setWorkspace( this );
 		}
+	}
+	
+	public List<EquationList> getEquationLists() {
+		return org.openforis.commons.collection.CollectionUtils.unmodifiableList( equationLists );
+	}
+	
+	public void setEquationLists(List<EquationList> equationLists) {
+		if( equationLists != null ){
+			for (EquationList equationList : equationLists) {
+				this.addEquationList(equationList);
+			}
+		}
+	}
+	
+	public void addEquationList( EquationList equationList ){
+		if( this.equationLists == null ){
+			this.equationLists = new ArrayList<EquationList>();
+		}
+		this.equationLists.add( equationList );
+		equationList.setWorkspace( this );
 	}
 	
 	@JsonInclude

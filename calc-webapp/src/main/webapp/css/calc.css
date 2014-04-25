@@ -255,23 +255,6 @@ button.settings:hover {
 	overflow: visible;
 	border-radius:8px;
 }
-#settings .btn-home ,
-#settings .btn-home:focus {
-	height: 7em;
-	width: 15%;
-	font-size: 1.1em;
-/* 	font-weight: 200; */
-	line-height: 2em;
-	overflow: visible;
-	border-radius: 0px;
-	background-color: #5d616e;
-	border: none;
-	letter-spacing: 0.03em;
-	color: #d0d4d9;
-}
-#settings .btn-home:hover {
-	background-color: #676c7a;
-}
 /**
 * Default nav bar
 */
@@ -827,9 +810,27 @@ ul.scroll-menu {
 * home settings section
 *
 */
+#settings .btn-home ,
+#settings .btn-home:focus {
+	height: 7em;
+	width: 15%;
+	font-size: 1.1em;
+/* 	font-weight: 200; */
+	line-height: 2em;
+	overflow: visible;
+	border-radius: 0px;
+	background-color: #5d616e;
+	border: none;
+	letter-spacing: 0.03em;
+	color: #d0d4d9;
+}
+#settings .btn-home:hover {
+	background-color: #676c7a;
+}
+
 #settings .group ,
 #settings .group-buttons {
-	height: 50%;
+	height: 33%;
 	width: 100%;
 }
 #settings .group-header {

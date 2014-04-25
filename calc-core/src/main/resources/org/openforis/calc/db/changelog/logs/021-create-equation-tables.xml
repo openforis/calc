@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+	<changeSet author="mino togna" id="021-create-equation-tables">
+
+		<sql>			
+			drop table if exists calc.equation;
+			drop table if exists calc.equation_list;
+			
+			create table calc.equation_list
+			(
+			        id bigserial not null,
+			        name varchar (255) not null,
+			        workspace_id integer not null,
+			        parameters text,
+			        primary key (id),
+			        constraint equation_list_workspace_fk foreign key (workspace_id) references
+			        calc.workspace (id)
+			);
+			    
+			    
+			create table calc.equation
+			(
+			        id bigserial not null,
+			        list_id bigint not null,
+			        equation varchar(2048) not null,
+			        condition varchar(2048),
+			        primary key (id),
+			        constraint equation_equation_list_fk foreign key (list_id) references
+			        calc.equation_list (id)
+			);
+    	</sql>
+    	
+	</changeSet>
+</databaseChangeLog>

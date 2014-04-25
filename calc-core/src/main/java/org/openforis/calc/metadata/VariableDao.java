@@ -3,21 +3,17 @@
  */
 package org.openforis.calc.metadata;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.beanutils.PropertyUtils;
 import org.jooq.Configuration;
 import org.jooq.Record2;
 import org.jooq.Result;
 import org.jooq.SelectLimitStep;
 import org.json.simple.JSONObject;
 import org.openforis.calc.engine.Workspace;
-import org.openforis.calc.metadata.Variable.Scale;
 import org.openforis.calc.persistence.jooq.Sequences;
-import org.openforis.calc.persistence.jooq.tables.pojos.VariableBase;
+import org.openforis.calc.persistence.jooq.Tables;
 import org.openforis.calc.psql.Psql;
 import org.openforis.calc.schema.CategoryDimensionTable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +33,7 @@ public class VariableDao extends org.openforis.calc.persistence.jooq.tables.daos
 		super(configuration);
 	}
 
-	public long countCategoryClasses(CategoryDimensionTable table ){
+	public long countCategoryClasses(CategoryDimensionTable table ) {
 		
 		Long count = psql
 			.selectCount()
@@ -53,7 +49,7 @@ public class VariableDao extends org.openforis.calc.persistence.jooq.tables.daos
 		
 		List<JSONObject> categories = new ArrayList<JSONObject>(); 
 		
-		 SelectLimitStep<Record2<String, String>> select = psql
+		SelectLimitStep<Record2<String, String>> select = psql
 			.select( table.getCodeField() , table.getCaptionField() )
 			.from( table )
 			.orderBy( table.getIdField() );
@@ -80,35 +76,12 @@ public class VariableDao extends org.openforis.calc.persistence.jooq.tables.daos
 		for ( int i = 0; i < entities.size(); i++ ) {
 			entityIds[i] = entities.get(i).getId();
 		}
-		// "case when scale='TEXT' then 'T' when scale in ( 'RATIO','INTERVAL','OTHER') then 'Q' when scale='BINARY' then 'B' else 'C' end"
-		List<VariableBase> vars = super.fetchByEntityId(entityIds);
-		for (VariableBase variableBase : vars) {
-			Variable<?> variable = null;
 
-			switch (variableBase.getScale()) {
-			case TEXT:
-				variable = new TextVariable();
-				break;
-			case BINARY:
-				variable = new BinaryVariable();
-				break;
-			case NOMINAL:
-				variable = new MultiwayVariable();
-				break;
-			default:
-				variable = new QuantitativeVariable();
-			}
-
-			try {
-				PropertyUtils.copyProperties(variable, variableBase);
-			} catch (Exception e) {
-				// it should never happens
-				throw new IllegalStateException( "Unable to load variables" , e );
-			}
-
-			Entity entity = workspace.getEntityById(variable.getEntityId());
-			entity.addVariable(variable);
-		}
+		psql
+			.select()
+			.from( Tables.VARIABLE )
+			.where( Tables.VARIABLE.ENTITY_ID.in(entityIds) )
+			.fetch( new VariableRecordMapper(workspace) );
 	}
 	
 	public void save( Variable<?>... variables ) {
@@ -126,49 +99,21 @@ public class VariableDao extends org.openforis.calc.persistence.jooq.tables.daos
 				// set sortOrder
 				variable.setSortOrder( i + 1 );
 				
-				// copy properties into VariableBase object
-				VariableBase base = new VariableBase();
-				try {
-					PropertyUtils.copyProperties( base , variable );
-				} catch (Exception e) {
-					// it should never happen
-					throw new IllegalStateException( "Unable to load variables" , e );
-				}
-				
 				// insert or update variable
-				if( base.getId() == null ) {
+				if( variable.getId() == null ) {
 					
 					Long nextval = psql.nextval( Sequences.VARIABLE_ID_SEQ );
 					int varId = nextval.intValue();
-					base.setId( varId );
 					variable.setId( varId );
 					
-					insert( base );
+					insert( variable );
 				} else {
-					update( base );
+					update( variable );
 				}
 			}
 		
 		}
 
-	}
-	
-	public static void main(String[] args) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-		VariableBase b = new VariableBase();
-		b.setDegenerateDimension(true);
-		b.setName("a");
-		b.setScale( Scale.NOMINAL );
-		
-		MultiwayVariable v = new MultiwayVariable();
-		
-		PropertyUtils.copyProperties(v, b);
-//		BeanUtils.copyProperties(v, b);
-		
-		
-		System.out.println( v.getDegenerateDimension() );
-		
-		
-		
 	}
 	
 }

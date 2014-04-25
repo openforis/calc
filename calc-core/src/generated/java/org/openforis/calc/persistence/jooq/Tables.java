@@ -39,6 +39,16 @@ public class Tables {
 	public static final org.openforis.calc.persistence.jooq.tables.EntityTable ENTITY = org.openforis.calc.persistence.jooq.tables.EntityTable.ENTITY;
 
 	/**
+	 * The table calc.equation
+	 */
+	public static final org.openforis.calc.persistence.jooq.tables.EquationTable EQUATION = org.openforis.calc.persistence.jooq.tables.EquationTable.EQUATION;
+
+	/**
+	 * The table calc.equation_list
+	 */
+	public static final org.openforis.calc.persistence.jooq.tables.EquationListTable EQUATION_LIST = org.openforis.calc.persistence.jooq.tables.EquationListTable.EQUATION_LIST;
+
+	/**
 	 * The table calc.processing_chain
 	 */
 	public static final org.openforis.calc.persistence.jooq.tables.ProcessingChainTable PROCESSING_CHAIN = org.openforis.calc.persistence.jooq.tables.ProcessingChainTable.PROCESSING_CHAIN;

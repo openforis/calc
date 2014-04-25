@@ -1,0 +1,26 @@
+<div class="page-section" id="equation-list" style="padding-top: 10px">
+
+	<div class="col-md-12 height100 view-section" style="overflow: hidden;">
+		<div class="col-md-2 list height100">
+			<div class="height10">
+				<form class="upload-csv-form"  method="post" enctype="multipart/form-data" action="rest/csv-upload.json">
+					<button type="button" class="btn btn-default width100" name="upload-btn">Upload Csv</button>
+				    <input type="file" name="file" style="display:none" />  
+				</form>
+			</div>
+			<div class=" height10">Equation lists</div>
+			<div class="equation-lists height80" style="overflow: auto;"></div>
+		</div>
+	</div>
+	
+	<div class="col-md-12 height100 import-section">
+	</div> 
+	 
+	<script>
+	$(function(){
+		
+		var eqListManager = new EquationListManager( "#equation-list" );		
+	});
+	</script>
+	
+</div>

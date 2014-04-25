@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class VariableTable extends org.jooq.impl.TableImpl<org.openforis.calc.persistence.jooq.tables.records.VariableRecord> {
 
-	private static final long serialVersionUID = 588556810;
+	private static final long serialVersionUID = 472213004;
 
 	/**
 	 * The singleton instance of <code>calc.variable</code>
@@ -69,7 +69,7 @@ public class VariableTable extends org.jooq.impl.TableImpl<org.openforis.calc.pe
 	/**
 	 * The column <code>calc.variable.override</code>.
 	 */
-	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.VariableRecord, java.lang.Boolean> OVERRIDE = createField("override", org.jooq.impl.SQLDataType.BOOLEAN.defaulted(true), this, "");
+	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.VariableRecord, java.lang.Boolean> OVERRIDE = createField("override", org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaulted(true), this, "");
 
 	/**
 	 * The column <code>calc.variable.dimension_table</code>.
@@ -79,7 +79,7 @@ public class VariableTable extends org.jooq.impl.TableImpl<org.openforis.calc.pe
 	/**
 	 * The column <code>calc.variable.degenerate_dimension</code>.
 	 */
-	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.VariableRecord, java.lang.Boolean> DEGENERATE_DIMENSION = createField("degenerate_dimension", org.jooq.impl.SQLDataType.BOOLEAN.defaulted(true), this, "");
+	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.VariableRecord, java.lang.Boolean> DEGENERATE_DIMENSION = createField("degenerate_dimension", org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaulted(true), this, "");
 
 	/**
 	 * The column <code>calc.variable.input_category_id_column</code>.

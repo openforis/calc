@@ -19,7 +19,7 @@ To realease :
 Add dev database settings to calc-core/src/main/resources/dev.properties.
 
 Regenerate jOOQ stub classes*: 
-
+	mvn clean install	
 	cd calc-core
 	mvn properties:read-project-properties jooq-codegen:generate
 
