@@ -15,38 +15,52 @@ UI.messageContainerClosBtn.click(function(e){
  * Shows application error message
  */
 UI.showError = function( message, hide ) {
-	// Add div if not defined
-	
-	UI.messageContainer.removeClass("alert-success");
-	UI.messageContainer.addClass("alert-danger");
-	
-	UI.messageContainer.find("span").html( message );
-	
-	UI.messageContainer.fadeIn( 400 );
-	
-	// fade out after 2 seconds
-	if( hide == true ) {
-		UI.messageContainer.delay( 2000 ).fadeOut( 800 );
-	}
-};	
+	UI.showMessage("error", message, hide);
+};
+
+/**
+ * Shows application warning message
+ */
+UI.showWarning = function( message, hide ) {
+	UI.showMessage("warning", message, hide);
+};
+
 /**
  * Shows application success  message
  */
-UI.showSuccess = function(message, hide){
-	// Add div if not defined
+UI.showSuccess = function(message, hide) {
+	UI.showMessage("success", message, hide);
+};
+
+/**
+ * Shows application message
+ */
+UI.showMessage = function(type, message, autoHide) {
+	UI.messageContainer.removeClass("alert-danger alert-warning alert-success");
 	
-	UI.messageContainer.removeClass("alert-danger");		
-	UI.messageContainer.addClass("alert-success");
+	switch ( type ) {
+	case "error":
+		alertClass = "alert-danger";
+		break;
+	case "warning":
+		alertClass = "alert-warning";
+		break;
+	default:
+		alertClass = "alert-success";
+	}
+	
+	UI.messageContainer.addClass(alertClass);
 	
 	UI.messageContainer.find("span").html( message );
 	
 	UI.messageContainer.fadeIn( 400 );
 	
-	// fade out after 2 seconds
-	if(hide == true) {
+	if ( autoHide == true ) {
+		// fade out after 2 seconds
 		UI.messageContainer.delay( 2000 ).fadeOut( 800 );
 	}
-};	
+};
+
 /**
  * Shows a modal with static backdrop to avoid user interaction
  */

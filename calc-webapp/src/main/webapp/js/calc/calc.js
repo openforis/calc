@@ -36,6 +36,10 @@ $(document).ready(function() {
 	Calc.footerHomeLinks 	= Calc.footer.find( ".links" );
 	Calc.backHomeBtn 		= Calc.footer.find( "button.back" );
 	
+	/**
+	 * Stores workspace enabled buttons that have been disabled when workspace is not initialized, so when workspace is available, only these buttons will be enabled
+	 */
+	Calc._disabledWorkspaceEnabledButtons = null;
 	
 	/**
 	 * Function to be called when active workspace change
@@ -44,6 +48,20 @@ $(document).ready(function() {
 		WorkspaceManager.getInstance().refreshActiveWorkspace( function(ws){
 			Calc.homeCalculationManager.updateSteps();
 			Calc.homeDataManager.refresh();
+			
+			if ( ws ) {
+				//enable previously disabled buttons
+				if ( Calc._disabledWorkspaceEnabledButtons ) {
+					UI.enable(Calc._disabledWorkspaceEnabledButtons);
+					Calc._disabledWorkspaceEnabledButtons = null;
+				}
+			} else {
+				//disable workspace-enabled buttons
+				Calc._disabledWorkspaceEnabledButtons = $(document).find(".workspace-enabled:enabled");
+				UI.disable(Calc._disabledWorkspaceEnabledButtons);
+				UI.showWarning("Workpace not yet initialized.<br/><br/>Please go into Settings and import a Collect backup file.");
+			}
+			
 			if ( success ) {
 				success(ws);
 			}
