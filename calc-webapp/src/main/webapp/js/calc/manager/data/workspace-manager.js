@@ -317,6 +317,32 @@ WorkspaceManager.prototype = (function(){
 	};
 	
 	/**
+	 * Import an equation list previously uploaded as csv file
+	 */
+	var activeWorkspaceImportEquationList = function( filePath , listName , success) {
+		var $this = this;
+		UI.lock();
+		$this.activeWorkspace(function(ws){
+			
+			var data = { "filePath":filePath , "listName":listName };
+			$.ajax({
+				url : "rest/workspace/active/settings/equationList.json",
+				dataType : "json",
+				method : "POST",
+				data : data
+			}).done( function(response) {
+				var lists = response.fields.equationLists;
+				ws.equationLists = lists;
+				success( ws );
+				UI.unlock();
+			}).error( function() {
+				Calc.error.apply( this , arguments );
+			});
+			
+		});
+	};
+
+	/**
 	 * Private function to
 	 * Set the active workspace and calls the callback function if present
 	 */
@@ -358,6 +384,8 @@ WorkspaceManager.prototype = (function(){
 		activeWorkspaceSetSamplingDesign : activeWorkspaceSetSamplingDesign
 		,
 		refreshActiveWorkspace : refreshActiveWorkspace
+		,
+		activeWorkspaceImportEquationList : activeWorkspaceImportEquationList
 	};
 	
 })();

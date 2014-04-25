@@ -119,4 +119,8 @@
 	<bean name="equationListDao" class="org.openforis.calc.metadata.EquationListDao">
     	<constructor-arg ref="config" />
     </bean>
+    	<bean name="equationDao" class="org.openforis.calc.persistence.jooq.tables.daos.EquationDao">
+    	<constructor-arg ref="config" />
+    </bean>
+    
 </beans>

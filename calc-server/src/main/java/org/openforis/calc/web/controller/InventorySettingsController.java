@@ -14,6 +14,7 @@ import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceLockedException;
 import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.EquationManager;
 import org.openforis.calc.metadata.SamplingDesign;
 import org.openforis.calc.metadata.SamplingDesignManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,9 @@ public class InventorySettingsController {
 	private SamplingDesignManager samplingDesignManager;
 	
 	@Autowired
+	private EquationManager equationManager;
+	
+	@Autowired
 	private TaskManager taskManager;
 
 	@RequestMapping(value = "/samplingDesign.json", method = RequestMethod.POST, produces = "application/json")
@@ -50,21 +54,10 @@ public class InventorySettingsController {
 
 		samplingDesignManager.delete( workspace );
 
-		SamplingDesign samplingDesign = parseSamplingDesignFromJsonString(workspace, samplingDesignParam);
+		SamplingDesign samplingDesign = parseSamplingDesignFromJsonString( workspace, samplingDesignParam );
 		if ( samplingDesign != null ) {
-			
-//			Entity samplingUnit = samplingDesign.getSamplingUnit();
-			// add weight variable to sampling unit if it doesnt exist
-//			String weightVariable = samplingDesign.getWeightVariable();
-//			QuantitativeVariable weightVar = samplingUnit.getOutputVariable( weightVariable );
-//			if( weightVar == null ){
-//				workspaceService.addOutputVariable( samplingUnit, weightVariable );
-//				workspaceService.resetResultTable( samplingUnit );
-//			}
-			
 			samplingDesignManager.insert( workspace ,  samplingDesign );
-//			workspace.setSamplingDesign(samplingDesign);
-			response.addField("samplingDesign", samplingDesign);
+			response.addField( "samplingDesign", samplingDesign );
 		}
 
 		// execute job
@@ -74,7 +67,20 @@ public class InventorySettingsController {
 		
 		return response;
 	}
-
+	
+	@RequestMapping(value = "/settings/equationList.json", method = RequestMethod.POST, produces = "application/json")
+	public @ResponseBody 
+	Response importEquationList( String filePath , String listName ) throws IOException {
+		
+		Workspace workspace = workspaceService.getActiveWorkspace();
+		
+		equationManager.importFromCsv( workspace, filePath, listName );
+		
+		Response response = new Response();
+		return response;
+	} 
+	
+	
 	/**
 	 * Parse the json object into a samplingDesing instance
 	 * 
