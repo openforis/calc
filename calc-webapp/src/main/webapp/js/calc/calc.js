@@ -26,8 +26,8 @@ $(document).ready(function() {
 	/**
 	 * Ui managers
 	 */
-	Calc.homeCalculationManager = new HomeCalculationManager( $("#calculation") );
-	Calc.homeDataManager 		= new HomeDataManager( $("#data") );
+	Calc.homeCalculationManager = null;
+	Calc.homeDataManager 		= null;
 
 	/**
 	 * Ui elements
@@ -40,9 +40,14 @@ $(document).ready(function() {
 	/**
 	 * Function to be called when active workspace change
 	 */
-	Calc.workspaceChange = function() {
-		Calc.homeCalculationManager.updateSteps();
-		Calc.homeDataManager.refresh();
+	Calc.workspaceChange = function(success) {
+		WorkspaceManager.getInstance().refreshActiveWorkspace( function(ws){
+			Calc.homeCalculationManager.updateSteps();
+			Calc.homeDataManager.refresh();
+			if ( success ) {
+				success(ws);
+			}
+		});
 	};
 	
 	/**
@@ -197,21 +202,26 @@ $(document).ready(function() {
 	
 	// when page is loaded init function is called
 	init = function() {
+		
+		// init ui managers
+		Calc.homeCalculationManager = new HomeCalculationManager( $("#calculation") );
+		Calc.homeDataManager 		= new HomeDataManager( $("#data") );
 
 		//set current home section to calculation
 		var calculation = $("#calculation");
 		Calc.section = calculation;
+		
 		//hide other sections to avoid focus on their elements
 		calculation.siblings().invisible();
-		
-		Calc.workspaceChange();
-		
-		// check if there's a job currently running
-		JobManager.getInstance().checkJobStatus();
 		
 		//on load, the footer buttons is positioned to the bottom of the page
 		resizeContainer();
 		positionFooter();
+		
+		Calc.workspaceChange(function(workspace) {
+			// check if there's a job currently running
+			JobManager.getInstance().checkJobStatus();
+		});
 	};
 	
 	init();

@@ -36,10 +36,6 @@ WorkspaceManager.prototype = (function(){
 		}).done(function(response) {
 			var workspace = response.fields.workspace;
 			$.proxy(setActiveWorkspace, $this)( workspace, success );
-			if ( ! workspace ) {
-				//TODO show metadata import page
-				success();
-			}
 			UI.unlock();
 		}).error( function() {
 			Calc.error.apply( this , arguments );
