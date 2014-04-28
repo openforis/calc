@@ -286,7 +286,7 @@ public class MetadataManager {
 	}
 	
 	@Transactional
-	public void deleteEntities(Collection<Entity> entities) {
+	public void deleteEntities( Collection<Entity> entities ) {
 		for ( Entity entity : entities ) {
 			Workspace ws = entity.getWorkspace();
 			List<Variable<?>> variables = entity.getVariables();
@@ -303,6 +303,9 @@ public class MetadataManager {
 	 * 	Workspace utility methods
 	 * ===========================
 	 */
+	/**
+	 * Deactivates all workspaces
+	 */
 	@Transactional
 	public void deactivateAll() {
 		List<Workspace> list = findAllWorkspaces();
@@ -311,12 +314,31 @@ public class MetadataManager {
 			workspaceDao.update( ws );
 		}
 	}
-
+	
+	/**
+	 * Activates a workspace. It deactivates all first
+	 * @param ws
+	 */
 	@Transactional
-	public void activate(Workspace ws) {
+	public void activate( Workspace ws ) {
 		deactivateAll();
 		ws.setActive( true );
 		workspaceDao.update( ws );
 	}
-
+	
+	/**
+	 * Returns all workspaces ordered by name without loading their metadata
+	 * @return
+	 */
+	public List<Workspace> loadAllWorksaceInfos() {
+		List<Workspace> list = workspaceDao.findAll();
+		Collections.sort( list, new Comparator<Workspace>() {
+			@Override
+			public int compare(Workspace o1, Workspace o2) {
+				return o1.getName().compareTo( o2.getName() );
+			}
+		});
+		return list;
+	}
+	
 }

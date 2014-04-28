@@ -3,6 +3,7 @@ package org.openforis.calc.web.controller;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.sql.DataSource;
 import javax.validation.Valid;
@@ -52,6 +53,13 @@ public class WorkspaceController {
 	private DataSource dataSource; 
 
 	
+	@RequestMapping(value = "/list.json", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	List<Workspace> getWorkspaceInfos() {
+		List<Workspace> infos = workspaceService.loadAllInfos();
+		return infos;
+	}
+	
 	@RequestMapping(value = "/active.json", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	Response getActiveWorkspace() {
@@ -60,7 +68,17 @@ public class WorkspaceController {
 		response.addField("workspace", workspace);
 		return response;
 	}
-
+	
+	@RequestMapping(value = "/{workspaceId}/activate.json", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	Response changeActiveWorkspace( @PathVariable int workspaceId ) {
+		Workspace workspace = workspaceService.get( workspaceId );
+		workspaceService.activate(workspace);
+		Response response = new Response();
+		response.addField( "status", "OK" );
+		return response;
+	}
+	
 	// TODO change rest call /active/job.json
 	@RequestMapping(value = "/job.json", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody

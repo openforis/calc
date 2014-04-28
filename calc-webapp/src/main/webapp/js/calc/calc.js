@@ -26,9 +26,10 @@ $(document).ready(function() {
 	/**
 	 * Ui managers
 	 */
-	Calc.homeCalculationManager = null;
-	Calc.homeDataManager 		= null;
-
+	Calc.homeCalculationManager 	= null;
+	Calc.homeDataManager 			= null;
+	Calc.workspaceSettingsManager 	= null;
+	
 	/**
 	 * Ui elements
 	 */
@@ -40,21 +41,27 @@ $(document).ready(function() {
 	 * Function to be called when active workspace change
 	 */
 	Calc.workspaceChange = function(success) {
+		
 		WorkspaceManager.getInstance().refreshActiveWorkspace( function(ws){
+			// load calc steps to home page
 			Calc.homeCalculationManager.updateSteps();
+			// load entities and variables for home data query section
 			Calc.homeDataManager.refresh();
+			// update active workspace home settings ui
+			Calc.workspaceSettingsManager.updateActive( ws );
 			
-			var workspaceEnabledButtons = $(document).find(".workspace-enabled");
+			var workspaceEnabledButtons = $(document).find( ".workspace-enabled" );
 			if ( ws ) {
-				UI.enable(workspaceEnabledButtons);
+				UI.enable( workspaceEnabledButtons );
 			} else {
-				UI.disable(workspaceEnabledButtons);
+				UI.disable( workspaceEnabledButtons );
 			}
 			
 			if ( success ) {
 				success(ws);
 			}
 		});
+			
 	};
 	
 	/**
@@ -210,10 +217,13 @@ $(document).ready(function() {
 	// when page is loaded init function is called
 	init = function() {
 		
+		
+		
 		// init ui managers
-		Calc.homeCalculationManager = new HomeCalculationManager( $("#calculation") );
-		Calc.homeDataManager 		= new HomeDataManager( $("#data") );
-
+		Calc.homeCalculationManager 	= new HomeCalculationManager( $("#calculation") );
+		Calc.homeDataManager 			= new HomeDataManager( $("#data") );
+		Calc.workspaceSettingsManager	= new WorkspaceSettingsManager( "#workspace-settings" );
+		
 		//set current home section to calculation
 		var calculation = $("#calculation");
 		Calc.section = calculation;

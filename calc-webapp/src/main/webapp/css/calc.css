@@ -1243,13 +1243,8 @@ ul.ui-sortable li {
 }
 
 
-
-
-
-
-
 /**
-*	Variable filter popover 
+*	Variable filter popover (data query component)
 */
 .variable-filter-popover {
 	display: none;
@@ -1306,4 +1301,26 @@ ul.ui-sortable li {
 /* 	margin: 0px 0.1em; */
 	font-size: 0.8em;
 	width: 100%;
+}
+
+
+/**
+*	Workspace settings 
+*/
+#workspace-settings .active-workspace-label {
+	color: #363a53;
+/* 	font-size: 1.2em; */
+	border: 1px solid; 
+}
+
+/** workspace list settings (change active workspace) */
+#workspace-edit-settings .row {
+	padding-top: 30px;	
+}
+
+#workspace-edit-settings .workspace-list button.option-btn, 
+#workspace-edit-settings .workspace-list button.option-btn-selected {
+	width: 10em;
+	height: 7em;
+	margin: 0.2em 0.5em;
 }

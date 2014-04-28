@@ -105,6 +105,10 @@ public class WorkspaceService {
 		return metadataManager.findAllWorkspaces();
 	}
 
+	public List<Workspace> loadAllInfos(){
+		return metadataManager.loadAllWorksaceInfos();
+	}
+	
 	/**
 	 * It returns the active workspace
 	 * 

@@ -43,6 +43,22 @@ WorkspaceManager.prototype = (function(){
 	};
 	
 	/**
+	 * Changes the active workspace with the workspace id passed as argument
+	 */
+	var changeActiveWorkspace = function( workspaceId , success ) {
+		var $this = this;
+		$.ajax({
+			url		: "rest/workspace/" + workspaceId + "/activate.json",
+			dataType: "json",
+			method 	: "GET"
+		}).done( function(response) {
+			Calc.workspaceChange( success );
+		}).error( function() {
+			Calc.error.apply( this , arguments );
+		});
+	};
+	
+	/**
 	 * Set the sampling unit to the workspace
 	 */
 	var activeWorkspaceSetSamplingUnit = function(entity, success){
@@ -268,7 +284,7 @@ WorkspaceManager.prototype = (function(){
 	 */
 	var activeWorkspaceSetPhase1PlotsTable = function(table, success){
 		var $this = this;
-		$this.activeWorkspace(function(ws){
+		$this.activeWorkspace( function(ws){
 
 			$.ajax({
 				url : "rest/workspace/active/phase1plotstable.json",
@@ -382,6 +398,8 @@ WorkspaceManager.prototype = (function(){
 		refreshActiveWorkspace : refreshActiveWorkspace
 		,
 		activeWorkspaceImportEquationList : activeWorkspaceImportEquationList
+		,
+		changeActiveWorkspace : changeActiveWorkspace
 	};
 	
 })();

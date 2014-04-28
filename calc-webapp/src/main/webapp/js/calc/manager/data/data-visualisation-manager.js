@@ -70,6 +70,9 @@ DataVisualisationManager.prototype.init = function() {
  * Refresh ui states
  */
 DataVisualisationManager.prototype.refresh = function() {
+	this.dataTable.hide();
+	this.scatterPlot.hide();
+	
 	var $this = this;
 	WorkspaceManager.getInstance().activeWorkspace(function(ws){
 		if( ws ) {
