@@ -46,21 +46,15 @@ Phase1Manager.prototype.init = function(){
 	    },
 	    complete: function() {
 	    	// reset upload form
-	    	$this.file.val("");
+	    	$this.fileUpload.reset();
 	    	UI.unlock();
 	    }
 	});	
 	
-	this.uploadBtn.click(function(event) {
-		event.preventDefault();
-		$this.file.click();
-	});
-	
-	this.file.change(function(event) {
-		event.preventDefault();
+	//init file upload
+	this.fileUpload = new FileUpload(this.uploadBtn, this.file, function(e) {
 		$this.form.submit();
 	});
-	
 };
 
 Phase1Manager.prototype.show = function() {

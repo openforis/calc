@@ -28,17 +28,21 @@ $(function(){
 	var $progressBar = $progressSection.find(".progress-bar");
 	var $progressPercent = $progressSection.find(".percent");
 	
+	var fileUpload = new FileUpload($uploadBtn, $file, function(event) {
+		$form.submit();
+	});
+	
 	$progressSection.hide();
 	
 	var resetForm = function() {
-		$file.val("");
+		fileUpload.reset();
+		
 		$progressSection.hide();
 		$formSection.show();
 
 		$progressPercent.html("0%");
 		$progressBar.width(0);
 	};
-	
 	
 	$form.ajaxForm( {
 	    dataType : 'json',
@@ -69,17 +73,6 @@ $(function(){
 	    	resetForm();
 	    }
 	});	
-	
-	$uploadBtn.click(function(event) {
-		event.preventDefault();
-		$file.click();
-	});
-	
-	$file.change(function(event) {
-		event.preventDefault();
-		$form.submit();
-	});
-	
 	
 });
 </script>

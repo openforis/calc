@@ -1,5 +1,9 @@
 package org.openforis.calc.psql;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+
 import org.apache.commons.lang3.StringUtils;
 import org.jooq.ExecuteContext;
 import org.jooq.ExecuteListener;
@@ -22,6 +26,13 @@ class LogSqlListener extends DefaultExecuteListener implements ExecuteListener {
 	@Override
 	public void renderEnd(ExecuteContext ctx) {
 		String sql = ctx.sql();
+		if ( sql == null ) {
+			//try to see if context contains batch sql
+			String[] batchSQL = ctx.batchSQL();
+			if ( batchSQL != null ) {
+				logText("Execute batch sql");
+			}
+		}
 		logSql(sql);
 	}
 	
@@ -31,5 +42,9 @@ class LogSqlListener extends DefaultExecuteListener implements ExecuteListener {
 		} else {
 			log.debug(sql + "; -- Parameters: " + StringUtils.join(bindings) + "");
 		}
+	}
+	
+	void logText(String text) {
+		log.debug(text);
 	}
 }

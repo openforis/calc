@@ -35,7 +35,7 @@ AoiManager = function(container) {
 	this.aoiTreeSection.css( "width", Math.floor( this.container.width()*(10/12) )+"px" );
 	this.aoiTreeSection.css( "height", Math.floor( this.container.height()*0.79 )+"px" );
 	this.aoiTreeSection.attr("id","aoi-tree-svg");
-	  
+	
 	this.init();
 };
 
@@ -64,24 +64,19 @@ AoiManager.prototype.init = function(){
 	    },
 	    complete: function() {
 	    	// reset upload form
-	    	$this.file.val("");
+	    	$this.fileUpload.reset();
 			$this.uploadSection.fadeIn();
 			$this.uploadProgressSection.fadeOut();
 			$this.uploadProgressBar.update(0,100);
 	    }
 	});	
 	
-	this.uploadBtn.click(function(event) {
-		event.preventDefault();
-		$this.file.click();
-	});
+	this.importBtn.click( function(e){ $this.import(); } );
 	
-	this.file.change(function(event) {
-		event.preventDefault();
+	//init file upload
+	this.fileUpload = new FileUpload(this.uploadBtn, this.file, function(e) {
 		$this.form.submit();
 	});
-	
-	this.importBtn.click( function(e){ $this.import(); } );
 	
 	// update aoi tree
 //	$this.initSvg();
