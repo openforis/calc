@@ -174,6 +174,7 @@ button.filter-btn-selected:hover {
 .page-section legend {
 /* 	font-size: 0.5em; */
 	border:none;
+	text-align: center;
 }
 .page-section label {
 /* 	font-size: 0.4em; */
