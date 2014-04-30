@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -139,6 +140,18 @@ public class Workspace extends WorkspaceBase {
 		equationList.setWorkspace( this );
 	}
 	
+	public void deleteEquationList( EquationList equationList ) {
+		if( this.equationLists != null ) {
+			Iterator<EquationList> iterator = this.equationLists.iterator();
+			while( iterator.hasNext() ) {
+				EquationList list = iterator.next();
+				if( list.getName().equals(equationList.getName()) ){
+					iterator.remove();
+					return;
+				}
+			}
+		}
+	}
 	@JsonInclude
 	public String getPhase1PlotTableName() {
 		return String.format( "_phase1_plot_%s" , this.getName() );

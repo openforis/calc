@@ -116,7 +116,7 @@
     <bean name="workspaceDao" class="org.openforis.calc.persistence.jooq.tables.daos.WorkspaceDao">
     	<constructor-arg ref="config" />
     </bean>
-	<bean name="equationListDao" class="org.openforis.calc.metadata.EquationListDao">
+	<bean name="equationListDao" class="org.openforis.calc.persistence.jooq.tables.daos.EquationListDao">
     	<constructor-arg ref="config" />
     </bean>
     	<bean name="equationDao" class="org.openforis.calc.persistence.jooq.tables.daos.EquationDao">

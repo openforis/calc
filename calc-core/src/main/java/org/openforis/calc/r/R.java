@@ -4,6 +4,8 @@ package org.openforis.calc.r;
 //import org.rosuda.JRI.Rengine;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 import javax.annotation.PostConstruct;
@@ -30,10 +32,13 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class R {
+	
 	private static final String[] R_PARAMS = { "--vanilla", "--slave" };
 	private REngine engine;
 	private Logger logger;
 	private RStdOutputListner rStdOutputListner;
+	
+	private List<String> baseFunctions;
 
 	public R() {
 		this.logger = LoggerFactory.getLogger(getClass());
@@ -133,6 +138,19 @@ public class R {
 		}
 	}
 
+	public List<String> getBaseFunctions() {
+		if( baseFunctions == null ) {
+			try {
+				REnvironment rEnvironment = this.newEnvironment();
+				String[] result = rEnvironment.evalStrings("as.vector( lsf.str(\"package:base\") )");
+				baseFunctions = Arrays.asList( result );
+			} catch (RException e) {
+				throw new IllegalStateException( "Unable to retreive R base functions" , e );
+			}
+		}
+		return baseFunctions;
+	}
+	
 	Logger getLogger() {
 		return logger;
 	}

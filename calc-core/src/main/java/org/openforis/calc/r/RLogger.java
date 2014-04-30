@@ -66,7 +66,7 @@ public class RLogger {
 			while( matcher.find() ){
 				String lineText = matcher.group(1);
 				if(lineText.contains("\\")){
-					System.out.println("aaaa");
+//					System.out.println("aaaa");
 				}
 				RLoggerLine line = new RLoggerLine(this.tempLine.oType, lineText);
 				this.lines.add(line);

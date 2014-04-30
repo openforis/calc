@@ -21,7 +21,6 @@ EquationListManager = function( container ) {
 	this.filePath		= "";
 	this.importBtn		= this.importSection.find( "[name=import-btn]" );
 	
-	
 	this.init();
 };
 
@@ -29,8 +28,6 @@ EquationListManager = function( container ) {
 EquationListManager.prototype.init = function() {
 	var $this = this;
 	
-	this.importSection.hide();
-	this.viewSection.show();
 	// bind events
 	this.form.ajaxForm({
 	    dataType : 'json',
@@ -72,14 +69,14 @@ EquationListManager.prototype.init = function() {
 			UI.showError( "List name cannot be blank" , true );
 		} else {
 			WorkspaceManager.getInstance().activeWorkspaceImportEquationList( $this.filePath , listName , function(ws) {
-				$this.updateLists();
+				$this.showList();
 			} );
 		}
 		
 	});
 	
 	// show lists
-	this.updateLists();
+	this.showList();
 };
 
 EquationListManager.prototype.showImport = function( filepath ) {
@@ -92,8 +89,14 @@ EquationListManager.prototype.showImport = function( filepath ) {
 /**
  * Update equation lists UI
  */
-EquationListManager.prototype.updateLists = function() {
+EquationListManager.prototype.showList = function() {
+	var $this = this;
+	
 	WorkspaceManager.getInstance().activeWorkspace( function(ws) {
 		console.log( ws.equationLists );
+		
+		$this.importSection.hide();
+		$this.viewSection.show();
 	});
+	
 };

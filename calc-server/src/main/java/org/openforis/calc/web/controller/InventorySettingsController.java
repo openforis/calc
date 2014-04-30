@@ -19,6 +19,7 @@ import org.openforis.calc.metadata.SamplingDesign;
 import org.openforis.calc.metadata.SamplingDesignManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -68,9 +69,9 @@ public class InventorySettingsController {
 		return response;
 	}
 	
-	@RequestMapping(value = "/settings/equationList.json", method = RequestMethod.POST, produces = "application/json")
+	@RequestMapping(value = "/settings/equationList/{listName}.json", method = RequestMethod.POST, produces = "application/json")
 	public @ResponseBody 
-	Response importEquationList( String filePath , String listName ) throws IOException {
+	Response importEquationList( @RequestParam String filePath , @PathVariable String listName ) throws IOException {
 		
 		Workspace workspace = workspaceService.getActiveWorkspace();
 		

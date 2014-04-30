@@ -57,6 +57,13 @@ public class EquationDao extends org.jooq.impl.DAOImpl<org.openforis.calc.persis
 	}
 
 	/**
+	 * Fetch records that have <code>code IN (values)</code>
+	 */
+	public java.util.List<Equation> fetchByCode(java.lang.String... values) {
+		return fetch(org.openforis.calc.persistence.jooq.tables.EquationTable.EQUATION.CODE, values);
+	}
+
+	/**
 	 * Fetch records that have <code>equation IN (values)</code>
 	 */
 	public java.util.List<Equation> fetchByEquation(java.lang.String... values) {

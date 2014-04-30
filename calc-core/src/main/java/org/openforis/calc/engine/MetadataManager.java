@@ -13,7 +13,7 @@ import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.metadata.AoiManager;
 import org.openforis.calc.metadata.Entity;
-import org.openforis.calc.metadata.EquationListDao;
+import org.openforis.calc.metadata.EquationManager;
 import org.openforis.calc.metadata.SamplingDesign;
 import org.openforis.calc.metadata.Stratum;
 import org.openforis.calc.metadata.Variable;
@@ -59,8 +59,9 @@ public class MetadataManager {
 	private VariableDao variableDao;
 	@Autowired
 	private SamplingDesignDao samplingDesignDao;
+	
 	@Autowired
-	private EquationListDao equationListDao;
+	private EquationManager equationManager;
 	
 	@Autowired
 	private AoiManager aoiManager;
@@ -133,7 +134,7 @@ public class MetadataManager {
 	}
 	
 	private void loadEquations(Workspace workspace) {
-		equationListDao.loadByWorkspace( workspace );
+		equationManager.loadListsByWorkspace( workspace );
 	}
 
 	private void initEntityHierarchy(Workspace workspace) {
@@ -322,6 +323,7 @@ public class MetadataManager {
 	@Transactional
 	public void activate( Workspace ws ) {
 		deactivateAll();
+		
 		ws.setActive( true );
 		workspaceDao.update( ws );
 	}
