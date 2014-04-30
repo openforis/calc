@@ -545,7 +545,7 @@ public class WorkspaceService {
 		Entity entity = getEntity(variable);
 		
 		DataSchema schema = new Schemas(entity.getWorkspace()).getDataSchema();
-		ResultTable resultTable = schema.getResultTable(entity);
+		ResultTable originalResultTable = schema.getResultTable(entity);
 		EntityDataView view = schema.getDataView(entity);
 
 		// drop entity data view
@@ -553,8 +553,8 @@ public class WorkspaceService {
 		
 		// drop column from results table
 		psql
-			.alterTable( resultTable )
-			.dropColumn( resultTable.getQuantityField(variable) )
+			.alterTable( originalResultTable )
+			.dropColumn( originalResultTable.getQuantityField(variable) )
 			.execute();
 		
 		// delete variable
@@ -562,10 +562,10 @@ public class WorkspaceService {
 		variableDao.delete( variable );
 		
 		// drop result table, if there are no more output variables
-		resultTable = schema.getResultTable( entity );
-		if ( resultTable == null ) {
+		ResultTable newResultTable = schema.getResultTable( entity );
+		if ( newResultTable == null ) {
 			psql
-				.dropTableIfExists( resultTable )
+				.dropTableIfExists( originalResultTable )
 				.execute();
 		}
 		
