@@ -4,11 +4,14 @@
  */
 
 EquationListManager = function( container ) {
+	this.BASE_URI = "rest/workspace/active/settings/equationList/"
 	/* UI components */
 	this.container = $( container );
 	
 	// View section
 	this.viewSection	= this.container.find( ".view-section" );
+	this.equationLists	= this.viewSection.find( ".equation-lists" );
+	this.equationsTable = this.viewSection.find( "table.equations-table" );
 	
 	// upload section
 	this.form 		= this.container.find( ".upload-csv-form" );
@@ -26,8 +29,13 @@ EquationListManager = function( container ) {
 
 
 EquationListManager.prototype.init = function() {
-	var $this = this;
+	// reset edit form
+	this.selectedListId = null;
 	
+	// hide equations table
+	this.equationsTable.hide();
+	
+	var $this = this;
 	// bind events
 	this.form.ajaxForm({
 	    dataType : 'json',
@@ -68,7 +76,7 @@ EquationListManager.prototype.init = function() {
 		if( listName == "" ) {
 			UI.showError( "List name cannot be blank" , true );
 		} else {
-			WorkspaceManager.getInstance().activeWorkspaceImportEquationList( $this.filePath , listName , function(ws) {
+			WorkspaceManager.getInstance().activeWorkspaceImportEquationList( $this.filePath , listName , $this.selectedListId , function(ws) {
 				$this.showList();
 			} );
 		}
@@ -80,8 +88,11 @@ EquationListManager.prototype.init = function() {
 };
 
 EquationListManager.prototype.showImport = function( filepath ) {
+	var $this = this;
+	
+	// after file upload 
 	this.listName.val("");
-	this.filePath= filepath ;
+	this.filePath = filepath ;
 	
 	this.viewSection.hide();
 	this.importSection.fadeIn();
@@ -90,13 +101,88 @@ EquationListManager.prototype.showImport = function( filepath ) {
  * Update equation lists UI
  */
 EquationListManager.prototype.showList = function() {
+	this.importSection.hide();
+	this.viewSection.show();
+	this.equationLists.empty();
+	 
 	var $this = this;
-	
 	WorkspaceManager.getInstance().activeWorkspace( function(ws) {
-		console.log( ws.equationLists );
+		$.each( ws.equationLists , function( i , eq ){
+			
+			var addButton = function( ){
+				
+				var btn = $( '<button class="btn option-btn width100"></button>' );
+				btn.hide();
+				btn.html( eq.name );
+				$this.equationLists.append( btn );
+				setTimeout( function(){
+					btn.fadeIn();
+				} , i * 75);
+				
+				
+				var optionBtn = new OptionButton( btn );
+				
+				var select = function( list ) {
+					
+					// unselect last selection 
+					if( $this.lastSelection ){
+						$this.lastSelection.deselect();
+					}
+					
+					UI.lock();
+					var tbody = $this.equationsTable.find("tbody");
+					tbody.empty();
+					$this.equationsTable.show();
+					$.ajax({
+						url			: $this.BASE_URI + list.id + "/equations.json" ,
+						method		: "GET" ,
+						dataType	: "json"
+					}).done( function(response) {
+						UI.unlock();
+						
+						var equations = response.fields.equations;
+						$.each( equations , function( j , equation) {
+							var tr = $( "<tr style='font-size:0.9em'></tr>" );
+							tr.hide();
+							tbody.append( tr );
+							
+							var td = $( "<td></td>" );
+							td.html( equation.code );
+							tr.append( td );
+							
+							td = $( "<td></td>" );
+							td.html( equation.equation );
+							tr.append( td );
+							
+							td = $( "<td></td>" );
+							td.html( equation.condition );
+							tr.append( td );
+							
+							setTimeout( function(){
+								tr.fadeIn();
+							} , j * 75);
+							
+							$this.selectedListButton = optionBtn;
+							$this.selectedListId 	= list.id; 
+						});
+					}).error(function(){
+						Calc.error.apply( this, arguments );
+					})
+				};
+				optionBtn.select( select , eq );
+				
+				var deselect = function( e ){
+					$this.equationsTable.fadeOut();
+					
+					$this.selectedListButton = null;
+					$this.selectedListId 	= null;
+				};
+				optionBtn.deselect( deselect , eq )
+			}
+			
+			addButton();
+		});
 		
-		$this.importSection.hide();
-		$this.viewSection.show();
 	});
 	
 };

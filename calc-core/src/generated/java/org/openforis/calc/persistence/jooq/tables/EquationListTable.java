@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class EquationListTable extends org.jooq.impl.TableImpl<org.openforis.calc.persistence.jooq.tables.records.EquationListRecord> {
 
-	private static final long serialVersionUID = 2050394933;
+	private static final long serialVersionUID = 623228662;
 
 	/**
 	 * The singleton instance of <code>calc.equation_list</code>
@@ -44,7 +44,7 @@ public class EquationListTable extends org.jooq.impl.TableImpl<org.openforis.cal
 	/**
 	 * The column <code>calc.equation_list.parameters</code>.
 	 */
-	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.EquationListRecord, org.openforis.calc.metadata.Variable.Scale> PARAMETERS = createField("parameters", org.jooq.impl.SQLDataType.CLOB.defaulted(true).asConvertedDataType(new org.openforis.calc.persistence.jooq.VariableScaleConverter()), this, "");
+	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.EquationListRecord, org.openforis.calc.engine.ParameterMap> PARAMETERS = createField("parameters", org.jooq.impl.SQLDataType.CLOB.defaulted(true).asConvertedDataType(new org.openforis.calc.persistence.jooq.ParameterMapConverter()), this, "");
 
 	/**
 	 * Create a <code>calc.equation_list</code> table reference

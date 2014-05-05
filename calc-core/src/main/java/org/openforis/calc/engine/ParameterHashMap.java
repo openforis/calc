@@ -1,6 +1,7 @@
 package org.openforis.calc.engine;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -86,6 +87,26 @@ public class ParameterHashMap implements ParameterMap {
 	public void setList(String name, List<ParameterMap> value) {
 		map.put(name, value);
 	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public Collection<? extends Object> getArray(String name) {
+		Object value = map.get(name);
+		
+		if( value == null ) {
+			return null;
+		} else if( value instanceof List ) {
+			return (Collection<? extends Object>) value;
+		} else {
+			throw new IllegalStateException( "Unknown value " + value.getClass() );			
+		}
+	}
+	
+	@Override
+	public void setArray( String name, Collection<? extends  Object> values ) {
+		map.put( name, new ArrayList<Object>(values) );
+	}
+	
 	/**
 	 * WARNING: Does not defensively copy the map; 
 	 * Changes to this map value pass through to the 

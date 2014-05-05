@@ -1,6 +1,7 @@
 package org.openforis.calc.web.controller;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -14,6 +15,8 @@ import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceLockedException;
 import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.Equation;
+import org.openforis.calc.metadata.EquationList;
 import org.openforis.calc.metadata.EquationManager;
 import org.openforis.calc.metadata.SamplingDesign;
 import org.openforis.calc.metadata.SamplingDesignManager;
@@ -69,18 +72,53 @@ public class InventorySettingsController {
 		return response;
 	}
 	
-	@RequestMapping(value = "/settings/equationList/{listName}.json", method = RequestMethod.POST, produces = "application/json")
+	@RequestMapping(value = "/settings/equationList.json", method = RequestMethod.PUT, produces = "application/json")
 	public @ResponseBody 
-	Response importEquationList( @RequestParam String filePath , @PathVariable String listName ) throws IOException {
-		
+	Response createEquationList( @RequestParam String filePath , @RequestParam String listName ) throws IOException {
 		Workspace workspace = workspaceService.getActiveWorkspace();
-		
-		equationManager.importFromCsv( workspace, filePath, listName );
+		equationManager.createFromCsv( workspace, filePath, listName );
 		
 		Response response = new Response();
+		response.addField("equationLists", workspace.getEquationLists());
+		return response;
+	}
+	
+	@RequestMapping(value = "/settings/equationList/{listId}.json", method = RequestMethod.PUT, produces = "application/json")
+	public @ResponseBody 
+	Response updateEquationList( @PathVariable long listId,  @RequestParam String filePath , @RequestParam String listName ) throws IOException {
+		Workspace workspace = workspaceService.getActiveWorkspace();
+		
+		equationManager.updateFromCsv(workspace, filePath, listName, listId);
+		
+		Response response = new Response();
+		response.addField("equationLists", workspace.getEquationLists());
 		return response;
 	} 
 	
+	@RequestMapping(value = "/settings/equationList/{listId}/equations.json", method = RequestMethod.GET, produces = "application/json")
+	public @ResponseBody 
+	Response getEquations( @PathVariable long listId ) throws IOException {
+		Workspace workspace = workspaceService.getActiveWorkspace();
+		
+		EquationList equationList = workspace.getEquationListById( listId );
+		List<Equation> equations = equationList.getEquations();
+		
+		Response response = new Response();
+		response.addField( "equations", equations );
+		
+		return response;
+	} 
+	
+//	@RequestMapping(value = "/settings/equationList/variables.json", method = RequestMethod.GET, produces = "application/json")
+//	public @ResponseBody 
+//	Response importEquationList( @RequestParam String filePath ) throws IOException {
+//		Set<String> variables = equationManager.extractVariables( filePath );
+//		
+//		Response response = new Response();
+//		response.addField("variables", variables);
+//		
+//		return response;
+//	}
 	
 	/**
 	 * Parse the json object into a samplingDesing instance
@@ -92,8 +130,8 @@ public class InventorySettingsController {
 	 */
 	private SamplingDesign parseSamplingDesignFromJsonString(Workspace workspace, String samplingDesignParam) throws ParseException {
 		if (StringUtils.isNotEmpty(samplingDesignParam)) {
-			JSONObject json = (JSONObject) new JSONParser().parse(samplingDesignParam);
-			Object suId = json.get("samplingUnitId");
+			JSONObject json = (JSONObject) new JSONParser().parse( samplingDesignParam );
+			Object suId = json.get( "samplingUnitId" );
 			if (suId != null) {
 				SamplingDesign samplingDesign = new SamplingDesign();
 				Entity entity = workspace.getEntityById(Integer.valueOf(suId.toString()));

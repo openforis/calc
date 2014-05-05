@@ -132,10 +132,25 @@ public class Workspace extends WorkspaceBase {
 		}
 	}
 	
+	public EquationList getEquationListById( long listId ) {
+		List<EquationList> equationLists2 = getEquationLists();
+		for (EquationList equationList : equationLists2) {
+			if( equationList.getId().equals(listId) ) {
+				return equationList;
+			}
+		}
+		return null;
+	}
+	
 	public void addEquationList( EquationList equationList ){
 		if( this.equationLists == null ){
 			this.equationLists = new ArrayList<EquationList>();
 		}
+		EquationList list = this.getEquationListById( equationList.getId() );
+		if( list != null ){
+			this.equationLists.remove( list );
+		}
+		
 		this.equationLists.add( equationList );
 		equationList.setWorkspace( this );
 	}

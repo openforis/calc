@@ -142,10 +142,11 @@ public class R {
 		if( baseFunctions == null ) {
 			try {
 				REnvironment rEnvironment = this.newEnvironment();
-				String[] result = rEnvironment.evalStrings("as.vector( lsf.str(\"package:base\") )");
+				String[] result = rEnvironment.evalStrings( "sort( builtins() )" );
+//				String[] result = rEnvironment.evalStrings("as.vector( lsf.str(\"package:base\") )");
 				baseFunctions = Arrays.asList( result );
 			} catch (RException e) {
-				throw new IllegalStateException( "Unable to retreive R base functions" , e );
+				throw new IllegalStateException( "Unable to retreive R builtin functions" , e );
 			}
 		}
 		return baseFunctions;

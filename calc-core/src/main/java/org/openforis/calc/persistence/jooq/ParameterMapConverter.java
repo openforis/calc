@@ -47,7 +47,7 @@ public class ParameterMapConverter implements Converter<String, ParameterMap> {
 			JSONParser parser = new JSONParser();
 			Object obj = parser.parse(str);
 			if (obj instanceof JSONObject) {
-				return new ParameterHashMap((JSONObject) obj);
+				return new ParameterHashMap( (JSONObject) obj );
 			} else {
 				throw new IllegalArgumentException("Invalid JSON in database: " + str);
 			}

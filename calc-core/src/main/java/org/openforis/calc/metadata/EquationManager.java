@@ -4,12 +4,18 @@
 package org.openforis.calc.metadata;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.json.simple.JSONObject;
+import org.openforis.calc.engine.ParameterHashMap;
+import org.openforis.calc.engine.ParameterMap;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.persistence.jooq.Sequences;
 import org.openforis.calc.persistence.jooq.Tables;
@@ -42,71 +48,82 @@ public class EquationManager {
 	@Autowired
 	private R r;
 
-	private static Pattern VARIABLE_PATTERN = Pattern.compile( "\\b([A-Za-z]+?)\\b" );;
-	
-	public Set<String> extractVariableNames( String filePath ) throws IOException {
-		Set<String> variables = new HashSet<String>();
-		
-		CsvReader csvReader = new CsvReader(filePath);
-		csvReader.readHeaders();
-//		int i = 0;
-		for ( FlatRecord record = csvReader.nextRecord(); record != null; record = csvReader.nextRecord() ) {
-//			String code = record.getValue( 0, String.class );
-			String equation = record.getValue( 1, String.class );
-//			System.out.println(" === Iter : " + (i++) + ".  Equation : " + equation);
-			Matcher matcher = VARIABLE_PATTERN.matcher( equation );
-			while( matcher.find() ) {
-				String var = matcher.group( 1 );
-				if( !r.getBaseFunctions().contains( var ) ) {
-					variables.add( var );
-				}
-			}
-		}
-		
-		csvReader.close();
-		
-		return variables;
-	}
-	
-	public static void main(String[] args) throws IOException {
-		EquationManager m = new EquationManager();
-		m.extractVariableNames("/openforis/test-data/src/main/resources/laputa/calc-volume-models.csv");
-	}
+	private static Pattern VARIABLE_PATTERN = Pattern.compile( "\\b([A-Za-z]+?)\\b" );
 	
 	@Transactional
-	public void importFromCsv( Workspace workspace , String filePath, String listName ) throws IOException {
-		
-		// delete equation list
-		deleteListByName( workspace , listName );
-		
+	public void createFromCsv( Workspace workspace , String filePath, String listName ) throws IOException {
 		// create equation list
-		EquationList list = new EquationList();
-		list.setName( listName );
-		list.setId( psql.nextval( Sequences.EQUATION_LIST_ID_SEQ ) );
-		workspace.addEquationList( list );
+		EquationList equationList = new EquationList();
+		equationList.setId( psql.nextval( Sequences.EQUATION_LIST_ID_SEQ ) );
+		equationList.setName( listName );
+		workspace.addEquationList( equationList );
+		
+		importCsv(equationList, filePath);
+		
+	}
+	
+	@Transactional
+	public void updateFromCsv( Workspace workspace , String filePath, String listName , long listId ) throws IOException {
+		EquationList equationList = workspace.getEquationListById(listId);
+		equationList.setName( listName );
+		workspace.addEquationList( equationList );
+		
+		importCsv(equationList, filePath);
+	}
+	
+	@Transactional
+	private void importCsv( EquationList equationList , String filePath) throws IOException {
+		// delete equations
+		deleteEquations( equationList );
 		
 		CsvReader csvReader = new CsvReader(filePath);
 		csvReader.readHeaders();
 		
+		Set<String> variables = new HashSet<String>();
 		for ( FlatRecord record = csvReader.nextRecord(); record != null; record = csvReader.nextRecord() ) {
-			System.out.println( record );
+//			System.out.println( record );
+			
+			String code = record.getValue( 0, String.class );
+			String equationString = record.getValue( 1, String.class );
+			String condition = record.getValue( 2, String.class );
+			
+			Equation equation = new Equation();
+			equation.setId( psql.nextval(Sequences.EQUATION_ID_SEQ) );
+			equation.setCode(code);
+			equation.setEquation(equationString);
+			equation.setCondition(condition);
+			
+			equationList.addEquation(equation);
+			
+			variables.addAll( extractVariables(equationString) );
 		}
+		
+		ParameterMap parameters = new ParameterHashMap();
+		parameters.setArray( "variables" , variables );
+		equationList.setParameters(parameters);
+		
+		
+		if( equationListDao.exists(equationList) ) {
+			equationListDao.update( equationList );
+		} else {
+			equationListDao.insert( equationList );
+		}
+		equationDao.insert( equationList.getEquations() );
 		
 		csvReader.close();
 	}
 	
 	@Transactional
-	private void deleteListByName( Workspace workspace, String listName ) {
-		List<EquationList> equationLists = workspace.getEquationLists();
-		for (EquationList equationList : equationLists) {
-			
-			if( equationList.getName().equals(listName) ) {
-				workspace.deleteEquationList( equationList );
-				equationListDao.deleteById( equationList.getId() );
-				break;
-			}
-			
-		}
+	private void deleteEquations( EquationList equationList ) {
+//		Workspace workspace = equationList.getWorkspace();
+//		workspace.deleteEquationList( equationList );
+//		equationDao.delete( equationList.getEquations() );
+		psql
+			.delete( Tables.EQUATION )
+			.where( Tables.EQUATION.LIST_ID.eq(equationList.getId()) )
+			.execute();
+		
+		equationList.setEquations(null);
 	}
 
 	@Transactional
@@ -129,4 +146,17 @@ public class EquationManager {
 		workspace.setEquationLists( list );
 		
 	}
+	
+	private Set<String> extractVariables( String equation ) throws IOException {
+		Set<String> variables = new HashSet<String>();
+		Matcher matcher = VARIABLE_PATTERN.matcher( equation );
+		while( matcher.find() ) {
+			String var = matcher.group( 1 );
+			if( !r.getBaseFunctions().contains( var ) ) {
+				variables.add( var );
+			}
+		}
+		return variables;
+	}
+
 }
