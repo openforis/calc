@@ -43,11 +43,13 @@ public class EquationList extends EquationListBase {
 	}
 	
 	public void setEquations( List<Equation> equations ) {
-		if( equations != null ){
+		if( equations == null ) {
+			this.equations = null;
+		} else {
 			for (Equation equation : equations) {
 				this.addEquation( equation );
 			}
-		}
+		} 
 	}
 	
 	public void addEquation( Equation equation ){

@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.jooq.DeleteConditionStep;
 import org.json.simple.JSONObject;
 import org.openforis.calc.engine.ParameterHashMap;
 import org.openforis.calc.engine.ParameterMap;
@@ -21,6 +22,7 @@ import org.openforis.calc.persistence.jooq.Sequences;
 import org.openforis.calc.persistence.jooq.Tables;
 import org.openforis.calc.persistence.jooq.tables.daos.EquationDao;
 import org.openforis.calc.persistence.jooq.tables.daos.EquationListDao;
+import org.openforis.calc.persistence.jooq.tables.records.EquationRecord;
 import org.openforis.calc.psql.Psql;
 import org.openforis.calc.r.R;
 import org.openforis.commons.io.csv.CsvReader;
@@ -115,15 +117,8 @@ public class EquationManager {
 	
 	@Transactional
 	private void deleteEquations( EquationList equationList ) {
-//		Workspace workspace = equationList.getWorkspace();
-//		workspace.deleteEquationList( equationList );
-//		equationDao.delete( equationList.getEquations() );
-		psql
-			.delete( Tables.EQUATION )
-			.where( Tables.EQUATION.LIST_ID.eq(equationList.getId()) )
-			.execute();
-		
-		equationList.setEquations(null);
+		equationDao.delete( equationList.getEquations() );
+		equationList.setEquations( null );
 	}
 
 	@Transactional
