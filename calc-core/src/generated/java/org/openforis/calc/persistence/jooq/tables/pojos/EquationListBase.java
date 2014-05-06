@@ -11,20 +11,20 @@ package org.openforis.calc.persistence.jooq.tables.pojos;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class EquationListBase implements java.io.Serializable {
 
-	private static final long serialVersionUID = 1831151447;
+	private static final long serialVersionUID = 1995433191;
 
-	private java.lang.Long                             id;
-	private java.lang.String                           name;
-	private java.lang.Integer                          workspaceId;
-	private org.openforis.calc.metadata.Variable.Scale parameters;
+	private java.lang.Long                         id;
+	private java.lang.String                       name;
+	private java.lang.Integer                      workspaceId;
+	private org.openforis.calc.engine.ParameterMap parameters;
 
 	public EquationListBase() {}
 
 	public EquationListBase(
-		java.lang.Long                             id,
-		java.lang.String                           name,
-		java.lang.Integer                          workspaceId,
-		org.openforis.calc.metadata.Variable.Scale parameters
+		java.lang.Long                         id,
+		java.lang.String                       name,
+		java.lang.Integer                      workspaceId,
+		org.openforis.calc.engine.ParameterMap parameters
 	) {
 		this.id = id;
 		this.name = name;
@@ -56,11 +56,11 @@ public class EquationListBase implements java.io.Serializable {
 		this.workspaceId = workspaceId;
 	}
 
-	public org.openforis.calc.metadata.Variable.Scale getParameters() {
+	public org.openforis.calc.engine.ParameterMap getParameters() {
 		return this.parameters;
 	}
 
-	public void setParameters(org.openforis.calc.metadata.Variable.Scale parameters) {
+	public void setParameters(org.openforis.calc.engine.ParameterMap parameters) {
 		this.parameters = parameters;
 	}
 }

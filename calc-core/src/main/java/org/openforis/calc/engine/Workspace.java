@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -131,14 +132,41 @@ public class Workspace extends WorkspaceBase {
 		}
 	}
 	
+	public EquationList getEquationListById( long listId ) {
+		List<EquationList> equationLists2 = getEquationLists();
+		for (EquationList equationList : equationLists2) {
+			if( equationList.getId().equals(listId) ) {
+				return equationList;
+			}
+		}
+		return null;
+	}
+	
 	public void addEquationList( EquationList equationList ){
 		if( this.equationLists == null ){
 			this.equationLists = new ArrayList<EquationList>();
 		}
+		EquationList list = this.getEquationListById( equationList.getId() );
+		if( list != null ){
+			this.equationLists.remove( list );
+		}
+		
 		this.equationLists.add( equationList );
 		equationList.setWorkspace( this );
 	}
 	
+	public void deleteEquationList( EquationList equationList ) {
+		if( this.equationLists != null ) {
+			Iterator<EquationList> iterator = this.equationLists.iterator();
+			while( iterator.hasNext() ) {
+				EquationList list = iterator.next();
+				if( list.getName().equals(equationList.getName()) ){
+					iterator.remove();
+					return;
+				}
+			}
+		}
+	}
 	@JsonInclude
 	public String getPhase1PlotTableName() {
 		return String.format( "_phase1_plot_%s" , this.getName() );

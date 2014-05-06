@@ -153,9 +153,9 @@ $(document).ready(function() {
 		}
 		
 		$.ajax({
-			url: sectionUrl,
+			url		: sectionUrl,
 			dataType: "html",
-			data:{ "t" : new Date().getTime() }
+			data	:{ "t" : new Date().getTime() }
 		}).done(function( response ) {
 			var page = $( response );
 			

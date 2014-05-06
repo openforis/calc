@@ -11,10 +11,11 @@ package org.openforis.calc.persistence.jooq.tables.pojos;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class EquationBase implements java.io.Serializable {
 
-	private static final long serialVersionUID = 987941495;
+	private static final long serialVersionUID = -1432586287;
 
 	private java.lang.Long   id;
 	private java.lang.Long   listId;
+	private java.lang.String code;
 	private java.lang.String equation;
 	private java.lang.String condition;
 
@@ -23,11 +24,13 @@ public class EquationBase implements java.io.Serializable {
 	public EquationBase(
 		java.lang.Long   id,
 		java.lang.Long   listId,
+		java.lang.String code,
 		java.lang.String equation,
 		java.lang.String condition
 	) {
 		this.id = id;
 		this.listId = listId;
+		this.code = code;
 		this.equation = equation;
 		this.condition = condition;
 	}
@@ -46,6 +49,14 @@ public class EquationBase implements java.io.Serializable {
 
 	public void setListId(java.lang.Long listId) {
 		this.listId = listId;
+	}
+
+	public java.lang.String getCode() {
+		return this.code;
+	}
+
+	public void setCode(java.lang.String code) {
+		this.code = code;
 	}
 
 	public java.lang.String getEquation() {

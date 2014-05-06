@@ -66,7 +66,7 @@ public class EquationListDao extends org.jooq.impl.DAOImpl<org.openforis.calc.pe
 	/**
 	 * Fetch records that have <code>parameters IN (values)</code>
 	 */
-	public java.util.List<EquationList> fetchByParameters(org.openforis.calc.metadata.Variable.Scale... values) {
+	public java.util.List<EquationList> fetchByParameters(org.openforis.calc.engine.ParameterMap... values) {
 		return fetch(org.openforis.calc.persistence.jooq.tables.EquationListTable.EQUATION_LIST.PARAMETERS, values);
 	}
 }

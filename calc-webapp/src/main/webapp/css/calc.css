@@ -1325,3 +1325,20 @@ ul.ui-sortable li {
 	height: 7em;
 	margin: 0.2em 0.5em;
 }
+
+
+/**
+* Equation list settings 
+*/
+.equations-table {
+	font-size: 0.8 em;
+}
+.equations-table th {
+	font-weight: 200;
+	border-bottom: 1px solid #FFF;
+}
+.equations-table td {
+	font-weight: 200;
+	border-bottom: 1px;
+	text-align: left;
+}

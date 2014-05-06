@@ -1,7 +1,8 @@
 <div class="page-section" id="equation-list" style="padding-top: 10px">
 
 	<div class="col-md-12 height100 view-section" style="overflow: hidden;">
-		<div class="col-md-2 list height100">
+	
+		<div class="row col-md-2 list height100">
 			<div class="height10">
 				<form class="upload-csv-form"  method="post" enctype="multipart/form-data" action="rest/csv-upload.json">
 					<button type="button" class="btn btn-default width100" name="upload-btn">Upload Csv</button>
@@ -11,11 +12,29 @@
 			<div class=" height5">Equation lists</div>
 			<div class="equation-lists height85" style="overflow: auto;"></div>
 		</div>
+		
+		<div class="col-md-offset-1 col-md-9 height100">
+			<table class="table equations-table">
+		        <thead>
+		        	<tr>
+		        		<th>Code</th>
+		        		<th>Equation</th>
+		        		<th>Condition</th>
+	        		</tr>
+        		</thead>
+		        <tbody></tbody>
+      		</table>
+		</div>
 	</div>
 	
 	<div class="col-md-12 height100 import-section" style="padding-top: 30px">
 		<div class="row">
-			Name : <input type="text" name="list-name" />
+			<div class="form-group col-md-4 col-md-offset-4">
+				<label class="col-md-2 control-label">Name</label>
+				<div class="col-md-10">
+					<input type="text" class="form-control" name="list-name">
+				</div>
+			</div>
 		</div>
 		<div class="row col-md-2 col-md-offset-5" style="padding-top: 30px;">
 			<button type="button" class="btn btn-default width100" name="import-btn">Import</button>

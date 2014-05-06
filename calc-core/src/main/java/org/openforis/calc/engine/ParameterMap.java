@@ -1,5 +1,6 @@
 package org.openforis.calc.engine;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -31,6 +32,9 @@ public interface ParameterMap {
 
 	List<ParameterMap> getList(String name);
 	void setList(String name, List<ParameterMap> value);
+	
+	Collection<? extends Object> getArray( String name );
+	void setArray( String name , Collection<? extends Object> values );
 	
 	void remove(String name);
 	

@@ -331,17 +331,23 @@ WorkspaceManager.prototype = (function(){
 	/**
 	 * Import an equation list previously uploaded as csv file
 	 */
-	var activeWorkspaceImportEquationList = function( filePath , listName , success) {
+	var activeWorkspaceImportEquationList = function( filePath , listName , listId , success) {
 		var $this = this;
 		UI.lock();
+		
+		var url = "rest/workspace/active/settings/equationList";
+		if( listId ) {
+			url += "/" + listId;
+		}
+		url += ".json";
+		
 		$this.activeWorkspace(function(ws){
 			
-			var data = { "filePath":filePath , "listName":listName };
 			$.ajax({
-				url : "rest/workspace/active/settings/equationList.json",
-				dataType : "json",
-				method : "POST",
-				data : data
+				url 		: url,
+				dataType 	: "json",
+				method 		: "PUT",
+				data 		: { "filePath" : filePath , "listName" : listName }
 			}).done( function(response) {
 				var lists = response.fields.equationLists;
 				ws.equationLists = lists;

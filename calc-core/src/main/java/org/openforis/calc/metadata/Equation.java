@@ -20,8 +20,10 @@ public class Equation extends EquationBase {
 	
 	public void setList(EquationList equationList) {
 		this.equationList = equationList;
+		setListId( equationList.getId() );
 	}
 	
+	@JsonIgnore
 	public EquationList getList() {
 		return equationList;
 	}
