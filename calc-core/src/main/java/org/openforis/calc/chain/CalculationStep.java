@@ -26,7 +26,10 @@ public class CalculationStep extends CalculationStepBase {
 
 	public static final String VARIABLE_PATTERN = "\\$(.+?)\\$";
 
-
+	public enum Type {
+		SCRIPT , EQUATION
+	}
+	
 	@JsonIgnore
 	private Variable<?> outputVariable;
 
@@ -96,6 +99,13 @@ public class CalculationStep extends CalculationStepBase {
 	@JsonSerialize(using = ParameterMapJsonSerializer.class)
 	public ParameterMap getParameters() {
 		return super.getParameters();
+	}
+	
+	public Type getType() {
+//		String string = getParameters().getString( "type" );
+//		Type type = Type.valueOf( string );
+//		return type;
+		return Type.SCRIPT;
 	}
 	
 }

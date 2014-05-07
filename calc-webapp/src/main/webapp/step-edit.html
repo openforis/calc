@@ -36,15 +36,22 @@
 					<div class="form-group">
 						<label for="select-variable" class="col-md-2 control-label">Variable</label>
 						<div class="col-md-9">
-							<select class="form-control" name="variableId" disabled="disabled"></select>
+							<select class="form-control" name="variableId"></select>
 						</div>
-<!-- 						<div class="no-padding col-md-1"> -->
 							<button name="add-variable" type="button" class="calculation btn btn-info col-md-1" disabled="disabled">
 								<i class="icon-plus-sign-alt"></i>
 							</button>
-<!-- 						</div> -->
 					</div>
 					<div class="form-group">
+						<label class="col-md-2 control-label">Type</label>
+						<div class="col-md-10" style="text-align: left">
+							<input type="hidden" name="type">
+							<button class="btn option-btn" name="type-r-script" style="min-width: 10em">R script</button>
+							<button class="btn option-btn" name="type-equation" style="min-width: 10em">External equation</button>
+						</div>
+					</div>
+					
+					<div class="form-group r-script-form">
 <!-- 						<div class="row"> -->
 							<label class="col-md-2 control-label">Script</label>
 							<div class="col-md-10">
@@ -68,37 +75,46 @@
 								</div>
 							</div>
 					</div>
+					<div class="form-group equation-form">
+						<label class="col-md-2 control-label">Equation</label>
+						<div class="col-md-10">
+							
+							<div class="form-group">
+								<label class="col-md-2 control-label">Equation list</label>
+								<div class="col-md-10">
+									<select class="form-control" name="equation-list"></select>
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<label class="col-md-2 control-label">Code variable</label>
+								<div class="col-md-10">
+									<select class="form-control" name="code-variable"></select>
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<label class="col-md-2 control-label">Variable 'd'</label>
+								<div class="col-md-10">
+									<select class="form-control" name="d"></select>
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<label class="col-md-2 control-label">Variable 'h'</label>
+								<div class="col-md-10">
+									<select class="form-control" name="h"></select>
+								</div>
+							</div>
+							
+						</div>
+					</div>
 					
 					<div class="form-group buttons">
 						<div class="col-md-2 col-md-offset-5" style="text-align: center;">
 							<button type="submit" class="btn btn-default" style="width: 100%">Save</button>
 						</div>
-<!-- 						<div class="col-md-6 step-edit-exec-option"> -->
-<!-- 							<div class="col-md-6"> -->
-<!-- 								<button type="button" name="run-calculcation-step" class="btn btn-default btn-lg" style="width: 50%">Execute</button> -->
-<!-- 								<button type="button" name="exec-options" class="btn no-background options-btn"><i class="icon-cog"></i></button> -->
-<!-- 							</div> -->
-<!-- 							<div class="col-md-6 options"> -->
-<!-- 								<input type="text" class="form-control no-border" name="totalItems" placeholder="Number of records"> -->
-<!-- 							</div> -->
-<!-- 						</div> -->
 					</div>
-					
-					<!-- Old buttons to save and execute.  -->
-<!-- 					<div class="form-group buttons"> -->
-<!-- 						<div class="col-md-3 col-md-offset-3" style="text-align: center;"> -->
-<!-- 							<button type="submit" class="btn btn-default btn-lg" style="width: 50%">Save</button> -->
-<!-- 						</div> -->
-<!-- 						<div class="col-md-6 step-edit-exec-option"> -->
-<!-- 							<div class="col-md-6"> -->
-<!-- 								<button type="button" name="run-calculcation-step" class="btn btn-default btn-lg" style="width: 50%">Execute</button> -->
-<!-- 								<button type="button" name="exec-options" class="btn no-background options-btn"><i class="icon-cog"></i></button> -->
-<!-- 							</div> -->
-<!-- 							<div class="col-md-6 options"> -->
-<!-- 								<input type="text" class="form-control no-border" name="totalItems" placeholder="Number of records"> -->
-<!-- 							</div> -->
-<!-- 						</div> -->
-<!-- 					</div> -->
 				</fieldset>
 				
 				<!-- // NOT USED NOW -->
