@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CalculationStepTable extends org.jooq.impl.TableImpl<org.openforis.calc.persistence.jooq.tables.records.CalculationStepRecord> {
 
-	private static final long serialVersionUID = 109040140;
+	private static final long serialVersionUID = 741542960;
 
 	/**
 	 * The singleton instance of <code>calc.calculation_step</code>
@@ -82,6 +82,16 @@ public class CalculationStepTable extends org.jooq.impl.TableImpl<org.openforis.
 	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.CalculationStepRecord, java.lang.Integer> OUTPUT_VARIABLE_ID = createField("output_variable_id", org.jooq.impl.SQLDataType.INTEGER.defaulted(true), this, "");
 
 	/**
+	 * The column <code>calc.calculation_step.type</code>.
+	 */
+	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.CalculationStepRecord, org.openforis.calc.chain.CalculationStep.Type> TYPE = createField("type", org.jooq.impl.SQLDataType.VARCHAR.length(255).nullable(false).defaulted(true).asConvertedDataType(new org.openforis.calc.persistence.jooq.CalculationStepTypeConverter()), this, "");
+
+	/**
+	 * The column <code>calc.calculation_step.equation_list_id</code>.
+	 */
+	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.CalculationStepRecord, java.lang.Long> EQUATION_LIST_ID = createField("equation_list_id", org.jooq.impl.SQLDataType.BIGINT.defaulted(true), this, "");
+
+	/**
 	 * Create a <code>calc.calculation_step</code> table reference
 	 */
 	public CalculationStepTable() {
@@ -132,7 +142,7 @@ public class CalculationStepTable extends org.jooq.impl.TableImpl<org.openforis.
 	 */
 	@Override
 	public java.util.List<org.jooq.ForeignKey<org.openforis.calc.persistence.jooq.tables.records.CalculationStepRecord, ?>> getReferences() {
-		return java.util.Arrays.<org.jooq.ForeignKey<org.openforis.calc.persistence.jooq.tables.records.CalculationStepRecord, ?>>asList(org.openforis.calc.persistence.jooq.Keys.CALCULATION_STEP__CALCULATION_STEP_PROCESSING_CHAIN_FKEY, org.openforis.calc.persistence.jooq.Keys.CALCULATION_STEP__CALCULATION_STEP_VARIABLE_FKEY);
+		return java.util.Arrays.<org.jooq.ForeignKey<org.openforis.calc.persistence.jooq.tables.records.CalculationStepRecord, ?>>asList(org.openforis.calc.persistence.jooq.Keys.CALCULATION_STEP__CALCULATION_STEP_PROCESSING_CHAIN_FKEY, org.openforis.calc.persistence.jooq.Keys.CALCULATION_STEP__CALCULATION_STEP_VARIABLE_FKEY, org.openforis.calc.persistence.jooq.Keys.CALCULATION_STEP__CALCULATION_STEP_EQUATION_LIST_FK);
 	}
 
 	/**

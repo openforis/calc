@@ -43,7 +43,7 @@ CalculationStepEditManager = function (container) {
 	this.workspace 	= null;
 	
 	this.init();
-}
+};
 
 /**
  * Initialize the event handlers and populate the form with initial data
@@ -71,9 +71,18 @@ CalculationStepEditManager.prototype.init = function(callback) {
 				$this.currentCalculationStep = response;
 				$this.updateForm();
 			});
-			
 		} else {
+			// default settings
 			$this.rScriptButton.select();
+		}
+		
+		// disable / enable type buttons
+		if( $this.workspace.equationLists.length == 0 ) {
+			// disable type equation
+			UI.disable( $this.equationButton.button );
+		} else {
+			// enable type equations
+			$this.equationListCombo.data( $this.workspace.equationLists , "id" , "name" );
 		}
 	});
 };
@@ -106,26 +115,35 @@ CalculationStepEditManager.prototype.initEventHandlers = function() {
 	
 	// selection / deselection of type buttons
 	this.rScriptButton.select( function() {
+		UI.disable( this.button );
 		$this.equationButton.deselect();
 		
 		$this.$form.find( '[name=type]' ).val( "SCRIPT" );
 		$this.rScriptForm.fadeIn( 300 );
 	});
 	this.rScriptButton.deselect( function() {
+		UI.enable( this.button );
+		
 		$this.$form.find( '[name=type]' ).val( "" );
 		$this.rScriptForm.hide();
 	});
 	
 	this.equationButton.select( function() {
+		UI.disable( this.button );
 		$this.rScriptButton.deselect();
 		
 		$this.$form.find( '[name=type]' ).val( "EQUATION" );
 		$this.equationForm.fadeIn( 300 );
 	});
 	this.equationButton.deselect( function() {
+		UI.enable( this.button );
+		
 		$this.$form.find( '[name=type]' ).val( "" );
 		$this.equationForm.hide();
 	});
+	
+	
+	this.equationListCombo.change( $.proxy( this.equationListChange , $this ) ) ;
 	
 };
 
@@ -204,6 +222,23 @@ CalculationStepEditManager.prototype.updateForm = function() {
 			break;
 		case "EQUATION":
 			this.equationButton.select();
+			// populate equation form
+			var params = $step.parameters;
+			
+			var equationListId = $step.equationListId;
+			this.equationListCombo.val( equationListId );
+			this.equationListChange();
+
+			var codeVariable = this.getSelectedEntity().getVariableById( params.codeVariable );
+			this.codeVariableCombo.val( codeVariable.id );
+			
+			for( var i in params.variables ){
+				var variableOption = params.variables[i];
+				var eqVar = variableOption.equationVariable;
+				var equiationVariableId = variableOption.variableId;
+				this.equationListVariableCombos[ eqVar ].val( equiationVariableId );
+			}
+			
 			break;
 	}
 	
@@ -216,14 +251,12 @@ CalculationStepEditManager.prototype.updateForm = function() {
 	
 /**
  * Returns the selected entity in the form
- * 
- * @returns
  */
 CalculationStepEditManager.prototype.getSelectedEntityId = function() {
 	var entityId = this.$entityCombo.val();
 	return entityId;
 };
-CalculationStepEditManager.prototype.getSelectedEntity = function(callback) {
+CalculationStepEditManager.prototype.getSelectedEntity = function() {
 	var entityId = this.getSelectedEntityId();
 	var entity = this.workspace.getEntityById( entityId );
 	return entity;
@@ -245,12 +278,25 @@ CalculationStepEditManager.prototype.entityChange = function() {
 		this.updateVariableSelect();
 		
 		UI.enable( this.$addVariableButton );
+		
+		this.equationListCombo.enable();
+		
 	} else {
 		// Entity not selected reset fields that need the entity
 		this.$RScript.entity = null;
 		UI.disable( this.$addVariableButton );
+		
 		this.$variableCombo.reset();
 		this.$variableCombo.disable();
+	
+		// not necessary. it shoud be easier to deselect the combobox...
+		this.equationListCombo.reset();
+		this.equationListCombo.data( this.workspace.equationLists , "id" , "name" );
+		
+		this.equationListCombo.disable();
+		
+		this.codeVariableCombo.reset();
+		this.codeVariableCombo.disable();
 	}
 	
 };
@@ -274,6 +320,46 @@ CalculationStepEditManager.prototype.hide = function() {
 	this.container.hide();
 };
 
+/**
+ * Handler for equation list combo box change event
+ */
+CalculationStepEditManager.prototype.equationListChange = function () {
+	var listId = this.equationListCombo.val();
+	var equationList = this.workspace.getEquationList( listId );
+	
+	this.equationForm.find( '.eq-variable' ).remove();
+	if( equationList ) {
+		this.codeVariableCombo.enable();
+		this.codeVariableCombo.data( this.getSelectedEntity().getAncestorsVariables() , "id" , "name" );
+		
+		var vars = equationList.parameters.variables;
+		this.equationListVariableCombos = {};
+		for( var i in vars ){
+			var variable = vars[i];
+			
+			var div = $( '<div class="form-group eq-variable">' );
+			var label = $( '<label class="col-md-2 control-label"></label>' );
+			label.html( "Variable '" +variable+ "'");
+			div.append( label );
+
+			var divSelect = $( '<div class="col-md-10">' );
+			var select = $( '<select class="form-control"></select>' );
+			select.attr( "name" , variable );
+			divSelect.append( select );	
+			var combo = select.combobox();
+			combo.data( this.getSelectedEntity().getAncestorsVariables() , "id" , "name" );
+			this.equationListVariableCombos[ variable ] = combo;
+			div.append( divSelect );
+			
+			div.hide();
+			this.equationForm.find(".form-container").append( div );
+			div.fadeIn();
+		}
+	} else {
+		this.codeVariableCombo.disable();
+		this.codeVariableCombo.reset();
+	}
+};
 
 AddVariableModal = function( triggerButton , editManager ) {
 	// calculation step edit manager instance
@@ -321,11 +407,11 @@ AddVariableModal.prototype.init = function() {
 		};
 		var completeCallback = function() {
 			UI.unlock();
-		}
+		};
 		
 		WorkspaceManager
 			.getInstance()
-			.activeWorkspaceAddQuantitativeVariable(variable, successCallback, errorCallback, completeCallback);
+			.activeWorkspaceAddQuantitativeVariable( variable, successCallback, errorCallback, completeCallback );
 	});
 	
 	//add variable button click

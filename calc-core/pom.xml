@@ -92,6 +92,10 @@
 									<name>org.openforis.calc.metadata.Variable.Scale</name>
 									<converter>org.openforis.calc.persistence.jooq.VariableScaleConverter</converter>
 								</customType>
+								<customType>
+									<name>org.openforis.calc.chain.CalculationStep.Type</name>
+									<converter>org.openforis.calc.persistence.jooq.CalculationStepTypeConverter</converter>
+								</customType>
 							</customTypes>
 							<forcedTypes>
 								<forcedType>
@@ -125,6 +129,10 @@
 								<forcedType>
 									<name>org.openforis.calc.engine.ParameterMap</name>
 									<expression>.*\.equation_list\.parameters</expression>
+								</forcedType>
+								<forcedType>
+									<name>org.openforis.calc.chain.CalculationStep.Type</name>
+									<expression>.*\.calculation_step\.type</expression>
 								</forcedType>
 							</forcedTypes>
 						</database>

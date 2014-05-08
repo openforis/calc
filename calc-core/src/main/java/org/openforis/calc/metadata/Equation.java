@@ -27,4 +27,5 @@ public class Equation extends EquationBase {
 	public EquationList getList() {
 		return equationList;
 	}
+	
 }

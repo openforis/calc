@@ -66,13 +66,15 @@ Entity.prototype.getVariables = function() {
  * Returns all the variables up to the root entity
  */
 Entity.prototype.getAncestorsVariables = function() {
-    var currentParent = this.parent();
     var result = this.getVariables();
-    while (currentParent != null) {
-	var parentVariables = currentParent.getVariables();
-	result = parentVariables.concat(result);
-	currentParent = currentParent.parent();
+    var currentParent = this.parent();
+
+    while ( currentParent != null ) {
+    	var parentVariables = currentParent.getVariables();
+    	result = parentVariables.concat( result );
+    	currentParent = currentParent.parent();
     }
+    
     return result;
 };
 
@@ -80,7 +82,7 @@ Entity.prototype.getAncestorsVariables = function() {
  * Returns the variable with the given id
  */
 Entity.prototype.getVariableById = function( id ) {
-	var variables = this.getVariables();
+	var variables = this.getAncestorsVariables();
     for (var i = 0; i < variables.length; i++) {
     	var variable = variables[i];
 		if (variable.id == id) {

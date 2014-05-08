@@ -118,4 +118,18 @@ public class CalculationStepDao extends org.jooq.impl.DAOImpl<org.openforis.calc
 	public java.util.List<CalculationStep> fetchByOutputVariableId(java.lang.Integer... values) {
 		return fetch(org.openforis.calc.persistence.jooq.tables.CalculationStepTable.CALCULATION_STEP.OUTPUT_VARIABLE_ID, values);
 	}
+
+	/**
+	 * Fetch records that have <code>type IN (values)</code>
+	 */
+	public java.util.List<CalculationStep> fetchByType(org.openforis.calc.chain.CalculationStep.Type... values) {
+		return fetch(org.openforis.calc.persistence.jooq.tables.CalculationStepTable.CALCULATION_STEP.TYPE, values);
+	}
+
+	/**
+	 * Fetch records that have <code>equation_list_id IN (values)</code>
+	 */
+	public java.util.List<CalculationStep> fetchByEquationListId(java.lang.Long... values) {
+		return fetch(org.openforis.calc.persistence.jooq.tables.CalculationStepTable.CALCULATION_STEP.EQUATION_LIST_ID, values);
+	}
 }

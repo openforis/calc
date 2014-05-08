@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+	<changeSet author="mino togna" id="023-add-calc-step-type">
+	
+		<sql>
+			alter table
+			    calc.calculation_step add column type varchar(255);
+			    
+			alter table
+			    calc.calculation_step add column equation_list_id bigint;
+			    
+			alter table
+			    calc.calculation_step add constraint calculation_step_equation_list_fk foreign key
+			    (equation_list_id) references calc.equation_list (id);
+			    
+			update calc.calculation_step set type = 'SCRIPT';
+			
+			alter table
+			    calc.calculation_step alter column type set not null;
+    
+		</sql>
+	    
+	</changeSet>
+    
+</databaseChangeLog>
+	    

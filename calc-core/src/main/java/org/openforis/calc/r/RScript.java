@@ -115,6 +115,10 @@ public class RScript {
 		return new If(this, condition, script);
 	}
 	
+	public IfElse ifElse( RScript condition, RScript leftValue, RScript rightValue ) {
+		return new IfElse( this, condition, leftValue, rightValue );
+	}
+	
 	public Not not(RScript script) {
 		return new Not(this, script);
 	}
