@@ -11,12 +11,10 @@ StratumManager = function(container , sdManager) {
 	// upload csv ui components
 	this.uploadSection = this.container.find(".upload-section");
 	
-	this.uploadBtn = this.container.find( "[name=upload-btn]" );
-	this.file = this.container.find( "[name=file]" );
-	this.form = this.container.find( "form" );
-	
-	
 	this.tableColumnSelector = new TableColumnSelector( this.container.find(".table-column-selector") );
+	
+	//form file upload manager (to be initialized in the init method)
+	this.formFileUpload = null;
 	
 	this.init();
 };
@@ -24,31 +22,13 @@ StratumManager = function(container , sdManager) {
 StratumManager.prototype.init = function(){
 	var $this = this;
 
-	// upload csv form methods 
-	this.form.ajaxForm( {
-	    dataType : 'json',
-	    beforeSubmit: function() {
-	    	UI.lock();
-	    },
-	    uploadProgress: function ( event, position, total, percentComplete ) {
-	    },
-	    success: function ( response ) {
-	    	$this.import( response.fields.filepath );
-	    },
-	    error: function (e) {
-			Calc.error.apply( this , arguments );
-	    	UI.unlock();
-	    },
-	    complete: function() {
-	    	// reset upload form
-	    	$this.fileUpload.reset();
-	    }
-	});	
+	//file upload success handler
+	var uploadSuccess = function ( response ) {
+		$this.import( response.fields.filepath );
+	};
 	
-	//init file upload
-	this.fileUpload = new FileUpload(this.uploadBtn, this.file, function(e) {
-		$this.form.submit();
-	});
+	//form file upload manager
+	this.formFileUpload = new FormFileUpload(this.uploadSection, null, uploadSuccess);
 };
 
 StratumManager.prototype.show = function() {

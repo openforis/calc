@@ -11,14 +11,8 @@ AoiManager = function(container) {
 	this.aoiSection = this.container.find(".aoi-section");
 	
 	// upload csv ui components
-	this.uploadSection = this.aoiSection.find(".upload-section");
-	this.uploadBtn = this.aoiSection.find( "[name=upload-btn]" );
-	this.file = this.aoiSection.find( "[name=file]" );
-	this.form = this.aoiSection.find( "form" );
-	this.uploadProgressBar = new ProgressBar( this.aoiSection.find(".progress"), this.aoiSection.find(".percent") );
-	// upload progress
-	this.uploadProgressSection = this.aoiSection.find(".progress-section");
-	this.uploadProgressSection.hide();
+	this.uploadFormSection = this.aoiSection.find(".upload-form-section");
+	this.uploadProgressSection = this.aoiSection.find(".upload-progress-section");
 	
 	// aoi import section
 	this.aoiImportSection = this.container.find(".aoi-import-section");
@@ -36,47 +30,19 @@ AoiManager = function(container) {
 	this.aoiTreeSection.css( "height", Math.floor( this.container.height()*0.79 )+"px" );
 	this.aoiTreeSection.attr("id","aoi-tree-svg");
 	
+	//form file uplaod manager (to be initialized in the init method)
+	this.formFileUpload = null;
+	
 	this.init();
 };
 
 AoiManager.prototype.init = function(){
 	var $this = this;
 
-	// upload csv form methods 
-	this.form.ajaxForm( {
-	    dataType : 'json',
-	    beforeSubmit: function() {
-	        $(this).addClass('loading');
-	        
-	        $this.uploadSection.fadeOut();
-			$this.uploadProgressSection.fadeIn();
-			$this.uploadProgressBar.update(0, 100);
-	    },
-	    uploadProgress: function ( event, position, total, percentComplete ) {
-	    	$this.uploadProgressBar.update(position, total);
-	    },
-	    success: function ( response ) {
-	    	$this.uploadProgressBar.progressSuccess();
-	    	$this.showImport(response);
-	    },
-	    error: function () {
-			Calc.error.apply( this , arguments );
-	    },
-	    complete: function() {
-	    	// reset upload form
-	    	$this.fileUpload.reset();
-			$this.uploadSection.fadeIn();
-			$this.uploadProgressSection.fadeOut();
-			$this.uploadProgressBar.update(0,100);
-	    }
-	});	
+	//form file upload manager
+	this.formFileUpload = new FormFileUpload(this.uploadFormSection, this.uploadProgressSection, $.proxy($this.showImport, $this));
 	
 	this.importBtn.click( function(e){ $this.import(); } );
-	
-	//init file upload
-	this.fileUpload = new FileUpload(this.uploadBtn, this.file, function(e) {
-		$this.form.submit();
-	});
 	
 	// update aoi tree
 //	$this.initSvg();

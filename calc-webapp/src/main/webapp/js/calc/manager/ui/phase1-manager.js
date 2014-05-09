@@ -9,17 +9,18 @@ Phase1Manager = function(container , sdManager) {
 	this.sdManager = sdManager;
 	
 	// upload section
-	this.uploadSection = this.container.find(".upload-section");	
-	this.uploadBtn = this.container.find( "[name=upload-btn]" );
-	this.file = this.container.find( "[name=file]" );
-	this.form = this.container.find( "form" );
+	//upload form container
+	this.uploadSection 	= this.container.find(".upload-section");
 	
 	// import section 
-	this.importSection = this.container.find(".import-section");
+	this.importSection 	= this.container.find(".import-section");
 	
 	// table join settings
 	this.tableJoin = new TableJoin( this.container.find(".table-join") );
 	this.tableJoin.hide();
+	
+	//form file upload manager (to be initialized in the init method)
+	this.formFileUpload = null;
 	
 	this.init();
 };
@@ -30,31 +31,12 @@ Phase1Manager.prototype.init = function(){
 	this.uploadSection.show();
 	this.importSection.hide();
 	
-	// upload csv form methods 
-	this.form.ajaxForm( {
-	    dataType : 'json',
-	    beforeSubmit: function() {
-	    	UI.lock();
-	    },
-	    uploadProgress: function ( event, position, total, percentComplete ) {
-	    },
-	    success: function ( response ) {
-	    	$this.showImport( response.fields.filepath, response.fields.headers );
-	    },
-	    error: function () {
-			Calc.error.apply( this , arguments );
-	    },
-	    complete: function() {
-	    	// reset upload form
-	    	$this.fileUpload.reset();
-	    	UI.unlock();
-	    }
-	});	
-	
-	//init file upload
-	this.fileUpload = new FileUpload(this.uploadBtn, this.file, function(e) {
-		$this.form.submit();
-	});
+	//file upload success handler
+	var uploadSuccess = function ( response ) {
+		$this.showImport( response.fields.filepath, response.fields.headers );
+	};
+	//form file upload manager
+	this.formFileUpload = new FormFileUpload(this.uploadSection, null, uploadSuccess);
 };
 
 Phase1Manager.prototype.show = function() {
@@ -68,6 +50,7 @@ Phase1Manager.prototype.show = function() {
 	// update join section
 	this.updateTableJoin();
 };
+
 Phase1Manager.prototype.hide = function() {
 	this.container.hide();
 };
