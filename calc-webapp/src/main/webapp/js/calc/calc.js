@@ -217,7 +217,8 @@ $(document).ready(function() {
 	// when page is loaded init function is called
 	init = function() {
 		
-		
+		//disable caching
+		$.ajaxSetup( { cache: false } );
 		
 		// init ui managers
 		Calc.homeCalculationManager 	= new HomeCalculationManager( $("#calculation") );

@@ -1,11 +1,13 @@
-<div class="page-section" style="padding-top:40px;">
-	<div class="text-center" id="sync-form-section" style="width: 100%">
+<div class="page-section" id="collect-sync-section" style="padding-top:40px;">
+
+	<div class="upload-form-section text-center" style="width: 100%">
 		<form  method="post" enctype="multipart/form-data" action="rest/collect/data.json">
 			<button type="button" class="btn btn-default" name="upload-btn">Upload backup file</button>
 		    <input type="file" name="file" style="display:none" />		    		    
 		</form>	
 	</div>
-	<div class="row" id="sync-progress-section">
+	
+	<div class="upload-progress-section row">
 		<div class="col-md-11">
 			<div class="progress progress-striped active">
 	        	<div class="progress-bar progress-bar-info"></div>
@@ -17,72 +19,12 @@
 	</div>
 	
 	<script>
-$(function(){
-	
-	var $formSection = $('#sync-form-section');
-	var $form = $formSection.find("form");
-	var $uploadBtn = $form.find("button[name='upload-btn']"); 
-	var $file = $form.find("input[name='file']");
-	
-	var $progressSection = $("#sync-progress-section");
-	var $progressBar = $progressSection.find(".progress-bar");
-	var $progressPercent = $progressSection.find(".percent");
-	
-	$progressSection.hide();
-	
-	var resetForm = function() {
-		$file.val("");
-		$progressSection.hide();
-		$formSection.show();
-
-		$progressPercent.html("0%");
-		$progressBar.width(0);
-	};
-	
-	
-	$form.ajaxForm( {
-	    dataType : 'json',
-	    beforeSubmit: function() {
-	        $(this).addClass('loading');
-	        
-	        $formSection.hide();
-			$progressSection.show();
-	    },
-	    uploadProgress: function ( event, position, total, percentComplete ) {
-	    	var percentVal = percentComplete+'%';
-	    	
-	    	$progressBar.width(percentVal);
-	    	$progressPercent.html(percentVal);
-	    },
-	    success: function ( job ) {
-	    	JobManager.getInstance().start( job , function() {
-// 	    		homeCalculationManager.updateSteps();
-				WorkspaceManager.getInstance().refreshActiveWorkspace(function(ws) {
-					Calc.workspaceChange();
-				});
-	    	});
-	    },
-	    error: function () {
-			Calc.error.apply( this , arguments );
-	    },
-	    complete: function() {
-	    	resetForm();
-	    }
-	});	
-	
-	$uploadBtn.click(function(event) {
-		event.preventDefault();
-		$file.click();
-	});
-	
-	$file.change(function(event) {
-		event.preventDefault();
-		$form.submit();
-	});
-	
-	
-});
-</script>
+		$(function(){
+			
+			var manager = new CollectSyncManager("#collect-sync-section");
+			
+		});
+	</script>
 </div>
 
 

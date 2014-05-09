@@ -4,7 +4,7 @@
  */
 
 EquationListManager = function( container ) {
-	this.BASE_URI = "rest/workspace/active/settings/equationList/"
+	this.BASE_URI = "rest/workspace/active/settings/equationList/";
 	/* UI components */
 	this.container = $( container );
 	
@@ -14,9 +14,7 @@ EquationListManager = function( container ) {
 	this.equationsTable = this.viewSection.find( "table.equations-table" );
 	
 	// upload section
-	this.form 		= this.container.find( ".upload-csv-form" );
-	this.uploadBtn 	= this.form.find( "[name=upload-btn]" );
-	this.file 		= this.form.find( "[name=file]" );
+	this.form 			= this.container.find( ".upload-csv-form-section" );
 	
 	// import section
 	this.importSection	= this.container.find( ".import-section" );
@@ -33,36 +31,13 @@ EquationListManager.prototype.init = function() {
 	this.selectedListId = null;
 	
 	var $this = this;
-	// bind events
-	this.form.ajaxForm({
-	    dataType : 'json',
-	    beforeSubmit: function() {
-	    	UI.lock();
-	    },
-	    uploadProgress: function ( event, position, total, percentComplete ) {
-	    },
-	    success: function ( response ) {
-	    	$this.showImport( response.fields.filepath, response.fields.headers );
-	    },
-	    error: function () {
-			Calc.error.apply( this , arguments );
-	    },
-	    complete: function() {
-	    	// reset upload form
-	    	$this.file.val("");
-	    	UI.unlock();
-	    }
-	});	
 	
-	this.uploadBtn.click(function(event) {
-		event.preventDefault();
-		$this.file.click();
-	});
-	
-	this.file.change(function(event) {
-		event.preventDefault();
-		$this.form.submit();
-	});
+	//form file upload manager
+	var uploadSuccess = function ( response ) {
+		$this.showImport( response.fields.filepath, response.fields.headers );
+	};
+
+	this.formFileUpload = new FormFileUpload(this.form, null, uploadSuccess);
 	
 	// import event handlers
 	this.importBtn.click( function(e) {

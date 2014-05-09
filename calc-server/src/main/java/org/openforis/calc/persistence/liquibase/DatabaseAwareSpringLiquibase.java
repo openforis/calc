@@ -32,5 +32,5 @@ public class DatabaseAwareSpringLiquibase extends SpringLiquibase {
 		}
 		return database;
 	}
-	
+
 }
