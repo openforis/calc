@@ -55,7 +55,7 @@ public class ProcessingChainService {
 	}
 	
 	@Transactional
-	public void saveCalculationStep(ProcessingChain chain, CalculationStep step) {
+	public void saveCalculationStep( ProcessingChain chain, CalculationStep step ) {
 		if ( step.getId() == null ) {
 			Long nextval = psql.nextval( Sequences.CALCULATION_STEP_ID_SEQ );
 			step.setId( nextval.intValue() );

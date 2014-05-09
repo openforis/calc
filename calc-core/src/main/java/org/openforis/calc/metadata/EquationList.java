@@ -4,6 +4,7 @@
 package org.openforis.calc.metadata;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.openforis.calc.engine.ParameterMap;
@@ -43,11 +44,13 @@ public class EquationList extends EquationListBase {
 	}
 	
 	public void setEquations( List<Equation> equations ) {
-		if( equations != null ){
+		if( equations == null ) {
+			this.equations = null;
+		} else {
 			for (Equation equation : equations) {
 				this.addEquation( equation );
 			}
-		}
+		} 
 	}
 	
 	public void addEquation( Equation equation ){
@@ -62,6 +65,17 @@ public class EquationList extends EquationListBase {
 	@Override
 	public ParameterMap getParameters() {
 		return super.getParameters();
+	}
+	
+	@JsonIgnore
+	public Collection<String> getEquationVariables() {
+		ParameterMap params = getParameters();
+		if( params!= null ){
+			@SuppressWarnings("unchecked")
+			Collection<String> array = (Collection<String>) params.getArray("variables");
+			return CollectionUtils.unmodifiableCollection( array );
+		}
+		return null;
 	}
 	
 }

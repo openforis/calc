@@ -4,16 +4,12 @@
 package org.openforis.calc.metadata;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.json.simple.JSONObject;
 import org.openforis.calc.engine.ParameterHashMap;
 import org.openforis.calc.engine.ParameterMap;
 import org.openforis.calc.engine.Workspace;
@@ -115,15 +111,8 @@ public class EquationManager {
 	
 	@Transactional
 	private void deleteEquations( EquationList equationList ) {
-//		Workspace workspace = equationList.getWorkspace();
-//		workspace.deleteEquationList( equationList );
-//		equationDao.delete( equationList.getEquations() );
-		psql
-			.delete( Tables.EQUATION )
-			.where( Tables.EQUATION.LIST_ID.eq(equationList.getId()) )
-			.execute();
-		
-		equationList.setEquations(null);
+		equationDao.delete( equationList.getEquations() );
+		equationList.setEquations( null );
 	}
 
 	@Transactional

@@ -11,34 +11,38 @@ package org.openforis.calc.persistence.jooq.tables.pojos;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CalculationStepBase implements java.io.Serializable {
 
-	private static final long serialVersionUID = -1241738354;
+	private static final long serialVersionUID = 527091990;
 
-	private java.lang.Integer                      id;
-	private java.lang.Integer                      chainId;
-	private java.lang.Integer                      stepNo;
-	private java.lang.String                       moduleName;
-	private java.lang.String                       moduleVersion;
-	private java.lang.String                       operationName;
-	private java.lang.String                       script;
-	private org.openforis.calc.engine.ParameterMap parameters;
-	private java.lang.String                       caption;
-	private java.lang.String                       description;
-	private java.lang.Integer                      outputVariableId;
+	private java.lang.Integer                             id;
+	private java.lang.Integer                             chainId;
+	private java.lang.Integer                             stepNo;
+	private java.lang.String                              moduleName;
+	private java.lang.String                              moduleVersion;
+	private java.lang.String                              operationName;
+	private java.lang.String                              script;
+	private org.openforis.calc.engine.ParameterMap        parameters;
+	private java.lang.String                              caption;
+	private java.lang.String                              description;
+	private java.lang.Integer                             outputVariableId;
+	private org.openforis.calc.chain.CalculationStep.Type type;
+	private java.lang.Long                                equationListId;
 
 	public CalculationStepBase() {}
 
 	public CalculationStepBase(
-		java.lang.Integer                      id,
-		java.lang.Integer                      chainId,
-		java.lang.Integer                      stepNo,
-		java.lang.String                       moduleName,
-		java.lang.String                       moduleVersion,
-		java.lang.String                       operationName,
-		java.lang.String                       script,
-		org.openforis.calc.engine.ParameterMap parameters,
-		java.lang.String                       caption,
-		java.lang.String                       description,
-		java.lang.Integer                      outputVariableId
+		java.lang.Integer                             id,
+		java.lang.Integer                             chainId,
+		java.lang.Integer                             stepNo,
+		java.lang.String                              moduleName,
+		java.lang.String                              moduleVersion,
+		java.lang.String                              operationName,
+		java.lang.String                              script,
+		org.openforis.calc.engine.ParameterMap        parameters,
+		java.lang.String                              caption,
+		java.lang.String                              description,
+		java.lang.Integer                             outputVariableId,
+		org.openforis.calc.chain.CalculationStep.Type type,
+		java.lang.Long                                equationListId
 	) {
 		this.id = id;
 		this.chainId = chainId;
@@ -51,6 +55,8 @@ public class CalculationStepBase implements java.io.Serializable {
 		this.caption = caption;
 		this.description = description;
 		this.outputVariableId = outputVariableId;
+		this.type = type;
+		this.equationListId = equationListId;
 	}
 
 	public java.lang.Integer getId() {
@@ -139,5 +145,21 @@ public class CalculationStepBase implements java.io.Serializable {
 
 	public void setOutputVariableId(java.lang.Integer outputVariableId) {
 		this.outputVariableId = outputVariableId;
+	}
+
+	public org.openforis.calc.chain.CalculationStep.Type getType() {
+		return this.type;
+	}
+
+	public void setType(org.openforis.calc.chain.CalculationStep.Type type) {
+		this.type = type;
+	}
+
+	public java.lang.Long getEquationListId() {
+		return this.equationListId;
+	}
+
+	public void setEquationListId(java.lang.Long equationListId) {
+		this.equationListId = equationListId;
 	}
 }

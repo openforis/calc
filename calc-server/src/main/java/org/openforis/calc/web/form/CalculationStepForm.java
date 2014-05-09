@@ -29,7 +29,7 @@ public class CalculationStepForm {
 	@NotNull
 	private Integer variableId;
 
-	@NotEmpty
+//	@NotEmpty
 	private String script;
 	
 	public Integer getId() {

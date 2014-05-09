@@ -32,9 +32,6 @@ EquationListManager.prototype.init = function() {
 	// reset edit form
 	this.selectedListId = null;
 	
-	// hide equations table
-	this.equationsTable.hide();
-	
 	var $this = this;
 	// bind events
 	this.form.ajaxForm({
@@ -71,7 +68,8 @@ EquationListManager.prototype.init = function() {
 		if( listName == "" ) {
 			UI.showError( "List name cannot be blank" , true );
 		} else {
-			WorkspaceManager.getInstance().activeWorkspaceImportEquationList( $this.filePath , listName , $this.selectedListId , function(ws) {
+			var listId = ( $this.selectedList ) ? $this.selectedList.id : null ;
+			WorkspaceManager.getInstance().activeWorkspaceImportEquationList( $this.filePath , listName , listId , function(ws) {
 				$this.showList();
 			} );
 		}
@@ -82,20 +80,23 @@ EquationListManager.prototype.init = function() {
 	this.showList();
 };
 
+// after file upload show import
 EquationListManager.prototype.showImport = function( filepath ) {
-	var $this = this;
-	
-	// after file upload 
-	this.listName.val("");
+	var listName = ( this.selectedList ) ? this.selectedList.name : "" ; 
+	this.listName.val( listName );
 	this.filePath = filepath ;
 	
 	this.viewSection.hide();
 	this.importSection.fadeIn();
 };
+
 /**
  * Update equation lists UI
  */
 EquationListManager.prototype.showList = function() {
+	// hide equations table
+	this.equationsTable.hide();
+
 	this.importSection.hide();
 	this.viewSection.show();
 	this.equationLists.empty();
@@ -120,14 +121,15 @@ EquationListManager.prototype.showList = function() {
 				var select = function( list ) {
 					
 					// unselect last selection 
-					if( $this.lastSelection ){
-						$this.lastSelection.deselect();
+					if( $this.selectedListButton ) {
+						$this.selectedListButton.deselect();
 					}
 					
 					UI.lock();
 					var tbody = $this.equationsTable.find("tbody");
 					tbody.empty();
 					$this.equationsTable.show();
+					
 					$.ajax({
 						url			: $this.BASE_URI + list.id + "/equations.json" ,
 						method		: "GET" ,
@@ -158,7 +160,7 @@ EquationListManager.prototype.showList = function() {
 							} , j * 75);
 							
 							$this.selectedListButton = optionBtn;
-							$this.selectedListId 	= list.id; 
+							$this.selectedList 		= list; 
 						});
 					}).error(function(){
 						Calc.error.apply( this, arguments );
@@ -166,11 +168,11 @@ EquationListManager.prototype.showList = function() {
 				};
 				optionBtn.select( select , eq );
 				
-				var deselect = function( e ){
-					$this.equationsTable.fadeOut();
+				var deselect = function( e ) {
+					$this.equationsTable.hide(0);
 					
 					$this.selectedListButton = null;
-					$this.selectedListId 	= null;
+					$this.selectedList 	= null;
 				};
 				optionBtn.deselect( deselect , eq )
 			}

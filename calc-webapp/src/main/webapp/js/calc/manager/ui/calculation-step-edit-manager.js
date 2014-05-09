@@ -2,341 +2,440 @@
  * 
  * Manages the editing of the CalculationStep
  *  @author S. Ricci
+ *  @author Mino Togna
  */
-function CalculationStepEditManager(container) {
-	this.container = container;
-	this.$form = this.container.find('#step-form');
-//	this.$form = $form;
-	this.$entityCombo = this.$form.find("[name='entityId']").combobox();
-	this.$variableCombo = this.$form.find("[name='variableId']").combobox();
-	this.$addVariableButton = this.$form.find("[name=add-variable]");
+CalculationStepEditManager = function (container) {
+	this.container 				= container;
+	this.$form 					= this.container.find('#step-form');
+	
 	this.currentCalculationStep = null;
-
-	this.calculationStepManager = CalculationStepManager.getInstance();
-	this.workspaceManager = WorkspaceManager.getInstance();
+	
+	// ui form elements
+	this.$entityCombo 			= this.$form.find("[name='entityId']").combobox();
+	this.$variableCombo 		= this.$form.find("[name='variableId']").combobox();
+	this.$addVariableButton		= this.$form.find("[name=add-variable]");
+	
+	this.equationListCombo		= this.$form.find( '[name=equation-list]' ).combobox();
+	this.codeVariableCombo		= this.$form.find( '[name=code-variable]' ).combobox();
+	
+	// sections to show / hide based on the type selection
+	this.rScriptForm			= this.container.find( ".r-script-form" );
+	this.rScriptForm.hide();
+	this.equationForm			= this.container.find( ".equation-form" );
+	this.equationForm.hide();
+	
+	// calculation step type buttons
+	var typeRScriptButton = this.$form.find( 'button[name="type-r-script"]' );
+	this.rScriptButton = new OptionButton( typeRScriptButton );
+	
+	var typeEquationButton = this.$form.find( 'button[name="type-equation"]' );
+	this.equationButton = new OptionButton( typeEquationButton );
 	
 	//initialized in the init method
 	//R script component manager
-	this.$RScript = null;
+	var rScriptField = this.$form.find("[name=script]");
+	this.$RScript = new RScript(rScriptField);
 	
-	// add variable ui elements
-	this.$addVariableButton = this.$form.find("button[name='add-variable']");
-	this.$addVariableModal = $('#add-variable-modal');
-	this.$addVariableForm = this.$addVariableModal.find('form');
-	this.$saveVariableButton = this.$addVariableModal.find('.save');
+	this.$addVariableButton = this.$form.find( "button[name='add-variable']" );	
+	this.addVariableModal = new AddVariableModal( this.$addVariableButton , this );
 	
+	// workspace instance
+	this.workspace 	= null;
 	
-	this._init();
-}
+	this.init();
+};
 
-CalculationStepEditManager.prototype = (function() {
-	
-	/**
-	 * Initialize the event handlers and populate the form with initial data
-	 *  
-	 * @param callback
-	 */
-	var init = function(callback) {
-		UI.lock();
-		var $this = this;
+/**
+ * Initialize the event handlers and populate the form with initial data
+ *  
+ * @param callback
+ */
+CalculationStepEditManager.prototype.init = function(callback) {
+	var $this = this;
+	WorkspaceManager.getInstance().activeWorkspace(function(ws) {
+		// i can use workspace as instance because there aren't any changes here to it
+		$this.workspace = ws;
 		
-		var rScriptField = this.$form.find("[name=script]");
-		$this.$RScript = new RScript(rScriptField);
-
-		$.proxy(initEventHandlers, $this)();
-	
-		$.proxy(refreshEntitySelect, $this)(function() {
-			var url = window.sectionUrl;
-			var stepId = $.url(url).param("id");
-			if ( stepId ) {
-				$.proxy(loadStepAndUpdateForm, $this)(stepId);
-			} else {
-				UI.unlock();
-			}
-		});
+		// init event handlers
+		$this.initEventHandlers();
 		
-	};
-	
-	/**
-	 * Init input fields event listeners
-	 */
-	var initEventHandlers = function() {
-		var $this = this;
+		// populate entity select 
+		$this.$entityCombo.data( ws.entities, "id", "name" );
 		
-		$this.$form.submit(function(event) {
-			event.preventDefault();
-		});
-		
-		//entity select change handler
-		$this.$entityCombo.change(function(event) {
-			$.proxy(refreshVariableSelect, $this)();
-			$.proxy(getSelectedEntity, $this)(function(entity) {
-				$this.$RScript.entity = entity;
-			});
-		});
-		
-		// on submit button click 
-		$this.$form.find("button[type='submit']").click(function(event){
-			event.preventDefault();
-			$.proxy(save, $this)(function(){
-				
-				UI.showSuccess("Saved!",true);
-			});
-		});
-		
-		// at input change, it keeps track that the form has changed
-		$this.$form.find(":input").change(function() {
-			$this.$form.data('changed', true);
-		});
-		
-		//add variable button click
-		$this.$addVariableButton.click(function(event){
-			event.preventDefault();
-			
-			UI.Form.reset($this.$addVariableForm);
-			
-			//set entityId hidden field value
-			var selectedEntityId = $this.getSelectedEntityId();
-			$this.$addVariableForm.find("[name=entityId]").val(selectedEntityId);
-			
-			$this.$addVariableModal.modal({keyboard: true, backdrop: "static"});
-			
-			//set focus on first field in form
-			setTimeout(function() {
-				UI.Form.setFocus($this.$addVariableForm);	
-			}, 500);
-		});
-		
-		// add variable form: on save button click, it submits the form
-		$this.$saveVariableButton.click(function(event) {
-			event.preventDefault();
-			$this.$addVariableForm.submit();
-		});
-		//submits the add variable form
-		$this.$addVariableForm.submit(function(event) {
-			event.preventDefault();
+		// load step if necessary
+		var url = window.sectionUrl;
+		var stepId = $.url(url).param("id");
+		if ( stepId ) {
 			UI.lock();
-			var variable = UI.Form.toJSON($this.$addVariableForm);
-			
-			var successCallback = function(response) {
-				UI.Form.updateErrors($this.$addVariableForm, response.errors);
-		    	if(response.status == "ERROR" ) {
-		    		var errors = response.errors;
-		    		var errorMessage = UI.Form.getFormErrorMessage($this.$addVariableForm, errors);
-		    		UI.showError(errorMessage, true);
-		    	} else {
-		    		var variable = response.fields.variable;
-		    		$this.refreshVariableSelect(variable.id);
-		    		
-		    		$this.$addVariableModal.modal('hide');
-		    		$this.$addVariableModal.modal('removeBackdrop');
-		    	}
-			};
-			var errorCallback = function (e) {
-		    	UI.showError("An error occured. Please check the log file.", false);
-			};
-			var completeCallback = function() {
-				UI.unlock();
-			}
-			$this.workspaceManager.activeWorkspaceAddQuantitativeVariable(variable, successCallback, errorCallback, completeCallback);
-		});
-		
-	};
-	
-	var loadStepAndUpdateForm = function(stepId) {
-		var $this = this;
-		$this.calculationStepManager.load(stepId, function(response) {
-			$this.currentCalculationStep = response;
-			$.proxy(updateForm, $this)();
-			$.proxy(getSelectedEntity, $this)(function(entity) {
-				$this.$RScript.entity = entity;
+			CalculationStepManager.getInstance().load (stepId, function(response) {
+				$this.currentCalculationStep = response;
+				$this.updateForm();
 			});
-			//reset changed state 
-			$this.$form.data('changed', false);
-		});
-	};
+		} else {
+			// default settings
+			$this.rScriptButton.select();
+		}
+		
+		// disable / enable type buttons
+		if( $this.workspace.equationLists.length == 0 ) {
+			// disable type equation
+			UI.disable( $this.equationButton.button );
+		} else {
+			// enable type equations
+			$this.equationListCombo.data( $this.workspace.equationLists , "id" , "name" );
+		}
+	});
+};
 	
-	/**
-	 * Create or update the calculation step according to the field values in the form 
-	 */
-	var save = function(successCallback, errorCallback) {
+/**
+ * Init input fields event listeners
+ */
+CalculationStepEditManager.prototype.initEventHandlers = function() {
+	var $this = this;
+	
+	this.$form.submit(function(event) {
+		event.preventDefault();
+	});
+	
+	//entity select change handler
+	this.$entityCombo.change( $.proxy( $this.entityChange , $this ) ) ;
+	
+	// on submit button click 
+	this.$form.find("button[type='submit']").click(function(event){
+		event.preventDefault();
+		$this.save( function(){
+			UI.showSuccess("Saved!",true);
+		});
+	});
+	
+	// at input change, it keeps track that the form has changed
+	this.$form.find(":input").change(function() {
+		$this.$form.data('changed', true);
+	});
+	
+	// selection / deselection of type buttons
+	this.rScriptButton.select( function() {
+		UI.disable( this.button );
+		$this.equationButton.deselect();
+		
+		$this.$form.find( '[name=type]' ).val( "SCRIPT" );
+		$this.rScriptForm.fadeIn( 300 );
+	});
+	this.rScriptButton.deselect( function() {
+		UI.enable( this.button );
+		
+		$this.$form.find( '[name=type]' ).val( "" );
+		$this.rScriptForm.hide();
+	});
+	
+	this.equationButton.select( function() {
+		UI.disable( this.button );
+		$this.rScriptButton.deselect();
+		
+		$this.$form.find( '[name=type]' ).val( "EQUATION" );
+		$this.equationForm.fadeIn( 300 );
+	});
+	this.equationButton.deselect( function() {
+		UI.enable( this.button );
+		
+		$this.$form.find( '[name=type]' ).val( "" );
+		$this.equationForm.hide();
+	});
+	
+	
+	this.equationListCombo.change( $.proxy( this.equationListChange , $this ) ) ;
+	
+};
+
+/**
+ * Create or update the calculation step according to the field values in the form 
+ */
+CalculationStepEditManager.prototype.save = function(successCallback, errorCallback) {
+	UI.lock();
+	var $this = this;
+	var $step = $this.$form.serialize();
+	CalculationStepManager.getInstance().save($step,
+		//success
+		function(response) {
+	    	UI.Form.updateErrors($this.$form, response.errors);
+	    	if(response.status == "ERROR" ) {
+	    		UI.showError("There are errors in the form. Please fix them before proceeding.", true);
+	    		
+	    		if ( errorCallback ) {
+	    			errorCallback();
+	    		}
+	    	} else {
+	    		$this.currentCalculationStep = response.fields.calculationStep;
+	    		$this.updateForm();
+		    	
+	    		Calc.homeCalculationManager.updateStep($this.currentCalculationStep);
+		    	
+	    		if(successCallback) {
+		    		successCallback( $this.currentCalculationStep );
+	    		};
+	    	}
+	    	
+	    	UI.unlock();
+		},
+		//error
+		function(e) {
+	    	UI.showError("An error occured. Please check the log file.", false);
+	
+			if ( errorCallback ) {
+				errorCallback(e);
+			}
+		},
+		//complete
+		function() {
+			//reset changed state
+//			$this.$form.data('changed', false);
+//			UI.unlock();
+		}
+	);
+};
+	
+/**
+ * Save the calculation step form only if it has changed, else calls the callback synchronously
+ */
+CalculationStepEditManager.prototype.saveIfChanged = function( success ) {
+	if( this.$form.data('changed') ) {
+		this.save( success );
+	} else {
+		success( this.currentCalculationStep );
+	}
+};
+	
+/**
+ * Update form with currentCalculationStep instance
+ */
+CalculationStepEditManager.prototype.updateForm = function() {
+	var $step = this.currentCalculationStep;
+	
+	this.$entityCombo.val( $step.outputEntityId );
+	this.entityChange();
+
+	this.$variableCombo.val( $step.outputVariableId );
+	
+	switch ( this.currentCalculationStep.type ) {
+		case "SCRIPT":
+			this.rScriptButton.select();
+			break;
+		case "EQUATION":
+			this.equationButton.select();
+			// populate equation form
+			var params = $step.parameters;
+			
+			var equationListId = $step.equationListId;
+			this.equationListCombo.val( equationListId );
+			this.equationListChange();
+
+			var codeVariable = this.getSelectedEntity().getVariableById( params.codeVariable );
+			this.codeVariableCombo.val( codeVariable.id );
+			
+			for( var i in params.variables ){
+				var variableOption = params.variables[i];
+				var eqVar = variableOption.equationVariable;
+				var equiationVariableId = variableOption.variableId;
+				this.equationListVariableCombos[ eqVar ].val( equiationVariableId );
+			}
+			
+			break;
+	}
+	
+	UI.Form.setFieldValues( this.$form, $step );
+	UI.unlock();
+	
+	//reset changed state 
+	this.$form.data('changed', false);
+};
+	
+/**
+ * Returns the selected entity in the form
+ */
+CalculationStepEditManager.prototype.getSelectedEntityId = function() {
+	var entityId = this.$entityCombo.val();
+	return entityId;
+};
+CalculationStepEditManager.prototype.getSelectedEntity = function() {
+	var entityId = this.getSelectedEntityId();
+	var entity = this.workspace.getEntityById( entityId );
+	return entity;
+};
+/**
+ * Function called when the entity combo change 
+ */
+CalculationStepEditManager.prototype.entityChange = function() {
+	var entityId = this.getSelectedEntityId();
+	var entity = this.workspace.getEntityById(entityId);
+	
+	if ( entity ) {
+		// populate fields that need the entity
+		// r script
+		this.$RScript.entity = entity;
+		
+		// variable select
+		this.$variableCombo.enable();
+		this.updateVariableSelect();
+		
+		UI.enable( this.$addVariableButton );
+		
+		this.equationListCombo.enable();
+		
+	} else {
+		// Entity not selected reset fields that need the entity
+		this.$RScript.entity = null;
+		UI.disable( this.$addVariableButton );
+		
+		this.$variableCombo.reset();
+		this.$variableCombo.disable();
+	
+		// not necessary. it shoud be easier to deselect the combobox...
+		this.equationListCombo.reset();
+		this.equationListCombo.data( this.workspace.equationLists , "id" , "name" );
+		
+		this.equationListCombo.disable();
+		
+		this.codeVariableCombo.reset();
+		this.codeVariableCombo.disable();
+	}
+	
+};
+
+/**
+ * Populate the "output variable" select according to the selected parent entityId.
+ */
+CalculationStepEditManager.prototype.updateVariableSelect = function() {
+	var entity = this.getSelectedEntity();
+	if( entity ) {
+		var variables = entity.outputVariables();
+		this.$variableCombo.data( variables, "id", "name" );
+	}
+};
+
+CalculationStepEditManager.prototype.show = function() {
+	this.container.fadeIn(400);
+};
+
+CalculationStepEditManager.prototype.hide = function() {
+	this.container.hide();
+};
+
+/**
+ * Handler for equation list combo box change event
+ */
+CalculationStepEditManager.prototype.equationListChange = function () {
+	var listId = this.equationListCombo.val();
+	var equationList = this.workspace.getEquationList( listId );
+	
+	this.equationForm.find( '.eq-variable' ).remove();
+	if( equationList ) {
+		this.codeVariableCombo.enable();
+		this.codeVariableCombo.data( this.getSelectedEntity().getAncestorsVariables() , "id" , "name" );
+		
+		var vars = equationList.parameters.variables;
+		this.equationListVariableCombos = {};
+		for( var i in vars ){
+			var variable = vars[i];
+			
+			var div = $( '<div class="form-group eq-variable">' );
+			var label = $( '<label class="col-md-2 control-label"></label>' );
+			label.html( "Variable '" +variable+ "'");
+			div.append( label );
+
+			var divSelect = $( '<div class="col-md-10">' );
+			var select = $( '<select class="form-control"></select>' );
+			select.attr( "name" , variable );
+			divSelect.append( select );	
+			var combo = select.combobox();
+			combo.data( this.getSelectedEntity().getAncestorsVariables() , "id" , "name" );
+			this.equationListVariableCombos[ variable ] = combo;
+			div.append( divSelect );
+			
+			div.hide();
+			this.equationForm.find(".form-container").append( div );
+			div.fadeIn();
+		}
+	} else {
+		this.codeVariableCombo.disable();
+		this.codeVariableCombo.reset();
+	}
+};
+
+AddVariableModal = function( triggerButton , editManager ) {
+	// calculation step edit manager instance
+	this.calcStepEditManager = editManager;
+	// button that triggers the opening of the add variable modal form
+	this.triggerButton = triggerButton;
+	// modal container
+	this.container = $( '#add-variable-modal' );
+	// form to submit
+	this.form = this.container.find('form');
+	// save button form
+	this.saveButton = this.container.find('.save');
+
+	this.init();
+};
+
+AddVariableModal.prototype.init = function() {
+	var $this = this;
+	
+	//submits the add variable form
+	this.form.submit( function(event) {
+		event.preventDefault();
 		UI.lock();
-		var $this = this;
-		var $step = $this.$form.serialize();
-		$this.calculationStepManager.save($step,
-			//success
-			function(response) {
-		    	UI.Form.updateErrors($this.$form, response.errors);
-		    	if(response.status == "ERROR" ) {
-		    		UI.showError("There are errors in the form. Please fix them before proceeding.", true);
-		    		
-		    		if ( errorCallback ) {
-		    			errorCallback();
-		    		}
-		    	} else {
-		    		$this.currentCalculationStep = response.fields.calculationStep;
-		    		$.proxy(updateForm, $this)();
-			    	
-		    		Calc.homeCalculationManager.updateStep($this.currentCalculationStep);
-			    	
-		    		if(successCallback) {
-			    		successCallback($this.currentCalculationStep);
-		    		};
-		    	}
-			},
-			//error
-			function(e) {
-		    	UI.showError("An error occured. Please check the log file.", false);
+		var variable = UI.Form.toJSON( $this.form );
 		
-				if ( errorCallback ) {
-					errorCallback(e);
-				}
-			},
-			//complete
-			function() {
-				//reset changed state
-				$this.$form.data('changed', false);
-				UI.unlock();
-			}
-		);
-	};
-	
-	/**
-	 * Save the calculation step form only if it has changed, else calls the callback synchronously
-	 */
-	var saveIfChanged = function(success) {
-		if( this.$form.data('changed') ) {
-			$.proxy(save,this)(success);
-		} else {
-			success(this.currentCalculationStep);
-		}
-		
-	};
-	
-	/**
-	 * Update the form with values from the currentCalculationStep instance
-	 * 
-	 * @param callback
-	 */
-	var updateForm = function(callback) {
-		var $this = this;
-		var $step = $this.currentCalculationStep;
-		
-		$this.$entityCombo.val($step.outputEntityId);
-		
-		$.proxy(refreshVariableSelect, $this)($step.outputVariableId, function() {
-			UI.Form.setFieldValues($this.$form, $step);
-	
+		var successCallback = function(response) {
+			UI.Form.updateErrors( $this.form, response.errors );
+			
+	    	if(response.status == "ERROR" ) {
+	    		var errors = response.errors;
+	    		var errorMessage = UI.Form.getFormErrorMessage( $this.form, errors );
+	    		UI.showError( errorMessage, true );
+	    	} else {
+	    		var variable = response.fields.variable;
+	    		
+	    		$this.calcStepEditManager.updateVariableSelect();
+	    		$this.calcStepEditManager.$variableCombo.val( variable.id );
+	    		
+	    		$this.container.modal('hide');
+	    		$this.container.modal('removeBackdrop');
+	    	}
+		};
+		var errorCallback = function (e) {
+	    	UI.showError("An error occured. Please check the log file.", false);
+		};
+		var completeCallback = function() {
 			UI.unlock();
+		};
+		
+		WorkspaceManager
+			.getInstance()
+			.activeWorkspaceAddQuantitativeVariable( variable, successCallback, errorCallback, completeCallback );
+	});
 	
-			if ( callback ) {
-				callback();
-			}
-		});
-	};
+	//add variable button click
+	$this.triggerButton.click(function(event){
+		event.preventDefault();
+		
+		UI.Form.reset( $this.form );
+		
+		//set entityId hidden field value
+		var selectedEntityId = $this.calcStepEditManager.getSelectedEntityId();
+		$this.form.find( "[name=entityId]" ).val( selectedEntityId );
+		// open the modal 
+		$this.container.modal( {keyboard: true, backdrop: "static"} );
+		
+		//set focus on first field in form
+		setTimeout(function() {
+			UI.Form.setFocus( $this.form );	
+		}, 500);
+	});
 	
-	/**
-	 * Returns the selected entity in the form
-	 * 
-	 * @returns
-	 */
-	var getSelectedEntityId = function() {
-		var entityId = this.$entityCombo.val();
-		return entityId;
-	};
-	
-	var getSelectedEntity = function(callback) {
-		var $this = this;
-		var entityId = $this.getSelectedEntityId();
-		if ( entityId ) {
-			$this.workspaceManager.activeWorkspace(function(ws) {
-				var entity = ws.getEntityById(entityId);
-				callback(entity);
-			});
-		} else {
-			callback(null);
-		}
+	// add variable form: on save button click, it submits the form
+	$this.saveButton.click(function(event) {
+		event.preventDefault();
+		$this.form.submit();
+	});
 
-	};
-	
-	/**
-	 * Populate the "entity" select
-	 * 
-	 * @param callback
-	 */
-	var refreshEntitySelect = function(callback) {
-		var $this = this;
-		$this.$variableCombo.reset();
-		
-		$this.workspaceManager.activeWorkspace(function(ws) {
-			var entities = ws.entities;
-			
-			$this.$entityCombo.data(entities, "id", "name");
-			
-			if ( callback ) {
-				callback(ws);
-			}
-		});
-	};
-	
-	/**
-	 * Populate the "output variable" select according to the selected parent entityId.
-	 * 
-	 * The option corresponding to the value specified will be selected.
-	
-	 * @param value Value to select in the select input control
-	 * @param callback
-	 */
-	var refreshVariableSelect = function(value, callback) {
-		var $this = this;
-
-		$this.$variableCombo.reset();
-		$this.$variableCombo.disable();
-		
-		UI.disable($this.$addVariableButton);
-		
-		var entityId = $this.getSelectedEntityId($this.$form);
-		if ( entityId ) {
-			$this.workspaceManager.activeWorkspace(function(ws) {
-				var entity = ws.getEntityById(entityId);
-				var variables = entity.outputVariables();
-				
-				$this.$variableCombo.data(variables, "id", "name");
-				$this.$variableCombo.val(value);
-				$this.$variableCombo.enable();
-
-				UI.enable($this.$addVariableButton);
-				
-				if ( value ) {
-					$this.$variableCombo.val(value);
-				}
-				if ( callback ) {
-					callback();
-				}
-			});
-		} else {
-			$this.$variableCombo.reset();
-		}
-	};
-	var show = function(){
-		this.container.fadeIn(400);
-	};
-	var hide = function(){
-		this.container.hide();
-	};
-	//prototype
-	return {
-		constructor : CalculationStepEditManager,
-		
-		//public methods
-		_init : init,
-		refreshVariableSelect : refreshVariableSelect,
-		getSelectedEntityId : getSelectedEntityId,
-		getSelectedEntity : getSelectedEntity,
-		save : save,
-		saveIfChanged : saveIfChanged,
-		// show / hide
-		show : show,
-		hide : hide
-	};
-})();
+};

@@ -1342,3 +1342,7 @@ ul.ui-sortable li {
 	border-bottom: 1px;
 	text-align: left;
 }
+
+.equation-lists button {
+	margin-bottom: 1px;
+}

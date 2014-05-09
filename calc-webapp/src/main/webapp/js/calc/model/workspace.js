@@ -109,3 +109,12 @@ Workspace.prototype.getAdminUnitFlatAois = function() {
 	}
 	return aois;
 };
+// returns the equation list with given id if there is
+Workspace.prototype.getEquationList = function( listId ) {
+	for( var i in this.equationLists ){
+		var list = this.equationLists[i];
+		if( list.id == listId ) {
+			return list;
+		}
+	}
+};

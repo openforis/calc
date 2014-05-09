@@ -9,6 +9,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.json.simple.JSONObject;
+import org.openforis.calc.json.ParameterMapJsonSerializer;
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * 
@@ -44,7 +47,8 @@ public class ParameterHashMap implements ParameterMap {
 	public void remove(String name) {
 		map.remove(name);
 	}
-
+	
+	@JsonSerialize(using = ParameterMapJsonSerializer.class)
 	@Override
 	public ParameterMap getMap(String name) {
 		Object value = map.get(name);
@@ -190,7 +194,8 @@ public class ParameterHashMap implements ParameterMap {
 	
 	@Override
 	public String toString() {
-		return map.toString();
+//		return map.toString();
+		return toJsonString();
 	}
 
 	@Override

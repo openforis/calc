@@ -4,16 +4,22 @@
 package org.openforis.calc.web.controller;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.openforis.calc.chain.CalculationStep;
+import org.openforis.calc.chain.CalculationStep.Type;
 import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.chain.ProcessingChainService;
+import org.openforis.calc.engine.ParameterHashMap;
+import org.openforis.calc.engine.ParameterMap;
 import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceService;
+import org.openforis.calc.metadata.EquationList;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.module.r.CalcRModule;
 import org.openforis.calc.module.r.CustomROperation;
@@ -45,6 +51,10 @@ public class CalculationStepController {
 	@Autowired
 	private TaskManager taskManager;
 
+	// added now for convenience. Mino
+	@Autowired(required=true)
+	private HttpServletRequest request;
+	
 	@RequestMapping(value = "/save.json", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	Response save(@Valid CalculationStepForm form, BindingResult result) {
@@ -67,12 +77,45 @@ public class CalculationStepController {
 			step.setModuleVersion(CalcRModule.VERSION_1);
 			step.setOperationName(CustomROperation.NAME);
 			step.setCaption(form.getCaption());
-			step.setScript(form.getScript());
+			
+			Type type = CalculationStep.Type.valueOf( request.getParameter("type") );
+			step.setType(type);
+			
+			ParameterMap params = new ParameterHashMap();
+			switch (type) {
+			case EQUATION:
+				long listId = Long.parseLong( request.getParameter("equation-list") );
+				step.setEquationListId( listId );
+				
+				// populate calc step parameters
+
+				String codeVariable = request.getParameter( "code-variable" );
+				params.setString( "codeVariable", codeVariable );
+				
+				EquationList equationList = ws.getEquationListById(listId);
+				Collection<String> equationVariables = equationList.getEquationVariables();
+				List<ParameterMap> varParams = new ArrayList<ParameterMap>();
+				for (String equationVariable : equationVariables) {
+					long variable = Long.parseLong( request.getParameter(equationVariable) );
+				
+					ParameterMap varParam = new ParameterHashMap();
+					varParam.setString( "equationVariable", equationVariable );
+					varParam.setNumber( "variableId", variable );
+					varParams.add( varParam );
+				}
+				params.setList( "variables", varParams  );
+				step.setRScriptFromEquation();
+				break;
+			case SCRIPT:
+				step.setScript(form.getScript());
+				break;
+			}
+			step.setParameters(params);
 			
 			chain.addCalculationStep(step);
-
 			processingChainService.saveCalculationStep(chain, step);
-			response.addField("calculationStep", step);
+			// better to reload it .it throws json parsing exception otherwise
+			response.addField( "calculationStep", load(step.getId()) );
 		}
 		return response;
 	}
