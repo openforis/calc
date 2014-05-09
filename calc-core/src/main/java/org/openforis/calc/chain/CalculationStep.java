@@ -34,8 +34,6 @@ public class CalculationStep extends CalculationStepBase {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final String VARIABLE_PATTERN = "\\$(.+?)\\$";
-
 	public enum Type {
 		SCRIPT , EQUATION
 	}

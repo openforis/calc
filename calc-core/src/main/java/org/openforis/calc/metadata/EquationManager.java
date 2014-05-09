@@ -47,17 +47,6 @@ public class EquationManager {
 
 	private static Pattern VARIABLE_PATTERN = Pattern.compile( "([A-Za-z_]+[A-Za-z_.]*)" );
 	
-	public static void main(String[] args) throws IOException {
-		EquationManager e = new EquationManager();
-		
-//		String expr = "round(as.numeric(vegetation_type)/100) == 2";
-		String expr = "0.000065 * dbh^1.633 * h^1.137";
-		Set<String> variables = e.extractVariables(expr);
-		for (String string : variables) {
-			System.out.println(string);
-		}
-	}
-	
 	@Transactional
 	public void createFromCsv( Workspace workspace , String filePath, String listName ) throws IOException {
 		// create equation list
