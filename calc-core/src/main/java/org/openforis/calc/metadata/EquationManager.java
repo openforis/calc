@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.openforis.calc.engine.ParameterHashMap;
 import org.openforis.calc.engine.ParameterMap;
 import org.openforis.calc.engine.Workspace;
@@ -44,7 +45,18 @@ public class EquationManager {
 	@Autowired
 	private R r;
 
-	private static Pattern VARIABLE_PATTERN = Pattern.compile( "\\b([A-Za-z]+?)\\b" );
+	private static Pattern VARIABLE_PATTERN = Pattern.compile( "([A-Za-z_]+[A-Za-z_.]*)" );
+	
+	public static void main(String[] args) throws IOException {
+		EquationManager e = new EquationManager();
+		
+//		String expr = "round(as.numeric(vegetation_type)/100) == 2";
+		String expr = "0.000065 * dbh^1.633 * h^1.137";
+		Set<String> variables = e.extractVariables(expr);
+		for (String string : variables) {
+			System.out.println(string);
+		}
+	}
 	
 	@Transactional
 	public void createFromCsv( Workspace workspace , String filePath, String listName ) throws IOException {
@@ -77,8 +89,6 @@ public class EquationManager {
 		
 		Set<String> variables = new HashSet<String>();
 		for ( FlatRecord record = csvReader.nextRecord(); record != null; record = csvReader.nextRecord() ) {
-//			System.out.println( record );
-			
 			String code = record.getValue( 0, String.class );
 			String equationString = record.getValue( 1, String.class );
 			String condition = record.getValue( 2, String.class );
@@ -91,6 +101,7 @@ public class EquationManager {
 			
 			equationList.addEquation(equation);
 			
+			variables.addAll( extractVariables(condition) );
 			variables.addAll( extractVariables(equationString) );
 		}
 		
@@ -135,16 +146,20 @@ public class EquationManager {
 		workspace.setEquationLists( list );
 		
 	}
-	
+
 	private Set<String> extractVariables( String equation ) throws IOException {
 		Set<String> variables = new HashSet<String>();
-		Matcher matcher = VARIABLE_PATTERN.matcher( equation );
-		while( matcher.find() ) {
-			String var = matcher.group( 1 );
-			if( !r.getBaseFunctions().contains( var ) ) {
-				variables.add( var );
+
+		if( StringUtils.isNotBlank(equation) ) {
+			Matcher matcher = VARIABLE_PATTERN.matcher( equation );
+			while( matcher.find() ) {
+				String var = matcher.group( 1 );
+				if( !r.getBaseFunctions().contains( var ) ) {
+					variables.add( var );
+				}
 			}
 		}
+		
 		return variables;
 	}
 

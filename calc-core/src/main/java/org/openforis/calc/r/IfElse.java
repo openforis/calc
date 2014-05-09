@@ -15,11 +15,11 @@ public class IfElse extends RScript {
 		append("ifelse(");
 		append( condition.toScript() );
 		append(" , ");
-		append(NEW_LINE);
+//		append(NEW_LINE);
 		append( leftValue.toScript() );
 		append(" , ");
 		append( rightValue.toScript() );
-		append(NEW_LINE);
+//		append(NEW_LINE);
 		append(") ");
 		
 	}

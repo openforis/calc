@@ -112,24 +112,28 @@ public class CalculationStep extends CalculationStepBase {
 	}
 
 	public void setRScriptFromEquation() {
-		Workspace workspace = getProcessingChain().getWorkspace();
+		Workspace workspace = getWorkspace();
 		
 		Variable<?> outputVariable = getOutputVariable();
 		Entity entity = outputVariable.getEntity();
 		RVariable rOutputVariable = r().variable( entity.getName(), outputVariable.getName() );
-	
+		
 		EquationList equationList = workspace.getEquationListById( getEquationListId() );
 		Iterator<Equation> iterator = equationList.getEquations().iterator();
-		RScript rScript = getNextREquation(iterator, rOutputVariable);
+		RScript rScript = getNextREquation( iterator );
 		
 		SetValue setValue = r().setValue( rOutputVariable, rScript );
 		
 		String script = setValue.toString();
 		this.setScript( script  );
 	}
+
+	private Workspace getWorkspace() {
+		Workspace workspace = getProcessingChain().getWorkspace();
+		return workspace;
+	}
 	
-	private RScript getNextREquation(Iterator<Equation> iterator, RVariable rOutputVariable) {
-		
+	private RScript getNextREquation(Iterator<Equation> iterator ) {
 		Equation eq = iterator.next();
 		
 		String code = eq.getCode();
@@ -139,13 +143,19 @@ public class CalculationStep extends CalculationStepBase {
 		RScript rCondition = null;
 		if( StringUtils.isNotBlank( code ) || StringUtils.isNotBlank( condition)  ) {
 			if(StringUtils.isNotBlank( code )) {
-				sbCondition.append( rOutputVariable.toString() );
+				
+				Entity entity = getOutputVariable().getEntity();
+				Integer codeVariableId = getParameters().getInteger( "codeVariable" );
+				Variable<?> codeVariable = getWorkspace().getVariableById(codeVariableId );
+				RVariable rCodeVariable	= r().variable( entity.getName() , codeVariable.getName() );
+				
+				sbCondition.append( rCodeVariable.toString() );
 				sbCondition.append( " == " );
-				if( getOutputVariable() instanceof CategoricalVariable ){
+				if( codeVariable instanceof CategoricalVariable ){
 					sbCondition.append( "'" );
 				}
 				sbCondition.append( code );
-				if( getOutputVariable() instanceof CategoricalVariable ){
+				if( codeVariable instanceof CategoricalVariable ){
 					sbCondition.append( "'" );
 				}
 			}
@@ -171,7 +181,7 @@ public class CalculationStep extends CalculationStepBase {
 			if( rCondition == null ){
 				throw new CalculationException( "Equation " + equation + " has neither code nor condition set" );
 			}
-			rScript = r().ifElse( rCondition, rEquation, getNextREquation(iterator, rOutputVariable) );
+			rScript = r().ifElse( rCondition, rEquation, getNextREquation(iterator) );
 		} else {
 			rScript = rEquation;
 		}
@@ -199,26 +209,9 @@ public class CalculationStep extends CalculationStepBase {
 		
 		return script;
 	}
-	public static void main(String[] args) {
-		String equationVariable = "dbh";
-		String rVar = "tree$\"plot_no\"";
-//		String rVar = "tree\\$plot_no";
-		rVar = rVar.replaceAll("\\$", "\\\\\\$");
-		String script = "0.0001 * dbh^2.032 * h^0.66";
-		System.out.println(rVar);
-		script = script.replaceAll( "\\b" + equationVariable + "\\b", rVar );
-		System.out.println( script );
-	}
-	// 
+
 	private RScript r() {
 		return new RScript();
 	}
-	
-//	public Type getType() {
-////		String string = getParameters().getString( "type" );
-////		Type type = Type.valueOf( string );
-////		return type;
-//		return Type.SCRIPT;
-//	}
 	
 }

@@ -71,6 +71,8 @@ public class CalculationStepController {
 			} else {
 				step = chain.getCalculationStep(stepId);
 			}
+			chain.addCalculationStep(step);
+			
 			Variable<?> outputVariable = ws.getVariableById(form.getVariableId());
 			step.setOutputVariable(outputVariable);
 			step.setModuleName(CalcRModule.MODULE_NAME);
@@ -82,6 +84,8 @@ public class CalculationStepController {
 			step.setType(type);
 			
 			ParameterMap params = new ParameterHashMap();
+			step.setParameters(params);
+			
 			switch (type) {
 			case EQUATION:
 				long listId = Long.parseLong( request.getParameter("equation-list") );
@@ -110,9 +114,7 @@ public class CalculationStepController {
 				step.setScript(form.getScript());
 				break;
 			}
-			step.setParameters(params);
 			
-			chain.addCalculationStep(step);
 			processingChainService.saveCalculationStep(chain, step);
 			// better to reload it .it throws json parsing exception otherwise
 			response.addField( "calculationStep", load(step.getId()) );

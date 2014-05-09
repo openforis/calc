@@ -46,7 +46,10 @@ public class CalcRTask extends Task {
 	@Override
 	protected void execute() throws Throwable {
 		RLogger logger = getJobLogger();
-		rEnvironment.eval(toString(), logger);
+		
+		String script = toString();
+		
+		rEnvironment.eval( script, logger );
 
 		// an R error has been detected by the logger
 		if ( logger.containsCalcErrorSignal() ) {

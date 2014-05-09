@@ -209,12 +209,10 @@ CalculationStepEditManager.prototype.saveIfChanged = function( success ) {
  * Update form with currentCalculationStep instance
  */
 CalculationStepEditManager.prototype.updateForm = function() {
-	var $step = this.currentCalculationStep;
-	
-	this.$entityCombo.val( $step.outputEntityId );
+	this.$entityCombo.val( this.currentCalculationStep.outputEntityId );
 	this.entityChange();
 
-	this.$variableCombo.val( $step.outputVariableId );
+	this.$variableCombo.val( this.currentCalculationStep.outputVariableId );
 	
 	switch ( this.currentCalculationStep.type ) {
 		case "SCRIPT":
@@ -223,9 +221,9 @@ CalculationStepEditManager.prototype.updateForm = function() {
 		case "EQUATION":
 			this.equationButton.select();
 			// populate equation form
-			var params = $step.parameters;
+			var params = this.currentCalculationStep.parameters;
 			
-			var equationListId = $step.equationListId;
+			var equationListId = this.currentCalculationStep.equationListId;
 			this.equationListCombo.val( equationListId );
 			this.equationListChange();
 
@@ -242,7 +240,7 @@ CalculationStepEditManager.prototype.updateForm = function() {
 			break;
 	}
 	
-	UI.Form.setFieldValues( this.$form, $step );
+	UI.Form.setFieldValues( this.$form, this.currentCalculationStep );
 	UI.unlock();
 	
 	//reset changed state 
