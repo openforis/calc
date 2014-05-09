@@ -61,6 +61,8 @@ Autocomplete.prototype = (function() {
 	var inputKeyDownHandler = function(event) {
 		var $this = this;
 		if ( event.ctrlKey && event.keyCode == 32) { //ctrl + spacebar pressed
+			event.preventDefault();
+			event.stopPropagation();
 			$.proxy(askForAutocomplete, $this)();
 		} else if ( $this.dropdownOpen ) {
 			switch ( event.keyCode ) {

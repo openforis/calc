@@ -269,94 +269,114 @@ ScatterPlot.prototype = (function(){
 		// on mouse over a bubble shows data values
 		var mouseOver = function() { 
 			var circle = d3.select(this);
-			var data = circle.data()[0];
-			
-			// transition to increase size/opacity of bubble
-			circle.transition()
-				.duration(600)
-				.style("opacity", 1)
-				.attr("r", 14)
-				.ease("elastic");
-			
-			// append lines to bubbles that will be used to show the precise data points.
-			var y1 = parseFloat(circle.attr("cy")) + 26;
-			y1 = Math.min( y1 , $this.svg.attr("height")-$this.padding );
-			$this.svg.append("g")
-				.attr("class", "guide")
-			.append("line")
-				.attr("x1", circle.attr("cx"))
-				.attr("x2", circle.attr("cx"))
-				.attr("y1", y1 )
-				.attr("y2", $this.svg.attr("height") - $this.padding)
-				.style("stroke", circle.style("fill"))
-				.style("opacity", 0)
-				.transition().delay(50).duration(300).styleTween("opacity", 
-							function() { return d3.interpolate(0, .4); });
 
-			var x1 = parseFloat(circle.attr("cx")) - 26;
-			x1 =  Math.max(x1, $this.padding);
-			$this.svg.append("g")
-				.attr("class", "guide")
-			.append("line")
-				.attr("x1", x1)
-				.attr("x2", $this.padding)
-				.attr("y1", circle.attr("cy"))
-				.attr("y2", circle.attr("cy"))
-				.style("stroke", circle.style("fill"))
-				.style("opacity", 0)
-				.transition().delay(50).duration(300).styleTween("opacity", 
-							function() { return d3.interpolate(0, .4); });
-			
-			// set low opacity to axis
-			d3
-			.selectAll(".axis,.axis-label")
-			.transition()
-			.duration(400)
-			.styleTween("opacity", function() { return d3.interpolate(.7, .2); });
-			
-			var format = d3.format(".3n");
-			// 	show point data values on the axis
-			$this.svg.append("g")
+			if( ! circle.classed("opened") ) {
+				closeBubbles();
+
+				var data = circle.data()[0];
+
+				// transition to increase size/opacity of bubble
+				circle.transition()
+					.duration(600)
+					.style("opacity", 1)
+					.attr("r", 14)
+					.ease("elastic");
+				
+				// append lines to bubbles that will be used to show the precise data points.
+				var y1 = parseFloat(circle.attr("cy")) + 26;
+				y1 = Math.min( y1 , $this.svg.attr("height")-$this.padding );
+				$this.svg.append("g")
+					.attr("class", "guide")
+				.append("line")
+					.attr("x1", circle.attr("cx"))
+					.attr("x2", circle.attr("cx"))
+					.attr("y1", y1 )
+					.attr("y2", $this.svg.attr("height") - $this.padding)
+					.style("stroke", circle.style("fill"))
+					.style("opacity", 0)
+					.transition().delay(50).duration(300).styleTween("opacity", 
+								function() { return d3.interpolate(0, .4); });
+
+				var x1 = parseFloat(circle.attr("cx")) - 26;
+				x1 =  Math.max(x1, $this.padding);
+				$this.svg.append("g")
+					.attr("class", "guide")
+				.append("line")
+					.attr("x1", x1)
+					.attr("x2", $this.padding)
+					.attr("y1", circle.attr("cy"))
+					.attr("y2", circle.attr("cy"))
+					.style("stroke", circle.style("fill"))
+					.style("opacity", 0)
+					.transition().delay(50).duration(300).styleTween("opacity", 
+								function() { return d3.interpolate(0, .4); });
+				
+				// set low opacity to axis
+				d3
+				.selectAll(".axis,.axis-label")
+				.transition()
+				.duration(400)
+				.styleTween("opacity", function() { return d3.interpolate(.7, .2); });
+				
+				var format = d3.format(".3n");
+				// 	show point data values on the axis
+				$this.svg.append("g")
+					.attr("class", "axis-tick")
+				.append("text")
+					.attr("opacity",0)
+					.attr("x",circle.attr("cx"))
+					.attr("y", $this.svg.attr("height") - ($this.padding/2) )
+					.text( format(data[0]) )
+					.transition()
+					.duration(400)
+					.styleTween("opacity", function() { return d3.interpolate(0, .7); });
+
+				$this.svg.append("g")
 				.attr("class", "axis-tick")
-			.append("text")
+				.append("text")
 				.attr("opacity",0)
-				.attr("x",circle.attr("cx"))
-				.attr("y", $this.svg.attr("height") - ($this.padding/2) )
-				.text( format(data[0]) )
+				.attr("x",$this.padding/2)
+				.attr("y",circle.attr("cy"))
+				.text( format(data[1]) )
 				.transition()
 				.duration(400)
 				.styleTween("opacity", function() { return d3.interpolate(0, .7); });
+				
+			// function to move mouseover item to front of SVG stage, in case
+			// another bubble overlaps it
+				d3.selection.prototype.moveToFront = function() { 
+				  return this.each(function() { 
+					this.parentNode.appendChild(this); 
+				  }); 
+				};
 
-			$this.svg.append("g")
-			.attr("class", "axis-tick")
-			.append("text")
-			.attr("opacity",0)
-			.attr("x",$this.padding/2)
-			.attr("y",circle.attr("cy"))
-			.text( format(data[1]) )
-			.transition()
-			.duration(400)
-			.styleTween("opacity", function() { return d3.interpolate(0, .7); });
+				if( circle.moveToFront ){
+					circle.moveToFront();
+				}
+				
+				//add 'opened' class
+				circle.classed("opened", true);
+			}
 			
-		// function to move mouseover item to front of SVG stage, in case
-		// another bubble overlaps it
-			d3.selection.prototype.moveToFront = function() { 
-			  return this.each(function() { 
-				this.parentNode.appendChild(this); 
-			  }); 
-			};
-
-			circle.moveToFront();
+			
 		};
 		
 		// on mouse out remove data values
 		var mouseOut = function() {
-			var circle = d3.select(this);
-
+			closeBubbles();
+		};
+		
+		/**
+		 * Closes the specified circle and restore it's style to the default one.
+		 */
+		var closeBubbles = function() {
+			var circle = d3.selectAll(".opened");
+			
 			// go back to original size and opacity
 			circle.transition()
 			.duration(800).style("opacity", .4)
 			.attr("r", 8).ease("elastic");
+			
 			// increase opacity to axis
 			d3
 			.selectAll(".axis,.axis-label")
@@ -379,8 +399,20 @@ ScatterPlot.prototype = (function(){
 			.duration(100)
 			.styleTween("opacity", function() { return d3.interpolate(.5, 0); })
 			.remove();
+			
+			//remove 'opened' class
+			circle.classed("opened", false);
+			
+			var opened = d3.selectAll(".opened");
+			
+			opened.transition()
+				.duration(800).style("opacity", .4)
+				.attr("r", 8).ease("elastic");
+			
+			//remove "opened" class
+			circle.classed("opened", false);
 		};
-
+		
 		// run the mouseon/out functions
 		this.circles.on("mouseover", mouseOver);
 		this.circles.on("mouseout", mouseOut);
