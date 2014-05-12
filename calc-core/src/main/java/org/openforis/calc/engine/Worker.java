@@ -38,7 +38,7 @@ public abstract class Worker {
 	}
 
 	public Worker() {
-		this.status = Status.PENDING;
+		this.setStatus(Status.PENDING);
 		this.startTime = -1;
 		this.endTime = -1;
 		this.itemsProcessed = 0;
@@ -69,13 +69,15 @@ public abstract class Worker {
 			throw new IllegalStateException("Already run");
 		}
 		try {
-			this.status = Status.RUNNING;
+			this.setStatus( Status.RUNNING );
+			
 			this.startTime = System.currentTimeMillis();
 			execute();
-			this.status = Status.COMPLETED;
+			this.setStatus( Status.COMPLETED );
+			
 		} catch (Throwable t) {
 			this.errorStackTrace = ExceptionUtils.getStackTrace(t);
-			this.status = Status.FAILED;
+			this.setStatus( Status.FAILED );
 			this.lastException = t;
 			logger.warn("Task failed");
 			log().error("Error while executing task", t);
@@ -86,7 +88,7 @@ public abstract class Worker {
 	}
 
 	public final long getDuration() {
-		switch (status) {
+		switch (getStatus()) {
 		case PENDING:
 			return -1;
 		case RUNNING:
@@ -97,23 +99,23 @@ public abstract class Worker {
 	}
 
 	public final boolean isPending() {
-		return status == Status.PENDING;
+		return getStatus() == Status.PENDING;
 	}
 
 	public final boolean isRunning() {
-		return status == Status.RUNNING;
+		return getStatus() == Status.RUNNING;
 	}
 
 	public final boolean isFailed() {
-		return status == Status.FAILED;
+		return getStatus() == Status.FAILED;
 	}
 
 	public final boolean isAborted() {
-		return status == Status.ABORTED;
+		return getStatus() == Status.ABORTED;
 	}
 
 	public final boolean isCompleted() {
-		return status == Status.COMPLETED;
+		return getStatus() == Status.COMPLETED;
 	}
 
 	/**
@@ -122,11 +124,15 @@ public abstract class Worker {
 	 * @return
 	 */
 	public final boolean isEnded() {
-		return status != Status.PENDING && status != Status.RUNNING;
+		return getStatus() != Status.PENDING && getStatus() != Status.RUNNING;
 	}
 
 	public final Task.Status getStatus() {
 		return this.status;
+	}
+	
+	void setStatus(Status status) {
+		this.status = status;
 	}
 
 	public final long getStartTime() {
@@ -197,5 +203,5 @@ public abstract class Worker {
 	protected RScript r() {
 		return new RScript();
 	}
-	
+
 }

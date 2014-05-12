@@ -61,8 +61,8 @@ public class InventorySettingsController {
 
 		SamplingDesign samplingDesign = parseSamplingDesignFromJsonString( workspace, samplingDesignParam );
 		if ( samplingDesign != null ) {
-			samplingDesignManager.insert( workspace ,  samplingDesign );
-			response.addField( "samplingDesign", samplingDesign );
+			samplingDesignManager.insert( workspace , samplingDesign );
+			response.addField( "samplingDesign",  workspace.getSamplingDesign() );
 		}
 
 		// execute job

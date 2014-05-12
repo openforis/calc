@@ -23,9 +23,9 @@ import org.openforis.calc.metadata.SamplingDesign.TableJoin;
 import org.openforis.calc.psql.Psql;
 import org.openforis.calc.psql.UpdateWithStep;
 import org.openforis.calc.schema.DataAoiTable;
+import org.openforis.calc.schema.DataSchema;
 import org.openforis.calc.schema.EntityDataView;
 import org.openforis.calc.schema.ExpansionFactorTable;
-import org.openforis.calc.schema.DataSchema;
 import org.openforis.calc.schema.Phase1AoiTable;
 
 /**

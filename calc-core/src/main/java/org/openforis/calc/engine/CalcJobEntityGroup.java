@@ -12,17 +12,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.jooq.Field;
-import org.jooq.Record;
-import org.jooq.SelectQuery;
 import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.metadata.Entity;
-import org.openforis.calc.psql.Psql;
 import org.openforis.calc.r.RScript;
 import org.openforis.calc.r.RVariable;
-import org.openforis.calc.r.SetValue;
 import org.openforis.calc.schema.EntityDataView;
-import org.openforis.calc.schema.InputTable;
 import org.openforis.calc.schema.ResultTable;
 
 /**

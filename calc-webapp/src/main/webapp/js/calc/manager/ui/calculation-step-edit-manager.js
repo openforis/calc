@@ -50,9 +50,9 @@ CalculationStepEditManager = function (container) {
  *  
  * @param callback
  */
-CalculationStepEditManager.prototype.init = function(callback) {
+CalculationStepEditManager.prototype.init = function( callback ) {
 	var $this = this;
-	WorkspaceManager.getInstance().activeWorkspace(function(ws) {
+	WorkspaceManager.getInstance().activeWorkspace( function(ws) {
 		// i can use workspace as instance because there aren't any changes here to it
 		$this.workspace = ws;
 		

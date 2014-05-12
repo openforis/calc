@@ -1,9 +1,12 @@
 package org.openforis.calc.chain;
 
+import org.openforis.calc.engine.Worker.Status;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.persistence.jooq.Sequences;
+import org.openforis.calc.persistence.jooq.Tables;
+import org.openforis.calc.persistence.jooq.tables.ProcessingChainTable;
 import org.openforis.calc.persistence.jooq.tables.daos.CalculationStepDao;
 import org.openforis.calc.persistence.jooq.tables.daos.ProcessingChainDao;
 import org.openforis.calc.psql.Psql;
@@ -110,4 +113,15 @@ public class ProcessingChainService {
 		}
 	}
 
+	public void updateProcessingChainStatus( ProcessingChain processingChain , Status status ){
+		processingChain.setStatus( status );
+		
+		ProcessingChainTable T = Tables.PROCESSING_CHAIN;
+		psql
+			.update( T )
+			.set( T.STATUS , status )
+			.where( T.ID.eq(processingChain.getId() ) )
+			.execute();
+	}
+	
 }

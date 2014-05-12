@@ -11,28 +11,31 @@ package org.openforis.calc.persistence.jooq.tables.pojos;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ProcessingChainBase implements java.io.Serializable {
 
-	private static final long serialVersionUID = 1574523699;
+	private static final long serialVersionUID = 1362419575;
 
-	private java.lang.Integer                      id;
-	private java.lang.Integer                      workspaceId;
-	private org.openforis.calc.engine.ParameterMap parameters;
-	private java.lang.String                       caption;
-	private java.lang.String                       description;
+	private java.lang.Integer                       id;
+	private java.lang.Integer                       workspaceId;
+	private org.openforis.calc.engine.ParameterMap  parameters;
+	private java.lang.String                        caption;
+	private java.lang.String                        description;
+	private org.openforis.calc.engine.Worker.Status status;
 
 	public ProcessingChainBase() {}
 
 	public ProcessingChainBase(
-		java.lang.Integer                      id,
-		java.lang.Integer                      workspaceId,
-		org.openforis.calc.engine.ParameterMap parameters,
-		java.lang.String                       caption,
-		java.lang.String                       description
+		java.lang.Integer                       id,
+		java.lang.Integer                       workspaceId,
+		org.openforis.calc.engine.ParameterMap  parameters,
+		java.lang.String                        caption,
+		java.lang.String                        description,
+		org.openforis.calc.engine.Worker.Status status
 	) {
 		this.id = id;
 		this.workspaceId = workspaceId;
 		this.parameters = parameters;
 		this.caption = caption;
 		this.description = description;
+		this.status = status;
 	}
 
 	public java.lang.Integer getId() {
@@ -73,5 +76,13 @@ public class ProcessingChainBase implements java.io.Serializable {
 
 	public void setDescription(java.lang.String description) {
 		this.description = description;
+	}
+
+	public org.openforis.calc.engine.Worker.Status getStatus() {
+		return this.status;
+	}
+
+	public void setStatus(org.openforis.calc.engine.Worker.Status status) {
+		this.status = status;
 	}
 }

@@ -75,7 +75,7 @@ public class TaskManager {
 	 * Create a job with write-access to the calc schema. Used for updating
 	 * metadata (e.g. importing sampling design, variables)
 	 */
-	public CalcJob createCalcJob(Workspace workspace) {
+	public CalcJob createCalcJob( Workspace workspace ) {
 		CalcJob job = new CalcJob(workspace, dataSource, this.beanFactory);
 		autowire(job);
 		return job;
@@ -88,13 +88,11 @@ public class TaskManager {
 	 */
 	public CalcJob createDefaultCalcJob(Workspace workspace, boolean aggregates) {
 		CalcJob job = createCalcJob(workspace);
+		job.setAggregates(aggregates);
 		
 		ProcessingChain processingChain = workspace.getDefaultProcessingChain();
+		job.setProcessingChain( processingChain );
 		
-		List<CalculationStep> steps = processingChain.getCalculationSteps();
-		job.addCalculationStep(steps);
-		job.setAggregates(aggregates);
-
 		return job;
 	}
 	

@@ -76,4 +76,11 @@ public class ProcessingChainDao extends org.jooq.impl.DAOImpl<org.openforis.calc
 	public java.util.List<ProcessingChain> fetchByDescription(java.lang.String... values) {
 		return fetch(org.openforis.calc.persistence.jooq.tables.ProcessingChainTable.PROCESSING_CHAIN.DESCRIPTION, values);
 	}
+
+	/**
+	 * Fetch records that have <code>status IN (values)</code>
+	 */
+	public java.util.List<ProcessingChain> fetchByStatus(org.openforis.calc.engine.Worker.Status... values) {
+		return fetch(org.openforis.calc.persistence.jooq.tables.ProcessingChainTable.PROCESSING_CHAIN.STATUS, values);
+	}
 }

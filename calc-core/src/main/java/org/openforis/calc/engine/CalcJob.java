@@ -19,6 +19,8 @@ import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.SchemaImpl;
 import org.openforis.calc.chain.CalculationStep;
+import org.openforis.calc.chain.ProcessingChain;
+import org.openforis.calc.chain.ProcessingChainService;
 import org.openforis.calc.chain.post.CreateAggregateTablesTask;
 import org.openforis.calc.chain.post.PublishRolapSchemaTask;
 import org.openforis.calc.metadata.Entity;
@@ -55,6 +57,8 @@ public class CalcJob extends Job {
 	// save results in a temporary results table 
 	private boolean tempResults;
 	
+	@Autowired
+	private ProcessingChainService processingChainService;
 	
 	@JsonIgnore
 	private CalcJobEntityGroup group;
@@ -63,6 +67,8 @@ public class CalcJob extends Job {
 	@JsonIgnore
 	private BeanFactory beanFactory;
 
+	private ProcessingChain processingChain;
+	
 	/**
 	 * RLogger used by calcRTask.execute
 	 */
@@ -115,7 +121,7 @@ public class CalcJob extends Job {
 		this.group.addCalculationStep(step);
 	}
 
-	public void addCalculationStep(List<CalculationStep> steps) {
+	public void addCalculationSteps(List<CalculationStep> steps) {
 		for (CalculationStep calculationStep : steps) {
 			addCalculationStep(calculationStep);
 		}
@@ -357,6 +363,26 @@ public class CalcJob extends Job {
 	public void setTempResults(boolean tempResults) {
 		this.tempResults = tempResults;
 	}
-
 	
+	@JsonInclude
+	public ProcessingChain getProcessingChain() {
+		return processingChain;
+	}
+
+	void setProcessingChain(ProcessingChain processingChain) {
+		this.processingChain = processingChain;
+		List<CalculationStep> steps = this.processingChain.getCalculationSteps();
+		this.addCalculationSteps( steps );
+	}
+	
+	/**
+	 * Set also  the status to the processing chain if associated to the job
+	 */
+	@Override
+	void setStatus(Status status) {
+		super.setStatus(status);
+		if( this.processingChain != null ){
+			processingChainService.updateProcessingChainStatus( processingChain, status );
+		}
+	}
 }

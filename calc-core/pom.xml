@@ -96,6 +96,10 @@
 									<name>org.openforis.calc.chain.CalculationStep.Type</name>
 									<converter>org.openforis.calc.persistence.jooq.CalculationStepTypeConverter</converter>
 								</customType>
+								<customType>
+									<name>org.openforis.calc.engine.Worker.Status</name>
+									<converter>org.openforis.calc.persistence.jooq.WorkerStatusConverter</converter>
+								</customType>
 							</customTypes>
 							<forcedTypes>
 								<forcedType>
@@ -133,6 +137,10 @@
 								<forcedType>
 									<name>org.openforis.calc.chain.CalculationStep.Type</name>
 									<expression>.*\.calculation_step\.type</expression>
+								</forcedType>
+								<forcedType>
+									<name>org.openforis.calc.engine.Worker.Status</name>
+									<expression>.*\.processing_chain\.status</expression>
 								</forcedType>
 							</forcedTypes>
 						</database>

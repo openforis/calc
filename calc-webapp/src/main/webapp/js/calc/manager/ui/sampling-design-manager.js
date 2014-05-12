@@ -488,7 +488,9 @@ SamplingDesignManager.prototype.saveSamplingDesign = function(){
 		
 		WorkspaceManager.getInstance().activeWorkspaceSetSamplingDesign( this.samplingDesign, $.proxy( function(ws){
 			this.updateSamplingDesign();
-			JobManager.getInstance().checkJobStatus();
+			JobManager.getInstance().checkJobStatus(function(){
+				Calc.updateButtonStatus();
+			});
 		} , this) );
 		
 	}

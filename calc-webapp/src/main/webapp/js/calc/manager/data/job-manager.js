@@ -43,7 +43,6 @@ JobManager.prototype.executeCalculationStepTest = function(stepId, complete, var
 		data: data,
 		dataType:"json"
 	}).done(function(response) {
-//		$.proxy(start, $this)(response, complete, hideOnComplete);
 		$this.start(response, complete, hideOnComplete);
 	})
 	.error( function() {
@@ -52,47 +51,44 @@ JobManager.prototype.executeCalculationStepTest = function(stepId, complete, var
 };
 	
 // execute all steps for active workspace
-JobManager.prototype.execute = function(complete) {
+JobManager.prototype.execute = function( complete ) {
 	var $this = this;
 	UI.disableAll();
 	$.ajax({
 		url : $this.contextPath + "/execute.json",
 		dataType:"json"
 	}).done(function(response) {
-//		$.proxy(start, $this)(response, complete);
 		$this.start(response, complete);
 	})
 	.error(function(e){
-		console.log("error!!! on exec");
-		console.log(e);
+		Calc.error.apply( this, arguments );
 	});
 };
 	
 /**
  * if workspace is locked, it shows the jobstatus modal window
  */
-JobManager.prototype.checkJobStatus = function(complete, hideOnComplete) {
+JobManager.prototype.checkJobStatus = function( complete, hideOnComplete ) {
 	var $this = this;
 	// if workspace is locked then shows job status
 	WorkspaceManager.getInstance().activeWorkspaceIsLocked(function(locked){
-		if(locked === true) {
-//			$.proxy(start, $this)(null, complete, hideOnComplete);
-			$this.start(null, complete, hideOnComplete);
+		if( locked === true ) {
+			$this.start( null, complete, hideOnComplete );
 		} else if ( complete ) {
 			complete();
 		}
 	});
 };
 
-JobManager.prototype.start = function(job, complete, hideOnComplete) {
+JobManager.prototype.start = function( job, complete, hideOnComplete ) {
 	this.job = job;
 	this.jobStatus.show();
-	this.updateJobStatus(complete, hideOnComplete);
+	this.updateJobStatus( complete, hideOnComplete );
 //	$.proxy(updateJobStatus, this)(complete, hideOnComplete);
 };
 	
 // check the job status for the active workspace 
-JobManager.prototype.updateJobStatus = function(complete, hideOnComplete) {
+JobManager.prototype.updateJobStatus = function( complete, hideOnComplete ) {
 	var $this = this;
 	$.ajax({
 		url: "rest/workspace/job.json",
@@ -124,6 +120,14 @@ JobManager.prototype.updateJobStatus = function(complete, hideOnComplete) {
 //						if( hideOnComplete === true ) {
 //							$this.jobStatus.hide();
 //						}
+					
+					// if there's a processing chain associated to the job (CalcJob)
+					if( job.processingChain ) {
+						WorkspaceManager.getInstance().activeWorkspace( function(ws){
+							ws.updateProcessingChain( job.processingChain );
+							Calc.updateButtonStatus();
+						});
+					}
 					break;
 				default:
 			}

@@ -109,12 +109,34 @@ Workspace.prototype.getAdminUnitFlatAois = function() {
 	}
 	return aois;
 };
+
 // returns the equation list with given id if there is
 Workspace.prototype.getEquationList = function( listId ) {
 	for( var i in this.equationLists ){
 		var list = this.equationLists[i];
 		if( list.id == listId ) {
 			return list;
+		}
+	}
+};
+
+Workspace.prototype.getDefaultProcessingChain = function(){
+	if( this.processingChains.length > 0 ){
+		for( var i in this.processingChains ) {
+			var chain = this.processingChains[i];
+			if( chain.caption == 'default' ){
+				return chain;
+			}
+		}
+	}
+};
+
+Workspace.prototype.updateProcessingChain = function( processingChain ) {
+	for( var i in this.processingChains ) {
+		var wsChain = this.processingChains[i];
+		if( wsChain.id == processingChain.id ){
+			this.processingChains[i] = processingChain;
+			break;
 		}
 	}
 };

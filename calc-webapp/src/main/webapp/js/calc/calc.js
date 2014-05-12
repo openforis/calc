@@ -40,7 +40,7 @@ $(document).ready(function() {
 	/**
 	 * Function to be called when active workspace change
 	 */
-	Calc.workspaceChange = function(success) {
+	Calc.workspaceChange = function( success ) {
 		
 		WorkspaceManager.getInstance().refreshActiveWorkspace( function(ws){
 			// load calc steps to home page
@@ -50,18 +50,48 @@ $(document).ready(function() {
 			// update active workspace home settings ui
 			Calc.workspaceSettingsManager.updateActive( ws );
 			
-			var workspaceEnabledButtons = $(document).find( ".workspace-enabled" );
-			if ( ws ) {
-				UI.enable( workspaceEnabledButtons );
-			} else {
-				UI.disable( workspaceEnabledButtons );
-			}
+			// update ui buttons
+			Calc.updateButtonStatus();
 			
 			if ( success ) {
 				success(ws);
 			}
 		});
 			
+	};
+	
+	/**
+	 * Enable / disable buttons based on the workspace status
+	 */
+	Calc.updateButtonStatus = function() {
+		
+		var wsButtons 		= $( document ).find( ".workspace-required" );
+		var aoiButtons 		= $( document ).find( ".aoi-required" );
+		var sdButtons 		= $( document ).find( ".sampling-design-required" );
+		var chainButtons 	= $( document ).find( ".default-chain-executed-required" );
+	
+		UI.disable( wsButtons );
+		UI.disable( aoiButtons );
+		UI.disable( sdButtons );
+		UI.disable( chainButtons );
+		
+		WorkspaceManager.getInstance().activeWorkspace( function(ws){
+			if ( ws ) {
+				UI.enable( wsButtons );
+				if( ws.aoiHierarchies.length > 0 ) {
+					UI.enable( aoiButtons );
+					
+					if( ws.samplingDesign ) {
+						UI.enable( sdButtons );
+						var chain = ws.getDefaultProcessingChain();
+						if( chain.status === "COMPLETED" ){
+							UI.enable( chainButtons );
+						}
+					}
+				} 
+			}
+			
+		});
 	};
 	
 	/**
@@ -75,7 +105,7 @@ $(document).ready(function() {
 		}
 		message.append( "<div class='width100'>" + textStatus + "</div>" );
 		
-		if( errorThrown ){
+		if( errorThrown ) {
 			message.append( "<div class='width100'>" + errorThrown + "</div>" );
 		}
 		

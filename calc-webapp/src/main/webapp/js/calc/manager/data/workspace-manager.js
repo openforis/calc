@@ -60,6 +60,7 @@ WorkspaceManager.prototype = (function(){
 	
 	/**
 	 * Set the sampling unit to the workspace
+	 * @deprecated
 	 */
 	var activeWorkspaceSetSamplingUnit = function(entity, success){
 		var $this = this;
@@ -104,8 +105,8 @@ WorkspaceManager.prototype = (function(){
 			}).done(function(response){
 				var variableToUpdate = response;
 				// replace old qty variable with the new one
-				variableToUpdate = entity.replaceVariable(variableToUpdate);
-				success(variableToUpdate);
+				variableToUpdate = entity.replaceVariable( variableToUpdate );
+				success( variableToUpdate );
 			}).error( function() {
 				Calc.error.apply( this , arguments );
 			});
@@ -246,8 +247,11 @@ WorkspaceManager.prototype = (function(){
 			}).done(function(response) {
 				var aoiHierarchy = response;
 				ws.aoiHierarchies[0] = response;
-				complete(ws);
+				
 				UI.unlock();
+				Calc.updateButtonStatus();
+				
+				complete( ws );
 			}).error( function() {
 				Calc.error.apply( this , arguments );
 			});

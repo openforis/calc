@@ -39,22 +39,23 @@
 	 	<div class="section-home calculation" id="calculation">
 	 		<div class="page-section">
 	 			
+	 			<!-- Calculation section -->
 	 			<div class="calculation-steps-outer-container"> 
 		  			<div class="button-bar-left">
 		  				<div class="button-bar-inner">
 <!-- 			 				<div class="row no-margin height100" > -->
 				 				<div class="col-md-6 no-padding height50">
-				 					<button type="button" class="btn btn-home-plus workspace-enabled" href="step-edit.html">
+				 					<button type="button" class="btn btn-home-plus workspace-required" href="step-edit.html">
 					 					<i class="icon-plus-sign-alt icon-5"></i>
 					 				</button>
 				 				</div>
 				 				<div class="col-md-6 no-padding height50">
-				 					<button type="button" class="btn execute workspace-enabled">
+				 					<button type="button" class="btn execute workspace-required">
 					 					<i class="fa-play icon-5"></i>
 					 				</button>
 				 				</div>
 				 				<div class="col-md-offset-6 col-md-6 no-padding height50">
-				 					<button type="button" class="btn btn-home-plus workspace-enabled" href="error-calc.html">
+				 					<button type="button" class="btn btn-home-plus default-chain-executed-required" href="error-calc.html">
 					 					<img alt="" src="img/cv.png">
 					 				</button>
 				 				</div>
@@ -80,12 +81,10 @@
 		 			</div>
 		 			<div class="button-bar-right">
 		  				<div class="button-bar-inner">
-<!-- 			 				<div class="row no-margin height100" > -->
 				 				<div class="col-md-12 no-padding height100">
 				 					<button type="button" class="btn delete" disabled="disabled">
 					 					<i class="fa-trash-o icon-5"></i>
 					 				</button>
-<!-- 				 				</div> -->
 			 				</div>
 		  				</div>
 		 			</div>
@@ -99,17 +98,8 @@
 	 			</div>
 	  		</div>
 	 	</div>
-	 	
-	 		<!-- Result section didsabled for now -->
-<!-- 	  	<div class="section-home results" id="results"> -->
-<!-- 	  		<div class="page-section"> -->
-<!-- 		  		<div class="row row1"></div> -->
-<!-- 		 		<div class="row row2"> -->
-<!-- 		  		</div> -->
-<!-- 		  		<div class="row row3"></div> -->
-<!-- 	  		</div> -->
-<!-- 	  	</div> -->
-	  	
+		 	
+		<!--  Data section  -->  	
 	  	<div class="section-home data" id="data">
 	  		<div class="page-section data-vis">
 <!-- 		  		<div class="row row1"></div> -->
@@ -119,6 +109,7 @@
 	  		</div>
 	  	</div>
 	  	
+	  	<!-- Settings section -->
 	  	<div class="section-home settings" id="settings">
 	  		<div class="page-section">
 	  			
@@ -132,8 +123,8 @@
 			  		</div>
 		  			<div class="row group-buttons">
 			 			<button type="button" class="btn btn-default btn-home" href="collect-sync.html">Collect</button>
-			 			<button type="button" class="btn btn-default btn-home workspace-enabled" href="aoi.html">Areas of interest</button>
-			 			<button type="button" class="btn btn-default btn-home workspace-enabled" href="equation-list.html">External equations</button>
+			 			<button type="button" class="btn btn-default btn-home workspace-required" href="aoi.html">Areas of interest</button>
+			 			<button type="button" class="btn btn-default btn-home workspace-required" href="equation-list.html">External equations</button>
 		  			</div>
 		  		</div>
 		  		
@@ -146,8 +137,8 @@
 			  			<div class="col-md-7"></div>
 			  		</div>
 		  			<div class="row group-buttons">
-		 				<button type="button" class="btn btn-default btn-home workspace-enabled" href="sampling-design.html">Sampling design</button>
-		 				<button type="button" class="btn btn-default btn-home workspace-enabled" href="aggregation.html">Aggregation</button>
+		 				<button type="button" class="btn btn-default btn-home aoi-required" href="sampling-design.html">Sampling design</button>
+		 				<button type="button" class="btn btn-default btn-home sampling-design-required" href="aggregation.html">Aggregation</button>
 	 				</div>
 		  		</div>
 		  		
@@ -160,7 +151,7 @@
 			  			<div class="col-md-7"></div>
 			  		</div>
 		  			<div class="row group-buttons">
-		 				<button type="button" class="btn btn-default btn-home workspace-enabled" 
+		 				<button type="button" class="btn btn-default btn-home workspace-required" 
 		 					href="workspace-list.html">Active:<div class="active-workspace-label"></div></button>
 	 				</div>
 		  		</div>

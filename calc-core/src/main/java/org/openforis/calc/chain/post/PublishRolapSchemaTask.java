@@ -1,6 +1,25 @@
 package org.openforis.calc.chain.post;
 
-import static org.openforis.calc.mondrian.Rolap.*;
+import static org.openforis.calc.mondrian.Rolap.DATA_TYPE_NUMERIC;
+import static org.openforis.calc.mondrian.Rolap.DIMENSION_TYPE_STANDARD;
+import static org.openforis.calc.mondrian.Rolap.NUMBER_FORMAT_STRING;
+import static org.openforis.calc.mondrian.Rolap.createAggForeignKey;
+import static org.openforis.calc.mondrian.Rolap.createAggLevel;
+import static org.openforis.calc.mondrian.Rolap.createAggMeasure;
+import static org.openforis.calc.mondrian.Rolap.createAggregateName;
+import static org.openforis.calc.mondrian.Rolap.createCalculatedMember;
+import static org.openforis.calc.mondrian.Rolap.createCube;
+import static org.openforis.calc.mondrian.Rolap.createCubeUsage;
+import static org.openforis.calc.mondrian.Rolap.createDimensionUsage;
+import static org.openforis.calc.mondrian.Rolap.createLevel;
+import static org.openforis.calc.mondrian.Rolap.createMeasure;
+import static org.openforis.calc.mondrian.Rolap.createSchema;
+import static org.openforis.calc.mondrian.Rolap.createSharedDimension;
+import static org.openforis.calc.mondrian.Rolap.createSqlView;
+import static org.openforis.calc.mondrian.Rolap.createTable;
+import static org.openforis.calc.mondrian.Rolap.createVirtualCube;
+import static org.openforis.calc.mondrian.Rolap.createVirtualCubeDimension;
+import static org.openforis.calc.mondrian.Rolap.createVirtualCubeMeasure;
 
 import java.math.BigDecimal;
 import java.util.Collection;
