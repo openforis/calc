@@ -349,9 +349,18 @@ WorkspaceManager.prototype = (function(){
 				method 		: "PUT",
 				data 		: { "filePath" : filePath , "listName" : listName }
 			}).done( function(response) {
-				var lists = response.fields.equationLists;
-				ws.equationLists = lists;
-				success( ws );
+				if( response.status == "OK" ){
+					var lists = response.fields.equationLists;
+					ws.equationLists = lists;
+					success( ws );
+				} else {
+					var msg = "";
+					$.each( response.errors , function( i , error ){
+						msg += error.defaultMessage + "<br/>";
+						UI.showError( msg , true );
+					});
+				}
+				
 				UI.unlock();
 			}).error( function() {
 				Calc.error.apply( this , arguments );

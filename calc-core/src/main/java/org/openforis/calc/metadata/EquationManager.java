@@ -11,6 +11,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jooq.Record;
+import org.jooq.Result;
+import org.jooq.SelectQuery;
 import org.openforis.calc.engine.ParameterHashMap;
 import org.openforis.calc.engine.ParameterMap;
 import org.openforis.calc.engine.Workspace;
@@ -129,13 +132,23 @@ public class EquationManager {
 				.fetchInto( Equation.class );
 			
 			eqList.setEquations( equations );
-			
 		}
 		// add equation list to workspace
 		workspace.setEquationLists( list );
-		
 	}
 
+	public boolean isNameUnique( String listName , Long listId ) {
+		SelectQuery<Record> select = psql.selectQuery();
+		select.addFrom( Tables.EQUATION_LIST );
+		select.addConditions( Tables.EQUATION_LIST.NAME.eq(listName) );
+		if( listId != null ) {
+			select.addConditions( Tables.EQUATION_LIST.ID.notEqual( listId ) );	
+		}
+		
+		Result<Record> result = select.fetch();
+		return result.size() <= 0;
+	}
+	
 	private Set<String> extractVariables( String equation ) throws IOException {
 		Set<String> variables = new HashSet<String>();
 

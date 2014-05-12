@@ -29,7 +29,7 @@ public class Response {
 		this(null);
 	}
 
-	Response(List<ObjectError> errors) {
+	Response( List<ObjectError> errors ) {
 		fields = new HashMap<String, Object>();
 		if (errors != null && !errors.isEmpty()) {
 			setStatus(Status.ERROR);
@@ -48,8 +48,20 @@ public class Response {
 		this.status = status;
 	}
 
+	void setStatusOk() {
+		setStatus( Status.OK );
+	}
+	
+	void setStatusError() {
+		setStatus( Status.ERROR );
+	}
+	
 	public List<ObjectError> getErrors() {
 		return errors;
+	}
+	
+	void addError( ObjectError objectError){
+		this.errors.add( objectError );
 	}
 
 	public boolean hasErrors() {

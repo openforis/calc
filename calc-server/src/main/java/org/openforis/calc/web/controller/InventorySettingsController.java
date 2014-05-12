@@ -22,6 +22,7 @@ import org.openforis.calc.metadata.SamplingDesign;
 import org.openforis.calc.metadata.SamplingDesignManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -75,25 +76,43 @@ public class InventorySettingsController {
 	@RequestMapping(value = "/settings/equationList.json", method = RequestMethod.PUT, produces = "application/json")
 	public @ResponseBody 
 	Response createEquationList( @RequestParam String filePath , @RequestParam String listName ) throws IOException {
-		Workspace workspace = workspaceService.getActiveWorkspace();
-		equationManager.createFromCsv( workspace, filePath, listName );
-		
 		Response response = new Response();
-		response.addField("equationLists", workspace.getEquationLists());
+		
+		validateEquationList( response, listName, null );
+		if( !response.hasErrors() ) {
+			Workspace workspace = workspaceService.getActiveWorkspace();
+			equationManager.createFromCsv( workspace, filePath, listName );
+			response.addField("equationLists", workspace.getEquationLists());
+		}
+		
 		return response;
 	}
 	
 	@RequestMapping(value = "/settings/equationList/{listId}.json", method = RequestMethod.PUT, produces = "application/json")
 	public @ResponseBody 
 	Response updateEquationList( @PathVariable long listId,  @RequestParam String filePath , @RequestParam String listName ) throws IOException {
-		Workspace workspace = workspaceService.getActiveWorkspace();
-		
-		equationManager.updateFromCsv(workspace, filePath, listName, listId);
-		
 		Response response = new Response();
-		response.addField("equationLists", workspace.getEquationLists());
+		validateEquationList( response, listName, listId );
+		if( !response.hasErrors() ) {
+			Workspace workspace = workspaceService.getActiveWorkspace();
+			equationManager.updateFromCsv(workspace, filePath, listName, listId);
+			response.addField("equationLists", workspace.getEquationLists());
+		}
+		
 		return response;
 	} 
+	
+	private void validateEquationList( Response response , String listName , Long listId ){
+		boolean unique = equationManager.isNameUnique( listName, listId );
+		if( unique ) {
+			response.setStatusOk();
+		} else {
+			response.setStatusError();
+			ObjectError objectError = new ObjectError( "name", "Name already defined");
+			response.addError( objectError );
+		}
+		
+	}
 	
 	@RequestMapping(value = "/settings/equationList/{listId}/equations.json", method = RequestMethod.GET, produces = "application/json")
 	public @ResponseBody 
