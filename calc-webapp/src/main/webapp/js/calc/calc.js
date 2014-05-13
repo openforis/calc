@@ -17,7 +17,12 @@ $(document).ready(function() {
 	 * Main calc instance
 	 */
 	Calc = {};
-
+	
+	/**
+	 * Application version (replaced during package phase)
+	 */
+	Calc.version = "PROJECT_VERSION";
+	
 	/**
 	 * current working section
 	 */
@@ -249,6 +254,9 @@ $(document).ready(function() {
 		
 		//disable caching
 		$.ajaxSetup( { cache: false } );
+
+		//set version number in footer
+		$("#footer .application-version").text(Calc.version);
 		
 		// init ui managers
 		Calc.homeCalculationManager 	= new HomeCalculationManager( $("#calculation") );

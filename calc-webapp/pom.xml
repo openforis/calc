@@ -12,10 +12,63 @@
 	<packaging>war</packaging>
 	<name>Open Foris Calc Web Application</name>
 
+	<properties>
+		<preassembly.dir>${basedir}/target/preassembly</preassembly.dir>
+	</properties>
+	
 	<build>
 		<finalName>calc</finalName>
+		
+		<plugins>
+		    
+		   <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<webResources>
+						<resource>
+							<!-- copy resources from this folder into the webapp before packaging -->
+							<directory>${preassembly.dir}</directory>
+						</resource>
+					</webResources>
+				</configuration>
+			</plugin>
+			
+		    <!-- replace PROJECT_VERSION in calc.js file with actual one 
+		    	(maven-replacer-plugin is not good for that, prepare-package phase is too early, package phase is too late -->
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+					    <!-- do some processing on your resources files -->
+						<phase>process-resources</phase>
+						<configuration>
+							<target>
+								<echo message="Replacing PROJECT_VERSION in calc.js file..."/>
+								<!-- copy the file to be processed -->
+				                <copy
+				                    file="${basedir}/src/main/webapp/js/calc/calc.js"
+				                    todir="${preassembly.dir}/js/calc"/>
+				                <!-- do the processing (replace the token value with a value passed in on the command line) -->
+				                <replace
+				                    summary="true"
+				                    file="${preassembly.dir}/js/calc/calc.js"
+				                    token="PROJECT_VERSION" value="${project.version}"/>
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			
+		</plugins>
+		
 	</build>
-
+	
 	<dependencies>
 		<dependency>
 			<groupId>org.openforis.calc</groupId>

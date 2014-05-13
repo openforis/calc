@@ -6,7 +6,12 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-
+    <!-- prevent caching -->
+<!-- 	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" /> -->
+	<meta http-equiv="Pragma" content="no-cache"> 
+    <meta http-equiv="Expires" content="-1"> 
+    <meta http-equiv="cache-control" content="no-store">
+	
     <title>Open Foris Calc</title>
 
     <!-- Bootstrap core CSS -->
@@ -180,9 +185,10 @@
 				</div>
 			</div>
 			<div class="col-md-3">
-					<div class="logo">
+				<div class="logo">
 					<img src="img/of-logo.png" width="30em">pen Foris Calc
-					</div>
+				</div>
+				<div class="application-version-wrapper">Version: <span class="application-version"></span></div>
 			</div>
 		</div>
 	</footer>
