@@ -60,6 +60,8 @@ AggregationManager.prototype.init = function() {
     	    WorkspaceManager.getInstance().activeWorkspaceSetEntityPlotArea( entityId, $this.rScriptInput.val(), function( ws ) {
     	    		$this.currentEntity = ws.getEntityById(entityId);
     	    		UI.unlock();
+    	    		
+    	    		UI.showSuccess("Saved!", true);
     	    });
     	});
 	

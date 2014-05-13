@@ -31,6 +31,13 @@ public class CalculationStepForm {
 
 //	@NotEmpty
 	private String script;
+
+	@NotEmpty
+	private String type;
+	
+	private Integer equationList;
+	
+	private Integer codeVariable;
 	
 	public Integer getId() {
 		return id;
@@ -70,5 +77,29 @@ public class CalculationStepForm {
 
 	public void setScript(String script) {
 		this.script = script;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public Integer getEquationList() {
+		return equationList;
+	}
+
+	public void setEquationList(Integer equationList) {
+		this.equationList = equationList;
+	}
+
+	public Integer getCodeVariable() {
+		return codeVariable;
+	}
+
+	public void setCodeVariable(Integer codeVariable) {
+		this.codeVariable = codeVariable;
 	}
 }

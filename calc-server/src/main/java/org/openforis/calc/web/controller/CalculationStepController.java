@@ -92,10 +92,10 @@ public class CalculationStepController {
 			switch (type) {
 			
 				case EQUATION:
-					long listId = Long.parseLong( request.getParameter("equation-list") );
+					long listId = Long.parseLong( request.getParameter("equationList") );
 					step.setEquationListId( listId );
 					// populate calc step parameters
-					String codeVariable = request.getParameter( "code-variable" );
+					String codeVariable = request.getParameter( "codeVariable" );
 					params.setString( "codeVariable", codeVariable );
 					
 					EquationList equationList = ws.getEquationListById(listId);

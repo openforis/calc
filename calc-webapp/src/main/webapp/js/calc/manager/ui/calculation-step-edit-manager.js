@@ -15,8 +15,8 @@ CalculationStepEditManager = function (container) {
 	this.$variableCombo 		= this.$form.find("[name='variableId']").combobox();
 	this.$addVariableButton		= this.$form.find("[name=add-variable]");
 	
-	this.equationListCombo		= this.$form.find( '[name=equation-list]' ).combobox();
-	this.codeVariableCombo		= this.$form.find( '[name=code-variable]' ).combobox();
+	this.equationListCombo		= this.$form.find( '[name=equationList]' ).combobox();
+	this.codeVariableCombo		= this.$form.find( '[name=codeVariable]' ).combobox();
 	
 	// sections to show / hide based on the type selection
 	this.rScriptForm			= this.container.find( ".r-script-form" );
