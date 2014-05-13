@@ -3,7 +3,6 @@ package org.openforis.calc.chain;
 import org.openforis.calc.engine.Worker.Status;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceService;
-import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.persistence.jooq.Sequences;
 import org.openforis.calc.persistence.jooq.Tables;
 import org.openforis.calc.persistence.jooq.tables.ProcessingChainTable;
@@ -20,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  * @author S. Ricci
  * @author Mino Togna
+ * 
  */
 @Service
 public class ProcessingChainService {
@@ -49,7 +49,7 @@ public class ProcessingChainService {
 	}
 	
 	@Transactional
-	public void createDefaultProcessingChain(Workspace ws) {
+	public void createDefaultProcessingChain( Workspace ws ) {
 		ProcessingChain chain = new ProcessingChain();
 		chain.setCaption(Workspace.DEFAULT_CHAIN_CAPTION);
 		ws.addProcessingChain(chain);
@@ -58,7 +58,7 @@ public class ProcessingChainService {
 	}
 	
 	@Transactional
-	public void saveCalculationStep( ProcessingChain chain, CalculationStep step ) {
+	public void saveCalculationStep( CalculationStep step ) {
 		if ( step.getId() == null ) {
 			Long nextval = psql.nextval( Sequences.CALCULATION_STEP_ID_SEQ );
 			step.setId( nextval.intValue() );
@@ -67,6 +67,8 @@ public class ProcessingChainService {
 		} else {
 			calculationStepDao.update(step);
 		}
+		
+		workspaceService.resetResult( step.getOutputVariable() );
 	}
 	
 	/**
@@ -76,26 +78,31 @@ public class ProcessingChainService {
 	 * @param stepId
 	 */
 	@Transactional
-	public Integer deleteCalculationStep(CalculationStep step) {
+	public Integer deleteCalculationStep(CalculationStep step) {		
 		ProcessingChain processingChain = step.getProcessingChain();
-		QuantitativeVariable outputVariable = (QuantitativeVariable) step.getOutputVariable();
 		
-		Integer deletedVariable = null;
+		// 1. delete step from db
+		calculationStepDao.delete( step );
 		
-		// remove step from processing chain
-		processingChain.removeCalculationStep(step);
-		calculationStepDao.delete(step);
+//		QuantitativeVariable outputVariable = (QuantitativeVariable) step.getOutputVariable();
+		// 2. delete output variable if defined only for this step. disabeld now
+		Integer deletedVariable = null;		
+//		if ( outputVariable.isUserDefined() ) {
+//			Workspace ws = processingChain.getWorkspace();
+//			List<CalculationStep> steps = ws.getCalculationStepsByVariable( outputVariable.getId() );
+//			if ( steps.size() == 1 && steps.get(0).getId().equals(step.getId()) ) {
+//				deletedVariable = outputVariable.getId();
+//				workspaceService.deleteOutputVariable(outputVariable, true);
+//			}
+//		}
 		
-		// update steps number in db
-		saveCalculationSteps(processingChain);
+				
+		// 3. remove step from metadata
+		processingChain.removeCalculationStep( step );
 		
-		if ( outputVariable.isUserDefined() ) {
-			Workspace ws = processingChain.getWorkspace();
-			if ( ws.getCalculationStepsByVariable(outputVariable.getId()).isEmpty() ) {
-				deletedVariable = outputVariable.getId();
-				workspaceService.deleteOutputVariable(outputVariable, true);
-			}
-		}
+		// 4. update steps number in db
+		saveCalculationSteps( processingChain );
+				
 		return deletedVariable;
 	}
 	
@@ -120,7 +127,7 @@ public class ProcessingChainService {
 		psql
 			.update( T )
 			.set( T.STATUS , status )
-			.where( T.ID.eq(processingChain.getId() ) )
+			.where( T.ID.eq(processingChain.getId()) )
 			.execute();
 	}
 	

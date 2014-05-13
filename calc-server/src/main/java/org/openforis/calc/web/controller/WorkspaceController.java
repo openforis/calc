@@ -105,42 +105,42 @@ public class WorkspaceController {
 //		return workspace;
 //	}
 
-	@RequestMapping(value = "/active/entity/{entityId}/variable/{variableId}/aggregates/{agg}.json", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
-	public @ResponseBody
-	QuantitativeVariable activeWorkspaceCreateVariableAggregate(@PathVariable int entityId, @PathVariable int variableId, @PathVariable String agg) {
-		Workspace workspace = workspaceService.getActiveWorkspace();
-		QuantitativeVariable variable = workspaceService.createVariableAggregate(workspace, entityId, variableId, agg);
-		return variable;
-	}
-
-	@RequestMapping(value = "/active/entity/{entityId}/variable/{variableId}/aggregates/{agg}.json", method = RequestMethod.DELETE, produces = APPLICATION_JSON_VALUE)
-	public @ResponseBody
-	QuantitativeVariable activeWorkspaceDeleteVariableAggregate(@PathVariable int entityId, @PathVariable int variableId, @PathVariable String agg) {
-		Workspace workspace = workspaceService.getActiveWorkspace();
-		QuantitativeVariable variable = workspaceService.deleteVariableAggregate(workspace, entityId, variableId, agg);
-		return variable;
-	}
-
-	// rest/workspace/active/entity/"+entityId+"/variable/"+variable.id+"/variable-per-ha.json
-	@RequestMapping(value = "/active/entity/{entityId}/variable/{variableId}/variable-per-ha", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
-	public @ResponseBody
-	QuantitativeVariable activeWorkspaceAddVariablePerHa(@PathVariable int entityId, @PathVariable int variableId) {
-		Workspace workspace = workspaceService.getActiveWorkspace();
-		Entity entity = workspace.getEntityById(entityId);
-		QuantitativeVariable variable = entity.getQtyVariableById(variableId);
-		variable = workspaceService.addVariablePerHa(variable);
-		return variable;
-	}
-
-	@RequestMapping(value = "/active/entity/{entityId}/variable/{variableId}/variable-per-ha", method = RequestMethod.DELETE, produces = APPLICATION_JSON_VALUE)
-	public @ResponseBody
-	QuantitativeVariable activeWorkspaceDeleteVariablePerHa(@PathVariable int entityId, @PathVariable int variableId) {
-		Workspace workspace = workspaceService.getActiveWorkspace();
-		Entity entity = workspace.getEntityById(entityId);
-		QuantitativeVariable variable = entity.getQtyVariableById(variableId);
-		variable = workspaceService.deleteVariablePerHa(variable);
-		return variable;
-	}
+//	@RequestMapping(value = "/active/entity/{entityId}/variable/{variableId}/aggregates/{agg}.json", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
+//	public @ResponseBody
+//	QuantitativeVariable activeWorkspaceCreateVariableAggregate(@PathVariable int entityId, @PathVariable int variableId, @PathVariable String agg) {
+//		Workspace workspace = workspaceService.getActiveWorkspace();
+//		QuantitativeVariable variable = workspaceService.createVariableAggregate(workspace, entityId, variableId, agg);
+//		return variable;
+//	}
+//
+//	@RequestMapping(value = "/active/entity/{entityId}/variable/{variableId}/aggregates/{agg}.json", method = RequestMethod.DELETE, produces = APPLICATION_JSON_VALUE)
+//	public @ResponseBody
+//	QuantitativeVariable activeWorkspaceDeleteVariableAggregate(@PathVariable int entityId, @PathVariable int variableId, @PathVariable String agg) {
+//		Workspace workspace = workspaceService.getActiveWorkspace();
+//		QuantitativeVariable variable = workspaceService.deleteVariableAggregate(workspace, entityId, variableId, agg);
+//		return variable;
+//	}
+//
+//	// rest/workspace/active/entity/"+entityId+"/variable/"+variable.id+"/variable-per-ha.json
+//	@RequestMapping(value = "/active/entity/{entityId}/variable/{variableId}/variable-per-ha", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
+//	public @ResponseBody
+//	QuantitativeVariable activeWorkspaceAddVariablePerHa(@PathVariable int entityId, @PathVariable int variableId) {
+//		Workspace workspace = workspaceService.getActiveWorkspace();
+//		Entity entity = workspace.getEntityById(entityId);
+//		QuantitativeVariable variable = entity.getQtyVariableById(variableId);
+//		variable = workspaceService.addVariablePerHa(variable);
+//		return variable;
+//	}
+//
+//	@RequestMapping(value = "/active/entity/{entityId}/variable/{variableId}/variable-per-ha", method = RequestMethod.DELETE, produces = APPLICATION_JSON_VALUE)
+//	public @ResponseBody
+//	QuantitativeVariable activeWorkspaceDeleteVariablePerHa(@PathVariable int entityId, @PathVariable int variableId) {
+//		Workspace workspace = workspaceService.getActiveWorkspace();
+//		Entity entity = workspace.getEntityById(entityId);
+//		QuantitativeVariable variable = entity.getQtyVariableById(variableId);
+//		variable = workspaceService.deleteVariablePerHa(variable);
+//		return variable;
+//	}
 
 	@RequestMapping(value = "/active/entity/{entityId}/variable/quantitative", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody

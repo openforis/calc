@@ -55,7 +55,7 @@ public class JobController {
 		
 		ProcessingChain defaultProcessingChain = workspace.getDefaultProcessingChain();
 		
-		CalculationStep step = defaultProcessingChain.getCalculationStep( stepId );
+		CalculationStep step = defaultProcessingChain.getCalculationStepById( stepId );
 
 //		workspaceService.updateResultTable( step );
 		
@@ -80,7 +80,7 @@ public class JobController {
 		Workspace workspace = workspaceService.getActiveWorkspace();
 		
 		CalcJob job = taskManager.createDefaultCalcJob( workspace , true );
-		workspaceService.resetCalculationResults( workspace );
+		workspaceService.resetResults( workspace );
 		
 		taskManager.startJob( job );
 
@@ -103,7 +103,7 @@ public class JobController {
 		
 		ProcessingChain defaultProcessingChain = workspace.getDefaultProcessingChain();
 		
-		CalculationStep step = defaultProcessingChain.getCalculationStep(stepId);
+		CalculationStep step = defaultProcessingChain.getCalculationStepById(stepId);
 
 		ParameterMap parameterMap = new ParameterMapJsonParser().parse(variables);
 

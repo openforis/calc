@@ -14,10 +14,12 @@ import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.metadata.AoiManager;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.EquationManager;
+import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.SamplingDesign;
 import org.openforis.calc.metadata.Stratum;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.VariableDao;
+import org.openforis.calc.metadata.Variable.Scale;
 import org.openforis.calc.persistence.jooq.Sequences;
 import org.openforis.calc.persistence.jooq.Tables;
 import org.openforis.calc.persistence.jooq.tables.daos.CalculationStepDao;
@@ -341,6 +343,26 @@ public class MetadataManager {
 			}
 		});
 		return list;
+	}
+
+	/**
+	 * Create an instance of a new quantitative variable with default values
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public QuantitativeVariable createQuantitativeVariable( String name ) {
+		QuantitativeVariable variable = new QuantitativeVariable();
+		
+		variable.setName( name );
+		variable.setInputValueColumn( name );
+		variable.setOutputValueColumn( name );
+		variable.setScale( Scale.RATIO );
+		variable.setOverride( true );
+		variable.setDegenerateDimension( false );
+		variable.setDisaggregate( false );
+		
+		return variable;
 	}
 	
 }

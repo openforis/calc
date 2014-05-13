@@ -52,26 +52,29 @@ public class CalculationStepController {
 	private TaskManager taskManager;
 
 	// added now for convenience. Mino
-	@Autowired(required=true)
+	@Autowired( required=true )
 	private HttpServletRequest request;
 	
 	@RequestMapping(value = "/save.json", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	Response save(@Valid CalculationStepForm form, BindingResult result) {
-		Response response = validate(form, result);
-		if ( ! response.hasErrors() ) {
+		Response response = validate( form, result );
+		
+		if ( !response.hasErrors() ) {
 			Workspace ws = workspaceService.getActiveWorkspace();
 			ProcessingChain chain = ws.getDefaultProcessingChain();
+			
 			CalculationStep step;
 			Integer stepId = form.getId();
 			if (stepId == null) {
 				step = new CalculationStep();
 				int stepNo = chain.getCalculationSteps().size() + 1;
 				step.setStepNo(stepNo);
+				
+				chain.addCalculationStep( step );
 			} else {
-				step = chain.getCalculationStep(stepId);
+				step = chain.getCalculationStepById( stepId );
 			}
-			chain.addCalculationStep(step);
 			
 			Variable<?> outputVariable = ws.getVariableById(form.getVariableId());
 			step.setOutputVariable(outputVariable);
@@ -87,35 +90,35 @@ public class CalculationStepController {
 			step.setParameters(params);
 			
 			switch (type) {
-			case EQUATION:
-				long listId = Long.parseLong( request.getParameter("equation-list") );
-				step.setEquationListId( listId );
-				
-				// populate calc step parameters
-
-				String codeVariable = request.getParameter( "code-variable" );
-				params.setString( "codeVariable", codeVariable );
-				
-				EquationList equationList = ws.getEquationListById(listId);
-				Collection<String> equationVariables = equationList.getEquationVariables();
-				List<ParameterMap> varParams = new ArrayList<ParameterMap>();
-				for (String equationVariable : equationVariables) {
-					long variable = Long.parseLong( request.getParameter(equationVariable) );
-				
-					ParameterMap varParam = new ParameterHashMap();
-					varParam.setString( "equationVariable", equationVariable );
-					varParam.setNumber( "variableId", variable );
-					varParams.add( varParam );
-				}
-				params.setList( "variables", varParams  );
-				step.setRScriptFromEquation();
-				break;
-			case SCRIPT:
-				step.setScript(form.getScript());
-				break;
+			
+				case EQUATION:
+					long listId = Long.parseLong( request.getParameter("equation-list") );
+					step.setEquationListId( listId );
+					// populate calc step parameters
+					String codeVariable = request.getParameter( "code-variable" );
+					params.setString( "codeVariable", codeVariable );
+					
+					EquationList equationList = ws.getEquationListById(listId);
+					Collection<String> equationVariables = equationList.getEquationVariables();
+					List<ParameterMap> varParams = new ArrayList<ParameterMap>();
+					for ( String equationVariable : equationVariables ) {
+						long variableId = Long.parseLong( request.getParameter(equationVariable) );
+					
+						ParameterMap varParam = new ParameterHashMap();
+						varParam.setString( "equationVariable", equationVariable );
+						varParam.setNumber( "variableId", variableId );
+						varParams.add( varParam );
+					}
+					params.setList( "variables", varParams  );
+					step.setRScriptFromEquation();
+					break;
+					
+				case SCRIPT:
+					step.setScript( form.getScript() );
+					break;
 			}
 			
-			processingChainService.saveCalculationStep(chain, step);
+			processingChainService.saveCalculationStep( step );
 			// better to reload it .it throws json parsing exception otherwise
 			response.addField( "calculationStep", load(step.getId()) );
 		}
@@ -151,7 +154,7 @@ public class CalculationStepController {
 	CalculationStep load(@PathVariable int stepId) {
 		Workspace workspace = workspaceService.getActiveWorkspace();
 		ProcessingChain defaultProcessingChain = workspace.getDefaultProcessingChain();
-		CalculationStep step = defaultProcessingChain.getCalculationStep(stepId);
+		CalculationStep step = defaultProcessingChain.getCalculationStepById(stepId);
 		return step;
 	}
 	

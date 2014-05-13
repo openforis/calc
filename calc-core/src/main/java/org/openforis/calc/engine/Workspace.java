@@ -347,7 +347,7 @@ public class Workspace extends WorkspaceBase {
 	}
 
 	/** =====================================
-	 * 		Sampling Desing utility methods
+	 * 		Sampling Design utility methods
 	 * 	=====================================
 	 */
 	public boolean isSamplingUnit(int entityId) {

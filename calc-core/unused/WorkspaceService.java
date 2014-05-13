@@ -6,13 +6,16 @@ import java.util.List;
 import org.jooq.Field;
 import org.jooq.Insert;
 import org.jooq.Record;
+import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.ProcessingChainService;
 import org.openforis.calc.metadata.AoiDao;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.StratumDao;
 import org.openforis.calc.metadata.Variable;
+import org.openforis.calc.metadata.Variable.Scale;
 import org.openforis.calc.metadata.VariableDao;
+import org.openforis.calc.persistence.jooq.Sequences;
 import org.openforis.calc.persistence.jooq.tables.daos.CalculationStepDao;
 import org.openforis.calc.persistence.jooq.tables.daos.EntityDao;
 import org.openforis.calc.persistence.jooq.tables.daos.SamplingDesignDao;
@@ -100,6 +103,14 @@ public class WorkspaceService {
 	 */
 	public Workspace getActiveWorkspace() {
 		Workspace workspace = metadataManager.fetchActiveWorkspace();
+			
+//		if ( workspace != null ) {
+//			List<AoiHierarchy> aoiHierarchies = workspace.getAoiHierarchies();
+//			// set root aoi to each aoiHierarchy linked to the workspace
+//			for (AoiHierarchy aoiHierarchy : aoiHierarchies) {
+//				aoiDao.assignRootAoi(aoiHierarchy);
+//			}
+//		}
 		return workspace;
 	}
 
@@ -107,15 +118,17 @@ public class WorkspaceService {
 		metadataManager.deactivateAll();
 
 		Workspace ws = new Workspace();
-		ws.setActive( true );
-		ws.setCollectSurveyUri( uri );
-		ws.setInputSchema( schema );
-		ws.setName( name );
-		ws.setCaption( name );
-		ws = metadataManager.saveWorkspace( ws );
+		ws.setActive(true);
+		ws.setCollectSurveyUri(uri);
+		ws.setInputSchema(schema);
+		ws.setName(name);
+		ws.setCaption(name);
+		ws = metadataManager.saveWorkspace(ws);
 
-		processingChainService.createDefaultProcessingChain( ws );
-//		setActiveWorkspace(ws);
+		processingChainService.createDefaultProcessingChain(ws);
+
+		setActiveWorkspace(ws);
+		
 		return ws;
 	}
 
@@ -123,12 +136,66 @@ public class WorkspaceService {
 	public QuantitativeVariable addOutputVariable( Entity entity, String name ) {
 		
 		// add variable to entity and update entity view
-		QuantitativeVariable variable = metadataManager.createQuantitativeVariable(name);
+		QuantitativeVariable variable = createQuantitativeVariable(name);
 		entity.addVariable(variable);
 
 		variableDao.save( variable );
 		
-//		updateEntityView( variable );
+		// get result table
+		
+//		addVariableColumn(variable);
+		
+		// add column to results table and update entity view
+//		if( originalResultTable == null) { 
+//			try {
+//					
+//					resetResultTable(resultTable, schema.getDataTable(entity) );
+//					
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		} else {
+//			new Psql(dataSource)
+//				.alterTable(resultTable)
+//				.addColumn( resultTable.getQuantityField(variable) )
+//				.execute();
+//		}
+//		
+		
+		updateEntityView( variable );
+		
+		return variable;
+	}
+
+	@Transactional
+	public void saveCalculationStep( CalculationStep step ) {
+		if ( step.getId() == null ) {
+			Long nextval = psql.nextval( Sequences.CALCULATION_STEP_ID_SEQ );
+			step.setId( nextval.intValue() );
+			
+			calculationStepDao.insert(step);
+		} else {
+			calculationStepDao.update(step);
+		}
+		
+		QuantitativeVariable variable = (QuantitativeVariable) step.getOutputVariable();
+		Entity entity = variable.getEntity();
+		
+		resetResult( entity, variable );
+	}
+	
+	
+	private QuantitativeVariable createQuantitativeVariable(String name) {
+		QuantitativeVariable variable = new QuantitativeVariable();
+		
+		variable.setName(name);
+		variable.setInputValueColumn(name);
+		variable.setOutputValueColumn(name);
+		variable.setScale(Scale.RATIO);
+		variable.setOverride( true );
+		variable.setDegenerateDimension(false);
+		variable.setDisaggregate(false);
 		
 		return variable;
 	}
@@ -160,7 +227,7 @@ public class WorkspaceService {
 
 	public void activate( Workspace ws ) {
 		metadataManager.activate( ws );
-//		setActiveWorkspace( ws );
+		setActiveWorkspace( ws );
 	}
 	
 	
@@ -173,11 +240,11 @@ public class WorkspaceService {
 	@Transactional
 	public void resetWorkspace( Workspace ws ) {
 		resetSamplingUnitWeight( ws );
-		resetResults( ws );
+		resetCalculationResults( ws );
 	}
 	
 	@Transactional
-	private void resetSamplingUnitWeight( Workspace ws ) {
+	private void resetSamplingUnitWeight(Workspace ws) {
 		Entity samplingUnit = ws.getSamplingUnit();
 		if( samplingUnit != null ) {
 			
@@ -198,17 +265,13 @@ public class WorkspaceService {
 	 * Remove all results table and recreates them empty
 	 */
 	@Transactional
-	public void resetResults( Workspace ws ){
+	public void resetCalculationResults(Workspace ws) {
 		List<Entity> entities = ws.getEntities();
 		for (Entity entity : entities) {
 			resetResults( entity );
 		}
 	}
 	
-	/**
-	 * Reset result table for given entity
-	 * @param entity
-	 */
 	@Transactional
 	private void resetResults( Entity entity ) {
 		DataSchema schema = new Schemas( entity.getWorkspace() ).getDataSchema();
@@ -240,15 +303,7 @@ public class WorkspaceService {
 		entityDataViewDao.createOrUpdateView( entity );
 	}
 	
-	/**
-	 * Reset result column for the given variable
-	 * 
-	 * @param entity
-	 * @param variable
-	 */
-	@Transactional
-	public void resetResult( Variable<?> variable ) {
-		Entity entity = variable.getEntity();
+	private void resetResult( Entity entity , Variable<?> variable ){
 		DataSchema schema = new Schemas( entity.getWorkspace() ).getDataSchema();
 		ResultTable resultTable = schema.getResultTable( entity );
 		
@@ -272,19 +327,133 @@ public class WorkspaceService {
 		}
 	}
 	
+//	@Transactional
+	@Deprecated
+	public QuantitativeVariable createVariableAggregate(Workspace workspace, int entityId, int variableId, String agg) {
+		return null;
+//		Entity entity = workspace.getEntityById(entityId);
+//		QuantitativeVariable variable = entity.getQtyVariableById(variableId);
+//		
+//		int variableReturnId = 0;
+//		//the variable id passed is a variable-per-ha linked to another variable
+//		if(variable == null) {
+//			variable = entity.getQtyVariablePerHaById(variableId);
+//			variableReturnId = variable.getSourceVariable().getId();
+//		} else {
+//			variableReturnId = variable.getId();
+//		}
+//		
+//		if (!variable.hasAggregate(agg)) {
+//			if (VariableAggregate.AGGREGATE_TYPE.isValid(agg)) {
+//				VariableAggregate varAgg = new VariableAggregate();
+//				varAgg.setVariable(variable);
+//				varAgg.setAggregateType(agg);
+//				varAgg.setAggregateFormula("");
+//				variableAggregateDao.saveWorkspace(varAgg);
+//			} else {
+//				throw new IllegalArgumentException("Invalild aggregate type: " + agg);
+//			}
+//		}
+//		variable = (QuantitativeVariable) variableDao.fetchWorkspaceById(variableReturnId);
+//		
+////		updateEntityView(variable);
+//		
+//		return variable;
+	}
+	
+	@Transactional
+	@Deprecated
+	public QuantitativeVariable deleteVariableAggregate(Workspace workspace, int entityId, int variableId, String agg) {
+		return null;
+//		Entity entity = workspace.getEntityById(entityId);
+//		QuantitativeVariable variable = entity.getQtyVariableById(variableId);
+//		
+//		int variableReturnId = 0;
+//		//the variable id passed is a variable-per-ha linked to another variable
+//		if(variable == null) {
+//			variable = entity.getQtyVariablePerHaById(variableId);
+//			variableReturnId = variable.getSourceVariable().getId();
+//		} else {
+//			variableReturnId = variable.getId();
+//		}
+//		
+//		VariableAggregate aggregate = variable.getAggregate(agg);
+//		if (aggregate != null) {
+//			variable.deleteAggregate(agg);
+//			variableDao.saveWorkspace(variable);
+//			variableAggregateDao.delete(aggregate.getId());
+//		}
+//		
+//		variable = (QuantitativeVariable) variableDao.fetchWorkspaceById(variableReturnId);
+//		
+////		updateEntityView(variable);
+//		
+//		return variable;
+	}
 
+	@Transactional
+	@Deprecated
+	public QuantitativeVariable addVariablePerHa(QuantitativeVariable variable) {
+		return null;
+//		QuantitativeVariable variablePerHa = variable.getVariablePerHa();
+//
+//		if (variablePerHa == null) {
+//			
+//			String name = variable.getName() + "_per_ha";
+//			variablePerHa = createQuantitativeVariable(name);
+//			variablePerHa.setSourceVariable(variable);
+//			
+//			variable.setVariablePerHa(variablePerHa);
+//			
+//			variableDao.saveWorkspace(variablePerHa);			
+//			variable = (QuantitativeVariable) variableDao.saveWorkspace(variable);
+//			
+////			addVariableColumn(variablePerHa);
+////			updateEntityView(variablePerHa);
+//		}
+//
+//		return variable;
+	}
+
+//	@Transactional
+	@Deprecated
+	public QuantitativeVariable deleteVariablePerHa(QuantitativeVariable variable) {
+//		return deleteVariablePerHa(variable, true);
+		return null;
+	}
+
+//	@Transactional
+	@Deprecated
+	public QuantitativeVariable deleteVariablePerHa(QuantitativeVariable variable, boolean updateEntityView) {
+		return null;
+//		QuantitativeVariable variablePerHa = variable.getVariablePerHa();
+//
+//		if (variablePerHa != null) {
+////			dropVariableColumn(variablePerHa);
+//			
+//			variable.setVariablePerHa(null);
+//			variableDao.delete(variablePerHa.getId());
+//			variable = (QuantitativeVariable) variableDao.saveWorkspace(variable);
+//			
+////			if ( updateEntityView ) {
+////				updateEntityView(variable);
+////			}
+//		}
+//
+//		return variable;
+	}
 	
 	@Transactional
 	public void deleteOutputVariable(QuantitativeVariable variable, boolean updateEntityView) {
-//		QuantitativeVariable variablePerHa = variable.getVariablePerHa();
-//		if ( variablePerHa != null ) {
-//			deleteVariablePerHa(variable, false);
-//		}
+		QuantitativeVariable variablePerHa = variable.getVariablePerHa();
+		if ( variablePerHa != null ) {
+			deleteVariablePerHa(variable, false);
+		}
 //		dropVariableColumn(variable);
 		
 		Entity entity = getEntity(variable);
 		
-		DataSchema schema = new Schemas( entity.getWorkspace() ).getDataSchema();
+		DataSchema schema = new Schemas(entity.getWorkspace()).getDataSchema();
 		ResultTable originalResultTable = schema.getResultTable(entity);
 		EntityDataView view = schema.getDataView(entity);
 
@@ -294,7 +463,7 @@ public class WorkspaceService {
 		// drop column from results table
 		psql
 			.alterTable( originalResultTable )
-			.dropColumnIfExists( originalResultTable.getQuantityField(variable) )
+			.dropColumn( originalResultTable.getQuantityField(variable) )
 			.execute();
 		
 		// delete variable
@@ -309,7 +478,9 @@ public class WorkspaceService {
 				.execute();
 		}
 		
+//		if ( updateEntityView ) {
 		updateEntityView(variable);
+//		}
 	}
 	
 	/**
@@ -342,7 +513,7 @@ public class WorkspaceService {
 		
 	}
 
-//	private void setActiveWorkspace(Workspace activeWorkspace) {
-////		this.activeWorkspace = activeWorkspace;
-//	}
+	private void setActiveWorkspace(Workspace activeWorkspace) {
+//		this.activeWorkspace = activeWorkspace;
+	}
 }

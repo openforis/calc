@@ -61,20 +61,21 @@ $(document).ready(function() {
 	};
 	
 	/**
-	 * Enable / disable buttons based on the workspace status
+	 * Enable / disable buttons based on workspace status
 	 */
 	Calc.updateButtonStatus = function() {
 		
 		var wsButtons 		= $( document ).find( ".workspace-required" );
 		var aoiButtons 		= $( document ).find( ".aoi-required" );
 		var sdButtons 		= $( document ).find( ".sampling-design-required" );
-		var chainButtons 	= $( document ).find( ".default-chain-executed-required" );
+		var chainButtons 	= $( document ).find( ".default-chain-completed-required" );
+		// TODO
+//		var stepsButtons 	= $( document ).find( ".calculation-steps-required" );
 	
 		UI.disable( wsButtons );
 		UI.disable( aoiButtons );
 		UI.disable( sdButtons );
 		UI.disable( chainButtons );
-		
 		WorkspaceManager.getInstance().activeWorkspace( function(ws){
 			if ( ws ) {
 				UI.enable( wsButtons );
