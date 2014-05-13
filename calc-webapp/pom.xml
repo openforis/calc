@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.openforis.calc</groupId>
 		<artifactId>calc</artifactId>
-		<version>1.0-a3</version>
+		<version>1.0-a4-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
 
