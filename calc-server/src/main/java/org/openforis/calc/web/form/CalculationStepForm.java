@@ -5,6 +5,8 @@ package org.openforis.calc.web.form;
 
 
 
+import java.util.Map;
+
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
@@ -38,6 +40,8 @@ public class CalculationStepForm {
 	private Integer equationList;
 	
 	private Integer codeVariable;
+	
+	private Map<String, Integer> equationVariables;
 	
 	public Integer getId() {
 		return id;
@@ -101,5 +105,13 @@ public class CalculationStepForm {
 
 	public void setCodeVariable(Integer codeVariable) {
 		this.codeVariable = codeVariable;
+	}
+
+	public Map<String, Integer> getEquationVariables() {
+		return equationVariables;
+	}
+
+	public void setEquationVariables(Map<String, Integer> equationVariables) {
+		this.equationVariables = equationVariables;
 	}
 }

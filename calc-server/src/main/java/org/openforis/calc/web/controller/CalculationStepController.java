@@ -6,6 +6,7 @@ package org.openforis.calc.web.controller;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -92,17 +93,19 @@ public class CalculationStepController {
 			switch (type) {
 			
 				case EQUATION:
-					long listId = Long.parseLong( request.getParameter("equationList") );
-					step.setEquationListId( listId );
+					Integer listId = form.getEquationList();
+					step.setEquationListId( listId.longValue() );
 					// populate calc step parameters
-					String codeVariable = request.getParameter( "codeVariable" );
-					params.setString( "codeVariable", codeVariable );
+					Integer codeVariable = form.getCodeVariable();
+					params.setInteger( "codeVariable", codeVariable );
 					
 					EquationList equationList = ws.getEquationListById(listId);
 					Collection<String> equationVariables = equationList.getEquationVariables();
+					Map<String, Integer> eqVariablesParam = form.getEquationVariables();
 					List<ParameterMap> varParams = new ArrayList<ParameterMap>();
 					for ( String equationVariable : equationVariables ) {
-						long variableId = Long.parseLong( request.getParameter(equationVariable) );
+						
+						Integer variableId = eqVariablesParam.get(equationVariable);
 					
 						ParameterMap varParam = new ParameterHashMap();
 						varParam.setString( "equationVariable", equationVariable );

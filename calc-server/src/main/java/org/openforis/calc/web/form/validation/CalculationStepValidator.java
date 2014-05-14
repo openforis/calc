@@ -5,6 +5,7 @@ package org.openforis.calc.web.form.validation;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintValidator;
@@ -32,7 +33,6 @@ public class CalculationStepValidator implements ConstraintValidator<Calculation
 	private static final String CAPTION_FIELD_NAME = "caption";
 	private static final String UNIQUE_CAPTION_MESSAGE = "must be unique";
 
-	// added now for convenience. Mino
 	@Autowired( required = true )
 	private HttpServletRequest request;
 
@@ -60,7 +60,7 @@ public class CalculationStepValidator implements ConstraintValidator<Calculation
 		Workspace ws = workspaceService.getActiveWorkspace();
 		Type type = CalculationStep.Type.valueOf( form.getType() );
 		
-		switch (type) {
+		switch( type ){
 		
 		case EQUATION :
 			Integer listId = form.getEquationList();
@@ -81,25 +81,27 @@ public class CalculationStepValidator implements ConstraintValidator<Calculation
 					
 					valid = false;
 				} else {
-					
+					Map<String, Integer> eqVariablesParam = form.getEquationVariables();
+
 					Collection<String> equationVariables = equationList.getEquationVariables();
 					for ( String equationVariable : equationVariables ) {
-						String equationVarParam = request.getParameter(equationVariable);
-						if( StringUtils.isBlank(equationVarParam) ){
-//							ctx
-//							.buildConstraintViolationWithTemplate( IS_REQUIRED )
-//							.addPropertyNode( equationVariable )
-//							.addConstraintViolation();
-//							
+
+						Integer variableId = eqVariablesParam.get(equationVariable);
+						String eqationVariableInputName = "equationVariables['" + equationVariable + "']";
+						if( variableId == null ){
+							ctx
+							.buildConstraintViolationWithTemplate( IS_REQUIRED )
+							.addPropertyNode( eqationVariableInputName )
+							.addConstraintViolation();
+							
 							valid = false;
 						} else {
-							int variableId = Integer.parseInt( equationVarParam );
 							Variable<?> variable = ws.getVariableById( variableId );
 							if( variable == null ){
-//								ctx
-//								.buildConstraintViolationWithTemplate( "not found" )
-//								.addPropertyNode( equationVariable )
-//								.addConstraintViolation();
+								ctx
+								.buildConstraintViolationWithTemplate( "not found" )
+								.addPropertyNode( eqationVariableInputName )
+								.addConstraintViolation();
 //								
 								valid = false;
 							}
@@ -108,8 +110,8 @@ public class CalculationStepValidator implements ConstraintValidator<Calculation
 					}
 				}
 			}
-			// populate calc step parameters
-			Integer codeVariable = form.getCodeVariable(); // request.getParameter( "codeVariable" );
+
+			Integer codeVariable = form.getCodeVariable();
 			Variable<?> variable = ws.getVariableById( codeVariable );
 			if( variable == null ){
 				ctx

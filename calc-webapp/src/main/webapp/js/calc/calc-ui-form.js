@@ -27,18 +27,18 @@ UI.Form.removeErrors = function ($form) {
  * @param $form
  * @param errors
  */
-UI.Form.updateErrors = function($form, errors) {
-	UI.Form.removeErrors($form);
+UI.Form.updateErrors = function( form, errors ) {
+	UI.Form.removeErrors( form );
 	
-	$.each(errors, function(i, error) {
+	$.each( errors, function( i, error ){
 		var fieldName = error.field;
-		var $field = $form.find('[name=' + fieldName + ']');
-		if ( $field != null ) {
-			var $formGroup = $field.closest('.form-group');
-			if ( ! $formGroup.hasClass('has-error') ) {
-				$formGroup.addClass('has-error');
+		var field = form.find( '[name="'+ fieldName + '"]' );
+		if ( field != null ) {
+			var formGroup = field.closest( '.form-group' );
+			if ( !formGroup.hasClass( 'has-error' ) ){
+				formGroup.addClass( 'has-error' );
 	
-				UI.Form.createErrorTooltip($field, error);
+				UI.Form.createErrorTooltip( field, error );
 			}
 		}
 	});
@@ -70,7 +70,7 @@ UI.Form.getFormErrorMessage = function($form, errors) {
 		var firstError = errors[0];
 		var fieldName = firstError.field;
 		var fieldErrorMessage = firstError.defaultMessage;
-		var field = $form.find("[name='" + fieldName + "']");
+		var field = $form.find( '[name="' + fieldName + '"]' );
 		var fieldLabel = UI.Form.getFieldLabel(field);
 		errorMessage =  fieldLabel + " " + fieldErrorMessage;
 	}

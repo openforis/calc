@@ -340,9 +340,10 @@ CalculationStepEditManager.prototype.equationListChange = function () {
 			label.html( "Variable '" +variable+ "'");
 			div.append( label );
 
-			var divSelect = $( '<div class="col-md-10">' );
-			var select = $( '<select class="form-control"></select>' );
-			select.attr( "name" , variable );
+			var divSelect 		= $( '<div class="col-md-10">' );
+			var select 			= $( '<select class="form-control"></select>' );
+			var selectNameAttr 	= "equationVariables['" + variable + "']"; 
+			select.attr( "name" , selectNameAttr );
 			divSelect.append( select );	
 			var combo = select.combobox();
 			combo.data( this.getSelectedEntity().getAncestorsVariables() , "id" , "name" );
