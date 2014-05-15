@@ -80,7 +80,7 @@
 						<database>
 							<name>org.jooq.util.postgres.PostgresDatabase</name>
 <!-- 							<includes>.*</includes> -->
-							<excludes>_.*|sampling_unit.*|srs|databasechangelog.*|category.*</excludes>
+							<excludes>_.*|sampling_unit.*|srs|databasechangelog.*</excludes>
 							<inputSchema>calc</inputSchema>
 							
 						  	<customTypes>

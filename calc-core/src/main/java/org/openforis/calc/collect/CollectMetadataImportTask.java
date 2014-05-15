@@ -92,7 +92,6 @@ public class CollectMetadataImportTask extends Task {
 		return totalNodes;
 	}
 
-	
 	@Override
 	protected void execute() throws Throwable {
 		entitiesByOriginalId = new LinkedHashMap<Integer, Entity>();

@@ -10,6 +10,8 @@ public abstract class CategoricalVariable<T> extends Variable<T> {
 
 	private static final long serialVersionUID = 1L;
 
+	private Category category;
+	
 	public CategoricalVariable() {
 	}
 
@@ -17,4 +19,13 @@ public abstract class CategoricalVariable<T> extends Variable<T> {
 		super.setScale(scale);
 	}
 
+	public Category getCategory() {
+		return category;
+	}
+	
+	public void setCategory(Category category) {
+		this.category = category;
+		setCategoryId(category.getId().longValue());
+	}
+	
 }

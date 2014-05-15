@@ -1,6 +1,11 @@
 package org.openforis.calc.schema;
 
+import java.util.List;
+
 import org.jooq.impl.SQLDataType;
+import org.openforis.calc.metadata.Category;
+import org.openforis.calc.metadata.CategoryHierarchy;
+import org.openforis.calc.metadata.CategoryLevel;
 import org.openforis.calc.metadata.MultiwayVariable;
 
 /**
@@ -15,11 +20,20 @@ public class CategoryDimensionTable extends DimensionTable {
 	private MultiwayVariable variable;
 
 	CategoryDimensionTable(RelationalSchema schema, MultiwayVariable variable) {
-		super(variable.getDimensionTable(), schema);
+		super( getLevel(variable).getTableName() , schema );
 
 		this.variable = variable;
 
 		initFields();
+	}
+
+	private static CategoryLevel getLevel(MultiwayVariable variable) {
+		Category category = variable.getCategory();
+		List<CategoryHierarchy> hierarchies = category.getHierarchies();
+		CategoryHierarchy hierarchy = hierarchies.get(0);
+		List<CategoryLevel> levels = hierarchy.getLevels();
+		CategoryLevel categoryLevel = levels.get(0);
+		return categoryLevel;
 	}
 
 	public MultiwayVariable getVariable() {
@@ -28,8 +42,10 @@ public class CategoryDimensionTable extends DimensionTable {
 
 	@Override
 	protected void initFields() {
-		setIdField( createField(this.variable.getDimensionTableIdColumn(), SQLDataType.INTEGER, this) );
-		setCaptionField( createField(this.variable.getDimensionTableCaptionColumn() , SQLDataType.VARCHAR, this) );
-		setCodeField( createField(this.variable.getDimensionTableCodeColumn() , SQLDataType.VARCHAR, this) );
+		CategoryLevel level = getLevel( getVariable() );
+		
+		setIdField( createField(level.getIdColumn(), SQLDataType.INTEGER, this) );
+		setCaptionField( createField(level.getCaptionColumn() , SQLDataType.VARCHAR, this) );
+		setCodeField( createField(level.getCodeColumn() , SQLDataType.VARCHAR, this) );
 	}
 }

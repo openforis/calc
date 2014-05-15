@@ -12,6 +12,7 @@ import org.apache.commons.collections.Predicate;
 import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.metadata.AoiHierarchy;
+import org.openforis.calc.metadata.Category;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.EquationList;
 import org.openforis.calc.metadata.SamplingDesign;
@@ -45,6 +46,8 @@ public class Workspace extends WorkspaceBase {
 	private List<ProcessingChain> processingChains;
 
 	private List<EquationList> equationLists;
+	
+	private List<Category> categories;
 	
 	private SamplingDesign samplingDesign;
 	
@@ -167,6 +170,23 @@ public class Workspace extends WorkspaceBase {
 			}
 		}
 	}
+	
+	public List<Category> getCategories() {
+		return org.openforis.commons.collection.CollectionUtils.unmodifiableList( categories );
+	}
+	
+	public void setCategories(List<Category> categories) {
+		this.categories = categories;
+	}
+	
+	void addCategory( Category category ){
+		if( this.categories == null ){
+			this.categories = new ArrayList<Category>();
+		}
+		category.setWorkspace( this );
+		this.categories.add( category );
+	}	
+	
 	@JsonInclude
 	public String getPhase1PlotTableName() {
 		return String.format( "_phase1_plot_%s" , this.getName() );
@@ -390,5 +410,6 @@ public class Workspace extends WorkspaceBase {
 		}
 		return variables;
 	}
+
 
 }

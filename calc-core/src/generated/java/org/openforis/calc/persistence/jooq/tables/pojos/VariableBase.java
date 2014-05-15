@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables.pojos;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class VariableBase implements java.io.Serializable {
 
-	private static final long serialVersionUID = 507028313;
+	private static final long serialVersionUID = -75111449;
 
 	private java.lang.Integer                          id;
 	private java.lang.Integer                          entityId;
@@ -22,19 +22,15 @@ public class VariableBase implements java.io.Serializable {
 	private java.lang.String                           defaultValue;
 	private java.lang.Boolean                          multipleResponse;
 	private java.lang.Boolean                          override;
-	private java.lang.String                           dimensionTable;
 	private java.lang.Boolean                          degenerateDimension;
 	private java.lang.String                           inputCategoryIdColumn;
 	private java.lang.Boolean                          disaggregate;
 	private java.lang.String                           outputValueColumn;
-	private java.lang.String                           outputCategoryIdColumn;
 	private java.lang.String                           caption;
 	private java.lang.String                           description;
 	private java.lang.Integer                          sortOrder;
 	private java.lang.Integer                          variablePerHaId;
-	private java.lang.String                           dimensionTableIdColumn;
-	private java.lang.String                           dimensionTableCodeColumn;
-	private java.lang.String                           dimensionTableCaptionColumn;
+	private java.lang.Long                             categoryId;
 
 	public VariableBase() {}
 
@@ -48,19 +44,15 @@ public class VariableBase implements java.io.Serializable {
 		java.lang.String                           defaultValue,
 		java.lang.Boolean                          multipleResponse,
 		java.lang.Boolean                          override,
-		java.lang.String                           dimensionTable,
 		java.lang.Boolean                          degenerateDimension,
 		java.lang.String                           inputCategoryIdColumn,
 		java.lang.Boolean                          disaggregate,
 		java.lang.String                           outputValueColumn,
-		java.lang.String                           outputCategoryIdColumn,
 		java.lang.String                           caption,
 		java.lang.String                           description,
 		java.lang.Integer                          sortOrder,
 		java.lang.Integer                          variablePerHaId,
-		java.lang.String                           dimensionTableIdColumn,
-		java.lang.String                           dimensionTableCodeColumn,
-		java.lang.String                           dimensionTableCaptionColumn
+		java.lang.Long                             categoryId
 	) {
 		this.id = id;
 		this.entityId = entityId;
@@ -71,19 +63,15 @@ public class VariableBase implements java.io.Serializable {
 		this.defaultValue = defaultValue;
 		this.multipleResponse = multipleResponse;
 		this.override = override;
-		this.dimensionTable = dimensionTable;
 		this.degenerateDimension = degenerateDimension;
 		this.inputCategoryIdColumn = inputCategoryIdColumn;
 		this.disaggregate = disaggregate;
 		this.outputValueColumn = outputValueColumn;
-		this.outputCategoryIdColumn = outputCategoryIdColumn;
 		this.caption = caption;
 		this.description = description;
 		this.sortOrder = sortOrder;
 		this.variablePerHaId = variablePerHaId;
-		this.dimensionTableIdColumn = dimensionTableIdColumn;
-		this.dimensionTableCodeColumn = dimensionTableCodeColumn;
-		this.dimensionTableCaptionColumn = dimensionTableCaptionColumn;
+		this.categoryId = categoryId;
 	}
 
 	public java.lang.Integer getId() {
@@ -158,14 +146,6 @@ public class VariableBase implements java.io.Serializable {
 		this.override = override;
 	}
 
-	public java.lang.String getDimensionTable() {
-		return this.dimensionTable;
-	}
-
-	public void setDimensionTable(java.lang.String dimensionTable) {
-		this.dimensionTable = dimensionTable;
-	}
-
 	public java.lang.Boolean getDegenerateDimension() {
 		return this.degenerateDimension;
 	}
@@ -196,14 +176,6 @@ public class VariableBase implements java.io.Serializable {
 
 	public void setOutputValueColumn(java.lang.String outputValueColumn) {
 		this.outputValueColumn = outputValueColumn;
-	}
-
-	public java.lang.String getOutputCategoryIdColumn() {
-		return this.outputCategoryIdColumn;
-	}
-
-	public void setOutputCategoryIdColumn(java.lang.String outputCategoryIdColumn) {
-		this.outputCategoryIdColumn = outputCategoryIdColumn;
 	}
 
 	public java.lang.String getCaption() {
@@ -238,27 +210,11 @@ public class VariableBase implements java.io.Serializable {
 		this.variablePerHaId = variablePerHaId;
 	}
 
-	public java.lang.String getDimensionTableIdColumn() {
-		return this.dimensionTableIdColumn;
+	public java.lang.Long getCategoryId() {
+		return this.categoryId;
 	}
 
-	public void setDimensionTableIdColumn(java.lang.String dimensionTableIdColumn) {
-		this.dimensionTableIdColumn = dimensionTableIdColumn;
-	}
-
-	public java.lang.String getDimensionTableCodeColumn() {
-		return this.dimensionTableCodeColumn;
-	}
-
-	public void setDimensionTableCodeColumn(java.lang.String dimensionTableCodeColumn) {
-		this.dimensionTableCodeColumn = dimensionTableCodeColumn;
-	}
-
-	public java.lang.String getDimensionTableCaptionColumn() {
-		return this.dimensionTableCaptionColumn;
-	}
-
-	public void setDimensionTableCaptionColumn(java.lang.String dimensionTableCaptionColumn) {
-		this.dimensionTableCaptionColumn = dimensionTableCaptionColumn;
+	public void setCategoryId(java.lang.Long categoryId) {
+		this.categoryId = categoryId;
 	}
 }

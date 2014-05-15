@@ -34,6 +34,21 @@ public class Sequences {
 	public static final org.jooq.Sequence<java.lang.Long> CALCULATION_STEP_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("calculation_step_id_seq", org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
 
 	/**
+	 * The sequence <code>calc.category_hierarchy_id_seq</code>
+	 */
+	public static final org.jooq.Sequence<java.lang.Long> CATEGORY_HIERARCHY_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("category_hierarchy_id_seq", org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
+
+	/**
+	 * The sequence <code>calc.category_id_seq</code>
+	 */
+	public static final org.jooq.Sequence<java.lang.Long> CATEGORY_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("category_id_seq", org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
+
+	/**
+	 * The sequence <code>calc.category_level_id_seq</code>
+	 */
+	public static final org.jooq.Sequence<java.lang.Long> CATEGORY_LEVEL_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("category_level_id_seq", org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
+
+	/**
 	 * The sequence <code>calc.entity_id_seq</code>
 	 */
 	public static final org.jooq.Sequence<java.lang.Long> ENTITY_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("entity_id_seq", org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.jooq.impl.SQLDataType.BIGINT.nullable(false));

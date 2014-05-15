@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author G. Miceli
  * @author M. Togna
  */
-//@DiscriminatorFormula("case when scale='TEXT' then 'T' when scale in ('RATIO','INTERVAL','OTHER') then 'Q' when scale='BINARY' then 'B' else 'C' end")
 public abstract class Variable<T> extends VariableBase {
 	
 	private static final long serialVersionUID = 1L;
@@ -34,9 +33,6 @@ public abstract class Variable<T> extends VariableBase {
 	@JsonIgnore
 	private Entity entity;
 
-//	@JsonIgnore	
-//	private Scale scale;
-//
 	public abstract Variable.Type getType();
 
 	public Entity getEntity() {
@@ -49,14 +45,6 @@ public abstract class Variable<T> extends VariableBase {
 			setEntityId( entity.getId() );
 		}
 	}
-
-//	public Scale getScale() {
-//		return this.scale;
-//	}
-//
-//	public void setScale(Scale scale) {
-//		this.scale = scale;
-//	}
 
 	@JsonIgnore
 	public boolean isInput() {
@@ -107,8 +95,5 @@ public abstract class Variable<T> extends VariableBase {
 			return false;
 		return true;
 	}
-	
-	
-	
 	
 }

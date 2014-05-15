@@ -119,8 +119,16 @@
 	<bean name="equationListDao" class="org.openforis.calc.persistence.jooq.tables.daos.EquationListDao">
     	<constructor-arg ref="config" />
     </bean>
-    	<bean name="equationDao" class="org.openforis.calc.persistence.jooq.tables.daos.EquationDao">
+   	<bean name="equationDao" class="org.openforis.calc.persistence.jooq.tables.daos.EquationDao">
     	<constructor-arg ref="config" />
     </bean>
-    
+    <bean name="categoryDao" class="org.openforis.calc.persistence.jooq.tables.daos.CategoryDao">
+    	<constructor-arg ref="config" />
+    </bean>
+    <bean name="categoryHierarchyDao" class="org.openforis.calc.persistence.jooq.tables.daos.CategoryHierarchyDao">
+    	<constructor-arg ref="config" />
+    </bean>
+    <bean name="categoryLevelDao" class="org.openforis.calc.persistence.jooq.tables.daos.CategoryLevelDao">
+    	<constructor-arg ref="config" />
+    </bean>
 </beans>
