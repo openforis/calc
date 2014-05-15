@@ -72,10 +72,10 @@
 			ALTER TABLE
 			    calc.variable DROP COLUMN dimension_table_caption_column;
 			ALTER TABLE
-			    calc.variable ADD COLUMN category_id bigint;
+			    calc.variable ADD COLUMN category_level_id bigint;
 			ALTER TABLE
-			    calc.variable ADD CONSTRAINT variable_category_fk FOREIGN KEY (category_id) REFERENCES
-			    calc.category (id);
+			    calc.variable ADD CONSTRAINT variable_category_level_fk FOREIGN KEY (category_level_id) REFERENCES
+			    calc.category_level (id);
 			    
 		</sql>
 	    

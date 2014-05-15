@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables.pojos;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class VariableBase implements java.io.Serializable {
 
-	private static final long serialVersionUID = -75111449;
+	private static final long serialVersionUID = -538261969;
 
 	private java.lang.Integer                          id;
 	private java.lang.Integer                          entityId;
@@ -30,7 +30,7 @@ public class VariableBase implements java.io.Serializable {
 	private java.lang.String                           description;
 	private java.lang.Integer                          sortOrder;
 	private java.lang.Integer                          variablePerHaId;
-	private java.lang.Long                             categoryId;
+	private java.lang.Long                             categoryLevelId;
 
 	public VariableBase() {}
 
@@ -52,7 +52,7 @@ public class VariableBase implements java.io.Serializable {
 		java.lang.String                           description,
 		java.lang.Integer                          sortOrder,
 		java.lang.Integer                          variablePerHaId,
-		java.lang.Long                             categoryId
+		java.lang.Long                             categoryLevelId
 	) {
 		this.id = id;
 		this.entityId = entityId;
@@ -71,7 +71,7 @@ public class VariableBase implements java.io.Serializable {
 		this.description = description;
 		this.sortOrder = sortOrder;
 		this.variablePerHaId = variablePerHaId;
-		this.categoryId = categoryId;
+		this.categoryLevelId = categoryLevelId;
 	}
 
 	public java.lang.Integer getId() {
@@ -210,11 +210,11 @@ public class VariableBase implements java.io.Serializable {
 		this.variablePerHaId = variablePerHaId;
 	}
 
-	public java.lang.Long getCategoryId() {
-		return this.categoryId;
+	public java.lang.Long getCategoryLevelId() {
+		return this.categoryLevelId;
 	}
 
-	public void setCategoryId(java.lang.Long categoryId) {
-		this.categoryId = categoryId;
+	public void setCategoryLevelId(java.lang.Long categoryLevelId) {
+		this.categoryLevelId = categoryLevelId;
 	}
 }

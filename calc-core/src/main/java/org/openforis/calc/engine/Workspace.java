@@ -13,6 +13,8 @@ import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.Category;
+import org.openforis.calc.metadata.CategoryHierarchy;
+import org.openforis.calc.metadata.CategoryLevel;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.EquationList;
 import org.openforis.calc.metadata.SamplingDesign;
@@ -186,6 +188,21 @@ public class Workspace extends WorkspaceBase {
 		category.setWorkspace( this );
 		this.categories.add( category );
 	}	
+	
+	public CategoryLevel getCategoryLevelById( long categoryLevelId ){
+		for ( Category category : getCategories() ){
+			List<CategoryHierarchy> hierarchies = category.getHierarchies();
+			for ( CategoryHierarchy hierarchy : hierarchies ){
+				List<CategoryLevel> levels = hierarchy.getLevels();
+				for ( CategoryLevel level : levels ){
+					if( level.getId().equals(categoryLevelId) ){
+						return level;
+					}
+				}
+			}
+		}
+		return null;
+	}
 	
 	@JsonInclude
 	public String getPhase1PlotTableName() {

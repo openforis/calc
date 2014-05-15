@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class VariableTable extends org.jooq.impl.TableImpl<org.openforis.calc.persistence.jooq.tables.records.VariableRecord> {
 
-	private static final long serialVersionUID = -1850116838;
+	private static final long serialVersionUID = -153631420;
 
 	/**
 	 * The singleton instance of <code>calc.variable</code>
@@ -112,9 +112,9 @@ public class VariableTable extends org.jooq.impl.TableImpl<org.openforis.calc.pe
 	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.VariableRecord, java.lang.Integer> VARIABLE_PER_HA_ID = createField("variable_per_ha_id", org.jooq.impl.SQLDataType.INTEGER.defaulted(true), this, "");
 
 	/**
-	 * The column <code>calc.variable.category_id</code>.
+	 * The column <code>calc.variable.category_level_id</code>.
 	 */
-	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.VariableRecord, java.lang.Long> CATEGORY_ID = createField("category_id", org.jooq.impl.SQLDataType.BIGINT.defaulted(true), this, "");
+	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.VariableRecord, java.lang.Long> CATEGORY_LEVEL_ID = createField("category_level_id", org.jooq.impl.SQLDataType.BIGINT.defaulted(true), this, "");
 
 	/**
 	 * Create a <code>calc.variable</code> table reference
@@ -167,7 +167,7 @@ public class VariableTable extends org.jooq.impl.TableImpl<org.openforis.calc.pe
 	 */
 	@Override
 	public java.util.List<org.jooq.ForeignKey<org.openforis.calc.persistence.jooq.tables.records.VariableRecord, ?>> getReferences() {
-		return java.util.Arrays.<org.jooq.ForeignKey<org.openforis.calc.persistence.jooq.tables.records.VariableRecord, ?>>asList(org.openforis.calc.persistence.jooq.Keys.VARIABLE__VARIABLE_ENTITY_FKEY, org.openforis.calc.persistence.jooq.Keys.VARIABLE__VARIABLE_VARIABLE_PER_HA_FKEY, org.openforis.calc.persistence.jooq.Keys.VARIABLE__VARIABLE_CATEGORY_FK);
+		return java.util.Arrays.<org.jooq.ForeignKey<org.openforis.calc.persistence.jooq.tables.records.VariableRecord, ?>>asList(org.openforis.calc.persistence.jooq.Keys.VARIABLE__VARIABLE_ENTITY_FKEY, org.openforis.calc.persistence.jooq.Keys.VARIABLE__VARIABLE_VARIABLE_PER_HA_FKEY, org.openforis.calc.persistence.jooq.Keys.VARIABLE__VARIABLE_CATEGORY_LEVEL_FK);
 	}
 
 	/**

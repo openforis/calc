@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables.records;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class VariableRecord extends org.jooq.impl.UpdatableRecordImpl<org.openforis.calc.persistence.jooq.tables.records.VariableRecord> implements org.jooq.Record18<java.lang.Integer, java.lang.Integer, java.lang.String, org.openforis.calc.metadata.Variable.Scale, java.lang.String, java.lang.Integer, java.lang.String, java.lang.Boolean, java.lang.Boolean, java.lang.Boolean, java.lang.String, java.lang.Boolean, java.lang.String, java.lang.String, java.lang.String, java.lang.Integer, java.lang.Integer, java.lang.Long> {
 
-	private static final long serialVersionUID = 1883340429;
+	private static final long serialVersionUID = -1554815678;
 
 	/**
 	 * Setter for <code>calc.variable.id</code>.
@@ -252,16 +252,16 @@ public class VariableRecord extends org.jooq.impl.UpdatableRecordImpl<org.openfo
 	}
 
 	/**
-	 * Setter for <code>calc.variable.category_id</code>.
+	 * Setter for <code>calc.variable.category_level_id</code>.
 	 */
-	public void setCategoryId(java.lang.Long value) {
+	public void setCategoryLevelId(java.lang.Long value) {
 		setValue(17, value);
 	}
 
 	/**
-	 * Getter for <code>calc.variable.category_id</code>.
+	 * Getter for <code>calc.variable.category_level_id</code>.
 	 */
-	public java.lang.Long getCategoryId() {
+	public java.lang.Long getCategoryLevelId() {
 		return (java.lang.Long) getValue(17);
 	}
 
@@ -438,7 +438,7 @@ public class VariableRecord extends org.jooq.impl.UpdatableRecordImpl<org.openfo
 	 */
 	@Override
 	public org.jooq.Field<java.lang.Long> field18() {
-		return org.openforis.calc.persistence.jooq.tables.VariableTable.VARIABLE.CATEGORY_ID;
+		return org.openforis.calc.persistence.jooq.tables.VariableTable.VARIABLE.CATEGORY_LEVEL_ID;
 	}
 
 	/**
@@ -582,7 +582,7 @@ public class VariableRecord extends org.jooq.impl.UpdatableRecordImpl<org.openfo
 	 */
 	@Override
 	public java.lang.Long value18() {
-		return getCategoryId();
+		return getCategoryLevelId();
 	}
 
 	/**
@@ -743,7 +743,7 @@ public class VariableRecord extends org.jooq.impl.UpdatableRecordImpl<org.openfo
 	 */
 	@Override
 	public VariableRecord value18(java.lang.Long value) {
-		setCategoryId(value);
+		setCategoryLevelId(value);
 		return this;
 	}
 
@@ -769,7 +769,7 @@ public class VariableRecord extends org.jooq.impl.UpdatableRecordImpl<org.openfo
 	/**
 	 * Create a detached, initialised VariableRecord
 	 */
-	public VariableRecord(java.lang.Integer id, java.lang.Integer entityId, java.lang.String inputValueColumn, org.openforis.calc.metadata.Variable.Scale scale, java.lang.String name, java.lang.Integer originalId, java.lang.String defaultValue, java.lang.Boolean multipleResponse, java.lang.Boolean override, java.lang.Boolean degenerateDimension, java.lang.String inputCategoryIdColumn, java.lang.Boolean disaggregate, java.lang.String outputValueColumn, java.lang.String caption, java.lang.String description, java.lang.Integer sortOrder, java.lang.Integer variablePerHaId, java.lang.Long categoryId) {
+	public VariableRecord(java.lang.Integer id, java.lang.Integer entityId, java.lang.String inputValueColumn, org.openforis.calc.metadata.Variable.Scale scale, java.lang.String name, java.lang.Integer originalId, java.lang.String defaultValue, java.lang.Boolean multipleResponse, java.lang.Boolean override, java.lang.Boolean degenerateDimension, java.lang.String inputCategoryIdColumn, java.lang.Boolean disaggregate, java.lang.String outputValueColumn, java.lang.String caption, java.lang.String description, java.lang.Integer sortOrder, java.lang.Integer variablePerHaId, java.lang.Long categoryLevelId) {
 		super(org.openforis.calc.persistence.jooq.tables.VariableTable.VARIABLE);
 
 		setValue(0, id);
@@ -789,6 +789,6 @@ public class VariableRecord extends org.jooq.impl.UpdatableRecordImpl<org.openfo
 		setValue(14, description);
 		setValue(15, sortOrder);
 		setValue(16, variablePerHaId);
-		setValue(17, categoryId);
+		setValue(17, categoryLevelId);
 	}
 }

@@ -264,8 +264,8 @@ public class MetadataManager {
 	 */
 	@Transactional
 	private void persistMetadata( Workspace workspace ) {
-		persistEntities( workspace );
 		persistCategories( workspace );
+		persistEntities( workspace );
 	}
 	
 	@Transactional

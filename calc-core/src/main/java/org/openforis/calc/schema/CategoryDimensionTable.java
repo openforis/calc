@@ -1,10 +1,6 @@
 package org.openforis.calc.schema;
 
-import java.util.List;
-
 import org.jooq.impl.SQLDataType;
-import org.openforis.calc.metadata.Category;
-import org.openforis.calc.metadata.CategoryHierarchy;
 import org.openforis.calc.metadata.CategoryLevel;
 import org.openforis.calc.metadata.MultiwayVariable;
 
@@ -27,12 +23,8 @@ public class CategoryDimensionTable extends DimensionTable {
 		initFields();
 	}
 
-	private static CategoryLevel getLevel(MultiwayVariable variable) {
-		Category category = variable.getCategory();
-		List<CategoryHierarchy> hierarchies = category.getHierarchies();
-		CategoryHierarchy hierarchy = hierarchies.get(0);
-		List<CategoryLevel> levels = hierarchy.getLevels();
-		CategoryLevel categoryLevel = levels.get(0);
+	private static CategoryLevel getLevel( MultiwayVariable variable ) {
+		CategoryLevel categoryLevel = variable.getCategoryLevel();
 		return categoryLevel;
 	}
 
@@ -42,7 +34,7 @@ public class CategoryDimensionTable extends DimensionTable {
 
 	@Override
 	protected void initFields() {
-		CategoryLevel level = getLevel( getVariable() );
+		CategoryLevel level = getLevel( this.variable );
 		
 		setIdField( createField(level.getIdColumn(), SQLDataType.INTEGER, this) );
 		setCaptionField( createField(level.getCaptionColumn() , SQLDataType.VARCHAR, this) );

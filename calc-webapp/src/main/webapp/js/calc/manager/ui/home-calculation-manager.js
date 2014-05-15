@@ -135,11 +135,13 @@ HomeCalculationManager.prototype = (function() {
 		stepElements.remove();
 		
 		WorkspaceManager.getInstance().activeWorkspace( function(ws){
-			var chain = ws.getDefaultProcessingChain();
-			if( chain ){
-				$.each( chain.calculationSteps , function( i, step ){
-					$.proxy( addStepElement, $this )( step );
-				});
+			if( ws ){
+				var chain = ws.getDefaultProcessingChain();
+				if( chain ){
+					$.each( chain.calculationSteps , function( i, step ){
+						$.proxy( addStepElement, $this )( step );
+					});
+				}
 			}
 		});
 	};

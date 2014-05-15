@@ -96,9 +96,12 @@ public class VariableDao extends org.openforis.calc.persistence.jooq.tables.daos
 					throw new IllegalStateException( "Found detached variable" );
 				}
 				variable.setEntityId( entity.getId() );
-
 				// set sortOrder
 				variable.setSortOrder( i + 1 );
+				if( variable instanceof CategoricalVariable<?> ){
+					CategoryLevel categoryLevel = ( (CategoricalVariable<?>) variable ).getCategoryLevel();
+					variable.setCategoryLevelId( categoryLevel.getId().longValue() );
+				}
 				
 				// insert or update variable
 				if( variable.getId() == null ) {
