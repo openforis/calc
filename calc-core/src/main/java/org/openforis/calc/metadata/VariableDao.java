@@ -98,7 +98,7 @@ public class VariableDao extends org.openforis.calc.persistence.jooq.tables.daos
 				variable.setEntityId( entity.getId() );
 				// set sortOrder
 				variable.setSortOrder( i + 1 );
-				if( variable instanceof CategoricalVariable<?> ){
+				if( variable instanceof CategoricalVariable<?> && ((CategoricalVariable<?>) variable).getCategoryLevel() != null ){
 					CategoryLevel categoryLevel = ( (CategoricalVariable<?>) variable ).getCategoryLevel();
 					variable.setCategoryLevelId( categoryLevel.getId().longValue() );
 				}

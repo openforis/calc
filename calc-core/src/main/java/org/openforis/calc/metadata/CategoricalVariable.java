@@ -25,7 +25,7 @@ public abstract class CategoricalVariable<T> extends Variable<T> {
 	
 	public void setCategoryLevel(CategoryLevel categoryLevel){
 		this.categoryLevel = categoryLevel;
-		setCategoryLevelId( categoryLevel.getId().longValue() );
+		setCategoryLevelId( categoryLevel == null || categoryLevel.getId() == null ? null: categoryLevel.getId().longValue());
 	}
 	
 }

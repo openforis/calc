@@ -69,47 +69,53 @@ public class SpeciesImportTask extends Task {
 			BackupFileExtractor fileExtractor = new BackupFileExtractor(zipFile);
 			List<String> speciesFileNames = fileExtractor.listSpeciesEntryNames();
 			for (String entry : speciesFileNames) {
-				String speciesListName = FilenameUtils.getBaseName(entry);
-				
-				SpeciesCodeTable table = createTable(speciesListName);
-				
-				File tempFile = fileExtractor.extract(entry);
-				SpeciesBackupCSVReader reader = null;
-				try {
-					
-					reader = new SpeciesBackupCSVReader(tempFile);
-					reader.init();
-					
-					int nextRecordId = 1;
-					List<InsertQuery<Record>> batchInserts = new ArrayList<InsertQuery<Record>>();
-					
-					while ( isRunning() ) {
-						SpeciesBackupLine line = reader.readNextLine();
-						if ( line != null ) {
-							InsertQuery<Record> insertQuery = createInsertQuery(table, line, nextRecordId ++);
-							batchInserts.add(insertQuery);
-							
-							if ( batchInserts.size() == MAX_BATCH_SIZE ) {
-								flushBatchInserts(batchInserts);
-							}
-						}
-						incrementItemsProcessed();
-						if ( ! reader.isReady() ) {
-							break;
-						}
-					}
-					if ( ! batchInserts.isEmpty() ) {
-						//flush remaining inserts
-						flushBatchInserts(batchInserts);
-					}
-				} catch(Exception e) {
-					throw new RuntimeException(e);
-				} finally {
-					IOUtils.closeQuietly(reader);
-				}
+				createSpeciesTable(zipFile, entry);
 			}
 		} finally {
 			close(zipFile);
+		}
+	}
+
+	protected void createSpeciesTable(ZipFile zipFile, String entry) {
+		String speciesListName = FilenameUtils.getBaseName(entry);
+		
+		BackupFileExtractor fileExtractor = new BackupFileExtractor(zipFile);
+		
+		SpeciesCodeTable table = createTable(speciesListName);
+		
+		File tempFile = fileExtractor.extract(entry);
+		SpeciesBackupCSVReader reader = null;
+		try {
+			
+			reader = new SpeciesBackupCSVReader(tempFile);
+			reader.init();
+			
+			int nextRecordId = 1;
+			List<InsertQuery<Record>> batchInserts = new ArrayList<InsertQuery<Record>>();
+			
+			while ( isRunning() ) {
+				SpeciesBackupLine line = reader.readNextLine();
+				if ( line != null ) {
+					InsertQuery<Record> insertQuery = createInsertQuery(table, line, nextRecordId ++);
+					batchInserts.add(insertQuery);
+					
+					if ( batchInserts.size() == MAX_BATCH_SIZE ) {
+						flushBatchInserts(batchInserts);
+					}
+				}
+				incrementItemsProcessed();
+				if ( ! reader.isReady() ) {
+					break;
+				}
+			}
+			if ( ! batchInserts.isEmpty() ) {
+				//flush remaining inserts
+				flushBatchInserts(batchInserts);
+			}
+		} catch(Exception e) {
+			throw new RuntimeException(e);
+		} finally {
+			IOUtils.closeQuietly(reader);
 		}
 	}
 

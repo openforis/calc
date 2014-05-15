@@ -22,7 +22,7 @@ public class CategoryLevel extends CategoryLevelBase {
 		return hierarchy;
 	}
 	
-	public void setHierarchy( CategoryHierarchy categoryHierarchy ){
+	public void setHierarchy( CategoryHierarchy categoryHierarchy ) {
 		this.hierarchy = categoryHierarchy;
 		setHierarchyId( categoryHierarchy.getId() );
 	}

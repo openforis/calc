@@ -15,10 +15,10 @@ import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.chain.pre.AssignAoiColumnsTask;
 import org.openforis.calc.chain.pre.CalculateExpansionFactorsTask;
 import org.openforis.calc.chain.pre.CalculateSamplingUnitWeightTask;
-import org.openforis.calc.collect.CollectSurveyImportJob;
 import org.openforis.calc.collect.CollectDataImportTask;
 import org.openforis.calc.collect.CollectInputSchemaCreatorTask;
 import org.openforis.calc.collect.CollectMetadataImportTask;
+import org.openforis.calc.collect.CollectSurveyImportJob;
 import org.openforis.calc.collect.SpeciesImportTask;
 import org.openforis.calc.module.ModuleRegistry;
 import org.openforis.calc.module.Operation;
@@ -132,6 +132,7 @@ public class TaskManager {
 		autowire(job);
 		
 		CollectMetadataImportTask importTask = createTask(CollectMetadataImportTask.class);
+		importTask.setBackupFile(backupFile);
 		job.addTask(importTask);
 
 		CollectInputSchemaCreatorTask schemaCreatorTask = createTask(CollectInputSchemaCreatorTask.class);

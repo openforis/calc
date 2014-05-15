@@ -3,24 +3,35 @@
  */
 package org.openforis.calc.collect;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
+import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
 
+import org.apache.commons.io.FilenameUtils;
 import org.openforis.calc.engine.MetadataManager;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.BinaryVariable;
+import org.openforis.calc.metadata.CategoricalVariable;
+import org.openforis.calc.metadata.Category;
+import org.openforis.calc.metadata.CategoryHierarchy;
+import org.openforis.calc.metadata.CategoryLevel;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.TextVariable;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.Variable.Scale;
+import org.openforis.collect.io.BackupFileExtractor;
 import org.openforis.collect.model.CollectSurvey;
 import org.openforis.collect.relational.model.CodeValueFKColumn;
 import org.openforis.collect.relational.model.DataColumn;
@@ -32,6 +43,8 @@ import org.openforis.idm.metamodel.AttributeDefinition;
 import org.openforis.idm.metamodel.BooleanAttributeDefinition;
 import org.openforis.idm.metamodel.CodeAttributeDefinition;
 import org.openforis.idm.metamodel.CodeList;
+import org.openforis.idm.metamodel.CodeListLabel.Type;
+import org.openforis.idm.metamodel.CodeListLevel;
 import org.openforis.idm.metamodel.CoordinateAttributeDefinition;
 import org.openforis.idm.metamodel.DateAttributeDefinition;
 import org.openforis.idm.metamodel.EntityDefinition;
@@ -55,11 +68,17 @@ import org.springframework.transaction.annotation.Transactional;
  */
 public class CollectMetadataImportTask extends Task {
 
+	private static final String SPECIES_CATEGORY_HIERARCHY_NAME = "taxonomy";
+
+	private static final int SPECIES_CATEGORY_ORIGINAL_ID = -9999;
+
 //	private static final QName CALC_SAMPLING_UNIT_ANNOTATION = new QName("http://www.openforis.org/calc/1.0/calc", "samplingUnit");
 //	private static final String DIMENSION_TABLE_FORMAT = "%s_%s_dim";
 
 	@Autowired
 	private MetadataManager metadataManager;
+	
+	private File backupFile;
 	
 	@Override
 	public String getName() {
@@ -97,23 +116,115 @@ public class CollectMetadataImportTask extends Task {
 		entitiesByOriginalId = new LinkedHashMap<Integer, Entity>();
 		variableNames = new HashSet<String>();
 		
-		Workspace workspace = getWorkspace(); 
+		updateWorkspaceCategories();
+		updateWorkspaceMetadata();
 		
-		updateWorkspaceMetadata( workspace );
-		updateWorkspaceCategories( workspace );
-		
-		metadataManager.saveWorkspace( workspace );
-		( (CollectSurveyImportJob) getJob() ).updateWorkspace( workspace );
+		saveWorkspace();
 	}
 
-	private void updateWorkspaceCategories(Workspace workspace) {
+	private void updateWorkspaceCategories() throws ZipException, IOException {
+		Workspace ws = getWorkspace();
 		CollectSurvey survey = getSurvey();
 		List<CodeList> codeLists = survey.getCodeLists();
-		for( CodeList codeList : codeLists ){
+		
+		List<Category> categories = new ArrayList<Category>( ws.getCategories() );
+
+		//remove all existing input categories
+		Iterator<Category> iterator = categories.iterator();
+		while( iterator.hasNext() ){
+			Category category = iterator.next();
+			if( category.isInput() ){
+				iterator.remove();
+			}
+		}
+		String surveyLanguage = survey.getDefaultLanguage();
+		
+		//add input categories
+		for( CodeList codeList : codeLists ) {
+			Category category = new Category();
+			category.setOriginalId( codeList.getId() );
+			String caption = codeList.getLabel( Type.ITEM, surveyLanguage );
+			if ( caption == null ) {
+				caption = codeList.getName();
+			}
+			category.setCaption( caption );
+			category.setDescription( codeList.getDescription( surveyLanguage ) );
+			categories.add( category );
+
+			//TODO support multiple hierarchies
+			CategoryHierarchy hierarchy = new CategoryHierarchy();
+			hierarchy.setName( codeList.getName() );
+
+			List<CodeListLevel> codeListHierarchy = codeList.getHierarchy();
+			if ( codeListHierarchy.isEmpty() ) {
+				//when no code list hierarchy is specified, a default category level is created
+				CategoryLevel level = createCategoryLevel( codeList, null );
+				hierarchy.addLevel(level);
+			} else {
+				for (int levelIdx = 0; levelIdx < codeListHierarchy.size(); levelIdx++) {
+					CategoryLevel level = createCategoryLevel( codeList, levelIdx );
+					hierarchy.addLevel( level );
+				}
+			}
+			category.addHierarchy( hierarchy );
+
 			incrementItemsProcessed();
 		}
+		
+		//add species categories
+		ZipFile zipFile = new ZipFile(backupFile);
+		BackupFileExtractor fileExtractor = new BackupFileExtractor(zipFile);
+		List<String> speciesFileNames = fileExtractor.listSpeciesEntryNames();
+		for (String speciesFileName : speciesFileNames) {
+			Category category = createSpeciesCategory(speciesFileName);
+			categories.add( category );
+		}
+		ws.setCategories( categories );
 	}
 
+	protected Category createSpeciesCategory(String speciesFileName) {
+		String speciesListName = FilenameUtils.getBaseName(speciesFileName);
+		Category category = new Category();
+		category.setOriginalId( SPECIES_CATEGORY_ORIGINAL_ID );
+		category.setCaption( speciesListName );
+		CategoryHierarchy hierarchy = new CategoryHierarchy();
+		hierarchy.setName( SPECIES_CATEGORY_HIERARCHY_NAME );
+		
+		SpeciesCodeTable speciesCodeTable = new SpeciesCodeTable( speciesListName, getInputSchema().getName());
+		
+		CategoryLevel level = new CategoryLevel();
+		
+		level.setName( speciesListName );
+		level.setCaptionColumn( speciesCodeTable.getScientificNameField().getName() );
+		level.setCodeColumn( speciesCodeTable.getCodeField().getName() );
+		level.setIdColumn( speciesCodeTable.getIdField().getName() );
+		level.setRank( 1 );
+		level.setTableName( speciesCodeTable.getName() );
+
+		hierarchy.addLevel( level );
+		
+		category.addHierarchy( hierarchy );
+		
+		return category;
+	}
+
+	protected CategoryLevel createCategoryLevel(CodeList codeList, Integer levelIdx) {
+		CategoryLevel level = new CategoryLevel();
+
+		CodeListLevel codeListLevel = levelIdx == null ? null: codeList.getHierarchy().get( levelIdx );
+		String name = codeListLevel == null ? codeList.getName(): codeListLevel.getName();
+
+		String tableName = CodeListTables.getTableName(codeList, levelIdx);
+		
+		level.setCaptionColumn( CodeListTables.getLabelColumnName( tableName ) );
+		level.setCodeColumn( CodeListTables.getCodeColumnName( tableName ) );
+		level.setIdColumn( CodeListTables.getIdColumnName( tableName ) );
+		level.setName( name );
+		level.setRank( levelIdx == null ? 1: levelIdx + 1 );
+		level.setTableName( tableName );
+		
+		return level;
+	}
 
 	/**
 	 * This method updates the workspace entities: 
@@ -123,7 +234,8 @@ public class CollectMetadataImportTask extends Task {
 	 * @throws IdmlParseException 
 	 */
 	@Transactional
-	public Workspace updateWorkspaceMetadata( Workspace ws ) throws IdmlParseException {
+	public Workspace updateWorkspaceMetadata() throws IdmlParseException {
+		Workspace ws = getWorkspace();
 		List<Entity> entities = createEntities();
 		
 		printToLog( entities );
@@ -257,13 +369,12 @@ public class CollectMetadataImportTask extends Task {
 				if ( fk != null ) {
 					variable.setInputCategoryIdColumn(fk.getName());
 				}
-				String codeListTableName = CodeListTables.getTableName(list, codeAttrDefn.getListLevelIndex());
 				
-				//dimension table
-				variable.setDimensionTable( codeListTableName );
-				variable.setDimensionTableIdColumn( CodeListTables.getIdColumnName(codeListTableName) );
-				variable.setDimensionTableCodeColumn( CodeListTables.getCodeColumnName(codeListTableName) );
-				variable.setDimensionTableCaptionColumn( CodeListTables.getLabelColumnName(codeListTableName) );
+				Workspace ws = getWorkspace();
+				String codeListTableName = CodeListTables.getTableName(list, codeAttrDefn.getListLevelIndex());
+				CategoryLevel categoryLevel = ws.getCategoryLevelByTableName( codeListTableName );
+				
+				variable.setCategoryLevel( categoryLevel );
 			}
 		} else if ( attrDefn instanceof DateAttributeDefinition ) {
 			v = new TextVariable();
@@ -280,12 +391,18 @@ public class CollectMetadataImportTask extends Task {
 			multiwayVar.setScale(Scale.NOMINAL);
 			multiwayVar.setMultipleResponse(attrDefn.isMultiple());
 			
+			//TODO create Category for species
+			String taxonomy = ((TaxonAttributeDefinition) attrDefn).getTaxonomy();
+			Workspace ws = getWorkspace();
+			CategoryLevel categoryLevel = ws.getCategoryLevelByTableName( taxonomy );
+			multiwayVar.setCategoryLevel( categoryLevel );
+			/*
 			SpeciesCodeTable speciesCodeTable = new SpeciesCodeTable(((TaxonAttributeDefinition) attrDefn).getTaxonomy(), getInputSchema().getName());
 			multiwayVar.setDimensionTable( speciesCodeTable.getName() );
 			multiwayVar.setDimensionTableIdColumn(speciesCodeTable.getIdField().getName());
 			multiwayVar.setDimensionTableCodeColumn(speciesCodeTable.getCodeField().getName());
 			multiwayVar.setDimensionTableCaptionColumn(speciesCodeTable.getScientificNameField().getName());
-			
+			*/
 		} else if ( attrDefn instanceof TextAttributeDefinition && 
 				((TextAttributeDefinition) attrDefn).getType() == TextAttributeDefinition.Type.SHORT ) {
 			v = new TextVariable();
@@ -479,7 +596,13 @@ public class CollectMetadataImportTask extends Task {
 		dest.setCaption(from.getCaption());
 		setDefaultValue(dest, from);
 		dest.setDescription(from.getDescription());
-		dest.setDimensionTable(from.getDimensionTable());
+		
+		//dest.setDimensionTable(from.getDimensionTable());
+		if ( dest instanceof CategoricalVariable ) {
+			((CategoricalVariable<?>) dest).setCategoryLevel( ((CategoricalVariable<?>) from).getCategoryLevel()  );
+		}
+		
+		
 		//TODO update variable name and inputValueColumn: handle taxon attribute variables (2 variables per each attribute definition)
 //		oldVariable.setInputValueColumn(newVariable.getInputValueColumn());
 		//oldVariable.setName(newVariable.getName());
@@ -489,11 +612,13 @@ public class CollectMetadataImportTask extends Task {
 			MultiwayVariable fromVar = (MultiwayVariable) from;
 			toVar.setDegenerateDimension(fromVar.getDegenerateDimension());
 			toVar.setDisaggregate(fromVar.getDisaggregate());
+			/*
 			toVar.setInputCategoryIdColumn(fromVar.getInputCategoryIdColumn());
 			toVar.setDimensionTable(fromVar.getDimensionTable());
 			toVar.setDimensionTableIdColumn(fromVar.getDimensionTableIdColumn());
 			toVar.setDimensionTableCodeColumn(fromVar.getDimensionTableCodeColumn());
 			toVar.setDimensionTableCaptionColumn(fromVar.getDimensionTableCaptionColumn());
+			*/
 		}
 	}
 	
@@ -517,6 +642,12 @@ public class CollectMetadataImportTask extends Task {
 		}
 	}
 	
+	private void saveWorkspace() {
+		Workspace workspace = getWorkspace(); 
+		metadataManager.saveWorkspace( workspace );
+		( (CollectSurveyImportJob) getJob() ).updateWorkspace( workspace );
+	}
+
 	protected void printToLog(List<Entity> entityList) {
 		// TODO print to debug log instead
 		for (Entity entity : entityList) {
@@ -531,4 +662,13 @@ public class CollectMetadataImportTask extends Task {
 		CollectSurvey survey = ((CollectSurveyImportJob) getJob()).getSurvey();
 		return survey;
 	}
+
+	public File getBackupFile() {
+		return backupFile;
+	}
+	
+	public void setBackupFile(File backupFile) {
+		this.backupFile = backupFile;
+	}
+
 }

@@ -178,7 +178,10 @@ public class Workspace extends WorkspaceBase {
 	}
 	
 	public void setCategories(List<Category> categories) {
-		this.categories = categories;
+		this.categories = new ArrayList<Category>();
+		for (Category category : categories) {
+			addCategory( category );
+		}
 	}
 	
 	void addCategory( Category category ){
@@ -187,15 +190,30 @@ public class Workspace extends WorkspaceBase {
 		}
 		category.setWorkspace( this );
 		this.categories.add( category );
-	}	
+	}
 	
 	public CategoryLevel getCategoryLevelById( long categoryLevelId ){
-		for ( Category category : getCategories() ){
+		for ( Category category : getCategories() ) {
 			List<CategoryHierarchy> hierarchies = category.getHierarchies();
 			for ( CategoryHierarchy hierarchy : hierarchies ){
 				List<CategoryLevel> levels = hierarchy.getLevels();
-				for ( CategoryLevel level : levels ){
+				for ( CategoryLevel level : levels ) {
 					if( level.getId().equals(categoryLevelId) ){
+						return level;
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
+	public CategoryLevel getCategoryLevelByTableName( String tableName ) {
+		for ( Category category : getCategories() ) {
+			List<CategoryHierarchy> hierarchies = category.getHierarchies();
+			for ( CategoryHierarchy hierarchy : hierarchies ){
+				List<CategoryLevel> levels = hierarchy.getLevels();
+				for ( CategoryLevel level : levels ) {
+					if( level.getTableName().equals(tableName) ){
 						return level;
 					}
 				}
@@ -427,6 +445,5 @@ public class Workspace extends WorkspaceBase {
 		}
 		return variables;
 	}
-
 
 }

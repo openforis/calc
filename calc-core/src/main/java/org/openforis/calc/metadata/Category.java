@@ -49,4 +49,8 @@ public class Category extends CategoryBase {
 		this.hierarchies.add( categoryHierarchy );
 		categoryHierarchy.setCategory( this ); 
 	}
+
+	public boolean isInput() {
+		return getOriginalId() != null;
+	}
 }

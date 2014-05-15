@@ -270,6 +270,7 @@ public class MetadataManager {
 	
 	@Transactional
 	private void persistCategories(Workspace workspace) {
+		
 		List<Category> categories = workspace.getCategories();
 		for ( Category category : categories ){
 			if( categoryDao.exists( category ) ){
@@ -281,6 +282,9 @@ public class MetadataManager {
 			
 			List<CategoryHierarchy> hierarchies = category.getHierarchies();
 			for ( CategoryHierarchy hierarchy : hierarchies ){
+				
+				hierarchy.setCategoryId( category.getId().longValue() );
+				
 				if( categoryHierarchyDao.exists( hierarchy ) ){
 					categoryHierarchyDao.update(hierarchy);
 				} else {
@@ -290,6 +294,9 @@ public class MetadataManager {
 				
 				List<CategoryLevel> levels = hierarchy.getLevels();
 				for ( CategoryLevel level : levels ){
+					
+					level.setHierarchyId( hierarchy.getId() );
+					
 					if( categoryLevelDao.exists( level ) ){
 						categoryLevelDao.update(level);
 					} else {

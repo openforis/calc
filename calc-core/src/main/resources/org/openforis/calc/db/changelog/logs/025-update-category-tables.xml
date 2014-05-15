@@ -76,7 +76,15 @@
 			ALTER TABLE
 			    calc.variable ADD CONSTRAINT variable_category_level_fk FOREIGN KEY (category_level_id) REFERENCES
 			    calc.category_level (id);
-			    
+			
+			ALTER TABLE
+			    calc.category_level DROP CONSTRAINT hierarchy_level_rank_key;
+			ALTER TABLE
+			    calc.category_level ADD CONSTRAINT hierarchy_level_rank_key UNIQUE (hierarchy_id, rank);
+			ALTER TABLE
+			    calc.category_level DROP CONSTRAINT hierarchy_level_hierarchy_id_key;
+			ALTER TABLE
+			    calc.category_level ADD CONSTRAINT hierarchy_level_name_key UNIQUE (hierarchy_id, name);
 		</sql>
 	    
 	</changeSet>

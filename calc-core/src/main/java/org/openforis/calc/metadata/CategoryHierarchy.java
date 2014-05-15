@@ -29,7 +29,7 @@ public class CategoryHierarchy extends CategoryHierarchyBase {
 
 	public void setCategory(Category category) {
 		this.category = category;
-		setCategoryId(category.getId().longValue());
+		setCategoryId( category == null || category.getId() == null ? null: category.getId().longValue());
 	}
 
 	public List<CategoryLevel> getLevels() {
