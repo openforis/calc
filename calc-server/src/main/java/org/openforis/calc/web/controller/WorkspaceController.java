@@ -11,7 +11,6 @@ import javax.validation.Valid;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.openforis.calc.engine.CollectTaskService;
 import org.openforis.calc.engine.CsvDataImportTask;
 import org.openforis.calc.engine.Job;
 import org.openforis.calc.engine.TaskManager;
@@ -45,9 +44,6 @@ public class WorkspaceController {
 
 	@Autowired
 	private TaskManager taskManager;
-
-	@Autowired
-	private CollectTaskService collectTaskManager;
 	
 	@Autowired
 	private DataSource dataSource; 

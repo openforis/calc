@@ -73,48 +73,103 @@ public class CollectMetadataImportTask extends Task {
 	@Override
 	protected long countTotalItems() {
 		//total items = schema nodes count
-		CollectSurvey survey = ((CollectJob) getJob()).getSurvey();
+		CollectSurvey survey = getSurvey();
 		Schema schema = survey.getSchema();
 		Stack<NodeDefinition> stack = new Stack<NodeDefinition>();
 		stack.addAll(schema.getRootEntityDefinitions());
 		int totalNodes = 0;
-		while ( ! stack.isEmpty() ) {
+		while ( ! stack.isEmpty() ){
 			NodeDefinition nodeDefn = stack.pop();
 			if ( nodeDefn instanceof EntityDefinition ) {
-				stack.addAll(((EntityDefinition) nodeDefn).getChildDefinitions());
+				stack.addAll( ((EntityDefinition) nodeDefn).getChildDefinitions() );
 			}
 			totalNodes++;
 		}
+		
+		List<CodeList> codeLists = survey.getCodeLists();
+		totalNodes += codeLists.size();
+		
 		return totalNodes;
 	}
+
 	
 	@Override
 	protected void execute() throws Throwable {
 		entitiesByOriginalId = new LinkedHashMap<Integer, Entity>();
 		variableNames = new HashSet<String>();
 		
-		List<Entity> entities = createEntitiesFromSchema();
-
-		Workspace workspace = updateEntities( entities );
+		Workspace workspace = getWorkspace(); 
+		
+		updateWorkspaceMetadata( workspace );
+		updateWorkspaceCategories( workspace );
+		
 		metadataManager.saveWorkspace( workspace );
-		
-		( (CollectBackupImportJob) getJob() ).refreshWorkspace( workspace );
-		
-		printToLog(entities);
+		( (CollectSurveyImportJob) getJob() ).updateWorkspace( workspace );
 	}
 
-	private List<Entity> createEntitiesFromSchema() throws IdmlParseException {
-		CollectSurvey survey = ((CollectJob) getJob()).getSurvey();
+	private void updateWorkspaceCategories(Workspace workspace) {
+		CollectSurvey survey = getSurvey();
+		List<CodeList> codeLists = survey.getCodeLists();
+		for( CodeList codeList : codeLists ){
+			incrementItemsProcessed();
+		}
+	}
+
+
+	/**
+	 * This method updates the workspace entities: 
+	 * it adds the new entities to the workspace removing the ones not present
+	 * 
+	 * @return
+	 * @throws IdmlParseException 
+	 */
+	@Transactional
+	public Workspace updateWorkspaceMetadata( Workspace ws ) throws IdmlParseException {
+		List<Entity> entities = createEntities();
 		
-		final RelationalSchema relationalSchema = ((CollectJob) getJob()).getInputRelationalSchema();
+		printToLog( entities );
 		
+		//remove deleted entities
+		Collection<Entity> entitiesToBeRemoved = new HashSet<Entity>();
+		for (Entity oldEntity : ws.getEntities()) {
+			Entity newEntity = getEntityByOriginalId( entities, oldEntity.getOriginalId());
+			if ( newEntity == null ) {
+				entitiesToBeRemoved.add(oldEntity);
+			}
+		}
+		metadataManager.deleteEntities(entitiesToBeRemoved);
+		
+		//apply changes to existing entities
+		for (Entity oldEntity : ws.getEntities()) {
+			Entity newEntity = getEntityByOriginalId( entities, oldEntity.getOriginalId());
+			if ( newEntity != null ) {
+				applyChangesToEntity(oldEntity, newEntity);
+			}
+		}
+		
+		//add new entities
+		for (Entity newEntity : entities) {
+			Entity oldEntity = ws.getEntityByOriginalId(newEntity.getOriginalId());
+			if ( oldEntity == null ) {
+				addToParentEntity(newEntity);
+				ws.addEntity( newEntity );
+//				metadataManager.saveEntity(ws, newEntity);
+			}
+		}
+
+		return ws;
+	}
+	
+	private List<Entity> createEntities() throws IdmlParseException {
+		CollectSurvey survey = getSurvey();
+		final RelationalSchema relationalSchema = ((CollectSurveyImportJob) getJob()).getInputRelationalSchema();
 		Schema schema = survey.getSchema();
 		
 		schema.traverse(new NodeDefinitionVisitor() {
 			@Override
 			public void visit(NodeDefinition definition) {
 				if ( definition.isMultiple() ) {
-					Entity entity = createEntity(definition, relationalSchema);
+					Entity entity = createEntity( definition, relationalSchema );
 					entity.setSortOrder(entitiesByOriginalId.size() + 1);
 					entitiesByOriginalId.put( definition.getId(), entity);
 				}
@@ -124,7 +179,7 @@ public class CollectMetadataImportTask extends Task {
 		return new ArrayList<Entity>(entitiesByOriginalId.values());
 	}
 
-	private Entity createEntity(NodeDefinition nodeDefinition, RelationalSchema relationalSchema) {
+	private Entity createEntity( NodeDefinition nodeDefinition, RelationalSchema relationalSchema ){
 		Entity entity = new Entity();
 		DataTable dataTable = relationalSchema.getDataTable(nodeDefinition);
 		int id = nodeDefinition.getId();
@@ -146,16 +201,13 @@ public class CollectMetadataImportTask extends Task {
 			setCoordinateColumns(entity, dataTable);
 		}
 
-		Entity parentEntity = getParentEntity(nodeDefinition);
+		Entity parentEntity = getParentEntity( nodeDefinition );
 		if ( parentEntity != null ) {
 			parentEntity.addChild( entity );
-			entity.setParentIdColumn(dataTable.getParentKeyColumn().getName());
+			entity.setParentIdColumn( dataTable.getParentKeyColumn().getName() );
 		}
 		
-//		boolean samplingUnit = Boolean.parseBoolean(nodeDefinition.getAnnotation(CALC_SAMPLING_UNIT_ANNOTATION));
-//		entity.setSamplingUnit(samplingUnit);
-		
-		createVariables(entity, dataTable);
+		createVariables( entity, dataTable );
 		
 		return entity;
 	}
@@ -180,51 +232,50 @@ public class CollectMetadataImportTask extends Task {
 		Variable<?> v = null;
 		String entityName = entity.getName();
 		NodeDefinition columnNodeDefn = column.getNodeDefinition();
-		String columnNodeDefnNam = columnNodeDefn.getName();
+		String columnNodeDefnName = columnNodeDefn.getName();
 		AttributeDefinition attrDefn = column.getAttributeDefinition();
-		if ( attrDefn instanceof BooleanAttributeDefinition && 
-				columnNodeDefnNam.equals(BooleanAttributeDefinition.VALUE_FIELD) ) {
+		if ( attrDefn instanceof BooleanAttributeDefinition &&  columnNodeDefnName.equals(BooleanAttributeDefinition.VALUE_FIELD) ) {
 			v = new BinaryVariable();
-			((BinaryVariable) v).setDisaggregate(! (column instanceof PrimaryKeyColumn));
-		} else if ( attrDefn instanceof CodeAttributeDefinition &&
-				columnNodeDefnNam.equals(CodeAttributeDefinition.CODE_FIELD)) {
+			((BinaryVariable) v).setDisaggregate( !(column instanceof PrimaryKeyColumn) );
+		} else if ( attrDefn instanceof CodeAttributeDefinition && columnNodeDefnName.equals(CodeAttributeDefinition.CODE_FIELD) ){
 			v = new MultiwayVariable();
-			MultiwayVariable multiwayVar = (MultiwayVariable) v;
-			multiwayVar.setScale(Scale.NOMINAL);
-			multiwayVar.setMultipleResponse(attrDefn.isMultiple());
-			multiwayVar.setDisaggregate(! (column instanceof PrimaryKeyColumn));
+			MultiwayVariable variable = (MultiwayVariable) v;
+			
+			variable.setScale(Scale.NOMINAL);
+			variable.setMultipleResponse(attrDefn.isMultiple());
+			variable.setDisaggregate(! (column instanceof PrimaryKeyColumn));
 			CodeAttributeDefinition codeAttrDefn = (CodeAttributeDefinition) attrDefn;
 			CodeList list = codeAttrDefn.getList();
-			multiwayVar.setDegenerateDimension(list.isExternal());
+			variable.setDegenerateDimension( list.isExternal() );
 			
-			if ( ! multiwayVar.getDegenerateDimension() ) {
+			if ( ! variable.getDegenerateDimension() ) {
 				//set dimension table and input category id column
-				RelationalSchema inputRelationalSchema = ((CollectJob) getJob()).getInputRelationalSchema();
+				RelationalSchema inputRelationalSchema = ((CollectSurveyImportJob) getJob()).getInputRelationalSchema();
 				
 				DataTable table = inputRelationalSchema.getDataTable(codeAttrDefn.getParentEntityDefinition());
 				
 				CodeValueFKColumn fk = table.getForeignKeyCodeColumn(codeAttrDefn);
 				if ( fk != null ) {
-					multiwayVar.setInputCategoryIdColumn(fk.getName());
+					variable.setInputCategoryIdColumn(fk.getName());
 				}
 				String codeListTableName = CodeListTables.getTableName(list, codeAttrDefn.getListLevelIndex());
 				
 				//dimension table
-				multiwayVar.setDimensionTable( codeListTableName );
-				multiwayVar.setDimensionTableIdColumn(CodeListTables.getIdColumnName(codeListTableName));
-				multiwayVar.setDimensionTableCodeColumn(CodeListTables.getCodeColumnName(codeListTableName));
-				multiwayVar.setDimensionTableCaptionColumn(CodeListTables.getLabelColumnName(codeListTableName));
+				variable.setDimensionTable( codeListTableName );
+				variable.setDimensionTableIdColumn( CodeListTables.getIdColumnName(codeListTableName) );
+				variable.setDimensionTableCodeColumn( CodeListTables.getCodeColumnName(codeListTableName) );
+				variable.setDimensionTableCaptionColumn( CodeListTables.getLabelColumnName(codeListTableName) );
 			}
 		} else if ( attrDefn instanceof DateAttributeDefinition ) {
 			v = new TextVariable();
 			v.setScale(Scale.TEXT);
 		} else if ( attrDefn instanceof NumberAttributeDefinition &&
-				columnNodeDefnNam.equals(NumberAttributeDefinition.VALUE_FIELD)) {
+				columnNodeDefnName.equals(NumberAttributeDefinition.VALUE_FIELD)) {
 			v = new QuantitativeVariable();
-			v.setScale(Scale.RATIO);
+			v.setScale( Scale.RATIO );
 			//TODO set unit...
 		} else if ( attrDefn instanceof TaxonAttributeDefinition &&
-				(columnNodeDefnNam.equals(TaxonAttributeDefinition.CODE_FIELD_NAME) ) ) {
+				(columnNodeDefnName.equals(TaxonAttributeDefinition.CODE_FIELD_NAME) ) ) {
 			v = new MultiwayVariable();
 			MultiwayVariable multiwayVar = (MultiwayVariable) v;
 			multiwayVar.setScale(Scale.NOMINAL);
@@ -235,6 +286,7 @@ public class CollectMetadataImportTask extends Task {
 			multiwayVar.setDimensionTableIdColumn(speciesCodeTable.getIdField().getName());
 			multiwayVar.setDimensionTableCodeColumn(speciesCodeTable.getCodeField().getName());
 			multiwayVar.setDimensionTableCaptionColumn(speciesCodeTable.getScientificNameField().getName());
+			
 		} else if ( attrDefn instanceof TextAttributeDefinition && 
 				((TextAttributeDefinition) attrDefn).getType() == TextAttributeDefinition.Type.SHORT ) {
 			v = new TextVariable();
@@ -243,6 +295,7 @@ public class CollectMetadataImportTask extends Task {
 			v = new TextVariable();
 			v.setScale(Scale.TEXT);
 		}
+		
 		if ( v != null ) {
 			if ( v.getName() == null ) {
 				v.setName(generateVariableName(entityName, column.getName()));
@@ -251,11 +304,12 @@ public class CollectMetadataImportTask extends Task {
 //					v instanceof TextVariable ) ) {
 //				v.setDimensionTable(getDimensionTableName(entityName, v.getName()));
 //			}
-			v.setCaption(attrDefn.getLabel(NodeLabel.Type.INSTANCE));
-			v.setDescription(attrDefn.getDescription());
-			v.setInputValueColumn(v.getName());
-			v.setOutputValueColumn(v.getName());
-			v.setOriginalId(attrDefn.getId());
+			v.setCaption( attrDefn.getLabel(NodeLabel.Type.INSTANCE) );
+			v.setDescription( attrDefn.getDescription() );
+			v.setInputValueColumn( v.getName() );
+			v.setOutputValueColumn( v.getName() );
+			v.setOriginalId( attrDefn.getId() );
+			
 			entity.addVariable(v);
 		}
 	}
@@ -361,48 +415,7 @@ public class CollectMetadataImportTask extends Task {
 		return name;
 	}
 	
-	/**
-	 * This method updates the workspace entities: 
-	 * it adds the new entities to the workspace removing the ones not present
-	 * 
-	 * @param ws
-	 * @param newEntities
-	 * @return
-	 */
-	@Transactional
-	public Workspace updateEntities(List<Entity> newEntities) {
-		Workspace ws = getWorkspace();
-		
-		//remove deleted entities
-		Collection<Entity> entitiesToBeRemoved = new HashSet<Entity>();
-		for (Entity oldEntity : ws.getEntities()) {
-			Entity newEntity = getEntityByOriginalId(newEntities, oldEntity.getOriginalId());
-			if ( newEntity == null ) {
-				entitiesToBeRemoved.add(oldEntity);
-			}
-		}
-		metadataManager.deleteEntities(entitiesToBeRemoved);
-		
-		//apply changes to existing entities
-		for (Entity oldEntity : ws.getEntities()) {
-			Entity newEntity = getEntityByOriginalId(newEntities, oldEntity.getOriginalId());
-			if ( newEntity != null ) {
-				applyChangesToEntity(oldEntity, newEntity);
-			}
-		}
-		
-		//add new entities
-		for (Entity newEntity : newEntities) {
-			Entity oldEntity = ws.getEntityByOriginalId(newEntity.getOriginalId());
-			if ( oldEntity == null ) {
-				addToParentEntity(newEntity);
-				ws.addEntity( newEntity );
-//				metadataManager.saveEntity(ws, newEntity);
-			}
-		}
-
-		return ws;
-	}
+	
 	
 	private Entity getEntityByOriginalId(List<Entity> entities, int originalId) {
 		for (Entity entity : entities) {
@@ -509,10 +522,14 @@ public class CollectMetadataImportTask extends Task {
 		// TODO print to debug log instead
 		for (Entity entity : entityList) {
 			List<Variable<?>> vars = entity.getVariables();
-			for (Variable<?> var : vars) {
+			for ( Variable<?> var : vars ){
 				System.out.printf("%s.%s (%s)%n", entity.getName(), var.getName(), var.getScale());
 			}
 		}
 	}
-
+	
+	private CollectSurvey getSurvey() {
+		CollectSurvey survey = ((CollectSurveyImportJob) getJob()).getSurvey();
+		return survey;
+	}
 }

@@ -31,7 +31,6 @@ public class CalculationStepForm {
 	@NotNull
 	private Integer variableId;
 
-//	@NotEmpty
 	private String script;
 
 	@NotEmpty

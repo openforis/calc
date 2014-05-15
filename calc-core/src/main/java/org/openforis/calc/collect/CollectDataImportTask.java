@@ -44,7 +44,7 @@ public class CollectDataImportTask extends Task {
 	@Override
 	protected long countTotalItems() {
 		long totalRecords = 0;
-		CollectSurvey survey = ((CollectJob) getJob()).getSurvey();
+		CollectSurvey survey = ((CollectSurveyImportJob) getJob()).getSurvey();
 		BackupDataExtractor recordExtractor = null;
 		try {
 			recordExtractor = new BackupDataExtractor(survey, dataFile, step);
@@ -66,13 +66,13 @@ public class CollectDataImportTask extends Task {
 	}
 
 	private void importData() throws CollectRdbException, ZipException, IOException, Exception {
-		RelationalSchema targetSchema = ((CollectJob) getJob()).getInputRelationalSchema();
+		RelationalSchema targetSchema = ((CollectSurveyImportJob) getJob()).getInputRelationalSchema();
 		
 		DatabaseExporter databaseExporter = new CollectDatabaseExporter(config);
 		databaseExporter.insertReferenceData(targetSchema);
 		
 		int recordId = 1;
-		CollectSurvey survey = ((CollectJob) getJob()).getSurvey();
+		CollectSurvey survey = ((CollectSurveyImportJob) getJob()).getSurvey();
 		BackupDataExtractor recordExtractor = null;
 		try {
 			recordExtractor = new BackupDataExtractor(survey, dataFile, step);

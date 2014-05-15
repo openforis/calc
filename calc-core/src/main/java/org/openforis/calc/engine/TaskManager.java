@@ -1,5 +1,6 @@
 package org.openforis.calc.engine;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,10 +15,15 @@ import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.chain.pre.AssignAoiColumnsTask;
 import org.openforis.calc.chain.pre.CalculateExpansionFactorsTask;
 import org.openforis.calc.chain.pre.CalculateSamplingUnitWeightTask;
-import org.openforis.calc.collect.CollectBackupImportJob;
+import org.openforis.calc.collect.CollectSurveyImportJob;
+import org.openforis.calc.collect.CollectDataImportTask;
+import org.openforis.calc.collect.CollectInputSchemaCreatorTask;
+import org.openforis.calc.collect.CollectMetadataImportTask;
+import org.openforis.calc.collect.SpeciesImportTask;
 import org.openforis.calc.module.ModuleRegistry;
 import org.openforis.calc.module.Operation;
 import org.openforis.calc.schema.Schemas;
+import org.openforis.collect.model.CollectRecord.Step;
 import org.openforis.collect.model.CollectSurvey;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,10 +119,37 @@ public class TaskManager {
 		job.addTask( createTask(CalculateExpansionFactorsTask.class) );
 	}
 	
-	public Job createCollectImportJob(Workspace workspace, CollectSurvey survey) {
-		Job job = new CollectBackupImportJob(workspace, getDataSource(), survey);
+	/**
+	 * Create collect data import job
+	 * @param workspace
+	 * @param survey
+	 * @param backupFile
+	 * @return
+	 */
+	public CollectSurveyImportJob createCollectSurveyImportJob( Workspace workspace, CollectSurvey survey , File backupFile ) {
+		CollectSurveyImportJob job = new CollectSurveyImportJob(workspace, getDataSource(), survey);
 		job.setSchemas( new Schemas(workspace) );
 		autowire(job);
+		
+		CollectMetadataImportTask importTask = createTask(CollectMetadataImportTask.class);
+		job.addTask(importTask);
+
+		CollectInputSchemaCreatorTask schemaCreatorTask = createTask(CollectInputSchemaCreatorTask.class);
+		job.addTask(schemaCreatorTask);
+
+		SpeciesImportTask speciesImportTask = createTask(SpeciesImportTask.class);
+		speciesImportTask.setBackupFile(backupFile);
+		job.addTask(speciesImportTask);
+		
+		CollectDataImportTask dataImportTask = createTask(CollectDataImportTask.class);
+		dataImportTask.setDataFile(backupFile);
+		dataImportTask.setStep(Step.ANALYSIS);
+		job.addTask(dataImportTask);
+		
+		if( workspace.hasSamplingDesign() ) {
+			addPreProcessingTasks( job );
+		}
+
 		return job;
 	}
 	
@@ -232,7 +265,7 @@ public class TaskManager {
 			lock = new SimpleLock();
 			locks.put(workspaceId, lock);
 		}
-		if (!lock.tryLock()) {
+		if ( !lock.tryLock() ) {
 			throw new WorkspaceLockedException();
 		}
 		return lock;

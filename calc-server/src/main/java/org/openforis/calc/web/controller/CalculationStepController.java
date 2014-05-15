@@ -124,6 +124,7 @@ public class CalculationStepController {
 			processingChainService.saveCalculationStep( step );
 			// better to reload it .it throws json parsing exception otherwise
 			response.addField( "calculationStep", load(step.getId()) );
+			response.addField( "processingChain", chain );
 		}
 		return response;
 	}
@@ -162,12 +163,17 @@ public class CalculationStepController {
 	}
 	
 	@RequestMapping(value = "/{stepId}/delete.json", method = RequestMethod.POST)
-	public @ResponseBody Response delete(@PathVariable int stepId) {
+	public @ResponseBody Response delete( @PathVariable int stepId ){
 		Response response = new Response();
+		
 		CalculationStep step = load(stepId);
+		ProcessingChain processingChain = step.getProcessingChain();
+
 		Integer variableId = processingChainService.deleteCalculationStep(step);
+		
 		response.addField( "deletedStep" , stepId );
 		response.addField("deletedVariable", variableId);
+		response.addField( "processingChain", processingChain );
 		return response;
 	}
 	

@@ -84,6 +84,7 @@ public class VariableDao extends org.openforis.calc.persistence.jooq.tables.daos
 			.fetch( new VariableRecordMapper(workspace) );
 	}
 	
+	@Transactional
 	public void save( Variable<?>... variables ) {
 		if( variables != null ) {
 			

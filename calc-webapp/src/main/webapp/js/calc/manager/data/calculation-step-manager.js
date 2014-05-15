@@ -12,7 +12,7 @@ CalculationStepManager.prototype = (function() {
 	/**
 	 * Load all the calculation steps for the active workspace
 	 */
-	var loadAll = function(callback) {
+	var loadAll = function( callback ) {
 		$.ajax({
 			url: contextPath + "/load.json",
 			dataType:"json"
@@ -44,6 +44,7 @@ CalculationStepManager.prototype = (function() {
 	 * Inserts or updates a calculation step 
 	 */
 	var save = function($step, successCallback, errorCallback, completeCallback) {
+		var $this = this;
 		$.ajax({
 			url: contextPath + "/save.json",
 			dataType: "json",
@@ -51,9 +52,12 @@ CalculationStepManager.prototype = (function() {
 			type: "POST"
 		})
 		.done(function(response) {
-    		if(successCallback) {
-	    		successCallback(response);
-    		};
+			$this.updateDefaultChain( response.fields.processingChain , function(){
+				if ( successCallback ) {
+					successCallback(response);
+				}
+			});
+
 		})
 		.error(function(e) {
 			Calc.error.apply( this , arguments );
@@ -74,15 +78,18 @@ CalculationStepManager.prototype = (function() {
 	 * Delete the calculation step with the specified id
 	 */
 	var remove = function(id, callback) {
+		var $this = this;
 		$.ajax({
 			url: contextPath + "/"+id+"/delete.json",
 			dataType:"json",
 			type: "POST"
 		})
-		.done(function(response){
-			if ( callback ) {
-				callback(response);
-			}
+		.done(function(response) {
+			$this.updateDefaultChain( response.fields.processingChain , function(){
+				if ( callback ) {
+					callback(response);
+				}
+			});
 		}).error( function() {
 			Calc.error.apply( this , arguments );
 		});
@@ -146,6 +153,22 @@ CalculationStepManager.prototype = (function() {
 		test : test
 	};
 })();
+
+CalculationStepManager.prototype.updateDefaultChain = function( chain ,  callback ){
+	var $this = this;
+	WorkspaceManager.getInstance().activeWorkspace( function(ws){
+		for( var i in ws.processingChains ) {
+			var wsChain = ws.processingChains[i];
+			if( wsChain.id == chain.id ){
+				ws.processingChains[i] = chain;
+			}
+		}
+		if( callback ) {
+			callback.apply( $this );
+		}
+		Calc.updateButtonStatus();
+	});
+};
 
 //singleton instance
 var _calculationStepManager = null;

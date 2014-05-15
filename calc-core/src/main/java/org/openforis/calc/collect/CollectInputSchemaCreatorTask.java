@@ -70,7 +70,7 @@ public class CollectInputSchemaCreatorTask extends Task {
 			.execute();
 		DataSourceConnectionProvider connectionProvider = (DataSourceConnectionProvider) config.connectionProvider();
 		DataSource dataSource = connectionProvider.dataSource();
-		RelationalSchema schema = ((CollectJob) getJob()).getInputRelationalSchema();
+		RelationalSchema schema = ((CollectSurveyImportJob) getJob()).getInputRelationalSchema();
 		RelationalSchemaCreator relationalSchemaCreator = new LiquibaseRelationalSchemaCreator();
 		Connection connection = DataSourceUtils.getConnection(dataSource);
 		relationalSchemaCreator.createRelationalSchema(schema, connection);

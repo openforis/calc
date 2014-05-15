@@ -4,8 +4,6 @@ import org.openforis.calc.engine.Worker.Status;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.persistence.jooq.Sequences;
-import org.openforis.calc.persistence.jooq.Tables;
-import org.openforis.calc.persistence.jooq.tables.ProcessingChainTable;
 import org.openforis.calc.persistence.jooq.tables.daos.CalculationStepDao;
 import org.openforis.calc.persistence.jooq.tables.daos.ProcessingChainDao;
 import org.openforis.calc.psql.Psql;
@@ -68,6 +66,8 @@ public class ProcessingChainService {
 			calculationStepDao.update(step);
 		}
 		
+		updateProcessingChainStatus( step.getProcessingChain() , Status.PENDING );
+		
 		workspaceService.resetResult( step.getOutputVariable() );
 	}
 	
@@ -100,8 +100,10 @@ public class ProcessingChainService {
 		// 3. remove step from metadata
 		processingChain.removeCalculationStep( step );
 		
+		updateProcessingChainStatus( processingChain, Status.PENDING );
+		
 		// 4. update steps number in db
-		saveCalculationSteps( processingChain );
+		updateCalculationSteps( processingChain );
 				
 		return deletedVariable;
 	}
@@ -111,10 +113,10 @@ public class ProcessingChainService {
 		ProcessingChain processingChain = step.getProcessingChain();
 		processingChain.shiftStep(step, stepNo);
 		
-		saveCalculationSteps(processingChain);
+		updateCalculationSteps(processingChain);
 	}
 
-	protected void saveCalculationSteps(ProcessingChain processingChain) {
+	protected void updateCalculationSteps(ProcessingChain processingChain) {
 		for (CalculationStep calculationStep : processingChain.getCalculationSteps()) {
 			calculationStepDao.update(calculationStep);
 		}
@@ -122,13 +124,14 @@ public class ProcessingChainService {
 
 	public void updateProcessingChainStatus( ProcessingChain processingChain , Status status ){
 		processingChain.setStatus( status );
+		processingChainDao.update( processingChain );
 		
-		ProcessingChainTable T = Tables.PROCESSING_CHAIN;
-		psql
-			.update( T )
-			.set( T.STATUS , status )
-			.where( T.ID.eq(processingChain.getId()) )
-			.execute();
+//		ProcessingChainTable T = Tables.PROCESSING_CHAIN;
+//		psql
+//			.update( T )
+//			.set( T.STATUS , status )
+//			.where( T.ID.eq(processingChain.getId()) )
+//			.execute();
 	}
 	
 }

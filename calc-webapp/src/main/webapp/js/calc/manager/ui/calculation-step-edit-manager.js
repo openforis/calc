@@ -150,11 +150,11 @@ CalculationStepEditManager.prototype.initEventHandlers = function() {
 /**
  * Create or update the calculation step according to the field values in the form 
  */
-CalculationStepEditManager.prototype.save = function(successCallback, errorCallback) {
+CalculationStepEditManager.prototype.save = function( successCallback, errorCallback ){
 	UI.lock();
 	var $this = this;
 	var $step = $this.$form.serialize();
-	CalculationStepManager.getInstance().save($step,
+	CalculationStepManager.getInstance().save( $step,
 		//success
 		function(response) {
 	    	UI.Form.updateErrors($this.$form, response.errors);
@@ -168,9 +168,10 @@ CalculationStepEditManager.prototype.save = function(successCallback, errorCallb
 	    		$this.currentCalculationStep = response.fields.calculationStep;
 	    		$this.updateForm();
 		    	
-	    		Calc.homeCalculationManager.updateStep($this.currentCalculationStep);
-		    	
-	    		if(successCallback) {
+	    		// update UIs
+	    		Calc.homeCalculationManager.updateStep( $this.currentCalculationStep );
+	    		
+	    		if( successCallback ){
 		    		successCallback( $this.currentCalculationStep );
 	    		};
 	    	}

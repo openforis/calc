@@ -4,7 +4,6 @@ import java.io.File;
 
 import org.apache.commons.io.FileUtils;
 import org.openforis.calc.collect.CollectBackupIdmExtractor;
-import org.openforis.calc.engine.CollectTaskService;
 import org.openforis.calc.engine.Job;
 import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
@@ -37,16 +36,12 @@ public class CollectDataController {
 	private WorkspaceService workspaceService;
 
 	@Autowired
-	private CollectTaskService collectTaskService;
-
-	@Autowired
 	private TaskManager taskManager;
 
 	@RequestMapping(value = "/data.json", method = RequestMethod.POST, produces = "application/json")
 	public @ResponseBody
 	Job importCollectData(@ModelAttribute("file") MultipartFile file) {
 		try {
-			
 			// upload file
 			File tempFile = File.createTempFile(TEMP_FILE_PREFIX, TEMP_FILE_SUFFIX);
 			FileUtils.copyInputStreamToFile(file.getInputStream(), tempFile);
@@ -63,7 +58,7 @@ public class CollectDataController {
 			}
 
 			// start import job
-			Job job = collectTaskService.createImportJob(ws, survey, tempFile);
+			Job job = taskManager.createCollectSurveyImportJob( ws, survey, tempFile );
 			taskManager.startJob(job);
 			
 //			workspaceService.activate(ws);
@@ -78,12 +73,5 @@ public class CollectDataController {
 		String name = uri.replaceFirst(".*/([^/?]+).*", "$1");
 		return name;
 	}
-
-	// public static void main(String[] args) {
-	// 
-//	String url = "http://www.openforis.org/idm/naforma1";
-	// url = url.replaceFirst(".*/([^/?]+).*", "$1");
-	// System.out.println(url);
-	// }
 
 }

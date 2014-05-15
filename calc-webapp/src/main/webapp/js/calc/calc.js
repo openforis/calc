@@ -63,33 +63,38 @@ $(document).ready(function() {
 	/**
 	 * Enable / disable buttons based on workspace status
 	 */
-	Calc.updateButtonStatus = function() {
+	Calc.updateButtonStatus = function(){
 		
 		var wsButtons 		= $( document ).find( ".workspace-required" );
 		var aoiButtons 		= $( document ).find( ".aoi-required" );
 		var sdButtons 		= $( document ).find( ".sampling-design-required" );
 		var chainButtons 	= $( document ).find( ".default-chain-completed-required" );
-		// TODO
-//		var stepsButtons 	= $( document ).find( ".calculation-steps-required" );
+		var stepsButtons 	= $( document ).find( ".calculation-steps-required" );
 	
 		UI.disable( wsButtons );
 		UI.disable( aoiButtons );
 		UI.disable( sdButtons );
 		UI.disable( chainButtons );
+		UI.disable( stepsButtons );
+		
 		WorkspaceManager.getInstance().activeWorkspace( function(ws){
 			if ( ws ) {
 				UI.enable( wsButtons );
 				if( ws.aoiHierarchies.length > 0 ) {
 					UI.enable( aoiButtons );
 					
-					if( ws.samplingDesign ) {
+					if( ws.samplingDesign ){
 						UI.enable( sdButtons );
 						var chain = ws.getDefaultProcessingChain();
 						if( chain.status === "COMPLETED" ){
 							UI.enable( chainButtons );
 						}
 					}
-				} 
+				}
+				var chain = ws.getDefaultProcessingChain();
+				if( chain && chain.calculationSteps.length > 0 ){
+					UI.enable( stepsButtons );			
+				}
 			}
 			
 		});

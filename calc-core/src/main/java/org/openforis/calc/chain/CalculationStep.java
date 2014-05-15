@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  * 
  * @author G. Miceli
  * @author S. Ricci
+ * @author Mino Togna
  * 
  */
 public class CalculationStep extends CalculationStepBase {
@@ -44,14 +45,9 @@ public class CalculationStep extends CalculationStepBase {
 	@JsonIgnore
 	private ProcessingChain processingChain;
 
-
 	public CalculationStep() {
 		setParameters( new ParameterHashMap() );
 	}
-
-//	public Integer getOutputEntityId() {
-//		return outputVariable == null ? null : outputVariable.getEntity().getId();
-//	}
 
 	public ProcessingChain getProcessingChain() {
 		return this.processingChain;

@@ -102,7 +102,7 @@ public class CalculationStepValidator implements ConstraintValidator<Calculation
 								.buildConstraintViolationWithTemplate( "not found" )
 								.addPropertyNode( eqationVariableInputName )
 								.addConstraintViolation();
-//								
+
 								valid = false;
 							}
 						}	
