@@ -1,5 +1,9 @@
 package org.openforis.calc.chain;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import org.openforis.calc.engine.Worker.Status;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceService;
@@ -20,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  */
 @Service
-public class ProcessingChainService {
+public class ProcessingChainManager {
 	
 	@Autowired
 	private WorkspaceService workspaceService;
@@ -69,6 +73,10 @@ public class ProcessingChainService {
 		updateProcessingChainStatus( step.getProcessingChain() , Status.PENDING );
 		
 		workspaceService.resetResult( step.getOutputVariable() );
+	}
+	
+	public CalculationStep loadCalculationStep( int stepId ){
+		return calculationStepDao.fetchOneById( stepId );
 	}
 	
 	/**
@@ -133,5 +141,34 @@ public class ProcessingChainService {
 //			.where( T.ID.eq(processingChain.getId()) )
 //			.execute();
 	}
+
+	public ProcessingChain loadChainById( int chainId ){
+		return processingChainDao.fetchOneById( chainId );
+	}
+	
+	public void loadChains( Workspace workspace ){
+		List<ProcessingChain> chains = processingChainDao.fetchByWorkspaceId( workspace.getId() );
+		for (ProcessingChain chain : chains) {
+			workspace.addProcessingChain(chain);
+			loadSteps( chain );
+		}
+	}
+	
+	private void loadSteps( ProcessingChain chain ){
+		List<CalculationStep> steps = calculationStepDao.fetchByChainId( chain.getId() );
+		Collections.sort( steps, new Comparator<CalculationStep>() {
+			@Override
+			public int compare(CalculationStep o1, CalculationStep o2) {
+				return o1.getStepNo().compareTo( o2.getStepNo() );
+			}
+		});
+		for (CalculationStep step : steps) {
+			chain.addCalculationStep( step );
+			Workspace workspace = chain.getWorkspace();
+			step.setOutputVariable( workspace.getVariableById(step.getOutputVariableId()) );
+		}
+		
+	}
+
 	
 }

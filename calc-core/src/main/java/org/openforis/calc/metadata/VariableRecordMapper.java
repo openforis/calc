@@ -64,7 +64,7 @@ public class VariableRecordMapper implements RecordMapper<Record, Variable<?> >{
 		if( variable instanceof CategoricalVariable<?> ){
 			Long categoryLevelId = variable.getCategoryLevelId();
 			if ( categoryLevelId != null ) {
-				CategoryLevel categoryLevel = workspace.getCategoryLevelById( categoryLevelId );
+				CategoryLevel categoryLevel = workspace.getCategoryLevelById( categoryLevelId.intValue() );
 				((CategoricalVariable<?>) variable).setCategoryLevel( categoryLevel );
 			}
 		}

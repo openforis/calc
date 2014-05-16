@@ -6,7 +6,7 @@ import java.util.List;
 import org.jooq.Field;
 import org.jooq.Insert;
 import org.jooq.Record;
-import org.openforis.calc.chain.ProcessingChainService;
+import org.openforis.calc.chain.ProcessingChainManager;
 import org.openforis.calc.metadata.AoiDao;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
@@ -53,7 +53,7 @@ public class WorkspaceService {
 	@Autowired
 	private VariableDao variableDao;
 	@Autowired
-	private ProcessingChainService processingChainService;
+	private ProcessingChainManager processingChainService;
 	@Autowired
 	private DataSchemaDao inputSchemaDao;
 	@Autowired

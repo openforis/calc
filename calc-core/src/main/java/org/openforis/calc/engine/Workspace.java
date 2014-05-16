@@ -192,8 +192,8 @@ public class Workspace extends WorkspaceBase {
 		this.categories.add( category );
 	}
 	
-	public CategoryLevel getCategoryLevelById( long categoryLevelId ){
-		for ( Category category : getCategories() ) {
+	public CategoryLevel getCategoryLevelById( int categoryLevelId ){
+		for ( Category category : getCategories() ){
 			List<CategoryHierarchy> hierarchies = category.getHierarchies();
 			for ( CategoryHierarchy hierarchy : hierarchies ){
 				List<CategoryLevel> levels = hierarchy.getLevels();

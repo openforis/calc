@@ -5,11 +5,9 @@ import java.util.List;
 
 import org.openforis.calc.engine.ParameterMap;
 import org.openforis.calc.engine.Workspace;
-import org.openforis.calc.json.ParameterMapJsonSerializer;
 import org.openforis.calc.persistence.jooq.tables.pojos.SamplingDesignBase;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * Provides metadata about the sampling design
@@ -46,7 +44,6 @@ public class SamplingDesign extends SamplingDesignBase {
 		setWorkspaceId( workspace.getId() );
 	}
 	
-	@JsonSerialize(using = ParameterMapJsonSerializer.class)
 	@Override
 	public ParameterMap getPhase1JoinSettings() {
 		return super.getPhase1JoinSettings();
@@ -56,7 +53,6 @@ public class SamplingDesign extends SamplingDesignBase {
 		return new TableJoin( getPhase1JoinSettings() );
 	}
 	
-	@JsonSerialize(using = ParameterMapJsonSerializer.class)
 	@Override
 	public ParameterMap getStratumJoinSettings() {
 		return super.getStratumJoinSettings();
@@ -66,7 +62,6 @@ public class SamplingDesign extends SamplingDesignBase {
 		return new ColumnJoin( getStratumJoinSettings() );
 	}
 	
-	@JsonSerialize(using = ParameterMapJsonSerializer.class)
 	@Override
 	public ParameterMap getClusterColumnSettings() {
 		return super.getClusterColumnSettings();
@@ -76,7 +71,6 @@ public class SamplingDesign extends SamplingDesignBase {
 		return new ColumnJoin( getClusterColumnSettings() );
 	}
 	 
-	@JsonSerialize(using = ParameterMapJsonSerializer.class)
 	@Override
 	public ParameterMap getAoiJoinSettings() {
 		return super.getAoiJoinSettings();

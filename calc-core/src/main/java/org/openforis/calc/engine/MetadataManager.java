@@ -9,8 +9,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.openforis.calc.chain.CalculationStep;
-import org.openforis.calc.chain.ProcessingChain;
+import org.openforis.calc.chain.ProcessingChainManager;
 import org.openforis.calc.metadata.AoiManager;
 import org.openforis.calc.metadata.Category;
 import org.openforis.calc.metadata.CategoryHierarchy;
@@ -82,6 +81,9 @@ public class MetadataManager {
 	
 	@Autowired
 	private Psql psql;
+
+	@Autowired
+	private ProcessingChainManager processingChainManager;
 	
 	/*
 	 * ============================
@@ -136,16 +138,20 @@ public class MetadataManager {
 	 */
 	@Transactional
 	private void loadMetadata( Workspace workspace ) {
-		aoiManager.loadByWorkspace( workspace );
-		
+		// the order matters here. 
+		loadAois(workspace);
+		loadCategories( workspace );
 		loadEntities( workspace );
 		loadStrata( workspace );
 		loadProcessingChains( workspace );
 		loadSamplingDesign( workspace );
 		loadEquations( workspace );
-		loadCategories( workspace );
 		
 		initEntityHierarchy( workspace );
+	}
+
+	private void loadAois(Workspace workspace) {
+		aoiManager.loadByWorkspace( workspace );
 	}
 	
 	private void loadCategories( Workspace workspace ){
@@ -209,29 +215,10 @@ public class MetadataManager {
 		}
 	}
 	
-	private void loadProcessingChains(Workspace workspace) {
-		List<ProcessingChain> chains = processingChainDao.fetchByWorkspaceId( workspace.getId() );
-		for (ProcessingChain chain : chains) {
-			workspace.addProcessingChain(chain);
-			loadSteps( chain );
-		}
+	private void loadProcessingChains( Workspace workspace ){
+		processingChainManager.loadChains( workspace );
 	}
 	
-	private void loadSteps(ProcessingChain chain) {
-		List<CalculationStep> steps = calculationStepDao.fetchByChainId( chain.getId() );
-		Collections.sort( steps, new Comparator<CalculationStep>() {
-			@Override
-			public int compare(CalculationStep o1, CalculationStep o2) {
-				return o1.getStepNo().compareTo( o2.getStepNo() );
-			}
-		});
-		for (CalculationStep step : steps) {
-			chain.addCalculationStep( step );
-			Workspace workspace = chain.getWorkspace();
-			step.setOutputVariable( workspace.getVariableById(step.getOutputVariableId()) );
-		}
-		
-	}
 	/*
 	 * ============================
 	 *  Save workspace methods

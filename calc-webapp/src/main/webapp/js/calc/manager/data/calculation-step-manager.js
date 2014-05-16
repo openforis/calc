@@ -43,7 +43,7 @@ CalculationStepManager.prototype = (function() {
 	/**
 	 * Inserts or updates a calculation step 
 	 */
-	var save = function($step, successCallback, errorCallback, completeCallback) {
+	var save = function( $step, successCallback, errorCallback, completeCallback ){
 		var $this = this;
 		$.ajax({
 			url: contextPath + "/save.json",
@@ -52,11 +52,15 @@ CalculationStepManager.prototype = (function() {
 			type: "POST"
 		})
 		.done(function(response) {
-			$this.updateDefaultChain( response.fields.processingChain , function(){
-				if ( successCallback ) {
-					successCallback(response);
-				}
-			});
+			if( response.status == "OK" ){
+				$this.updateDefaultChain( response.fields.processingChain , function(){
+					if ( successCallback ) {
+						successCallback(response);
+					}
+				});
+			} else if( successCallback ){
+				successCallback(response);
+			}
 
 		})
 		.error(function(e) {

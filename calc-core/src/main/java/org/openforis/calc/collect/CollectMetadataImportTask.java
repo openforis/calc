@@ -17,6 +17,7 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openforis.calc.engine.MetadataManager;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
@@ -59,7 +60,6 @@ import org.openforis.idm.metamodel.TextAttributeDefinition;
 import org.openforis.idm.metamodel.TimeAttributeDefinition;
 import org.openforis.idm.metamodel.xml.IdmlParseException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author S. Ricci
@@ -69,9 +69,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class CollectMetadataImportTask extends Task {
 
 	private static final int SPECIES_CATEGORY_ORIGINAL_ID = -9999;
-
-//	private static final QName CALC_SAMPLING_UNIT_ANNOTATION = new QName("http://www.openforis.org/calc/1.0/calc", "samplingUnit");
-//	private static final String DIMENSION_TABLE_FORMAT = "%s_%s_dim";
 
 	@Autowired
 	private MetadataManager metadataManager;
@@ -83,48 +80,8 @@ public class CollectMetadataImportTask extends Task {
 		return "Import metadata";
 	}
 	
-	//transient variables
 	private LinkedHashMap<Integer, Entity> entitiesByOriginalId;
 	private Set<String> variableNames;
-
-	@Override
-	protected long countTotalItems() {
-		int totalItems = 0;
-		//total items = schema nodes count + code lists count + species list count
-		
-		//schema nodes count
-		CollectSurvey survey = getSurvey();
-		Schema schema = survey.getSchema();
-		Stack<NodeDefinition> stack = new Stack<NodeDefinition>();
-		stack.addAll(schema.getRootEntityDefinitions());
-		while ( ! stack.isEmpty() ){
-			NodeDefinition nodeDefn = stack.pop();
-			if ( nodeDefn instanceof EntityDefinition ) {
-				stack.addAll( ((EntityDefinition) nodeDefn).getChildDefinitions() );
-			}
-			totalItems ++;
-		}
-		
-		//code lists count
-		List<CodeList> codeLists = survey.getCodeLists();
-		for (CodeList codeList : codeLists) {
-			if ( ! codeList.isExternal() ) {
-				totalItems ++;
-			}
-		}
-		
-		//species lists count
-		try {
-			ZipFile zipFile = new ZipFile(backupFile);
-			BackupFileExtractor fileExtractor = new BackupFileExtractor(zipFile);
-			List<String> speciesFileNames = fileExtractor.listSpeciesEntryNames();
-			totalItems += speciesFileNames.size();
-		} catch ( Exception e ) {
-			throw new RuntimeException("Error counting species lists: " + e.getMessage(), e);
-		}
-		
-		return totalItems;
-	}
 
 	@Override
 	protected void execute() throws Throwable {
@@ -158,17 +115,23 @@ public class CollectMetadataImportTask extends Task {
 		//add input categories
 		for( CodeList codeList : codeLists ) {
 			if ( ! codeList.isExternal() ) {
+				String codeListName = codeList.getName();
+				String codeListLabel = codeList.getLabel( Type.ITEM, surveyLanguage );
+				codeListLabel = ( StringUtils.isBlank(codeListLabel) ) ? codeListName : codeListLabel; 
+				String codeListDescription = codeList.getDescription( surveyLanguage );
+				
 				Category category = new Category();
 				category.setOriginalId( codeList.getId() );
-				category.setCaption( codeList.getLabel( Type.ITEM, surveyLanguage ) );
-				category.setDescription( codeList.getDescription( surveyLanguage ) );
-				category.setName( codeList.getName() );
+				category.setCaption( codeListLabel );
+				category.setDescription( codeListDescription );
+				category.setName( codeListName );
 				categories.add( category );
 	
 				//TODO support multiple hierarchies
 				CategoryHierarchy hierarchy = new CategoryHierarchy();
-				hierarchy.setName( codeList.getName() );
-	
+				hierarchy.setCaption( codeListLabel );
+				hierarchy.setName( codeListName );
+				hierarchy.setDescription( codeListDescription );
 				List<CodeListLevel> codeListHierarchy = codeList.getHierarchy();
 				if ( codeListHierarchy.isEmpty() ) {
 					//when no code list hierarchy is specified, a default category level is created
@@ -201,27 +164,29 @@ public class CollectMetadataImportTask extends Task {
 
 	protected Category createSpeciesCategory(String speciesFileName) {
 		String speciesListName = FilenameUtils.getBaseName(speciesFileName);
+		String caption = "Species list " + speciesListName;
+		
 		Category category = new Category();
 		category.setName( speciesListName );
 		category.setOriginalId( SPECIES_CATEGORY_ORIGINAL_ID );
+		category.setCaption( caption );
+		
 		CategoryHierarchy hierarchy = new CategoryHierarchy();
 		hierarchy.setName( speciesListName );
+		hierarchy.setCaption( caption );
 		
-		SpeciesCodeTable speciesCodeTable = new SpeciesCodeTable( speciesListName, getInputSchema().getName());
+		SpeciesCodeTable speciesTable = new SpeciesCodeTable( speciesListName, getInputSchema().getName());
 		
 		CategoryLevel level = new CategoryLevel();
-		
 		level.setName( speciesListName );
-		level.setCaptionColumn( speciesCodeTable.getScientificNameField().getName() );
-		level.setCodeColumn( speciesCodeTable.getCodeField().getName() );
-		level.setIdColumn( speciesCodeTable.getIdField().getName() );
+		level.setCaptionColumn( speciesTable.getScientificNameField().getName() );
+		level.setCodeColumn( speciesTable.getCodeField().getName() );
+		level.setIdColumn( speciesTable.getIdField().getName() );
 		level.setRank( 1 );
-		level.setTableName( speciesCodeTable.getName() );
+		level.setTableName( speciesTable.getName() );
 
 		hierarchy.addLevel( level );
-		
 		category.addHierarchy( hierarchy );
-		
 		return category;
 	}
 
@@ -239,7 +204,7 @@ public class CollectMetadataImportTask extends Task {
 		level.setName( name );
 		level.setRank( levelIdx == null ? 1: levelIdx + 1 );
 		level.setTableName( tableName );
-		
+
 		return level;
 	}
 
@@ -250,8 +215,7 @@ public class CollectMetadataImportTask extends Task {
 	 * @return
 	 * @throws IdmlParseException 
 	 */
-	@Transactional
-	public Workspace updateWorkspaceMetadata() throws IdmlParseException {
+	private Workspace updateWorkspaceMetadata() throws IdmlParseException {
 		Workspace ws = getWorkspace();
 		List<Entity> entities = createEntities();
 		

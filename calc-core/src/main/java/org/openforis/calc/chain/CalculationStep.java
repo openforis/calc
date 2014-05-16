@@ -9,7 +9,6 @@ import org.openforis.calc.engine.CalculationException;
 import org.openforis.calc.engine.ParameterHashMap;
 import org.openforis.calc.engine.ParameterMap;
 import org.openforis.calc.engine.Workspace;
-import org.openforis.calc.json.ParameterMapJsonSerializer;
 import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.Equation;
@@ -21,7 +20,6 @@ import org.openforis.calc.r.RVariable;
 import org.openforis.calc.r.SetValue;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * A single user-defined step in a {@link ProcessingChain}
@@ -76,6 +74,7 @@ public class CalculationStep extends CalculationStepBase {
 		return String.format( "#%d: %s:%s:%s", getStepNo(), getModuleName(), getOperationName(), getModuleVersion() );
 	}
 
+//	@JsonIgnore
 	public RScript getRScript() {
 		Variable<?> outputVariable = this.getOutputVariable();
 		Entity entity = outputVariable.getEntity();
@@ -88,19 +87,19 @@ public class CalculationStep extends CalculationStepBase {
 	 * 
 	 * @return
 	 */
-	@Deprecated
-	public Set<String> getInputVariables() {
-		return getRScript().getVariables();
-	}
-
+//	@Deprecated
+//	public Set<String> getInputVariables() {
+//		return getRScript().getVariables();
+//	}
+//
+	
 	public Set<String> getVariables() {
-		Set<String> variables = getInputVariables();
+		Set<String> variables = getRScript().getVariables();
 		variables.add(getOutputVariable().getName());
 		return variables;
 	}
 	
 	@Override
-	@JsonSerialize(using = ParameterMapJsonSerializer.class)
 	public ParameterMap getParameters() {
 		return super.getParameters();
 	}

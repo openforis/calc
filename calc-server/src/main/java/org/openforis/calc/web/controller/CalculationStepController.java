@@ -14,7 +14,7 @@ import javax.validation.Valid;
 import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.CalculationStep.Type;
 import org.openforis.calc.chain.ProcessingChain;
-import org.openforis.calc.chain.ProcessingChainService;
+import org.openforis.calc.chain.ProcessingChainManager;
 import org.openforis.calc.engine.ParameterHashMap;
 import org.openforis.calc.engine.ParameterMap;
 import org.openforis.calc.engine.TaskManager;
@@ -47,7 +47,7 @@ public class CalculationStepController {
 	private WorkspaceService workspaceService;
 
 	@Autowired
-	private ProcessingChainService processingChainService;
+	private ProcessingChainManager processingChainManager;
 	
 	@Autowired
 	private TaskManager taskManager;
@@ -103,7 +103,7 @@ public class CalculationStepController {
 					Collection<String> equationVariables = equationList.getEquationVariables();
 					Map<String, Integer> eqVariablesParam = form.getEquationVariables();
 					List<ParameterMap> varParams = new ArrayList<ParameterMap>();
-					for ( String equationVariable : equationVariables ) {
+					for ( String equationVariable : equationVariables ){
 						
 						Integer variableId = eqVariablesParam.get(equationVariable);
 					
@@ -120,10 +120,10 @@ public class CalculationStepController {
 					step.setScript( form.getScript() );
 					break;
 			}
-			
-			processingChainService.saveCalculationStep( step );
-			// better to reload it .it throws json parsing exception otherwise
-			response.addField( "calculationStep", load(step.getId()) );
+				
+			processingChainManager.saveCalculationStep( step );
+
+			response.addField( "calculationStep", step );
 			response.addField( "processingChain", chain );
 		}
 		return response;
@@ -169,7 +169,7 @@ public class CalculationStepController {
 		CalculationStep step = load(stepId);
 		ProcessingChain processingChain = step.getProcessingChain();
 
-		Integer variableId = processingChainService.deleteCalculationStep(step);
+		Integer variableId = processingChainManager.deleteCalculationStep(step);
 		
 		response.addField( "deletedStep" , stepId );
 		response.addField("deletedVariable", variableId);
@@ -181,7 +181,7 @@ public class CalculationStepController {
 	public @ResponseBody Response updateStepNo(@PathVariable int stepId, @PathVariable int stepNo) {
 		Response response = new Response();
 		CalculationStep step = load(stepId);
-		processingChainService.shiftCalculationStep(step, stepNo);
+		processingChainManager.shiftCalculationStep(step, stepNo);
 		return response;
 	}
 	

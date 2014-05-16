@@ -8,10 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.jooq.tools.json.JSONArray;
 import org.json.simple.JSONObject;
-import org.openforis.calc.json.ParameterMapJsonSerializer;
-
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * 
@@ -48,7 +46,6 @@ public class ParameterHashMap implements ParameterMap {
 		map.remove(name);
 	}
 	
-	@JsonSerialize(using = ParameterMapJsonSerializer.class)
 	@Override
 	public ParameterMap getMap(String name) {
 		Object value = map.get(name);
@@ -89,7 +86,7 @@ public class ParameterHashMap implements ParameterMap {
 
 	@Override
 	public void setList(String name, List<ParameterMap> value) {
-		map.put(name, value);
+		map.put( name,  new JSONArray(value) );
 	}
 	
 	@Override

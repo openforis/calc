@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openforis.calc.persistence.jooq.tables.pojos.CategoryHierarchyBase;
+import org.openforis.commons.collection.CollectionUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -33,7 +34,7 @@ public class CategoryHierarchy extends CategoryHierarchyBase {
 	}
 
 	public List<CategoryLevel> getLevels() {
-		return levels;
+		return CollectionUtils.unmodifiableList( levels );
 	}
 
 	public void setLevels(List<CategoryLevel> levels) {
