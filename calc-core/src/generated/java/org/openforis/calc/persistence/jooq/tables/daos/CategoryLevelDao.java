@@ -57,13 +57,6 @@ public class CategoryLevelDao extends org.jooq.impl.DAOImpl<org.openforis.calc.p
 	}
 
 	/**
-	 * Fetch a unique record that has <code>hierarchy_id = value</code>
-	 */
-	public CategoryLevel fetchOneByHierarchyId(java.lang.Integer value) {
-		return fetchOne(org.openforis.calc.persistence.jooq.tables.CategoryLevelTable.CATEGORY_LEVEL.HIERARCHY_ID, value);
-	}
-
-	/**
 	 * Fetch records that have <code>name IN (values)</code>
 	 */
 	public java.util.List<CategoryLevel> fetchByName(java.lang.String... values) {
@@ -82,13 +75,6 @@ public class CategoryLevelDao extends org.jooq.impl.DAOImpl<org.openforis.calc.p
 	 */
 	public java.util.List<CategoryLevel> fetchByRank(java.lang.Integer... values) {
 		return fetch(org.openforis.calc.persistence.jooq.tables.CategoryLevelTable.CATEGORY_LEVEL.RANK, values);
-	}
-
-	/**
-	 * Fetch a unique record that has <code>rank = value</code>
-	 */
-	public CategoryLevel fetchOneByRank(java.lang.Integer value) {
-		return fetchOne(org.openforis.calc.persistence.jooq.tables.CategoryLevelTable.CATEGORY_LEVEL.RANK, value);
 	}
 
 	/**

@@ -76,4 +76,11 @@ public class CategoryDao extends org.jooq.impl.DAOImpl<org.openforis.calc.persis
 	public java.util.List<Category> fetchByWorkspaceId(java.lang.Long... values) {
 		return fetch(org.openforis.calc.persistence.jooq.tables.CategoryTable.CATEGORY.WORKSPACE_ID, values);
 	}
+
+	/**
+	 * Fetch records that have <code>name IN (values)</code>
+	 */
+	public java.util.List<Category> fetchByName(java.lang.String... values) {
+		return fetch(org.openforis.calc.persistence.jooq.tables.CategoryTable.CATEGORY.NAME, values);
+	}
 }

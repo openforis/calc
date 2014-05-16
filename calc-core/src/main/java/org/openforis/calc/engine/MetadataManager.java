@@ -270,8 +270,13 @@ public class MetadataManager {
 	
 	@Transactional
 	private void persistCategories(Workspace workspace) {
-		
 		List<Category> categories = workspace.getCategories();
+
+		//remove persisted categories
+		List<Category> persistedCategories = categoryDao.fetchByWorkspaceId( workspace.getId().longValue() );
+		categoryDao.delete(persistedCategories);
+		
+		//save new categories
 		for ( Category category : categories ){
 			if( categoryDao.exists( category ) ){
 				categoryDao.update(category);

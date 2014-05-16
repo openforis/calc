@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CategoryTable extends org.jooq.impl.TableImpl<org.openforis.calc.persistence.jooq.tables.records.CategoryRecord> {
 
-	private static final long serialVersionUID = 2006024951;
+	private static final long serialVersionUID = -1802224226;
 
 	/**
 	 * The singleton instance of <code>calc.category</code>
@@ -50,6 +50,11 @@ public class CategoryTable extends org.jooq.impl.TableImpl<org.openforis.calc.pe
 	 * The column <code>calc.category.workspace_id</code>.
 	 */
 	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.CategoryRecord, java.lang.Long> WORKSPACE_ID = createField("workspace_id", org.jooq.impl.SQLDataType.BIGINT.nullable(false).defaulted(true), this, "");
+
+	/**
+	 * The column <code>calc.category.name</code>.
+	 */
+	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.CategoryRecord, java.lang.String> NAME = createField("name", org.jooq.impl.SQLDataType.VARCHAR.length(255).nullable(false).defaulted(true), this, "");
 
 	/**
 	 * Create a <code>calc.category</code> table reference
@@ -94,7 +99,7 @@ public class CategoryTable extends org.jooq.impl.TableImpl<org.openforis.calc.pe
 	 */
 	@Override
 	public java.util.List<org.jooq.UniqueKey<org.openforis.calc.persistence.jooq.tables.records.CategoryRecord>> getKeys() {
-		return java.util.Arrays.<org.jooq.UniqueKey<org.openforis.calc.persistence.jooq.tables.records.CategoryRecord>>asList(org.openforis.calc.persistence.jooq.Keys.CATEGORY_PKEY);
+		return java.util.Arrays.<org.jooq.UniqueKey<org.openforis.calc.persistence.jooq.tables.records.CategoryRecord>>asList(org.openforis.calc.persistence.jooq.Keys.CATEGORY_PKEY, org.openforis.calc.persistence.jooq.Keys.CATEGORY_NAME_KEY);
 	}
 
 	/**

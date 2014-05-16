@@ -85,6 +85,25 @@
 			    calc.category_level DROP CONSTRAINT hierarchy_level_hierarchy_id_key;
 			ALTER TABLE
 			    calc.category_level ADD CONSTRAINT hierarchy_level_name_key UNIQUE (hierarchy_id, name);
+			    
+			ALTER TABLE
+			    calc.category_hierarchy DROP CONSTRAINT category_hierarchy_category_fk;
+			ALTER TABLE
+			    calc.category_hierarchy ADD CONSTRAINT category_hierarchy_category_fk FOREIGN KEY
+			    (category_id) REFERENCES calc.category (id)
+			    ON DELETE CASCADE;
+			    
+			ALTER TABLE
+			    calc.variable DROP CONSTRAINT variable_category_level_fk;
+			ALTER TABLE
+			    calc.variable ADD CONSTRAINT variable_category_level_fk FOREIGN KEY (category_level_id)
+			    REFERENCES calc.category_level (id)
+			    ON DELETE SET NULL;
+			    
+			ALTER TABLE
+			    calc.category ADD COLUMN name VARCHAR(255) NOT NULL;
+			ALTER TABLE
+			    calc.category ADD CONSTRAINT category_name_key UNIQUE (workspace_id, name);
 		</sql>
 	    
 	</changeSet>

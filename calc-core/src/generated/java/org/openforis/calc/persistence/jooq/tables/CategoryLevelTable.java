@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CategoryLevelTable extends org.jooq.impl.TableImpl<org.openforis.calc.persistence.jooq.tables.records.CategoryLevelRecord> {
 
-	private static final long serialVersionUID = 1526074332;
+	private static final long serialVersionUID = -760824478;
 
 	/**
 	 * The singleton instance of <code>calc.category_level</code>
@@ -109,7 +109,7 @@ public class CategoryLevelTable extends org.jooq.impl.TableImpl<org.openforis.ca
 	 */
 	@Override
 	public java.util.List<org.jooq.UniqueKey<org.openforis.calc.persistence.jooq.tables.records.CategoryLevelRecord>> getKeys() {
-		return java.util.Arrays.<org.jooq.UniqueKey<org.openforis.calc.persistence.jooq.tables.records.CategoryLevelRecord>>asList(org.openforis.calc.persistence.jooq.Keys.HIERARCHY_LEVEL_PKEY, org.openforis.calc.persistence.jooq.Keys.HIERARCHY_LEVEL_HIERARCHY_ID_KEY, org.openforis.calc.persistence.jooq.Keys.HIERARCHY_LEVEL_RANK_KEY);
+		return java.util.Arrays.<org.jooq.UniqueKey<org.openforis.calc.persistence.jooq.tables.records.CategoryLevelRecord>>asList(org.openforis.calc.persistence.jooq.Keys.HIERARCHY_LEVEL_PKEY, org.openforis.calc.persistence.jooq.Keys.HIERARCHY_LEVEL_NAME_KEY, org.openforis.calc.persistence.jooq.Keys.HIERARCHY_LEVEL_RANK_KEY);
 	}
 
 	/**
