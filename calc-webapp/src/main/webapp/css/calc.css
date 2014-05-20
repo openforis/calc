@@ -346,7 +346,6 @@ button.settings:hover {
 /* 	font-size: 0.8em; */
 }
 #footer .logo {
-	float: left;
 	font-size: 1.5em;
 	font-weight: 100;
 /* 	margin-top: 30px; */
@@ -356,13 +355,13 @@ button.settings:hover {
 	height: auto;
 /* 	display:block; */
 }
-#footer .application-version-wrapper {
-	float: left;
+#footer .application-version {
 	position: relative;
 	top: 40px;
 	left: 30px;
 	height: auto;
 	font-size: 0.7em;
+	text-align: center;
 }
 #footer .logo img {
 /* 	position:absolute; */
