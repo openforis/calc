@@ -17,7 +17,7 @@ $(document).ready(function() {
 	 * Main calc instance
 	 */
 	Calc = {};
-
+	
 	/**
 	 * current working section
 	 */
@@ -250,11 +250,27 @@ $(document).ready(function() {
 		scrollToSection(false);
 	});
 	
+	//private static utility method to load Calc info model object
+	Calc._loadInfo = function() {
+		$.ajax({
+			url: "rest/calc/info.json",
+			dataType:"json"
+		}).done(function(calc) {
+			$("#footer .application-version").text( calc.version );
+		}).error( function() {
+			Calc.error.apply( this , arguments );
+		});
+
+	};
+	
 	// when page is loaded init function is called
 	init = function() {
 		
 		//disable caching
 		$.ajaxSetup( { cache: false } );
+		
+		// load calc info
+		Calc._loadInfo();
 		
 		// init ui managers
 		Calc.homeCalculationManager 	= new HomeCalculationManager( $("#calculation") );
