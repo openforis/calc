@@ -110,13 +110,13 @@ UI.enableAll = function() {
 * Disable a component like buttons
 */
 UI.disable = function(component) {
-	component.prop('disabled', true);
+	component.prop( 'disabled', true );
 };
 /**
 * Enable a component like buttons
 */
 UI.enable = function(component) {
-	component.prop('disabled', false);
+	component.prop( 'disabled' , false );
 };
 
 /**

@@ -49,7 +49,7 @@ public class EntityDataViewDao extends AbstractJooqDao {
 		create(view);
 	}
 
-	public void create(EntityDataView view) {
+	public void create( EntityDataView view ) {
 		Select<?> select = view.getSelect();
 		psql().createView(view).as(select).execute();
 	}
@@ -58,6 +58,16 @@ public class EntityDataViewDao extends AbstractJooqDao {
 		psql().dropViewIfExists(view).execute();
 	}
 
+	public void drop( Entity entity ) {
+		Workspace ws = entity.getWorkspace();
+
+		Schemas schemas = new Schemas(ws);
+		DataSchema inputSchema = schemas.getDataSchema();
+		EntityDataView view = inputSchema.getDataView(entity);
+
+		drop( view );
+	}
+	
 	public long count( Entity entity , JSONArray filters ) {
 		EntityDataView view = getDataView(entity.getWorkspace(), entity);
 		

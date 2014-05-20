@@ -106,13 +106,6 @@ public class VariableDao extends org.jooq.impl.DAOImpl<org.openforis.calc.persis
 	}
 
 	/**
-	 * Fetch records that have <code>dimension_table IN (values)</code>
-	 */
-	public java.util.List<Variable> fetchByDimensionTable(java.lang.String... values) {
-		return fetch(org.openforis.calc.persistence.jooq.tables.VariableTable.VARIABLE.DIMENSION_TABLE, values);
-	}
-
-	/**
 	 * Fetch records that have <code>degenerate_dimension IN (values)</code>
 	 */
 	public java.util.List<Variable> fetchByDegenerateDimension(java.lang.Boolean... values) {
@@ -138,13 +131,6 @@ public class VariableDao extends org.jooq.impl.DAOImpl<org.openforis.calc.persis
 	 */
 	public java.util.List<Variable> fetchByOutputValueColumn(java.lang.String... values) {
 		return fetch(org.openforis.calc.persistence.jooq.tables.VariableTable.VARIABLE.OUTPUT_VALUE_COLUMN, values);
-	}
-
-	/**
-	 * Fetch records that have <code>output_category_id_column IN (values)</code>
-	 */
-	public java.util.List<Variable> fetchByOutputCategoryIdColumn(java.lang.String... values) {
-		return fetch(org.openforis.calc.persistence.jooq.tables.VariableTable.VARIABLE.OUTPUT_CATEGORY_ID_COLUMN, values);
 	}
 
 	/**
@@ -176,23 +162,9 @@ public class VariableDao extends org.jooq.impl.DAOImpl<org.openforis.calc.persis
 	}
 
 	/**
-	 * Fetch records that have <code>dimension_table_id_column IN (values)</code>
+	 * Fetch records that have <code>category_level_id IN (values)</code>
 	 */
-	public java.util.List<Variable> fetchByDimensionTableIdColumn(java.lang.String... values) {
-		return fetch(org.openforis.calc.persistence.jooq.tables.VariableTable.VARIABLE.DIMENSION_TABLE_ID_COLUMN, values);
-	}
-
-	/**
-	 * Fetch records that have <code>dimension_table_code_column IN (values)</code>
-	 */
-	public java.util.List<Variable> fetchByDimensionTableCodeColumn(java.lang.String... values) {
-		return fetch(org.openforis.calc.persistence.jooq.tables.VariableTable.VARIABLE.DIMENSION_TABLE_CODE_COLUMN, values);
-	}
-
-	/**
-	 * Fetch records that have <code>dimension_table_caption_column IN (values)</code>
-	 */
-	public java.util.List<Variable> fetchByDimensionTableCaptionColumn(java.lang.String... values) {
-		return fetch(org.openforis.calc.persistence.jooq.tables.VariableTable.VARIABLE.DIMENSION_TABLE_CAPTION_COLUMN, values);
+	public java.util.List<Variable> fetchByCategoryLevelId(java.lang.Long... values) {
+		return fetch(org.openforis.calc.persistence.jooq.tables.VariableTable.VARIABLE.CATEGORY_LEVEL_ID, values);
 	}
 }

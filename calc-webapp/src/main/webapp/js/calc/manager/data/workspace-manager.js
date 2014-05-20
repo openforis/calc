@@ -378,11 +378,24 @@ WorkspaceManager.prototype = (function(){
 	 * Set the active workspace and calls the callback function if present
 	 */
 	var setActiveWorkspace = function( data, callback ) {
-		var $this = this;
-		$this._activeWorkspace = data ? new Workspace( data ) : null;
-		if( callback ) {
-			callback($this._activeWorkspace);
-		}
+		this._activeWorkspace = data ? new Workspace( data ) : null;
+		
+		// load calculation steps for active workspace
+//		if( this._activeWorkspace && this._activeWorkspace.getDefaultProcessingChain() ) {
+//			var chain = this._activeWorkspace.getDefaultProcessingChain();
+//			CalculationStepManager.getInstance().loadAll(function(response){
+//				console.log( chain );
+//				
+//				if( callback ) {
+//					callback( this._activeWorkspace );
+//				}
+//			});
+//		} else {
+			if( callback ) {
+				callback( this._activeWorkspace );
+			}
+//		}
+		
 	};
 	
 	return {

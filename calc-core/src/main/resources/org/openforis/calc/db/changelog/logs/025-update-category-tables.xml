@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+	<changeSet author="mino togna" id="025-update-category-tables">
+	
+		<sql>
+			DROP TABLE
+			    calc.category_category_group;
+			DROP TABLE
+			    calc.category_group;
+			
+			ALTER TABLE
+			    calc.category DROP COLUMN variable_id;
+			ALTER TABLE
+			    calc.category DROP COLUMN code;
+			ALTER TABLE
+			    calc.category DROP COLUMN value;
+			ALTER TABLE
+			    calc.category DROP COLUMN override;
+			ALTER TABLE
+			    calc.category DROP COLUMN sort_order;
+			ALTER TABLE
+    			calc.category ADD COLUMN workspace_id bigint;
+			ALTER TABLE
+			    calc.category ALTER COLUMN workspace_id SET NOT NULL;
+			ALTER TABLE
+			    calc.category ADD CONSTRAINT category_workspace_fk FOREIGN KEY (workspace_id) REFERENCES
+			    calc.workspace (id);
+			    
+			ALTER TABLE
+			    calc.category_hierarchy DROP COLUMN variable_id;
+			ALTER TABLE
+			    calc.category_hierarchy ADD COLUMN category_id bigint;
+			ALTER TABLE
+			    calc.category_hierarchy ALTER COLUMN category_id SET NOT NULL;
+			ALTER TABLE
+			    calc.category_hierarchy ADD CONSTRAINT category_hierarchy_category_fk FOREIGN KEY
+			    (category_id) REFERENCES calc.category (id);
+			
+			ALTER TABLE
+			    calc.category_level DROP COLUMN caption;
+			ALTER TABLE
+			    calc.category_level DROP COLUMN description;
+			ALTER TABLE
+			    calc.category_level ADD COLUMN table_name VARCHAR(255);
+			ALTER TABLE
+			    calc.category_level ALTER COLUMN table_name SET NOT NULL;
+			ALTER TABLE
+			    calc.category_level ADD COLUMN id_column VARCHAR(255);
+			ALTER TABLE
+			    calc.category_level ALTER COLUMN id_column SET NOT NULL;
+			ALTER TABLE
+			    calc.category_level ADD COLUMN caption_column VARCHAR(255);
+			ALTER TABLE
+			    calc.category_level ALTER COLUMN caption_column SET NOT NULL;
+			ALTER TABLE
+			    calc.category_level ALTER COLUMN value_column SET NOT NULL;
+			ALTER TABLE
+			    calc.category_level RENAME COLUMN value_column TO code_column;
+			
+			
+			ALTER TABLE
+			    calc.variable DROP COLUMN dimension_table;
+			ALTER TABLE
+			    calc.variable DROP COLUMN output_category_id_column;
+			ALTER TABLE
+			    calc.variable DROP COLUMN dimension_table_id_column;
+			ALTER TABLE
+			    calc.variable DROP COLUMN dimension_table_code_column;
+			ALTER TABLE
+			    calc.variable DROP COLUMN dimension_table_caption_column;
+			ALTER TABLE
+			    calc.variable ADD COLUMN category_level_id bigint;
+			ALTER TABLE
+			    calc.variable ADD CONSTRAINT variable_category_level_fk FOREIGN KEY (category_level_id) REFERENCES
+			    calc.category_level (id);
+			
+			ALTER TABLE
+			    calc.category_level DROP CONSTRAINT hierarchy_level_rank_key;
+			ALTER TABLE
+			    calc.category_level ADD CONSTRAINT hierarchy_level_rank_key UNIQUE (hierarchy_id, rank);
+			ALTER TABLE
+			    calc.category_level DROP CONSTRAINT hierarchy_level_hierarchy_id_key;
+			ALTER TABLE
+			    calc.category_level ADD CONSTRAINT hierarchy_level_name_key UNIQUE (hierarchy_id, name);
+			    
+			ALTER TABLE
+			    calc.category_hierarchy DROP CONSTRAINT category_hierarchy_category_fk;
+			ALTER TABLE
+			    calc.category_hierarchy ADD CONSTRAINT category_hierarchy_category_fk FOREIGN KEY
+			    (category_id) REFERENCES calc.category (id)
+			    ON DELETE CASCADE;
+			    
+			ALTER TABLE
+			    calc.variable DROP CONSTRAINT variable_category_level_fk;
+			ALTER TABLE
+			    calc.variable ADD CONSTRAINT variable_category_level_fk FOREIGN KEY (category_level_id)
+			    REFERENCES calc.category_level (id)
+			    ON DELETE SET NULL;
+			    
+			ALTER TABLE
+			    calc.category ADD COLUMN name VARCHAR(255) NOT NULL;
+			ALTER TABLE
+			    calc.category ADD CONSTRAINT category_name_key UNIQUE (workspace_id, name);
+		</sql>
+	    
+	</changeSet>
+    
+</databaseChangeLog>
+	    

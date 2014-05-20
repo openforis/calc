@@ -9,18 +9,25 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.openforis.calc.chain.CalculationStep;
-import org.openforis.calc.chain.ProcessingChain;
+import org.openforis.calc.chain.ProcessingChainManager;
 import org.openforis.calc.metadata.AoiManager;
+import org.openforis.calc.metadata.Category;
+import org.openforis.calc.metadata.CategoryHierarchy;
+import org.openforis.calc.metadata.CategoryLevel;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.EquationManager;
+import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.SamplingDesign;
 import org.openforis.calc.metadata.Stratum;
 import org.openforis.calc.metadata.Variable;
+import org.openforis.calc.metadata.Variable.Scale;
 import org.openforis.calc.metadata.VariableDao;
 import org.openforis.calc.persistence.jooq.Sequences;
 import org.openforis.calc.persistence.jooq.Tables;
 import org.openforis.calc.persistence.jooq.tables.daos.CalculationStepDao;
+import org.openforis.calc.persistence.jooq.tables.daos.CategoryDao;
+import org.openforis.calc.persistence.jooq.tables.daos.CategoryHierarchyDao;
+import org.openforis.calc.persistence.jooq.tables.daos.CategoryLevelDao;
 import org.openforis.calc.persistence.jooq.tables.daos.EntityDao;
 import org.openforis.calc.persistence.jooq.tables.daos.ProcessingChainDao;
 import org.openforis.calc.persistence.jooq.tables.daos.SamplingDesignDao;
@@ -45,11 +52,21 @@ public class MetadataManager {
 	private WorkspaceDao workspaceDao;
 	
 	@Autowired
+	private SamplingDesignDao samplingDesignDao;	
+	@Autowired
 	private StratumDao stratumDao;
+	@Autowired
+	private AoiManager aoiManager;
+	
+	@Autowired
+	private CategoryDao categoryDao;
+	@Autowired
+	private CategoryHierarchyDao categoryHierarchyDao;
+	@Autowired
+	private CategoryLevelDao categoryLevelDao;
 	
 	@Autowired
 	private ProcessingChainDao processingChainDao;
-	
 	@Autowired
 	private CalculationStepDao calculationStepDao; 
 	
@@ -57,17 +74,16 @@ public class MetadataManager {
 	private EntityDao entityDao; 
 	@Autowired
 	private VariableDao variableDao;
-	@Autowired
-	private SamplingDesignDao samplingDesignDao;
 	
 	@Autowired
 	private EquationManager equationManager;
 	
-	@Autowired
-	private AoiManager aoiManager;
 	
 	@Autowired
 	private Psql psql;
+
+	@Autowired
+	private ProcessingChainManager processingChainManager;
 	
 	/*
 	 * ============================
@@ -122,8 +138,9 @@ public class MetadataManager {
 	 */
 	@Transactional
 	private void loadMetadata( Workspace workspace ) {
-		aoiManager.loadByWorkspace( workspace );
-		
+		// the order matters here. 
+		loadAois(workspace);
+		loadCategories( workspace );
 		loadEntities( workspace );
 		loadStrata( workspace );
 		loadProcessingChains( workspace );
@@ -132,7 +149,28 @@ public class MetadataManager {
 		
 		initEntityHierarchy( workspace );
 	}
+
+	private void loadAois(Workspace workspace) {
+		aoiManager.loadByWorkspace( workspace );
+	}
 	
+	private void loadCategories( Workspace workspace ){
+		List<Category> categories = categoryDao.fetchByWorkspaceId( workspace.getId().longValue() );
+		for ( Category category : categories ){
+			workspace.addCategory( category );
+			
+			List<CategoryHierarchy> hierarchies = this.categoryHierarchyDao.fetchByCategoryId( category.getId().longValue() );
+			for ( CategoryHierarchy categoryHierarchy : hierarchies ){
+				category.addHierarchy( categoryHierarchy );
+				
+				List<CategoryLevel> levels = categoryLevelDao.fetchByHierarchyId( categoryHierarchy.getId() );
+				for ( CategoryLevel categoryLevel : levels){
+					categoryHierarchy.addLevel( categoryLevel );
+				}
+			}
+		}
+	}
+
 	private void loadEquations(Workspace workspace) {
 		equationManager.loadListsByWorkspace( workspace );
 	}
@@ -177,29 +215,10 @@ public class MetadataManager {
 		}
 	}
 	
-	private void loadProcessingChains(Workspace workspace) {
-		List<ProcessingChain> chains = processingChainDao.fetchByWorkspaceId( workspace.getId() );
-		for (ProcessingChain chain : chains) {
-			workspace.addProcessingChain(chain);
-			loadSteps( chain );
-		}
+	private void loadProcessingChains( Workspace workspace ){
+		processingChainManager.loadChains( workspace );
 	}
 	
-	private void loadSteps(ProcessingChain chain) {
-		List<CalculationStep> steps = calculationStepDao.fetchByChainId( chain.getId() );
-		Collections.sort( steps, new Comparator<CalculationStep>() {
-			@Override
-			public int compare(CalculationStep o1, CalculationStep o2) {
-				return o1.getStepNo().compareTo( o2.getStepNo() );
-			}
-		});
-		for (CalculationStep step : steps) {
-			chain.addCalculationStep( step );
-			Workspace workspace = chain.getWorkspace();
-			step.setOutputVariable( workspace.getVariableById(step.getOutputVariableId()) );
-		}
-		
-	}
 	/*
 	 * ============================
 	 *  Save workspace methods
@@ -212,7 +231,7 @@ public class MetadataManager {
 	 * @return
 	 */
 	@Transactional
-	public Workspace saveWorkspace( Workspace workspace ) {
+	public Workspace saveWorkspace( Workspace workspace ){
 		if( workspaceDao.exists(workspace) ) {
 			workspaceDao.update( workspace );
 		} else {
@@ -221,7 +240,7 @@ public class MetadataManager {
 			workspaceDao.insert( workspace );
 		}
 		
-		saveMetadata( workspace );
+		persistMetadata( workspace );
 		
 		return fetchWorkspaceByCollectSurveyUri( workspace.getCollectSurveyUri() );
 	}
@@ -231,7 +250,61 @@ public class MetadataManager {
 	 * ===============================
 	 */
 	@Transactional
-	private void saveMetadata( Workspace workspace ) {
+	private void persistMetadata( Workspace workspace ) {
+		persistCategories( workspace );
+		persistEntities( workspace );
+	}
+	
+	@Transactional
+	private void persistCategories(Workspace workspace) {
+		List<Category> categories = workspace.getCategories();
+
+		//remove persisted categories
+		List<Category> persistedCategories = categoryDao.fetchByWorkspaceId( workspace.getId().longValue() );
+		categoryDao.delete(persistedCategories);
+		
+		//save new categories
+		for ( Category category : categories ){
+			if( categoryDao.exists( category ) ){
+				categoryDao.update(category);
+			} else {
+				category.setId( psql.nextval(Sequences.CATEGORY_ID_SEQ).intValue() );
+				categoryDao.insert(category);
+			}
+			
+			List<CategoryHierarchy> hierarchies = category.getHierarchies();
+			for ( CategoryHierarchy hierarchy : hierarchies ){
+				
+				hierarchy.setCategoryId( category.getId().longValue() );
+				
+				if( categoryHierarchyDao.exists( hierarchy ) ){
+					categoryHierarchyDao.update(hierarchy);
+				} else {
+					hierarchy.setId( psql.nextval(Sequences.CATEGORY_HIERARCHY_ID_SEQ).intValue() );
+					categoryHierarchyDao.insert(hierarchy);
+				}
+				
+				List<CategoryLevel> levels = hierarchy.getLevels();
+				for ( CategoryLevel level : levels ){
+					
+					level.setHierarchyId( hierarchy.getId() );
+					
+					if( categoryLevelDao.exists( level ) ){
+						categoryLevelDao.update(level);
+					} else {
+						level.setId( psql.nextval(Sequences.CATEGORY_LEVEL_ID_SEQ).intValue() );
+						categoryLevelDao.insert(level);
+					}	
+				}
+			}
+		}
+	}
+	/**
+	 * 
+	 * @param workspace
+	 */
+	@Transactional
+	private void persistEntities(Workspace workspace) {
 		Collection<Entity> rootEntities = workspace.getRootEntities();
 		for (Entity entity : rootEntities) {
 			entity.traverse(new Entity.Visitor() {
@@ -245,8 +318,7 @@ public class MetadataManager {
 					// insert or update entity
 					Integer id = entity.getId();
 					if( id == null ) {
-						Long nextval = psql.nextval( Sequences.ENTITY_ID_SEQ );
-						entity.setId( nextval.intValue() );
+						entity.setId( psql.nextval( Sequences.ENTITY_ID_SEQ ).intValue() );
 						entityDao.insert( entity );
 					} else {
 						entityDao.update( entity );
@@ -341,6 +413,26 @@ public class MetadataManager {
 			}
 		});
 		return list;
+	}
+
+	/**
+	 * Create an instance of a new quantitative variable with default values
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public QuantitativeVariable createQuantitativeVariable( String name ) {
+		QuantitativeVariable variable = new QuantitativeVariable();
+		
+		variable.setName( name );
+		variable.setInputValueColumn( name );
+		variable.setOutputValueColumn( name );
+		variable.setScale( Scale.RATIO );
+		variable.setOverride( true );
+		variable.setDegenerateDimension( false );
+		variable.setDisaggregate( false );
+		
+		return variable;
 	}
 	
 }

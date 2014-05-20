@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CalcSchema extends org.jooq.impl.SchemaImpl {
 
-	private static final long serialVersionUID = -976574454;
+	private static final long serialVersionUID = 1620912014;
 
 	/**
 	 * The singleton instance of <code>calc</code>
@@ -38,6 +38,9 @@ public class CalcSchema extends org.jooq.impl.SchemaImpl {
 			org.openforis.calc.persistence.jooq.Sequences.AOI_ID_SEQ,
 			org.openforis.calc.persistence.jooq.Sequences.AOI_LEVEL_ID_SEQ,
 			org.openforis.calc.persistence.jooq.Sequences.CALCULATION_STEP_ID_SEQ,
+			org.openforis.calc.persistence.jooq.Sequences.CATEGORY_HIERARCHY_ID_SEQ,
+			org.openforis.calc.persistence.jooq.Sequences.CATEGORY_ID_SEQ,
+			org.openforis.calc.persistence.jooq.Sequences.CATEGORY_LEVEL_ID_SEQ,
 			org.openforis.calc.persistence.jooq.Sequences.ENTITY_ID_SEQ,
 			org.openforis.calc.persistence.jooq.Sequences.EQUATION_ID_SEQ,
 			org.openforis.calc.persistence.jooq.Sequences.EQUATION_LIST_ID_SEQ,
@@ -63,6 +66,9 @@ public class CalcSchema extends org.jooq.impl.SchemaImpl {
 			org.openforis.calc.persistence.jooq.tables.AoiHierarchyTable.AOI_HIERARCHY,
 			org.openforis.calc.persistence.jooq.tables.AoiLevelTable.AOI_LEVEL,
 			org.openforis.calc.persistence.jooq.tables.CalculationStepTable.CALCULATION_STEP,
+			org.openforis.calc.persistence.jooq.tables.CategoryTable.CATEGORY,
+			org.openforis.calc.persistence.jooq.tables.CategoryHierarchyTable.CATEGORY_HIERARCHY,
+			org.openforis.calc.persistence.jooq.tables.CategoryLevelTable.CATEGORY_LEVEL,
 			org.openforis.calc.persistence.jooq.tables.EntityTable.ENTITY,
 			org.openforis.calc.persistence.jooq.tables.EquationTable.EQUATION,
 			org.openforis.calc.persistence.jooq.tables.EquationListTable.EQUATION_LIST,

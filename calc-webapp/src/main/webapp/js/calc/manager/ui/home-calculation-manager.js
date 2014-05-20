@@ -130,16 +130,18 @@ HomeCalculationManager.prototype = (function() {
 	 */
 	var updateSteps = function(callback) {
 		var $this = this;
+		
 		var stepElements = $this.stepsContainer.find(".calculation-step");
 		stepElements.remove();
-
-		$this.calculationStepManager.loadAll(function(response) {
-			var $steps = response;
-			$.each($steps, function(i, $step) {
-				$.proxy(addStepElement, $this)($step);
-			});
-			if (callback) {
-				callback();
+		
+		WorkspaceManager.getInstance().activeWorkspace( function(ws){
+			if( ws ){
+				var chain = ws.getDefaultProcessingChain();
+				if( chain ){
+					$.each( chain.calculationSteps , function( i, step ){
+						$.proxy( addStepElement, $this )( step );
+					});
+				}
 			}
 		});
 	};
@@ -194,7 +196,7 @@ HomeCalculationManager.prototype = (function() {
 	var deleteStep = function(step) {
 		var $this = this;
 		UI.lock();
-		$this.calculationStepManager.remove(step.id,
+		$this.calculationStepManager.remove( step.id,
 			function(response) {
 				//remove element from ui
 				var element = $.proxy(getStepElement, $this)(step);
@@ -209,6 +211,7 @@ HomeCalculationManager.prototype = (function() {
 					});
 				}
 				$.proxy(reset, $this)();
+				
 				UI.unlock();
 		});
 	};

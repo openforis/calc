@@ -39,7 +39,6 @@ public class EntityDataView extends DataTable {
 		createCategoryFields(entity);
 		createQuantityFields();
 		createTextFields();
-//		initSelect();
 
 		ResultTable resultTable = this.schema.getResultTable(entity);
 		if (resultTable != null) {
@@ -67,26 +66,6 @@ public class EntityDataView extends DataTable {
 			currentEntity = currentEntity.getParent();
 		}
 	}
-
-
-
-//	private void addUniqueNameFields(SelectQuery<Record> select, Field<?>[] fields) {
-//		for (Field<?> field : fields) {
-//			Field<?> existingField = getFieldByName(select, field.getName());
-//			if (existingField == null) {
-//				select.addSelect(field);
-//			}
-//		}
-//	}
-
-//	private Field<?> getFieldByName(SelectQuery<Record> select, String name) {
-//		for (Field<?> field : select.getSelect()) {
-//			if (field.getName().equals(name)) {
-//				return field;
-//			}
-//		}
-//		return null;
-//	}
 
 	protected void createCategoryFields(Entity entity) {
 		
@@ -136,9 +115,8 @@ public class EntityDataView extends DataTable {
 		for (QuantitativeVariable var : getEntity().getOriginalQuantitativeVariables()) {
 			select.addSelect( table.getQuantityField(var) );
 		}
-		
+		// add weight column if sampling unit
 		if( getEntity().isSamplingUnit() ) {
-			// add weight column
 			select.addSelect( table.getWeightField() );
 		}
 		
@@ -159,7 +137,7 @@ public class EntityDataView extends DataTable {
 			
 			select.addJoin(parentTable, currentTable.getParentIdField().eq(parentTable.getIdField()));
 			
-//			addUniqueNameFields(select, parentTable.fields());
+//			addUniqueNameFields( select, parentTable.fields() );
 			currentEntity = parentEntity;
 		}
 		
@@ -167,10 +145,10 @@ public class EntityDataView extends DataTable {
 		ResultTable resultTable = schema.getResultTable(getEntity());
 		if( resultTable != null ){
 			// select output variables from results table
-			for (QuantitativeVariable var : getEntity().getOutputVariables()) {
+			for (QuantitativeVariable var : getEntity().getDefaultProcessingChainOutputVariables()) {
 				select.addSelect( resultTable.getQuantityField(var) );
 			}
-			if( resultTable.getPlotArea() != null ){
+			if( resultTable.getPlotArea() != null ) {
 				select.addSelect( resultTable.getPlotArea() );
 			}
 			

@@ -27,6 +27,7 @@ public class CollectBackupIdmExtractor {
 	private CollectSurveyIdmlBinder binder;
 	
 	public CollectSurvey extractSurvey(File file) throws IdmlParseException, IOException {
+		@SuppressWarnings("resource")
 		ZipFile zipFile = new ZipFile(file);
 		Enumeration<? extends ZipEntry> zipEntries = zipFile.entries();
 		ZipEntry zipEntry = getIdmEntry(zipEntries);

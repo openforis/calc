@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class VariableTable extends org.jooq.impl.TableImpl<org.openforis.calc.persistence.jooq.tables.records.VariableRecord> {
 
-	private static final long serialVersionUID = 472213004;
+	private static final long serialVersionUID = -153631420;
 
 	/**
 	 * The singleton instance of <code>calc.variable</code>
@@ -72,11 +72,6 @@ public class VariableTable extends org.jooq.impl.TableImpl<org.openforis.calc.pe
 	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.VariableRecord, java.lang.Boolean> OVERRIDE = createField("override", org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaulted(true), this, "");
 
 	/**
-	 * The column <code>calc.variable.dimension_table</code>.
-	 */
-	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.VariableRecord, java.lang.String> DIMENSION_TABLE = createField("dimension_table", org.jooq.impl.SQLDataType.VARCHAR.length(255).defaulted(true), this, "");
-
-	/**
 	 * The column <code>calc.variable.degenerate_dimension</code>.
 	 */
 	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.VariableRecord, java.lang.Boolean> DEGENERATE_DIMENSION = createField("degenerate_dimension", org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaulted(true), this, "");
@@ -95,11 +90,6 @@ public class VariableTable extends org.jooq.impl.TableImpl<org.openforis.calc.pe
 	 * The column <code>calc.variable.output_value_column</code>.
 	 */
 	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.VariableRecord, java.lang.String> OUTPUT_VALUE_COLUMN = createField("output_value_column", org.jooq.impl.SQLDataType.VARCHAR.length(255).defaulted(true), this, "");
-
-	/**
-	 * The column <code>calc.variable.output_category_id_column</code>.
-	 */
-	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.VariableRecord, java.lang.String> OUTPUT_CATEGORY_ID_COLUMN = createField("output_category_id_column", org.jooq.impl.SQLDataType.VARCHAR.length(255).defaulted(true), this, "");
 
 	/**
 	 * The column <code>calc.variable.caption</code>.
@@ -122,19 +112,9 @@ public class VariableTable extends org.jooq.impl.TableImpl<org.openforis.calc.pe
 	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.VariableRecord, java.lang.Integer> VARIABLE_PER_HA_ID = createField("variable_per_ha_id", org.jooq.impl.SQLDataType.INTEGER.defaulted(true), this, "");
 
 	/**
-	 * The column <code>calc.variable.dimension_table_id_column</code>.
+	 * The column <code>calc.variable.category_level_id</code>.
 	 */
-	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.VariableRecord, java.lang.String> DIMENSION_TABLE_ID_COLUMN = createField("dimension_table_id_column", org.jooq.impl.SQLDataType.VARCHAR.length(255).defaulted(true), this, "");
-
-	/**
-	 * The column <code>calc.variable.dimension_table_code_column</code>.
-	 */
-	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.VariableRecord, java.lang.String> DIMENSION_TABLE_CODE_COLUMN = createField("dimension_table_code_column", org.jooq.impl.SQLDataType.VARCHAR.length(255).defaulted(true), this, "");
-
-	/**
-	 * The column <code>calc.variable.dimension_table_caption_column</code>.
-	 */
-	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.VariableRecord, java.lang.String> DIMENSION_TABLE_CAPTION_COLUMN = createField("dimension_table_caption_column", org.jooq.impl.SQLDataType.VARCHAR.length(255).defaulted(true), this, "");
+	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.VariableRecord, java.lang.Long> CATEGORY_LEVEL_ID = createField("category_level_id", org.jooq.impl.SQLDataType.BIGINT.defaulted(true), this, "");
 
 	/**
 	 * Create a <code>calc.variable</code> table reference
@@ -187,7 +167,7 @@ public class VariableTable extends org.jooq.impl.TableImpl<org.openforis.calc.pe
 	 */
 	@Override
 	public java.util.List<org.jooq.ForeignKey<org.openforis.calc.persistence.jooq.tables.records.VariableRecord, ?>> getReferences() {
-		return java.util.Arrays.<org.jooq.ForeignKey<org.openforis.calc.persistence.jooq.tables.records.VariableRecord, ?>>asList(org.openforis.calc.persistence.jooq.Keys.VARIABLE__VARIABLE_ENTITY_FKEY, org.openforis.calc.persistence.jooq.Keys.VARIABLE__VARIABLE_VARIABLE_PER_HA_FKEY);
+		return java.util.Arrays.<org.jooq.ForeignKey<org.openforis.calc.persistence.jooq.tables.records.VariableRecord, ?>>asList(org.openforis.calc.persistence.jooq.Keys.VARIABLE__VARIABLE_ENTITY_FKEY, org.openforis.calc.persistence.jooq.Keys.VARIABLE__VARIABLE_VARIABLE_PER_HA_FKEY, org.openforis.calc.persistence.jooq.Keys.VARIABLE__VARIABLE_CATEGORY_LEVEL_FK);
 	}
 
 	/**

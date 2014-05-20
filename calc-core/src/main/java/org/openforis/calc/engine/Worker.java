@@ -69,9 +69,9 @@ public abstract class Worker {
 			throw new IllegalStateException("Already run");
 		}
 		try {
-			this.setStatus( Status.RUNNING );
-			
 			this.startTime = System.currentTimeMillis();
+
+			this.setStatus( Status.RUNNING );
 			execute();
 			this.setStatus( Status.COMPLETED );
 			

@@ -34,6 +34,21 @@ public class Tables {
 	public static final org.openforis.calc.persistence.jooq.tables.CalculationStepTable CALCULATION_STEP = org.openforis.calc.persistence.jooq.tables.CalculationStepTable.CALCULATION_STEP;
 
 	/**
+	 * The table calc.category
+	 */
+	public static final org.openforis.calc.persistence.jooq.tables.CategoryTable CATEGORY = org.openforis.calc.persistence.jooq.tables.CategoryTable.CATEGORY;
+
+	/**
+	 * The table calc.category_hierarchy
+	 */
+	public static final org.openforis.calc.persistence.jooq.tables.CategoryHierarchyTable CATEGORY_HIERARCHY = org.openforis.calc.persistence.jooq.tables.CategoryHierarchyTable.CATEGORY_HIERARCHY;
+
+	/**
+	 * The table calc.category_level
+	 */
+	public static final org.openforis.calc.persistence.jooq.tables.CategoryLevelTable CATEGORY_LEVEL = org.openforis.calc.persistence.jooq.tables.CategoryLevelTable.CATEGORY_LEVEL;
+
+	/**
 	 * The table calc.entity
 	 */
 	public static final org.openforis.calc.persistence.jooq.tables.EntityTable ENTITY = org.openforis.calc.persistence.jooq.tables.EntityTable.ENTITY;

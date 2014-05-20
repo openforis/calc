@@ -5,7 +5,6 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.json.simple.JSONObject;
-import org.openforis.calc.engine.CollectTaskService;
 import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceService;
@@ -38,9 +37,6 @@ public class VariableController {
 	@Autowired
 	private TaskManager taskManager;
 
-	@Autowired
-	private CollectTaskService collectTaskManager;
-	
 	@Autowired
 	private VariableDao variableDao;
 	

@@ -4,6 +4,7 @@ import javax.sql.DataSource;
 
 import org.openforis.calc.engine.Job;
 import org.openforis.calc.engine.Workspace;
+import org.openforis.calc.schema.Schemas;
 import org.openforis.collect.model.CollectSurvey;
 import org.openforis.collect.relational.CollectRdbException;
 import org.openforis.collect.relational.model.RelationalSchema;
@@ -13,12 +14,10 @@ import org.openforis.collect.relational.model.RelationalSchemaGenerator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
- * 
- * @author M. Togna
  * @author S. Ricci
- *
+ * @author Mino Togna
  */
-public abstract class CollectJob extends Job {
+public class CollectSurveyImportJob extends Job {
 
 	@JsonIgnore
 	private CollectSurvey survey;
@@ -26,7 +25,7 @@ public abstract class CollectJob extends Job {
 	@JsonIgnore
 	private RelationalSchema inputRelationalSchema;
 
-	public CollectJob(Workspace workspace, DataSource dataSource, CollectSurvey survey) {
+	public CollectSurveyImportJob(  Workspace workspace, DataSource dataSource, CollectSurvey survey  ){
 		super(workspace, dataSource);
 		this.survey = survey;
 	}
@@ -40,15 +39,15 @@ public abstract class CollectJob extends Job {
 	private RelationalSchema createInputRelationalSchema() {
 		String inputSchemaName = getWorkspace().getInputSchema();
 		RelationalSchemaConfig config = RelationalSchemaConfig.createDefault();
-		config.setDefaultCode("-1");
-		config.setUniqueColumnNames(true);
-		RelationalSchemaGenerator rdbGenerator = new RelationalSchemaGenerator(config);
+		config.setDefaultCode( "-1" );
+		config.setUniqueColumnNames( true );
+		RelationalSchemaGenerator rdbGenerator = new RelationalSchemaGenerator( config );
 		CollectSurvey survey = getSurvey();
 		try {
-			RelationalSchema schema = rdbGenerator.generateSchema(survey, inputSchemaName);
+			RelationalSchema schema = rdbGenerator.generateSchema( survey, inputSchemaName );
 			return schema;
-		} catch (CollectRdbException e) {
-			throw new RuntimeException("Error generating relational input schema", e);
+		} catch ( CollectRdbException e ){
+			throw new RuntimeException( "Error generating relational input schema" , e );
 		}
 	}
 	
@@ -58,5 +57,16 @@ public abstract class CollectJob extends Job {
 	
 	protected RelationalSchema getInputRelationalSchema() {
 		return inputRelationalSchema;
+	}
+	
+	@Override
+	public String getName() {
+		return "Collect data import";
+	}
+
+
+	public void updateWorkspace(Workspace ws) {
+		setWorkspace(ws);
+		setSchemas( new Schemas(ws) );
 	}
 }

@@ -72,9 +72,6 @@ public class Job extends Worker implements Iterable<Task> {
 	public void init() {
 		super.init();
 		log().debug("Initializing");
-		// for (Worker task : tasks) {
-		// task.init();
-		// }
 	}
 
 	@Override

@@ -15,8 +15,8 @@ CalculationStepEditManager = function (container) {
 	this.$variableCombo 		= this.$form.find("[name='variableId']").combobox();
 	this.$addVariableButton		= this.$form.find("[name=add-variable]");
 	
-	this.equationListCombo		= this.$form.find( '[name=equation-list]' ).combobox();
-	this.codeVariableCombo		= this.$form.find( '[name=code-variable]' ).combobox();
+	this.equationListCombo		= this.$form.find( '[name=equationList]' ).combobox();
+	this.codeVariableCombo		= this.$form.find( '[name=codeVariable]' ).combobox();
 	
 	// sections to show / hide based on the type selection
 	this.rScriptForm			= this.container.find( ".r-script-form" );
@@ -150,11 +150,11 @@ CalculationStepEditManager.prototype.initEventHandlers = function() {
 /**
  * Create or update the calculation step according to the field values in the form 
  */
-CalculationStepEditManager.prototype.save = function(successCallback, errorCallback) {
+CalculationStepEditManager.prototype.save = function( successCallback, errorCallback ){
 	UI.lock();
 	var $this = this;
 	var $step = $this.$form.serialize();
-	CalculationStepManager.getInstance().save($step,
+	CalculationStepManager.getInstance().save( $step,
 		//success
 		function(response) {
 	    	UI.Form.updateErrors($this.$form, response.errors);
@@ -168,9 +168,10 @@ CalculationStepEditManager.prototype.save = function(successCallback, errorCallb
 	    		$this.currentCalculationStep = response.fields.calculationStep;
 	    		$this.updateForm();
 		    	
-	    		Calc.homeCalculationManager.updateStep($this.currentCalculationStep);
-		    	
-	    		if(successCallback) {
+	    		// update UIs
+	    		Calc.homeCalculationManager.updateStep( $this.currentCalculationStep );
+	    		
+	    		if( successCallback ){
 		    		successCallback( $this.currentCalculationStep );
 	    		};
 	    	}
@@ -340,9 +341,10 @@ CalculationStepEditManager.prototype.equationListChange = function () {
 			label.html( "Variable '" +variable+ "'");
 			div.append( label );
 
-			var divSelect = $( '<div class="col-md-10">' );
-			var select = $( '<select class="form-control"></select>' );
-			select.attr( "name" , variable );
+			var divSelect 		= $( '<div class="col-md-10">' );
+			var select 			= $( '<select class="form-control"></select>' );
+			var selectNameAttr 	= "equationVariables['" + variable + "']"; 
+			select.attr( "name" , selectNameAttr );
 			divSelect.append( select );	
 			var combo = select.combobox();
 			combo.data( this.getSelectedEntity().getAncestorsVariables() , "id" , "name" );

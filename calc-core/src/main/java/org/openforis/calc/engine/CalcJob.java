@@ -20,7 +20,7 @@ import org.jooq.impl.SQLDataType;
 import org.jooq.impl.SchemaImpl;
 import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.ProcessingChain;
-import org.openforis.calc.chain.ProcessingChainService;
+import org.openforis.calc.chain.ProcessingChainManager;
 import org.openforis.calc.chain.post.CreateAggregateTablesTask;
 import org.openforis.calc.chain.post.PublishRolapSchemaTask;
 import org.openforis.calc.metadata.Entity;
@@ -58,7 +58,7 @@ public class CalcJob extends Job {
 	private boolean tempResults;
 	
 	@Autowired
-	private ProcessingChainService processingChainService;
+	private ProcessingChainManager processingChainService;
 	
 	@JsonIgnore
 	private CalcJobEntityGroup group;

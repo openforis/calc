@@ -44,7 +44,7 @@ public class ProcessingChain extends ProcessingChainBase {
 		setWorkspaceId( workspace.getId() );
 	}
 	
-	public CalculationStep getCalculationStep( int stepId ){
+	public CalculationStep getCalculationStepById( int stepId ){
 		CalculationStep step = null;
 		
 		for ( CalculationStep tmpStep : steps ) {

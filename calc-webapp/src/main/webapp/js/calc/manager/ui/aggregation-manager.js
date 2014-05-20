@@ -14,19 +14,21 @@ AggregationManager = function( container ) {
     // this.samplingUnitSection = this.container.find(".sampling-unit-section");
     this.entitiesSection = this.container.find(".entities");
     
-    // aggregate settings ui sections (each entity has their own aggregate
-    // settings)
-    this.aggregateSettingsSection = this.container.find(".aggregate-settings-section");
-    this.plotAreaSection = this.container.find(".plot-area-section");
-    this.variablesSection = this.container.find(".variables");
-    this.variableSection = this.container.find(".variable");
-    this.variablePerHaSection = this.container.find(".variable-per-ha");
+    // aggregate settings ui sections (each entity has their own aggregate settings)
+    // not used anymore. TODO remove ununsed code
+    this.aggregateSettingsSection 	= this.container.find(".aggregate-settings-section");
+    this.plotAreaSection 			= this.container.find(".plot-area-section");
+    this.variablesSection 			= this.container.find(".variables");
+    this.variableSection 			= this.container.find(".variable");
+    this.variablePerHaSection 		= this.container.find(".variable-per-ha");
     
     // r script
-    this.rScriptInput = this.container.find("[name=plot-area]");
-    this.rScript = new RScript(this.rScriptInput);
+    this.rScriptInput 	= this.container.find("[name=plot-area]");
+    this.rScript 		= new RScript( this.rScriptInput );
     
-    // init page
+    // save button
+    this.saveBtn 	=	this.container.find( 'button[name=save-btn]' );
+    
     this.init();
 };
 
@@ -35,46 +37,41 @@ AggregationManager = function( container ) {
 AggregationManager.prototype.init = function() {
     var $this = this;
     
-    // get the active workspace
     WorkspaceManager.getInstance().activeWorkspace( function( ws ) {
 	
-	// refresh sampling design select.
-	// $this.samplingUnitCombo.data(ws.entities, 'id','name');
 	
-	// if sampling design is defined for active workspace update ui
-	if (ws.samplingDesign) {
-	    var sd = ws.samplingDesign;
-	    if (sd.samplingUnitId) {
-		var entity = ws.getEntityById(sd.samplingUnitId);
-		if (entity) {
-		    // $this.samplingUnitCombo.val(entity.id);
-		    $this.samplingUnitUpdate(entity.id);
-//		    $.proxy(samplingUnitUpdate, $this)(entity.id);
+    	// if sampling design is defined for active workspace update ui
+    	if ( ws.samplingDesign ){
+			var sd = ws.samplingDesign;
+		    if ( sd.samplingUnitId ){
+		    	var entity = ws.getEntityById(sd.samplingUnitId);
+		    	if( entity ){
+		    		$this.samplingUnitUpdate(entity.id);
+		    	}
+		    }
 		}
-	    }
-	}
+    	
+    	$this.saveBtn.click(function(e){
+    		e.preventDefault();
+    		
+    		UI.lock();
+    	    var entityId = $this.currentEntity.id;
+    	    
+    	    WorkspaceManager.getInstance().activeWorkspaceSetEntityPlotArea( entityId, $this.rScriptInput.val(), function( ws ) {
+    	    		$this.currentEntity = ws.getEntityById(entityId);
+    	    		UI.unlock();
+    	    		
+    	    		UI.showSuccess("Saved!", true);
+    	    });
+    	});
 	
-	/**
-	 * Event handlers
-	 */
+		// refresh sampling design select.
+		// $this.samplingUnitCombo.data(ws.entities, 'id','name');
 	// when sampling unit changes, save it and shows entities	
 	// $this.samplingUnitCombo.change( function(e){
 	// var entityId = $this.samplingUnitCombo.val();
 	// $.proxy(samplingUnitChange , $this)(entityId);
 	// });
-	
-	// bind event for focus out of plot area script input
-	$this.rScriptInput.focusout(function( e ) {
-//	    UI.disableAll();
-	    UI.lock();
-	    var entityId = $this.currentEntity.id;
-	    WorkspaceManager.getInstance().activeWorkspaceSetEntityPlotArea(entityId, $this.rScriptInput.val(), function( ws ) {
-		$this.currentEntity = ws.getEntityById(entityId);
-		// succesfully updated
-//		UI.enableAll();
-		UI.unlock();
-	    });
-	});
 	
     } );
 };
@@ -175,6 +172,10 @@ AggregationManager.prototype.entitiesUpdate = function( entities ) {
 	t += 15;
     });
 };
+
+
+
+
 /*
  * ==========================================
  * variable aggregation section not used now

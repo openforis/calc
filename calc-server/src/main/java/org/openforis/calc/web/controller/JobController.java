@@ -17,7 +17,7 @@ import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceLockedException;
 import org.openforis.calc.engine.WorkspaceService;
-import org.openforis.calc.json.ParameterMapJsonParser;
+import org.openforis.calc.persistence.jooq.ParameterMapConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -55,7 +55,7 @@ public class JobController {
 		
 		ProcessingChain defaultProcessingChain = workspace.getDefaultProcessingChain();
 		
-		CalculationStep step = defaultProcessingChain.getCalculationStep( stepId );
+		CalculationStep step = defaultProcessingChain.getCalculationStepById( stepId );
 
 //		workspaceService.updateResultTable( step );
 		
@@ -80,7 +80,7 @@ public class JobController {
 		Workspace workspace = workspaceService.getActiveWorkspace();
 		
 		CalcJob job = taskManager.createDefaultCalcJob( workspace , true );
-		workspaceService.resetCalculationResults( workspace );
+		workspaceService.resetResults( workspace );
 		
 		taskManager.startJob( job );
 
@@ -103,9 +103,9 @@ public class JobController {
 		
 		ProcessingChain defaultProcessingChain = workspace.getDefaultProcessingChain();
 		
-		CalculationStep step = defaultProcessingChain.getCalculationStep(stepId);
+		CalculationStep step = defaultProcessingChain.getCalculationStepById(stepId);
 
-		ParameterMap parameterMap = new ParameterMapJsonParser().parse(variables);
+		ParameterMap parameterMap = new ParameterMapConverter().from( variables );
 
 		CalcTestJob job = taskManager.createCalcTestJob(workspace, step, parameterMap);
 		job.setCalculationStep(step);

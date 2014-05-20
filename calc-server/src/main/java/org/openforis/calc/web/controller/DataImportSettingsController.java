@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @Controller
 @RequestMapping(value = "/rest/workspace/active/")
-public class DataSettingsController {
+public class DataImportSettingsController {
 
 	@Autowired
 	private WorkspaceService workspaceService;

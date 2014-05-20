@@ -22,29 +22,24 @@ public class ResultTable extends DataTable {
 
 	private TableField<Record, BigDecimal> plotArea;
 	
-	public ResultTable(Entity entity, DataSchema schema, boolean temporary) {
+	public ResultTable( Entity entity, DataSchema schema, boolean temporary ) {
 		super(entity, (temporary?entity.getTemporaryResultsTable():entity.getResultsTable()), schema);
 		createPrimaryKeyField();
-//		createParentIdField();
-//		createCategoryValueFields(entity, true);
 		createQuantityFields();
 		
-		if( entity.getPlotAreaRScript() != null ){
-//			Field<BigDecimal> field = createValueField(var, Psql.DOUBLE_PRECISION, valueColumn);
+		// for now it always creates the plot area column
+//		if( entity.getPlotAreaRScript() != null ){
 			plotArea = super.createField( PLOT_AREA_COLUMN_NAME, Psql.DOUBLE_PRECISION , this );
-		}
-		
-//		createCoordinateFields();
-//		createTextFields();
+//		}
 	}
 	
 	private void createQuantityFields() {
 		Collection<QuantitativeVariable> quantitativeVariables = getEntity().getDefaultProcessingChainOutputVariables();
 		for (QuantitativeVariable var : quantitativeVariables) {
-			createQuantityField(var, var.getOutputValueColumn());
+			createQuantityField( var, var.getOutputValueColumn() );
 		}
 	}
-
+	
 	public ResultTable(Entity entity, DataSchema schema) {
 		this(entity, schema, false);
 	}
@@ -52,19 +47,4 @@ public class ResultTable extends DataTable {
 	public TableField<Record, BigDecimal> getPlotArea() {
 		return plotArea;
 	}
-
-//	@SuppressWarnings("unchecked")
-//	@Override
-//	protected <T> Field<T> createValueField(Variable<?> var, DataType<T> valueType, String valueColumn) {
-//		DataType<?> sqlType;
-//		if ( var.getOriginalId() == null ) {
-//			//user defined variable
-//			sqlType = valueType;;
-//		} else {
-//			// we don't know the datatype of columns in the input schema...
-//			sqlType = SQLDataType.OTHER;
-//		}
-//		return (Field<T>) super.createValueField(var, sqlType, valueColumn);
-//	}
-
 }

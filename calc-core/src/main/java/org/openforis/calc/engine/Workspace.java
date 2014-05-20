@@ -12,6 +12,9 @@ import org.apache.commons.collections.Predicate;
 import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.metadata.AoiHierarchy;
+import org.openforis.calc.metadata.Category;
+import org.openforis.calc.metadata.CategoryHierarchy;
+import org.openforis.calc.metadata.CategoryLevel;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.EquationList;
 import org.openforis.calc.metadata.SamplingDesign;
@@ -45,6 +48,8 @@ public class Workspace extends WorkspaceBase {
 	private List<ProcessingChain> processingChains;
 
 	private List<EquationList> equationLists;
+	
+	private List<Category> categories;
 	
 	private SamplingDesign samplingDesign;
 	
@@ -167,6 +172,56 @@ public class Workspace extends WorkspaceBase {
 			}
 		}
 	}
+	
+	public List<Category> getCategories() {
+		return org.openforis.commons.collection.CollectionUtils.unmodifiableList( categories );
+	}
+	
+	public void setCategories(List<Category> categories) {
+		this.categories = new ArrayList<Category>();
+		for (Category category : categories) {
+			addCategory( category );
+		}
+	}
+	
+	void addCategory( Category category ){
+		if( this.categories == null ){
+			this.categories = new ArrayList<Category>();
+		}
+		category.setWorkspace( this );
+		this.categories.add( category );
+	}
+	
+	public CategoryLevel getCategoryLevelById( int categoryLevelId ){
+		for ( Category category : getCategories() ){
+			List<CategoryHierarchy> hierarchies = category.getHierarchies();
+			for ( CategoryHierarchy hierarchy : hierarchies ){
+				List<CategoryLevel> levels = hierarchy.getLevels();
+				for ( CategoryLevel level : levels ) {
+					if( level.getId().equals(categoryLevelId) ){
+						return level;
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
+	public CategoryLevel getCategoryLevelByTableName( String tableName ) {
+		for ( Category category : getCategories() ) {
+			List<CategoryHierarchy> hierarchies = category.getHierarchies();
+			for ( CategoryHierarchy hierarchy : hierarchies ){
+				List<CategoryLevel> levels = hierarchy.getLevels();
+				for ( CategoryLevel level : levels ) {
+					if( level.getTableName().equals(tableName) ){
+						return level;
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
 	@JsonInclude
 	public String getPhase1PlotTableName() {
 		return String.format( "_phase1_plot_%s" , this.getName() );
@@ -347,7 +402,7 @@ public class Workspace extends WorkspaceBase {
 	}
 
 	/** =====================================
-	 * 		Sampling Desing utility methods
+	 * 		Sampling Design utility methods
 	 * 	=====================================
 	 */
 	public boolean isSamplingUnit(int entityId) {

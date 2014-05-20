@@ -84,6 +84,7 @@ public class VariableDao extends org.openforis.calc.persistence.jooq.tables.daos
 			.fetch( new VariableRecordMapper(workspace) );
 	}
 	
+	@Transactional
 	public void save( Variable<?>... variables ) {
 		if( variables != null ) {
 			
@@ -95,9 +96,12 @@ public class VariableDao extends org.openforis.calc.persistence.jooq.tables.daos
 					throw new IllegalStateException( "Found detached variable" );
 				}
 				variable.setEntityId( entity.getId() );
-
 				// set sortOrder
 				variable.setSortOrder( i + 1 );
+				if( variable instanceof CategoricalVariable<?> && ((CategoricalVariable<?>) variable).getCategoryLevel() != null ){
+					CategoryLevel categoryLevel = ( (CategoricalVariable<?>) variable ).getCategoryLevel();
+					variable.setCategoryLevelId( categoryLevel.getId().longValue() );
+				}
 				
 				// insert or update variable
 				if( variable.getId() == null ) {
