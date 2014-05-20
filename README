@@ -19,21 +19,11 @@
 	
 2. Optional (not needed at the moment). After installation,  run stackbuilder to install PostGis
 
-3. Install R 3.x		
-	http://www.r-project.org/
+3. Install R 3.x ( http://www.r-project.org/ )
 	
-	3.1 Set R environment variables 
+	Follow specific operating system instructions in the next section ( R Installation instructions )
 	
-		Follow specific operating system instructions in the next section ( R Installation instructions )
-	
-	3.2 Install R required packages (inside R terminal type)
-	
-		install.packages("RPostgreSQL")
-		install.packages("sqldf")
-		install.packages("rJava")
-
-	3.3 Check that rJava has been properly installed
-	
+	* Note: after having installed R and all libraries, check that rJava has been properly installed:
 		inside R terminal type: library(rJava)
 		
 4. Start Calc
@@ -141,20 +131,25 @@
 
 	- Download R for Windows (http://cran.r-project.org/bin/windows/base/)
 	
-	- Run the installer (If installing R under Windows Vista/7, please install it outside of c:\program files, e.g. c:\opt\r)
+	- Run the installer
+	 
+		IMPORTANT: If installing R under Windows Vista/7, please install it outside of c:\program files, e.g. c:\opt\r
 		( In case of troubles installing R under Windows Vista/7, please see the R FAQ (http://cran.r-project.org/bin/windows/base/rw-FAQ.html) ) 
 	
 	- Set up environment variables:
 	
-		- Define R_HOME environment variable ( e.g. R_HOME=c:\opt\R )
+		- Define R_HOME environment variable ( e.g. R_HOME=c:\opt\R\R-VERSION_NUMBER )
 		
 		- Define JAVA_HOME environment variable ( e.g. JAVA_HOME=c:\opt\java\jdk-1.7 )
 		
-		- Add to PATH environment variable: %R_HOME%\bin; %R_HOME%\bin\i386 ; %R_HOME%\library\rJava\jri ; %JAVA_HOME%\jre\bin\server;
+		- Add to PATH environment variable:
 		
-			( e.g. PATH=%PATH%;%R_HOME%\bin;%R_HOME%\bin\i386;%R_HOME%\library\rJava\jri;%JAVA_HOME%\jre\bin\server; )
-			
-	
+			- Windows 32 bit (i386): 				
+				%R_HOME%\bin; %R_HOME%\bin\i386 ; %R_HOME%\library\rJava\jri ; %JAVA_HOME%\jre\bin\server;
+								
+			- Windows 64 bit (x64): 				
+				%R_HOME%\bin; %R_HOME%\bin\x64 ; %R_HOME%\library\rJava\jri\x64 ; %JAVA_HOME%\jre\bin\server;
+					
 	- Install R required packages:
 		- From command line type:
 			R
@@ -169,12 +164,11 @@
 				install.packages("rJava")
 				install.packages("sqldf")
 				
-	- Check that rJava is properly installed.
-		Inside R terminal type:
+	- Troubleshooting								
+			- if getting an error, check that JAVA_HOME and PATH have been properly defined
 			
-			library(rJava)
-			
-			(if getting an error, check that JAVA_HOME and PATH have been properly defined)
+			- If OF calc cannot read libraries (e.g. you see a message in the console: Error in library("RPostgreSQL") : there is no package called ‘RPostgreSQL’) 
+			you have probably installed R into the Program Files folder. Please read carefully how to install R on windows.
 	
 ============================================================================
 	* Tomcat 7 database parameters configuration
