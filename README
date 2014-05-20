@@ -159,6 +159,10 @@
 		- From command line type:
 			R
 			
+		- Make sure .libPaths() are pointing to the current R installation before installing the libraries.
+			You can restore it by typing 
+			.libPaths( paste(R.home() , 'library' , sep='/') )
+				
 		- Inside R terminal type:
 				
 				install.packages("RPostgreSQL")
