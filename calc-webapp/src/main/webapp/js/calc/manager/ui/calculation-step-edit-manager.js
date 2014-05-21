@@ -11,6 +11,7 @@ CalculationStepEditManager = function (container) {
 	this.currentCalculationStep = null;
 	
 	// ui form elements
+	this.typeInput				= this.$form.find( '[name=type]' );
 	this.$entityCombo 			= this.$form.find("[name='entityId']").combobox();
 	this.$variableCombo 		= this.$form.find("[name='variableId']").combobox();
 	this.$addVariableButton		= this.$form.find("[name=add-variable]");
@@ -23,13 +24,18 @@ CalculationStepEditManager = function (container) {
 	this.rScriptForm.hide();
 	this.equationForm			= this.container.find( ".equation-form" );
 	this.equationForm.hide();
+	this.categoryForm			= this.container.find( ".category-form" );
+	this.categoryForm.hide();
 	
 	// calculation step type buttons
-	var typeRScriptButton = this.$form.find( 'button[name="type-r-script"]' );
-	this.rScriptButton = new OptionButton( typeRScriptButton );
+	var typeRScriptButton 	= this.$form.find( 'button[name="type-r-script"]' );
+	this.rScriptButton 		= new OptionButton( typeRScriptButton );
 	
-	var typeEquationButton = this.$form.find( 'button[name="type-equation"]' );
-	this.equationButton = new OptionButton( typeEquationButton );
+	var typeCategoryButton 	= this.$form.find( 'button[name="type-category"]' );
+	this.categoryButton 	= new OptionButton( typeCategoryButton );
+	
+	var typeEquationButton 	= this.$form.find( 'button[name="type-equation"]' );
+	this.equationButton 	= new OptionButton( typeEquationButton );
 	
 	//initialized in the init method
 	//R script component manager
@@ -117,28 +123,55 @@ CalculationStepEditManager.prototype.initEventHandlers = function() {
 	this.rScriptButton.select( function() {
 		UI.disable( this.button );
 		$this.equationButton.deselect();
+		$this.categoryButton.deselect();
 		
-		$this.$form.find( '[name=type]' ).val( "SCRIPT" );
+		$this.typeInput.val( "SCRIPT" );
 		$this.rScriptForm.fadeIn( 300 );
 	});
 	this.rScriptButton.deselect( function() {
 		UI.enable( this.button );
 		
-		$this.$form.find( '[name=type]' ).val( "" );
+		$this.typeInput.val( "" );
 		$this.rScriptForm.hide();
+	});
+
+	this.categoryButton.select( function() {
+		UI.disable( this.button );
+		$this.rScriptButton.deselect();
+		$this.equationButton.deselect();
+		
+		//reset output variable. not needed
+		// not necessary. it should be easier to deselect the combobox...
+//		$this.$variableCombo.reset();
+//		this.equationListCombo.data( this.workspace.equationLists , "id" , "name" );
+		$this.$variableCombo.disable();
+		UI.disable( $this.$addVariableButton );
+		
+		$this.typeInput.val( "CATEGORY" );
+		$this.categoryForm.fadeIn( 300 );
+	});
+	this.categoryButton.deselect( function() {
+		UI.enable( this.button );
+		
+		$this.$variableCombo.enable();
+		UI.enable( $this.$addVariableButton );
+		
+		$this.typeInput.val( "" );
+		$this.categoryForm.hide();
 	});
 	
 	this.equationButton.select( function() {
 		UI.disable( this.button );
 		$this.rScriptButton.deselect();
+		$this.categoryButton.deselect();
 		
-		$this.$form.find( '[name=type]' ).val( "EQUATION" );
+		$this.typeInput.val( "EQUATION" );
 		$this.equationForm.fadeIn( 300 );
 	});
 	this.equationButton.deselect( function() {
 		UI.enable( this.button );
 		
-		$this.$form.find( '[name=type]' ).val( "" );
+		$this.typeInput.val( "" );
 		$this.equationForm.hide();
 	});
 	
@@ -215,11 +248,14 @@ CalculationStepEditManager.prototype.updateForm = function() {
 
 	this.$variableCombo.val( this.currentCalculationStep.outputVariableId );
 	
+	UI.Form.setFieldValues( this.$form, this.currentCalculationStep );
+	
 	switch ( this.currentCalculationStep.type ) {
-		case "SCRIPT":
+		case "SCRIPT" :
 			this.rScriptButton.select();
 			break;
-		case "EQUATION":
+		
+		case "EQUATION" :
 			this.equationButton.select();
 			// populate equation form
 			var params = this.currentCalculationStep.parameters;
@@ -238,14 +274,19 @@ CalculationStepEditManager.prototype.updateForm = function() {
 				this.equationListVariableCombos[ eqVar ].val( equiationVariableId );
 			}
 			
+			this.$RScript.$inputField.val( "" );
+			break;
+		
+		case "CATEGORY" :
+
+			this.$RScript.$inputField.val( "" );
 			break;
 	}
 	
-	UI.Form.setFieldValues( this.$form, this.currentCalculationStep );
 	UI.unlock();
 	
 	//reset changed state 
-	this.$form.data('changed', false);
+	this.$form.data( 'changed', false );
 };
 	
 /**
@@ -267,7 +308,7 @@ CalculationStepEditManager.prototype.entityChange = function() {
 	var entityId = this.getSelectedEntityId();
 	var entity = this.workspace.getEntityById(entityId);
 	
-	if ( entity ) {
+	if ( entity ){
 		// populate fields that need the entity
 		// r script
 		this.$RScript.entity = entity;
@@ -288,12 +329,13 @@ CalculationStepEditManager.prototype.entityChange = function() {
 		this.$variableCombo.reset();
 		this.$variableCombo.disable();
 	
-		// not necessary. it shoud be easier to deselect the combobox...
-		this.equationListCombo.reset();
-		this.equationListCombo.data( this.workspace.equationLists , "id" , "name" );
+		// not necessary. it should be easier to deselect the combobox...
+		this.equationListCombo.val( null );
+//		this.equationListCombo.reset();
+//		this.equationListCombo.data( this.workspace.equationLists , "id" , "name" );
 		
 		this.equationListCombo.disable();
-		
+		this.equationListChange();
 		this.codeVariableCombo.reset();
 		this.codeVariableCombo.disable();
 	}
@@ -306,7 +348,7 @@ CalculationStepEditManager.prototype.entityChange = function() {
 CalculationStepEditManager.prototype.updateVariableSelect = function() {
 	var entity = this.getSelectedEntity();
 	if( entity ) {
-		var variables = entity.outputVariables();
+		var variables = entity.quantitativeOutputVariables();
 		this.$variableCombo.data( variables, "id", "name" );
 	}
 };
@@ -360,6 +402,9 @@ CalculationStepEditManager.prototype.equationListChange = function () {
 		this.codeVariableCombo.reset();
 	}
 };
+
+
+
 
 AddVariableModal = function( triggerButton , editManager ) {
 	// calculation step edit manager instance

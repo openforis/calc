@@ -20,7 +20,16 @@
 		<input type="hidden" class="form-control" name="id" /> 
 		<div class="row col-md-8 col-md-offset-2">
 				<fieldset>
-<!-- 					<legend>Formula Editor</legend> -->
+					<div class="form-group">
+						<label class="col-md-2 control-label">Type</label>
+						<div class="col-md-10" style="text-align: left">
+							<input type="hidden" name="type">
+							<button class="btn option-btn" name="type-r-script" style="min-width: 10em">R script</button>
+							<button class="btn option-btn" name="type-equation" style="min-width: 10em">External equation</button>
+							<button class="btn option-btn" name="type-category" style="min-width: 10em">Category</button>
+						</div>
+					</div>
+					
 					<div class="form-group">
 						<label class="col-md-2 control-label">Caption</label>
 						<div class="col-md-10">
@@ -33,6 +42,7 @@
 							<select class="form-control" name="entityId"></select>
 						</div>
 					</div>
+					
 					<div class="form-group">
 						<label for="select-variable" class="col-md-2 control-label">Variable</label>
 						<div class="col-md-9">
@@ -42,71 +52,49 @@
 								<i class="icon-plus-sign-alt"></i>
 							</button>
 					</div>
-					<div class="form-group">
-						<label class="col-md-2 control-label">Type</label>
-						<div class="col-md-10" style="text-align: left">
-							<input type="hidden" name="type">
-							<button class="btn option-btn" name="type-r-script" style="min-width: 10em">R script</button>
-							<button class="btn option-btn" name="type-equation" style="min-width: 10em">External equation</button>
-						</div>
-					</div>
 					
 					<div class="form-group r-script-form">
-<!-- 						<div class="row"> -->
 							<label class="col-md-2 control-label">Script</label>
 							<div class="col-md-10">
-								
-								<!-- Formula editor -->
-<!-- 								<div class="row small-text formula-editor"> -->
-<!-- 									<div class="col-md-12"> -->
-<!-- 										Input variables -->
-<!-- 										<button name="add-input-variable" class="calculation btn btn-info"> -->
-<!-- 											<i class="icon-plus-sign-alt"></i> -->
-<!-- 										</button> -->
-<!-- 									</div> -->
-<!-- 									<div class="row input-vars"> -->
-<!-- 									</div> -->
-<!-- 								</div> -->
-<!-- 								<div class="checkbox col-lg-10"> -->
-<!-- 									<label> <input type="checkbox" name="external-formula"> Run as external process </label> -->
-<!-- 								</div>								 -->
 								<div class="row" style="margin-top: 5px;">
 									<textarea class="form-control" rows="13" name="script"></textarea>
 								</div>
 							</div>
 					</div>
+					
+					<div class="form-group category-form">
+						<label class="col-md-2 control-label">Category?!</label>
+<!-- 						<div class="col-md-10 form-container"> -->
+<!-- 							<div class="form-group"> -->
+<!-- 								<label class="col-md-2 control-label">Equation list</label> -->
+<!-- 								<div class="col-md-10"> -->
+<!-- 									<select class="form-control" name="equationList"></select> -->
+<!-- 								</div> -->
+<!-- 							</div> -->
+<!-- 							<div class="form-group"> -->
+<!-- 								<label class="col-md-2 control-label">Code variable</label> -->
+<!-- 								<div class="col-md-10"> -->
+<!-- 									<select class="form-control" name="codeVariable"></select> -->
+<!-- 								</div> -->
+<!-- 							</div> -->
+<!-- 						</div> -->
+					</div>
+					
 					<div class="form-group equation-form">
 						<label class="col-md-2 control-label">Equation</label>
 						<div class="col-md-10 form-container">
-							
 							<div class="form-group">
 								<label class="col-md-2 control-label">Equation list</label>
 								<div class="col-md-10">
 									<select class="form-control" name="equationList"></select>
 								</div>
 							</div>
-							
 							<div class="form-group">
 								<label class="col-md-2 control-label">Code variable</label>
 								<div class="col-md-10">
 									<select class="form-control" name="codeVariable"></select>
 								</div>
 							</div>
-							
-<!-- 							<div class="form-group"> -->
-<!-- 								<label class="col-md-2 control-label">Variable 'd'</label> -->
-<!-- 								<div class="col-md-10"> -->
-<!-- 									<select class="form-control" name="d"></select> -->
-<!-- 								</div> -->
-<!-- 							</div> -->
-							
-<!-- 							<div class="form-group"> -->
-<!-- 								<label class="col-md-2 control-label">Variable 'h'</label> -->
-<!-- 								<div class="col-md-10"> -->
-<!-- 									<select class="form-control" name="h"></select> -->
-<!-- 								</div> -->
-<!-- 							</div> -->
-							
 						</div>
 					</div>
 					
@@ -270,7 +258,7 @@
 <script>
 $(function() {
 	// step edit page
-	var stepEdit = $("#step-edit-page");
+	var stepEdit = $( "#step-edit-page" );
 	
 	// ui managers 
 	var calculationStepEditManager = new CalculationStepEditManager( stepEdit.find("#calculation-step-edit-container") );	
@@ -293,11 +281,11 @@ $(function() {
 	});
 	
 	// 	Show exec section
-	showExecBtn.click(function(e){
+	showExecBtn.click( function(e){
 		e.preventDefault();
-		if(calculationStepEditManager.currentCalculationStep){
+		if( calculationStepEditManager.currentCalculationStep ){
 			// first save the calculation step if it has changed
-			calculationStepEditManager.saveIfChanged(function(response) {
+			calculationStepEditManager.saveIfChanged( function(response) {
 				var calculationStep = response;
 				calculationStepEditManager.hide();
 				calculationStepResultsManager.hide();

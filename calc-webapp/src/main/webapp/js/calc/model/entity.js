@@ -123,7 +123,7 @@ Entity.prototype.isAggregable = function() {
 /**
  * Returns user defined quantitative variables
  */
-Entity.prototype.outputVariables = function() {
+Entity.prototype.quantitativeOutputVariables = function() {
 	var vars = [];
 	for( var i in this.quantitativeVariables ){
 		var v = this.quantitativeVariables[ i ];

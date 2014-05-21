@@ -34,7 +34,7 @@ public class CalculationStep extends CalculationStepBase {
 	private static final long serialVersionUID = 1L;
 
 	public enum Type {
-		SCRIPT , EQUATION
+		SCRIPT , EQUATION , CATEGORY
 	}
 	
 	@JsonIgnore
