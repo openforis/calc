@@ -485,19 +485,34 @@
 	  this.$element.prop('disabled', false);
 	  this.$button.removeAttr('disabled');
   }
-  
-  , val: function(value) {
-	  if ( value ) {
-		  //set value
-		  this.$source.val(value);
-		  this.$target.val(value);
-		  var label = this.$source.find("option:selected").text();
-		  this.$element.val(label);
-		  this.$container.addClass('combobox-selected');
-	      this.selected = true;
-	  } else {
+  /**
+   * Selects the item with the specified value or returns the selected one if the value parameters is not specified.
+   * By default, the change event is not triggered.
+   * 
+   * @param value The value to set.
+   * @param triggerChange (default = false) If true, triggers the change event
+   */
+  , val: function(value, triggerChange) {
+	  if ( typeof value == "undefined" ) {
 		  //get value
 		  return this.$source.val();
+	  } else {
+		  if ( value == null ) {
+			  //clear element and target
+			  this.clearElement();
+			  this.clearTarget();
+		  } else {
+			  //set value
+			  this.$source.val(value);
+			  this.$target.val(value);
+			  var label = this.$source.find("option:selected").text();
+			  this.$element.val(label);
+			  this.$container.addClass('combobox-selected');
+		      this.selected = true;
+		  }
+		  if ( triggerChange ) {
+			  this.triggerChange();
+		  }
 	  }
   }
   /**
