@@ -43,12 +43,22 @@
 						</div>
 					</div>
 					
-					<div class="form-group">
+					<div class="form-group output-variable-form">
 						<label for="select-variable" class="col-md-2 control-label">Variable</label>
 						<div class="col-md-9">
 							<select class="form-control" name="variableId"></select>
 						</div>
 							<button name="add-variable" type="button" class="calculation btn btn-info col-md-1" disabled="disabled">
+								<i class="icon-plus-sign-alt"></i>
+							</button>
+					</div>
+					
+					<div class="form-group output-category-form">
+						<label for="categoryId" class="col-md-2 control-label">Category</label>
+						<div class="col-md-9">
+							<select class="form-control" name="categoryId"></select>
+						</div>
+							<button name="add-category" type="button" class="calculation btn btn-info col-md-1" >
 								<i class="icon-plus-sign-alt"></i>
 							</button>
 					</div>
@@ -232,7 +242,7 @@
 	<div class="modal fade" id="add-variable-modal">
 		<div class="modal-dialog">
 			<div class="modal-content">
-				<div class="modal-body">
+				<div class="modal-body calculation">
 					<form class="form-vertical" method="POST">
 						<input type="hidden" class="form-control" name="entityId" /> 
 						<fieldset>
@@ -255,6 +265,59 @@
 		</div><!-- /.modal-dialog -->
 	</div><!-- /.modal -->
 	
+	
+	<!-- add category modal form -->
+	<div class="modal fade" id="add-category-form">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-body calculation">
+					<form class="form-horizontal" method="POST">
+<!-- 						<input type="hidden" class="form-control" name="entityId" />  -->
+						<fieldset>
+						
+							<div class="form-group">
+								<label class="col-md-2 control-label">Name</label>
+								<div class="col-md-10">
+									<input type="text" class="form-control" name="name">
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-2 control-label">Caption</label>
+								<div class="col-md-10">
+									<input type="text" class="form-control" name="caption">
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-2 control-label">Classes</label>
+								
+								<div class="col-md-10">
+									<div class="row no-margin">
+										<div class="col-md-3">
+											Code
+										</div>
+										<div class="col-md-7">
+											Caption
+										</div>
+									</div>
+									<div class="row no-margin category-classes">
+									</div>
+								</div>
+							</div>
+							
+							<div class="row" style="margin-top: 25px">
+								<div class="col-md-3 col-md-offset-3">
+									<button type="button" class="btn btn-default save" style="width:100%">Save</button>
+								</div>
+								<div class="col-md-3">
+									<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true" style="width:100%">Cancel</button>
+								</div>
+							</div>					
+						</fieldset>
+					</form>
+				</div>
+			</div><!-- /.modal-content -->
+		</div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
 <script>
 $(function() {
 	// step edit page

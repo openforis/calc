@@ -3,6 +3,7 @@ package org.openforis.calc.engine;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -173,8 +174,24 @@ public class Workspace extends WorkspaceBase {
 		}
 	}
 	
+	/**
+	 * Returns the categories associated to the workspace ordered by 'caption'
+	 * @return
+	 */
 	public List<Category> getCategories() {
-		return org.openforis.commons.collection.CollectionUtils.unmodifiableList( categories );
+		if( categories == null ){
+			return Collections.emptyList();
+		} else {
+			List<Category> list = new ArrayList<Category>( categories );
+			Collections.sort( list, new Comparator<Category>() {
+				public int compare(Category o1, Category o2) {
+					return o1.getCaption().compareToIgnoreCase( o2.getCaption() );
+				}
+			});
+			
+			return org.openforis.commons.collection.CollectionUtils.unmodifiableList( list );
+		}
+		
 	}
 	
 	public void setCategories(List<Category> categories) {

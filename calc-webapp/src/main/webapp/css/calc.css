@@ -931,6 +931,10 @@ table.import-csv-table input[type=checkbox] {
 #calculation-step-exec-container .test-input-var .form-group.small input {
 	width: 100%;
 }
+#step-edit-page .modal label , 
+#step-edit-page .modal{
+	color: #FFF;
+}
 
 /**
 **
