@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables.pojos;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CategoryLevelBase implements java.io.Serializable {
 
-	private static final long serialVersionUID = 1969885109;
+	private static final long serialVersionUID = -102076607;
 
 	private java.lang.Integer id;
 	private java.lang.Integer hierarchyId;
@@ -21,6 +21,7 @@ public class CategoryLevelBase implements java.io.Serializable {
 	private java.lang.String  tableName;
 	private java.lang.String  idColumn;
 	private java.lang.String  captionColumn;
+	private java.lang.String  caption;
 
 	public CategoryLevelBase() {}
 
@@ -32,7 +33,8 @@ public class CategoryLevelBase implements java.io.Serializable {
 		java.lang.Integer rank,
 		java.lang.String  tableName,
 		java.lang.String  idColumn,
-		java.lang.String  captionColumn
+		java.lang.String  captionColumn,
+		java.lang.String  caption
 	) {
 		this.id = id;
 		this.hierarchyId = hierarchyId;
@@ -42,6 +44,7 @@ public class CategoryLevelBase implements java.io.Serializable {
 		this.tableName = tableName;
 		this.idColumn = idColumn;
 		this.captionColumn = captionColumn;
+		this.caption = caption;
 	}
 
 	public java.lang.Integer getId() {
@@ -106,5 +109,13 @@ public class CategoryLevelBase implements java.io.Serializable {
 
 	public void setCaptionColumn(java.lang.String captionColumn) {
 		this.captionColumn = captionColumn;
+	}
+
+	public java.lang.String getCaption() {
+		return this.caption;
+	}
+
+	public void setCaption(java.lang.String caption) {
+		this.caption = caption;
 	}
 }

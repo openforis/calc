@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CategoryLevelTable extends org.jooq.impl.TableImpl<org.openforis.calc.persistence.jooq.tables.records.CategoryLevelRecord> {
 
-	private static final long serialVersionUID = -760824478;
+	private static final long serialVersionUID = -321959040;
 
 	/**
 	 * The singleton instance of <code>calc.category_level</code>
@@ -65,6 +65,11 @@ public class CategoryLevelTable extends org.jooq.impl.TableImpl<org.openforis.ca
 	 * The column <code>calc.category_level.caption_column</code>.
 	 */
 	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.CategoryLevelRecord, java.lang.String> CAPTION_COLUMN = createField("caption_column", org.jooq.impl.SQLDataType.VARCHAR.length(255).nullable(false).defaulted(true), this, "");
+
+	/**
+	 * The column <code>calc.category_level.caption</code>.
+	 */
+	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.CategoryLevelRecord, java.lang.String> CAPTION = createField("caption", org.jooq.impl.SQLDataType.VARCHAR.length(255).defaulted(true), this, "");
 
 	/**
 	 * Create a <code>calc.category_level</code> table reference

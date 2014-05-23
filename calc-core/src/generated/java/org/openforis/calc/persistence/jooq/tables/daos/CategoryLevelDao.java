@@ -97,4 +97,11 @@ public class CategoryLevelDao extends org.jooq.impl.DAOImpl<org.openforis.calc.p
 	public java.util.List<CategoryLevel> fetchByCaptionColumn(java.lang.String... values) {
 		return fetch(org.openforis.calc.persistence.jooq.tables.CategoryLevelTable.CATEGORY_LEVEL.CAPTION_COLUMN, values);
 	}
+
+	/**
+	 * Fetch records that have <code>caption IN (values)</code>
+	 */
+	public java.util.List<CategoryLevel> fetchByCaption(java.lang.String... values) {
+		return fetch(org.openforis.calc.persistence.jooq.tables.CategoryLevelTable.CATEGORY_LEVEL.CAPTION, values);
+	}
 }

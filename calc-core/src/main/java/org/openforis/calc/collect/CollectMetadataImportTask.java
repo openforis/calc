@@ -13,6 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
+import java.util.StringTokenizer;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
@@ -184,7 +185,9 @@ public class CollectMetadataImportTask extends Task {
 		level.setIdColumn( speciesTable.getIdField().getName() );
 		level.setRank( 1 );
 		level.setTableName( speciesTable.getName() );
-
+		String levelCaption = getNormalizedName(speciesListName);
+		level.setCaption( levelCaption );
+		
 		hierarchy.addLevel( level );
 		category.addHierarchy( hierarchy );
 		return category;
@@ -204,8 +207,27 @@ public class CollectMetadataImportTask extends Task {
 		level.setName( name );
 		level.setRank( levelIdx == null ? 1: levelIdx + 1 );
 		level.setTableName( tableName );
-
+		
+		String caption = getNormalizedName(name);
+		level.setCaption( caption );
+		
 		return level;
+	}
+
+	private String getNormalizedName(String name) {
+		StringBuilder sb = new StringBuilder();
+		
+		StringTokenizer t = new StringTokenizer(name , "_");
+		while( t.hasMoreTokens() ){
+			String string = StringUtils.capitalize( t.nextToken() );
+			sb.append(string);
+			if( t.hasMoreTokens() ){
+				sb.append( " " );
+			}
+		}
+		
+		String str = sb.toString();
+		return str;
 	}
 
 	/**
