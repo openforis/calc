@@ -11,10 +11,13 @@ import org.jooq.Condition;
 import org.jooq.DataType;
 import org.jooq.Field;
 import org.jooq.Record;
+import org.jooq.TableField;
+import org.jooq.UniqueKey;
 import org.openforis.calc.metadata.SamplingDesign.ColumnJoin;
 import org.openforis.calc.metadata.SamplingDesign.TableJoin;
 import org.openforis.calc.psql.Psql;
 import org.openforis.calc.schema.DataTable;
+import org.openforis.calc.schema.KeyFactory;
 
 /**
  * @author Mino Togna
@@ -23,11 +26,12 @@ import org.openforis.calc.schema.DataTable;
 public class DynamicTable<R extends Record> extends TableImpl<R> {
 
 	private static final long serialVersionUID = 1L;
-
+	private UniqueKey<R> primaryKey;
 	private List<Field<?>> fields;
 
 	public DynamicTable(String name, String schema) {
 		super(name, new SchemaImpl(schema));
+		
 		this.fields = new ArrayList<Field<?>>();
 	}
 
@@ -101,4 +105,14 @@ public class DynamicTable<R extends Record> extends TableImpl<R> {
 		}
 		return conditions;
 	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public UniqueKey<R> getPrimaryKey() {
+		if( primaryKey == null ){
+			primaryKey = KeyFactory.createUniqueKey( this, (TableField<R, Long>) getIdField());
+		}
+		return primaryKey;
+	}
+	
 }

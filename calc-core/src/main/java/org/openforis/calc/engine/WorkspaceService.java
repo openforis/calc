@@ -6,8 +6,11 @@ import java.util.List;
 import org.jooq.Field;
 import org.jooq.Insert;
 import org.jooq.Record;
+import org.json.simple.JSONArray;
 import org.openforis.calc.chain.ProcessingChainManager;
 import org.openforis.calc.metadata.AoiDao;
+import org.openforis.calc.metadata.Category;
+import org.openforis.calc.metadata.CategoryManager;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.StratumDao;
@@ -66,6 +69,8 @@ public class WorkspaceService {
 	private TableDataDao tableDataDao;
 	@Autowired
 	private CalculationStepDao calculationStepDao;
+	@Autowired
+	private CategoryManager categoryManager;
 	
 	@Autowired
 	private Psql psql;
@@ -341,7 +346,17 @@ public class WorkspaceService {
 		}
 		
 	}
+	/**
+	 * Add a new category to the workspace
+	 * @param workspace
+	 * @param category
+	 */
+	public void addCategory( Workspace workspace , Category category , JSONArray classes) {
+		categoryManager.createCategory( workspace, category , classes );
+	}
 
+	
+	
 //	private void setActiveWorkspace(Workspace activeWorkspace) {
 ////		this.activeWorkspace = activeWorkspace;
 //	}

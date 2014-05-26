@@ -17,6 +17,7 @@ import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.AoiLevel;
 import org.openforis.calc.metadata.CategoricalVariable;
+import org.openforis.calc.metadata.CategoryLevel;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.MultiwayVariable;
 
@@ -25,7 +26,6 @@ import org.openforis.calc.metadata.MultiwayVariable;
  * @author M. Togna
  * 
  */
-// TODO rename InputSchema to Schema? or DataSchema?
 public class DataSchema extends RelationalSchema {
 
 	private static final long serialVersionUID = 1L;
@@ -46,9 +46,17 @@ public class DataSchema extends RelationalSchema {
 	private Map<MultiwayVariable, CategoryDimensionTable> categoryDimensionTables;
 	
 	public DataSchema(Workspace workspace) {
-		super(workspace.getInputSchema());
+		this(workspace.getInputSchema() , workspace);
+	}
+
+	public DataSchema(String name, Workspace workspace){
+		super(name);
 		this.workspace = workspace;
 		
+		initSchema();
+	}
+	
+	protected void initSchema() {
 		initDataTables();
 //		initResultTables();
 		
@@ -209,7 +217,7 @@ public class DataSchema extends RelationalSchema {
 		return this.stratumDimensionTable;
 	}
 	
-	private void initCategoryDimensionTables() {
+	protected void initCategoryDimensionTables() {
 		this.categoryDimensionTables = new HashMap<MultiwayVariable, CategoryDimensionTable>();
 		List<Entity> entities = workspace.getEntities();
 		for ( Entity entity : entities ) {
@@ -219,10 +227,15 @@ public class DataSchema extends RelationalSchema {
 				for (CategoricalVariable<?> var : entity.getCategoricalVariables()) {
 					if( var instanceof MultiwayVariable ){
 						MultiwayVariable multiVar = (MultiwayVariable) var;
-						if ( ! var.getDegenerateDimension() && var.getDisaggregate() ) {
-							CategoryDimensionTable table = new CategoryDimensionTable( this, multiVar );
-							addTable(table);
-							categoryDimensionTables.put( multiVar, table );
+						CategoryLevel categoryLevel = var.getCategoryLevel();
+						if( categoryLevel != null ){
+							String schemaName = categoryLevel.getSchemaName();
+							if ( schemaName.equals(this.getName()) && !var.getDegenerateDimension() && var.getDisaggregate() ) {
+								
+								CategoryDimensionTable table = new CategoryDimensionTable( this, multiVar );
+								addTable(table);
+								categoryDimensionTables.put( multiVar, table );
+							}
 						}
 					}
 				}

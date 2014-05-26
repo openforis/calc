@@ -187,6 +187,7 @@ public class CollectMetadataImportTask extends Task {
 		level.setTableName( speciesTable.getName() );
 		String levelCaption = getNormalizedName(speciesListName);
 		level.setCaption( levelCaption );
+		level.setSchemaName(getWorkspace().getInputSchema());
 		
 		hierarchy.addLevel( level );
 		category.addHierarchy( hierarchy );
@@ -207,7 +208,8 @@ public class CollectMetadataImportTask extends Task {
 		level.setName( name );
 		level.setRank( levelIdx == null ? 1: levelIdx + 1 );
 		level.setTableName( tableName );
-		
+		level.setSchemaName(getWorkspace().getInputSchema());
+
 		String caption = getNormalizedName(name);
 		level.setCaption( caption );
 		

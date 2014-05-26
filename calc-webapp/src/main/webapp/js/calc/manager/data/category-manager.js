@@ -25,11 +25,33 @@ CategoryManager.prototype.create = function( name , caption , categoryClasses , 
 			type	: "json" ,
 			data	: data
 		}).done(function(response){
-			
+			if( response.status == "OK" ){
+				ws.categories = response.fields.categories;
+				if( successCallback ){
+					var categoryId = response.fields.categoryId;
+					successCallback( ws , categoryId );
+				}
+			}
 		}).error(function(){
 			Calc.error.apply( this, arguments );
-		})
+		});
 		
+	});
+};
+
+CategoryManager.prototype.getCategoryLevelClasses = function( categoryId , doneFunction ) {
+	var url =  this.contextPath + "/"+ categoryId +"/level/classes.json";
+	$.ajax({
+		url		: url ,
+		method 	: "GET" ,
+		type	: "json" 
+	}).done(function(response){
+		var classes = response.fields.classes;
+		if( doneFunction ){
+			doneFunction( classes );
+		}
+	}).error(function(){
+		Calc.error.apply( this, arguments );
 	});
 };
 

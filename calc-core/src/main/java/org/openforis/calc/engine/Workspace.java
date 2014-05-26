@@ -22,6 +22,7 @@ import org.openforis.calc.metadata.SamplingDesign;
 import org.openforis.calc.metadata.Stratum;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.persistence.jooq.tables.pojos.WorkspaceBase;
+import org.openforis.calc.schema.Schemas;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -201,7 +202,7 @@ public class Workspace extends WorkspaceBase {
 		}
 	}
 	
-	void addCategory( Category category ){
+	public void addCategory( Category category ){
 		if( this.categories == null ){
 			this.categories = new ArrayList<Category>();
 		}
@@ -209,6 +210,14 @@ public class Workspace extends WorkspaceBase {
 		this.categories.add( category );
 	}
 	
+	public Category getCategoryById( int categoryId ){
+		for ( Category category : getCategories() ){
+			if( category.getId().equals(categoryId) ){
+				return category;
+			}
+		}
+		return null;
+	}
 	public CategoryLevel getCategoryLevelById( int categoryLevelId ){
 		for ( Category category : getCategories() ){
 			List<CategoryHierarchy> hierarchies = category.getHierarchies();
@@ -462,5 +471,11 @@ public class Workspace extends WorkspaceBase {
 		}
 		return variables;
 	}
-
+	
+	/**
+	 * Returns a new instance of Schemas object
+	 */
+	public Schemas schemas() {
+		return new Schemas( this );
+	}
 }

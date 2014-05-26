@@ -407,7 +407,7 @@ CalculationStepEditManager.prototype.equationListChange = function () {
 			div.append( divSelect );
 			
 			div.hide();
-			this.equationForm.find(".form-container").append( div );
+			this.equationForm.find( ".form-container" ).append( div );
 			div.fadeIn();
 		}
 	} else {
@@ -417,8 +417,15 @@ CalculationStepEditManager.prototype.equationListChange = function () {
 };
 
 CalculationStepEditManager.prototype.categoryChange = function(){
-	console.log( this );
-	console.log( 'category changed' );
+//	console.log( this );
+//	console.log( 'category changed' );
+	var $this = this;
+	var categoryId = this.categoryCombo.val();
+	if( categoryId ){
+		CategoryManager.getInstance().getCategoryLevelClasses( categoryId, function(classes){
+			console.log( classes ) ;
+		});
+	}
 };
 
 
@@ -551,6 +558,11 @@ AddCategoryModal.prototype.init = function(){
 		$this.calcStepEditManager.workspace = ws;
 		$this.calcStepEditManager.categoryCombo.data( ws.categories , "id" , "caption" );
 		$this.calcStepEditManager.categoryCombo.val( categoryId );
+		$this.calcStepEditManager.categoryChange();
+		
+		$this.container.modal('hide');
+		$this.container.modal('removeBackdrop');
+		UI.unlock();
 	};
 	
 	this.saveButton.click( function(e){

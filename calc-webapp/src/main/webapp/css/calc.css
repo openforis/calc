@@ -86,7 +86,7 @@ button.option-btn {
 }
 button.option-btn:hover {
 	color: white;
-	background-color: #6a916f;
+	background-color: #888889;
 /* 	border: 1px solid #7c977f; */
 	border-radius: 1px; 
 }
@@ -97,7 +97,7 @@ button.option-btn-selected {
 	color : white;
 }
 button.option-btn-selected:hover {
-	background-color: #888889;
+	background-color: #6a916f;
 	color: white;
 /* 	border: 1px solid #7c977f; */
 	border-radius: 1px; 

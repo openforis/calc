@@ -30,14 +30,17 @@ public class RolapSchema {
 	// private List<CategoryDimension> categoryDimensions;
 	private Map<Integer, Cube> cubes;
 	private DataSchema dataSchema;
+	private ExtendedSchema extendedSchema;
 
 	private List<VirtualCube> virtualCubes;
 
-	public RolapSchema(Workspace workspace, DataSchema schema) {
+
+	public RolapSchema(Workspace workspace, DataSchema schema, ExtendedSchema extendedSchema) {
 		this.name = workspace.getInputSchema();
 
 		this.workspace = workspace;
 		this.dataSchema = schema;
+		this.extendedSchema = extendedSchema;
 		// this.categoryDimensions = new ArrayList<CategoryDimension>();
 
 		createAoiDimensions();
@@ -89,6 +92,11 @@ public class RolapSchema {
 	private void createSharedDimensions() {
 		sharedDimensions = new HashMap<CategoricalVariable<?>, CategoryDimension>();
 
+		initSharedDimension( dataSchema );
+		initSharedDimension( extendedSchema );
+	}
+
+	protected void initSharedDimension(DataSchema dataSchema) {
 		Collection<CategoryDimensionTable> categoryDimensionTables = dataSchema.getCategoryDimensionTables();
 		for ( CategoryDimensionTable categoryDimensionTable : categoryDimensionTables ) {
 			CategoryDimension dimension = new CategoryDimension( this, categoryDimensionTable );
