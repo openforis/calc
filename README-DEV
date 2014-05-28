@@ -55,6 +55,7 @@ IMPORTANT: When making updates to the database schema, ALWAYS ADD A Liquibase
 			<Parameter name="calc.jdbc.minIdle" 		value="5" />
 			
 			<Parameter name="saiku.home" 				value="${catalina.home}/webapps/saiku" />
+			<Parameter name="saiku.ui.url" 				value="/saiku-ui" />
 		</Context>
 	
 	- If Tomcat server uses Eclipse metadata, define these parameters in the context.xml file of the relative server.

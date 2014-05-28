@@ -256,6 +256,7 @@ $(document).ready(function() {
 			url: "rest/calc/info.json",
 			dataType:"json"
 		}).done(function(calc) {
+			$.extend( Calc , calc );
 			$("#footer .application-version").text( calc.version );
 		}).error( function() {
 			Calc.error.apply( this , arguments );

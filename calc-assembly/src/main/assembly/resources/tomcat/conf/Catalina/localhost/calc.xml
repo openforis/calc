@@ -15,4 +15,6 @@
 	<Parameter name="calc.jdbc.minIdle" 		value="5" />
 	
 	<Parameter name="saiku.home" 				value="${catalina.home}/webapps/saiku" />
+	<Parameter name="saiku.ui.url" 				value="/saiku-ui" />
+	
 </Context>

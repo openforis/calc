@@ -1,16 +1,22 @@
 <div class="page-section no-padding no-margin" style="overflow: hidden">
 	
-	<iframe src="/saiku-ui" width="100%" id="saiku-iframe" style="overflow: hidden">
+	<iframe width="100%" id="saiku-iframe" style="overflow: hidden">
 	</iframe>
 	
 	<!-- ==== Everything has to go inside page-section === -->
 	
 	<script>
 	$(function() {
+		var iFrame = $( "#saiku-iframe" );
 		
-		var height = $(window).height() - Calc.footer.height();
+		iFrame.hide();
 		
-		$( "#saiku-iframe" ).css( 'height', height);		
+		var height = $(window).height() - Calc.footer.height();		
+		iFrame.css( 'height', height);
+		
+		iFrame.src = Calc.saikuUiUrl;
+		
+		iFrame.fadeIn( 150 );
 	});
 	</script>
 </div>

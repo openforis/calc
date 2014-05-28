@@ -6,6 +6,7 @@ import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
@@ -17,6 +18,8 @@ public class Calc {
 	private static final String INFO_FILE_NAME = "info.properties";
 	
 	private String version;
+	@Value(value="${saiku.ui.url:/saiku-ui}")
+	private String saikuUiUrl;
 	
 	@PostConstruct
 	public void init() {
@@ -26,6 +29,10 @@ public class Calc {
 
 	public String getVersion() {
 		return version;
+	}
+	
+	public String getSaikuUiUrl() {
+		return saikuUiUrl;
 	}
 	
 	private Properties readInfoProperties() {
