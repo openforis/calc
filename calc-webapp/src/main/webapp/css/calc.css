@@ -88,7 +88,10 @@ button.option-btn:hover {
 	color: white;
 	background-color: #888889;
 /* 	border: 1px solid #7c977f; */
-	border-radius: 1px; 
+	border-radius: 1px;
+	
+	opacity:0.85;
+	filter:alpha(opacity=85); /* For IE8 and earlier */ 
 }
 button.option-btn-selected {
 	background-color: #6a916f;
@@ -100,7 +103,10 @@ button.option-btn-selected:hover {
 	background-color: #6a916f;
 	color: white;
 /* 	border: 1px solid #7c977f; */
-	border-radius: 1px; 
+	border-radius: 1px;
+	
+	opacity:0.85;
+	filter:alpha(opacity=85); /* For IE8 and earlier */ 
 }
 
 /**
@@ -312,7 +318,7 @@ button.settings:hover {
 * Footer
 */
 #footer {
-  	height: 12%;
+  	height: 70px;
 	position: fixed;
 /* 	top: -75px; */
 	z-index: 10;
@@ -330,15 +336,15 @@ button.settings:hover {
 }
 #footer .links {
 /* 	margin-top:40px; */
-	padding: 15px 0px;
+	padding: 2px 0px;
 	text-align:center;
 	width:100%;
 }
 #footer .links  button {
 	height: 100%;
 	width: 25%;
-	font-size:1.3em;
-	font-weight: 100;
+	font-size:1.2em;
+	font-weight: 200;
 	letter-spacing: 0.03em;
 /* 	line-height: 2em; */
 /* 	overflow: visible; */
@@ -346,18 +352,18 @@ button.settings:hover {
 /* 	font-size: 0.8em; */
 }
 #footer .logo {
-	font-size: 1.5em;
+	font-size: 1.2em;
 	font-weight: 100;
 /* 	margin-top: 30px; */
 	text-align: center;
 	position: relative;
-	top: 30px;
+	top: 2px;
 	height: auto;
 /* 	display:block; */
 }
 #footer .application-version {
 	position: relative;
-	top: 40px;
+/* 	top: 12px; */
 	left: 30px;
 	height: auto;
 	font-size: 0.7em;
@@ -376,7 +382,7 @@ button.settings:hover {
 
 
 #footer button.back {
-	font-size:3em;	
+	font-size:2em;	
 	display:none;	
 	width: 70%;
 }

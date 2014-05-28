@@ -31,6 +31,7 @@ CalculationStepEditManager = function (container) {
 	this.equationForm.hide();
 	this.categoryForm			= this.container.find( ".category-form" );
 	this.categoryForm.hide();
+	this.categorySettingsForm = this.container.find( ".category-settings-form" );
 	
 	// calculation step type buttons
 	var typeRScriptButton 	= this.$form.find( 'button[name="type-r-script"]' );
@@ -419,16 +420,37 @@ CalculationStepEditManager.prototype.equationListChange = function () {
 CalculationStepEditManager.prototype.categoryChange = function(){
 //	console.log( this );
 //	console.log( 'category changed' );
+	this.categorySettingsForm.empty();
+	
 	var $this = this;
 	var categoryId = this.categoryCombo.val();
 	if( categoryId ){
 		CategoryManager.getInstance().getCategoryLevelClasses( categoryId, function(classes){
 			console.log( classes ) ;
+			$.each( classes , function( i , cls ){
+				if( cls.code != '-1' ){
+					var option = new CategoryClassOption( cls , $this.categorySettingsForm );
+//					$this.categorySettingsForm.append( option.container );
+				}
+			});
 		});
 	}
 };
 
-
+CategoryClassOption = function( cls , parentContainer ){
+	var container = $( '<div class="row no-margin" style="padding-top : 5px"></div>' );
+	
+	var divCode = $( '<div class="col-md-1"></div>' );
+	divCode.html( cls.code );
+	var inputCode = $( '<input type="hidden" name=""> ');
+	inputCode.val( cls.id );
+	divCode.append( inputCode );
+	container.append( divCode );
+	
+	
+	
+	parentContainer.append( container );
+};
 
 
 AddVariableModal = function( triggerButton , editManager ) {
