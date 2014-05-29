@@ -100,8 +100,9 @@ public class CalculationStep extends CalculationStepBase {
 	}
 	
 	@Override
-	public ParameterMap getParameters() {
-		return super.getParameters();
+	@JsonIgnore
+	public Integer getStepNo() {
+		return super.getStepNo();
 	}
 
 	public void setRScriptFromEquation() {

@@ -39,3 +39,21 @@ ArrayUtils.getItemByProperty = function(array, propertyName, value) {
 ArrayUtils.clone = function(array) {
 	return array.slice(0);
 };
+
+/**
+ * Changes the item position in the given array
+ */
+ArrayUtils.shiftItem = function ( array, item, toIndex ) {
+	var oldIndex = array.indexOf(item);
+	
+	if ( oldIndex < 0 ) {
+		throw new Error( "Item not found" );
+	} else if ( toIndex < 0 && toIndex >= array.length ) {
+		throw new Error( "Index out of bounds: " + toIndex + " (array length = " + array.length + ")" );
+	} else {
+		//remove item in the old position
+		array.splice(oldIndex, 1);
+		//add item in the new position
+		array.splice(toIndex, 0, item);
+	}
+};
