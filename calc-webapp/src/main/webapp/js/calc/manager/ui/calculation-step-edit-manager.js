@@ -211,9 +211,6 @@ CalculationStepEditManager.prototype.save = function( successCallback, errorCall
 	    		$this.currentCalculationStep = response.fields.calculationStep;
 	    		$this.updateForm();
 		    	
-	    		// update UIs
-	    		Calc.homeCalculationManager.updateStep( $this.currentCalculationStep );
-	    		
 	    		if( successCallback ){
 		    		successCallback( $this.currentCalculationStep );
 	    		};

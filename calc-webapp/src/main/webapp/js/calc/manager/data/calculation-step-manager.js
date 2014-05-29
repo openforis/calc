@@ -170,6 +170,7 @@ CalculationStepManager.prototype.updateDefaultChain = function( chain ,  callbac
 		if( callback ) {
 			callback.apply( $this );
 		}
+		Calc.homeCalculationManager.updateSteps();
 		Calc.updateButtonStatus();
 	});
 };
