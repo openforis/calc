@@ -318,7 +318,7 @@ button.settings:hover {
 * Footer
 */
 #footer {
-  	height: 70px;
+  	height: 9%;
 	position: fixed;
 /* 	top: -75px; */
 	z-index: 10;
@@ -328,7 +328,7 @@ button.settings:hover {
 /* 	top:0px; */
 } 
 .footer-placeholder {
-	height: 12%;
+	height: 9%;
 }
 
 #footer div{
@@ -336,7 +336,7 @@ button.settings:hover {
 }
 #footer .links {
 /* 	margin-top:40px; */
-	padding: 2px 0px;
+	padding: 5px 0px;
 	text-align:center;
 	width:100%;
 }
@@ -357,7 +357,7 @@ button.settings:hover {
 /* 	margin-top: 30px; */
 	text-align: center;
 	position: relative;
-	top: 2px;
+	top: 6px;
 	height: auto;
 /* 	display:block; */
 }
