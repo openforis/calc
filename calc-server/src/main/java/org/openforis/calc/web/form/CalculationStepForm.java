@@ -14,7 +14,7 @@ import org.openforis.calc.web.form.validation.CalculationStepContraint;
 
 /**
  * @author S. Ricci
- * @author M. Togna
+ * @author Mino Togna
  * 
  */
 @CalculationStepContraint
@@ -28,7 +28,7 @@ public class CalculationStepForm {
 	@NotNull
 	private Integer entityId;
 
-	@NotNull
+//	@NotNull
 	private Integer variableId;
 
 	private String script;
@@ -36,11 +36,16 @@ public class CalculationStepForm {
 	@NotEmpty
 	private String type;
 	
-	private Integer equationList;
-	
-	private Integer codeVariable;
-	
+	private Integer equationList;	
+	private Integer codeVariable;	
 	private Map<String, Integer> equationVariables;
+	
+	private Integer categoryId;
+	private Map<String, Integer> categoryClassIds;
+	private Map<String, Integer> categoryClassVariables;
+	private Map<String, String> categoryClassConditions;
+	private Map<String, Integer> categoryClassLeftConditions;
+	private Map<String, Integer> categoryClassRightConditions;
 	
 	public Integer getId() {
 		return id;
@@ -112,5 +117,53 @@ public class CalculationStepForm {
 
 	public void setEquationVariables(Map<String, Integer> equationVariables) {
 		this.equationVariables = equationVariables;
+	}
+
+	public Integer getCategoryId() {
+		return categoryId;
+	}
+
+	public void setCategoryId(Integer categoryId) {
+		this.categoryId = categoryId;
+	}
+
+	public Map<String, Integer> getCategoryClassIds() {
+		return categoryClassIds;
+	}
+
+	public void setCategoryClassIds(Map<String, Integer> categoryClassIds) {
+		this.categoryClassIds = categoryClassIds;
+	}
+
+	public Map<String, Integer> getCategoryClassVariables() {
+		return categoryClassVariables;
+	}
+
+	public void setCategoryClassVariables(Map<String, Integer> categoryClassVariables) {
+		this.categoryClassVariables = categoryClassVariables;
+	}
+
+	public Map<String, String> getCategoryClassConditions() {
+		return categoryClassConditions;
+	}
+
+	public void setCategoryClassConditions(Map<String, String> categoryClassConditions) {
+		this.categoryClassConditions = categoryClassConditions;
+	}
+
+	public Map<String, Integer> getCategoryClassLeftConditions() {
+		return categoryClassLeftConditions;
+	}
+
+	public void setCategoryClassLeftConditions(Map<String, Integer> categoryClassLeftConditions) {
+		this.categoryClassLeftConditions = categoryClassLeftConditions;
+	}
+
+	public Map<String, Integer> getCategoryClassRightConditions() {
+		return categoryClassRightConditions;
+	}
+
+	public void setCategoryClassRightConditions(Map<String, Integer> categoryClassRightConditions) {
+		this.categoryClassRightConditions = categoryClassRightConditions;
 	}
 }

@@ -348,7 +348,9 @@ CalculationStepEditManager.prototype.entityChange = function() {
 		this.codeVariableCombo.reset();
 		this.codeVariableCombo.disable();
 		
+		this.categoryCombo.val( null );
 		this.categoryCombo.disable();
+		this.categorySettingsForm.empty();
 	}
 	
 };
@@ -415,261 +417,30 @@ CalculationStepEditManager.prototype.equationListChange = function () {
 };
 
 CalculationStepEditManager.prototype.categoryChange = function(){
-//	console.log( this );
-//	console.log( 'category changed' );
 	this.categorySettingsForm.empty();
 	
 	var $this = this;
 	var categoryId = this.categoryCombo.val();
 	if( categoryId ){
+		UI.lock();
 		CategoryManager.getInstance().getCategoryLevelClasses( categoryId, function(classes){
-			console.log( classes ) ;
+			// add headers
+			var container = $( '<div class="row no-margin" style="padding: 5px"></div>' );
+			var divCode = $( '<div class="col-md-2">Code</div>' );
+			container.append( divCode );
+			var divVar = $( '<div class="col-md-3">Variable</div>' );
+			container.append( divVar );
+			var divVarFiler = $( '<div class="col-md-6">Condition</div>' );
+			container.append( divVarFiler );
+			$this.categorySettingsForm.append( container );
+			
 			$.each( classes , function( i , cls ){
 				if( cls.code != '-1' ){
-					var option = new CategoryClassOption( cls , $this.categorySettingsForm );
+					var option = new CategoryClassOption( cls , $this , $this.categorySettingsForm );
 //					$this.categorySettingsForm.append( option.container );
 				}
 			});
+			UI.unlock();
 		});
 	}
 };
-
-CategoryClassOption = function( cls , parentContainer ){
-	var container = $( '<div class="row no-margin" style="padding-top : 5px"></div>' );
-	
-	var divCode = $( '<div class="col-md-1"></div>' );
-	divCode.html( cls.code );
-	var inputCode = $( '<input type="hidden" name=""> ');
-	inputCode.val( cls.id );
-	divCode.append( inputCode );
-	container.append( divCode );
-	
-	
-	
-	parentContainer.append( container );
-};
-
-
-AddVariableModal = function( triggerButton , editManager ) {
-	// calculation step edit manager instance
-	this.calcStepEditManager = editManager;
-	// button that triggers the opening of the add variable modal form
-	this.triggerButton = triggerButton;
-	// modal container
-	this.container = $( '#add-variable-modal' );
-	// form to submit
-	this.form = this.container.find('form');
-	// save button form
-	this.saveButton = this.container.find('.save');
-
-	this.init();
-};
-
-AddVariableModal.prototype.init = function() {
-	var $this = this;
-	
-	//submits the add variable form
-	this.form.submit( function(event) {
-		event.preventDefault();
-		UI.lock();
-		var variable = UI.Form.toJSON( $this.form );
-		
-		var successCallback = function(response) {
-			UI.Form.updateErrors( $this.form, response.errors );
-			
-	    	if(response.status == "ERROR" ) {
-	    		var errors = response.errors;
-	    		var errorMessage = UI.Form.getFormErrorMessage( $this.form, errors );
-	    		UI.showError( errorMessage, true );
-	    	} else {
-	    		var variable = response.fields.variable;
-	    		
-	    		$this.calcStepEditManager.updateVariableSelect();
-	    		$this.calcStepEditManager.$variableCombo.val( variable.id );
-	    		
-	    		$this.container.modal('hide');
-	    		$this.container.modal('removeBackdrop');
-	    	}
-		};
-		var errorCallback = function (e) {
-	    	UI.showError("An error occured. Please check the log file.", false);
-		};
-		var completeCallback = function() {
-			UI.unlock();
-		};
-		
-		WorkspaceManager
-			.getInstance()
-			.activeWorkspaceAddQuantitativeVariable( variable, successCallback, errorCallback, completeCallback );
-	});
-	
-	//add variable button click
-	$this.triggerButton.click(function(event){
-		event.preventDefault();
-		
-		UI.Form.reset( $this.form );
-		
-		//set entityId hidden field value
-		var selectedEntityId = $this.calcStepEditManager.getSelectedEntityId();
-		$this.form.find( "[name=entityId]" ).val( selectedEntityId );
-		// open the modal 
-		$this.container.modal( {keyboard: true, backdrop: "static"} );
-		
-		//set focus on first field in form
-		setTimeout(function() {
-			UI.Form.setFocus( $this.form );	
-		}, 500);
-	});
-	
-	// add variable form: on save button click, it submits the form
-	$this.saveButton.click(function(event) {
-		event.preventDefault();
-		$this.form.submit();
-	});
-
-};
-
-AddCategoryModal = function( triggerButton , calcStepEditManager ){
-	// calculation step edit manager instance
-	this.calcStepEditManager 		= calcStepEditManager;
-	// button that triggers the opening of the add variable modal form
-	this.triggerButton 				= triggerButton;
-	// modal container
-	this.container 					= $( '#add-category-form' );
-	// form to submit
-	this.form 						= this.container.find('form');
-	
-	this.categoryClassesContainer 	= this.container.find( ".category-classes" );
-	
-	// save button form
-	this.saveButton 				= this.container.find('button.save');
-
-	// contains the selected classes by the user
-	this.categoryClasses			= [];
-	
-	this.init();
-};
-
-AddCategoryModal.prototype.init = function(){
-	var $this = this;
-	
-	//add variable button click
-	this.triggerButton.click(function(event){
-		event.preventDefault();
-		
-		// reset form
-		UI.Form.reset( $this.form );
-		$this.categoryClassesContainer.empty();
-		$this.categoryClasses			= [];
-		// add empty row
-		$this.addRow();
-		
-		// open the modal 
-		$this.container.modal( {keyboard: true, backdrop: "static"} );
-		
-		//set focus on first field in form
-		setTimeout(function() {
-			UI.Form.setFocus( $this.form );	
-		}, 500);
-	});
-	
-	var saveCategoryCallback = function( ws , categoryId ){
-		$this.calcStepEditManager.workspace = ws;
-		$this.calcStepEditManager.categoryCombo.data( ws.categories , "id" , "caption" );
-		$this.calcStepEditManager.categoryCombo.val( categoryId );
-		$this.calcStepEditManager.categoryChange();
-		
-		$this.container.modal('hide');
-		$this.container.modal('removeBackdrop');
-		UI.unlock();
-	};
-	
-	this.saveButton.click( function(e){
-		e.preventDefault();
-		UI.lock();
-		
-		var name 	= $this.form.find( 'input[name=name]' ).val();
-		var caption = $this.form.find( 'input[name=caption]' ).val();
-		var classes = JSON.stringify( $this.categoryClasses );
-		CategoryManager
-			.getInstance()
-			.create( name , caption , classes , saveCategoryCallback );
-	});
-	
-	
-};
-// add new category class row
-AddCategoryModal.prototype.addRow = function() {
-	var row = new CategoryClassRow( this );
-	this.categoryClasses.push( row );
-	this.updateRowButtons();
-};
-AddCategoryModal.prototype.deleteRow = function( categoryClassRow , rowDiv ){
-	for(var i in this.categoryClasses){
-		var r = this.categoryClasses[i];
-		if( r == categoryClassRow ){
-			rowDiv.fadeOut(200);
-			setTimeout( $.proxy( function(){
-				rowDiv.remove();
-				this.updateRowButtons();
-			} , this ) , 140);
-			this.categoryClasses.splice(i, 1);
-			break;
-		}
-	}
-};
-AddCategoryModal.prototype.updateRowButtons = function() {
-	this.container.find(".category-class-row").find( "[name=delete-btn]" ).visible();
-	if( this.categoryClasses.length == 1 ){
-		this.container.find( ".category-class-row:first" ).find( "[name=delete-btn]" ).invisible();
-	}
-
-	this.container.find( ".category-class-row:not(:last)" ).find( "[name=add-btn]" ).invisible();
-	this.container.find( ".category-class-row:last" ).find( "[name=add-btn]" ).visible();
-};
-
-CategoryClassRow = function( addCategoryModal ) {
-	var $this = this;
-	var container = addCategoryModal.categoryClassesContainer;
-	
-	this.code = null;
-	this.caption = null;
-	
-	// add row to the modal window
-	var row = $( '<div class="row no-margin category-class-row" style="margin-bottom: 2px"></div>' );
-	row.hide();
-	container.append( row );
-	
-	var divCode 	= $( '<div class="col-md-3"></div>' );
-	row.append( divCode );
-	var inputCode	= $( '<input type="text" class="form-control width100">' );
-	inputCode.change( function(){
-		$this.code = $( this ).val();
-	});
-	divCode.append( inputCode );
-	
-	var divCaption 	= $( '<div class="col-md-7"></div>' );
-	row.append( divCaption );
-	var inputCaption	= $( '<input type="text" class="form-control width100">' );
-	inputCaption.change( function(){
-		$this.caption = $( this ).val();
-	});
-	divCaption.append( inputCaption );
-
-	var deleteBtn 	= $( '<button type="button" class="btn no-background col-md-1" name="delete-btn"><i class="fa fa-minus-square-o"></i></button>' );
-	deleteBtn.click( function(e){
-		e.preventDefault();
-		addCategoryModal.deleteRow( $this , row );
-	});
-	row.append( deleteBtn );
-	
-	var addBtn 		= $( '<button type="button" class="btn no-background col-md-1" name="add-btn"><i class="fa fa-plus-square-o"></i></button>' );
-	addBtn.click( function(e){
-		e.preventDefault();
-		addCategoryModal.addRow();
-	});
-	row.append( addBtn );
-	
-	row.fadeIn();
-};
-

@@ -206,8 +206,8 @@ VariableQueryCondition.prototype.appendUIElements = function( container ) {
     container.append( div );
     
     select.change( $.proxy( function(){
-	this.condition = select.val();
-	this.updateButtonsState( input1 , input2 );
+    	this.condition = select.val();
+    	this.updateButtonsState( input1 , input2 );
     } , this ) );
     
     input1.change( $.proxy( function(){
@@ -262,11 +262,11 @@ VariableQueryCondition.prototype.validate = function( variable ) {
 	case "BETWEEN":
 	case "NOT BETWEEN":
 	    if( this.value1 !== "" && this.value2 !== "" ) {
-		if( quantitative ){
-		    valid = $.isNumeric( this.value1 ) && $.isNumeric( this.value2 ); 
-		} 
+			if( quantitative ){
+			    valid = $.isNumeric( this.value1 ) && $.isNumeric( this.value2 ); 
+			} 
 	    }  else {
-		valid = false;
+	    	valid = false;
 	    } 
 	    break;
 	case "IS NULL":
@@ -354,5 +354,5 @@ CategoricalVariableQueryCondition.prototype.validate = function( variable ) {
 		return false;
 	}
 	return true;
-}
+};
 

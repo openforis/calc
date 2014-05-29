@@ -1,4 +1,4 @@
-<div class="page-section no-padding no-margin" style="overflow: hidden">
+<div class="page-section no-padding no-margin" style="overflow: hidden; background-color: #aaaaaa">
 	
 	<iframe width="100%" id="saiku-iframe" style="overflow: hidden">
 	</iframe>
@@ -9,14 +9,10 @@
 	$(function() {
 		var iFrame = $( "#saiku-iframe" );
 		
-		iFrame.hide();
-		
 		var height = $(window).height() - Calc.footer.height();		
 		iFrame.css( 'height', height);
 		
-		iFrame.attr("src", Calc.saikuUiUrl);
-		
-		iFrame.show();
+		iFrame.attr( "src", Calc.saikuUiUrl );
 	});
 	</script>
 </div>
