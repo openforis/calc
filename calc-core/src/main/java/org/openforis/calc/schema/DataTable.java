@@ -115,8 +115,7 @@ public abstract class DataTable extends AbstractTable {
 		createQuantityFields(entity, input, variableAggregates);
 	}
 
-	protected void createQuantityFields(Entity entity, boolean input,
-			boolean variableAggregates) {
+	protected void createQuantityFields(Entity entity, boolean input, boolean variableAggregates) {
 		List<QuantitativeVariable> variables = entity.getQuantitativeVariables();
 		for ( QuantitativeVariable var : variables ) {
 			createQuantityField(var, input, variableAggregates);

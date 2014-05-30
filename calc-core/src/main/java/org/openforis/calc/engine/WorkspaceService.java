@@ -12,6 +12,7 @@ import org.openforis.calc.metadata.AoiDao;
 import org.openforis.calc.metadata.Category;
 import org.openforis.calc.metadata.CategoryManager;
 import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.StratumDao;
 import org.openforis.calc.metadata.Variable;
@@ -125,19 +126,27 @@ public class WorkspaceService {
 	}
 
 	@Transactional
-	public QuantitativeVariable addOutputVariable( Entity entity, String name ) {
-		
-		// add variable to entity and update entity view
+	public QuantitativeVariable addQuantityVariable( Entity entity, String name ) {
 		QuantitativeVariable variable = metadataManager.createQuantitativeVariable(name);
 		entity.addVariable(variable);
+		saveVariable( variable );
 
-		variableDao.save( variable );
-		
-//		updateEntityView( variable );
-		
 		return variable;
 	}
 
+	@Transactional
+	public MultiwayVariable addMultiwayVariable( Entity entity, String name ) {
+		MultiwayVariable variable = metadataManager.createMultiwayVariableVariable( name );
+		entity.addVariable(variable);
+		saveVariable(variable);
+		
+		return variable;
+	}
+	@Transactional
+	public void saveVariable(Variable<?> variable) {
+		variableDao.save( variable );
+	}
+	
 	private void updateEntityView(QuantitativeVariable variable) {
 		Entity entity = getEntity(variable);
 		entityDataViewDao.createOrUpdateView(entity);
@@ -270,6 +279,19 @@ public class WorkspaceService {
 				.alterTable( resultTable )
 				.addColumn( field )
 				.execute();
+			
+			if( variable instanceof MultiwayVariable ){
+				
+				Field<?> idField = resultTable.field( variable.getInputCategoryIdColumn() );
+				psql
+					.alterTable( resultTable )
+					.dropColumnIfExists( idField )
+					.execute();
+				psql
+					.alterTable( resultTable )
+					.addColumn( idField )
+					.execute();
+			}
 			
 			entityDataViewDao.createOrUpdateView( entity );
 		} else if( !exists ) {

@@ -41,11 +41,11 @@ public class CalculationStepForm {
 	private Map<String, Integer> equationVariables;
 	
 	private Integer categoryId;
-	private Map<String, Integer> categoryClassIds;
-	private Map<String, Integer> categoryClassVariables;
-	private Map<String, String> categoryClassConditions;
-	private Map<String, Integer> categoryClassLeftConditions;
-	private Map<String, Integer> categoryClassRightConditions;
+	private Map<Integer, String> categoryClassCodes;
+	private Map<Integer, Integer> categoryClassVariables;
+	private Map<Integer, String> categoryClassConditions;
+	private Map<Integer, String> categoryClassLeftConditions;
+	private Map<Integer, String> categoryClassRightConditions;
 	
 	public Integer getId() {
 		return id;
@@ -127,43 +127,44 @@ public class CalculationStepForm {
 		this.categoryId = categoryId;
 	}
 
-	public Map<String, Integer> getCategoryClassIds() {
-		return categoryClassIds;
+	public Map<Integer, String> getCategoryClassCodes() {
+		return categoryClassCodes;
 	}
-
-	public void setCategoryClassIds(Map<String, Integer> categoryClassIds) {
-		this.categoryClassIds = categoryClassIds;
+	
+	public void setCategoryClassCodes(Map<Integer, String> categoryClassCodes) {
+		this.categoryClassCodes = categoryClassCodes;
 	}
-
-	public Map<String, Integer> getCategoryClassVariables() {
+	
+	public Map<Integer, Integer> getCategoryClassVariables() {
 		return categoryClassVariables;
 	}
 
-	public void setCategoryClassVariables(Map<String, Integer> categoryClassVariables) {
+	public void setCategoryClassVariables(Map<Integer, Integer> categoryClassVariables) {
 		this.categoryClassVariables = categoryClassVariables;
 	}
 
-	public Map<String, String> getCategoryClassConditions() {
+	public Map<Integer, String> getCategoryClassConditions() {
 		return categoryClassConditions;
 	}
 
-	public void setCategoryClassConditions(Map<String, String> categoryClassConditions) {
+	public void setCategoryClassConditions(Map<Integer, String> categoryClassConditions) {
 		this.categoryClassConditions = categoryClassConditions;
 	}
 
-	public Map<String, Integer> getCategoryClassLeftConditions() {
+	public Map<Integer, String> getCategoryClassLeftConditions() {
 		return categoryClassLeftConditions;
 	}
 
-	public void setCategoryClassLeftConditions(Map<String, Integer> categoryClassLeftConditions) {
+	public void setCategoryClassLeftConditions(Map<Integer, String> categoryClassLeftConditions) {
 		this.categoryClassLeftConditions = categoryClassLeftConditions;
 	}
 
-	public Map<String, Integer> getCategoryClassRightConditions() {
+	public Map<Integer, String> getCategoryClassRightConditions() {
 		return categoryClassRightConditions;
 	}
 
-	public void setCategoryClassRightConditions(Map<String, Integer> categoryClassRightConditions) {
+	public void setCategoryClassRightConditions(Map<Integer, String> categoryClassRightConditions) {
 		this.categoryClassRightConditions = categoryClassRightConditions;
 	}
+
 }

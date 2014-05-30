@@ -343,16 +343,45 @@ public class Entity extends EntityBase {
 	 * @return 
 	 */
 	@JsonIgnore
-	public List<QuantitativeVariable> getDefaultProcessingChainOutputVariables() {
+	public List<QuantitativeVariable> getDefaultProcessingChainQuantitativeOutputVariables() {
 		List<QuantitativeVariable> variables = new ArrayList<QuantitativeVariable>();
 		
 		ProcessingChain processingChain = getWorkspace().getDefaultProcessingChain();
 		List<CalculationStep> steps = processingChain.getCalculationSteps();
 		for (CalculationStep step : steps) {
-			QuantitativeVariable variable = (QuantitativeVariable) step.getOutputVariable();
-			Entity outputEntity = variable.getEntity();
-			if( outputEntity.getId().equals( this.getId() ) ){
-				variables.add( variable );
+			Variable<?> var = step.getOutputVariable();
+			if( var instanceof QuantitativeVariable){
+				QuantitativeVariable variable = (QuantitativeVariable) var;
+				Entity outputEntity = variable.getEntity();
+				if( outputEntity.getId().equals( this.getId() ) ){
+					variables.add( variable );
+				}
+			}
+		}
+//		if( this.isSamplingUnit() ){
+//			QuantitativeVariable weightVar = getOutputVariable("weight");
+//			if( weightVar != null ) {
+//				variables.add( weightVar);
+//			}
+//		}
+		
+		return variables;
+	}
+	
+	@JsonIgnore
+	public List<MultiwayVariable> getDefaultProcessingChainCategoricalOutputVariables() {
+		List<MultiwayVariable> variables = new ArrayList<MultiwayVariable>();
+		
+		ProcessingChain processingChain = getWorkspace().getDefaultProcessingChain();
+		List<CalculationStep> steps = processingChain.getCalculationSteps();
+		for (CalculationStep step : steps) {
+			Variable<?> var = step.getOutputVariable();
+			if( var instanceof MultiwayVariable){
+				MultiwayVariable variable = (MultiwayVariable) var;
+				Entity outputEntity = variable.getEntity();
+				if( outputEntity.getId().equals( this.getId() ) ){
+					variables.add( variable );
+				}
 			}
 		}
 //		if( this.isSamplingUnit() ){
@@ -435,7 +464,7 @@ public class Entity extends EntityBase {
 	// or if this is the sampling unit
 	public boolean isAggregable() {
 		// for now only if output variables have been defined
-		return isSamplingUnit() || getDefaultProcessingChainOutputVariables().size() > 0 ;
+		return isSamplingUnit() || getDefaultProcessingChainQuantitativeOutputVariables().size() > 0 ;
 //		
 //		if( this.isSamplingUnit() ) {
 //			return true;

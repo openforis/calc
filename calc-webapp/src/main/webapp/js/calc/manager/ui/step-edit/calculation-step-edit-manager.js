@@ -257,7 +257,9 @@ CalculationStepEditManager.prototype.updateForm = function() {
 	
 	UI.Form.setFieldValues( this.$form, this.currentCalculationStep );
 	
+	var params = this.currentCalculationStep.parameters;
 	switch ( this.currentCalculationStep.type ) {
+		
 		case "SCRIPT" :
 			this.rScriptButton.select();
 			break;
@@ -265,7 +267,6 @@ CalculationStepEditManager.prototype.updateForm = function() {
 		case "EQUATION" :
 			this.equationButton.select();
 			// populate equation form
-			var params = this.currentCalculationStep.parameters;
 			
 			var equationListId = this.currentCalculationStep.equationListId;
 			this.equationListCombo.val( equationListId );
@@ -285,8 +286,26 @@ CalculationStepEditManager.prototype.updateForm = function() {
 			break;
 		
 		case "CATEGORY" :
-
+			this.categoryButton.select();
 			this.$RScript.$inputField.val( "" );
+			
+			this.categoryCombo.val( params.categoryId );
+			
+			var classes 	= params.categoryClassParameters;
+			this.categoryChange( function(){
+
+				for( var i in classes ){
+					var classSettings = classes[i]; 
+					var classOption = this.categoryClassSettings[ classSettings.classId ];
+					
+					classOption.variableCombo.val( classSettings.variableId );
+					classOption.conditionSelect.val( classSettings.condition );
+					classOption.input1.val( classSettings.left );
+					classOption.input2.val( classSettings.right );
+				}
+				
+			});
+			
 			break;
 	}
 	
@@ -416,16 +435,17 @@ CalculationStepEditManager.prototype.equationListChange = function () {
 	}
 };
 
-CalculationStepEditManager.prototype.categoryChange = function(){
+CalculationStepEditManager.prototype.categoryChange = function( callback ){
 	this.categorySettingsForm.empty();
 	
 	var $this = this;
 	var categoryId = this.categoryCombo.val();
+	$this.categoryClassSettings = [];
 	if( categoryId ){
 		UI.lock();
 		CategoryManager.getInstance().getCategoryLevelClasses( categoryId, function(classes){
 			// add headers
-			var container = $( '<div class="row no-margin" style="padding: 5px"></div>' );
+			var container = $( '<div class="row"></div>' );
 			var divCode = $( '<div class="col-md-2">Code</div>' );
 			container.append( divCode );
 			var divVar = $( '<div class="col-md-3">Variable</div>' );
@@ -438,9 +458,14 @@ CalculationStepEditManager.prototype.categoryChange = function(){
 				if( cls.code != '-1' ){
 					var option = new CategoryClassOption( cls , $this , $this.categorySettingsForm );
 //					$this.categorySettingsForm.append( option.container );
+					$this.categoryClassSettings[ cls.id ] = option;
 				}
 			});
 			UI.unlock();
+			
+			if( callback ){
+				callback.apply( $this );
+			}
 		});
 	}
 };

@@ -99,7 +99,7 @@ public class Cube {
 		measures = new HashMap<Measure, Field<BigDecimal>>();
 		Entity entity = factTable.getEntity();
 
-		for ( QuantitativeVariable var : entity.getDefaultProcessingChainOutputVariables() ) {
+		for ( QuantitativeVariable var : entity.getDefaultProcessingChainQuantitativeOutputVariables() ) {
 			Field<BigDecimal> measureField = factTable.getMeasureField(var);
 			Measure measure = new Measure( getRolapSchema(), this, var );
 			measures.put(measure, measureField);

@@ -6,97 +6,98 @@
  */
 
 CategoryClassOption = function( cls , editManager , parentContainer ){
-	var container = $( '<div class="row no-margin" style="padding-top : 5px"></div>' );
+	var container = $( '<div class="row"></div>' );
 	
-	var divCode = $( '<div class="col-md-2"></div>' );
+	var divCode = $( '<div class="col-md-2 code"></div>' );
 	divCode.html( cls.code );
+	divCode.tooltip({ title: cls.caption, delay: { show: 0, hide: 100, placement : "left" }});
 	var inputCode = $( '<input type="hidden"> ');
-	inputCode.attr( "name" , "categoryClassIds['" + cls.id + "']" );
+	inputCode.attr( "name" , "categoryClassCodes['" + cls.code + "']" );
 	inputCode.val( cls.id );
 	divCode.append( inputCode );
 	container.append( divCode );
 	
-	var divVar = $( '<div class="col-md-3"></div>' );
+	var divVar = $( '<div class="col-md-4 form-group"></div>' );
 	container.append( divVar );
 	var selectVar = $( '<select class="form-control" name=""></select>' );
 	selectVar.attr( "name" , "categoryClassVariables['" + cls.id + "']" );
 	divVar.append( selectVar );
-	var selectCombo = selectVar.combobox();
-	selectCombo.data( editManager.getSelectedEntity().getAncestorsVariables() , "id" , "name" ); 
+	this.variableCombo = selectVar.combobox();
+	this.variableCombo.data( editManager.getSelectedEntity().getAncestorsVariables() , "id" , "name" ); 
 	
 	var divVarFiler = $( '<div class="col-md-6"></div>' );
 	container.append( divVarFiler );
-	var v = new CategoryClassOptionCondition( divVarFiler , cls.id );
+	var v = new CategoryClassOptionCondition( divVarFiler , cls.id , this );
 	
 	parentContainer.append( container );
 };
 
 
-CategoryClassOptionCondition = function( container , cls ) {
+CategoryClassOptionCondition = function( container , cls , classOption) {
     
     this.condition 	= CategoryClassOptionCondition.conditions[0];
     this.value1 	= "";
     this.value2		= "";
   
-    this.appendUIElements( container , cls );
+    this.appendUIElements( container , cls , classOption );
 };
 
-CategoryClassOptionCondition.prototype.appendUIElements = function( container , cls ) {
+CategoryClassOptionCondition.prototype.appendUIElements = function( container , cls , classOption) {
     
-    var select = $( '<select class="form-control"></select>' );
-    select.attr( "name" , "categoryClassConditions['" + cls + "']" );
+    classOption.conditionSelect = $( '<select class="form-control"></select>' );
+    classOption.conditionSelect.attr( "name" , "categoryClassConditions['" + cls + "']" );
     
     for( var i in  CategoryClassOptionCondition.conditions ) {
 		var variableCondition = CategoryClassOptionCondition.conditions[ i ];
 		var opt = $( "<option></option>");
 		opt.val( variableCondition );
 		opt.html( variableCondition );
-		select.append( opt );
+		classOption.conditionSelect.append( opt );
     }
     
-    var div = $( '<div class="form-item width50 float-left"></div>' );
-    div.append( select );
+    var div = $( '<div class="form-item width50 float-left  form-group"></div>' );
+    div.append( classOption.conditionSelect );
     container.append( div );
 
     
-    var input1 = $( '<input type="text" class="form-control">' );
-    input1.attr( "name" , "categoryClassLeftConditions['" + cls + "']" );
-    div = $( '<div class="form-item width25 float-left"></div>' );
-    div.append( input1 );
+    classOption.input1 = $( '<input type="text" class="form-control">' );
+    classOption.input1.attr( "name" , "categoryClassLeftConditions['" + cls + "']" );
+    div = $( '<div class="form-item width25 float-left  form-group"></div>' );
+    div.append( classOption.input1 );
     container.append( div );
     
     
-    var input2 = input1.clone();
-    input2.attr( "name" , "categoryClassRightConditions['" + cls + "']" );
-    div = $( '<div class="form-item width25 float-left"></div>' );
-    div.append( input2 );
+    classOption.input2 = classOption.input1.clone();
+    classOption.input2.attr( "name" , "categoryClassRightConditions['" + cls + "']" );
+    div = $( '<div class="form-item width25 float-left  form-group"></div>' );
+    div.append( classOption.input2 );
     container.append( div );
     
-    select.change( $.proxy( function(){
+    classOption.conditionSelect.change( $.proxy( function(){
     	this.condition = select.val();
-    	this.updateButtonsState( input1 , input2 );
+    	this.updateButtonsState( classOption.input1 , classOption.input2 );
     } , this ) );
     
-    input1.change( $.proxy( function(){
-    	this.value1 = input1.val();
+    classOption.input1.change( $.proxy( function(){
+    	this.value1 = classOption.input1.val();
     } , this ) );
     
-    input2.change( $.proxy( function(){
-    	this.value2 = input2.val();
+    classOption.input2.change( $.proxy( function(){
+    	this.value2 = classOption.input2.val();
     } , this ) );
     
     
     if( this.condition !== "" ) {
-    	select.val( this.condition );
+    	classOption.conditionSelect.val( this.condition );
     }
     if( this.value1 !== "" ) {
-    	input1.val( this.value1 );
+    	classOption.input1.val( this.value1 );
     }
     if( this.value2 !== "" ) {
-    	input2.val( this.value2 );
+    	classOption.input2.val( this.value2 );
     }
     
-    this.updateButtonsState( input1 , input2 );
+    this.updateButtonsState( classOption.input1 , classOption.input2 );
 };
 
 /**

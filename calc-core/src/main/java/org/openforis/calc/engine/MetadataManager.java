@@ -14,6 +14,7 @@ import org.openforis.calc.metadata.AoiManager;
 import org.openforis.calc.metadata.CategoryManager;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.EquationManager;
+import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.SamplingDesign;
 import org.openforis.calc.metadata.Stratum;
@@ -349,6 +350,28 @@ public class MetadataManager {
 		variable.setOverride( true );
 		variable.setDegenerateDimension( false );
 		variable.setDisaggregate( false );
+		
+		return variable;
+	}
+	
+	/**
+	 * Create an instance of a new categorical variable with default values
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public MultiwayVariable createMultiwayVariableVariable( String name ) {
+//		QuantitativeVariable variable = new QuantitativeVariable();
+		MultiwayVariable variable = new MultiwayVariable();
+		variable.setName( name );
+		variable.setInputValueColumn( name );
+		variable.setInputCategoryIdColumn( name +"_id" );
+		variable.setOutputValueColumn( name );
+		variable.setScale( Scale.NOMINAL );
+		variable.setOverride( true );
+		variable.setDegenerateDimension( false );
+		variable.setDisaggregate( true );
+		
 		
 		return variable;
 	}

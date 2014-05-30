@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
@@ -36,9 +35,6 @@ public class CalculationStepValidator implements ConstraintValidator<Calculation
 	private static final String NOT_FOUND = "not found";
 	private static final String IS_REQUIRED = " is required";
 	private static final String UNIQUE_CAPTION_MESSAGE = "must be unique";
-
-	@Autowired( required = true )
-	private HttpServletRequest request;
 
 	@Autowired
 	private WorkspaceService workspaceService;
@@ -74,17 +70,19 @@ public class CalculationStepValidator implements ConstraintValidator<Calculation
 				valid = false;
 			}
 			break;
+		
 		case SCRIPT:
 			if (!validateTypeScript(form, ctx, ws)) {
 				valid = false;
 			}
 			break;
-		case CATEGORY:
 
+		case CATEGORY:
 			if (!validateTypeCategory(form, valid, ctx, ws)) {
 				valid = false;
 			}
 			break;
+			
 		}
 	
 		return valid;
@@ -103,59 +101,64 @@ public class CalculationStepValidator implements ConstraintValidator<Calculation
 		} else {
 
 			JSONArray categoryClasses = categoryManager.loadCategoryClasses( ws, categoryId );
+			
 			for (Object object : categoryClasses) {
 				JSONObject o = (JSONObject) object;
+				
 				int classId = Integer.parseInt( o.get( "id" ).toString() );
-				
-				Integer variableId = form.getCategoryClassVariables().get( classId );
-//				String fieldName = "categoryClassVariables['" + classId + "']";
-				
-				Variable<?> variable = ws.getVariableById(variableId);
-				if( variable == null ){
-					ctx
-					.buildConstraintViolationWithTemplate( NOT_FOUND )
-					.addPropertyNode( "categoryClassVariables['" + classId + "']" )
-					.addConstraintViolation();
+				if( classId != -1 ){
 					
-					valid = false;
-				}
-				
-				String condition = form.getCategoryClassConditions().get(classId);
-				if( StringUtils.isBlank(condition) ){
-					ctx
-					.buildConstraintViolationWithTemplate( NOT_FOUND )
-					.addPropertyNode( "categoryClassConditions['" + classId + "']" )
-					.addConstraintViolation();
+					Integer variableId = form.getCategoryClassVariables().get( classId );
+	//				String fieldName = "categoryClassVariables['" + classId + "']";
 					
-					valid = false;
+					Variable<?> variable = ws.getVariableById(variableId);
+					if( variable == null ){
+						ctx
+						.buildConstraintViolationWithTemplate( IS_REQUIRED )
+						.addPropertyNode( "categoryClassVariables['" + classId + "']" )
+						.addConstraintViolation();
+						
+						valid = false;
+					}
+					
+					String condition = form.getCategoryClassConditions().get(classId);
+					if( StringUtils.isBlank(condition) ){
+						ctx
+						.buildConstraintViolationWithTemplate( IS_REQUIRED )
+						.addPropertyNode( "categoryClassConditions['" + classId + "']" )
+						.addConstraintViolation();
+						
+						valid = false;
+					} else {
+						
+						String left = form.getCategoryClassLeftConditions().get(classId);
+						String right = form.getCategoryClassRightConditions().get(classId);
+						
+						if( !(condition.equals("IS NULL") || condition.equals("IS NOT NULL")) ){
+							if( StringUtils.isBlank(left) ){
+								ctx
+								.buildConstraintViolationWithTemplate( IS_REQUIRED )
+								.addPropertyNode( "categoryClassLeftConditions['" + classId + "']" )
+								.addConstraintViolation();
+								
+								valid = false;
+							}
+							
+							if( condition.equals("BETWEEN") || condition.equals("NOT BETWEEN") ){
+								if( StringUtils.isBlank(right) ){
+									ctx
+									.buildConstraintViolationWithTemplate( IS_REQUIRED )
+									.addPropertyNode( "categoryClassRightConditions['" + classId + "']" )
+									.addConstraintViolation();
+									
+									valid = false;
+								}	
+							}
+						}
+						
+					}
+				
 				}
-				//TODO continue
-//				switch ( this.condition ) {
-//				case "BETWEEN":
-//				case "NOT BETWEEN":
-//				    if( this.value1 !== "" && this.value2 !== "" ) {
-//						if( quantitative ){
-//						    valid = $.isNumeric( this.value1 ) && $.isNumeric( this.value2 ); 
-//						} 
-//				    }  else {
-//				    	valid = false;
-//				    } 
-//				    break;
-//				case "IS NULL":
-//				case "IS NOT NULL":
-//				    valid = true;
-//				    break;
-//				default:
-//				    if( this.value1 !== "" ) {
-//					if( quantitative ){
-//					    valid = $.isNumeric( this.value1 ); 
-//					}
-//				    }  else {
-//					valid = false;
-//				    } 
-//				}
-				
-				
 			}
 		}
 		

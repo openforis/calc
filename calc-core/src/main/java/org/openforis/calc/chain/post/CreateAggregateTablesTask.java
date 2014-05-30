@@ -118,7 +118,7 @@ public final class CreateAggregateTablesTask extends Task {
 			
 			// add sum( quantity * expf )
 			// for now quantity fields. check if it needs to be done for each variable aggregate
-			for ( QuantitativeVariable var : sourceTable.getEntity().getDefaultProcessingChainOutputVariables() ) {
+			for ( QuantitativeVariable var : sourceTable.getEntity().getDefaultProcessingChainQuantitativeOutputVariables() ) {
 				Field<BigDecimal> quantityField = sourceTable.getQuantityField(var);				
 				Field<BigDecimal> aggregateField = quantityField.mul( expfTable.EXPF ).sum();
 				
@@ -168,7 +168,7 @@ public final class CreateAggregateTablesTask extends Task {
 		if( plotArea == null ){
 			throw new CalculationException( "Plot area script has not been defined for entity " + sourceTable.getEntity().getName()+ ". Unable to aggregate this entity at plot level" );
 		}
-		for ( QuantitativeVariable var : sourceTable.getEntity().getDefaultProcessingChainOutputVariables() ) {
+		for ( QuantitativeVariable var : sourceTable.getEntity().getDefaultProcessingChainQuantitativeOutputVariables() ) {
 			Field<BigDecimal> quantityField = sourceTable.getQuantityField(var);
 			
 			Field<BigDecimal> aggregateField = 
@@ -217,7 +217,7 @@ public final class CreateAggregateTablesTask extends Task {
 			Field<BigDecimal> fld = dataTable.getQuantityField(var);
 			select.addSelect(fld);
 		}
-		vars = factTable.getEntity().getDefaultProcessingChainOutputVariables();
+		vars = factTable.getEntity().getDefaultProcessingChainQuantitativeOutputVariables();
 		for (QuantitativeVariable var : vars) {
 			Field<BigDecimal> fld = dataTable.getQuantityField(var);
 			select.addSelect(fld);

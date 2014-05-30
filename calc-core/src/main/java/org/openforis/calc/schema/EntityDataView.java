@@ -9,6 +9,7 @@ import org.jooq.Select;
 import org.jooq.SelectQuery;
 import org.jooq.TableField;
 import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.psql.Psql;
 
@@ -131,7 +132,7 @@ public class EntityDataView extends DataTable {
 			select.addSelect( parentTable.getCategoryValueFields() );
 			select.addSelect( parentTable.getCategoryIdFields() );
 			select.addSelect( parentTable.getTextFields() );
-			for (QuantitativeVariable var : parentEntity.getOriginalQuantitativeVariables()) {
+			for ( QuantitativeVariable var : parentEntity.getOriginalQuantitativeVariables() ) {
 				select.addSelect( parentTable.getQuantityField(var) );
 			}
 			
@@ -145,8 +146,12 @@ public class EntityDataView extends DataTable {
 		ResultTable resultTable = schema.getResultTable(getEntity());
 		if( resultTable != null ){
 			// select output variables from results table
-			for (QuantitativeVariable var : getEntity().getDefaultProcessingChainOutputVariables()) {
+			for (QuantitativeVariable var : getEntity().getDefaultProcessingChainQuantitativeOutputVariables()) {
 				select.addSelect( resultTable.getQuantityField(var) );
+			}
+			for ( MultiwayVariable var : getEntity().getDefaultProcessingChainCategoricalOutputVariables() ){
+				select.addSelect( resultTable.getCategoryIdField(var) );
+				select.addSelect( resultTable.getCategoryValueField(var) );
 			}
 			if( resultTable.getPlotArea() != null ) {
 				select.addSelect( resultTable.getPlotArea() );

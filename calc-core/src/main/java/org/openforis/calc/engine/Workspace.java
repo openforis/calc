@@ -210,7 +210,7 @@ public class Workspace extends WorkspaceBase {
 		this.categories.add( category );
 	}
 	
-	public Category getCategoryById( int categoryId ){
+	public Category getCategoryById( Integer categoryId ){
 		for ( Category category : getCategories() ){
 			if( category.getId().equals(categoryId) ){
 				return category;
@@ -218,7 +218,7 @@ public class Workspace extends WorkspaceBase {
 		}
 		return null;
 	}
-	public CategoryLevel getCategoryLevelById( int categoryLevelId ){
+	public CategoryLevel getCategoryLevelById( Integer categoryLevelId ){
 		for ( Category category : getCategories() ){
 			List<CategoryHierarchy> hierarchies = category.getHierarchies();
 			for ( CategoryHierarchy hierarchy : hierarchies ){

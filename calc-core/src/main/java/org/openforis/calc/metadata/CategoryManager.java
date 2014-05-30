@@ -173,7 +173,7 @@ public class CategoryManager {
 		if( !defaultFound ){
 			// NA
 			InsertQuery<Record> insert = psql.insertQuery(table);
-			insert.addValue(idField, ++count);
+			insert.addValue(idField, (long)-1);
 			insert.addValue(codeField,"-1");
 			insert.addValue(captionField, "NA");
 			queries.add(insert);

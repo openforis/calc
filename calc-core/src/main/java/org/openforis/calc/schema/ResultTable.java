@@ -2,10 +2,13 @@ package org.openforis.calc.schema;
 
 import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.List;
 
 import org.jooq.Record;
 import org.jooq.TableField;
+import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.psql.Psql;
 
@@ -26,6 +29,7 @@ public class ResultTable extends DataTable {
 		super(entity, (temporary?entity.getTemporaryResultsTable():entity.getResultsTable()), schema);
 		createPrimaryKeyField();
 		createQuantityFields();
+		createCategoryFields();
 		
 		// for now it always creates the plot area column
 //		if( entity.getPlotAreaRScript() != null ){
@@ -33,8 +37,19 @@ public class ResultTable extends DataTable {
 //		}
 	}
 	
+	private void createCategoryFields() {
+		List<CategoricalVariable<?>> categoricalVariables = getEntity().getCategoricalVariables();
+		for (CategoricalVariable<?> variable : categoricalVariables) {
+			if( variable.isUserDefined() && variable instanceof MultiwayVariable) {
+				createCategoryIdField( (MultiwayVariable) variable, variable.getInputCategoryIdColumn());
+				createCategoryValueField( (MultiwayVariable) variable, variable.getOutputValueColumn() );
+			}
+		}
+		
+	}
+
 	private void createQuantityFields() {
-		Collection<QuantitativeVariable> quantitativeVariables = getEntity().getDefaultProcessingChainOutputVariables();
+		Collection<QuantitativeVariable> quantitativeVariables = getEntity().getDefaultProcessingChainQuantitativeOutputVariables();
 		for (QuantitativeVariable var : quantitativeVariables) {
 			createQuantityField( var, var.getOutputValueColumn() );
 		}

@@ -113,7 +113,7 @@ public class DataSchema extends RelationalSchema {
 
 	public ResultTable getResultTable(Entity entity, boolean temporary) {
 //		/|| entity.isSamplingUnit()
-		if( entity.getDefaultProcessingChainOutputVariables().size() > 0 ) {
+		if( entity.getDefaultProcessingChainQuantitativeOutputVariables().size() > 0 ) {
 			ResultTable table = new ResultTable(entity, this, temporary);
 			return table;
 		}

@@ -941,7 +941,12 @@ table.import-csv-table input[type=checkbox] {
 #step-edit-page .modal{
 	color: #FFF;
 }
-
+.category-settings-form .form-group {
+	margin: 0px;
+}
+.category-settings-form .code {
+	padding-top: 5px;
+}
 /**
 **
 ** button-bar

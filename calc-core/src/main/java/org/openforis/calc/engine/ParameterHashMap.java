@@ -53,7 +53,7 @@ public class ParameterHashMap implements ParameterMap {
 	}
 
 	@SuppressWarnings("unchecked")
-	private ParameterMap toParameterMap(Object value) {
+	private ParameterMap toParameterMap( Object value ){
 		if ( value == null ) {
 			return null;
 		} else if ( value instanceof ParameterMap ) {
