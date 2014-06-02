@@ -116,7 +116,10 @@ $(document).ready(function() {
 		}
 		
 		if( jqXHR.responseText ) {
-			message.append( "<div class='width100'>" + jqXHR.responseText + "</div>" );
+			var heightPercent = 80 / 100;
+			//div height will be 80% of available space
+			var height = heightPercent * ($(window).height() - Calc.footer.height()) + "px";
+			message.append( "<div class='width100' style='overflow-y: auto; height: " + height + "'>" + jqXHR.responseText + "</div>" );
 		}
 		
 		UI.showError( message, false );
