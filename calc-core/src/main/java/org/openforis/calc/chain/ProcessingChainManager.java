@@ -7,6 +7,8 @@ import java.util.List;
 import org.openforis.calc.engine.Worker.Status;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceService;
+import org.openforis.calc.metadata.MultiwayVariable;
+import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.persistence.jooq.Sequences;
 import org.openforis.calc.persistence.jooq.tables.daos.CalculationStepDao;
 import org.openforis.calc.persistence.jooq.tables.daos.ProcessingChainDao;
@@ -91,10 +93,19 @@ public class ProcessingChainManager {
 		
 		// 1. delete step from db
 		calculationStepDao.delete( step );
+		Variable<?> outputVariable = step.getOutputVariable();
 		
+		// for now delete only categorical variable
+		Integer deletedVariable = null;		
+		if( outputVariable instanceof MultiwayVariable) {
+			List<CalculationStep> steps = calculationStepDao.fetchByOutputVariableId(outputVariable.getId());
+			if( steps.isEmpty() ){
+				deletedVariable = outputVariable.getId();
+				workspaceService.deleteVariable(outputVariable);
+			}
+		}
 //		QuantitativeVariable outputVariable = (QuantitativeVariable) step.getOutputVariable();
 		// 2. delete output variable if defined only for this step. disabeld now
-		Integer deletedVariable = null;		
 //		if ( outputVariable.isUserDefined() ) {
 //			Workspace ws = processingChain.getWorkspace();
 //			List<CalculationStep> steps = ws.getCalculationStepsByVariable( outputVariable.getId() );

@@ -158,9 +158,8 @@ public class CalculationStepRScriptGenerator {
 		DynamicTable<?> table = new DynamicTable<Record>(entity.getName());
 		
 		Psql dsl = new Psql(SQLDialect.SQLITE);
-		SelectQuery<Record> select = dsl.selectQuery();
-		select.addFrom(table);
-		select.addSelect( DSL.field( entity.getName() + ".*") );
+		
+//		select.addSelect( DSL.field( entity.getName() + ".*") );
 		CaseStep caseIdStep = dsl.decode();
 		CaseStep caseCodeStep = dsl.decode();
 		
@@ -187,19 +186,38 @@ public class CalculationStepRScriptGenerator {
 			caseIdStep = caseIdStep.when(sqlCondition, classId);
 			caseCodeStep = caseCodeStep.when(sqlCondition, "\\'"+classCode+"\\'");
 		}
+		StringBuilder sb = new StringBuilder();
+		
 		EndStep endId = caseIdStep.otherwise( -1 ).end();
+		SelectQuery<Record> select = dsl.selectQuery();
+		select.addFrom(table);
 		select.addSelect( DSL.field(endId.toString()).as( outputVariable.getInputCategoryIdColumn()) );
+		
+		Sqldf sqldf = r().sqldf(select.toString());
+		RVariable tmp = r().variable("tmp");
+		SetValue setValue = r().setValue(tmp , sqldf);
+		sb.append(setValue.toString());
+		
+		RVariable outputVar = r().variable(entity.getName() , outputVariable.getInputCategoryIdColumn() );
+		setValue = r().setValue( outputVar, r().variable(tmp,outputVariable.getInputCategoryIdColumn()) );
+		sb.append(setValue.toString());
 		
 		EndStep endCode = caseCodeStep.otherwise( "\\'NA\\'" ).end();
 		select.addSelect( DSL.field(endCode.toString()).as( outputVariable.getOutputValueColumn()) );
+		select = dsl.selectQuery();
+		select.addFrom(table);
+		select.addSelect( DSL.field(endCode.toString()).as( outputVariable.getOutputValueColumn()) );
 		
-		String string = select.toString();
+		sqldf = r().sqldf(select.toString());
+		tmp = r().variable("tmp");
+		setValue = r().setValue(tmp , sqldf);
+		sb.append(setValue.toString());
 		
-		Sqldf sqldf = r().sqldf(string);
-		RVariable rEntity = r().variable(entity.getName());
-		SetValue setValue = r().setValue( rEntity, sqldf );
+		outputVar = r().variable(entity.getName() , outputVariable.getOutputValueColumn() );
+		setValue = r().setValue( outputVar, r().variable(tmp,outputVariable.getOutputValueColumn()) );
+		sb.append(setValue.toString());
 		
-		return setValue.toString();
+		return sb.toString();
 	}
 	
 	@SuppressWarnings("unchecked")

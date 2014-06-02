@@ -8,6 +8,7 @@ import org.jooq.Record;
 import org.jooq.Select;
 import org.jooq.SelectQuery;
 import org.jooq.TableField;
+import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.QuantitativeVariable;
@@ -108,13 +109,16 @@ public class EntityDataView extends DataTable {
 //		select.addSelect(table.fields());
 		
 		select.addSelect( table.getIdField() );
-		select.addSelect( table.getCategoryIdFields() );
-		select.addSelect( table.getCategoryValueFields() );
+////		select.addSelect( table.getCategoryIdFields() );
+//		select.addSelect( table.getCategoryValueFields() );
 		select.addSelect( table.getTextFields() );
 		select.addSelect( table.getAoiIdFields() );
-		
 		for (QuantitativeVariable var : getEntity().getOriginalQuantitativeVariables()) {
 			select.addSelect( table.getQuantityField(var) );
+		}
+		for (CategoricalVariable<?> var : getEntity().getOriginalCategoricalVariables()) {
+			select.addSelect( table.getCategoryIdField(var) );
+			select.addSelect( table.getCategoryValueField(var) );
 		}
 		// add weight column if sampling unit
 		if( getEntity().isSamplingUnit() ) {

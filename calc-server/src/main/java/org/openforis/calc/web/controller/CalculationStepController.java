@@ -23,9 +23,12 @@ import org.openforis.calc.engine.ParameterMap;
 import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceService;
+import org.openforis.calc.metadata.Category;
+import org.openforis.calc.metadata.CategoryLevel;
 import org.openforis.calc.metadata.CategoryManager;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.EquationList;
+import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.module.r.CalcRModule;
@@ -112,22 +115,28 @@ public class CalculationStepController {
 					break;
 					
 				case CATEGORY:
-				
+					Integer categoryId = form.getCategoryId();
+					params.setInteger( "categoryId", categoryId );
+
+					Category category = ws.getCategoryById(categoryId);
+					CategoryLevel defualtLevel = category.getHierarchies().get(0).getLevels().get(0);
+					CategoryLevel categoryLevel = ws.getCategoryLevelById(defualtLevel.getId());
+					
 					Variable<?> variable = step.getOutputVariable();
 					String name = "output_variable_" + step.getCaption().replaceAll("\\W", "_").toLowerCase();
 					if( variable == null || variable instanceof QuantitativeVariable){
 						Entity entity = ws.getEntityById( form.getEntityId() );
 						variable = workspaceService.addMultiwayVariable( entity , name );
 						step.setOutputVariable( variable );
-					} else {
+					} 
+//					else {
 						// change the name . in case the caption of the step has changed.
-						variable.setName( name );
-						workspaceService.saveVariable( variable );
-					}
+//						variable.setName( name );
+					( (MultiwayVariable) variable).setCategoryLevel( defualtLevel );
+					workspaceService.saveVariable( variable );
+//					}
 					
 					// prepare params
-					Integer categoryId = form.getCategoryId();
-					params.setInteger( "categoryId", categoryId );
 					
 					JSONArray categoryClasses = categoryManager.loadCategoryClasses( ws, categoryId );
 					List<ParameterMap> classParams = new ArrayList<ParameterMap>();

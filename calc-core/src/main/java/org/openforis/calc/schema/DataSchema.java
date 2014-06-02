@@ -231,10 +231,13 @@ public class DataSchema extends RelationalSchema {
 						if( categoryLevel != null ){
 							String schemaName = categoryLevel.getSchemaName();
 							if ( schemaName.equals(this.getName()) && !var.getDegenerateDimension() && var.getDisaggregate() ) {
-								
-								CategoryDimensionTable table = new CategoryDimensionTable( this, multiVar );
-								addTable(table);
-								categoryDimensionTables.put( multiVar, table );
+								// last test . if not input variable, it has to be in the output chain
+								if( !var.isUserDefined() || entity.getDefaultProcessingChainCategoricalOutputVariables().contains(multiVar) ){
+									CategoryDimensionTable table = new CategoryDimensionTable( this, multiVar );
+									addTable(table);
+									categoryDimensionTables.put( multiVar, table );
+									
+								}
 							}
 						}
 					}

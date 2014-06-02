@@ -148,7 +148,7 @@ public class CalcJob extends Job {
 		
 		// execute the calculation steps grouped by entity
 		for (Integer entityId : this.group.entityIds() ) {
-//		for (Integer entityId : this.calculationSteps.keySet()) {
+
 			Entity entity = getWorkspace().getEntityById(entityId);
 			EntityDataView view = getSchemas().getDataSchema().getDataView(entity);
 			DataTable table = getSchemas().getDataSchema().getDataTable(entity);
@@ -168,7 +168,7 @@ public class CalcJob extends Job {
 					// TODO what if there are other types of field to update
 					// other than double?
 
-					Field<Double> f = (Field<Double>) table.field(field);
+					Field<Double> f = (Field<Double>) finalResultTable.field(field);
 					upd.addValue(f, DSL.val(null, Double.class));
 				}
 			}

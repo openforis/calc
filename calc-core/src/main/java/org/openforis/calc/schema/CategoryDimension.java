@@ -1,7 +1,9 @@
 package org.openforis.calc.schema;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.WordUtils;
+import org.openforis.calc.metadata.Category;
+import org.openforis.calc.metadata.CategoryHierarchy;
+import org.openforis.calc.metadata.CategoryLevel;
+import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.schema.Hierarchy.Level;
 import org.openforis.calc.schema.Hierarchy.Table;
 
@@ -24,17 +26,29 @@ public class CategoryDimension extends Dimension {
 	}
 
 	private void createHierarchy() {
-		Hierarchy hierarchy = new Hierarchy(table.getVariable().getName());
+		MultiwayVariable variable = table.getVariable();
+		
+		CategoryLevel categoryLevel = variable.getCategoryLevel();
+		CategoryHierarchy categoryHierarchy = categoryLevel.getHierarchy();
+		Category category = categoryHierarchy.getCategory();
+		
+		setCaption(category.getCaption());
+		
+		String hName = categoryHierarchy.getName();
+//		if( variable.isUserDefined() ){
+//			hName += " " + variable.getName();
+//		}
+		Hierarchy hierarchy = new Hierarchy(hName);
 		
 		Table t = new Table(table.getSchema().getName(), table.getName());
 		hierarchy.setTable(t);
 		
-		String caption = table.getVariable().getCaption();
-		if ( StringUtils.isBlank(caption) ) {
-			caption = WordUtils.capitalize( table.getVariable().getName() );
-		}
+//		String caption = variable.getCaption();
+//		if ( StringUtils.isBlank(caption) ) {
+//			caption = WordUtils.capitalize( variable.getName() );
+//		}
 		
-		Level level = new Level(table.getVariable().getName(), table.getIdField().getName(), table.getCaptionField().getName() , caption );
+		Level level = new Level(variable.getName(), table.getIdField().getName(), table.getCaptionField().getName() , categoryLevel.getCaption() );
 		hierarchy.addLevel(level);
 		
 		setHierarchy(hierarchy);

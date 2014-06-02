@@ -302,6 +302,15 @@ public class WorkspaceService {
 
 	
 	@Transactional
+	public void deleteVariable(Variable<?> variable) {
+		metadataManager.deleteVariable(variable);
+		
+		if( !variable.isUserDefined() ){
+			this.resetResult(variable);
+		}
+	}
+	
+	@Transactional
 	public void deleteOutputVariable(QuantitativeVariable variable, boolean updateEntityView) {
 //		QuantitativeVariable variablePerHa = variable.getVariablePerHa();
 //		if ( variablePerHa != null ) {

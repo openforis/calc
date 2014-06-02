@@ -14,6 +14,7 @@ import org.openforis.calc.engine.CalculationException;
 import org.openforis.calc.engine.Job;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.metadata.AoiLevel;
+import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.SamplingDesign.TableJoin;
 import org.openforis.calc.psql.CreateTableStep.AsStep;
@@ -212,12 +213,13 @@ public final class CreateAggregateTablesTask extends Task {
 		}
 
 		// add quantities to select
-		Collection<QuantitativeVariable> vars = factTable.getEntity().getOriginalQuantitativeVariables();
+		Entity entity = factTable.getEntity();
+		Collection<QuantitativeVariable> vars = entity.getOriginalQuantitativeVariables();
 		for (QuantitativeVariable var : vars) {
 			Field<BigDecimal> fld = dataTable.getQuantityField(var);
 			select.addSelect(fld);
 		}
-		vars = factTable.getEntity().getDefaultProcessingChainQuantitativeOutputVariables();
+		vars = entity.getDefaultProcessingChainQuantitativeOutputVariables();
 		for (QuantitativeVariable var : vars) {
 			Field<BigDecimal> fld = dataTable.getQuantityField(var);
 			select.addSelect(fld);
