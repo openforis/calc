@@ -39,13 +39,25 @@ Entity.prototype.replaceVariable = function( variable ) {
     return variable;
 };
 
+Entity.prototype.addVariable = function( variable ) {
+	if( variable.type == "QUANTITATIVE" ){
+		this.addQuantitativeVariable(variable);
+	} else if( variable.type == "CATEGORICAL" ){
+		this.addCategoricalVariable(variable);
+	}
+};
 /**
  * Adds the passed variable to the list of quantitative variables
  */
 Entity.prototype.addQuantitativeVariable = function( variable ) {
     this.quantitativeVariables.push(variable);
 };
-
+/**
+ * Adds the passed variable to the list of quantitative variables
+ */
+Entity.prototype.addCategoricalVariable = function( variable ) {
+    this.categoricalVariables.push(variable);
+};
 /**
  * Returns all variables
  */
@@ -97,8 +109,16 @@ Entity.prototype.getVariableById = function( id ) {
  */
 Entity.prototype.deleteVariable = function( id ) {
     var v = this.getVariableById(id);
+    
     var index = this.quantitativeVariables.indexOf(v);
-    this.quantitativeVariables.splice(index, 1);
+    if( index > 0 ) {
+    	this.quantitativeVariables.splice(index, 1);
+    } else {
+    	index = this.categoricalVariables.indexOf(v);
+        if( index > 0 ) {
+        	this.categoricalVariables.splice(index, 1);
+        }	
+    }
 };
 
 /**

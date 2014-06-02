@@ -302,11 +302,42 @@ public class WorkspaceService {
 
 	
 	@Transactional
-	public void deleteVariable(Variable<?> variable) {
+	public void deleteVariable(Variable<?> variable , boolean createView) {
+		Entity entity = variable.getEntity();
 		metadataManager.deleteVariable(variable);
 		
-		if( !variable.isUserDefined() ){
-			this.resetResult(variable);
+		if( variable.isUserDefined() ){
+
+			DataSchema schema = new Schemas( entity.getWorkspace() ).getDataSchema();
+			ResultTable resultTable = schema.getResultTable( entity );
+			
+			boolean exists = resultTable != null && tableDataDao.exists( resultTable.getSchema().getName() , resultTable.getName() );
+			if( exists ) {
+				entityDataViewDao.drop( entity );
+				
+				Field<?> field = resultTable.field( variable.getOutputValueColumn() );
+				psql
+					.alterTable( resultTable )
+					.dropColumnIfExists( field )
+					.execute();
+				
+				if( variable instanceof MultiwayVariable ){
+					
+					Field<?> idField = resultTable.field( variable.getInputCategoryIdColumn() );
+					psql
+						.alterTable( resultTable )
+						.dropColumnIfExists( idField )
+						.execute();
+				}
+				
+				if( createView ){
+					entityDataViewDao.createOrUpdateView( entity );
+				}
+				
+			} else if( !exists ) {
+				resetResults( entity );
+			}
+		
 		}
 	}
 	

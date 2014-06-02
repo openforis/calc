@@ -74,7 +74,7 @@ CategoryClassOptionCondition.prototype.appendUIElements = function( container , 
     container.append( div );
     
     classOption.conditionSelect.change( $.proxy( function(){
-    	this.condition = select.val();
+    	this.condition = classOption.conditionSelect.val();
     	this.updateButtonsState( classOption.input1 , classOption.input2 );
     } , this ) );
     

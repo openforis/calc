@@ -36,7 +36,6 @@ import org.openforis.calc.r.RScript;
 import org.openforis.calc.r.RVariable;
 import org.openforis.calc.r.RVector;
 import org.openforis.calc.r.SetValue;
-import org.openforis.calc.schema.DataTable;
 import org.openforis.calc.schema.EntityDataView;
 import org.openforis.calc.schema.ResultTable;
 import org.openforis.calc.schema.Schemas;
@@ -151,7 +150,7 @@ public class CalcJob extends Job {
 
 			Entity entity = getWorkspace().getEntityById(entityId);
 			EntityDataView view = getSchemas().getDataSchema().getDataView(entity);
-			DataTable table = getSchemas().getDataSchema().getDataTable(entity);
+//			DataTable table = getSchemas().getDataSchema().getDataTable(entity);
 			Field<?> primaryKeyField = view.getPrimaryKey().getFields().get(0);
 			String primaryKey = primaryKeyField.getName();
 			RVariable dataFrame = r().variable(entity.getName());

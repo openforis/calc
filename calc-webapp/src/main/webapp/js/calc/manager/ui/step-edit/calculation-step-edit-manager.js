@@ -84,6 +84,18 @@ CalculationStepEditManager.prototype.init = function( callback ) {
 			CalculationStepManager.getInstance().load (stepId, function(response) {
 				$this.currentCalculationStep = response;
 				$this.updateForm();
+				
+				// disable all type buttons
+				UI.disable( $this.rScriptButton.button );
+				UI.disable( $this.equationButton.button );
+				UI.disable( $this.categoryButton.button );
+				
+				UI.disable( $this.addVariableModal.triggerButton );
+				UI.disable( $this.addCategoryModal.triggerButton );
+				
+				$this.$entityCombo.disable();
+				$this.$variableCombo.disable();
+				$this.categoryCombo.disable();
 			});
 		} else {
 			// default settings
@@ -91,7 +103,7 @@ CalculationStepEditManager.prototype.init = function( callback ) {
 		}
 		
 		// disable / enable type buttons
-		if( $this.workspace.equationLists.length == 0 ) {
+		if( $this.workspace.equationLists.length == 0 || stepId ) {
 			// disable type equation
 			UI.disable( $this.equationButton.button );
 		} else {
@@ -371,7 +383,6 @@ CalculationStepEditManager.prototype.entityChange = function() {
 		this.categoryCombo.disable();
 		this.categorySettingsForm.empty();
 	}
-	
 };
 
 /**
