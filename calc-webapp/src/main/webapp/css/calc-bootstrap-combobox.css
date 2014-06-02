@@ -45,7 +45,7 @@ ul.typeahead li {
 }
 .form-horizontal .form-group > .combobox-container {
 	display: inline-block;
-	width: auto;
+	width: 100%;
 }
 .form-group.small > .combobox-container .dropdown-toggle {
 	font-size: 0.9em;

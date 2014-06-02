@@ -20,14 +20,22 @@ CollectSyncManager = function(container) {
 CollectSyncManager.prototype.init = function () {
 	
 	//file upload success handler
-	var uploadSuccess = function ( job ) {
-	    JobManager.getInstance().start( job , function() {
-
-	    	WorkspaceManager.getInstance().refreshActiveWorkspace(function(ws) {
-				Calc.workspaceChange();
-	    	});
-	    	
-	    });
+	var uploadSuccess = function ( response ) {
+		if ( response.status == "OK" ) {
+			var job = response.fields.job;
+			
+			JobManager.getInstance().start( job , function() {
+				
+				WorkspaceManager.getInstance().refreshActiveWorkspace(function(ws) {
+					Calc.workspaceChange();
+				});
+				
+			});
+		} else {
+			var errors = response.errors;
+			var message = UI.Form.getFieldErrorMessage(errors);
+			UI.showError(message, true);
+		}
 	};
 	//form file upload manager
 	this.formFileUpload = new FormFileUpload(this.formSection, this.progressSection, uploadSuccess);
