@@ -63,6 +63,10 @@ public final class Psql extends DefaultDSLContext {
 		init();
 	}
 
+	public Psql(SQLDialect dialect) {
+		super( dialect);
+	}
+
 	private void init() {
 		configuration().set(new DefaultExecuteListenerProvider(new LogSqlListener()));
 	}

@@ -125,7 +125,7 @@ public class CalculationStepController {
 						workspaceService.saveVariable( variable );
 					}
 					
-					// preapare params
+					// prepare params
 					Integer categoryId = form.getCategoryId();
 					params.setInteger( "categoryId", categoryId );
 					
@@ -142,7 +142,7 @@ public class CalculationStepController {
 							
 							String condition = form.getCategoryClassConditions().get( classId );
 							
-							CalculationStepCategoryClassParameters classParam = new CalculationStepCategoryClassParameters(step);
+							CalculationStepCategoryClassParameters classParam = new CalculationStepCategoryClassParameters();
 							
 							classParam.setClassId( classId );
 							classParam.setClassCode( code );

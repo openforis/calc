@@ -34,7 +34,7 @@ public class CaseStep extends PsqlPart {
 		return new EndStep(this);
 	}
 	
-	class ElseStep extends PsqlPart {
+	public class ElseStep extends PsqlPart {
 
 		ElseStep(Object expr) {
 			super(CaseStep.this);
@@ -47,7 +47,7 @@ public class CaseStep extends PsqlPart {
 		}
 	}
 	
-	class EndStep extends PsqlPart {
+	public class EndStep extends PsqlPart {
 
 		EndStep(PsqlPart previous) {
 			super(previous);

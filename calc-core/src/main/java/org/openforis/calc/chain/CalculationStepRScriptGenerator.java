@@ -1,9 +1,17 @@
 package org.openforis.calc.chain;
 
+import java.math.BigDecimal;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jooq.Condition;
+import org.jooq.Field;
+import org.jooq.Record;
+import org.jooq.SQLDialect;
+import org.jooq.SelectQuery;
+import org.jooq.impl.DSL;
+import org.jooq.impl.DynamicTable;
 import org.openforis.calc.engine.CalculationException;
 import org.openforis.calc.engine.ParameterMap;
 import org.openforis.calc.engine.Workspace;
@@ -11,10 +19,15 @@ import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.Equation;
 import org.openforis.calc.metadata.EquationList;
+import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.Variable;
+import org.openforis.calc.psql.CaseStep;
+import org.openforis.calc.psql.CaseStep.EndStep;
+import org.openforis.calc.psql.Psql;
 import org.openforis.calc.r.RScript;
 import org.openforis.calc.r.RVariable;
 import org.openforis.calc.r.SetValue;
+import org.openforis.calc.r.Sqldf;
 import org.springframework.stereotype.Component;
 
 /**
@@ -137,9 +150,106 @@ public class CalculationStepRScriptGenerator {
 		return script;
 	}
 	
-	private String createCategoryTypeScript(CalculationStep calculationStep) {
-		return null;
+	private String createCategoryTypeScript( CalculationStep calculationStep ) {
+		
+		Variable<?> outputVariable = calculationStep.getOutputVariable();
+		Entity entity = outputVariable.getEntity();
+		Workspace workspace = entity.getWorkspace();
+		DynamicTable<?> table = new DynamicTable<Record>(entity.getName());
+		
+		Psql dsl = new Psql(SQLDialect.SQLITE);
+		SelectQuery<Record> select = dsl.selectQuery();
+		select.addFrom(table);
+		select.addSelect( DSL.field( entity.getName() + ".*") );
+		CaseStep caseIdStep = dsl.decode();
+		CaseStep caseCodeStep = dsl.decode();
+		
+//		select.addSelect( dsl.decode().when(condition, expr) );
+		List<CalculationStepCategoryClassParameters> parameters = calculationStep.getCategoryClassParameters();
+		for (CalculationStepCategoryClassParameters param : parameters) {
+			Integer classId = param.getClassId();
+			String classCode = param.getClassCode();
+			Integer variableId = param.getVariableId();
+			String condition = param.getCondition();
+			String left = param.getLeft();
+			String right = param.getRight();
+			
+			Variable<?> variable = workspace.getVariableById(variableId);
+			String variableName = variable.getName();
+			
+			Condition sqlCondition = null;
+			if( variable instanceof CategoricalVariable ){
+				sqlCondition = getCondition( table.getVarcharField(variableName)  ,condition, left, right, String.class ) ;
+			} else if( variable instanceof QuantitativeVariable ){
+				sqlCondition = getCondition( table.getBigDecimalField(variableName)  ,condition, left, right, BigDecimal.class ) ;
+			}
+			
+			caseIdStep = caseIdStep.when(sqlCondition, classId);
+			caseCodeStep = caseCodeStep.when(sqlCondition, "\\'"+classCode+"\\'");
+		}
+		EndStep endId = caseIdStep.otherwise( -1 ).end();
+		select.addSelect( DSL.field(endId.toString()).as( outputVariable.getInputCategoryIdColumn()) );
+		
+		EndStep endCode = caseCodeStep.otherwise( "\\'NA\\'" ).end();
+		select.addSelect( DSL.field(endCode.toString()).as( outputVariable.getOutputValueColumn()) );
+		
+		String string = select.toString();
+		
+		Sqldf sqldf = r().sqldf(string);
+		RVariable rEntity = r().variable(entity.getName());
+		SetValue setValue = r().setValue( rEntity, sqldf );
+		
+		return setValue.toString();
 	}
+	
+	@SuppressWarnings("unchecked")
+	private <T> Condition getCondition(Field<T> field, String condition, String left, String right, Class<T> fieldType) {
+		T value1 = null; 
+		T value2 = null;
+		if( String.class.isAssignableFrom( fieldType ) ) {
+			value1 = left ==  null ? null : (T) left;
+			value2 = right ==  null ? null : (T) right;
+		} else if( Number.class.isAssignableFrom( fieldType ) ) {
+			value1 = left ==  null ? null : (T) new BigDecimal(left);
+			value2 = right ==  null ? null : (T) new BigDecimal(right);
+		} else {
+			throw new IllegalArgumentException( "Data type " + fieldType.getName() + " not yet supported" );
+		}
+		
+		Condition c = null;
+		if ("=".equals(condition)) {
+			c = field.eq( value1 );
+		} else if ("!=".equals(condition)) {
+			c = field.notEqual( value1 );
+		} else if ( "<".equals(condition) ) {
+			c = field.lessThan(value1);
+		} else if ( "<=".equals(condition)) {
+			c = field.lessOrEqual( value1 );
+		} else if ( ">".equals(condition)) {
+			c = field.greaterThan( value1 );
+		} else if ( ">=".equals(condition)) {
+			c = field.greaterOrEqual( value1 );
+		} else if ( "LIKE".equals(condition)) {
+			c = field.like( value1.toString() );
+		} else if ( "NOT LIKE".equals(condition)) {
+			c = field.notLike( value1.toString() );
+		} else if ("BETWEEN".equals(condition)) {
+			c = field.between( value1 , value2 );
+		} else if ("NOT BETWEEN".equals(condition)) {
+			c = field.notBetween( value1 , value2 );
+		} else if ("IS NULL".equals(condition)) {
+			c = field.isNull();
+		} else if ("IS NOT NULL".equals(condition)) {
+			c = field.isNotNull();
+		} else if ("IN".equals(condition)) {
+			// right now only string with IN clause is working
+//			JSONArray valuesList = (JSONArray) conditionParam.get("values");
+//			c = field.in( valuesList );
+		}
+	
+		return c;
+	}
+	
 
 	private RScript r() {
 		return new RScript();

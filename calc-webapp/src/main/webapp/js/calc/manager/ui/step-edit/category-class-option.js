@@ -19,7 +19,7 @@ CategoryClassOption = function( cls , editManager , parentContainer ){
 	
 	var divVar = $( '<div class="col-md-4 form-group"></div>' );
 	container.append( divVar );
-	var selectVar = $( '<select class="form-control" name=""></select>' );
+	var selectVar = $( '<select class="form-control width100" name=""></select>' );
 	selectVar.attr( "name" , "categoryClassVariables['" + cls.id + "']" );
 	divVar.append( selectVar );
 	this.variableCombo = selectVar.combobox();

@@ -306,7 +306,7 @@ public class CalcJob extends Job {
 
 		// init libraries
 //		initTask.addScript(r().library("lmfor"));
-		initTask.addScript(r().library("RPostgreSQL"));
+//		initTask.addScript(r().library("RPostgreSQL"));
 		// common functions //org/openforis/calc/r/functions.R
 		initTask.addScript(RScript.getCalcCommonScript());
 		// create driver

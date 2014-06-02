@@ -1,5 +1,6 @@
 package org.openforis.calc.chain;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -91,15 +92,16 @@ public class CalculationStep extends CalculationStepBase {
 	}
 
 	@JsonIgnore
-	public void getCategoryClassParameters() {
+	public List<CalculationStepCategoryClassParameters> getCategoryClassParameters() {
+		List<CalculationStepCategoryClassParameters> params = new ArrayList<CalculationStepCategoryClassParameters>();
 		if( this.getType() == Type.CATEGORY ){
 			ParameterMap map = getParameters();
 			List<ParameterMap> list = map.getList( "categoryClassParameters" );
-			for (ParameterMap parameterMap : list) {
-				//TOCONTINUE
-				CalculationStepCategoryClassParameters s = new CalculationStepCategoryClassParameters(this );
+			for ( ParameterMap parameterMap : list) {
+				CalculationStepCategoryClassParameters s = new CalculationStepCategoryClassParameters( (ParameterHashMap) parameterMap );
+				params .add( s );
 			}
-			
 		}
+		return params;
 	}
 }
