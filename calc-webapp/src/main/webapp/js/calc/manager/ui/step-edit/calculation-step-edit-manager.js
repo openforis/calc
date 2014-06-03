@@ -76,12 +76,22 @@ CalculationStepEditManager.prototype.init = function( callback ) {
 		// populate entity select 
 		$this.$entityCombo.data( ws.entities, "id", "name" );
 		
+		// disable / enable type buttons
+		if( $this.workspace.equationLists.length == 0 || stepId ) {
+			// disable type equation
+			UI.disable( $this.equationButton.button );
+		} else {
+			// enable type equations
+			$this.equationListCombo.data( $this.workspace.equationLists , "id" , "name" );
+		}
+
 		// load step if necessary
 		var url = window.sectionUrl;
 		var stepId = $.url(url).param("id");
 		if ( stepId ) {
 			UI.lock();
 			CalculationStepManager.getInstance().load (stepId, function(response) {
+				
 				$this.currentCalculationStep = response;
 				$this.updateForm();
 				
@@ -100,15 +110,6 @@ CalculationStepEditManager.prototype.init = function( callback ) {
 		} else {
 			// default settings
 			$this.rScriptButton.select();
-		}
-		
-		// disable / enable type buttons
-		if( $this.workspace.equationLists.length == 0 || stepId ) {
-			// disable type equation
-			UI.disable( $this.equationButton.button );
-		} else {
-			// enable type equations
-			$this.equationListCombo.data( $this.workspace.equationLists , "id" , "name" );
 		}
 		
 		// populate category combobox
@@ -360,6 +361,7 @@ CalculationStepEditManager.prototype.entityChange = function() {
 		this.equationListCombo.enable();
 		
 		this.categoryCombo.enable();
+		UI.enable( this.addCategoryModal.triggerButton );
 		
 	} else {
 		// Entity not selected reset fields that need the entity
@@ -376,11 +378,13 @@ CalculationStepEditManager.prototype.entityChange = function() {
 		
 		this.equationListCombo.disable();
 		this.equationListChange();
+		
 		this.codeVariableCombo.reset();
 		this.codeVariableCombo.disable();
 		
 		this.categoryCombo.val( null );
 		this.categoryCombo.disable();
+		UI.disable( this.addCategoryModal.triggerButton );
 		this.categorySettingsForm.empty();
 	}
 };
@@ -417,7 +421,7 @@ CalculationStepEditManager.prototype.equationListChange = function () {
 		this.codeVariableCombo.data( this.getSelectedEntity().getAncestorsVariables() , "id" , "name" );
 		
 		var vars = equationList.parameters.variables;
-		this.equationListVariableCombos = {};
+		this.equationListVariableCombos = [];
 		for( var i in vars ){
 			var variable = vars[i];
 			
@@ -474,7 +478,7 @@ CalculationStepEditManager.prototype.categoryChange = function( callback ){
 			});
 			UI.unlock();
 			
-			if( callback ){
+			if( Utils.isFunction( callback) ){
 				callback.apply( $this );
 			}
 		});

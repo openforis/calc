@@ -20,6 +20,7 @@ import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.CategoryLevel;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.MultiwayVariable;
+import org.openforis.calc.metadata.Variable;
 
 /**
  * @author G. Miceli
@@ -113,7 +114,9 @@ public class DataSchema extends RelationalSchema {
 
 	public ResultTable getResultTable(Entity entity, boolean temporary) {
 //		/|| entity.isSamplingUnit()
-		if( entity.getDefaultProcessingChainQuantitativeOutputVariables().size() > 0 ) {
+		Collection<Variable<?>> userDefinedVariables = entity.getUserDefinedVariables();
+		
+		if( userDefinedVariables.size() > 0 ) {
 			ResultTable table = new ResultTable(entity, this, temporary);
 			return table;
 		}
