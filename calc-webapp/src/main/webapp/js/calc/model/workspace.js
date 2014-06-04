@@ -119,7 +119,9 @@ Workspace.prototype.getEquationList = function( listId ) {
 		}
 	}
 };
-
+/**
+ * Returns the default processing chain
+ */
 Workspace.prototype.getDefaultProcessingChain = function(){
 	if( this.processingChains.length > 0 ){
 		for( var i in this.processingChains ) {
@@ -131,6 +133,9 @@ Workspace.prototype.getDefaultProcessingChain = function(){
 	}
 };
 
+/**
+ * Update the processing chain with the one passed as argument
+ */
 Workspace.prototype.updateProcessingChain = function( processingChain ) {
 	for( var i in this.processingChains ) {
 		var wsChain = this.processingChains[i];
@@ -139,4 +144,17 @@ Workspace.prototype.updateProcessingChain = function( processingChain ) {
 			break;
 		}
 	}
+};
+/**
+ * Returns the user defined categories
+ */
+Workspace.prototype.userDefinedcategories = function(){
+	var list = [];
+	$.each( this.categories , function( i , category){
+		if( !category.originalId ){
+			list.push( category );
+		}
+	});
+	return list;
+	
 };

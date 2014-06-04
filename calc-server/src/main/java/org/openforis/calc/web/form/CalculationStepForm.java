@@ -28,7 +28,6 @@ public class CalculationStepForm {
 	@NotNull
 	private Integer entityId;
 
-//	@NotNull
 	private Integer variableId;
 
 	private String script;
