@@ -8,6 +8,8 @@
 - Open Foris Collect:
 	http://www.openforis.org/nexus/service/local/artifact/maven/redirect?r=releases&g=org.openforis.collect&a=collect-assembly&v=LATEST&e=zip
 
+- Open Foris Test Data:
+	http://www.openforis.org/nexus/service/local/artifact/maven/redirect?r=releases&g=org.openforis.test-data&a=test-data&v=LATEST&e=zip
 
 ==============================================================
 		* Calc Installation instructions
