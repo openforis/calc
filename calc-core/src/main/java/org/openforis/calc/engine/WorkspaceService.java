@@ -6,7 +6,6 @@ import java.util.List;
 import org.jooq.Field;
 import org.jooq.Insert;
 import org.jooq.Record;
-import org.json.simple.JSONArray;
 import org.openforis.calc.chain.ProcessingChainManager;
 import org.openforis.calc.metadata.AoiDao;
 import org.openforis.calc.metadata.Category;
@@ -413,8 +412,8 @@ public class WorkspaceService {
 	 * @param workspace
 	 * @param category
 	 */
-	public void addCategory( Workspace workspace , Category category , JSONArray classes) {
-		categoryManager.createCategory( workspace, category , classes );
+	public void addCategory( Workspace workspace , Category category , List<String> codes , List<String> captions ) {
+		categoryManager.createCategory( workspace, category , codes , captions );
 	}
 
 	

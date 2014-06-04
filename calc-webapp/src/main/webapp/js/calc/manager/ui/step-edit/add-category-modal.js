@@ -48,27 +48,50 @@ AddCategoryModal.prototype.init = function(){
 		}, 500);
 	});
 	
-	var saveCategoryCallback = function( ws , categoryId ){
-		$this.calcStepEditManager.workspace = ws;
-		$this.calcStepEditManager.categoryCombo.data( ws.categories , "id" , "caption" );
-		$this.calcStepEditManager.categoryCombo.val( categoryId );
-		$this.calcStepEditManager.categoryChange();
+	var saveCategoryCallback = function( response ){
 		
-		$this.container.modal('hide');
-		$this.container.modal('removeBackdrop');
+		UI.Form.updateErrors( $this.form , response.errors );
+		
+		if( response.status == "OK" ){
+			WorkspaceManager.getInstance().activeWorkspace( function(ws){
+				var categoryId = response.fields.categoryId;
+				
+				$this.calcStepEditManager.workspace = ws;
+				$this.calcStepEditManager.categoryCombo.data( ws.userDefinedcategories() , "id" , "caption" );
+				$this.calcStepEditManager.categoryCombo.val( categoryId );
+				$this.calcStepEditManager.categoryChange();
+				
+				$this.container.modal('hide');
+				$this.container.modal('removeBackdrop');
+			});
+		}
 		UI.unlock();
+		
 	};
 	
 	this.saveButton.click( function(e){
 		e.preventDefault();
 		UI.lock();
 		
-		var name 	= $this.form.find( 'input[name=name]' ).val();
+//		var name 	= $this.form.find( 'input[name=name]' ).val();
 		var caption = $this.form.find( 'input[name=caption]' ).val();
 		var classes = JSON.stringify( $this.categoryClasses );
+		
+		// update input names
+		var codes = $this.container.find(".category-class-row input.code");
+		$.each( codes, function(i, input){
+			$( input ).attr( "name" , "codes["+i+"]" );
+		});
+		var captions = $this.container.find(".category-class-row input.caption");
+		$.each( captions, function(i, input){
+			$( input ).attr( "name" , "captions["+i+"]" );
+		});
+		
+		var params = $this.form.serialize();
+		
 		CategoryManager
 			.getInstance()
-			.create( name , caption , classes , saveCategoryCallback );
+			.create( params , saveCategoryCallback );
 	});
 	
 	
@@ -79,6 +102,7 @@ AddCategoryModal.prototype.addRow = function() {
 	this.categoryClasses.push( row );
 	this.updateRowButtons();
 };
+
 AddCategoryModal.prototype.deleteRow = function( categoryClassRow , rowDiv ){
 	for(var i in this.categoryClasses){
 		var r = this.categoryClasses[i];
@@ -93,6 +117,7 @@ AddCategoryModal.prototype.deleteRow = function( categoryClassRow , rowDiv ){
 		}
 	}
 };
+
 AddCategoryModal.prototype.updateRowButtons = function() {
 	this.container.find(".category-class-row").find( "[name=delete-btn]" ).visible();
 	if( this.categoryClasses.length == 1 ){
@@ -117,7 +142,7 @@ CategoryClassRow = function( addCategoryModal ) {
 	
 	var divCode 	= $( '<div class="col-md-3"></div>' );
 	row.append( divCode );
-	var inputCode	= $( '<input type="text" class="form-control width100">' );
+	var inputCode	= $( '<input type="text" class="form-control width100 code">' );
 	inputCode.change( function(){
 		$this.code = $( this ).val();
 	});
@@ -125,7 +150,7 @@ CategoryClassRow = function( addCategoryModal ) {
 	
 	var divCaption 	= $( '<div class="col-md-7"></div>' );
 	row.append( divCaption );
-	var inputCaption	= $( '<input type="text" class="form-control width100">' );
+	var inputCaption	= $( '<input type="text" class="form-control width100 caption">' );
 	inputCaption.change( function(){
 		$this.caption = $( this ).val();
 	});

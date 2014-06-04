@@ -113,7 +113,7 @@ CalculationStepEditManager.prototype.init = function( callback ) {
 		}
 		
 		// populate category combobox
-		$this.categoryCombo.data( $this.workspace.categories , "id" , "caption" );
+		$this.categoryCombo.data( $this.workspace.userDefinedcategories() , "id" , "caption" );
 	});
 };
 	

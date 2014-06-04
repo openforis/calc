@@ -9,28 +9,22 @@ CategoryManager = function(){
 /**
  * create a new category
  */
-CategoryManager.prototype.create = function( name , caption , categoryClasses , successCallback ){
+CategoryManager.prototype.create = function( params , successCallback ){
 	var $this = this;
 	
 	WorkspaceManager.getInstance().activeWorkspace( function(ws){
-		
-		var data	 			= {};
-		data.name 				= name;
-		data.caption			= caption;
-		data.categoryClasses 	= categoryClasses;
 		
 		$.ajax({
 			url		: $this.contextPath + "/create.json" ,
 			method 	: "PUT" ,
 			type	: "json" ,
-			data	: data
+			data	: params
 		}).done(function(response){
 			if( response.status == "OK" ){
 				ws.categories = response.fields.categories;
-				if( successCallback ){
-					var categoryId = response.fields.categoryId;
-					successCallback( ws , categoryId );
-				}
+			}
+			if( successCallback ){
+				successCallback( response );
 			}
 		}).error(function(){
 			Calc.error.apply( this, arguments );

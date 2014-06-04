@@ -46,7 +46,7 @@ public class CategoryManager {
 	}
 	
 	@Transactional
-	public void loadByWorkspace( Workspace workspace ){
+	public void load( Workspace workspace ){
 		List<Category> categories = categoryDao.fetchByWorkspaceId( workspace.getId().longValue() );
 		for ( Category category : categories ){
 			workspace.addCategory( category );
@@ -64,7 +64,7 @@ public class CategoryManager {
 	}
 	
 	@Transactional
-	public void saveByWorkspace( Workspace workspace ){
+	public void save( Workspace workspace ){
 		List<Category> categories = workspace.getCategories();
 
 		//remove persisted categories
@@ -109,8 +109,8 @@ public class CategoryManager {
 	}
 	
 	@Transactional
-	public void createCategory(Workspace workspace, Category category , JSONArray classes){
-		createCategoryTable(workspace, category, classes);
+	public void createCategory(Workspace workspace, Category category , List<String> codes , List<String> captions ){
+		createCategoryTable(workspace, category, codes, captions);
 	
 		category.setId( psql.nextval(Sequences.CATEGORY_ID_SEQ).intValue() );
 		category.setWorkspace(workspace);
@@ -131,7 +131,12 @@ public class CategoryManager {
 		workspace.addCategory(category);
 	}
 	
-	private void createCategoryTable(Workspace workspace, Category category , JSONArray classes) {
+	private void createCategoryTable(Workspace workspace, Category category , List<String> codes , List<String> captions ) {
+		
+		if( codes.size() != captions.size() ){
+			throw new IllegalArgumentException( "codes and captions must have the same size" );
+		}
+		
 		ExtendedSchema extendedSchema = workspace.schemas().getExtendedSchema();
 		
 		createSchemaIfNotExists(extendedSchema);
@@ -150,16 +155,15 @@ public class CategoryManager {
 			.addPrimaryKey(table.getPrimaryKey())
 			.execute();
 		
-		long count = 0;
 		List<Query> queries = new ArrayList<Query>();
 		boolean defaultFound = false;
-		for (Object o : classes) {
-			JSONObject categoryClass = (JSONObject) o;
-			String catCode = categoryClass.get( "code" ).toString().trim();
-			String catCaption = categoryClass.get( "caption" ).toString().trim();
+		for ( int i = 0 ; i < codes.size() ; i++ ) {
+			
+			String catCode = codes.get(i);
+			String catCaption = captions.get(i);
 		
 			InsertQuery<Record> insert = psql.insertQuery(table);
-			insert.addValue(idField, ++count);
+			insert.addValue(idField, (long)(i+1) );
 			insert.addValue(codeField,catCode);
 			insert.addValue(captionField, catCaption);
 			

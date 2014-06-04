@@ -132,7 +132,7 @@ public class MetadataManager {
 	private void loadMetadata( Workspace workspace ) {
 		// the order matters here. 
 		aoiManager.loadByWorkspace( workspace );
-		categoryManager.loadByWorkspace( workspace );
+		categoryManager.load( workspace );
 		loadEntities( workspace );
 		loadStrata( workspace );
 		processingChainManager.loadChains( workspace );
@@ -214,7 +214,7 @@ public class MetadataManager {
 	 */
 	@Transactional
 	private void persistMetadata( Workspace workspace ) {
-		categoryManager.saveByWorkspace(workspace);
+		categoryManager.save(workspace);
 		persistEntities( workspace );
 	}
 	
