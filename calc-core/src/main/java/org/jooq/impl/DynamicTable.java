@@ -29,8 +29,12 @@ public class DynamicTable<R extends Record> extends TableImpl<R> {
 	private UniqueKey<R> primaryKey;
 	private List<Field<?>> fields;
 
+	public DynamicTable(String name) {
+		this(name , null);
+	}
+	
 	public DynamicTable(String name, String schema) {
-		super(name, new SchemaImpl(schema));
+		super( name, (schema == null) ? null : new SchemaImpl(schema) );
 		
 		this.fields = new ArrayList<Field<?>>();
 	}

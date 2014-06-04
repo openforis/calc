@@ -35,7 +35,11 @@ public class ParameterHashMap implements ParameterMap {
 	public ParameterHashMap(Map<String, Object> map) {
 		this.map = map;
 	}
-
+	
+	public ParameterHashMap(ParameterHashMap parameterMap) {
+		this.map = parameterMap.map;
+	}
+	
 	@Override
 	public Set<String> names() {
 		return Collections.unmodifiableSet( map.keySet() );

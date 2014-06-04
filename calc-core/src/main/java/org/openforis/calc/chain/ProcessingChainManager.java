@@ -7,10 +7,14 @@ import java.util.List;
 import org.openforis.calc.engine.Worker.Status;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceService;
+import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.MultiwayVariable;
+import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.persistence.jooq.Sequences;
 import org.openforis.calc.persistence.jooq.tables.daos.CalculationStepDao;
 import org.openforis.calc.persistence.jooq.tables.daos.ProcessingChainDao;
 import org.openforis.calc.psql.Psql;
+import org.openforis.calc.schema.EntityDataViewDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +38,9 @@ public class ProcessingChainManager {
 	
 	@Autowired
 	private CalculationStepDao calculationStepDao;
+	
+	@Autowired
+	private EntityDataViewDao entityDataViewDao;
 	
 	@Autowired
 	private Psql psql;
@@ -89,24 +96,28 @@ public class ProcessingChainManager {
 	public Integer deleteCalculationStep(CalculationStep step) {		
 		ProcessingChain processingChain = step.getProcessingChain();
 		
-		// 1. delete step from db
-		calculationStepDao.delete( step );
-		
-//		QuantitativeVariable outputVariable = (QuantitativeVariable) step.getOutputVariable();
-		// 2. delete output variable if defined only for this step. disabeld now
+		// 1. delete output variable
+		Variable<?> outputVariable = step.getOutputVariable();
+		Entity entity = outputVariable.getEntity();
+		// for now delete only categorical variable
 		Integer deletedVariable = null;		
-//		if ( outputVariable.isUserDefined() ) {
-//			Workspace ws = processingChain.getWorkspace();
-//			List<CalculationStep> steps = ws.getCalculationStepsByVariable( outputVariable.getId() );
-//			if ( steps.size() == 1 && steps.get(0).getId().equals(step.getId()) ) {
-//				deletedVariable = outputVariable.getId();
-//				workspaceService.deleteOutputVariable(outputVariable, true);
-//			}
-//		}
-		
+		if( outputVariable instanceof MultiwayVariable) {
+			List<CalculationStep> steps = calculationStepDao.fetchByOutputVariableId(outputVariable.getId());
+			if( steps.size() == 1 ){
+				// set output var to null (foreign key constraint "calculation_step_variable_fkey" )
+				step.setOutputVariableId(null);
+				calculationStepDao.update(step);
 				
+				deletedVariable = outputVariable.getId();
+				workspaceService.deleteVariable(outputVariable, false);
+			}
+		}
+		// 2. delete step from db
+		calculationStepDao.delete( step );
 		// 3. remove step from metadata
 		processingChain.removeCalculationStep( step );
+		// 4. update entity view
+		entityDataViewDao.createOrUpdateView( entity );
 		
 		updateProcessingChainStatus( processingChain, Status.PENDING );
 		
@@ -133,13 +144,6 @@ public class ProcessingChainManager {
 	public void updateProcessingChainStatus( ProcessingChain processingChain , Status status ){
 		processingChain.setStatus( status );
 		processingChainDao.update( processingChain );
-		
-//		ProcessingChainTable T = Tables.PROCESSING_CHAIN;
-//		psql
-//			.update( T )
-//			.set( T.STATUS , status )
-//			.where( T.ID.eq(processingChain.getId()) )
-//			.execute();
 	}
 
 	public ProcessingChain loadChainById( int chainId ){

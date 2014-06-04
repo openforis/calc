@@ -153,12 +153,15 @@ public abstract class DataTable extends AbstractTable {
 	protected void createCategoryIdFields(Entity entity, boolean input) {
 		List<CategoricalVariable<?>> variables = entity.getCategoricalVariables();
 		for ( CategoricalVariable<?> var : variables ) {
-			String valueColumn = input ? var.getInputValueColumn() : var.getOutputValueColumn();
-			if ( valueColumn != null ) {
-				if ( var instanceof BinaryVariable ) {
-//					createBinaryCategoryValueField((BinaryVariable) var, valueColumn);
-				} else if ( var instanceof MultiwayVariable ) {
-					createCategoryIdField((MultiwayVariable) var, ((MultiwayVariable) var).getInputCategoryIdColumn());
+			// only input categories
+			if( !var.isUserDefined() || entity.getDefaultProcessingChainCategoricalOutputVariables().contains(var)){
+				String valueColumn = input ? var.getInputValueColumn() : var.getOutputValueColumn();
+				if ( valueColumn != null ) {
+					if ( var instanceof BinaryVariable ) {
+	//					createBinaryCategoryValueField((BinaryVariable) var, valueColumn);
+					} else if ( var instanceof MultiwayVariable ) {
+						createCategoryIdField((MultiwayVariable) var, ((MultiwayVariable) var).getInputCategoryIdColumn());
+					}
 				}
 			}
 		}
@@ -172,12 +175,15 @@ public abstract class DataTable extends AbstractTable {
 	protected void createCategoryValueFields(Entity entity, boolean input) {
 		List<CategoricalVariable<?>> variables = entity.getCategoricalVariables();
 		for ( CategoricalVariable<?> var : variables ) {
-			String valueColumn = input ? var.getInputValueColumn() : var.getOutputValueColumn();
-			if ( valueColumn != null ) {
-				if ( var instanceof BinaryVariable ) {
-					createBinaryCategoryValueField((BinaryVariable) var, valueColumn);
-				} else if ( var instanceof MultiwayVariable ) {
-					createCategoryValueField((MultiwayVariable) var, valueColumn);
+			// only input categories
+			if( !var.isUserDefined() || entity.getDefaultProcessingChainCategoricalOutputVariables().contains(var)){
+				String valueColumn = input ? var.getInputValueColumn() : var.getOutputValueColumn();
+				if ( valueColumn != null ) {
+					if ( var instanceof BinaryVariable ) {
+						createBinaryCategoryValueField((BinaryVariable) var, valueColumn);
+					} else if ( var instanceof MultiwayVariable ) {
+						createCategoryValueField((MultiwayVariable) var, valueColumn);
+					}
 				}
 			}
 		}
@@ -366,9 +372,11 @@ public abstract class DataTable extends AbstractTable {
 	protected void createDimensionIdField(CategoricalVariable<?> var) {
 		if ( !var.getDegenerateDimension() && var.getDisaggregate() ) {
 			if( var instanceof MultiwayVariable){
-				String fieldName = ((MultiwayVariable) var).getInputCategoryIdColumn();  // String.format(DIMENSION_ID_COLUMN_FORMAT, var.getName());
-				Field<Integer> fld = createField(fieldName, SQLDataType.INTEGER, this);
-				dimensionIdFields.put(var, fld);
+				if( !var.isUserDefined() ||var.getEntity().getDefaultProcessingChainCategoricalOutputVariables().contains(var) ){
+					String fieldName = ((MultiwayVariable) var).getInputCategoryIdColumn();  // String.format(DIMENSION_ID_COLUMN_FORMAT, var.getName());
+					Field<Integer> fld = createField(fieldName, SQLDataType.INTEGER, this);
+					dimensionIdFields.put(var, fld);
+				}
 			}
 		}
 	}

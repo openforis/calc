@@ -23,9 +23,12 @@ import org.openforis.calc.engine.ParameterMap;
 import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceService;
+import org.openforis.calc.metadata.Category;
+import org.openforis.calc.metadata.CategoryLevel;
 import org.openforis.calc.metadata.CategoryManager;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.EquationList;
+import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.module.r.CalcRModule;
@@ -81,89 +84,22 @@ public class CalculationStepController {
 			switch ( step.getType() ) {
 			
 				case EQUATION:
-					Integer listId = form.getEquationList();
-					step.setEquationListId( listId.longValue() );
-					// populate calc step parameters
-					Integer codeVariable = form.getCodeVariable();
-					params.setInteger( "codeVariable", codeVariable );
-					
-					EquationList equationList = ws.getEquationListById(listId);
-					Collection<String> equationVariables = equationList.getEquationVariables();
-					Map<String, Integer> eqVariablesParam = form.getEquationVariables();
-					List<ParameterMap> varParams = new ArrayList<ParameterMap>();
-					for ( String equationVariable : equationVariables ){
-						
-						Integer variableId = eqVariablesParam.get(equationVariable);
-					
-						ParameterMap varParam = new ParameterHashMap();
-						varParam.setString( "equationVariable", equationVariable );
-						varParam.setNumber( "variableId", variableId );
-						varParams.add( varParam );
-					}
-					params.setList( "variables", varParams  );
+					populateStepTypeEquation(form, ws, step, params);
 //					break;
 				case SCRIPT:
 					step.setScript( form.getScript() );
 					
 					// quantitative output variable in case of script and equation
-					Variable<?> outputVariable = ws.getVariableById(form.getVariableId());
-					step.setOutputVariable(outputVariable);
+					Variable<?> outputVariable = ws.getVariableById( form.getVariableId() );
+					step.setOutputVariable( outputVariable );
 					
 					break;
 					
 				case CATEGORY:
-				
-					Variable<?> variable = step.getOutputVariable();
-					String name = "output_variable_" + step.getCaption().replaceAll("\\W", "_").toLowerCase();
-					if( variable == null || variable instanceof QuantitativeVariable){
-						Entity entity = ws.getEntityById( form.getEntityId() );
-						variable = workspaceService.addMultiwayVariable( entity , name );
-						step.setOutputVariable( variable );
-					} else {
-						// change the name . in case the caption of the step has changed.
-						variable.setName( name );
-						workspaceService.saveVariable( variable );
+					boolean varCreated = populateStepTypeCategory(form, ws, step, params);
+					if( varCreated ){
+						response.addField( "addedVariable", step.getOutputVariable() );
 					}
-					
-					// preapare params
-					Integer categoryId = form.getCategoryId();
-					params.setInteger( "categoryId", categoryId );
-					
-					JSONArray categoryClasses = categoryManager.loadCategoryClasses( ws, categoryId );
-					List<ParameterMap> classParams = new ArrayList<ParameterMap>();
-					
-					for (Object object : categoryClasses) {
-						JSONObject categoryClass = (JSONObject) object;
-						
-						int classId = Integer.parseInt( categoryClass.get( "id" ).toString() );
-						if( classId != -1 ){
-							String code = form.getCategoryClassCodes().get( classId );
-							Integer variableId = form.getCategoryClassVariables().get( classId );
-							
-							String condition = form.getCategoryClassConditions().get( classId );
-							
-							CalculationStepCategoryClassParameters classParam = new CalculationStepCategoryClassParameters(step);
-							
-							classParam.setClassId( classId );
-							classParam.setClassCode( code );
-							classParam.setVariableId( variableId );
-							classParam.setCondition( condition );
-							
-							String left = form.getCategoryClassLeftConditions().get( classId );
-							String right = form.getCategoryClassRightConditions().get( classId );
-							
-							if( !(condition.equals("IS NULL") || condition.equals("IS NOT NULL")) ) {
-								classParam.setLeft( left );
-								if( condition.equals("BETWEEN") || condition.equals("NOT BETWEEN") ){
-									classParam.setRight( right );
-								}
-							}
-							
-							classParams.add( classParam );
-						}
-					}
-					params.setList( "categoryClassParameters", classParams );
-					
 					break;
 			}
 			
@@ -175,6 +111,92 @@ public class CalculationStepController {
 			response.addField( "processingChain", chain );
 		}
 		return response;
+	}
+
+	// returns true if a new output variable has been created
+	protected boolean populateStepTypeCategory(CalculationStepForm form, Workspace ws, CalculationStep step, ParameterMap params) {
+		boolean varCreated = false;
+		
+		Integer categoryId = form.getCategoryId();
+		params.setInteger( "categoryId", categoryId );
+
+		Category category = ws.getCategoryById(categoryId);
+		CategoryLevel defualtLevel = category.getHierarchies().get(0).getLevels().get(0);
+		
+		Variable<?> variable = step.getOutputVariable();
+		String name = step.getCaption().replaceAll("\\W", "_").toLowerCase() ;
+		if( variable == null || variable instanceof QuantitativeVariable){
+			Entity entity = ws.getEntityById( form.getEntityId() );
+			variable = workspaceService.addMultiwayVariable( entity , name );
+			step.setOutputVariable( variable );
+			varCreated = true;
+		} 
+		
+		// set level to variable
+		( (MultiwayVariable) variable ).setCategoryLevel( defualtLevel );
+		workspaceService.saveVariable( variable );
+		
+		// prepare params
+		
+		JSONArray categoryClasses = categoryManager.loadCategoryClasses( ws, categoryId );
+		List<ParameterMap> classParams = new ArrayList<ParameterMap>();
+		
+		for (Object object : categoryClasses) {
+			JSONObject categoryClass = (JSONObject) object;
+			
+			int classId = Integer.parseInt( categoryClass.get( "id" ).toString() );
+			if( classId != -1 ){
+				String code = form.getCategoryClassCodes().get( classId );
+				Integer variableId = form.getCategoryClassVariables().get( classId );
+				
+				String condition = form.getCategoryClassConditions().get( classId );
+				
+				CalculationStepCategoryClassParameters classParam = new CalculationStepCategoryClassParameters();
+				
+				classParam.setClassId( classId );
+				classParam.setClassCode( code );
+				classParam.setVariableId( variableId );
+				classParam.setCondition( condition );
+				
+				String left = form.getCategoryClassLeftConditions().get( classId );
+				String right = form.getCategoryClassRightConditions().get( classId );
+				
+				if( !(condition.equals("IS NULL") || condition.equals("IS NOT NULL")) ) {
+					classParam.setLeft( left );
+					if( condition.equals("BETWEEN") || condition.equals("NOT BETWEEN") ){
+						classParam.setRight( right );
+					}
+				}
+				
+				classParams.add( classParam );
+			}
+		}
+		params.setList( "categoryClassParameters", classParams );
+		
+		return varCreated;
+	}
+
+	protected void populateStepTypeEquation(CalculationStepForm form, Workspace ws, CalculationStep step, ParameterMap params) {
+		Integer listId = form.getEquationList();
+		step.setEquationListId( listId.longValue() );
+		// populate calc step parameters
+		Integer codeVariable = form.getCodeVariable();
+		params.setInteger( "codeVariable", codeVariable );
+		
+		EquationList equationList = ws.getEquationListById(listId);
+		Collection<String> equationVariables = equationList.getEquationVariables();
+		Map<String, Integer> eqVariablesParam = form.getEquationVariables();
+		List<ParameterMap> varParams = new ArrayList<ParameterMap>();
+		for ( String equationVariable : equationVariables ){
+			
+			Integer variableId = eqVariablesParam.get(equationVariable);
+		
+			ParameterMap varParam = new ParameterHashMap();
+			varParam.setString( "equationVariable", equationVariable );
+			varParam.setNumber( "variableId", variableId );
+			varParams.add( varParam );
+		}
+		params.setList( "variables", varParams  );
 	}
 
 	private CalculationStep getOrCreateCalculationStep(CalculationStepForm form, ProcessingChain chain) {
@@ -244,7 +266,7 @@ public class CalculationStepController {
 		Integer variableId = processingChainManager.deleteCalculationStep(step);
 		
 		response.addField( "deletedStep" , stepId );
-		response.addField("deletedVariable", variableId);
+		response.addField("deletedVariableId", variableId);
 		response.addField( "processingChain", processingChain );
 		return response;
 	}

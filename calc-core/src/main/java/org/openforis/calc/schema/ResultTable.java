@@ -38,12 +38,10 @@ public class ResultTable extends DataTable {
 	}
 	
 	private void createCategoryFields() {
-		List<CategoricalVariable<?>> categoricalVariables = getEntity().getCategoricalVariables();
+		List<MultiwayVariable> categoricalVariables = getEntity().getDefaultProcessingChainCategoricalOutputVariables();
 		for (CategoricalVariable<?> variable : categoricalVariables) {
-			if( variable.isUserDefined() && variable instanceof MultiwayVariable) {
-				createCategoryIdField( (MultiwayVariable) variable, variable.getInputCategoryIdColumn());
-				createCategoryValueField( (MultiwayVariable) variable, variable.getOutputValueColumn() );
-			}
+			createCategoryIdField( (MultiwayVariable) variable, variable.getInputCategoryIdColumn());
+			createCategoryValueField( (MultiwayVariable) variable, variable.getOutputValueColumn() );
 		}
 		
 	}

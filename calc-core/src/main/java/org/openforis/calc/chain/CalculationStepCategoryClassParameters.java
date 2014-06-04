@@ -3,11 +3,7 @@
  */
 package org.openforis.calc.chain;
 
-import org.json.simple.JSONObject;
 import org.openforis.calc.engine.ParameterHashMap;
-import org.openforis.calc.engine.Workspace;
-import org.openforis.calc.metadata.CategoricalVariable;
-import org.openforis.calc.metadata.Variable;
 
 /**
  * Wrapper class for calculation step category type settings
@@ -24,18 +20,14 @@ public class CalculationStepCategoryClassParameters extends ParameterHashMap {
 	private static final String CLASS_CODE = "classCode";
 	private static final String CLASS_ID = "classId";
 
-	private CalculationStep calculationStep;
-
-	@SuppressWarnings("unchecked")
-	public CalculationStepCategoryClassParameters(CalculationStep calculationStep , JSONObject jsonObject) {
-		super( jsonObject );
-		this.calculationStep = calculationStep;
+	public CalculationStepCategoryClassParameters() {
+		super();
 	}
 	
-	public CalculationStepCategoryClassParameters(CalculationStep calculationStep) {
-		this.calculationStep = calculationStep;
+	public CalculationStepCategoryClassParameters(ParameterHashMap map) {
+		super( map );
 	}
-
+	
 	public Integer getClassId() {
 		return getInteger(CLASS_ID);
 	}
@@ -73,7 +65,7 @@ public class CalculationStepCategoryClassParameters extends ParameterHashMap {
 	}
 
 	public void setLeft(String left) {
-		setString(LEFT, parseConditionValue(left));
+		setString(LEFT, left);
 	}
 
 	public String getRight() {
@@ -81,21 +73,7 @@ public class CalculationStepCategoryClassParameters extends ParameterHashMap {
 	}
 
 	public void setRight(String right) {
-		setString(RIGHT, parseConditionValue(right));
+		setString(RIGHT, right);
 	}
 
-	private String parseConditionValue(String string) {
-		Workspace ws = this.calculationStep.getWorkspace();
-		Variable<?> classVariable = ws.getVariableById(getVariableId());
-
-		if (classVariable instanceof CategoricalVariable<?> && !string.startsWith("'")) {
-			string = "'" + string;
-		}
-
-		if (classVariable instanceof CategoricalVariable<?> && !string.endsWith("'")) {
-			string += "'";
-		}
-
-		return string;
-	}
 }

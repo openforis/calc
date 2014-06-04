@@ -151,6 +151,10 @@ public class RScript {
 		return new Try(this, scripts);
 	}
 
+	public Sqldf sqldf(String script) {
+		return new Sqldf(this, script);
+	}
+
 	public CheckError checkError(RVariable variable) {
 		return checkError(variable, null);
 	}

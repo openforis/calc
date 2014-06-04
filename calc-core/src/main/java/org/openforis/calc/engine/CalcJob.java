@@ -36,7 +36,6 @@ import org.openforis.calc.r.RScript;
 import org.openforis.calc.r.RVariable;
 import org.openforis.calc.r.RVector;
 import org.openforis.calc.r.SetValue;
-import org.openforis.calc.schema.DataTable;
 import org.openforis.calc.schema.EntityDataView;
 import org.openforis.calc.schema.ResultTable;
 import org.openforis.calc.schema.Schemas;
@@ -148,10 +147,10 @@ public class CalcJob extends Job {
 		
 		// execute the calculation steps grouped by entity
 		for (Integer entityId : this.group.entityIds() ) {
-//		for (Integer entityId : this.calculationSteps.keySet()) {
+
 			Entity entity = getWorkspace().getEntityById(entityId);
 			EntityDataView view = getSchemas().getDataSchema().getDataView(entity);
-			DataTable table = getSchemas().getDataSchema().getDataTable(entity);
+//			DataTable table = getSchemas().getDataSchema().getDataTable(entity);
 			Field<?> primaryKeyField = view.getPrimaryKey().getFields().get(0);
 			String primaryKey = primaryKeyField.getName();
 			RVariable dataFrame = r().variable(entity.getName());
@@ -168,7 +167,7 @@ public class CalcJob extends Job {
 					// TODO what if there are other types of field to update
 					// other than double?
 
-					Field<Double> f = (Field<Double>) table.field(field);
+					Field<Double> f = (Field<Double>) finalResultTable.field(field);
 					upd.addValue(f, DSL.val(null, Double.class));
 				}
 			}
@@ -306,7 +305,7 @@ public class CalcJob extends Job {
 
 		// init libraries
 //		initTask.addScript(r().library("lmfor"));
-		initTask.addScript(r().library("RPostgreSQL"));
+//		initTask.addScript(r().library("RPostgreSQL"));
 		// common functions //org/openforis/calc/r/functions.R
 		initTask.addScript(RScript.getCalcCommonScript());
 		// create driver

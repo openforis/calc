@@ -106,10 +106,13 @@ public class Rolap {
 		return dim;
 	}
 
-	public static SharedDimension createSharedDimension(String name, String table, String schema, String column, String nameColumn, String caption) {
+	public static SharedDimension createSharedDimension(String name, String table, String schema, String column, String nameColumn, String caption, String dimCaption) {
 		SharedDimension dim = new SharedDimension();
 		dim.setType(DIMENSION_TYPE_STANDARD);
 		dim.setName(name);
+		if( dimCaption!= null){
+			dim.setCaption(dimCaption);
+		}
 
 		Hierarchy h = new Hierarchy();
 		h.setName(name);

@@ -271,10 +271,15 @@ public class MetadataManager {
 	@Transactional
 	public void deleteVariables(Collection<Variable<?>> variables) {
 		for (Variable<?> variable : variables) {
-			Entity entity = variable.getEntity();
-			entity.removeVariable(variable);
-			variableDao.delete(variable);
+			deleteVariable(variable);
 		}
+	}
+	
+	@Transactional
+	protected void deleteVariable(Variable<?> variable) {
+		Entity entity = variable.getEntity();
+		entity.removeVariable(variable);
+		variableDao.delete(variable);
 	}
 	
 	@Transactional
@@ -358,6 +363,7 @@ public class MetadataManager {
 	 * Create an instance of a new categorical variable with default values
 	 * 
 	 * @param name
+	 * @param levelId 
 	 * @return
 	 */
 	public MultiwayVariable createMultiwayVariableVariable( String name ) {
@@ -371,7 +377,6 @@ public class MetadataManager {
 		variable.setOverride( true );
 		variable.setDegenerateDimension( false );
 		variable.setDisaggregate( true );
-		
 		
 		return variable;
 	}

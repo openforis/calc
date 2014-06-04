@@ -53,7 +53,9 @@ CalculationStepManager.prototype = (function() {
 		})
 		.done(function(response) {
 			if( response.status == "OK" ){
-				$this.updateDefaultChain( response.fields.processingChain , function(){
+				$this.updateWorkspaceStatus( response.fields , function(){
+//					var variable = response.fields.variable;
+					
 					if ( successCallback ) {
 						successCallback(response);
 					}
@@ -89,7 +91,7 @@ CalculationStepManager.prototype = (function() {
 			type: "POST"
 		})
 		.done(function(response) {
-			$this.updateDefaultChain( response.fields.processingChain , function(){
+			$this.updateWorkspaceStatus( response.fields , function(){
 				if ( callback ) {
 					callback(response);
 				}
@@ -158,20 +160,34 @@ CalculationStepManager.prototype = (function() {
 	};
 })();
 
-CalculationStepManager.prototype.updateDefaultChain = function( chain ,  callback ){
+CalculationStepManager.prototype.updateWorkspaceStatus = function( obj ,  callback ){
 	var $this = this;
 	WorkspaceManager.getInstance().activeWorkspace( function(ws){
+		var chain = obj.processingChain;
+		// update processing chain
 		for( var i in ws.processingChains ) {
 			var wsChain = ws.processingChains[i];
 			if( wsChain.id == chain.id ){
 				ws.processingChains[i] = chain;
 			}
 		}
+		// update variable if there is
+		if( obj.addedVariable ){
+			var entity = ws.getEntityById( obj.addedVariable.entityId );
+			entity.addVariable( obj.addedVariable );
+		}
+		if( obj.deletedVariableId ){
+			var variable = ws.getVariableById( obj.deletedVariableId );
+			var entity = ws.getEntityById( variable.entityId );
+			entity.deleteVariable( obj.deletedVariableId );
+		}
+		
 		if( callback ) {
 			callback.apply( $this );
 		}
 		Calc.homeCalculationManager.updateSteps();
 		Calc.updateButtonStatus();
+		Calc.homeDataManager.refresh();
 	});
 };
 

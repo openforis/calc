@@ -265,7 +265,7 @@ public class PublishRolapSchemaTask extends Task {
 		org.openforis.calc.schema.Hierarchy.Table table = hierarchy.getTable();
 		org.openforis.calc.schema.Hierarchy.Level level = hierarchy.getLevels().get(0);
 
-		SharedDimension dim = createSharedDimension(dimension.getName(), table.getName(), table.getSchema(), level.getColumn(), level.getNameColumn(), level.getCaption() );
+		SharedDimension dim = createSharedDimension(dimension.getName(), table.getName(), table.getSchema(), level.getColumn(), level.getNameColumn(), level.getCaption() ,dimension.getCaption());
 		return dim;
 	}
 

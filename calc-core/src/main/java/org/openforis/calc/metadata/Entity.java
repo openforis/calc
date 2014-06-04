@@ -317,6 +317,17 @@ public class Entity extends EntityBase {
 	
 	@SuppressWarnings("unchecked")
 	@JsonIgnore
+	public Collection<CategoricalVariable<?>> getOriginalCategoricalVariables() {
+		return CollectionUtils.select(getCategoricalVariables(), new Predicate() {
+			@Override
+			public boolean evaluate(Object object) {
+				return ((CategoricalVariable<?>)object).getOriginalId() != null;
+			}
+		});
+	}
+	
+	@SuppressWarnings("unchecked")
+	@JsonIgnore
 	public Collection<Variable<?>> getOriginalVariables() {
 		return CollectionUtils.select(getVariables(), new Predicate() {
 			@Override
@@ -464,7 +475,7 @@ public class Entity extends EntityBase {
 	// or if this is the sampling unit
 	public boolean isAggregable() {
 		// for now only if output variables have been defined
-		return isSamplingUnit() || getDefaultProcessingChainQuantitativeOutputVariables().size() > 0 ;
+		return isSamplingUnit() || getDefaultProcessingChainQuantitativeOutputVariables().size() > 0 || getDefaultProcessingChainCategoricalOutputVariables().size() > 0;
 //		
 //		if( this.isSamplingUnit() ) {
 //			return true;

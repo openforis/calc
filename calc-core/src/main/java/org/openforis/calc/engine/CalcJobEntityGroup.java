@@ -74,7 +74,7 @@ public class CalcJobEntityGroup {
 
 			// used to create tasks
 			Entity entity = job.getWorkspace().getEntityById(entityId);
-			EntityDataView view = job.getSchemas().getDataSchema().getDataView(entity);
+//			EntityDataView view = job.getSchemas().getDataSchema().getDataView(entity);
 //			InputTable table = job.getSchemas().getInputSchema().getDataTable(entity);
 //			Field<?> primaryKeyField = view.getPrimaryKey().getFields().get(0);
 //			String primaryKey = primaryKeyField.getName();
