@@ -22,7 +22,7 @@
 		<jooq.version>3.3.1</jooq.version>
 		<collect.version>3.0.1-Alpha3</collect.version>
 		<mondrian.version>3.5.0</mondrian.version>	
-		<of-commons-version>0.0.5</of-commons-version>
+		<of-commons-version>0.0.11</of-commons-version>
 		<geotools.version>2.7.5</geotools.version>
 		<jackson.version>2.1.0</jackson.version>
 	</properties>
