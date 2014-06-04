@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.openforis.calc.engine;
+package org.openforis.calc.metadata;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -10,17 +10,8 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.openforis.calc.chain.ProcessingChainManager;
-import org.openforis.calc.metadata.AoiManager;
-import org.openforis.calc.metadata.CategoryManager;
-import org.openforis.calc.metadata.Entity;
-import org.openforis.calc.metadata.EquationManager;
-import org.openforis.calc.metadata.MultiwayVariable;
-import org.openforis.calc.metadata.QuantitativeVariable;
-import org.openforis.calc.metadata.SamplingDesign;
-import org.openforis.calc.metadata.Stratum;
-import org.openforis.calc.metadata.Variable;
+import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.Variable.Scale;
-import org.openforis.calc.metadata.VariableDao;
 import org.openforis.calc.persistence.jooq.Sequences;
 import org.openforis.calc.persistence.jooq.Tables;
 import org.openforis.calc.persistence.jooq.tables.daos.CalculationStepDao;
@@ -207,6 +198,7 @@ public class MetadataManager {
 		
 		return fetchWorkspaceByCollectSurveyUri( workspace.getCollectSurveyUri() );
 	}
+	
 	/* 
 	 * ===============================
 	 *  Save metadata methods
@@ -276,7 +268,7 @@ public class MetadataManager {
 	}
 	
 	@Transactional
-	protected void deleteVariable(Variable<?> variable) {
+	public void deleteVariable(Variable<?> variable) {
 		Entity entity = variable.getEntity();
 		entity.removeVariable(variable);
 		variableDao.delete(variable);
@@ -379,6 +371,13 @@ public class MetadataManager {
 		variable.setDisaggregate( true );
 		
 		return variable;
+	}
+
+	public void removeInputVariables(Workspace ws) {
+		// remove input variables
+		for (Entity entity : ws.getEntities()) {
+			entity.removeInputVariables();
+		}
 	}
 	
 }

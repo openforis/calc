@@ -11,6 +11,7 @@ import org.openforis.calc.metadata.AoiDao;
 import org.openforis.calc.metadata.Category;
 import org.openforis.calc.metadata.CategoryManager;
 import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.MetadataManager;
 import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.StratumDao;
@@ -24,7 +25,6 @@ import org.openforis.calc.psql.Psql;
 import org.openforis.calc.schema.DataSchema;
 import org.openforis.calc.schema.DataSchemaDao;
 import org.openforis.calc.schema.DataTable;
-import org.openforis.calc.schema.EntityDataView;
 import org.openforis.calc.schema.EntityDataViewDao;
 import org.openforis.calc.schema.ResultTable;
 import org.openforis.calc.schema.Schemas;
@@ -98,6 +98,9 @@ public class WorkspaceService {
 		return metadataManager.loadAllWorksaceInfos();
 	}
 	
+	public void deleteInputCategories(Workspace workspace) {
+		categoryManager.deleteInputCategories(workspace);
+	}
 	/**
 	 * It returns the active workspace
 	 * 
@@ -146,42 +149,19 @@ public class WorkspaceService {
 		variableDao.save( variable );
 	}
 	
-	private void updateEntityView(QuantitativeVariable variable) {
-		Entity entity = getEntity(variable);
-		entityDataViewDao.createOrUpdateView(entity);
-	}
 
-	private Entity getEntity(QuantitativeVariable variable) {
-		Entity entity = variable.getEntity();
-		if (entity == null) {
-			QuantitativeVariable sourceVariable = variable.getSourceVariable();
-			if(sourceVariable == null){
-				throw new IllegalStateException("Unable to find entity to update for variable " + variable.getName());
-			}
-			entity = sourceVariable.getEntity();
-		}
-		return entity;
-	}
-
-	public void addUserDefinedVariableColumns(Workspace ws) {
-		for (Variable<?> v : ws.getUserDefinedVariables()) {
-			if (v instanceof QuantitativeVariable) {
-				inputSchemaDao.addUserDefinedVariableColumn((QuantitativeVariable) v);
-			}
-		}
-	}
+//	public void addUserDefinedVariableColumns(Workspace ws) {
+//		for (Variable<?> v : ws.getUserDefinedVariables()) {
+//			if (v instanceof QuantitativeVariable) {
+//				inputSchemaDao.addUserDefinedVariableColumn((QuantitativeVariable) v);
+//			}
+//		}
+//	}
 
 	public void activate( Workspace ws ) {
 		metadataManager.activate( ws );
-//		setActiveWorkspace( ws );
 	}
 	
-	
-	public void resetDataViews(Workspace ws) {
-		for (Entity entity : ws.getEntities()) {
-			entityDataViewDao.createOrUpdateView(entity);
-		}
-	}
 	
 	@Transactional
 	public void resetWorkspace( Workspace ws ) {
@@ -340,44 +320,6 @@ public class WorkspaceService {
 		}
 	}
 	
-	@Transactional
-	public void deleteOutputVariable(QuantitativeVariable variable, boolean updateEntityView) {
-//		QuantitativeVariable variablePerHa = variable.getVariablePerHa();
-//		if ( variablePerHa != null ) {
-//			deleteVariablePerHa(variable, false);
-//		}
-//		dropVariableColumn(variable);
-		
-		Entity entity = getEntity(variable);
-		
-		DataSchema schema = new Schemas( entity.getWorkspace() ).getDataSchema();
-		ResultTable originalResultTable = schema.getResultTable(entity);
-		EntityDataView view = schema.getDataView(entity);
-
-		// drop entity data view
-		entityDataViewDao.drop( view );
-		
-		// drop column from results table
-		psql
-			.alterTable( originalResultTable )
-			.dropColumnIfExists( originalResultTable.getQuantityField(variable) )
-			.execute();
-		
-		// delete variable
-		entity.removeVariable( variable );
-		variableDao.delete( variable );
-		
-		// drop result table, if there are no more output variables
-		ResultTable newResultTable = schema.getResultTable( entity );
-		if ( newResultTable == null ) {
-			psql
-				.dropTableIfExists( originalResultTable )
-				.execute();
-		}
-		
-		updateEntityView(variable);
-	}
-	
 	/**
 	 * Set plot area script for the given entity and returns it
 	 * @param entity
@@ -407,6 +349,7 @@ public class WorkspaceService {
 		}
 		
 	}
+	
 	/**
 	 * Add a new category to the workspace
 	 * @param workspace
@@ -416,6 +359,17 @@ public class WorkspaceService {
 		categoryManager.createCategory( workspace, category , codes , captions );
 	}
 
+	/**
+	 * Clone the active workspace for export. 
+	 * Input variables are excluded
+	 */
+	public Workspace cloneActiveForExport() {
+		Workspace ws = getActiveWorkspace();
+		metadataManager.removeInputVariables( ws );
+		ws.removeInputCategories();
+		
+		return ws;
+	}
 	
 	
 //	private void setActiveWorkspace(Workspace activeWorkspace) {

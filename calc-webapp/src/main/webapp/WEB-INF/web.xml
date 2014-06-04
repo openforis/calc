@@ -114,6 +114,10 @@
 		<servlet-name>spring</servlet-name>
 		<url-pattern>*.csv</url-pattern>
 	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>spring</servlet-name>
+		<url-pattern>*.zip</url-pattern>
+	</servlet-mapping>
 	
 	<!-- ====================================================== -->
 	<!-- MISCELLANEOUS -->

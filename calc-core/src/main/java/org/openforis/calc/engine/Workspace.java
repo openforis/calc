@@ -472,6 +472,18 @@ public class Workspace extends WorkspaceBase {
 		return variables;
 	}
 	
+	void removeInputCategories(){
+		if( this.categories != null ){
+			Iterator<Category> iterator = this.categories.iterator();
+			while( iterator.hasNext() ){
+				Category category = iterator.next();
+				if( !category.isUserDefined() ){
+					iterator.remove();
+				}
+			}
+		}
+	}
+	
 	/**
 	 * Returns a new instance of Schemas object
 	 */

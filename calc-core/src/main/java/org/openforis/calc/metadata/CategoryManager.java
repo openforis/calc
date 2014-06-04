@@ -17,6 +17,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.persistence.jooq.Sequences;
+import org.openforis.calc.persistence.jooq.Tables;
+import org.openforis.calc.persistence.jooq.tables.CategoryTable;
 import org.openforis.calc.persistence.jooq.tables.daos.CategoryDao;
 import org.openforis.calc.persistence.jooq.tables.daos.CategoryHierarchyDao;
 import org.openforis.calc.persistence.jooq.tables.daos.CategoryLevelDao;
@@ -67,11 +69,6 @@ public class CategoryManager {
 	public void save( Workspace workspace ){
 		List<Category> categories = workspace.getCategories();
 
-		//remove persisted categories
-		List<Category> persistedCategories = categoryDao.fetchByWorkspaceId( workspace.getId().longValue() );
-		categoryDao.delete(persistedCategories);
-		
-		//save new categories
 		for ( Category category : categories ){
 			if( categoryDao.exists( category ) ){
 				categoryDao.update(category);
@@ -106,6 +103,17 @@ public class CategoryManager {
 				}
 			}
 		}
+	}
+	
+	@Transactional
+	public void deleteInputCategories(Workspace workspace) {
+		CategoryTable T = Tables.CATEGORY;
+		
+		psql
+			.delete(T)
+			.where( T.WORKSPACE_ID.eq(workspace.getId().longValue())
+					.and( T.ORIGINAL_ID.isNotNull()) )
+			.execute();
 	}
 	
 	@Transactional
@@ -238,5 +246,5 @@ public class CategoryManager {
 		return array;
 	
 	}
-	
+
 }

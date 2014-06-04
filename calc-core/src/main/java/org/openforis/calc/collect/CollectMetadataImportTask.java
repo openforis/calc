@@ -19,15 +19,16 @@ import java.util.zip.ZipFile;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.openforis.calc.engine.MetadataManager;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
+import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.BinaryVariable;
 import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Category;
 import org.openforis.calc.metadata.CategoryHierarchy;
 import org.openforis.calc.metadata.CategoryLevel;
 import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.MetadataManager;
 import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.TextVariable;
@@ -71,6 +72,9 @@ public class CollectMetadataImportTask extends Task {
 
 	private static final int SPECIES_CATEGORY_ORIGINAL_ID = -9999;
 
+	@Autowired
+	private WorkspaceService workspaceService;
+	
 	@Autowired
 	private MetadataManager metadataManager;
 	
@@ -623,8 +627,11 @@ public class CollectMetadataImportTask extends Task {
 	}
 	
 	private void saveWorkspace() {
-		Workspace workspace = getWorkspace(); 
-		metadataManager.saveWorkspace( workspace );
+		Workspace workspace = getWorkspace();
+		// delete input categories first
+		workspaceService.deleteInputCategories( workspace );
+		workspaceService.save( workspace );
+		
 		( (CollectSurveyImportJob) getJob() ).updateWorkspace( workspace );
 	}
 

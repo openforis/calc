@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 
@@ -532,6 +533,17 @@ public class Entity extends EntityBase {
 
 		void visit(Entity entity);
 
+	}
+	
+	void removeInputVariables() {
+		Iterator<Variable<?>> iterator = variables.iterator();
+		while( iterator.hasNext() ){
+			
+			Variable<?> variable = iterator.next();
+			if( !variable.isUserDefined() ){
+				iterator.remove();
+			}
+		}
 	}
 	
 	@Override

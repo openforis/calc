@@ -23,7 +23,7 @@ import org.springframework.jdbc.datasource.DataSourceUtils;
  * @author S. Ricci
  *
  */
-public class CollectInputSchemaCreatorTask extends Task {
+public class CreateInputSchemaTask extends Task {
 
 	@Autowired
 	private Configuration config;
@@ -38,7 +38,7 @@ public class CollectInputSchemaCreatorTask extends Task {
 	
 	@Override
 	protected long countTotalItems() {
-		return 3;
+		return 2;
 	}
 	
 	@Override
@@ -47,7 +47,7 @@ public class CollectInputSchemaCreatorTask extends Task {
 		
 		createInputSchema();
 		
-		addUserDefinedVariableColumns();
+//		addUserDefinedVariableColumns();
 		
 //		addVariablePerHaColumns();
 		
@@ -78,10 +78,10 @@ public class CollectInputSchemaCreatorTask extends Task {
 		return schema;
 	}
 	
-	private void addUserDefinedVariableColumns() {
-		workspaceService.addUserDefinedVariableColumns(getWorkspace());
-		incrementItemsProcessed();
-	}
+//	private void addUserDefinedVariableColumns() {
+//		workspaceService.addUserDefinedVariableColumns(getWorkspace());
+//		incrementItemsProcessed();
+//	}
 
 //	private void addVariablePerHaColumns() {
 //		workspaceService.addVariablePerHaColumns(getWorkspace());

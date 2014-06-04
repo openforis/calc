@@ -825,8 +825,8 @@ ul.scroll-menu {
 * home settings section
 *
 */
-#settings .btn-home ,
-#settings .btn-home:focus {
+#settings .settings-btn ,
+#settings .settings-btn:focus {
 	height: 7em;
 	width: 15%;
 	font-size: 1.1em;
@@ -839,7 +839,7 @@ ul.scroll-menu {
 	letter-spacing: 0.03em;
 	color: #d0d4d9;
 }
-#settings .btn-home:hover {
+#settings .settings-btn:hover {
 	background-color: #676c7a;
 }
 

@@ -6,7 +6,8 @@
 WorkspaceManager = function() {
 	
 	this._activeWorkspace = null;
-
+	
+	this.contextPath = "rest/workspace/";
 };
 
 WorkspaceManager.prototype = (function(){
@@ -435,6 +436,15 @@ WorkspaceManager.prototype = (function(){
 	};
 	
 })();
+
+WorkspaceManager.prototype.export = function() {
+	var $this = this;
+	this.activeWorkspace( function(ws){
+		
+		var url = $this.contextPath + ws.name + "-calc-workspace.zip";	
+		UI.Form.download( url );
+	});
+};
 
 // singleton instance of workspace manager
 var _workspaceManager = null;

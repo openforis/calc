@@ -1,16 +1,22 @@
 package org.openforis.calc.web.controller;
 
+import static org.apache.commons.codec.binary.Base64.encodeBase64;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import javax.validation.Valid;
 
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.openforis.calc.Calc;
 import org.openforis.calc.engine.CsvDataImportTask;
 import org.openforis.calc.engine.Job;
 import org.openforis.calc.engine.TaskManager;
@@ -28,6 +34,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * 
@@ -48,6 +56,11 @@ public class WorkspaceController {
 	@Autowired
 	private DataSource dataSource; 
 
+	@Autowired
+	private Calc calc;
+	
+	@Autowired
+	private ObjectMapper jsonObjectMapper; 
 	
 	@RequestMapping(value = "/list.json", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody
@@ -192,5 +205,36 @@ public class WorkspaceController {
 		
 		return job;
 	}
+	
+	/**
+	 * Export active workspace
+	 * @throws IOException 
+	 */
+	@RequestMapping(value = "/{wsName}-calc-workspace.zip", method = RequestMethod.POST)
+	public void export(HttpServletResponse response) throws IOException {
+		Workspace workspace = workspaceService.cloneActiveForExport();
+		String version = calc.getVersion();
+		
+		ZipOutputStream stream = new ZipOutputStream( response.getOutputStream() );
+		
+		// add info entry
+		ZipEntry info = new ZipEntry( "calc-version.txt" );
+		stream.putNextEntry(info);
+		stream.write(  encodeBase64(version.getBytes()) );
+		stream.closeEntry();
+		
+		// add workspace
+		StringWriter sw = new StringWriter();
+		jsonObjectMapper.writeValue( sw, workspace );
+		String wsString = sw.toString();
+		
+		ZipEntry wsEntry = new ZipEntry( "workspace.json" );
+		stream.putNextEntry(wsEntry);
+		stream.write( encodeBase64(wsString.getBytes()) );
+		stream.closeEntry();
+		
+		stream.close();
+	}
+	
 
 }

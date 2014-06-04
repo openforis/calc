@@ -30,12 +30,12 @@
 	<context:component-scan base-package="org.openforis.calc" />
 	<context:annotation-config />
 
+	<bean id="jsonObjectMapper" class="org.openforis.calc.web.json.CalcObjectMapper" />
+		             	
 	<mvc:annotation-driven>
 	    <mvc:message-converters register-defaults="true">
 	         <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
-	             <property name="objectMapper">
-					<bean class="org.openforis.calc.web.json.CalcObjectMapper" />	             	
-	             </property>
+	             <property name="objectMapper" ref="jsonObjectMapper" />
 	         </bean>
 	    </mvc:message-converters>
 	</mvc:annotation-driven>

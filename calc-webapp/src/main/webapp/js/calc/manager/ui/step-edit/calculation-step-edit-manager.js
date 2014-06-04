@@ -76,14 +76,17 @@ CalculationStepEditManager.prototype.init = function( callback ) {
 		// populate entity select 
 		$this.$entityCombo.data( ws.entities, "id", "name" );
 		
+		// populate category combobox
+		$this.categoryCombo.data( $this.workspace.userDefinedcategories() , "id" , "caption" );
+		
 		// disable / enable type buttons
-		if( $this.workspace.equationLists.length == 0 || stepId ) {
+//		if( $this.workspace.equationLists.length == 0 || stepId ) {
 			// disable type equation
-			UI.disable( $this.equationButton.button );
-		} else {
+//			UI.disable( $this.equationButton.button );
+//		} else {
 			// enable type equations
-			$this.equationListCombo.data( $this.workspace.equationLists , "id" , "name" );
-		}
+		$this.equationListCombo.data( $this.workspace.equationLists , "id" , "name" );
+//		}
 
 		// load step if necessary
 		var url = window.sectionUrl;
@@ -111,9 +114,7 @@ CalculationStepEditManager.prototype.init = function( callback ) {
 			// default settings
 			$this.rScriptButton.select();
 		}
-		
-		// populate category combobox
-		$this.categoryCombo.data( $this.workspace.userDefinedcategories() , "id" , "caption" );
+
 	});
 };
 	

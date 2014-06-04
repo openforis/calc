@@ -6,7 +6,34 @@ WorkspaceSettingsManager = function( container ) {
 	
 	this.container = $( container );
 	
-	this.activeWorkspaceLabel = this.container.find( ".active-workspace-label" );
+	// home settings ui components
+	this.activeWorkspaceLabel 	= this.container.find( ".active-workspace-label" );
+	
+	this.exportBtn 				= this.container.find( ".export-workspace" );
+	this.importBtn 				= this.container.find( ".import-workspace" );
+	
+	this.init();
+};
+
+WorkspaceSettingsManager.prototype.init = function(){
+	var $this = this;
+	
+	// init event handlers
+	this.exportBtn.click( function(e){
+		e.preventDefault();
+		
+		WorkspaceManager.getInstance().export( function(){
+			
+		});
+	});
+};
+
+/**
+ * Update UI settings for active workspace
+ */
+WorkspaceSettingsManager.prototype.updateActive = function( ws ) {
+	var wsLabel = ( ws ) ? ws.name : "" ;
+	this.activeWorkspaceLabel.html( wsLabel );
 };
 
 WorkspaceSettingsManager.prototype.updateList = function( container ) {
@@ -83,10 +110,3 @@ WorkspaceSettingsManager.prototype.updateList = function( container ) {
 	
 };
 
-/**
- * Update UI settings for active workspace
- */
-WorkspaceSettingsManager.prototype.updateActive = function( ws ) {
-	var wsLabel = ( ws ) ? ws.name : "" ;
-	this.activeWorkspaceLabel.html( wsLabel );
-};

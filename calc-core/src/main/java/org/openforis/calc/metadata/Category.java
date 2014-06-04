@@ -53,4 +53,8 @@ public class Category extends CategoryBase {
 	public boolean isInput() {
 		return getOriginalId() != null;
 	}
+
+	public boolean isUserDefined() {
+		return getOriginalId() == null;
+	}
 }
