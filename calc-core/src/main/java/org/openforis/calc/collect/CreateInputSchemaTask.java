@@ -8,10 +8,16 @@ import java.sql.Connection;
 import javax.sql.DataSource;
 
 import org.jooq.Configuration;
+import org.jooq.Field;
+import org.jooq.Record;
+import org.jooq.impl.DSL;
 import org.jooq.impl.DataSourceConnectionProvider;
+import org.jooq.impl.DynamicTable;
 import org.jooq.impl.SchemaImpl;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.WorkspaceService;
+import org.openforis.calc.psql.Psql;
+import org.openforis.calc.schema.ExtendedSchema;
 import org.openforis.collect.relational.CollectRdbException;
 import org.openforis.collect.relational.RelationalSchemaCreator;
 import org.openforis.collect.relational.liquibase.LiquibaseRelationalSchemaCreator;
@@ -31,6 +37,9 @@ public class CreateInputSchemaTask extends Task {
 	@Autowired
 	private WorkspaceService workspaceService;
 	
+	@Autowired
+	private Psql psql;
+	
 	@Override
 	public String getName() {
 		return "Create database";
@@ -38,7 +47,7 @@ public class CreateInputSchemaTask extends Task {
 	
 	@Override
 	protected long countTotalItems() {
-		return 2;
+		return 3;
 	}
 	
 	@Override
@@ -47,11 +56,7 @@ public class CreateInputSchemaTask extends Task {
 		
 		createInputSchema();
 		
-//		addUserDefinedVariableColumns();
-		
-//		addVariablePerHaColumns();
-		
-//		createViews();
+		createExtendedSchema();
 	}
 
 	private void dropInputSchema() {
@@ -60,6 +65,7 @@ public class CreateInputSchemaTask extends Task {
 			.dropSchemaIfExists(new SchemaImpl(inputSchemaName))
 			.cascade()
 			.execute();
+		
 		incrementItemsProcessed();
 	}
 
@@ -78,19 +84,26 @@ public class CreateInputSchemaTask extends Task {
 		return schema;
 	}
 	
-//	private void addUserDefinedVariableColumns() {
-//		workspaceService.addUserDefinedVariableColumns(getWorkspace());
-//		incrementItemsProcessed();
-//	}
+	private void createExtendedSchema() {
+		
+		String extendedSchema = ExtendedSchema.getName( getWorkspace() );
+		
+		DynamicTable<Record> schemata = new DynamicTable<Record>("schemata" ,"information_schema");
+		Field<String> schemaName = schemata.getVarcharField("schema_name");
 
-//	private void addVariablePerHaColumns() {
-//		workspaceService.addVariablePerHaColumns(getWorkspace());
-//		incrementItemsProcessed();
-//	}
-
-//	private void createViews() {
-//		workspaceService.createViews(getWorkspace());
-//		incrementItemsProcessed();
-//	}
+		Integer count = psql
+					.selectCount()
+					.from( schemata )
+					.where( schemaName.eq(extendedSchema) )
+					.fetchOne( DSL.count() );
+		
+		if( count == 0 ) {
+			psql
+				.createSchema( new SchemaImpl(extendedSchema) )
+				.execute();
+		}
+		
+		incrementItemsProcessed();
+	}
 
 }

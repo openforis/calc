@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
+import org.json.simple.JSONArray;
 import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.metadata.AoiHierarchy;
@@ -63,9 +64,10 @@ public class Workspace extends WorkspaceBase {
 	 * TODO remove getInputSchema and replace it with getDataSchema
 	 * @return
 	 */
-	@JsonInclude
-	public String getDataSchema(){
-		return getInputSchema();
+	@Override
+	// TODO rename to dataSchema
+	public String getInputSchema(){
+		return super.getInputSchema();
 	} 
 
 	public List<Entity> getEntities() {
@@ -455,14 +457,17 @@ public class Workspace extends WorkspaceBase {
 		return getSamplingUnit() != null;
 	}
 	
+	@JsonIgnore
 	public boolean hasStratifiedSamplingDesign() {
 		return this.hasSamplingDesign() && getSamplingDesign().getStratified();
 	}
-
+	
+	@JsonIgnore
 	public boolean hasClusterSamplingDesign() {
 		return this.hasSamplingDesign() && getSamplingDesign().getCluster();
 	}
 
+	@JsonIgnore
 	public List<Variable<?>> getVariables() {
 		List<Variable<?>> variables = new ArrayList<Variable<?>>();
 		List<Entity> entities = getEntities();
@@ -490,4 +495,35 @@ public class Workspace extends WorkspaceBase {
 	public Schemas schemas() {
 		return new Schemas( this );
 	}
+	
+	// used when exporting/importing the workspace
+	@JsonInclude
+	protected Phase1Data phase1Data;
+	
+	public Phase1Data getPhase1Data() {
+		return phase1Data;
+	}
+	
+	public static class Phase1Data {
+		
+		public Phase1Data(){
+		}
+		
+		public Phase1Data( JSONArray tableInfo , List<DataRecord> records ){
+			this.tableInfo = tableInfo;
+			this.records = records;
+		}
+		private JSONArray tableInfo;
+		private List<DataRecord> records;
+		
+		public JSONArray getTableInfo() {
+			return tableInfo;
+		}
+		
+		public List<DataRecord> getRecords() {
+			return records;
+		}
+		
+	}
+	
 }

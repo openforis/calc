@@ -38,6 +38,7 @@ public class AoiLevel extends AoiLevelBase {
 		setAoiHierarchyId( aoiHierarchy.getId() );
 	}
 
+	@JsonIgnore
 	public String getDimensionTable() {
 		return String.format(DIMENSION_TABLE_FORMAT, hierarchy.getName(), getName());
 	}
@@ -46,18 +47,20 @@ public class AoiLevel extends AoiLevelBase {
 	 * 
 	 * @return the name of the aoi id in output fact tables
 	 */
+	@JsonIgnore
 	public String getFkColumn() {
 		return normalize( String.format(FK_COLUMN_FORMAT, hierarchy.getName(), getName()) ) ;
 	}
-
+	
+	@JsonIgnore
 	public String getCaptionColumn() {
 		return normalize( String.format(CAPTION_COLUMN_FORMAT, hierarchy.getName(), getName()) ) ;
 	}
-	
+	@JsonIgnore
 	public String getCodeColumn() {
 		return normalize( String.format(CODE_COLUMN_FORMAT, hierarchy.getName(), getName()) ) ;
 	}
-	
+	@JsonIgnore
 	public String getAreaColumn() {
 		return normalize( String.format(AREA_COLUMN_FORMAT, hierarchy.getName(), getName()) ) ;
 	}
@@ -80,7 +83,7 @@ public class AoiLevel extends AoiLevelBase {
 		}
 		this.aois.add(aoi);
 	}
-
+	@JsonIgnore
 	public String getNormalizedName() {
 		return normalize( getName() ) ;
 	}

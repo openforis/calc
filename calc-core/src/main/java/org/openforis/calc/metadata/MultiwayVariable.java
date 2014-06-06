@@ -1,5 +1,7 @@
 package org.openforis.calc.metadata;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * A {@link CategoricalVariable} that is not a {@link BinaryVariable}
  * 
@@ -26,9 +28,10 @@ public class MultiwayVariable extends CategoricalVariable<String> {
 	 * 
 	 * @return
 	 */
-	public boolean isOrdered() {
-		return getScale() == Scale.ORDINAL;
-	}
+	@JsonIgnore
+//	public boolean isOrdered() {
+//		return getScale() == Scale.ORDINAL;
+//	}
 
 	@Override
 	public void setScale(Scale scale) {
@@ -39,6 +42,7 @@ public class MultiwayVariable extends CategoricalVariable<String> {
 	}
 
 	@Override
+	@JsonIgnore
 	public String getDefaultValueTemp() {
 		return defaultValue;
 	}

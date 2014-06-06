@@ -6,7 +6,6 @@ import java.util.List;
 import org.openforis.commons.collection.CollectionUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * A variable which may take on a single numeric value.
@@ -27,18 +26,20 @@ public class QuantitativeVariable extends Variable<BigDecimal> {
 //	@OneToMany(mappedBy = "variable", fetch = FetchType.EAGER)
 //	@Cascade(CascadeType.ALL)
 	// TODO
+	@JsonIgnore
 	private List<VariableAggregate> aggregates;
 
 	//variable_per_ha_id
 //	@OneToOne(fetch = FetchType.EAGER)	
 //	@JoinColumn(name = "variable_per_ha_id")
 	// TODO 
+	@JsonIgnore
 	private QuantitativeVariable variablePerHa;
 	
-	@JsonIgnore
 //	@OneToOne(mappedBy = "variablePerHa")
 //	@JoinColumn(name = "variable_per_ha_id")
 	// TODO
+	@JsonIgnore
 	private QuantitativeVariable sourceVariable;
 	
 	public QuantitativeVariable getSourceVariable() {
@@ -71,6 +72,7 @@ public class QuantitativeVariable extends Variable<BigDecimal> {
 	}
 
 	@Override
+	@JsonIgnore
 	public BigDecimal getDefaultValueTemp() {
 		return defaultValue;
 	}
@@ -109,6 +111,7 @@ public class QuantitativeVariable extends Variable<BigDecimal> {
 		}
 	}
 	
+	@JsonIgnore
 	public String getVariablePerHaName(){
 		return String.format( "%s_per_ha", getName() );
 	}
@@ -117,7 +120,8 @@ public class QuantitativeVariable extends Variable<BigDecimal> {
 	 * Returns the list of available aggregates for the variable
 	 * @return
 	 */
-	@JsonInclude
+//	@JsonInclude
+	@JsonIgnore
 	public VariableAggregate.AGGREGATE_TYPE[] getAggregateTypes() {
 		VariableAggregate.AGGREGATE_TYPE[] aggTypes = { VariableAggregate.AGGREGATE_TYPE.SUM, VariableAggregate.AGGREGATE_TYPE.MAX , VariableAggregate.AGGREGATE_TYPE.MIN, VariableAggregate.AGGREGATE_TYPE.MEAN , VariableAggregate.AGGREGATE_TYPE.STDDEV };
 		return aggTypes;

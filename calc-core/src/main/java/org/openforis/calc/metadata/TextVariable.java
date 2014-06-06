@@ -1,5 +1,7 @@
 package org.openforis.calc.metadata;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 /**
  * A variable which may take on a single text value (it can be used as degenerate dimension).
@@ -20,6 +22,7 @@ public class TextVariable extends Variable<String> {
 	}
 
 	@Override
+	@JsonIgnore
 	public String getDefaultValueTemp() {
 		return defaultValue;
 	}

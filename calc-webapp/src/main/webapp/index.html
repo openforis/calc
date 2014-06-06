@@ -165,6 +165,13 @@
 		 					href="workspace-list.html">Active:<div class="active-workspace-label"></div></button>
 		 					
 	 					<button type="button" class="btn btn-default settings-btn workspace-required export-workspace"><i class="fa fa-download icon-3"></i>&nbsp;Export</button>
+	 					
+	 					<div style="display: none" class="import-workspace-form-section">
+		 					<form method="post" enctype="multipart/form-data" action="rest/workspace/import.json">
+							    <input type="file" name="file" style="display:none" accept=".zip" />		    		    
+							</form>
+	 					</div>
+	 					<button type="button" class="btn btn-default settings-btn workspace-required import-workspace"><i class="fa fa-upload icon-3"></i>&nbsp;Import</button>
 	 				</div>
 		  		</div>
 <!-- 		  		<div class="row  height33 width100"></div> -->

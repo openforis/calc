@@ -11,6 +11,7 @@ WorkspaceSettingsManager = function( container ) {
 	
 	this.exportBtn 				= this.container.find( ".export-workspace" );
 	this.importBtn 				= this.container.find( ".import-workspace" );
+	this.importFormSection		= this.container.find( ".import-workspace-form-section" );
 	
 	this.init();
 };
@@ -18,14 +19,24 @@ WorkspaceSettingsManager = function( container ) {
 WorkspaceSettingsManager.prototype.init = function(){
 	var $this = this;
 	
+	var importCallback = function(){
+		console.log( "imported" );
+	};
+	this.formFileUpload = new FormFileUpload( this.importFormSection, null, importCallback );
+	this.formFileUpload.showHideForm = false;
+	
 	// init event handlers
 	this.exportBtn.click( function(e){
 		e.preventDefault();
 		
-		WorkspaceManager.getInstance().export( function(){
-			
-		});
+		WorkspaceManager.getInstance().export();
 	});
+	
+	this.importBtn.click( function(e){
+		e.preventDefault();
+		$this.formFileUpload.fileInput.click();
+	});
+	
 };
 
 /**

@@ -25,7 +25,7 @@ public class EquationList extends EquationListBase {
 	@JsonIgnore
 	private Workspace workspace;
 
-	@JsonIgnore
+//	@JsonIgnore
 	private List<Equation> equations;
 	
 	public Workspace getWorkspace() {

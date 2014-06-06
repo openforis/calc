@@ -23,7 +23,7 @@ CategoryClassOption = function( cls , editManager , parentContainer ){
 	selectVar.attr( "name" , "categoryClassVariables['" + cls.id + "']" );
 	divVar.append( selectVar );
 	this.variableCombo = selectVar.combobox();
-	this.variableCombo.data( editManager.getSelectedEntity().getAncestorsVariables() , "id" , "name" ); 
+	this.variableCombo.data( editManager.getSelectedEntity().hierarchyVariables() , "id" , "name" ); 
 	
 	var divVarFiler = $( '<div class="col-md-6"></div>' );
 	container.append( divVarFiler );

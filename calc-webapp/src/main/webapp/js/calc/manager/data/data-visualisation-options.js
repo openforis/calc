@@ -100,8 +100,8 @@ DataVisualisationOptions.prototype.addVariableOptions = function( entity ) {
 		this.quantities.append( header );
 		this.categories.append( header.clone() );
 		
-		this.addVariableOptionButtons( entity.quantitativeVariables , this.quantities );
-		this.addVariableOptionButtons( entity.categoricalVariables , this.categories );
+		this.addVariableOptionButtons( entity.quantitativeVariables() , this.quantities );
+		this.addVariableOptionButtons( entity.categoricalVariables() , this.categories );
 		
 		entity = entity.parent();
 	}

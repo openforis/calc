@@ -1,28 +1,42 @@
 /**
  * Entity model object
  * 
- * @author S. Ricci
  * @author Mino Togna
+ * @author S. Ricci
  */
-Entity = function( workspace , object ) {
-    $.extend(this, object);
+Entity = function( workspace , jsonObject ) {
+    $.extend( this, jsonObject );
     
     this.workspace = workspace;
 };
 
 /**
- * Returns the quantitative variable with id variableId associated with entity
- * with id entityId (if there is)
+ * Returns the categorical variables
  */
-Entity.prototype.getQuantitativeVariableById = function( variableId ) {
-    var vars = this.quantitativeVariables;
-    for ( var i in vars) {
-		var variable = vars[i];
-		if (variable.id.toString() == variableId.toString()) {
-		    return variable;
+Entity.prototype.categoricalVariables = function(){
+	return this.filterVariables( "type" , "CATEGORICAL" );
+};
+
+/**
+ * Returns the quantitative variables
+ */
+Entity.prototype.quantitativeVariables = function(){
+	return this.filterVariables( "type" , "QUANTITATIVE" );
+};
+
+Entity.prototype.filterVariables = function( field , value ){
+	var vars = [];
+	
+	for( var i in this.variables ){
+		var variable = this.variables[i];
+		
+		var variableFieldValue = variable[field];
+		if( variableFieldValue == value ){
+			vars.push( variable );
 		}
-    };
-    return null;
+	}
+	
+	return vars;
 };
 
 /**
@@ -30,9 +44,9 @@ Entity.prototype.getQuantitativeVariableById = function( variableId ) {
  */
 Entity.prototype.replaceVariable = function( variable ) {
     var $this = this;
-    $.each($this.quantitativeVariables, function( i , variableToReplace ) {
+    $.each($this.variables, function( i , variableToReplace ) {
 		if (variableToReplace.id.toString() == variable.id.toString()) {
-		    $this.quantitativeVariables[i] = variable;
+		    $this.variables[i] = variable;
 		    return false;
 		}
     });
@@ -40,49 +54,18 @@ Entity.prototype.replaceVariable = function( variable ) {
 };
 
 Entity.prototype.addVariable = function( variable ) {
-	if( variable.type == "QUANTITATIVE" ){
-		this.addQuantitativeVariable(variable);
-	} else if( variable.type == "CATEGORICAL" ){
-		this.addCategoricalVariable(variable);
-	}
-};
-/**
- * Adds the passed variable to the list of quantitative variables
- */
-Entity.prototype.addQuantitativeVariable = function( variable ) {
-    this.quantitativeVariables.push(variable);
-};
-/**
- * Adds the passed variable to the list of quantitative variables
- */
-Entity.prototype.addCategoricalVariable = function( variable ) {
-    this.categoricalVariables.push(variable);
-};
-/**
- * Returns all variables
- */
-Entity.prototype.getVariables = function() {
-    var result = this.categoricalVariables.concat(this.quantitativeVariables).concat(this.textVariables);
-    
-    //TODO temp workaround
-    if (this.workspace.isSamplingUnit(this)) {
-	result = result.concat({
-	    name : "weight"
-	});
-    }
-    
-    return result;
+	this.variables.push(variable);
 };
 
 /**
  * Returns all the variables up to the root entity
  */
-Entity.prototype.getAncestorsVariables = function() {
-    var result = this.getVariables();
+Entity.prototype.hierarchyVariables = function() {
+    var result = this.variables;
     var currentParent = this.parent();
 
     while ( currentParent != null ) {
-    	var parentVariables = currentParent.getVariables();
+    	var parentVariables = currentParent.variables;
     	result = parentVariables.concat( result );
     	currentParent = currentParent.parent();
     }
@@ -94,7 +77,7 @@ Entity.prototype.getAncestorsVariables = function() {
  * Returns the variable with the given id
  */
 Entity.prototype.getVariableById = function( id ) {
-	var variables = this.getAncestorsVariables();
+	var variables = this.hierarchyVariables();
     for (var i = 0; i < variables.length; i++) {
     	var variable = variables[i];
 		if (variable.id == id) {
@@ -105,20 +88,15 @@ Entity.prototype.getVariableById = function( id ) {
 };
 
 /**
- * Deletes the quantitative variable with the given id
+ * Deletes the variable with the given id
  */
 Entity.prototype.deleteVariable = function( id ) {
-    var v = this.getVariableById(id);
+    var v = this.getVariableById( id );
     
-    var index = this.quantitativeVariables.indexOf(v);
+    var index = this.variables.indexOf( v );
     if( index > 0 ) {
-    	this.quantitativeVariables.splice(index, 1);
-    } else {
-    	index = this.categoricalVariables.indexOf(v);
-        if( index > 0 ) {
-        	this.categoricalVariables.splice(index, 1);
-        }	
-    }
+    	this.variables.splice( index , 1 );
+    } 	
 };
 
 /**
@@ -132,21 +110,17 @@ Entity.prototype.parent = function() {
  * Returns true if it has at least one user defined quantity variable
  */
 Entity.prototype.isAggregable = function() {
-    for ( var i in this.quantitativeVariables) {
-	var qtyVar = this.quantitativeVariables[i];
-	if (qtyVar.userDefined === true) {
-	    return true;
-	}
-    }
-    return false;
+    return this.quantitativeOutputVariables().length > 0;
 };
+
 /**
  * Returns user defined quantitative variables
  */
 Entity.prototype.quantitativeOutputVariables = function() {
+	var qtyVars = this.quantitativeVariables();
 	var vars = [];
-	for( var i in this.quantitativeVariables ){
-		var v = this.quantitativeVariables[ i ];
+	for( var i in qtyVars ){
+		var v = qtyVars[ i ];
 		if( v.userDefined === true ){
 			vars.push( v );
 		}

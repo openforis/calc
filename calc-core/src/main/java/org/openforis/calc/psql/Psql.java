@@ -1,6 +1,8 @@
 package org.openforis.calc.psql;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
@@ -16,6 +18,7 @@ import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultDSLContext;
 import org.jooq.impl.DefaultExecuteListenerProvider;
 import org.jooq.impl.SQLDataType;
+import org.jooq.util.postgres.PostgresDataType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +41,8 @@ public final class Psql extends DefaultDSLContext {
 	@SuppressWarnings("unused")
 	private static final Logger log = LoggerFactory.getLogger( Psql.class );
 
+	public static final Map<String,DataType<?>> POSTGRESQL_DATA_TYPES ;
+	
 	public enum Privilege {
 
 		USAGE, ALL, SELECT;
@@ -46,6 +51,27 @@ public final class Psql extends DefaultDSLContext {
 			return name().toLowerCase();
 		};
 	};
+	
+	static {
+		// init postgresql data types
+		try {
+			POSTGRESQL_DATA_TYPES = new HashMap<String, DataType<?>>();
+			
+			java.lang.reflect.Field[] fields = PostgresDataType.class.getDeclaredFields();
+			for ( java.lang.reflect.Field field : fields ) {
+				field.setAccessible(true);
+				if ( java.lang.reflect.Modifier.isStatic( field.getModifiers() ) ) {
+			        Object object = field.get( null );
+			        if( object instanceof DataType<?> ){
+			        	DataType<?> dataType = (DataType<?>) object;
+			        	POSTGRESQL_DATA_TYPES.put( dataType.getTypeName(), dataType );
+			        }
+			    }
+			}
+		} catch ( Exception e ) {
+			throw new RuntimeException( "Error while loading postgreSQL datatypes " , e );
+		}
+	}
 
 	public Psql(Configuration configuration) {
 		super(configuration);

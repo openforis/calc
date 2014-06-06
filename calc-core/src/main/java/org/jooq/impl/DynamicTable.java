@@ -13,6 +13,8 @@ import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.TableField;
 import org.jooq.UniqueKey;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.openforis.calc.metadata.SamplingDesign.ColumnJoin;
 import org.openforis.calc.metadata.SamplingDesign.TableJoin;
 import org.openforis.calc.psql.Psql;
@@ -118,5 +120,23 @@ public class DynamicTable<R extends Record> extends TableImpl<R> {
 		}
 		return primaryKey;
 	}
+	
+	/**
+	 * initialize fields with a json array objects
+	 * the objects must have fields column_name and data_type
+	 * 
+	 * @param jsonArray
+	 */
+	public void initFields( JSONArray jsonArray ){
+		for ( Object object : jsonArray ) {
+			JSONObject jsonObject = (JSONObject) object;
+			String name = jsonObject.get("column_name").toString();
+			String type = jsonObject.get("data_type").toString();
+			
+			DataType<?> dataType = Psql.POSTGRESQL_DATA_TYPES.get(type);
+			createField( name, dataType, this );
+		}
+	}
+	
 	
 }

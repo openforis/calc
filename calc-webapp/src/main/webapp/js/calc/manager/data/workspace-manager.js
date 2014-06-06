@@ -136,7 +136,7 @@ WorkspaceManager.prototype = (function(){
 		
 		$this.activeWorkspace(function(ws){
 			var entity = ws.getEntityById(entityId);
-			var variable = entity.getQuantitativeVariableById(variableId);
+			var variable = entity.getVariableById(variableId);
 			
 			$.ajax({
 				url:"rest/workspace/active/entity/"+entityId+"/variable/"+variableId+"/variable-per-ha.json",
@@ -171,7 +171,7 @@ WorkspaceManager.prototype = (function(){
 				$this.activeWorkspace(function(ws) {
 					var newVariable = response.fields.variable;
 					var entity = ws.getEntityById(variable.entityId);
-					entity.addQuantitativeVariable(newVariable);
+					entity.addVariable(newVariable);
 				});
 			}
 			if ( success ) {

@@ -218,6 +218,11 @@
 				<artifactId>commons-collections</artifactId>
 				<version>${of-commons-version}</version>
 			</dependency>
+			<dependency>
+				<groupId>org.openforis.commons</groupId>
+				<artifactId>commons-versioning</artifactId>
+				<version>${of-commons-version}</version>
+			</dependency>
 			
 			<!-- Spring -->
 			<dependency>

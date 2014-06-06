@@ -3,10 +3,16 @@ package org.openforis.calc.engine;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+import org.jooq.DataType;
 import org.jooq.Field;
 import org.jooq.Insert;
 import org.jooq.Record;
+import org.jooq.impl.DynamicTable;
+import org.jooq.util.postgres.PostgresDataType;
+import org.json.simple.JSONArray;
 import org.openforis.calc.chain.ProcessingChainManager;
+import org.openforis.calc.engine.Workspace.Phase1Data;
 import org.openforis.calc.metadata.AoiDao;
 import org.openforis.calc.metadata.Category;
 import org.openforis.calc.metadata.CategoryManager;
@@ -17,10 +23,12 @@ import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.StratumDao;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.VariableDao;
+import org.openforis.calc.persistence.jooq.CalcSchema;
 import org.openforis.calc.persistence.jooq.tables.daos.CalculationStepDao;
 import org.openforis.calc.persistence.jooq.tables.daos.EntityDao;
 import org.openforis.calc.persistence.jooq.tables.daos.SamplingDesignDao;
 import org.openforis.calc.persistence.jooq.tables.daos.WorkspaceDao;
+import org.openforis.calc.psql.InformationSchemaColumnsTable;
 import org.openforis.calc.psql.Psql;
 import org.openforis.calc.schema.DataSchema;
 import org.openforis.calc.schema.DataSchemaDao;
@@ -28,7 +36,7 @@ import org.openforis.calc.schema.DataTable;
 import org.openforis.calc.schema.EntityDataViewDao;
 import org.openforis.calc.schema.ResultTable;
 import org.openforis.calc.schema.Schemas;
-import org.openforis.calc.schema.TableDataDao;
+import org.openforis.calc.schema.TableDao;
 import org.openforis.commons.io.csv.CsvReader;
 import org.openforis.commons.io.flat.FlatRecord;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +74,7 @@ public class WorkspaceService {
 	@Autowired
 	private StratumDao stratumDao;
 	@Autowired
-	private TableDataDao tableDataDao;
+	private TableDao tableDao;
 	@Autowired
 	private CalculationStepDao calculationStepDao;
 	@Autowired
@@ -245,7 +253,7 @@ public class WorkspaceService {
 		DataSchema schema = new Schemas( entity.getWorkspace() ).getDataSchema();
 		ResultTable resultTable = schema.getResultTable( entity );
 		
-		boolean exists = resultTable != null && tableDataDao.exists( resultTable.getSchema().getName() , resultTable.getName() );
+		boolean exists = resultTable != null && tableDao.exists( resultTable.getSchema().getName() , resultTable.getName() );
 		if( exists ) {
 			entityDataViewDao.drop( entity );
 			
@@ -290,7 +298,7 @@ public class WorkspaceService {
 			DataSchema schema = new Schemas( entity.getWorkspace() ).getDataSchema();
 			ResultTable resultTable = schema.getResultTable( entity );
 			
-			boolean exists = resultTable != null && tableDataDao.exists( resultTable.getSchema().getName() , resultTable.getName() );
+			boolean exists = resultTable != null && tableDao.exists( resultTable.getSchema().getName() , resultTable.getName() );
 			if( exists ) {
 				entityDataViewDao.drop( entity );
 				
@@ -337,6 +345,7 @@ public class WorkspaceService {
 	public void importStrata(Workspace workspace, String filepath) throws IOException {
 		stratumDao.deleteAll(workspace);
 		
+		@SuppressWarnings( "resource" )
 		CsvReader csvReader = new CsvReader(filepath);
 		csvReader.readHeaders();
 		
@@ -365,12 +374,46 @@ public class WorkspaceService {
 	 */
 	public Workspace cloneActiveForExport() {
 		Workspace ws = getActiveWorkspace();
+		
 		metadataManager.removeInputVariables( ws );
+		
 		ws.removeInputCategories();
+		
+		loadPhase1Data( ws );
 		
 		return ws;
 	}
 	
+	
+	private void loadPhase1Data( Workspace ws ) {
+		String phase1PlotTable = ws.getPhase1PlotTable();
+		if( StringUtils.isNotBlank(phase1PlotTable) ) {
+			// read table information 
+			DynamicTable<?> phase1Table = new DynamicTable<Record>( phase1PlotTable, CalcSchema.CALC.getName() );
+			JSONArray tableInfo = tableDao.info( phase1Table );
+			
+			phase1Table.initFields(tableInfo);
+			List<DataRecord> records = tableDao.selectAll(phase1Table);
+			
+			ws.phase1Data = new Phase1Data( tableInfo , records );
+		}
+		
+	}
+
+	public static void main( String[] args ) throws IllegalArgumentException, IllegalAccessException {
+		java.lang.reflect.Field[] fields = PostgresDataType.class.getDeclaredFields();
+		for ( java.lang.reflect.Field field : fields ) {
+			field.setAccessible(true);
+			if ( java.lang.reflect.Modifier.isStatic( field.getModifiers() ) ) {
+//		        System.out.println( field.getName() );
+		        Object object = field.get( null );
+		        if( object instanceof DataType<?> ){
+		        	DataType<?> dataType = (DataType<?>) object;
+		        	System.out.println( dataType.getTypeName() );
+		        }
+		    }
+		}
+	}
 	
 //	private void setActiveWorkspace(Workspace activeWorkspace) {
 ////		this.activeWorkspace = activeWorkspace;

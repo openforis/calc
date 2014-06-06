@@ -10,6 +10,8 @@ import java.util.Set;
 
 import org.openforis.commons.collection.CollectionUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * This class is a container for the data entity table
  * 
@@ -46,6 +48,7 @@ public class DataRecord implements Cloneable {
 		return fields;
 	}
 	
+	@JsonIgnore
 	public Set<String> getFieldNames() {
 		return CollectionUtils.unmodifiableSet(fields.keySet());
 	}

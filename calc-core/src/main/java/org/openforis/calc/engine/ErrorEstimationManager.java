@@ -40,7 +40,7 @@ import org.openforis.calc.schema.ExpansionFactorTable;
 import org.openforis.calc.schema.FactTable;
 import org.openforis.calc.schema.Schemas;
 import org.openforis.calc.schema.StratumDimensionTable;
-import org.openforis.calc.schema.TableDataDao;
+import org.openforis.calc.schema.TableDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -56,7 +56,7 @@ import org.springframework.stereotype.Component;
 public class ErrorEstimationManager {
 	
 	@Autowired
-	private TableDataDao tableDataDao;
+	private TableDao tableDataDao;
 	
 	@Autowired
 	R r;

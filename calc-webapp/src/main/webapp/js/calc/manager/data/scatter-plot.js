@@ -80,7 +80,7 @@ ScatterPlot.prototype = (function(){
 		// populate input combos
 		this.workspaceManager.activeWorkspace(function(ws) {
 			var entity = ws.getEntityById($this.dataProvider.entityId);
-			var variables = entity.quantitativeVariables;
+			var variables = entity.quantitativeVariables();
 			
 			$this.xCombo.data(variables, 'name', 'name');
 			$this.yCombo.data(variables, 'name', 'name');

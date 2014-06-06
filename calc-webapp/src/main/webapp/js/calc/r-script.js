@@ -100,7 +100,7 @@ RScript.prototype = (function() {
 		var $this = this;
 		var result = new Array();
 		if ( $this.entity != null ) {
-			var variables = $this.entity.getAncestorsVariables(); 
+			var variables = $this.entity.hierarchyVariables(); 
 			$.each(variables, function(index, variable) {
 				var variableName = variable.name;
 				var variableItem = $this.entity.name + "$" + variableName;

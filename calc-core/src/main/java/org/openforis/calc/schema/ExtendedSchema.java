@@ -14,7 +14,11 @@ public class ExtendedSchema extends DataSchema {
 	private static final long serialVersionUID = 1L;
 
 	public ExtendedSchema(Workspace workspace) {
-		super( workspace.getInputSchema() + "_ext" , workspace);
+		super( getName(workspace) , workspace);
+	}
+
+	public static String getName(Workspace workspace) {
+		return workspace.getInputSchema() + "_ext";
 	}
 	
 	@Override

@@ -226,7 +226,7 @@ AggregationManager.prototype.variableUpdate = function( variableId ) {
 	// empty variable-per-ha section
 	$this.variablePerHaSection.empty();
 	
-	var variable = $this.currentEntity.getQuantitativeVariableById(variableId);
+	var variable = $this.currentEntity.getVariableById(variableId);
 	// $this.variableSection.hide();
 	
 	// update variable section header
@@ -342,7 +342,7 @@ AggregationManager.prototype.getAggregateButton = function( variable , agg , per
 AggregationManager.prototype.variablePerHaUpdate = function( variableId ) {
     var $this = this;
     WorkspaceManager.getInstance().activeWorkspace($.proxy(function( ws ) {
-	var variable = $this.currentEntity.getQuantitativeVariableById(variableId);
+	var variable = $this.currentEntity.getVariableById(variableId);
 	var variablePerHa = variable.variablePerHa;
 	
 	// append btn to add/remove variable-per-ha

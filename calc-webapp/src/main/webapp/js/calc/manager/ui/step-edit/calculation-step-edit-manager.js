@@ -419,7 +419,7 @@ CalculationStepEditManager.prototype.equationListChange = function () {
 	this.equationForm.find( '.eq-variable' ).remove();
 	if( equationList ) {
 		this.codeVariableCombo.enable();
-		this.codeVariableCombo.data( this.getSelectedEntity().getAncestorsVariables() , "id" , "name" );
+		this.codeVariableCombo.data( this.getSelectedEntity().hierarchyVariables() , "id" , "name" );
 		
 		var vars = equationList.parameters.variables;
 		this.equationListVariableCombos = [];
@@ -437,7 +437,7 @@ CalculationStepEditManager.prototype.equationListChange = function () {
 			select.attr( "name" , selectNameAttr );
 			divSelect.append( select );	
 			var combo = select.combobox();
-			combo.data( this.getSelectedEntity().getAncestorsVariables() , "id" , "name" );
+			combo.data( this.getSelectedEntity().hierarchyVariables() , "id" , "name" );
 			this.equationListVariableCombos[ variable ] = combo;
 			div.append( divSelect );
 			

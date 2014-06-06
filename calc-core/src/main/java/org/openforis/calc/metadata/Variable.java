@@ -3,6 +3,11 @@ package org.openforis.calc.metadata;
 import org.openforis.calc.persistence.jooq.tables.pojos.VariableBase;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+
+
 
 /**
  * Base class for Calc variables.  Variables may be either categorical or quantitative.  Note that binary classes are special cases of categorical
@@ -11,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author G. Miceli
  * @author M. Togna
  */
+@JsonTypeInfo(use=Id.CLASS, include=As.PROPERTY, property="class")
 public abstract class Variable<T> extends VariableBase {
 	
 	private static final long serialVersionUID = 1L;

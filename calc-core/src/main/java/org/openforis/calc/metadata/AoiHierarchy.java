@@ -44,6 +44,7 @@ public class AoiHierarchy extends AoiHierarchyBase {
 		return org.openforis.commons.collection.CollectionUtils.unmodifiableList( levels );
 	}
 
+	@JsonIgnore
 	public Collection<AoiLevel> getLevelsReverseOrder() {
 		List<AoiLevel> aoiLevels = new ArrayList<AoiLevel>( this.levels );
 		

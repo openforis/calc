@@ -21,6 +21,7 @@ import org.openforis.calc.metadata.CategoryLevel;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.Variable;
+import org.openforis.calc.persistence.jooq.CalcSchema;
 
 /**
  * @author G. Miceli
@@ -204,7 +205,7 @@ public class DataSchema extends RelationalSchema {
 		String phase1PlotTable = workspace.getPhase1PlotTable();
 		
 		if( StringUtils.isNotBlank(phase1PlotTable) ) {
-			return new DynamicTable<Record>( phase1PlotTable, "calc" );
+			return new DynamicTable<Record>( phase1PlotTable, CalcSchema.CALC.getName() );
 		}
 		
 		return null;

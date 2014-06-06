@@ -1,5 +1,7 @@
 package org.openforis.calc.metadata;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 /**
  * A special type of CategoricalVariable which may take only two values (TRUE or FALSE) plus NA.
@@ -35,6 +37,7 @@ public class BinaryVariable extends CategoricalVariable<Boolean> {
 	}
 
 	@Override
+	@JsonIgnore
 	public Boolean getDefaultValueTemp() {
 		return defaultValue;
 	}

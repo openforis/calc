@@ -3,6 +3,7 @@ package org.openforis.calc.web.controller;
 import static org.apache.commons.codec.binary.Base64.encodeBase64;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.List;
@@ -13,12 +14,14 @@ import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import javax.validation.Valid;
 
+import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.openforis.calc.Calc;
 import org.openforis.calc.engine.CsvDataImportTask;
 import org.openforis.calc.engine.Job;
+import org.openforis.calc.engine.SurveyBackupExtractor;
 import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceLockedException;
@@ -26,14 +29,18 @@ import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.web.form.VariableForm;
+import org.openforis.commons.versioning.Version;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -207,8 +214,9 @@ public class WorkspaceController {
 	}
 	
 	/**
-	 * Export active workspace
-	 * @throws IOException 
+	 * =========================
+	 * Import / export methods
+	 * =======================
 	 */
 	@RequestMapping(value = "/{wsName}-calc-workspace.zip", method = RequestMethod.POST)
 	public void export(HttpServletResponse response) throws IOException {
@@ -218,7 +226,7 @@ public class WorkspaceController {
 		ZipOutputStream stream = new ZipOutputStream( response.getOutputStream() );
 		
 		// add info entry
-		ZipEntry info = new ZipEntry( "calc-version.txt" );
+		ZipEntry info = new ZipEntry( SurveyBackupExtractor.VERSION_FILE_NAME );
 		stream.putNextEntry(info);
 		stream.write(  encodeBase64(version.getBytes()) );
 		stream.closeEntry();
@@ -228,7 +236,7 @@ public class WorkspaceController {
 		jsonObjectMapper.writeValue( sw, workspace );
 		String wsString = sw.toString();
 		
-		ZipEntry wsEntry = new ZipEntry( "workspace.json" );
+		ZipEntry wsEntry = new ZipEntry( SurveyBackupExtractor.WORKSPACE_FILE_NAME );
 		stream.putNextEntry(wsEntry);
 		stream.write( encodeBase64(wsString.getBytes()) );
 		stream.closeEntry();
@@ -236,5 +244,45 @@ public class WorkspaceController {
 		stream.close();
 	}
 	
+	@RequestMapping(value = "/import.json", method = RequestMethod.POST, produces =  MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	Response importWs(@ModelAttribute("file") MultipartFile file) throws IOException {
+		Response response = new Response();
+		
+		
+		// upload file
+		File tempFile = File.createTempFile( "calc", "workspace.zip");
+		FileUtils.copyInputStreamToFile(file.getInputStream(), tempFile);
+		
+		SurveyBackupExtractor extractor = new SurveyBackupExtractor( tempFile , jsonObjectMapper );
+		
+		Version version = extractor.extractVersion();
+		
+		String calcVersionString = calc.getVersion();
+		if( calcVersionString.equals( SurveyBackupExtractor.DEV_VERSION ) ){
+			calcVersionString = "0.0";
+		}
+		Version calcVersion = new Version( calcVersionString );
 
+		// if backup has been created with a newer version of calc, it fails
+		if( version.compareTo( calcVersion ) <= 0 ){
+			
+			Workspace workspace = extractor.extractWorkspace();
+			Workspace originalSurvey = workspaceService.fetchByCollectSurveyUri( workspace.getCollectSurveyUri() );
+			// it fails if the survey to import doesn't exist
+			if( originalSurvey == null ){
+				response.setStatusError();
+				response.addField( "error", "Workspace " + workspace.getName() + " not found. Unable to import." );
+			} else {
+				
+			}
+			
+		} else {
+			
+			response.setStatusError();
+			response.addField("error", "Backup was created using version " + version.toString()
+				+ ".\n Please upgrade Calc in order to proceed.\n Visit https://github.com/openforis/calc to download it.");
+		}
+		return response;
+	}
 }

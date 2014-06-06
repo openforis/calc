@@ -24,7 +24,7 @@ import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.schema.EntityDataViewDao;
-import org.openforis.calc.schema.TableDataDao;
+import org.openforis.calc.schema.TableDao;
 import org.openforis.commons.io.csv.CsvWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -57,7 +57,7 @@ public class DataController {
 	private EntityDataViewDao entityDao;
 	
 	@Autowired
-	private TableDataDao tableDataDao;
+	private TableDao tableDataDao;
 	
 	@RequestMapping(value = "/entity/{entityId}/query.json", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody

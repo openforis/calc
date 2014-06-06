@@ -113,7 +113,8 @@ ErrorCalculationManager.prototype.showQuantity = function() {
 			for( var i in steps ) {
 				var step = steps[i];
 				var variableId = step.outputVariableId;
-				if( vars.indexOf(variableId) < 0 ) {
+				var variable = ws.getVariableById( variableId );
+				if( vars.indexOf(variableId) < 0 && variable.type == "QUANTITATIVE") {
 					
 					var initVariableButton = function(){
 						var variable = ws.getVariableById( variableId ); 
@@ -186,7 +187,7 @@ ErrorCalculationManager.prototype.showCategory = function( vId ) {
 		var btns = [];
 		while( entity ) {
 			
-			var vars = entity.categoricalVariables;
+			var vars = entity.categoricalVariables();
 			for( i in vars ) {
 				var variable = vars[i];
 				var variableId = variable.id;

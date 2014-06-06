@@ -2,13 +2,11 @@ package org.openforis.calc.chain;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.openforis.calc.engine.ParameterHashMap;
 import org.openforis.calc.engine.ParameterMap;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.Entity;
-import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.persistence.jooq.tables.pojos.CalculationStepBase;
 import org.openforis.calc.r.RScript;
@@ -70,14 +68,12 @@ public class CalculationStep extends CalculationStepBase {
 
 	public RScript getRScript() {
 		Variable<?> outputVariable = this.getOutputVariable();
-		Entity entity = outputVariable.getEntity();
-		return new RScript().rScript(getScript(), entity.getHierarchyVariables());
-	}
-
-	public Set<String> getVariables() {
-		Set<String> variables = getRScript().getVariables();
-		variables.add(getOutputVariable().getName());
-		return variables;
+		if( outputVariable != null ){
+			Entity entity = outputVariable.getEntity();
+			return new RScript().rScript(getScript(), entity.getHierarchyVariables());
+		}
+		
+		return null;
 	}
 
 	@Override

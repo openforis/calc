@@ -4,7 +4,10 @@
 package org.openforis.calc.schema;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.jooq.Field;
 import org.jooq.Record;
@@ -24,7 +27,7 @@ import org.springframework.stereotype.Repository;
  * 
  */
 @Repository
-public class TableDataDao extends AbstractJooqDao {
+public class TableDao extends AbstractJooqDao {
 	
 	/**
 	 * Check if the given table exists in the database
@@ -47,6 +50,10 @@ public class TableDataDao extends AbstractJooqDao {
 		DynamicTable<?> dbTable = new DynamicTable<Record>(table, schema);
 		Long count = psql().selectCount().from(dbTable).fetchOne(0, Long.class);
 		return count;
+	}
+	
+	public JSONArray info( Table<?> table ){
+		return info( table.getSchema().getName() , table.getName() );
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -76,7 +83,16 @@ public class TableDataDao extends AbstractJooqDao {
 		return array;
 	}
 	
-	public List<DataRecord> selectAll( Table<?> table , List<String> fields ) {
+	public List<DataRecord> selectAll( Table<?> table ) {
+		Set<String> fields = new HashSet<String>();
+		for ( Field<?> field : table.fields() ) {
+			fields.add( field.getName() );
+		}
+		
+		return selectAll( table, fields ); 
+	}
+	
+	public List<DataRecord> selectAll( Table<?> table , Collection<String> fields ) {
 		return query( table.getSchema().getName() , table.getName() , null , null  , null , fields.toArray(new String[]{}) );
 	}
 	
@@ -132,5 +148,5 @@ public class TableDataDao extends AbstractJooqDao {
 		}
 		return records;
 	}
-
+	
 }

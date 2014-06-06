@@ -21,6 +21,8 @@ FormFileUpload = function ( formSection, progressSection, uploadCallback ) {
 	this.progressBar = this.progressSection == null ? null: new ProgressBar( this.progressSection, this.progressSection.find(".percent") );
 	
 	this.init();
+	
+	this.showHideForm = true;
 };
 
 FormFileUpload.prototype.init = function() {
@@ -39,7 +41,9 @@ FormFileUpload.prototype.init = function() {
 	    	
 	        $this.form.addClass('loading');
 	        
-	        $this.formSection.fadeOut();
+	        if( $this.showHideForm ) {
+	        	$this.formSection.fadeOut();
+	        }
 	        
 	        if ( $this.progressSection ) {
 				$this.progressSection.fadeIn();
@@ -72,7 +76,9 @@ FormFileUpload.prototype.init = function() {
 	    	// replace input file with a new one (IE compatibility)
 	    	$this.fileInput.replaceWith ( $this.fileInput = $this.fileInput.clone ( true ) );
 	    	
-	    	$this.formSection.fadeIn();
+	    	if( $this.showHideForm ) {
+	    		$this.formSection.fadeIn();
+	    	}
 	    	
 	    	if ( $this.progressSection ) {
 	    		$this.progressSection.fadeOut();

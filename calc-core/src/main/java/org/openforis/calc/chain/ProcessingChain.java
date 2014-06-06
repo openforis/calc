@@ -24,15 +24,15 @@ public class ProcessingChain extends ProcessingChainBase {
 	@JsonIgnore	
 	private Workspace workspace;
 	
-	private List<CalculationStep> steps;
+	private List<CalculationStep> calculationSteps;
 	
 	public ProcessingChain() {
 		setParameters( new ParameterHashMap() );
-		this.steps = new ArrayList<CalculationStep>();
+		this.calculationSteps = new ArrayList<CalculationStep>();
 	}
 	
 	public List<CalculationStep> getCalculationSteps() {
-		return Collections.unmodifiableList(steps);
+		return Collections.unmodifiableList(calculationSteps);
 	}
 	
 	public Workspace getWorkspace() {
@@ -47,7 +47,7 @@ public class ProcessingChain extends ProcessingChainBase {
 	public CalculationStep getCalculationStepById( int stepId ){
 		CalculationStep step = null;
 		
-		for ( CalculationStep tmpStep : steps ) {
+		for ( CalculationStep tmpStep : calculationSteps ) {
 			int id = Integer.valueOf(stepId);
 			if( tmpStep.getId().equals(id)){
 				step = tmpStep;
@@ -59,7 +59,7 @@ public class ProcessingChain extends ProcessingChainBase {
 	
 	public void addCalculationStep( CalculationStep step ) {
 		step.setProcessingChain( this );
-		steps.add( step );
+		calculationSteps.add( step );
 	}
 	
 	/**
@@ -68,7 +68,7 @@ public class ProcessingChain extends ProcessingChainBase {
 	 * @param step
 	 */
 	public void removeCalculationStep(CalculationStep step) {
-		steps.remove(step);
+		calculationSteps.remove(step);
 		updateStepNumbers();
 	}
 	
@@ -80,14 +80,14 @@ public class ProcessingChain extends ProcessingChainBase {
 	 */
 	public void shiftStep(CalculationStep step, int stepNo) {
 		int oldIndex = step.getStepNo() - 1;
-		steps.remove(oldIndex);
+		calculationSteps.remove(oldIndex);
 		int newIndex = stepNo - 1;
-		if ( newIndex == steps.size() ) {
+		if ( newIndex == calculationSteps.size() ) {
 			// move step at the end
-			steps.add(step);
+			calculationSteps.add(step);
 		} else {
 			// move step in the middle
-			steps.add(newIndex, step);
+			calculationSteps.add(newIndex, step);
 		}
 		updateStepNumbers();
 	}
@@ -95,7 +95,7 @@ public class ProcessingChain extends ProcessingChainBase {
 	protected void updateStepNumbers() {
 		//set step number based on the position in this chain
 		int newStepNo = 1;
-		for ( CalculationStep calculationStep : steps ) {
+		for ( CalculationStep calculationStep : calculationSteps ) {
 			calculationStep.setStepNo(newStepNo ++);
 		}
 	}

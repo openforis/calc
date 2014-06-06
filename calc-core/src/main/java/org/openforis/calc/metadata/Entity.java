@@ -30,9 +30,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 public class Entity extends EntityBase {
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	@JsonIgnore
@@ -40,18 +37,10 @@ public class Entity extends EntityBase {
 	@JsonIgnore
 	private Entity parent;
 	@JsonIgnore
-//	@OrderBy("sortOrder")
-	private List<Variable<?>> variables = new ArrayList<Variable<?>>();
-	@JsonIgnore
-//	@OrderBy("sortOrder")
 	private List<Entity> children = new ArrayList<Entity>();
 
-	@JsonIgnore
-	private Variable<?> clusterVariable;
+	private List<Variable<?>> variables = new ArrayList<Variable<?>>();
 	
-//	@JsonIgnore
-//	private Variable<?> unitNoVariable;
-
 	public Workspace getWorkspace() {
 		return this.workspace;
 	}
@@ -63,6 +52,7 @@ public class Entity extends EntityBase {
 		}
 	}
 	
+	@JsonIgnore
 	public String getDataView() {
 		return String.format( "%s_view", getName() );
 	}
@@ -223,6 +213,7 @@ public class Entity extends EntityBase {
 		}
 	}
 
+	@JsonIgnore
 	public RScript getPlotAreaRScript() {
 		String plotAreaScript = getPlotAreaScript();
 		if( StringUtils.isBlank(plotAreaScript) ) {
@@ -233,6 +224,7 @@ public class Entity extends EntityBase {
 		}
 	}
 	
+	@JsonIgnore
 	public List<Variable<?>> getHierarchyVariables() {
 		List<Variable<?>> variables = new ArrayList<Variable<?>>();
 
@@ -245,42 +237,44 @@ public class Entity extends EntityBase {
 		return variables;
 	}
 	
+	@JsonIgnore
 	public String getResultsTable() {
 		return String.format( "_%s_results" , getName() );
 	}
 
+	@JsonIgnore
 	public String getTemporaryResultsTable() {
 		return String.format( "_%s_temp_results" , getName() );
 	}
 	
 	
-//	@JsonIgnore
+	@JsonIgnore
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public List<CategoricalVariable<?>> getCategoricalVariables() {
 		return Collections.unmodifiableList(selectInstancesOf((List)variables, CategoricalVariable.class));
 	}
 
-//	@JsonIgnore
+	@JsonIgnore
 	public List<QuantitativeVariable> getQuantitativeVariables() {
 		return Collections.unmodifiableList(selectInstancesOf(variables, QuantitativeVariable.class));
 	}
 
-//	@JsonIgnore
+	@JsonIgnore
 	public List<TextVariable> getTextVariables() {
 		return Collections.unmodifiableList(selectInstancesOf(variables, TextVariable.class));
 	}
 	
 	@JsonIgnore
 	public Collection<Variable<?>> getUserDefinedVariables() {
-		Collection<Variable<?>> result = new HashSet<Variable<?>>();
+		Collection<Variable<?>> list = new HashSet<Variable<?>>();
 		if ( CollectionUtils.isNotEmpty(variables) ) {
 			for (Variable<?> v: variables) {
 				if ( v.getOriginalId() == null ) {
-					result.add(v);
+					list.add(v);
 				}
 			}
 		}
-		return result;
+		return list;
 	}
 	
 	@JsonIgnore
@@ -437,14 +431,15 @@ public class Entity extends EntityBase {
 		CollectionUtils.select(items, new InstanceofPredicate(type), out);
 		return out;
 	}
-
-	public Variable<?> getClusterVariable() {
-		return clusterVariable;
-	}
-
-	public void setClusterVariable(Variable<?> clusterVariable) {
-		this.clusterVariable = clusterVariable;
-	}
+	
+//
+//	public Variable<?> getClusterVariable() {
+//		return clusterVariable;
+//	}
+//
+//	public void setClusterVariable(Variable<?> clusterVariable) {
+//		this.clusterVariable = clusterVariable;
+//	}
 
 	/**
 	 * Returns a quantity variable with the id passed as argument.
@@ -474,6 +469,7 @@ public class Entity extends EntityBase {
 
 	// returns true if at least one quantitative variable or output variable has an aggregate function associated
 	// or if this is the sampling unit
+	@JsonIgnore
 	public boolean isAggregable() {
 		// for now only if output variables have been defined
 		return isSamplingUnit() || getDefaultProcessingChainQuantitativeOutputVariables().size() > 0 || getDefaultProcessingChainCategoricalOutputVariables().size() > 0;
