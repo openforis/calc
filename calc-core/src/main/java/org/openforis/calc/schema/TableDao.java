@@ -46,6 +46,10 @@ public class TableDao extends AbstractJooqDao {
 		return count > 0;
 	}
 	
+	public boolean exists( Table<?> table ){
+		return exists( table.getSchema().getName() , table.getName() );
+	}
+	
 	public long count(String schema, String table){
 		DynamicTable<?> dbTable = new DynamicTable<Record>(table, schema);
 		Long count = psql().selectCount().from(dbTable).fetchOne(0, Long.class);

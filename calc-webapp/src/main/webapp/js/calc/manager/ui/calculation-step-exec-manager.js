@@ -57,7 +57,7 @@ CalculationStepExecManager.prototype = (function() {
 					function(job) {
 						// create instance of data provider
 						var entityId = $this.calculationStep.outputEntityId;
-						var variables  = $this.calculationStep.rScript.variables;
+						var variables  = $this.calculationStep.rscript.variables;
 						var dataProvider = new DataViewProvider(entityId, variables, true);
 						
 						// once completed hide this and shows results section

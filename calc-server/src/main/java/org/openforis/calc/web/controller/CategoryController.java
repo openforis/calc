@@ -3,6 +3,9 @@
  */
 package org.openforis.calc.web.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.json.simple.JSONArray;
@@ -12,6 +15,7 @@ import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.Category;
 import org.openforis.calc.metadata.CategoryHierarchy;
 import org.openforis.calc.metadata.CategoryLevel;
+import org.openforis.calc.metadata.CategoryLevel.CategoryLevelValue;
 import org.openforis.calc.metadata.CategoryManager;
 import org.openforis.calc.web.controller.Response.Status;
 import org.openforis.calc.web.form.CategoryForm;
@@ -73,7 +77,9 @@ public class CategoryController {
 			level.setRank(1);
 			hierarchy.addLevel(level);
 			
-			workspaceService.addCategory( workspace, category, form.getCodes() , form.getCaptions() );
+			List<CategoryLevelValue> values = createCategoryLevelValues( form.getCodes() , form.getCaptions() );
+			
+			workspaceService.addCategory( workspace, category , values );
 			
 			response.setStatusOk();
 			response.addField( "categoryId", category.getId() );
@@ -84,12 +90,33 @@ public class CategoryController {
 		return response;
 	}
 	
+	public List<CategoryLevelValue> createCategoryLevelValues( List<String> codes , List<String> captions ) {
+		boolean defaultFound = false;
+		List<CategoryLevelValue> values = new ArrayList<CategoryLevel.CategoryLevelValue>();
+		for ( int i = 0 ; i < codes.size() ; i++ ) {
+			String catCode = codes.get(i);
+			String catCaption = captions.get(i);
+			
+			CategoryLevelValue value = new CategoryLevelValue( (long) i, catCode, catCaption );
+			values.add(value);
+			
+			if( catCode.equals("-1") ){
+				defaultFound = true;
+			}
+		}
+		if( !defaultFound ){
+			CategoryLevelValue value = new CategoryLevelValue( -1l, "-1", "NA" );
+			values.add(value);
+		}
+		return values;
+	}
 	@RequestMapping(value = "{categoryId}/level/classes.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
-	Response getCategoryLevelClasses(@PathVariable int categoryId ){
+	Response getCategoryDefaultLevelValues(@PathVariable int categoryId ) {
 		Workspace workspace = workspaceService.getActiveWorkspace();
 
 		Response response = new Response();
+		@SuppressWarnings( "deprecation" )
 		JSONArray categoryClasses = categoryManager.loadCategoryClasses( workspace, categoryId );
 		response.addField("classes", categoryClasses);
 		return response ;

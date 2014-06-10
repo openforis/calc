@@ -4,6 +4,7 @@
 package org.openforis.calc.metadata;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -163,6 +164,33 @@ public class EquationManager {
 		}
 		
 		return variables;
+	}
+
+	@Transactional
+	public void delete( Workspace workspace ) {
+		List<EquationList> equationLists = workspace.getEquationLists();
+		for ( EquationList equationList : equationLists ) {
+			equationDao.delete( equationList.getEquations() );
+			equationListDao.delete( equationList );
+		}
+		
+		workspace.setEquationLists( new ArrayList<EquationList>() );
+	}
+
+	@Transactional
+	public void create( Workspace workspace , EquationList equationList ) {
+		workspace.addEquationList(equationList);
+		equationList.setId( psql.nextval( Sequences.EQUATION_LIST_ID_SEQ ) );
+		
+		equationListDao.insert( equationList );
+		
+		for ( Equation equation : equationList.getEquations() ) {
+			equation.setId( psql.nextval(Sequences.EQUATION_ID_SEQ) );
+			equation.setList(equationList);
+			
+			equationDao.insert( equation );
+		}
+		
 	}
 
 }

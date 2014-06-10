@@ -10,7 +10,6 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
-import org.json.simple.JSONArray;
 import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.metadata.AoiHierarchy;
@@ -104,6 +103,9 @@ public class Workspace extends WorkspaceBase {
 	
 	public void setStrata(List<Stratum> strata) {
 		this.strata = strata;
+		for ( Stratum stratum : this.strata ) {
+			stratum.setWorkspace(this);
+		}
 	}
 	
 	public void emptyStrata() {
@@ -416,6 +418,20 @@ public class Workspace extends WorkspaceBase {
 		return null;
 	}
 	
+	public Variable<?> getVariableByOriginalId( Integer originalId ) {
+		if( originalId == null ){
+			return null;
+		}
+		List<Entity> entities = getEntities();
+		for (Entity entity : entities) {
+			Variable<?> v = entity.getVariableByOriginalId( originalId );
+			if (v != null) {
+				return v;
+			}
+		}
+		return null;
+	}
+	
 	public List<CalculationStep> getCalculationStepsByVariable(int variableId) {
 		List<CalculationStep> result = new ArrayList<CalculationStep>();
 		for (ProcessingChain processingChain : getProcessingChains()) {
@@ -494,36 +510,6 @@ public class Workspace extends WorkspaceBase {
 	 */
 	public Schemas schemas() {
 		return new Schemas( this );
-	}
-	
-	// used when exporting/importing the workspace
-	@JsonInclude
-	protected Phase1Data phase1Data;
-	
-	public Phase1Data getPhase1Data() {
-		return phase1Data;
-	}
-	
-	public static class Phase1Data {
-		
-		public Phase1Data(){
-		}
-		
-		public Phase1Data( JSONArray tableInfo , List<DataRecord> records ){
-			this.tableInfo = tableInfo;
-			this.records = records;
-		}
-		private JSONArray tableInfo;
-		private List<DataRecord> records;
-		
-		public JSONArray getTableInfo() {
-			return tableInfo;
-		}
-		
-		public List<DataRecord> getRecords() {
-			return records;
-		}
-		
 	}
 	
 }

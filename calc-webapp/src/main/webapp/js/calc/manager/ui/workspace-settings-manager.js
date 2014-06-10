@@ -19,8 +19,21 @@ WorkspaceSettingsManager = function( container ) {
 WorkspaceSettingsManager.prototype.init = function(){
 	var $this = this;
 	
-	var importCallback = function(){
-		console.log( "imported" );
+	var importCallback = function(response){
+		if ( response.status == "OK" ) {
+			var job = response.fields.job;
+			
+			JobManager.getInstance().start( job , function() {
+				
+				WorkspaceManager.getInstance().refreshActiveWorkspace(function(ws) {
+					Calc.workspaceChange();
+				});
+				
+			});
+		} else {
+			var error = response.fields.error;
+			UI.showError( error , false );
+		}
 	};
 	this.formFileUpload = new FormFileUpload( this.importFormSection, null, importCallback );
 	this.formFileUpload.showHideForm = false;

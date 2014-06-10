@@ -531,12 +531,23 @@ public class Entity extends EntityBase {
 
 	}
 	
-	void removeInputVariables() {
+	void deleteInputVariables() {
 		Iterator<Variable<?>> iterator = variables.iterator();
 		while( iterator.hasNext() ){
 			
 			Variable<?> variable = iterator.next();
 			if( !variable.isUserDefined() ){
+				iterator.remove();
+			}
+		}
+	}
+	
+	void deleteOutputVariables() {
+		Iterator<Variable<?>> iterator = variables.iterator();
+		while( iterator.hasNext() ){
+			
+			Variable<?> variable = iterator.next();
+			if( variable.isUserDefined() ){
 				iterator.remove();
 			}
 		}

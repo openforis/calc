@@ -1,15 +1,13 @@
 package org.openforis.calc.web.controller;
 
-import static org.apache.commons.codec.binary.Base64.encodeBase64;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
+import java.util.zip.ZipFile;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import javax.validation.Valid;
@@ -21,9 +19,10 @@ import org.json.simple.parser.ParseException;
 import org.openforis.calc.Calc;
 import org.openforis.calc.engine.CsvDataImportTask;
 import org.openforis.calc.engine.Job;
-import org.openforis.calc.engine.SurveyBackupExtractor;
 import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
+import org.openforis.calc.engine.WorkspaceBackup;
+import org.openforis.calc.engine.WorkspaceBackupService;
 import org.openforis.calc.engine.WorkspaceLockedException;
 import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.Entity;
@@ -69,6 +68,9 @@ public class WorkspaceController {
 	@Autowired
 	private ObjectMapper jsonObjectMapper; 
 	
+	@Autowired
+	private WorkspaceBackupService workspaceBackupService;
+	
 	@RequestMapping(value = "/list.json", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	List<Workspace> getWorkspaceInfos() {
@@ -99,11 +101,11 @@ public class WorkspaceController {
 	@RequestMapping(value = "/job.json", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	Job getJob() {
-		Workspace workspace = workspaceService.getActiveWorkspace();
-		if (workspace == null) {
+		Integer activeWorkspaceId = workspaceService.getActiveWorkspaceId();
+		if (activeWorkspaceId == null) {
 			return null;
 		} else {
-			Job job = taskManager.getJob(workspace.getId());
+			Job job = taskManager.getJob(activeWorkspaceId);
 			return job;
 		}
 	}
@@ -220,69 +222,63 @@ public class WorkspaceController {
 	 */
 	@RequestMapping(value = "/{wsName}-calc-workspace.zip", method = RequestMethod.POST)
 	public void export(HttpServletResponse response) throws IOException {
-		Workspace workspace = workspaceService.cloneActiveForExport();
-		String version = calc.getVersion();
+		Workspace ws = workspaceService.getActiveWorkspace();
+		WorkspaceBackup backup = workspaceBackupService.createBackup( ws );
 		
-		ZipOutputStream stream = new ZipOutputStream( response.getOutputStream() );
+		ServletOutputStream outputStream = response.getOutputStream();
 		
-		// add info entry
-		ZipEntry info = new ZipEntry( SurveyBackupExtractor.VERSION_FILE_NAME );
-		stream.putNextEntry(info);
-		stream.write(  encodeBase64(version.getBytes()) );
-		stream.closeEntry();
-		
-		// add workspace
-		StringWriter sw = new StringWriter();
-		jsonObjectMapper.writeValue( sw, workspace );
-		String wsString = sw.toString();
-		
-		ZipEntry wsEntry = new ZipEntry( SurveyBackupExtractor.WORKSPACE_FILE_NAME );
-		stream.putNextEntry(wsEntry);
-		stream.write( encodeBase64(wsString.getBytes()) );
-		stream.closeEntry();
-		
-		stream.close();
+		workspaceBackupService.exportToStream( backup, outputStream );
 	}
-	
+
 	@RequestMapping(value = "/import.json", method = RequestMethod.POST, produces =  MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
-	Response importWs(@ModelAttribute("file") MultipartFile file) throws IOException {
+	Response importWs(@ModelAttribute("file") MultipartFile file) throws IOException, WorkspaceLockedException {
 		Response response = new Response();
-		
 		
 		// upload file
 		File tempFile = File.createTempFile( "calc", "workspace.zip");
 		FileUtils.copyInputStreamToFile(file.getInputStream(), tempFile);
+		ZipFile zipFile = new ZipFile(tempFile);
 		
-		SurveyBackupExtractor extractor = new SurveyBackupExtractor( tempFile , jsonObjectMapper );
+		WorkspaceBackup backup = workspaceBackupService.extractBackup( zipFile );
 		
-		Version version = extractor.extractVersion();
-		
-		String calcVersionString = calc.getVersion();
-		if( calcVersionString.equals( SurveyBackupExtractor.DEV_VERSION ) ){
-			calcVersionString = "0.0";
-		}
-		Version calcVersion = new Version( calcVersionString );
+		Version version =  parseVersion( backup.getVersion() );
+		Version calcVersion = parseVersion( calc.getVersion() );
 
 		// if backup has been created with a newer version of calc, it fails
 		if( version.compareTo( calcVersion ) <= 0 ){
 			
-			Workspace workspace = extractor.extractWorkspace();
-			Workspace originalSurvey = workspaceService.fetchByCollectSurveyUri( workspace.getCollectSurveyUri() );
+			Workspace workspace = backup.getWorkspace();
+			Workspace originalWorkspace = workspaceService.fetchByCollectSurveyUri( workspace.getCollectSurveyUri() );
 			// it fails if the survey to import doesn't exist
-			if( originalSurvey == null ){
+			if( originalWorkspace == null ){
 				response.setStatusError();
 				response.addField( "error", "Workspace " + workspace.getName() + " not found. Unable to import." );
 			} else {
+				// activate first the workspace
+				workspaceService.activate(originalWorkspace);
+				// then it stars the import job
+				Job job = workspaceBackupService.createImportBackupJob( originalWorkspace, backup );
+				taskManager.startJob(job);
 				
+				response.setStatusOk();
+				response.addField( "job", job );
 			}
 			
 		} else {
 			
 			response.setStatusError();
 			response.addField("error", "Backup was created using version " + version.toString()
-				+ ".\n Please upgrade Calc in order to proceed.\n Visit https://github.com/openforis/calc to download it.");
+				+ ".\n Please upgrade your Calc instance in order to proceed.\n Visit https://github.com/openforis/calc to get the download link.");
 		}
 		return response;
+	}
+
+	public Version parseVersion( String versionString ) {
+		if( versionString.equals( WorkspaceBackupService.DEV_VERSION ) ){
+			versionString = "0.0";
+		}
+		Version version = new Version( versionString );
+		return version;
 	}
 }

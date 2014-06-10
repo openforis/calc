@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -20,6 +21,7 @@ import org.jooq.impl.DSL;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.persistence.jooq.Sequences;
 import org.openforis.calc.persistence.jooq.Tables;
+import org.openforis.calc.persistence.jooq.tables.AoiTable;
 import org.openforis.calc.persistence.jooq.tables.daos.AoiHierarchyDao;
 import org.openforis.calc.persistence.jooq.tables.daos.AoiLevelDao;
 import org.openforis.calc.psql.Psql;
@@ -46,18 +48,13 @@ public class AoiManager {
 	@Autowired
 	private AoiDao aoiDao;
 
-//	@Autowired
-//	private DataSource dataSource;
-
 	@Autowired
 	private Psql psql;
-	
-//	@Autowired
-//	private PlatformTransactionManager transactionManager;
 	
 	@SuppressWarnings( "unchecked" )
 	@Transactional
 	public Workspace csvImport(Workspace workspace, String filepath, String[] levelNames) throws IOException {
+		@SuppressWarnings( "resource" )
 		CsvReader csvReader = new CsvReader(filepath);
 		csvReader.readHeaders();
 
@@ -258,6 +255,81 @@ public class AoiManager {
 			aoi.setChildren( children  );
 		}
 		return aois;
+	}
+	
+	/**
+	 * Delete all Aoi Hierarchies/levels and aois for the given workspace
+	 * @param workspace
+	 */
+	@Transactional
+	public void delete( Workspace workspace ) {
+		List<AoiHierarchy> aoiHierarchies = workspace.getAoiHierarchies();
+		for ( AoiHierarchy aoiHierarchy : aoiHierarchies ) {
+			
+			Collection<AoiLevel> levels = aoiHierarchy.getLevelsReverseOrder();
+			for ( AoiLevel aoiLevel : levels ) {
+				AoiTable T = Tables.AOI;
+				psql
+					.delete( T )
+					.where( T.AOI_LEVEL_ID.eq(aoiLevel.getId()) )
+					.execute();
+			}
+			aoiLevelDao.delete( levels );
+			
+		}
+		aoiHierarchyDao.delete( aoiHierarchies );
+		
+		workspace.setAoiHierarchies( new ArrayList<AoiHierarchy>() );
+	}
+
+	@Transactional
+	public void createFromBackup( Workspace workspace , AoiHierarchy aoiHierarchy ) {
+		
+		aoiHierarchy.setId( psql.nextval(Sequences.AOI_HIERARCHY_ID_SEQ).intValue() );
+		workspace.addAoiHierarchy(aoiHierarchy);
+		aoiHierarchyDao.insert(aoiHierarchy);
+		
+		List<AoiLevel> levels = aoiHierarchy.getLevels();
+		for ( AoiLevel aoiLevel : levels ) {
+			aoiLevel.setId(  psql.nextval(Sequences.AOI_LEVEL_ID_SEQ).intValue()  );
+			aoiLevel.setHierarchy(aoiHierarchy);
+			
+			aoiLevelDao.insert(aoiLevel);
+		}
+		
+		Map<Integer, Integer> aoiIds = new HashMap<Integer, Integer>();
+		
+		Aoi aoi = aoiHierarchy.getRootAoi();
+		createAoiFromBackup( aoi, levels, aoiIds, 0 );
+		
+	}
+	
+	@Transactional
+	private void createAoiFromBackup( Aoi aoi , List<AoiLevel> levels , Map<Integer, Integer> aoiIds , int indexLevel ) {
+		// set aoi level
+		AoiLevel aoiLevel = levels.get( indexLevel );
+		aoi.setAoiLevel( aoiLevel );
+		
+		// set new aoi id and keep reference of old id
+		Integer aoiId = aoi.getId();
+		int newAoiId = psql.nextval( Sequences.AOI_ID_SEQ ).intValue();
+		aoiIds.put( aoiId, newAoiId );
+		aoi.setId( newAoiId );
+		
+		// set aoi parent id (taken from aoiIds map)
+		Integer parentAoiId = aoi.getParentAoiId();
+		if( parentAoiId != null ){
+			Integer newParentAoiId = aoiIds.get(parentAoiId);
+			aoi.setParentAoiId(newParentAoiId);
+		}
+		
+		aoiDao.insert( aoi );
+		
+		// create child aois
+		for ( Aoi childAoi : aoi.getChildren() ) {
+			createAoiFromBackup( childAoi, levels, aoiIds, indexLevel+1 );
+		}
+		
 	}
 	
 }

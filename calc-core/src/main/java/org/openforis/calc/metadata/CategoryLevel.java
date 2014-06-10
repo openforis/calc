@@ -41,5 +41,49 @@ public class CategoryLevel extends CategoryLevelBase {
 		}
 		return schemaName;
 	}
+	
+	// used for export / import
+//	private List<CategoryLevelValue> categoryLevelValues;
+//	public void clearValues() {
+//		categoryLevelValues = null;
+//	}
+//	
+//	public List<CategoryLevelValue> getCategoryLevelValues() {
+//		return CollectionUtils.unmodifiableList( categoryLevelValues );
+//	}
+//	
+//	public void setCategoryLevelValues( List<CategoryLevelValue> categoryLevelValues ) {
+//		this.categoryLevelValues = categoryLevelValues;
+//	}
+	
+	public static class CategoryLevelValue {
+		
+		private long id;
+		private String code;
+		private String caption;
+		
+		public CategoryLevelValue(){
+			super();
+		}
 
+		public CategoryLevelValue( long id , String code , String caption ){
+			super();
+			this.id = id;
+			this.code = code;
+			this.caption = caption;
+		}
+
+		public long getId() {
+			return id;
+		}
+		
+		public String getCode() {
+			return code;
+		}
+		
+		public String getCaption() {
+			return caption;
+		}
+	}
+	
 }

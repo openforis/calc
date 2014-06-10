@@ -29,5 +29,5 @@ public class CalcObjectMapper extends ObjectMapper {
 		
 		this.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	}
-
+	
 }

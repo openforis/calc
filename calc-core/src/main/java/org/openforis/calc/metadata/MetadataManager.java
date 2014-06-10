@@ -9,11 +9,13 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.chain.ProcessingChainManager;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.Variable.Scale;
 import org.openforis.calc.persistence.jooq.Sequences;
 import org.openforis.calc.persistence.jooq.Tables;
+import org.openforis.calc.persistence.jooq.tables.EntityTable;
 import org.openforis.calc.persistence.jooq.tables.daos.CalculationStepDao;
 import org.openforis.calc.persistence.jooq.tables.daos.EntityDao;
 import org.openforis.calc.persistence.jooq.tables.daos.ProcessingChainDao;
@@ -21,6 +23,7 @@ import org.openforis.calc.persistence.jooq.tables.daos.SamplingDesignDao;
 import org.openforis.calc.persistence.jooq.tables.daos.StratumDao;
 import org.openforis.calc.persistence.jooq.tables.daos.WorkspaceDao;
 import org.openforis.calc.psql.Psql;
+import org.openforis.calc.schema.TableDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,6 +70,9 @@ public class MetadataManager {
 
 	@Autowired
 	private ProcessingChainManager processingChainManager;
+
+	@Autowired
+	private TableDao tableDao;
 	
 	/*
 	 * ============================
@@ -206,7 +212,7 @@ public class MetadataManager {
 	 */
 	@Transactional
 	private void persistMetadata( Workspace workspace ) {
-		categoryManager.save(workspace);
+		categoryManager.save( workspace );
 		persistEntities( workspace );
 	}
 	
@@ -243,18 +249,6 @@ public class MetadataManager {
 		}
 	}
 	
-//	@Transactional
-//	public void saveStrata(Workspace workspace) {
-//		for ( Stratum stratum : workspace.getStrata() ) {
-//			if( stratumDao.exists( stratum ) ) {
-//				stratumDao.update( stratum );
-//			} else {
-//				stratumDao.insert( stratum );
-//			}
-//		}
-//		
-//	}
-	
 	/* 
 	 * ===============================
 	 *  Delete metadata methods
@@ -287,6 +281,62 @@ public class MetadataManager {
 		}
 	}
 	
+	/**
+	 * Delete all output metadata (created in calc)
+	 * used when importing a workspace backup
+	 * 
+	 * @param workspace
+	 */
+	@Transactional
+	public void deleteOutputMetadata( Workspace workspace ) {
+		// delete ext equations
+		equationManager.delete( workspace );
+		// delete sampling design
+		if( workspace.hasSamplingDesign() ){
+			samplingDesignDao.delete( workspace.getSamplingDesign() );
+			workspace.setSamplingDesign( null );
+		}
+		stratumDao.delete( workspace.getStrata() );
+		workspace.emptyStrata();
+		// delete output categories
+		categoryManager.deleteOutputCategories( workspace );
+		// delete aois
+		aoiManager.delete( workspace ); 
+		// delete plot area script
+		EntityTable T = Tables.ENTITY;
+		psql
+			.update( T )
+			.set( T.PLOT_AREA_SCRIPT, (String) null )
+			.where( T.WORKSPACE_ID.eq(workspace.getId()) )
+			.execute();
+		// delete calc steps
+		ProcessingChain processingChain = workspace.getDefaultProcessingChain();
+		calculationStepDao.delete( processingChain.getCalculationSteps() );
+		processingChain.clearCalculationSteps();
+		//delete output variables
+		List<Entity> entities = workspace.getEntities();
+		for ( Entity entity : entities ) {
+			Collection<Variable<?>> userDefinedVariables = entity.getUserDefinedVariables();
+			variableDao.delete( userDefinedVariables.toArray( new Variable<?>[]{} ) );
+			entity.deleteOutputVariables();
+		}
+	}
+	
+	public void deleteUserDefinedVariables( Workspace workspace ){
+		List<Entity> entities = workspace.getEntities();
+		for ( Entity entity : entities ) {
+			Collection<Variable<?>> userDefinedVariables = entity.getUserDefinedVariables();
+			variableDao.delete( userDefinedVariables.toArray( new Variable<?>[]{} ) );
+			entity.deleteOutputVariables();
+		}
+	}
+	
+	public void importOutputMetadata(  Workspace workspace ) {
+		workspaceDao.update( workspace );
+//		resetAoiIds( )
+//		aoiManager.save( workspace );
+	}
+	
 	/*
 	 * ===========================
 	 * 	Workspace utility methods
@@ -297,11 +347,10 @@ public class MetadataManager {
 	 */
 	@Transactional
 	public void deactivateAll() {
-		List<Workspace> list = findAllWorkspaces();
-		for (Workspace ws : list) {
-			ws.setActive( false );
-			workspaceDao.update( ws );
-		}
+		psql
+			.update( Tables.WORKSPACE )
+			.set( Tables.WORKSPACE.ACTIVE , false )
+			.execute();
 	}
 	
 	/**
@@ -358,7 +407,7 @@ public class MetadataManager {
 	 * @param levelId 
 	 * @return
 	 */
-	public MultiwayVariable createMultiwayVariableVariable( String name ) {
+	public MultiwayVariable createMultiwayVariable( String name ) {
 //		QuantitativeVariable variable = new QuantitativeVariable();
 		MultiwayVariable variable = new MultiwayVariable();
 		variable.setName( name );
@@ -373,11 +422,11 @@ public class MetadataManager {
 		return variable;
 	}
 
-	public void removeInputVariables(Workspace ws) {
+	public void deleteInputVariables(Workspace ws) {
 		// remove input variables
 		for (Entity entity : ws.getEntities()) {
-			entity.removeInputVariables();
+			entity.deleteInputVariables();
 		}
 	}
-	
+
 }

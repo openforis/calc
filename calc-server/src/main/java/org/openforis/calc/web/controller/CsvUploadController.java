@@ -33,6 +33,7 @@ public class CsvUploadController {
 			File tempFile = File.createTempFile(fileNameFormat.format(new Date()), ".csv");
 			FileUtils.copyInputStreamToFile(file.getInputStream(), tempFile);
 
+			@SuppressWarnings( "resource" )
 			CsvReader csvReader = new CsvReader(tempFile.getAbsolutePath());
 			csvReader.readHeaders();
 

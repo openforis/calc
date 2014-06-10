@@ -35,6 +35,10 @@ public class ProcessingChain extends ProcessingChainBase {
 		return Collections.unmodifiableList(calculationSteps);
 	}
 	
+	public void clearCalculationSteps() {
+		this.calculationSteps = new ArrayList<CalculationStep>();
+	}
+	
 	public Workspace getWorkspace() {
 		return workspace;
 	}

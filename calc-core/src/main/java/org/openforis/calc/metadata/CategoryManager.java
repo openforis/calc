@@ -4,6 +4,7 @@
 package org.openforis.calc.metadata;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.jooq.Field;
@@ -16,6 +17,7 @@ import org.jooq.impl.DynamicTable;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.openforis.calc.engine.Workspace;
+import org.openforis.calc.metadata.CategoryLevel.CategoryLevelValue;
 import org.openforis.calc.persistence.jooq.Sequences;
 import org.openforis.calc.persistence.jooq.Tables;
 import org.openforis.calc.persistence.jooq.tables.CategoryTable;
@@ -117,11 +119,44 @@ public class CategoryManager {
 	}
 	
 	@Transactional
-	public void createCategory(Workspace workspace, Category category , List<String> codes , List<String> captions ){
-		createCategoryTable(workspace, category, codes, captions);
+	public void deleteOutputCategories( Workspace workspace ) {
+		ArrayList<Category> categories = new ArrayList<Category>( workspace.getCategories() );
+		Iterator<Category> iterator = categories.iterator();
+		while( iterator.hasNext() ){
+			Category category = iterator.next();
+			if( category.isUserDefined() ){
+				
+				for ( CategoryHierarchy hierarchy : category.getHierarchies() ) {
+					for ( CategoryLevel level : hierarchy.getLevels() ) {
+						DynamicTable<?> table = new DynamicTable<Record>( level.getTableName() , level.getSchemaName() );
+						psql
+							.dropTableIfExists(table)
+							.execute();
+						
+						categoryLevelDao.delete( level );
+					}
+					categoryHierarchyDao.delete( hierarchy );
+				}
+				categoryDao.delete( category );
+				iterator.remove();
+			}
+		}
+		workspace.setCategories( categories );
+		
+	}
 	
+	/**
+	 * Creates a new category and a table for each level
+	 * @param workspace
+	 * @param category
+	 */
+	@Transactional
+	public void createCategory( Workspace workspace , Category category , List<CategoryLevelValue> values ) {
+		
 		category.setId( psql.nextval(Sequences.CATEGORY_ID_SEQ).intValue() );
-		category.setWorkspace(workspace);
+		
+		workspace.addCategory(category);
+		
 		categoryDao.insert(category);
 		
 		for (CategoryHierarchy categoryHierarchy : category.getHierarchies()) {
@@ -130,26 +165,23 @@ public class CategoryManager {
 			categoryHierarchyDao.insert(categoryHierarchy);
 			
 			for (CategoryLevel categoryLevel : categoryHierarchy.getLevels()) {
+
+				createCategoryLevelTable( workspace, categoryLevel , values );
+				
 				categoryLevel.setId( psql.nextval(Sequences.CATEGORY_LEVEL_ID_SEQ).intValue() );
 				categoryLevel.setHierarchy( categoryHierarchy );
 				categoryLevelDao.insert( categoryLevel );
 			}
 		}
-		
-		workspace.addCategory(category);
 	}
 	
-	private void createCategoryTable(Workspace workspace, Category category , List<String> codes , List<String> captions ) {
-		
-		if( codes.size() != captions.size() ){
-			throw new IllegalArgumentException( "codes and captions must have the same size" );
-		}
+	private void createCategoryLevelTable( Workspace workspace , CategoryLevel level, List<CategoryLevelValue> values ) {
 		
 		ExtendedSchema extendedSchema = workspace.schemas().getExtendedSchema();
 		
 		createSchemaIfNotExists(extendedSchema);
 		
-		DynamicTable<Record> table = new DynamicTable<Record>( category.getName() , extendedSchema.getName() );
+		DynamicTable<Record> table = new DynamicTable<Record>( level.getName() , extendedSchema.getName() );
 		Field<Long> idField = table.getIdField();
 		Field<String> codeField = table.getVarcharField( "code" );
 		Field<String> captionField = table.getVarcharField( "caption" );
@@ -164,37 +196,18 @@ public class CategoryManager {
 			.execute();
 		
 		List<Query> queries = new ArrayList<Query>();
-		boolean defaultFound = false;
-		for ( int i = 0 ; i < codes.size() ; i++ ) {
-			
-			String catCode = codes.get(i);
-			String catCaption = captions.get(i);
 		
+		for ( CategoryLevelValue value : values ) {
 			InsertQuery<Record> insert = psql.insertQuery(table);
-			insert.addValue(idField, (long)(i+1) );
-			insert.addValue(codeField,catCode);
-			insert.addValue(captionField, catCaption);
 			
-			queries.add(insert);
+			insert.addValue( idField, value.getId() );
+			insert.addValue( codeField, value.getCode() );
+			insert.addValue( captionField, value.getCaption() );
 			
-			if( catCode.equals("-1") ){
-				defaultFound = true;
-			}
-		}
-		// insert default category (not available)
-		if( !defaultFound ){
-			// NA
-			InsertQuery<Record> insert = psql.insertQuery(table);
-			insert.addValue(idField, (long)-1);
-			insert.addValue(codeField,"-1");
-			insert.addValue(captionField, "NA");
 			queries.add(insert);
 		}
 		psql.batch( queries ).execute();
 	
-		CategoryHierarchy hierarchy = category.getHierarchies().get(0);
-		CategoryLevel level = hierarchy.getLevels().get(0);
-		
 		level.setCaptionColumn(captionField.getName());
 		level.setCodeColumn(codeField.getName());
 		level.setIdColumn(idField.getName());
@@ -218,7 +231,27 @@ public class CategoryManager {
 		}
 	}
 	
+	@Transactional
+	public List<CategoryLevelValue> loadCategoryLevelValues( CategoryLevel categoryLevel ){
+		DynamicTable<Record> table = new DynamicTable<Record>( categoryLevel.getTableName() , categoryLevel.getSchemaName() );
+		
+		Field<Long> idField = table.getLongField( categoryLevel.getIdColumn() );
+		Field<String> codeField = table.getVarcharField( categoryLevel.getCodeColumn() );
+		Field<String> captionField = table.getVarcharField( categoryLevel.getCaptionColumn() );
+		
+		Result<Record> records = psql.select().from(table).fetch();
+
+		List<CategoryLevelValue> values = new ArrayList<CategoryLevel.CategoryLevelValue>();
+		for ( Record record : records ) {
+			CategoryLevelValue value = new CategoryLevelValue( record.getValue(idField), record.getValue(codeField), record.getValue(captionField) );
+			values.add(value);
+		}
+//		categoryLevel.setCategoryLevelValues(values);
+		return values;
+	}
+	
 	@SuppressWarnings("unchecked")
+	@Deprecated
 	public JSONArray loadCategoryClasses( Workspace workspace , int categoryId ){
 		Category category = workspace.getCategoryById( categoryId );
 		CategoryHierarchy categoryHierarchy = category.getHierarchies().get(0);

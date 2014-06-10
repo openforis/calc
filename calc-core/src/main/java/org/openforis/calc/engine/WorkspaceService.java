@@ -3,16 +3,10 @@ package org.openforis.calc.engine;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-import org.jooq.DataType;
 import org.jooq.Field;
 import org.jooq.Insert;
 import org.jooq.Record;
-import org.jooq.impl.DynamicTable;
-import org.jooq.util.postgres.PostgresDataType;
-import org.json.simple.JSONArray;
 import org.openforis.calc.chain.ProcessingChainManager;
-import org.openforis.calc.engine.Workspace.Phase1Data;
 import org.openforis.calc.metadata.AoiDao;
 import org.openforis.calc.metadata.Category;
 import org.openforis.calc.metadata.CategoryManager;
@@ -23,12 +17,13 @@ import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.StratumDao;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.VariableDao;
-import org.openforis.calc.persistence.jooq.CalcSchema;
+import org.openforis.calc.metadata.CategoryLevel.CategoryLevelValue;
+import org.openforis.calc.persistence.jooq.Tables;
+import org.openforis.calc.persistence.jooq.tables.WorkspaceTable;
 import org.openforis.calc.persistence.jooq.tables.daos.CalculationStepDao;
 import org.openforis.calc.persistence.jooq.tables.daos.EntityDao;
 import org.openforis.calc.persistence.jooq.tables.daos.SamplingDesignDao;
 import org.openforis.calc.persistence.jooq.tables.daos.WorkspaceDao;
-import org.openforis.calc.psql.InformationSchemaColumnsTable;
 import org.openforis.calc.psql.Psql;
 import org.openforis.calc.schema.DataSchema;
 import org.openforis.calc.schema.DataSchemaDao;
@@ -119,6 +114,17 @@ public class WorkspaceService {
 		return workspace;
 	}
 
+	/**
+	 * It returns the active workspace
+	 * 
+	 * @return
+	 */
+	public Integer getActiveWorkspaceId() {
+		WorkspaceTable T = Tables.WORKSPACE;
+		Integer id = psql.select(T.ID).from(T).where( T.ACTIVE.isTrue() ).fetchOne().getValue(T.ID);
+		return id;
+	}
+	
 	public Workspace createAndActivate(String name, String uri, String schema) {
 		metadataManager.deactivateAll();
 
@@ -146,7 +152,7 @@ public class WorkspaceService {
 
 	@Transactional
 	public MultiwayVariable addMultiwayVariable( Entity entity, String name ) {
-		MultiwayVariable variable = metadataManager.createMultiwayVariableVariable( name );
+		MultiwayVariable variable = metadataManager.createMultiwayVariable( name );
 		entity.addVariable(variable);
 		saveVariable(variable);
 		
@@ -364,57 +370,10 @@ public class WorkspaceService {
 	 * @param workspace
 	 * @param category
 	 */
-	public void addCategory( Workspace workspace , Category category , List<String> codes , List<String> captions ) {
-		categoryManager.createCategory( workspace, category , codes , captions );
+	public void addCategory( Workspace workspace , Category category , List<CategoryLevelValue> values ) {
+		categoryManager.createCategory( workspace, category , values );
 	}
 
-	/**
-	 * Clone the active workspace for export. 
-	 * Input variables are excluded
-	 */
-	public Workspace cloneActiveForExport() {
-		Workspace ws = getActiveWorkspace();
-		
-		metadataManager.removeInputVariables( ws );
-		
-		ws.removeInputCategories();
-		
-		loadPhase1Data( ws );
-		
-		return ws;
-	}
-	
-	
-	private void loadPhase1Data( Workspace ws ) {
-		String phase1PlotTable = ws.getPhase1PlotTable();
-		if( StringUtils.isNotBlank(phase1PlotTable) ) {
-			// read table information 
-			DynamicTable<?> phase1Table = new DynamicTable<Record>( phase1PlotTable, CalcSchema.CALC.getName() );
-			JSONArray tableInfo = tableDao.info( phase1Table );
-			
-			phase1Table.initFields(tableInfo);
-			List<DataRecord> records = tableDao.selectAll(phase1Table);
-			
-			ws.phase1Data = new Phase1Data( tableInfo , records );
-		}
-		
-	}
-
-	public static void main( String[] args ) throws IllegalArgumentException, IllegalAccessException {
-		java.lang.reflect.Field[] fields = PostgresDataType.class.getDeclaredFields();
-		for ( java.lang.reflect.Field field : fields ) {
-			field.setAccessible(true);
-			if ( java.lang.reflect.Modifier.isStatic( field.getModifiers() ) ) {
-//		        System.out.println( field.getName() );
-		        Object object = field.get( null );
-		        if( object instanceof DataType<?> ){
-		        	DataType<?> dataType = (DataType<?>) object;
-		        	System.out.println( dataType.getTypeName() );
-		        }
-		    }
-		}
-	}
-	
 //	private void setActiveWorkspace(Workspace activeWorkspace) {
 ////		this.activeWorkspace = activeWorkspace;
 //	}
