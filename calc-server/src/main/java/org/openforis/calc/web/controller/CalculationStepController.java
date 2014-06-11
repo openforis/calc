@@ -76,7 +76,7 @@ public class CalculationStepController {
 			Workspace ws = workspaceService.getActiveWorkspace();
 			ProcessingChain chain = ws.getDefaultProcessingChain();
 			
-			CalculationStep step = getOrCreateCalculationStep(form, chain);
+			CalculationStep step = convertFormToCalculationStep(form, chain);
 			
 			ParameterMap params = new ParameterHashMap();
 			step.setParameters(params);
@@ -84,7 +84,7 @@ public class CalculationStepController {
 			switch ( step.getType() ) {
 			
 				case EQUATION:
-					populateStepTypeEquation(form, ws, step, params);
+					populateStepTypeEquation( form, ws, step, params );
 //					break;
 				case SCRIPT:
 					step.setScript( form.getScript() );
@@ -96,7 +96,7 @@ public class CalculationStepController {
 					break;
 					
 				case CATEGORY:
-					boolean varCreated = populateStepTypeCategory(form, ws, step, params);
+					boolean varCreated = populateStepTypeCategory( form, ws, step, params );
 					if( varCreated ){
 						response.addField( "addedVariable", step.getOutputVariable() );
 					}
@@ -124,13 +124,13 @@ public class CalculationStepController {
 		CategoryLevel defualtLevel = category.getHierarchies().get(0).getLevels().get(0);
 		
 		Variable<?> variable = step.getOutputVariable();
-		String name = step.getCaption().replaceAll("\\W", "_").toLowerCase() ;
-		if( variable == null || variable instanceof QuantitativeVariable){
+		String name = step.getCaption().replaceAll( "\\W" , "_" ).toLowerCase() ;
+		if( variable == null || variable instanceof QuantitativeVariable) {
 			Entity entity = ws.getEntityById( form.getEntityId() );
 			variable = workspaceService.addMultiwayVariable( entity , name );
 			step.setOutputVariable( variable );
 			varCreated = true;
-		} 
+		}
 		
 		// set level to variable
 		( (MultiwayVariable) variable ).setCategoryLevel( defualtLevel );
@@ -199,7 +199,7 @@ public class CalculationStepController {
 		params.setList( "variables", varParams  );
 	}
 
-	private CalculationStep getOrCreateCalculationStep(CalculationStepForm form, ProcessingChain chain) {
+	private CalculationStep convertFormToCalculationStep(CalculationStepForm form, ProcessingChain chain) {
 		CalculationStep step;
 		Integer stepId = form.getId();
 		if (stepId == null) {

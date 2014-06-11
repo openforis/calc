@@ -19,6 +19,7 @@ import org.jooq.Table;
 import org.jooq.Update;
 import org.jooq.impl.DSL;
 import org.openforis.calc.engine.Workspace;
+import org.openforis.calc.engine.WorkspaceBackup;
 import org.openforis.calc.persistence.jooq.Sequences;
 import org.openforis.calc.persistence.jooq.Tables;
 import org.openforis.calc.persistence.jooq.tables.AoiTable;
@@ -283,7 +284,15 @@ public class AoiManager {
 	}
 
 	@Transactional
-	public void createFromBackup( Workspace workspace , AoiHierarchy aoiHierarchy ) {
+	public void importBackup( Workspace workspace, WorkspaceBackup workspaceBackup ) {
+		List<AoiHierarchy> aoiHierarchies = workspaceBackup.getWorkspace().getAoiHierarchies();
+		for ( AoiHierarchy aoiHierarchy : aoiHierarchies ) {
+			this.createFromBackup( workspace , aoiHierarchy );
+		}
+	}
+	
+	@Transactional
+	private void createFromBackup( Workspace workspace , AoiHierarchy aoiHierarchy ) {
 		
 		aoiHierarchy.setId( psql.nextval(Sequences.AOI_HIERARCHY_ID_SEQ).intValue() );
 		workspace.addAoiHierarchy(aoiHierarchy);

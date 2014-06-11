@@ -24,13 +24,12 @@ public class WorkspaceBackup {
 	/**
 	 * Map of variables (Calc id -> Original id)
 	 */
-	private Map<Integer, Integer> inputVariables;
+	private Map<Integer, Integer> variableOriginalIds;
 
 	/**
 	 * map of category classes ( CategoryLevelId -> List<CategoryLevelValue> )
 	 */
 	private Map<Integer, List<CategoryLevelValue>> categoryLevelValues;
-	
 	
 	private Phase1Data phase1Data;
 	
@@ -58,8 +57,8 @@ public class WorkspaceBackup {
 		return phase1Data;
 	}
 	
-	public Map<Integer, Integer> getInputVariables() {
-		return inputVariables;
+	public Map<Integer, Integer> getVariableOriginalIds() {
+		return variableOriginalIds;
 	}
 	
 	public Map<Integer, List<CategoryLevelValue>> getCategoryLevelValues() {
@@ -70,8 +69,8 @@ public class WorkspaceBackup {
 		this.version = version;
 	}
 
-	void setInputVariables( Map<Integer, Integer> inputVariables ) {
-		this.inputVariables = inputVariables;
+	void setVariableOriginalIds( Map<Integer, Integer> variableOriginalIds ) {
+		this.variableOriginalIds = variableOriginalIds;
 	}
 
 	void setCategoryLevelValues( Map<Integer, List<CategoryLevelValue>> categoryLevelValues ) {

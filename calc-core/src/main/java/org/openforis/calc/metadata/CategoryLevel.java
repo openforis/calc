@@ -58,7 +58,7 @@ public class CategoryLevel extends CategoryLevelBase {
 	
 	public static class CategoryLevelValue {
 		
-		private long id;
+		private Long id;
 		private String code;
 		private String caption;
 		
@@ -66,14 +66,14 @@ public class CategoryLevel extends CategoryLevelBase {
 			super();
 		}
 
-		public CategoryLevelValue( long id , String code , String caption ){
+		public CategoryLevelValue( Long id , String code , String caption ){
 			super();
 			this.id = id;
 			this.code = code;
 			this.caption = caption;
 		}
 
-		public long getId() {
+		public Long getId() {
 			return id;
 		}
 		

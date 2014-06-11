@@ -15,11 +15,11 @@ import org.jooq.Result;
 import org.jooq.SelectQuery;
 import org.jooq.Table;
 import org.jooq.impl.DynamicTable;
+import org.jooq.util.postgres.information_schema.tables.Columns;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.openforis.calc.engine.DataRecord;
 import org.openforis.calc.persistence.jooq.AbstractJooqDao;
-import org.openforis.calc.psql.InformationSchemaColumnsTable;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -62,21 +62,20 @@ public class TableDao extends AbstractJooqDao {
 	
 	@SuppressWarnings("unchecked")
 	public JSONArray info(String schema, String table){
-		InformationSchemaColumnsTable infoTable = new InformationSchemaColumnsTable();
+		Columns T = Columns.COLUMNS;
 		
 		Result<Record> result = psql()
 		.select()
-		.from(infoTable)
-		.where(
-				infoTable.TABLE_SCHEMA.eq(schema)
-				.and(infoTable.TABLE_NAME.eq(table))
-		).fetch();
+			.from( T )
+			.where( T.TABLE_SCHEMA.eq(schema)
+			.and( T.TABLE_NAME.eq(table) ) )
+			.fetch();
 		
 		JSONArray array = new  JSONArray();
 		for (Record record : result) {
 
 			JSONObject o = new JSONObject();
-			for (Field<?> field : infoTable.fields()) {
+			for ( Field<?> field : T.fields() ) {
 				String fieldName = field.getName();
 				o.put(fieldName, record.getValue(fieldName));
 			}

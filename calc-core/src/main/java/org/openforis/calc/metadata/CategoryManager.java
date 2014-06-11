@@ -4,6 +4,7 @@
 package org.openforis.calc.metadata;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -14,9 +15,14 @@ import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DynamicTable;
+import org.jooq.util.postgres.information_schema.tables.Schemata;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.openforis.calc.chain.CalculationStep;
+import org.openforis.calc.chain.CalculationStepCategoryClassParameters;
+import org.openforis.calc.chain.CalculationStep.Type;
 import org.openforis.calc.engine.Workspace;
+import org.openforis.calc.engine.WorkspaceBackup;
 import org.openforis.calc.metadata.CategoryLevel.CategoryLevelValue;
 import org.openforis.calc.persistence.jooq.Sequences;
 import org.openforis.calc.persistence.jooq.Tables;
@@ -216,17 +222,17 @@ public class CategoryManager {
 	}
 
 	protected void createSchemaIfNotExists(ExtendedSchema extendedSchema) {
-		DynamicTable<Record> schemata = new DynamicTable<Record>("schemata" ,"information_schema");
-		Field<String> schemaName = schemata.getVarcharField("schema_name");
-
+		Schemata schemata = Schemata.SCHEMATA;
+		
 		Integer count = psql
 					.selectCount()
 					.from( schemata )
-					.where( schemaName.eq(extendedSchema.getName()) )
+					.where( schemata.SCHEMA_NAME.eq(extendedSchema.getName()) )
 					.fetchOne( DSL.count() );
+		
 		if( count == 0 ) {
 			psql
-				.createSchema(extendedSchema)
+				.createSchema( extendedSchema )
 				.execute();
 		}
 	}
@@ -239,15 +245,33 @@ public class CategoryManager {
 		Field<String> codeField = table.getVarcharField( categoryLevel.getCodeColumn() );
 		Field<String> captionField = table.getVarcharField( categoryLevel.getCaptionColumn() );
 		
-		Result<Record> records = psql.select().from(table).fetch();
+		Result<Record> records = psql.select().from( table ).fetch();
 
 		List<CategoryLevelValue> values = new ArrayList<CategoryLevel.CategoryLevelValue>();
 		for ( Record record : records ) {
 			CategoryLevelValue value = new CategoryLevelValue( record.getValue(idField), record.getValue(codeField), record.getValue(captionField) );
 			values.add(value);
 		}
-//		categoryLevel.setCategoryLevelValues(values);
+		
 		return values;
+	}
+	
+	public CategoryLevelValue loadCategoryLevelValue( CategoryLevel categoryLevel , String code ){
+		DynamicTable<Record> table = new DynamicTable<Record>( categoryLevel.getTableName() , categoryLevel.getSchemaName() );
+		
+		Field<Long> idField = table.getLongField( categoryLevel.getIdColumn() );
+		Field<String> codeField = table.getVarcharField( categoryLevel.getCodeColumn() );
+		Field<String> captionField = table.getVarcharField( categoryLevel.getCaptionColumn() );
+		
+		Record record = psql
+			.select()
+			.from( table )
+			.where( codeField.eq(code) )
+			.fetchOne();
+
+		CategoryLevelValue value = new CategoryLevelValue( record.getValue(idField), record.getValue(codeField), record.getValue(captionField) );
+		
+		return value;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -277,7 +301,65 @@ public class CategoryManager {
 			array.add( jsonObject );
 		}
 		return array;
+	}
 	
+	@Transactional
+	public void importBackup( Workspace workspace, WorkspaceBackup workspaceBackup ) {
+		Workspace workspaceToImport = workspaceBackup.getWorkspace();
+
+		List<Category> categories = workspaceToImport.getCategories();
+		for ( Category category : categories ) {
+			if( category.isUserDefined() ){
+				
+				CategoryHierarchy hierarchy = category.getHierarchies().get(0);
+				CategoryLevel level = hierarchy.getLevels().get(0);
+				
+				Integer oldCategoryId = category.getId();
+				Integer oldCategoryLevelId = level.getId();
+				
+				List<CategoryLevelValue> values = workspaceBackup.getCategoryLevelValues().get( level.getId() );
+				this.createCategory( workspace, category , values );
+				
+				// replace categoryId in calc step of type category  
+				Integer newCategoryId = category.getId();
+				
+				List<CalculationStep> calculationSteps = workspaceToImport.getDefaultProcessingChain().getCalculationSteps();
+				for ( CalculationStep calculationStep : calculationSteps ) {
+					if( calculationStep.getType() == Type.CATEGORY ){
+						Integer stepCategoryId = calculationStep.getParameters().getInteger( "categoryId" );
+						
+						if( stepCategoryId.equals(oldCategoryId) ){
+							calculationStep.getParameters().setInteger( "categoryId" , newCategoryId );
+
+							// replace category class ids in calculation steps
+							List<CalculationStepCategoryClassParameters> categoryClassParameters = calculationStep.getCategoryClassParameters();
+							for ( CalculationStepCategoryClassParameters classParameters : categoryClassParameters ) {
+								String classCode = classParameters.getClassCode();
+								
+								CategoryLevelValue levelValue = this.loadCategoryLevelValue( level, classCode );
+								classParameters.setClassId( levelValue.getId().intValue() );
+								
+								Integer variableOriginalId = workspaceBackup.getVariableOriginalIds().get( classParameters.getVariableId() );
+								Variable<?> variable = workspace.getVariableByOriginalId( variableOriginalId );
+								classParameters.setVariableId( variable.getId() );
+							}
+						}
+					}
+				}
+
+				level = hierarchy.getLevels().get(0);
+				Integer newCategoryLevelId = level.getId();
+				// replace categoryId in user defined variables				
+				Collection<Variable<?>> userDefinedVariables = workspaceToImport.getUserDefinedVariables();
+				for ( Variable<?> variable : userDefinedVariables ) {
+					if( variable.getCategoryLevelId() != null && oldCategoryLevelId.equals(variable.getCategoryLevelId().intValue()) ) {
+						variable.setCategoryLevelId(newCategoryLevelId.longValue());
+					}
+				}
+				
+			}
+		}
+		
 	}
 
 }

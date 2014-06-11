@@ -5,6 +5,7 @@ package org.openforis.calc.engine;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,21 +16,13 @@ import org.jooq.Query;
 import org.jooq.Record;
 import org.jooq.impl.DynamicTable;
 import org.openforis.calc.chain.CalculationStep;
-import org.openforis.calc.chain.CalculationStep.Type;
+import org.openforis.calc.chain.ProcessingChainManager;
 import org.openforis.calc.engine.WorkspaceBackup.Phase1Data;
-import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.AoiManager;
-import org.openforis.calc.metadata.Category;
-import org.openforis.calc.metadata.CategoryHierarchy;
-import org.openforis.calc.metadata.CategoryLevel;
-import org.openforis.calc.metadata.CategoryLevel.CategoryLevelValue;
 import org.openforis.calc.metadata.CategoryManager;
 import org.openforis.calc.metadata.Entity;
-import org.openforis.calc.metadata.EquationList;
 import org.openforis.calc.metadata.EquationManager;
-import org.openforis.calc.metadata.MetadataManager;
 import org.openforis.calc.metadata.QuantitativeVariable;
-import org.openforis.calc.metadata.SamplingDesign;
 import org.openforis.calc.metadata.SamplingDesignManager;
 import org.openforis.calc.metadata.Stratum;
 import org.openforis.calc.metadata.Variable;
@@ -37,12 +30,10 @@ import org.openforis.calc.metadata.Variable.Scale;
 import org.openforis.calc.metadata.VariableDao;
 import org.openforis.calc.persistence.jooq.CalcSchema;
 import org.openforis.calc.persistence.jooq.Sequences;
-import org.openforis.calc.persistence.jooq.tables.daos.CalculationStepDao;
 import org.openforis.calc.persistence.jooq.tables.daos.EntityDao;
 import org.openforis.calc.persistence.jooq.tables.daos.StratumDao;
 import org.openforis.calc.persistence.jooq.tables.daos.WorkspaceDao;
 import org.openforis.calc.psql.Psql;
-import org.openforis.calc.schema.TableDao;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -64,21 +55,19 @@ public class ImportOutputMetadataTask extends Task{
 	@Autowired
 	private CategoryManager categoryManager;
 	@Autowired
-	private CalculationStepDao calculationStepDao; 
-	@Autowired
 	private EquationManager equationManager;
 	@Autowired
 	private Psql psql;
-	@Autowired
-	private TableDao tableDao;
-	@Autowired
-	private MetadataManager metadataManager;
 	@Autowired
 	private VariableDao variableDao;
 	@Autowired
 	private EntityDao entityDao;
 	@Autowired
 	private WorkspaceDao workspaceDao;
+	@Autowired
+	private ProcessingChainManager processingChainManager;
+	@Autowired
+	private WorkspaceService workspaceService;
 	
 	@Override
 	protected long countTotalItems() {
@@ -87,126 +76,53 @@ public class ImportOutputMetadataTask extends Task{
 	
 	@Override
 	protected void execute() throws Throwable {
+		Workspace workspace = getWorkspace();
 		
-		importPhase1Data();
-		importStrata();
-		importPlotAreaScript();
-		importOutputCategories();
-		importExternalEquations();
-		importSamplingDesign();
-		importAois(); 
-		importOutputVariables();
-		importCalculationSteps();
+		importPhase1Data( workspace , workspaceBackup );
+		importStrata( workspace , workspaceBackup );
+		importPlotAreaScript( workspace , workspaceBackup );
+
+		categoryManager.importBackup( workspace, workspaceBackup );
+		incrementItemsProcessed();
 		
+		equationManager.importBackup( workspace , workspaceBackup );
+		incrementItemsProcessed();
+		
+		samplingDesignManager.importBackup( workspace, workspaceBackup );
+		incrementItemsProcessed();
+		
+		aoiManager.importBackup( workspace, workspaceBackup );
+		incrementItemsProcessed();
+		
+		importVariables( workspace , workspaceBackup );
+		
+		processingChainManager.importBackup( workspace, workspaceBackup );
+		incrementItemsProcessed();
+		
+		// reload workspace
+		workspace = workspaceService.fetchByCollectSurveyUri( workspace.getCollectSurveyUri() );
+		workspaceService.resetResults(workspace);
+		getJob().setWorkspace( workspace );
+		getJob().setSchemas( workspace.schemas() );
 	}
-	
-	private void importCalculationSteps() {
+
+	private void importStrata( Workspace workspace, WorkspaceBackup workspaceBackup ) {
+		List<Stratum> strata = workspaceBackup.getWorkspace().getStrata();
+		
+		workspace.setStrata( strata );
+		stratumDao.insert( workspace.getStrata() );
 		
 		incrementItemsProcessed();
 	}
 
-	private void importAois() {
-		List<AoiHierarchy> aoiHierarchies = getWorkspaceToImport().getAoiHierarchies();
-		for ( AoiHierarchy aoiHierarchy : aoiHierarchies ) {
-			aoiManager.createFromBackup( getWorkspace() , aoiHierarchy );
-		}
-		
-		incrementItemsProcessed();
-	}
-
-	private void importSamplingDesign() {
-		if( getWorkspaceToImport().hasSamplingDesign() ){
-			SamplingDesign samplingDesign = getWorkspaceToImport().getSamplingDesign();
-			
-			Entity entity = getWorkspaceToImport().getEntityById( samplingDesign.getSamplingUnitId() );
-			Entity samplingUnit = getWorkspace().getEntityByOriginalId( entity.getOriginalId() );
-			
-			samplingDesign.setSamplingUnit(samplingUnit);
-			
-			samplingDesignManager.insert( getWorkspace(), samplingDesign  );
-		}
-		
-		incrementItemsProcessed();
-	}
-
-	private void importExternalEquations() {
-		List<EquationList> equationLists = getWorkspaceToImport().getEquationLists();
-		for ( EquationList equationList : equationLists ) {
-			
-			Long equationListId = equationList.getId();
-			equationManager.create( getWorkspace() , equationList );
-			Long newEquationListId = equationList.getId();
-			
-			List<CalculationStep> calculationSteps = getWorkspaceToImport().getDefaultProcessingChain().getCalculationSteps();
-			for ( CalculationStep calculationStep : calculationSteps ) {
-				if( calculationStep.getType() == Type.EQUATION && equationListId.equals(calculationStep.getEquationListId()) ){
-					calculationStep.setEquationListId( newEquationListId );
-				}
-			}
-			
-		}
-		
-		incrementItemsProcessed();
-	}
-
-	private void importOutputCategories() {
-		List<Category> categories = getWorkspaceToImport().getCategories();
-		for ( Category category : categories ) {
-			if( category.isUserDefined() ){
-				
-				CategoryHierarchy hierarchy = category.getHierarchies().get(0);
-				CategoryLevel level = hierarchy.getLevels().get(0);
-				
-				Integer oldCategoryId = category.getId();
-				Integer oldCategoryLevelId = level.getId();
-				
-				getWorkspace().addCategory( category );
-				List<CategoryLevelValue> values = workspaceBackup.getCategoryLevelValues().get( level.getId() );
-				
-				categoryManager.createCategory( getWorkspace(), category , values );
-				
-				Integer newCategoryId = category.getId();
-				// replace categoryId in calc step of type category  
-				List<CalculationStep> calculationSteps = getWorkspaceToImport().getDefaultProcessingChain().getCalculationSteps();
-				for ( CalculationStep calculationStep : calculationSteps ) {
-					if( calculationStep.getType() == Type.CATEGORY ){
-						Integer stepCategoryId = calculationStep.getParameters().getInteger( "categoryId" );
-						if( stepCategoryId.equals(oldCategoryId) ){
-							calculationStep.getParameters().setInteger( "categoryId" , newCategoryId );
-						}
-					}
-				}
-
-				level = hierarchy.getLevels().get(0);
-				Integer newCategoryLevelId = level.getId();
-				// replace categoryId in user defined variables				
-				Collection<Variable<?>> userDefinedVariables = getWorkspaceToImport().getUserDefinedVariables();
-				for ( Variable<?> variable : userDefinedVariables ) {
-					if( variable.getCategoryLevelId() != null && oldCategoryLevelId.equals(variable.getCategoryLevelId().intValue()) ) {
-						variable.setCategoryLevelId(newCategoryLevelId.longValue());
-					}
-				}
-				
-			}
-		}
-		
-		incrementItemsProcessed();
-	}
-
-	private void importStrata() {
-		List<Stratum> strata = getWorkspaceToImport().getStrata();
-		getWorkspace().setStrata(strata);
-		stratumDao.insert( getWorkspace().getStrata() );
-		
-		incrementItemsProcessed();
-	}
-
-	private void importPlotAreaScript() {
-		List<Entity> entities = getWorkspaceToImport().getEntities();
+	private void importPlotAreaScript( Workspace workspace, WorkspaceBackup workspaceBackup ) {
+		List<Entity> entities = workspaceBackup.getWorkspace().getEntities();
 		for ( Entity entity : entities ) {
+			
 			String plotAreaScript = entity.getPlotAreaScript();
+			
 			if( StringUtils.isNotBlank(plotAreaScript) ){
-				Entity originalEntity = getWorkspace().getEntityByOriginalId( entity.getOriginalId() );
+				Entity originalEntity = workspace.getEntityByOriginalId( entity.getOriginalId() );
 				if( originalEntity == null ){
 					throw new IllegalStateException( "Entity " + entity.getName() + " not found in workspace" );
 				}
@@ -218,39 +134,83 @@ public class ImportOutputMetadataTask extends Task{
 		incrementItemsProcessed();
 	}
 
-	private void importOutputVariables() {
-		Collection<Variable<?>> userDefinedVariables = getWorkspaceToImport().getUserDefinedVariables();
+	private void importVariables( Workspace workspace, WorkspaceBackup workspaceBackup ) {
+		// first prepare a map with old ids -> new ids
+		Map<Integer, Integer> variableIds = new HashMap<Integer, Integer>();
+		
+		Map<Integer, Integer> originalIds = workspaceBackup.getVariableOriginalIds();
+		for ( Integer oldCalcId : originalIds.keySet() ) {
+			Integer originalId = originalIds.get(oldCalcId);
+			if( originalId != null ){
+				Variable<?> variable = workspace.getVariableByOriginalId( originalId  );
+				variableIds.put( oldCalcId, variable.getId() );
+			}
+		}
+		
+		Workspace workspaceToImport = workspaceBackup.getWorkspace();
+		
+		List<CalculationStep> calculationSteps = workspaceToImport.getDefaultProcessingChain().getCalculationSteps();
+		
+		Collection<Variable<?>> userDefinedVariables = workspaceToImport.getUserDefinedVariables();
 		for ( Variable<?> variable : userDefinedVariables ) {
 			
-			Entity originalEntity = getWorkspaceToImport().getEntityById( variable.getEntityId() );
-			Entity entity = getWorkspace().getEntityByOriginalId( originalEntity.getOriginalId() );
+			Entity originalEntity = workspaceToImport.getEntityById( variable.getEntityId() );
+			Entity entity = workspace.getEntityByOriginalId( originalEntity.getOriginalId() );
 			if( entity == null ){
 				throw new IllegalStateException( "Entity " + variable.getEntity().getName() + " not found in workspace" );
 			}
-			entity.addVariable(variable);
+			entity.addVariable( variable );
 			
-			// set new id to variable 
 			Integer variableId = variable.getId();
-			int newVariableId = psql.nextval( Sequences.VARIABLE_ID_SEQ ).intValue();
-			variable.setId( newVariableId );
+			// set new id to variable 
+			variable.setId( psql.nextval( Sequences.VARIABLE_ID_SEQ ).intValue() );
 			Scale scale = (variable instanceof QuantitativeVariable ) ? Scale.RATIO : Scale.NOMINAL;
 			variable.setScale( scale  );
 			variableDao.insert( variable );
 			
-			// replace output variable for calculation steps
-			List<CalculationStep> calculationSteps = getWorkspaceToImport().getDefaultProcessingChain().getCalculationSteps();
-			for ( CalculationStep calculationStep : calculationSteps ) {
-				if( calculationStep.getOutputVariableId().equals(variableId) ){
-					calculationStep.setOutputVariable(variable);
+			variableIds.put( variableId , variable.getId() );
+		}
+		
+		// replace variable references for calculation steps
+		for ( CalculationStep calculationStep : calculationSteps ) {
+			
+			ParameterMap parameters = calculationStep.getParameters();
+			
+			switch ( calculationStep.getType() ) {
+			case EQUATION:
+				
+				Integer codeVariableId = parameters.getInteger( "code_variable" );
+				Integer newCodeVariableId = variableIds.get( codeVariableId );
+				parameters.setInteger( "code_variable" , newCodeVariableId );
+				
+				List<ParameterMap> list = parameters.getList( "variables" );
+				for ( ParameterMap param : list ) {
+					Integer varId = param.getInteger( "variableId" );
+					Integer newVarId = variableIds.get( varId );
+					param.setInteger( "variableId" , newVarId );
 				}
+				
+			case SCRIPT:
+			case CATEGORY:
+				Integer oldVariableId =  calculationStep.getOutputVariableId() ;
+				Integer variableId = variableIds.get( oldVariableId );
+				Variable<?> outputVariable = workspace.getVariableById( variableId );
+				calculationStep.setOutputVariable( outputVariable );
+				break;
+			default:
+				break;
 			}
 		}
+		
+		incrementItemsProcessed();
 	}
 
-	private <T extends Object> void importPhase1Data() {
-		Phase1Data phase1Data = this.workspaceBackup.getPhase1Data();
+	private <T extends Object> void importPhase1Data(Workspace workspace, WorkspaceBackup workspaceBackup ) {
+		Phase1Data phase1Data = workspaceBackup.getPhase1Data();
+		Workspace workspaceToImport = workspaceBackup.getWorkspace();
+		
 		if( phase1Data != null ){
-			DynamicTable<?> table = new DynamicTable<Record>( getWorkspaceToImport().getPhase1PlotTableName(), CalcSchema.CALC.getName() );
+			DynamicTable<?> table = new DynamicTable<Record>( workspaceToImport.getPhase1PlotTableName(), CalcSchema.CALC.getName() );
 			table.initFields( phase1Data.getTableInfo() );
 			@SuppressWarnings( "unchecked" )
 			Field<T>[] tableFields = (Field<T>[]) table.fields();
@@ -285,10 +245,11 @@ public class ImportOutputMetadataTask extends Task{
 				.batch(queries)
 				.execute();
 			
-			Workspace workspace = getWorkspace();
+			
 			workspace.setPhase1PlotTable( table.getName() );
 			workspaceDao.update( workspace );
 		}
+		
 		incrementItemsProcessed();
 	}
 
@@ -296,23 +257,4 @@ public class ImportOutputMetadataTask extends Task{
 		this.workspaceBackup = workspaceBackup;
 	}
 	
-	@JsonIgnore
-	public Workspace getWorkspaceToImport() {
-		return this.workspaceBackup.getWorkspace();
-	}
-	
-	private Variable<?> findVariable( Integer variableId ) {
-		Map<Integer, Integer> inputVariables = this.workspaceBackup.getInputVariables();
-		Integer originalId = inputVariables.get(variableId);
-		Variable<?> variable = getWorkspace().getVariableByOriginalId( originalId );
-		return variable;
-	}
-	
-//	private Entity findEntity( Integer entityId ) {
-//		Map<Integer, Integer> inputEntities = this.workspaceBackup.getInputEntities();
-//		Integer originalId = inputEntities.get(entityId);
-//		Entity entity = getWorkspace().getEntityByOriginalId( originalId );
-//		return entity;
-//	}
-
 }

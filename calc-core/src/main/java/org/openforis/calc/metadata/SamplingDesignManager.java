@@ -4,6 +4,7 @@
 package org.openforis.calc.metadata;
 
 import org.openforis.calc.engine.Workspace;
+import org.openforis.calc.engine.WorkspaceBackup;
 import org.openforis.calc.persistence.jooq.Sequences;
 import org.openforis.calc.persistence.jooq.tables.daos.SamplingDesignDao;
 import org.openforis.calc.psql.Psql;
@@ -43,6 +44,23 @@ public class SamplingDesignManager {
 		workspace.setSamplingDesign( samplingDesign );
 		
 		samplingDesignDao.insert( samplingDesign );
+	}
+	
+	@Transactional
+	public void importBackup( Workspace workspace, WorkspaceBackup workspaceBackup ) {
+		Workspace workspaceToImport = workspaceBackup.getWorkspace();
+		
+		if( workspaceToImport.hasSamplingDesign() ){
+			SamplingDesign samplingDesign = workspaceToImport.getSamplingDesign();
+			
+			Entity entity = workspaceToImport.getEntityById( samplingDesign.getSamplingUnitId() );
+			Entity samplingUnit = workspace.getEntityByOriginalId( entity.getOriginalId() );
+			
+			samplingDesign.setSamplingUnit(samplingUnit);
+			
+			this.insert( workspace, samplingDesign  );
+		}
+		
 	}
 	
 }

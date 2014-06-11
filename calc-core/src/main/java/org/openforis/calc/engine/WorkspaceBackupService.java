@@ -79,17 +79,16 @@ public class WorkspaceBackupService {
 	public WorkspaceBackup createBackup( Workspace ws ) {
 		WorkspaceBackup backup = new WorkspaceBackup( ws );
 		
-		// input variables map
+		// variable original ids map
 		List<Variable<?>> variables = ws.getVariables();
 		Map<Integer, Integer> variableIds = new HashMap<Integer, Integer>();
 		for ( Variable<?> variable : variables ) {
 			variableIds.put( variable.getId(), variable.getOriginalId() );
 		}
-		backup.setInputVariables( variableIds );
+		backup.setVariableOriginalIds( variableIds );
 		
+		// remove input variables and input categories
 		metadataManager.deleteInputVariables( ws );
-		
-		// dont export input categories
 		ws.removeInputCategories();
 		
 		// export phase1 data and user defined category values

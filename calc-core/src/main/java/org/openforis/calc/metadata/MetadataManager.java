@@ -331,12 +331,6 @@ public class MetadataManager {
 		}
 	}
 	
-	public void importOutputMetadata(  Workspace workspace ) {
-		workspaceDao.update( workspace );
-//		resetAoiIds( )
-//		aoiManager.save( workspace );
-	}
-	
 	/*
 	 * ===========================
 	 * 	Workspace utility methods

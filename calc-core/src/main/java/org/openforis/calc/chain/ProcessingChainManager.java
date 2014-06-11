@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.openforis.calc.engine.Worker.Status;
 import org.openforis.calc.engine.Workspace;
+import org.openforis.calc.engine.WorkspaceBackup;
 import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.MultiwayVariable;
@@ -174,5 +175,21 @@ public class ProcessingChainManager {
 		
 	}
 
+	@Transactional
+	public void importBackup( Workspace workspace , WorkspaceBackup workspaceBackup ) {
+		ProcessingChain processingChain = workspace.getDefaultProcessingChain();
+
+		Workspace workspaceToImport = workspaceBackup.getWorkspace();
+		
+		List<CalculationStep> calculationSteps = workspaceToImport.getDefaultProcessingChain().getCalculationSteps();
+		for ( CalculationStep calculationStep : calculationSteps ) {
+			
+			processingChain.addCalculationStep(calculationStep);
+			
+			calculationStep.setId( psql.nextval(Sequences.CALCULATION_STEP_ID_SEQ).intValue() );
+			calculationStepDao.insert( calculationStep );
+		}
+		
+	}
 	
 }

@@ -15,9 +15,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.SelectQuery;
+import org.openforis.calc.chain.CalculationStep;
+import org.openforis.calc.chain.CalculationStep.Type;
 import org.openforis.calc.engine.ParameterHashMap;
 import org.openforis.calc.engine.ParameterMap;
 import org.openforis.calc.engine.Workspace;
+import org.openforis.calc.engine.WorkspaceBackup;
 import org.openforis.calc.persistence.jooq.Sequences;
 import org.openforis.calc.persistence.jooq.Tables;
 import org.openforis.calc.persistence.jooq.tables.daos.EquationDao;
@@ -189,6 +192,28 @@ public class EquationManager {
 			equation.setList(equationList);
 			
 			equationDao.insert( equation );
+		}
+		
+	}
+
+	@Transactional
+	public void importBackup( Workspace workspace , WorkspaceBackup workspaceBackup ) {
+		Workspace workspaceToImport = workspaceBackup.getWorkspace();
+		
+		List<EquationList> equationLists = workspaceToImport.getEquationLists();
+		for ( EquationList equationList : equationLists ) {
+			
+			Long equationListId = equationList.getId();
+			this.create( workspace , equationList );
+			Long newEquationListId = equationList.getId();
+			
+			List<CalculationStep> calculationSteps = workspaceToImport.getDefaultProcessingChain().getCalculationSteps();
+			for ( CalculationStep calculationStep : calculationSteps ) {
+				if( calculationStep.getType() == Type.EQUATION && equationListId.equals(calculationStep.getEquationListId()) ){
+					calculationStep.setEquationListId( newEquationListId );
+				}
+			}
+			
 		}
 		
 	}

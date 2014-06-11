@@ -77,7 +77,7 @@ public class CalculationStep extends CalculationStepBase {
 	}
 
 	@Override
-	@JsonIgnore
+//	@JsonIgnore
 	public Integer getStepNo() {
 		return super.getStepNo();
 	}
