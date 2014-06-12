@@ -123,7 +123,7 @@ public class EquationManager {
 	}
 
 	@Transactional
-	public void loadListsByWorkspace( Workspace workspace ) {
+	public void loadEquationLists( Workspace workspace ) {
 		
 		List<EquationList> list = equationListDao.fetchByWorkspaceId( workspace.getId() );
 		

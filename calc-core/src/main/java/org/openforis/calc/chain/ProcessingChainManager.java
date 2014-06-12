@@ -87,6 +87,12 @@ public class ProcessingChainManager {
 		return calculationStepDao.fetchOneById( stepId );
 	}
 	
+	@Transactional
+	public void deleteCalculationSteps( ProcessingChain processingChain ){
+		calculationStepDao.delete( processingChain.getCalculationSteps() );
+		processingChain.clearCalculationSteps();
+	}
+	
 	/**
 	 * Delete the step with given stepId 
 	 * Returns the output variable id if it has been removed because it's used only by the deleted calculation step
@@ -146,11 +152,8 @@ public class ProcessingChainManager {
 		processingChain.setStatus( status );
 		processingChainDao.update( processingChain );
 	}
-
-	public ProcessingChain loadChainById( int chainId ){
-		return processingChainDao.fetchOneById( chainId );
-	}
 	
+	@Transactional
 	public void loadChains( Workspace workspace ){
 		List<ProcessingChain> chains = processingChainDao.fetchByWorkspaceId( workspace.getId() );
 		for (ProcessingChain chain : chains) {
@@ -188,8 +191,9 @@ public class ProcessingChainManager {
 			
 			calculationStep.setId( psql.nextval(Sequences.CALCULATION_STEP_ID_SEQ).intValue() );
 			calculationStepDao.insert( calculationStep );
-		}
-		
+		}		
 	}
+	
+	
 	
 }

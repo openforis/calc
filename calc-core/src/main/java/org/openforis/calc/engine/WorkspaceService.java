@@ -9,15 +9,15 @@ import org.jooq.Record;
 import org.openforis.calc.chain.ProcessingChainManager;
 import org.openforis.calc.metadata.AoiDao;
 import org.openforis.calc.metadata.Category;
+import org.openforis.calc.metadata.CategoryLevel.CategoryLevelValue;
 import org.openforis.calc.metadata.CategoryManager;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.MetadataManager;
 import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.QuantitativeVariable;
-import org.openforis.calc.metadata.StratumDao;
+import org.openforis.calc.metadata.SamplingDesignManager;
 import org.openforis.calc.metadata.Variable;
-import org.openforis.calc.metadata.VariableDao;
-import org.openforis.calc.metadata.CategoryLevel.CategoryLevelValue;
+import org.openforis.calc.metadata.VariableManager;
 import org.openforis.calc.persistence.jooq.Tables;
 import org.openforis.calc.persistence.jooq.tables.WorkspaceTable;
 import org.openforis.calc.persistence.jooq.tables.daos.CalculationStepDao;
@@ -57,7 +57,7 @@ public class WorkspaceService {
 	@Autowired
 	private EntityDataViewDao entityDataViewDao;
 	@Autowired
-	private VariableDao variableDao;
+	private VariableManager variableManager;
 	@Autowired
 	private ProcessingChainManager processingChainService;
 	@Autowired
@@ -67,7 +67,7 @@ public class WorkspaceService {
 	@Autowired
 	private AoiDao aoiDao;
 	@Autowired
-	private StratumDao stratumDao;
+	private SamplingDesignManager samplingDesignManager;
 	@Autowired
 	private TableDao tableDao;
 	@Autowired
@@ -160,7 +160,7 @@ public class WorkspaceService {
 	}
 	@Transactional
 	public void saveVariable(Variable<?> variable) {
-		variableDao.save( variable );
+		variableManager.save( variable );
 	}
 	
 
@@ -349,7 +349,7 @@ public class WorkspaceService {
 
 	@Transactional
 	public void importStrata(Workspace workspace, String filepath) throws IOException {
-		stratumDao.deleteAll(workspace);
+		samplingDesignManager.deleteStrata( workspace );
 		
 		@SuppressWarnings( "resource" )
 		CsvReader csvReader = new CsvReader(filepath);
@@ -360,7 +360,7 @@ public class WorkspaceService {
 			Integer no = record.getValue(0, Integer.class);
 			String caption = record.getValue(1, String.class);
 			
-			stratumDao.insert(workspace, no, caption);
+			samplingDesignManager.addStrata(workspace, no, caption);
 		}
 		
 	}

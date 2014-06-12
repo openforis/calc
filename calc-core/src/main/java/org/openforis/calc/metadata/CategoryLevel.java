@@ -43,19 +43,6 @@ public class CategoryLevel extends CategoryLevelBase {
 	}
 	
 	// used for export / import
-//	private List<CategoryLevelValue> categoryLevelValues;
-//	public void clearValues() {
-//		categoryLevelValues = null;
-//	}
-//	
-//	public List<CategoryLevelValue> getCategoryLevelValues() {
-//		return CollectionUtils.unmodifiableList( categoryLevelValues );
-//	}
-//	
-//	public void setCategoryLevelValues( List<CategoryLevelValue> categoryLevelValues ) {
-//		this.categoryLevelValues = categoryLevelValues;
-//	}
-	
 	public static class CategoryLevelValue {
 		
 		private Long id;

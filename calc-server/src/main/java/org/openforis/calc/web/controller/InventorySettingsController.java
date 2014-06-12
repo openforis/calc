@@ -57,7 +57,7 @@ public class InventorySettingsController {
 		Response response = new Response();
 		Workspace workspace = workspaceService.getActiveWorkspace();
 
-		samplingDesignManager.delete( workspace );
+		samplingDesignManager.deleteSamplingDesign( workspace );
 
 		SamplingDesign samplingDesign = parseSamplingDesignFromJsonString( workspace, samplingDesignParam );
 		if ( samplingDesign != null ) {
@@ -127,17 +127,6 @@ public class InventorySettingsController {
 		
 		return response;
 	} 
-	
-//	@RequestMapping(value = "/settings/equationList/variables.json", method = RequestMethod.GET, produces = "application/json")
-//	public @ResponseBody 
-//	Response importEquationList( @RequestParam String filePath ) throws IOException {
-//		Set<String> variables = equationManager.extractVariables( filePath );
-//		
-//		Response response = new Response();
-//		response.addField("variables", variables);
-//		
-//		return response;
-//	}
 	
 	/**
 	 * Parse the json object into a samplingDesing instance

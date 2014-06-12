@@ -107,10 +107,10 @@
     <bean name="processingChainDao" class="org.openforis.calc.persistence.jooq.tables.daos.ProcessingChainDao">
     	<constructor-arg ref="config" />
     </bean>
-    <bean name="stratumDao" class="org.openforis.calc.metadata.StratumDao">
+    <bean name="stratumDao" class="org.openforis.calc.persistence.jooq.tables.daos.StratumDao">
     	<constructor-arg ref="config" />
     </bean>
-    <bean name="variableDao" class="org.openforis.calc.metadata.VariableDao">
+    <bean name="variableDao" class="org.openforis.calc.persistence.jooq.tables.daos.VariableDao">
     	<constructor-arg ref="config" />
     </bean>
     <bean name="workspaceDao" class="org.openforis.calc.persistence.jooq.tables.daos.WorkspaceDao">

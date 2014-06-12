@@ -10,7 +10,7 @@ import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.Variable;
-import org.openforis.calc.metadata.VariableDao;
+import org.openforis.calc.metadata.VariableManager;
 import org.openforis.calc.schema.CategoryDimensionTable;
 import org.openforis.calc.schema.Schemas;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +38,7 @@ public class VariableController {
 	private TaskManager taskManager;
 
 	@Autowired
-	private VariableDao variableDao;
+	private VariableManager variableManager;
 	
 	@Autowired
 	private DataSource dataSource; 
@@ -58,12 +58,12 @@ public class VariableController {
 				
 				boolean readCategories = true;			
 				if( max != null ) {
-					long count = variableDao.countCategoryClasses( table );
+					long count = variableManager.countCategoryClasses( table );
 					readCategories = count <= max;
 				}
 				
 				if( readCategories ) {
-					List<JSONObject> categories = variableDao.getCategoryClasses( table );
+					List<JSONObject> categories = variableManager.getCategoryClasses( table );
 					response.addField( "categories", categories );
 				}
 			}
