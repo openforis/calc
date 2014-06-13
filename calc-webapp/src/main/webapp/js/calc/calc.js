@@ -179,9 +179,10 @@ $(document).ready(function() {
 	// event handler for home button click
 	homeButtonClick = function(event){
 		event.preventDefault();
+
 		var $button = $(event.currentTarget);
-		
 		sectionUrl = $button.attr("href");
+		
 		//set the current working section (calculation,results,data or settings)
 		Calc.section = $button.parents( ".section-home" );
 		//home page section (contains the button links to the external pages)
@@ -191,10 +192,17 @@ $(document).ready(function() {
 			throw msg;
 		}
 		
+		Calc.navigateToSection( sectionUrl );
+	};
+	
+	Calc.navigateToSection = function( sectionUrl ){
+		
+		Calc.pushToHistory( sectionUrl );
+		
 		$.ajax({
 			url		: sectionUrl,
 			dataType: "html",
-			data	:{ "t" : new Date().getTime() }
+			data	: { "t" : new Date().getTime() }
 		}).done(function( response ) {
 			var page = $( response );
 			
@@ -219,15 +227,17 @@ $(document).ready(function() {
 		}).error( function() {
 			Calc.error.apply( this , arguments );
 		});
-		
-		
 	};
 	
-	$(".section-home button.btn-home, .section-home button.btn-home-plus").click(homeButtonClick);
+	$(".section-home button.btn-home, .section-home button.btn-home-plus").click( homeButtonClick );
 	
-	Calc.backHomeBtn.click(function(event){
+	Calc.backHomeBtn.click( function(event){
 		event.preventDefault();
-		
+		history.go( -1 );
+//		Calc.navigateToHome();
+	});
+	
+	Calc.navigateToHome = function(){
 		var $btnSection = Calc.section.find(".page-section:nth-child(1)");
 		var $extSection = Calc.section.find(".page-section:nth-child(2)");
 		
@@ -244,14 +254,15 @@ $(document).ready(function() {
 		$btnSection.show();
 		$btnSection.animate({left:"0px"}, 1000, 'easeOutExpo');
 		Calc.footerHomeLinks.fadeIn(500);
-	});
+		
+		Calc.pushToHistory( "home" );
+	};
 	
-	// on resize window
-	$( window ).resize(function() {
-		positionFooter();
-		resizeContainer();
-		scrollToSection(false);
-	});
+	// history methods
+	Calc.pushToHistory = function( section ) {
+		window.history.replaceState( window.history.state , "load" , location.pathname + "#" + section );
+		window.history.pushState( { section: section} );
+	};
 	
 	//private static utility method to load Calc info model object
 	Calc._loadInfo = function() {
@@ -267,6 +278,30 @@ $(document).ready(function() {
 
 	};
 	
+	// window events
+	// on resize window
+	$( window ).resize(function() {
+		positionFooter();
+		resizeContainer();
+		scrollToSection(false);
+	});
+	
+	// on browser back button click 
+	window.onpopstate = function(event) {
+		var section = ( event.state ) ? event.state.section : "home";
+//		console.log( section );
+		window.history.replaceState( window.history.state , "load" , location.pathname + "#" + section );
+		
+		switch ( section ) {
+		case "home":
+			Calc.navigateToHome();
+			break;
+		default:
+			Calc.navigateToSection( section );
+		break;
+		}
+	};
+
 	// when page is loaded init function is called
 	init = function() {
 		
@@ -296,6 +331,7 @@ $(document).ready(function() {
 			// check if there's a job currently running
 			JobManager.getInstance().checkJobStatus();
 		});
+	
 	};
 	
 	init();

@@ -1,3 +1,5 @@
+#= remove all objects in session
+rm( list = ls() ) ;
 #== 
 #== function used by open foris calc to check if the execution of a task returned an error 
 #== 

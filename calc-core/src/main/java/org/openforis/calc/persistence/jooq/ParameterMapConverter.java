@@ -28,7 +28,11 @@ public class ParameterMapConverter implements Converter<String, ParameterMap> {
 
 	@Override
 	public String to(ParameterMap userObject) {
-		return userObject.toJsonString();
+		if( userObject != null ) {
+			return userObject.toJsonString();
+		} else {
+			return "{}";
+		}
 	}
 
 	@Override

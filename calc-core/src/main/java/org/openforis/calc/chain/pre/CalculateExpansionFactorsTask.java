@@ -57,10 +57,10 @@ public final class CalculateExpansionFactorsTask extends Task {
 
 			if (samplingDesign.getTwoPhases()) {
 				// create expf table
-				createExpfTable2phases(expf);
+				createExpfTable2phases( expf );
 			} else {
 				// TODO and TOTEST
-				createExpfTable1phase(expf);
+				createExpfTable1phase( expf);
 			}
 			
 			addWeightField( expf );

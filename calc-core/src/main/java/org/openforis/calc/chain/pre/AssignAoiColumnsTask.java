@@ -9,6 +9,7 @@ import org.jooq.SelectQuery;
 import org.jooq.impl.DynamicTable;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
+import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.SamplingDesign;
 import org.openforis.calc.metadata.SamplingDesign.ColumnJoin;
 import org.openforis.calc.metadata.SamplingDesign.TableJoin;
@@ -43,11 +44,13 @@ public final class AssignAoiColumnsTask extends Task {
 //		DataAoiTable dataAoiTable = null;
 		if( samplingDesign.getTwoPhases() ) {
 //			dataAoiTable = schema.getPhase1AoiTable();			
-			createAoiJoinTable( schema.getPhase1AoiTable() , hierarchyTable , samplingDesign.getAoiJoin() );
+			createAoiJoinTable2Phases( schema.getPhase1AoiTable() , hierarchyTable , samplingDesign.getAoiJoin() );
 			createSamplingUnitAoi();
 			
 		} else {
-			createAoiJoinTable( schema.getSamplingUnitAoiTable() , hierarchyTable , samplingDesign.getAoiJoin() );
+			Entity samplingUnit = samplingDesign.getSamplingUnit();
+			EntityDataView suView = schema.getDataView( samplingUnit );
+			createAoiJoinTable1Phase( schema.getSamplingUnitAoiTable() , hierarchyTable , suView , samplingDesign.getAoiJoin() );
 //			dataAoiTable = schema.getSamplingUnitAoiTable();
 		}
 
@@ -103,7 +106,7 @@ public final class AssignAoiColumnsTask extends Task {
 			.execute();
 	}
 
-	private void createAoiJoinTable(DataAoiTable dataAoiTable, AoiHierarchyFlatTable hierarchyTable, ColumnJoin columnJoin) {
+	private void createAoiJoinTable2Phases(DataAoiTable dataAoiTable, AoiHierarchyFlatTable hierarchyTable, ColumnJoin columnJoin) {
 		
 		// drop table first
 		psql()
@@ -127,7 +130,29 @@ public final class AssignAoiColumnsTask extends Task {
 			
 	}
 
-
+	private void createAoiJoinTable1Phase(DataAoiTable dataAoiTable, AoiHierarchyFlatTable hierarchyTable, EntityDataView samplingUnitView, ColumnJoin columnJoin) {
+		
+		// drop table first
+		psql()
+			.dropTableIfExists( dataAoiTable )
+			.execute();
+		
+		// create table 
+			
+		SelectQuery<Record> select = hierarchyTable.getSelectQuery();
+		
+		@SuppressWarnings( "unchecked" )
+		Field<String> joinField = (Field<String>) samplingUnitView.field( columnJoin.getColumn() );
+		String aliasJoin = hierarchyTable.getAoiHierarchy().getLeafLevel().getNormalizedName();
+		select.addJoin( samplingUnitView ,	Tables.AOI.as( aliasJoin ).CODE.eq(joinField) );
+		select.addSelect( samplingUnitView.getIdField().as("id") );
+			
+		psql()
+			.createTable( dataAoiTable )
+			.as( select )
+			.execute() ;
+			
+	}
 	
 	
 	

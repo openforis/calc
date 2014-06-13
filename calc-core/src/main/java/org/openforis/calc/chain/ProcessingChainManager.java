@@ -9,7 +9,6 @@ import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceBackup;
 import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.Entity;
-import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.persistence.jooq.Sequences;
 import org.openforis.calc.persistence.jooq.tables.daos.CalculationStepDao;
@@ -107,18 +106,16 @@ public class ProcessingChainManager {
 		Variable<?> outputVariable = step.getOutputVariable();
 		Entity entity = outputVariable.getEntity();
 		// for now delete only categorical variable
-		Integer deletedVariable = null;		
-//		if( outputVariable instanceof MultiwayVariable) {
-			List<CalculationStep> steps = calculationStepDao.fetchByOutputVariableId(outputVariable.getId());
-			if( steps.size() == 1 ){
-				// set output var to null (foreign key constraint "calculation_step_variable_fkey" )
-				step.setOutputVariableId(null);
-				calculationStepDao.update(step);
-				
-				deletedVariable = outputVariable.getId();
-				workspaceService.deleteVariable(outputVariable, false);
-			}
-//		}
+		Integer deletedVariable = null;
+		List<CalculationStep> steps = calculationStepDao.fetchByOutputVariableId(outputVariable.getId());
+		if( steps.size() == 1 ){
+			// set output var to null (foreign key constraint "calculation_step_variable_fkey" )
+			step.setOutputVariableId(null);
+			calculationStepDao.update(step);
+			
+			deletedVariable = outputVariable.getId();
+			workspaceService.deleteVariable(outputVariable, false);
+		}
 		// 2. delete step from db
 		calculationStepDao.delete( step );
 		// 3. remove step from metadata
