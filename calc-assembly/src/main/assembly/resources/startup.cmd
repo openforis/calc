@@ -8,9 +8,9 @@
 if "%JRE_HOME%"=="" (
 	echo Setting JRE_HOME
         if exist "%ProgramFiles%\Java" (
-		for /d %%i in ("%ProgramFiles%\Java\jre*") do set JRE_HOME=%%i
+		for /d %%i in ("%ProgramFiles%\Java\jdk*") do set JRE_HOME=%%i
 	) else if exist "%ProgramFiles% (x86)\Java" (
-		for /d %%i in ("%ProgramFiles% (x86)\Java\jre*") do set JRE_HOME=%%i
+		for /d %%i in ("%ProgramFiles% (x86)\Java\jdk*") do set JRE_HOME=%%i
 	)
 ) else (
 	echo Using already defined JRE_HOME
@@ -26,7 +26,4 @@ if "%JRE_HOME%"=="" (
 	set JRE_HOME
 	cd tomcat/bin
 	startup.bat
-	
-	echo Opening Calc on default web browser
-	start http://localhost:8080/calc
 )

@@ -41,6 +41,8 @@ AddVariableModal.prototype.init = function() {
 	    		
 	    		$this.container.modal('hide');
 	    		$this.container.modal('removeBackdrop');
+	    		
+	    		Calc.homeDataManager.refresh();
 	    	}
 		};
 		var errorCallback = function (e) {

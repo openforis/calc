@@ -297,7 +297,6 @@ public class WorkspaceService {
 	@Transactional
 	public void deleteVariable(Variable<?> variable , boolean createView) {
 		Entity entity = variable.getEntity();
-		metadataManager.deleteVariable(variable);
 		
 		if( variable.isUserDefined() ){
 
@@ -322,6 +321,8 @@ public class WorkspaceService {
 						.dropColumnIfExists( idField )
 						.execute();
 				}
+				
+				metadataManager.deleteVariable(variable);
 				
 				if( createView ){
 					entityDataViewDao.createOrUpdateView( entity );

@@ -108,7 +108,7 @@ public class ProcessingChainManager {
 		Entity entity = outputVariable.getEntity();
 		// for now delete only categorical variable
 		Integer deletedVariable = null;		
-		if( outputVariable instanceof MultiwayVariable) {
+//		if( outputVariable instanceof MultiwayVariable) {
 			List<CalculationStep> steps = calculationStepDao.fetchByOutputVariableId(outputVariable.getId());
 			if( steps.size() == 1 ){
 				// set output var to null (foreign key constraint "calculation_step_variable_fkey" )
@@ -118,7 +118,7 @@ public class ProcessingChainManager {
 				deletedVariable = outputVariable.getId();
 				workspaceService.deleteVariable(outputVariable, false);
 			}
-		}
+//		}
 		// 2. delete step from db
 		calculationStepDao.delete( step );
 		// 3. remove step from metadata
