@@ -12,8 +12,8 @@ CategoryClassOption = function( cls , editManager , parentContainer ){
 	divCode.html( cls.code );
 	divCode.tooltip({ title: cls.caption, delay: { show: 0, hide: 100, placement : "left" }});
 	var inputCode = $( '<input type="hidden"> ');
-	inputCode.attr( "name" , "categoryClassCodes['" + cls.code + "']" );
-	inputCode.val( cls.id );
+	inputCode.attr( "name" , "categoryClassCodes['" + cls.id + "']" );
+	inputCode.val( cls.code );
 	divCode.append( inputCode );
 	container.append( divCode );
 	

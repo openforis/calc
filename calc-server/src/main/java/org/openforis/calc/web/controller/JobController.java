@@ -59,7 +59,7 @@ public class JobController {
 
 //		workspaceService.updateResultTable( step );
 		
-		CalcJob job = taskManager.createCalcJob(workspace);
+		CalcJob job = taskManager.createCalcJob( workspace );
 		job.addCalculationStep(step);
 		job.setTempResults(true);
 		

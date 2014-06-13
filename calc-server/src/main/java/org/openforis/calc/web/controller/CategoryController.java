@@ -97,7 +97,7 @@ public class CategoryController {
 			String catCode = codes.get(i);
 			String catCaption = captions.get(i);
 			
-			CategoryLevelValue value = new CategoryLevelValue( (long) i, catCode, catCaption );
+			CategoryLevelValue value = new CategoryLevelValue( (long) i+1, catCode, catCaption );
 			values.add(value);
 			
 			if( catCode.equals("-1") ){

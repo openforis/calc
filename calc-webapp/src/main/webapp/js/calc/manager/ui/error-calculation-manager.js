@@ -324,15 +324,20 @@ ErrorCalculationManager.prototype.showResults = function( results ) {
 	thead.empty();
 	tbody.empty();
 	
-	var fieldNames = results[0].fieldNames;
+	var fieldNames = results[0].fields;
 	
 	var tr = $( "<tr></tr>" );
 	thead.append(tr);
-	$.each( fieldNames , function(i,field) {
+	for( var n in fieldNames ){
 		var th = $( "<th></th>" );
-		th.html( field );
+		th.html( n );
 		tr.append( th );
-	});
+	}
+//	$.each( fieldNames , function(i,field) {
+//		var th = $( "<th></th>" );
+//		th.html( field );
+//		tr.append( th );
+//	});
 	
 	
 	$.each( results, function( i , record ) {
@@ -340,7 +345,7 @@ ErrorCalculationManager.prototype.showResults = function( results ) {
 		tbody.append( tr );
 		
 		$.each( fieldNames, function( j , f ) {
-			var value = record.fields[ f ];
+			var value = record.fields[ j ];
 			// format only numbers with decimal points
 			var field = ( typeof value === "number" && value % 1 !== 0 ) ? formatNumber( value ) : value;
 			var td = $( "<td></td>" );

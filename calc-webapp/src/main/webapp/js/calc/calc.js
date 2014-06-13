@@ -70,7 +70,7 @@ $(document).ready(function() {
 		var sdButtons 		= $( document ).find( ".sampling-design-required" );
 		var chainButtons 	= $( document ).find( ".default-chain-completed-required" );
 		var stepsButtons 	= $( document ).find( ".calculation-steps-required" );
-	
+		
 		UI.disable( wsButtons );
 		UI.disable( aoiButtons );
 		UI.disable( sdButtons );

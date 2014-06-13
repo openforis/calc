@@ -98,17 +98,7 @@ CalculationStepEditManager.prototype.init = function( callback ) {
 				$this.currentCalculationStep = response;
 				$this.updateForm();
 				
-				// disable all type buttons
-				UI.disable( $this.rScriptButton.button );
-				UI.disable( $this.equationButton.button );
-				UI.disable( $this.categoryButton.button );
-				
-				UI.disable( $this.addVariableModal.triggerButton );
-				UI.disable( $this.addCategoryModal.triggerButton );
-				
-				$this.$entityCombo.disable();
-				$this.$variableCombo.disable();
-				$this.categoryCombo.disable();
+				$this.lockForm();
 			});
 		} else {
 			// default settings
@@ -116,6 +106,23 @@ CalculationStepEditManager.prototype.init = function( callback ) {
 		}
 
 	});
+};
+
+/**
+ * This functions disable the input fields when it's in the edit step (not add)
+ */
+CalculationStepEditManager.prototype.lockForm = function() {
+	// disable all type buttons
+	UI.disable( this.rScriptButton.button );
+	UI.disable( this.equationButton.button );
+	UI.disable( this.categoryButton.button );
+	
+	UI.disable( this.addVariableModal.triggerButton );
+	UI.disable( this.addCategoryModal.triggerButton );
+	
+	this.$entityCombo.disable();
+	this.$variableCombo.disable();
+	this.categoryCombo.disable();
 };
 	
 /**
@@ -135,6 +142,9 @@ CalculationStepEditManager.prototype.initEventHandlers = function() {
 	this.$form.find("button[type='submit']").click(function(event){
 		event.preventDefault();
 		$this.save( function(){
+			
+			$this.lockForm();
+			
 			UI.showSuccess("Saved!",true);
 		});
 	});

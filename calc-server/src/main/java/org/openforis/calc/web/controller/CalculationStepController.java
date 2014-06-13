@@ -97,7 +97,7 @@ public class CalculationStepController {
 					
 				case CATEGORY:
 					boolean varCreated = populateStepTypeCategory( form, ws, step, params );
-					if( varCreated ){
+					if( varCreated ) {
 						response.addField( "addedVariable", step.getOutputVariable() );
 					}
 					break;

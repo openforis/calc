@@ -22,6 +22,7 @@ import org.openforis.calc.persistence.jooq.tables.daos.SamplingDesignDao;
 import org.openforis.calc.persistence.jooq.tables.daos.StratumDao;
 import org.openforis.calc.persistence.jooq.tables.daos.WorkspaceDao;
 import org.openforis.calc.psql.Psql;
+import org.openforis.calc.schema.DataTable;
 import org.openforis.calc.schema.TableDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -130,6 +131,14 @@ public class SamplingDesignManager {
 			samplingDesign.setSamplingUnit(samplingUnit);
 			
 			this.insert( workspace, samplingDesign  );
+			
+			DataTable table = workspace.schemas().getDataSchema().getDataTable(samplingUnit);
+			// drop weight column if exists
+			psql.alterTable( table ).dropColumnIfExists( table.getWeightField(),true ).execute();
+			// add weight column to sammpling unit table
+			psql.alterTable( table ).addColumn( table.getWeightField() ).execute() ;
+
+			
 		}
 	}
 	

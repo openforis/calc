@@ -9,6 +9,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.openforis.calc.chain.InvalidProcessingChainException;
+import org.openforis.calc.engine.DataRecord;
 import org.openforis.calc.engine.ErrorEstimationManager;
 import org.openforis.calc.engine.ParameterHashMap;
 import org.openforis.calc.engine.Workspace;
@@ -66,7 +67,8 @@ public class ErrorCalculationController {
 
 		List<String> classes = (List<String>) parameterMap.get("classes");
 
-		return errorEstimationManager.estimateError( workspace, aoi, quantity, category, classes );
+		List<DataRecord> error = errorEstimationManager.estimateError( workspace, aoi, quantity, category, classes );
+		return error;
 	}
 
 }
