@@ -193,10 +193,9 @@ public class SamplingDesignManager {
 	@Transactional
 	public void importBackupStrata( Workspace workspace , WorkspaceBackup workspaceBackup ) {
 		List<Stratum> strata = workspaceBackup.getWorkspace().getStrata();
-		
-		workspace.setStrata( strata );
-		stratumDao.insert( workspace.getStrata() );
-		
+		for ( Stratum stratum : strata ) {
+			addStrata( workspace, stratum.getStratumNo(), stratum.getCaption() );
+		}
 	}
 	
 }

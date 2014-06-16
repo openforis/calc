@@ -346,6 +346,8 @@ SamplingDesignManager.prototype.updateSamplingDesign = function() {
 					// todo move loading info tables before edit. not necessary here
 					this.loadPhase1TableInfo();
 					
+					this.addToSdUi( "Sampling unit:<br/>" + this.samplingUnit.name );
+					
 					// view properties
 					if( this.samplingDesign.srs === true ){
 						this.addToSdUi("Srs");

@@ -35,7 +35,7 @@ $(document).ready(function() {
 	 */
 	Calc.footer 			= $( "#footer" );
 	Calc.footerHomeLinks 	= Calc.footer.find( ".links" );
-	Calc.backHomeBtn 		= Calc.footer.find( "button.back" );
+//	Calc.backHomeBtn 		= Calc.footer.find( "button.back" );
 	
 	/**
 	 * Function to be called when active workspace change
@@ -196,46 +196,48 @@ $(document).ready(function() {
 	};
 	
 	Calc.navigateToSection = function( sectionUrl ){
+		if( $homeSection ){
 		
-		Calc.pushToHistory( sectionUrl );
-		
-		$.ajax({
-			url		: sectionUrl,
-			dataType: "html",
-			data	: { "t" : new Date().getTime() }
-		}).done(function( response ) {
-			var page = $( response );
+			Calc.pushToHistory( sectionUrl );
 			
-			//hide loaded page
-			page.hide();
-			/**
-			 * hide home and shows loaded page
-			 */
-			//fade out footer links
-			Calc.footerHomeLinks.fadeOut(500);
-			//move the home section buttons out of the screen towards left
-			$homeSection.animate( {left:"-="+$(document).width()} , 1000 , 'easeInOutExpo' );
-			setTimeout( function(){
-				//hide the home section buttons
-				$homeSection.hide();
-				//append and show the loaded page to the current home section
-				Calc.section.append( page );
-				page.show();
-				//show the back home button
-				Calc.backHomeBtn.fadeIn(500);
-			},500);
-		}).error( function() {
-			Calc.error.apply( this , arguments );
-		});
+			$.ajax({
+				url		: sectionUrl,
+				dataType: "html",
+				data	: { "t" : new Date().getTime() }
+			}).done(function( response ) {
+				var page = $( response );
+				
+				//hide loaded page
+				page.hide();
+				/**
+				 * hide home and shows loaded page
+				 */
+				//fade out footer links
+				Calc.footerHomeLinks.fadeOut(500);
+				//move the home section buttons out of the screen towards left
+				$homeSection.animate( {left:"-="+$(document).width()} , 1000 , 'easeInOutExpo' );
+				setTimeout( function(){
+					//hide the home section buttons
+					$homeSection.hide();
+					//append and show the loaded page to the current home section
+					Calc.section.append( page );
+					page.show();
+					//show the back home button
+	//				Calc.backHomeBtn.fadeIn(500);
+				},500);
+			}).error( function() {
+				Calc.error.apply( this , arguments );
+			});
+		}
 	};
 	
 	$(".section-home button.btn-home, .section-home button.btn-home-plus").click( homeButtonClick );
 	
-	Calc.backHomeBtn.click( function(event){
-		event.preventDefault();
-		history.go( -1 );
+//	Calc.backHomeBtn.click( function(event){
+//		event.preventDefault();
+////		history.go( -1 );
 //		Calc.navigateToHome();
-	});
+//	});
 	
 	Calc.navigateToHome = function(){
 		var $btnSection = Calc.section.find(".page-section:nth-child(1)");
@@ -244,7 +246,7 @@ $(document).ready(function() {
 		//fade out loaded content and back button
 		var duration = 500;
 		$extSection.fadeOut(duration);
-		Calc.backHomeBtn.fadeOut(duration);
+//		Calc.backHomeBtn.fadeOut(duration);
 		//remove loaded page from the document
 		setTimeout(function(){
 			$extSection.remove();
@@ -332,6 +334,7 @@ $(document).ready(function() {
 			JobManager.getInstance().checkJobStatus();
 		});
 	
+		Calc.pushToHistory( "home" );
 	};
 	
 	init();

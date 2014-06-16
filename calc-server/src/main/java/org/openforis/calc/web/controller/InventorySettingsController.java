@@ -78,9 +78,9 @@ public class InventorySettingsController {
 	Response createEquationList( @RequestParam String filePath , @RequestParam String listName ) throws IOException {
 		Response response = new Response();
 		
-		validateEquationList( response, listName, null );
+		Workspace workspace = workspaceService.getActiveWorkspace();
+		validateEquationList( response, workspace , listName, null );
 		if( !response.hasErrors() ) {
-			Workspace workspace = workspaceService.getActiveWorkspace();
 			equationManager.createFromCsv( workspace, filePath, listName );
 			response.addField("equationLists", workspace.getEquationLists());
 		}
@@ -92,9 +92,9 @@ public class InventorySettingsController {
 	public @ResponseBody 
 	Response updateEquationList( @PathVariable long listId,  @RequestParam String filePath , @RequestParam String listName ) throws IOException {
 		Response response = new Response();
-		validateEquationList( response, listName, listId );
+		Workspace workspace = workspaceService.getActiveWorkspace();
+		validateEquationList( response, workspace , listName, listId );
 		if( !response.hasErrors() ) {
-			Workspace workspace = workspaceService.getActiveWorkspace();
 			equationManager.updateFromCsv(workspace, filePath, listName, listId);
 			response.addField("equationLists", workspace.getEquationLists());
 		}
@@ -102,8 +102,8 @@ public class InventorySettingsController {
 		return response;
 	} 
 	
-	private void validateEquationList( Response response , String listName , Long listId ){
-		boolean unique = equationManager.isNameUnique( listName, listId );
+	private void validateEquationList( Response response , Workspace workspace, String listName , Long listId ){
+		boolean unique = equationManager.isNameUnique( workspace, listName, listId );
 		if( unique ) {
 			response.setStatusOk();
 		} else {

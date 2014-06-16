@@ -23,6 +23,7 @@ import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceBackup;
 import org.openforis.calc.persistence.jooq.Sequences;
 import org.openforis.calc.persistence.jooq.Tables;
+import org.openforis.calc.persistence.jooq.tables.EquationListTable;
 import org.openforis.calc.persistence.jooq.tables.daos.EquationDao;
 import org.openforis.calc.persistence.jooq.tables.daos.EquationListDao;
 import org.openforis.calc.psql.Psql;
@@ -141,12 +142,17 @@ public class EquationManager {
 		workspace.setEquationLists( list );
 	}
 
-	public boolean isNameUnique( String listName , Long listId ) {
+	public boolean isNameUnique( Workspace workspace , String listName , Long listId ) {
+		EquationListTable T = Tables.EQUATION_LIST;
+
 		SelectQuery<Record> select = psql.selectQuery();
-		select.addFrom( Tables.EQUATION_LIST );
-		select.addConditions( Tables.EQUATION_LIST.NAME.eq(listName) );
+		select.addFrom( T );
+		
+		select.addConditions( T.NAME.eq(listName) );
+		select.addConditions( T.WORKSPACE_ID.eq(workspace.getId()) );
+		
 		if( listId != null ) {
-			select.addConditions( Tables.EQUATION_LIST.ID.notEqual( listId ) );	
+			select.addConditions( T.ID.notEqual( listId ) );	
 		}
 		
 		Result<Record> result = select.fetch();
