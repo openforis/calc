@@ -196,7 +196,8 @@ $(document).ready(function() {
 	};
 	
 	Calc.navigateToSection = function( sectionUrl ){
-		if( $homeSection ){
+		// not accessing the page directly with section in the url
+		if( typeof $homeSection !== 'undefined' ){
 		
 			Calc.pushToHistory( sectionUrl );
 			
