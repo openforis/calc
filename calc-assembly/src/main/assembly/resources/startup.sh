@@ -12,6 +12,4 @@ if [ ! $JRE_HOME ]; then
 	echo and define JRE_HOME environment variable
 else 
 	./tomcat/bin/startup.sh
-	echo "Opening Calc on default web browser"
-	sensible-browser http://localhost:8080/calc
 fi
