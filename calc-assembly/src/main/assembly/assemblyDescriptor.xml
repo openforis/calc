@@ -10,23 +10,7 @@
 	<includeBaseDirectory>false</includeBaseDirectory>
 	
 	<fileSets>
-	    
-		<!-- Include files from unpacked Tomcat distribution -->
-		<fileSet>
-			<directory>${project.build.directory}/apache-tomcat-${tomcat.version}</directory>
-			<outputDirectory>${output.directory}/tomcat</outputDirectory>
-			<excludes>
-				<exclude>**/webapps/ROOT/**</exclude>
-				<exclude>**/webapps/docs/**</exclude>
-				<exclude>**/webapps/examples/**</exclude>
-				<!-- exclude mondrian.properties file in Saiku webapp -->
-				<exclude>**/webapps/saiku/WEB-INF/classes/mondrian.properties</exclude>
-			</excludes>
-			<directoryMode>777</directoryMode>
-			<fileMode>777</fileMode>
-		</fileSet>
-	    
-		<!-- Include custom files -->
+	    <!-- Include custom files -->
 		<fileSet>
 			<directory>${basedir}/src/main/assembly/resources</directory>
 			<outputDirectory>${output.directory}</outputDirectory>
@@ -36,6 +20,23 @@
 			<directoryMode>777</directoryMode>
 			<fileMode>777</fileMode>
 		</fileSet>
+		
+		<!-- Include files from unpacked Tomcat distribution -->
+		<fileSet>
+			<directory>${project.build.directory}/apache-tomcat-${tomcat.version}</directory>
+			<outputDirectory>${output.directory}/tomcat</outputDirectory>
+			<excludes>
+				<exclude>**/webapps/ROOT/**</exclude>
+				<exclude>**/webapps/docs/**</exclude>
+				<exclude>**/webapps/examples/**</exclude>
+				<!-- exclude mondrian.properties file in Saiku webapp -->
+<!-- 				<exclude>**/webapps/saiku/WEB-INF/classes/mondrian.properties</exclude> -->
+<!-- 				<exclude>**/webapps/saiku/WEB-INF/users.properties</exclude> -->
+			</excludes>
+			<directoryMode>777</directoryMode>
+			<fileMode>777</fileMode>
+		</fileSet>
+	    
 	</fileSets>
 	
 	<dependencySets>
