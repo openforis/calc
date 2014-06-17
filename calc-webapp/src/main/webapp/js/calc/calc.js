@@ -35,7 +35,7 @@ $(document).ready(function() {
 	 */
 	Calc.footer 			= $( "#footer" );
 	Calc.footerHomeLinks 	= Calc.footer.find( ".links" );
-//	Calc.backHomeBtn 		= Calc.footer.find( "button.back" );
+	Calc.backHomeBtn 		= Calc.footer.find( "button.back" );
 	
 	/**
 	 * Function to be called when active workspace change
@@ -224,7 +224,7 @@ $(document).ready(function() {
 					Calc.section.append( page );
 					page.show();
 					//show the back home button
-	//				Calc.backHomeBtn.fadeIn(500);
+					Calc.backHomeBtn.fadeIn(500);
 				},500);
 			}).error( function() {
 				Calc.error.apply( this , arguments );
@@ -234,11 +234,11 @@ $(document).ready(function() {
 	
 	$(".section-home button.btn-home, .section-home button.btn-home-plus").click( homeButtonClick );
 	
-//	Calc.backHomeBtn.click( function(event){
-//		event.preventDefault();
-////		history.go( -1 );
+	Calc.backHomeBtn.click( function(event){
+		event.preventDefault();
+		history.go( -1 );
 //		Calc.navigateToHome();
-//	});
+	});
 	
 	Calc.navigateToHome = function(){
 		var $btnSection = Calc.section.find(".page-section:nth-child(1)");
@@ -247,7 +247,7 @@ $(document).ready(function() {
 		//fade out loaded content and back button
 		var duration = 500;
 		$extSection.fadeOut(duration);
-//		Calc.backHomeBtn.fadeOut(duration);
+		Calc.backHomeBtn.fadeOut(duration);
 		//remove loaded page from the document
 		setTimeout(function(){
 			$extSection.remove();
