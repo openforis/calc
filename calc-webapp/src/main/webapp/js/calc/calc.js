@@ -149,17 +149,17 @@ $(document).ready(function() {
 			
 			var onAnimationComplete = function(){
 				//remove scrollbar when animation ends
-				$container.css('overflow','hidden');
+				$container.css( 'overflow' , 'hidden' );
 				//make siblings invisible (block focus of hidden sections)
 				Calc.section.siblings().invisible();
 			};
 			//scroll to the current section offset
-			$container.stop().animate({scrollTop: scrollTop}, 800, "easeOutQuart", onAnimationComplete);
+			$container.stop().animate( {scrollTop: scrollTop}, 700, "easeOutQuart", onAnimationComplete );
 		} else {
 			//scroll to the current section offset
-			$container.css('overflow','auto');
+			$container.css( 'overflow' , 'auto' );
 			$container[0].scrollTop = scrollTop;
-			$container.css('overflow','hidden');
+			$container.css( 'overflow' , 'hidden' );
 		}
 	};
 
@@ -335,7 +335,19 @@ $(document).ready(function() {
 			JobManager.getInstance().checkJobStatus();
 		});
 	
+//		console.log( location );
+//		var section = location.hash.replace( "#" , "" );
+//		var indexOfQuestionMark = section.indexOf("?");
+//		if( indexOfQuestionMark > 0 ){
+//			section = section.substring( 0 , indexOfQuestionMark );
+//		}
+//		console.log( section );
+//		var btn = $( "[href='"+section+"']" );
+//		console.log( btn );
+		
 		Calc.pushToHistory( "home" );
+		
+//		console.log( $.url(location.) )
 	};
 	
 	init();

@@ -52,6 +52,14 @@ public class VirtualCube {
 		cubeUsages.add( new CubeUsage(this.childCube.getName()) );
 	}
 	
+	public Cube getChildCube() {
+		return childCube;
+	}
+	
+	public Cube getSamplingUnitCube() {
+		return samplingUnitCube;
+	}
+	
 	private void initVirtualCubeDimensions() {
 		this.virtualCubeDimensions = new ArrayList<VirtualCube.VirtualCubeDimension>();
 		

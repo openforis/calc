@@ -258,7 +258,7 @@ CalculationStepEditManager.prototype.save = function( successCallback, errorCall
 		}
 	);
 };
-	
+
 /**
  * Save the calculation step form only if it has changed, else calls the callback synchronously
  */

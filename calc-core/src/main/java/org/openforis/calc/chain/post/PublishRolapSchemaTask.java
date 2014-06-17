@@ -36,6 +36,9 @@ import org.openforis.calc.mondrian.Hierarchy.Level;
 import org.openforis.calc.mondrian.Schema;
 import org.openforis.calc.mondrian.Schema.Cube;
 import org.openforis.calc.mondrian.Schema.Cube.Measure;
+import org.openforis.calc.mondrian.Schema.Role;
+import org.openforis.calc.mondrian.Schema.Role.SchemaGrant;
+import org.openforis.calc.mondrian.Schema.Role.SchemaGrant.CubeGrant;
 import org.openforis.calc.mondrian.Schema.VirtualCube;
 import org.openforis.calc.mondrian.Schema.VirtualCube.CubeUsages;
 import org.openforis.calc.mondrian.Schema.VirtualCube.CubeUsages.CubeUsage;
@@ -66,6 +69,9 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class PublishRolapSchemaTask extends Task {
 
+	private static final String ROLE_ADMIN = "ROLE_ADMIN" ;
+	private static final String ROLE_USER = "ROLE_USER" ;
+	
 	@Autowired
 	private Saiku saiku;
 	
@@ -74,6 +80,11 @@ public class PublishRolapSchemaTask extends Task {
 	}
 
 	@Override
+	protected long countTotalItems() {
+		return 8;
+	}
+	
+	@Override
 	protected void execute() throws Throwable {
 		
 		Workspace workspace = getWorkspace();
@@ -81,24 +92,71 @@ public class PublishRolapSchemaTask extends Task {
 
 		// create schema
 		Schema schema = createSchema(rolapSchema.getName());
-
+		incrementItemsProcessed();
+		
 		// create aoi dimensions
 		createAoiDimensions(rolapSchema, schema);
-
+		incrementItemsProcessed();
+		
 		// create stratum dimension
 		createStratumDimension(rolapSchema, schema);
-
+		incrementItemsProcessed();
+		
 		// create shared dimensions
 		createSharedDimensions(rolapSchema, schema);
-
+		incrementItemsProcessed();
+		
 		// create cubes for each fact table
 		createCubes(rolapSchema, schema);
-
+		incrementItemsProcessed();
+		
 		// create virtual cubes
 		createVirtualCubes(rolapSchema, schema);
+		incrementItemsProcessed();
+		
+		// create roles
+		createRoles( rolapSchema , schema );
+		incrementItemsProcessed();
 		
 		// publish schema
 		this.saiku.publishSchema(workspace, schema);
+		incrementItemsProcessed();
+	}
+
+	private void createRoles( RolapSchema rolapSchema , Schema schema ) {
+		// TODO Auto-generated method stub
+		List<Role> roles = schema.getRole();
+		
+		// add admin role
+		Role admin = createRole( ROLE_ADMIN );
+		roles.add( admin  );
+		
+		// add role user
+		Role user = createRole( ROLE_USER );
+		
+		SchemaGrant schemaGrant = user.getSchemaGrant().get(0);
+		Collection<org.openforis.calc.schema.VirtualCube> virtualCubes = rolapSchema.getVirtualCubes();
+		for ( org.openforis.calc.schema.VirtualCube virtualCube : virtualCubes ) {
+			
+			CubeGrant cubeGrant = new CubeGrant();
+			cubeGrant.setCube( virtualCube.getChildCube().getName() );
+			cubeGrant.setAccess( "none" );
+			
+			schemaGrant.getCubeGrant().add( cubeGrant );
+		}
+		roles.add( user );
+		
+	}
+
+	private Role createRole( String roleName ) {
+		Role role = new Role();
+		role.setName( roleName );
+		
+		SchemaGrant schemaGrant = new SchemaGrant();
+		schemaGrant.setAccess( "all" );
+		role.getSchemaGrant().add( schemaGrant );
+		
+		return role;
 	}
 
 	private void createCubes(RolapSchema rolapSchema, Schema schema) {
@@ -120,7 +178,7 @@ public class PublishRolapSchemaTask extends Task {
 		}
 	}
 
-	private void createVirtualCubes(RolapSchema rolapSchema, Schema schema) {
+	private void createVirtualCubes( RolapSchema rolapSchema, Schema schema ){
 		for ( org.openforis.calc.schema.VirtualCube calcCube : rolapSchema.getVirtualCubes() ) {
 			VirtualCube virtualCube = createVirtualCube( calcCube.getName() );
 			schema.getVirtualCube().add( virtualCube );
@@ -150,7 +208,7 @@ public class PublishRolapSchemaTask extends Task {
 		}
 	}
 	
-	private void createCubeMembers(org.openforis.calc.schema.Cube rolapCube, Cube cube) {
+	private void createCubeMembers( org.openforis.calc.schema.Cube rolapCube, Cube cube ){
 		// add stratum dimension usage
 		StratumDimension stratumDimension = rolapCube.getStratumDimension();
 		if( stratumDimension != null ) {
@@ -205,8 +263,8 @@ public class PublishRolapSchemaTask extends Task {
 			}
 
 			for ( org.openforis.calc.schema.Cube.AggLevel aggLevel : aggName.getAggLevels() ) {
-				AggLevel aggL = createAggLevel(aggLevel.getHierarchy(), aggLevel.getName(), aggLevel.getColumn());
-				aggTable.getAggLevel().add(aggL);
+				AggLevel aggL = createAggLevel( aggLevel.getHierarchy(), aggLevel.getName(), aggLevel.getColumn() );
+				aggTable.getAggLevel().add( aggL );
 			}
 			approxRowCnt += 100;
 		}
