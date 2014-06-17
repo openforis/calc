@@ -116,7 +116,7 @@ public class DataController {
 		Response response = new Response();
 		
 		if( tableDataDao.exists(schema, table) ) {
-			long count = tableDataDao.count(schema, table);
+			long count = tableDataDao.count( schema, table );
 			response.addField("count", count);
 			
 			JSONArray result = tableDataDao.info(schema, table);

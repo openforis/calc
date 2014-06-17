@@ -69,6 +69,7 @@ public class TableDao extends AbstractJooqDao {
 			.from( T )
 			.where( T.TABLE_SCHEMA.eq(schema)
 			.and( T.TABLE_NAME.eq(table) ) )
+			.orderBy( T.COLUMN_NAME )
 			.fetch();
 		
 		JSONArray array = new  JSONArray();

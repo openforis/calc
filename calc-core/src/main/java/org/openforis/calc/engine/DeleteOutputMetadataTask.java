@@ -52,8 +52,8 @@ public class DeleteOutputMetadataTask extends Task {
 		incrementItemsProcessed();
 		
 		// delete sampling design
-		samplingDesignManager.deleteSamplingDesign( workspace );
 		samplingDesignManager.deletePhase1Table( workspace );
+		samplingDesignManager.deleteSamplingDesign( workspace );
 		incrementItemsProcessed();
 		
 		samplingDesignManager.deleteStrata(workspace);

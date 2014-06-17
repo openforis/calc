@@ -3,7 +3,7 @@
  * constructor gets schema and table in order to send the requests
  * @author Mino Togna
  */
-TableDataProvider = function (schema, table) {
+TableDataProvider = function ( schema, table ){
 	// base context path for rest call
 	this.contextPath = "rest/data";
 	this.schema = schema;

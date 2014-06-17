@@ -55,11 +55,10 @@ public final class CalculateExpansionFactorsTask extends Task {
 		for ( AoiLevel aoiLevel : hierarchy.getLevels() ) {
 			ExpansionFactorTable expf = schema.getExpansionFactorTable( aoiLevel );
 
+			// create expf table
 			if (samplingDesign.getTwoPhases()) {
-				// create expf table
 				createExpfTable2phases( expf );
 			} else {
-				// TODO and TOTEST
 				createExpfTable1phase( expf);
 			}
 			
@@ -118,10 +117,11 @@ public final class CalculateExpansionFactorsTask extends Task {
 				Field<String> leftField = phase1Table.getVarcharField(leftColumn.getColumn());				
 				Field<String> rightField = (Field<String>)samplingUnitView.field(rightJoin.getColumn());
 				
+				Condition joinCondition = leftField.eq( rightField );
 				if( conditions == null ) {
-					conditions = leftField.eq( rightField );
+					conditions = joinCondition;
 				} else {
-					conditions = conditions.and( leftField.eq( rightField) );
+					conditions = conditions.and( joinCondition );
 				}
 			}
 			selectWeight.addJoin(phase1Table, JoinType.RIGHT_OUTER_JOIN, conditions);
@@ -174,7 +174,6 @@ public final class CalculateExpansionFactorsTask extends Task {
 		UpdateWithStep updateWith = psql().updateWith( cursor, update, joinCondition );
 		updateWith.execute();
 			
-//		System.out.println( updateWith.toString() );
 	}
 
 	@SuppressWarnings("unchecked")
@@ -190,13 +189,12 @@ public final class CalculateExpansionFactorsTask extends Task {
 		Field<Long> aoiIdField = dataAoiTable.getAoiIdField(aoiLevel);
 		Field<BigDecimal> aoiAreaField = dataAoiTable.getAoiAreaField(aoiLevel);
 		
-		
 		// select totals for aoi
 		Select<?> selectTotals = psql()
 			.select( dataView.getIdField().count() , aoiIdField )
 			.from( dataView )
 			.join( dataAoiTable )
-			.on( dataView.getIdField().eq(aoiIdField) )
+			.on( dataView.getIdField().eq( dataAoiTable.getIdField() ) )
 			.groupBy( aoiIdField );
 		Table<?> totals = selectTotals.asTable( "totals" );
 //		
@@ -232,11 +230,11 @@ public final class CalculateExpansionFactorsTask extends Task {
 //        ( count(p.id) / total.count::double precision ) * a._administrative_unit_level_1_area as area
 		
 		psql()
-			.dropTableIfExists(expf)
+			.dropTableIfExists( expf )
 			.execute();
 		
 		psql()
-			.createTable(expf)
+			.createTable( expf )
 			.as( select )
 			.execute();
 			
@@ -244,7 +242,7 @@ public final class CalculateExpansionFactorsTask extends Task {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void createExpfTable2phases(ExpansionFactorTable expf) {
+	private void createExpfTable2phases( ExpansionFactorTable expf ){
 		DynamicTable<Record> phase1Table = new DynamicTable<Record>( getWorkspace().getPhase1PlotTable(), "calc" );
 		Phase1AoiTable phase1AoiTable = getInputSchema().getPhase1AoiTable();
 		AoiLevel aoiLevel = expf.getAoiLevel();
@@ -259,7 +257,7 @@ public final class CalculateExpansionFactorsTask extends Task {
 			.select( phase1Table.getIdField().count() , aoiIdField )
 			.from( phase1Table )
 			.join( phase1AoiTable )
-			.on( phase1Table.getIdField().eq(aoiIdField) )
+			.on( phase1Table.getIdField().eq( phase1AoiTable.getIdField() ) )
 			.groupBy( aoiIdField );
 		Table<?> totals = selectTotals.asTable( "totals" );
 		
@@ -273,7 +271,7 @@ public final class CalculateExpansionFactorsTask extends Task {
 		select.addJoin( phase1AoiTable, phase1Table.getIdField().eq(phase1AoiTable.getIdField()) );
 		select.addGroupBy( aoiIdField );
 		
-		if( stratified ) {
+		if( stratified ){
 			ColumnJoin stratumJoin = getSamplingDesign().getStratumJoin();
 			
 			Field<Integer> stratumField = phase1Table.getIntegerField(stratumJoin.getColumn());

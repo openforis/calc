@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -349,8 +350,8 @@ public class Entity extends EntityBase {
 	 * @return 
 	 */
 	@JsonIgnore
-	public List<QuantitativeVariable> getDefaultProcessingChainQuantitativeOutputVariables() {
-		List<QuantitativeVariable> variables = new ArrayList<QuantitativeVariable>();
+	public Collection<QuantitativeVariable> getDefaultProcessingChainQuantitativeOutputVariables() {
+		Set<QuantitativeVariable> variables = new HashSet<QuantitativeVariable>();
 		
 		ProcessingChain processingChain = getWorkspace().getDefaultProcessingChain();
 		List<CalculationStep> steps = processingChain.getCalculationSteps();
@@ -375,8 +376,8 @@ public class Entity extends EntityBase {
 	}
 	
 	@JsonIgnore
-	public List<MultiwayVariable> getDefaultProcessingChainCategoricalOutputVariables() {
-		List<MultiwayVariable> variables = new ArrayList<MultiwayVariable>();
+	public Collection<MultiwayVariable> getDefaultProcessingChainCategoricalOutputVariables() {
+		Set<MultiwayVariable> variables = new HashSet<MultiwayVariable>();
 		
 		ProcessingChain processingChain = getWorkspace().getDefaultProcessingChain();
 		List<CalculationStep> steps = processingChain.getCalculationSteps();

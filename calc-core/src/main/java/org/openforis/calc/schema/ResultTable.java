@@ -2,7 +2,6 @@ package org.openforis.calc.schema;
 
 import java.math.BigDecimal;
 import java.util.Collection;
-import java.util.List;
 
 import org.jooq.Record;
 import org.jooq.TableField;
@@ -38,7 +37,7 @@ public class ResultTable extends DataTable {
 	}
 	
 	private void createCategoryFields() {
-		List<MultiwayVariable> categoricalVariables = getEntity().getDefaultProcessingChainCategoricalOutputVariables();
+		Collection<MultiwayVariable> categoricalVariables = getEntity().getDefaultProcessingChainCategoricalOutputVariables();
 		for (CategoricalVariable<?> variable : categoricalVariables) {
 			createCategoryIdField( (MultiwayVariable) variable, variable.getInputCategoryIdColumn());
 			createCategoryValueField( (MultiwayVariable) variable, variable.getOutputValueColumn() );

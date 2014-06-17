@@ -112,9 +112,9 @@ SamplingDesignManager.prototype.init = function(){
 		this.samplingDesign.twoPhases = false;
 		this.phase1Manager.hide();
 		
-		this.stratifiedBtn.deselect();
-		this.clusterBtn.deselect();
-		this.samplingDesign.aoiJoinSettings = {};
+//		this.stratifiedBtn.deselect();
+//		this.clusterBtn.deselect();
+//		this.samplingDesign.aoiJoinSettings = {};
 	}, this) );
 	
 	//stratified
@@ -310,6 +310,7 @@ SamplingDesignManager.prototype.validateStep5 = function(){
 	}
 	return valid;
 };
+
 /**
  * Validate weight script 
  */
@@ -346,7 +347,7 @@ SamplingDesignManager.prototype.updateSamplingDesign = function() {
 					// todo move loading info tables before edit. not necessary here
 					this.loadPhase1TableInfo();
 					
-					this.addToSdUi( "Sampling unit:<br/>" + this.samplingUnit.name );
+					this.addToSdUi( "Sampling unit<br/>" + this.samplingUnit.name );
 					
 					// view properties
 					if( this.samplingDesign.srs === true ){
@@ -431,8 +432,6 @@ SamplingDesignManager.prototype.updateEditView = function(){
 	}
 	
 	this.aoiJoinManager.show();
-	
-	
 };
 
 SamplingDesignManager.prototype.addToSdUi = function(text) {
@@ -467,16 +466,13 @@ SamplingDesignManager.prototype.loadPhase1TableInfo = function(callback){
 	var $this  = this;
 	WorkspaceManager.getInstance().activeWorkspace(function(ws){
 		if( ws.phase1PlotTable ) {
-			
-			new TableDataProvider("calc" , ws.phase1PlotTable ).tableInfo( function(response) {
+			new TableDataProvider( "calc" , ws.phase1PlotTable ).tableInfo( function(response) {
 				$this.phase1TableInfo = response;
-				if(callback){
+				if( callback ){
 					callback();
 				}
-				
-			} );
-			
-		} 
+			});
+		}
 	});
 };
 
@@ -484,13 +480,13 @@ SamplingDesignManager.prototype.loadPhase1TableInfo = function(callback){
  * Save current sampling design for the current workspace
  */
 SamplingDesignManager.prototype.saveSamplingDesign = function(){
-	
+	var $this = this;
 	var validate = this[ "validateStep" + this.stepMax ] ;
 	if( !validate || $.proxy(validate, this)() ){
 		
 		WorkspaceManager.getInstance().activeWorkspaceSetSamplingDesign( this.samplingDesign, $.proxy( function(ws){
-			this.updateSamplingDesign();
 			JobManager.getInstance().checkJobStatus(function(){
+				$this.updateSamplingDesign();
 				Calc.updateButtonStatus();
 			});
 		} , this) );
