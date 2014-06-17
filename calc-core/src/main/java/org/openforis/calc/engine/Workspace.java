@@ -484,6 +484,11 @@ public class Workspace extends WorkspaceBase {
 	}
 
 	@JsonIgnore
+	public boolean has2PhasesSamplingDesign() {
+		return this.hasSamplingDesign() && getSamplingDesign().getTwoPhases();
+	}
+	
+	@JsonIgnore
 	public List<Variable<?>> getVariables() {
 		List<Variable<?>> variables = new ArrayList<Variable<?>>();
 		List<Entity> entities = getEntities();

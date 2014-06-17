@@ -97,6 +97,12 @@ public class SamplingDesignManager {
 		if( workspace.hasSamplingDesign() ){
 			samplingDesignDao.delete( workspace.getSamplingDesign() );
 			workspace.setSamplingDesign( null );
+		}
+	}
+	
+	@Transactional
+	public void deletePhase1Table( Workspace workspace ) {
+		if( workspace.has2PhasesSamplingDesign() ){
 			
 			// remove phase 1 data if there is
 			DynamicTable<?> phase1Table = new DynamicTable<Record>( workspace.getPhase1PlotTableName(), CalcSchema.CALC.getName() );
@@ -109,6 +115,7 @@ public class SamplingDesignManager {
 			workspace.setPhase1PlotTable( null );
 			workspaceDao.update( workspace );
 		}
+		
 	}
 	
 	@Transactional
