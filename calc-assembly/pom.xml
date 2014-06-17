@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>org.openforis.calc</groupId>
 		<artifactId>calc</artifactId>
-		<version>1.0-a7-SNAPSHOT</version>
+		<version>1.0-a7</version>
 	</parent>
 	<artifactId>calc-assembly</artifactId>
 	<packaging>pom</packaging>
