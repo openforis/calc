@@ -24,6 +24,6 @@ if "%JRE_HOME%"=="" (
 	pause
 ) else (
 	set JRE_HOME
-	cd tomcat/bin
+	cd install_directory/calc-server/tomcat/bin
 	shutdown.bat
 )

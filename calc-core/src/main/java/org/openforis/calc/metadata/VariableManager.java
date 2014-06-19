@@ -14,9 +14,11 @@ import org.jooq.Result;
 import org.jooq.SelectLimitStep;
 import org.json.simple.JSONObject;
 import org.openforis.calc.chain.CalculationStep;
+import org.openforis.calc.chain.CalculationStepCategoryClassParameters;
 import org.openforis.calc.engine.ParameterMap;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceBackup;
+import org.openforis.calc.metadata.CategoryLevel.CategoryLevelValue;
 import org.openforis.calc.metadata.Variable.Scale;
 import org.openforis.calc.persistence.jooq.Sequences;
 import org.openforis.calc.persistence.jooq.Tables;
@@ -37,6 +39,9 @@ public class VariableManager {
 	
 	@Autowired
 	private VariableDao variableDao;
+	
+	@Autowired
+	private CategoryManager categoryManager;
 	
 	@Autowired
 	private Psql psql;
@@ -162,8 +167,7 @@ public class VariableManager {
 		
 		Workspace workspaceToImport = workspaceBackup.getWorkspace();
 		
-		List<CalculationStep> calculationSteps = workspaceToImport.getDefaultProcessingChain().getCalculationSteps();
-		
+		// import new variables
 		Collection<Variable<?>> userDefinedVariables = workspaceToImport.getUserDefinedVariables();
 		for ( Variable<?> variable : userDefinedVariables ) {
 			
@@ -184,6 +188,7 @@ public class VariableManager {
 			variableIds.put( variableId , variable.getId() );
 		}
 		
+		List<CalculationStep> calculationSteps = workspaceToImport.getDefaultProcessingChain().getCalculationSteps();
 		// replace variable references of calculation steps
 		for ( CalculationStep calculationStep : calculationSteps ) {
 			
@@ -203,17 +208,44 @@ public class VariableManager {
 					param.setInteger( "variableId" , newVarId );
 				}
 				
+				replaceOutputVariableId(workspace, variableIds, calculationStep);
+				
+				break;
 			case SCRIPT:
+				replaceOutputVariableId(workspace, variableIds, calculationStep);
+				break;
 			case CATEGORY:
-				Integer oldVariableId =  calculationStep.getOutputVariableId() ;
-				Integer variableId = variableIds.get( oldVariableId );
-				Variable<?> outputVariable = workspace.getVariableById( variableId );
-				calculationStep.setOutputVariable( outputVariable );
+				
+				replaceOutputVariableId(workspace, variableIds, calculationStep);
+				
+				Integer categoryId = calculationStep.getParameters().getInteger( "categoryId" );
+				Category category = workspace.getCategoryById( categoryId );
+				CategoryLevel level = category.getDefaultLevel();
+
+				// replace category class ids in calculation steps
+				List<CalculationStepCategoryClassParameters> categoryClassParameters = calculationStep.getCategoryClassParameters();
+				for ( CalculationStepCategoryClassParameters classParameters : categoryClassParameters ) {
+					String classCode = classParameters.getClassCode();
+					
+					CategoryLevelValue levelValue = categoryManager.loadCategoryLevelValue( level, classCode );
+					
+					classParameters.setClassId( levelValue.getId().intValue() );
+					
+					Integer variableId = variableIds.get( classParameters.getVariableId() );
+					classParameters.setVariableId( variableId );
+				}
 				break;
 			default:
 				break;
 			}
 		}
+	}
+
+	private void replaceOutputVariableId( Workspace workspace , Map<Integer, Integer> variableIds , CalculationStep calculationStep ) {
+		Integer oldVariableId =  calculationStep.getOutputVariableId() ;
+		Integer variableId = variableIds.get( oldVariableId );
+		Variable<?> outputVariable = workspace.getVariableById( variableId );
+		calculationStep.setOutputVariable( outputVariable );
 	}
 	
 }

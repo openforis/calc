@@ -6,4 +6,5 @@ else
 	echo "Using JRE_HOME $JRE_HOME" 
 fi
 
-./tomcat/bin/shutdown.sh
+cd install_directory/calc-server/tomcat/bin
+./shutdown.sh

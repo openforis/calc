@@ -329,20 +329,21 @@ public class CategoryManager {
 						Integer stepCategoryId = calculationStep.getParameters().getInteger( "categoryId" );
 						
 						if( stepCategoryId.equals(oldCategoryId) ){
+							// replace category id parameter
 							calculationStep.getParameters().setInteger( "categoryId" , newCategoryId );
-
-							// replace category class ids in calculation steps
-							List<CalculationStepCategoryClassParameters> categoryClassParameters = calculationStep.getCategoryClassParameters();
-							for ( CalculationStepCategoryClassParameters classParameters : categoryClassParameters ) {
-								String classCode = classParameters.getClassCode();
-								
-								CategoryLevelValue levelValue = this.loadCategoryLevelValue( level, classCode );
-								classParameters.setClassId( levelValue.getId().intValue() );
-								
-								Integer variableOriginalId = workspaceBackup.getVariableOriginalIds().get( classParameters.getVariableId() );
-								Variable<?> variable = workspace.getVariableByOriginalId( variableOriginalId );
-								classParameters.setVariableId( variable.getId() );
-							}
+//
+//							// replace category class ids in calculation steps
+//							List<CalculationStepCategoryClassParameters> categoryClassParameters = calculationStep.getCategoryClassParameters();
+//							for ( CalculationStepCategoryClassParameters classParameters : categoryClassParameters ) {
+//								String classCode = classParameters.getClassCode();
+//								
+//								CategoryLevelValue levelValue = this.loadCategoryLevelValue( level, classCode );
+//								classParameters.setClassId( levelValue.getId().intValue() );
+//								
+//								Integer variableOriginalId = workspaceBackup.getVariableOriginalIds().get( classParameters.getVariableId() );
+//								Variable<?> variable = workspace.getVariableByOriginalId( variableOriginalId );
+//								classParameters.setVariableId( variable.getId() );
+//							}
 						}
 					}
 				}

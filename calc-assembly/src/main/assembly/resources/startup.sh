@@ -11,5 +11,6 @@ if [ ! $JRE_HOME ]; then
 	echo Please make sure you have Java Runtime Environment installed
 	echo and define JRE_HOME environment variable
 else 
-	./tomcat/bin/startup.sh
+	cd install_directory/calc-server/tomcat/bin
+	./startup.sh
 fi

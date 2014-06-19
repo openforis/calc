@@ -23,7 +23,8 @@ if "%JRE_HOME%"=="" (
 	echo     System Properties / Enviromnent Variables / System variables
 	pause
 ) else (
-	set JRE_HOME
-	cd tomcat/bin
+	set JRE_HOME 
+	./startup.sh
+	cd install_directory/calc-server/tomcat/bin
 	startup.bat
 )

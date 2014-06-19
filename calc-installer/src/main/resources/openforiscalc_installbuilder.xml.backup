@@ -1,0 +1,209 @@
+<project>
+    <shortName>openforiscalc</shortName>
+    <fullName>Open Foris Calc</fullName>
+    <version>1.0</version>
+    <readmeFile>../../../../README</readmeFile>
+    <licenseFile>../../../../License.txt</licenseFile>
+    <leftImage>img/left-side.png</leftImage>
+    <logoImage>../../../../calc-webapp/src/main/webapp/img/of-logo-small.png</logoImage>
+    <componentList>
+        <component>
+            <name>default</name>
+            <description>Default Component</description>
+            <canBeEdited>1</canBeEdited>
+            <selected>1</selected>
+            <show>1</show>
+            <desktopShortcutList>
+                <fileShortcut>
+                    <comment></comment>
+                    <filePath>${installdir}/calc-server/startup.sh</filePath>
+                    <icon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo.png</icon>
+                    <name>Startup Open Foris Calc</name>
+                    <platforms>linux</platforms>
+                    <runAsAdmin>0</runAsAdmin>
+                    <runInTerminal>0</runInTerminal>
+                    <windowsIcon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo.png</windowsIcon>
+                </fileShortcut>
+                <fileShortcut>
+                    <comment>Shutdown Open Foris Calc server</comment>
+                    <filePath>${installdir}/calc-server/shutdown.sh</filePath>
+                    <icon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo.png</icon>
+                    <name>Shutdown Open Foris Calc</name>
+                    <platforms>linux</platforms>
+                    <runAsAdmin>0</runAsAdmin>
+                    <runInTerminal>0</runInTerminal>
+                    <windowsIcon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo.png</windowsIcon>
+                </fileShortcut>
+            </desktopShortcutList>
+            <folderList>
+                <folder>
+                    <description>Program Files</description>
+                    <destination>${installdir}</destination>
+                    <name>programfiles</name>
+                    <platforms>all</platforms>
+                    <distributionFileList>
+                        <distributionFile>
+                            <origin>../../../../calc-assembly/target/calc-server.zip</origin>
+                        </distributionFile>
+                    </distributionFileList>
+                    <shortcutList>
+                        <shortcut>
+                            <comment>Uninstall</comment>
+                            <exec>${installdir}/${uninstallerName}</exec>
+                            <icon></icon>
+                            <name>Uninstall ${product_fullname}</name>
+                            <path>${installdir}</path>
+                            <platforms>all</platforms>
+                            <runAsAdmin>0</runAsAdmin>
+                            <runInTerminal>0</runInTerminal>
+                            <windowsExec>${installdir}/${uninstallerName}.exe</windowsExec>
+                            <windowsExecArgs></windowsExecArgs>
+                            <windowsIcon></windowsIcon>
+                            <windowsPath>${installdir}</windowsPath>
+                        </shortcut>
+                    </shortcutList>
+                </folder>
+                <folder>
+                    <description>Program Files</description>
+                    <destination>${installdir}</destination>
+                    <name>programfileslinux</name>
+                    <platforms>linux</platforms>
+                </folder>
+                <folder>
+                    <description>Program Files</description>
+                    <destination>${installdir}</destination>
+                    <name>programfileswindows</name>
+                    <platforms>windows</platforms>
+                </folder>
+                <folder>
+                    <description>Program Files</description>
+                    <destination>${installdir}</destination>
+                    <name>programfilesosx</name>
+                    <platforms>osx</platforms>
+                </folder>
+            </folderList>
+            <startMenuShortcutList>
+                <startMenuShortcut>
+                    <comment>Uninstall ${product_fullname}</comment>
+                    <name>Uninstall ${product_fullname}</name>
+                    <runAsAdmin>0</runAsAdmin>
+                    <runInTerminal>0</runInTerminal>
+                    <windowsExec>${installdir}/${uninstallerName}.exe</windowsExec>
+                    <windowsExecArgs></windowsExecArgs>
+                    <windowsIcon></windowsIcon>
+                    <windowsPath>${installdir}/</windowsPath>
+                </startMenuShortcut>
+                <startMenuShortcut>
+                    <comment>Startup Open Foris Calc Server</comment>
+                    <name>Startup OF Calc</name>
+                    <runAsAdmin>0</runAsAdmin>
+                    <runInTerminal>0</runInTerminal>
+                    <windowsExec>${installdir}/calc-server/startup.cmd</windowsExec>
+                    <windowsExecArgs></windowsExecArgs>
+                    <windowsIcon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo.png</windowsIcon>
+                    <windowsPath></windowsPath>
+                </startMenuShortcut>
+                <startMenuFileShortcut>
+                    <comment>Shutdown Open Foris Calc Server</comment>
+                    <filePath>${installdir}/calc-server/shutdown.cmd</filePath>
+                    <name>Shutdown OF Calc</name>
+                    <runAsAdmin>0</runAsAdmin>
+                    <runInTerminal>0</runInTerminal>
+                    <windowsIcon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo.png</windowsIcon>
+                </startMenuFileShortcut>
+            </startMenuShortcutList>
+        </component>
+        <include>
+            <file>JDK1.7/java.xml</file>
+        </include>
+    </componentList>
+    <postInstallationActionList>
+        <unzip>
+            <destinationDirectory>${installdir}</destinationDirectory>
+            <zipFile>${installdir}/calc-server.zip</zipFile>
+        </unzip>
+        <substitute>
+            <files>${installdir}/calc-server/startup.sh</files>
+            <type>exact</type>
+            <substitutionList>
+                <substitution>
+                    <pattern>install_directory</pattern>
+                    <value>${installdir}</value>
+                </substitution>
+            </substitutionList>
+        </substitute>
+        <substitute>
+            <files>${installdir}/calc-server/shutdown.sh</files>
+            <type>exact</type>
+            <substitutionList>
+                <substitution>
+                    <pattern>install_directory</pattern>
+                    <value>${installdir}</value>
+                </substitution>
+            </substitutionList>
+        </substitute>
+        <substitute>
+            <files>${installdir}/calc-server/startup.cmd</files>
+            <type>exact</type>
+            <substitutionList>
+                <substitution>
+                    <pattern>install_directory</pattern>
+                    <value>${installdir}</value>
+                </substitution>
+            </substitutionList>
+        </substitute>
+        <substitute>
+            <files>${installdir}/calc-server/shutdown.cmd</files>
+            <type>exact</type>
+            <substitutionList>
+                <substitution>
+                    <pattern>install_directory</pattern>
+                    <value>${installdir}</value>
+                </substitution>
+            </substitutionList>
+        </substitute>
+        <addEnvironmentVariable>
+            <name>JAVA_HOME</name>
+            <scope>system</scope>
+            <value>${installdir}/java</value>
+        </addEnvironmentVariable>
+        <addEnvironmentVariable>
+            <name>R_HOME</name>
+            <scope>system</scope>
+            <value>${r_install_dir}</value>
+        </addEnvironmentVariable>
+    </postInstallationActionList>
+    <compressionAlgorithm>lzma-ultra</compressionAlgorithm>
+    <enableRollback>1</enableRollback>
+    <enableTimestamp>1</enableTimestamp>
+    <saveRelativePaths>1</saveRelativePaths>
+    <vendor>Open Foris</vendor>
+    <parameterList>
+        <directoryParameter>
+            <name>installdir</name>
+            <description>Installer.Parameter.installdir.description</description>
+            <explanation>Installer.Parameter.installdir.explanation</explanation>
+            <value></value>
+            <default>${platform_install_prefix}/${product_shortname}-${product_version}</default>
+            <allowEmptyValue>0</allowEmptyValue>
+            <ask>yes</ask>
+            <cliOptionName>prefix</cliOptionName>
+            <mustBeWritable>yes</mustBeWritable>
+            <mustExist>0</mustExist>
+            <width>30</width>
+        </directoryParameter>
+        <directoryParameter>
+            <name>r_install_dir</name>
+            <title>Please select your R installation directory</title>
+            <description></description>
+            <explanation></explanation>
+            <value></value>
+            <default></default>
+            <allowEmptyValue>0</allowEmptyValue>
+            <mustBeWritable>0</mustBeWritable>
+            <mustExist>1</mustExist>
+            <width>40</width>
+        </directoryParameter>
+    </parameterList>
+</project>
+

@@ -57,4 +57,11 @@ public class Category extends CategoryBase {
 	public boolean isUserDefined() {
 		return getOriginalId() == null;
 	}
+
+	@JsonIgnore
+	public CategoryLevel getDefaultLevel() {
+		CategoryHierarchy hierarchy = getHierarchies().get(0);
+		CategoryLevel level = hierarchy.getLevels().get(0);
+		return level;
+	}
 }

@@ -14,7 +14,7 @@
 		<tomcat.version>7.0.47</tomcat.version>
 		<saiku.version>2.5</saiku.version>
 		<output.directory>calc-server</output.directory>
-		<output.finalName>calc-server-${project.version}</output.finalName>
+		<output.finalName>calc-server</output.finalName>
 	</properties>
 
 	<dependencies>
