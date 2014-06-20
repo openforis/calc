@@ -19,7 +19,6 @@ import org.jooq.util.postgres.information_schema.tables.Schemata;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.openforis.calc.chain.CalculationStep;
-import org.openforis.calc.chain.CalculationStepCategoryClassParameters;
 import org.openforis.calc.chain.CalculationStep.Type;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceBackup;

@@ -10,7 +10,7 @@ getPackages <- function(packs){
 
 downloadPackages <- function( packages ){
 
-  download.packages( packages, destdir="packages/linux" );
+  download.packages( packages, destdir="./R-linux" );
   
 };
 

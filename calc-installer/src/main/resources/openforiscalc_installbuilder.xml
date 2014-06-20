@@ -18,8 +18,8 @@
                     <comment></comment>
                     <filePath>${installdir}/calc-server/startup.sh</filePath>
                     <icon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo.png</icon>
-                    <name>Startup Open Foris Calc</name>
-                    <platforms>linux</platforms>
+                    <name>StartupOpenForisCalc</name>
+                    <platforms>all</platforms>
                     <runAsAdmin>0</runAsAdmin>
                     <runInTerminal>0</runInTerminal>
                     <windowsIcon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo.png</windowsIcon>
@@ -28,8 +28,8 @@
                     <comment>Shutdown Open Foris Calc server</comment>
                     <filePath>${installdir}/calc-server/shutdown.sh</filePath>
                     <icon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo.png</icon>
-                    <name>Shutdown Open Foris Calc</name>
-                    <platforms>linux</platforms>
+                    <name>ShutdownOpenForisCalc</name>
+                    <platforms>all</platforms>
                     <runAsAdmin>0</runAsAdmin>
                     <runInTerminal>0</runInTerminal>
                     <windowsIcon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo.png</windowsIcon>
@@ -68,18 +68,39 @@
                     <destination>${installdir}</destination>
                     <name>programfileslinux</name>
                     <platforms>linux</platforms>
+                    <distributionFileList>
+                        <distributionDirectory>
+                            <origin>R/R-linux</origin>
+                        </distributionDirectory>
+                        <distributionFile>
+                            <origin>change_file_permissions.sh</origin>
+                        </distributionFile>
+                    </distributionFileList>
                 </folder>
                 <folder>
                     <description>Program Files</description>
                     <destination>${installdir}</destination>
                     <name>programfileswindows</name>
                     <platforms>windows</platforms>
+                    <distributionFileList>
+                        <distributionDirectory>
+                            <origin>R/R-windows</origin>
+                        </distributionDirectory>
+                    </distributionFileList>
                 </folder>
                 <folder>
                     <description>Program Files</description>
                     <destination>${installdir}</destination>
                     <name>programfilesosx</name>
                     <platforms>osx</platforms>
+                    <distributionFileList>
+                        <distributionDirectory>
+                            <origin>R/R-mac</origin>
+                        </distributionDirectory>
+                        <distributionFile>
+                            <origin>change_file_permissions.sh</origin>
+                        </distributionFile>
+                    </distributionFileList>
                 </folder>
             </folderList>
             <startMenuShortcutList>
@@ -111,19 +132,33 @@
                     <runInTerminal>0</runInTerminal>
                     <windowsIcon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo.png</windowsIcon>
                 </startMenuFileShortcut>
+                <startMenuLinkShortcut>
+                    <comment></comment>
+                    <name>Open OFCalc in browser </name>
+                    <runAsAdmin>0</runAsAdmin>
+                    <runInTerminal>0</runInTerminal>
+                    <url>http://localhost:8080/calc</url>
+                    <windowsIcon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo.png</windowsIcon>
+                </startMenuLinkShortcut>
             </startMenuShortcutList>
         </component>
         <include>
             <file>JDK1.7/java.xml</file>
         </include>
     </componentList>
+    <preInstallationActionList>
+        <setInstallerVariable>
+            <name>installdir</name>
+            <value>${env(SYSTEMDRIVE)}/opt/${product_shortname}-${product_version}</value>
+        </setInstallerVariable>
+    </preInstallationActionList>
     <postInstallationActionList>
         <unzip>
             <destinationDirectory>${installdir}</destinationDirectory>
             <zipFile>${installdir}/calc-server.zip</zipFile>
         </unzip>
         <substitute>
-            <files>${installdir}/calc-server/startup.sh</files>
+            <files>${installdir}/calc-server/startup.sh;${installdir}/calc-server/shutdown.sh;${installdir}/calc-server/startup.cmd;${installdir}/calc-server/shutdown.cmd;${installdir}/R-linux/install.R;${installdir}/R-mac/install.R;${installdir}/R-windows/install.R;${installdir}/change_file_permissions.sh;</files>
             <type>exact</type>
             <substitutionList>
                 <substitution>
@@ -133,32 +168,12 @@
             </substitutionList>
         </substitute>
         <substitute>
-            <files>${installdir}/calc-server/shutdown.sh</files>
+            <files>${installdir}/R-windows/install.R;</files>
             <type>exact</type>
             <substitutionList>
                 <substitution>
-                    <pattern>install_directory</pattern>
-                    <value>${installdir}</value>
-                </substitution>
-            </substitutionList>
-        </substitute>
-        <substitute>
-            <files>${installdir}/calc-server/startup.cmd</files>
-            <type>exact</type>
-            <substitutionList>
-                <substitution>
-                    <pattern>install_directory</pattern>
-                    <value>${installdir}</value>
-                </substitution>
-            </substitutionList>
-        </substitute>
-        <substitute>
-            <files>${installdir}/calc-server/shutdown.cmd</files>
-            <type>exact</type>
-            <substitutionList>
-                <substitution>
-                    <pattern>install_directory</pattern>
-                    <value>${installdir}</value>
+                    <pattern>\</pattern>
+                    <value>/</value>
                 </substitution>
             </substitutionList>
         </substitute>
@@ -166,16 +181,103 @@
             <name>JAVA_HOME</name>
             <scope>system</scope>
             <value>${installdir}/java</value>
+            <ruleList>
+                <platformTest>
+                    <negate>1</negate>
+                    <type>windows</type>
+                </platformTest>
+            </ruleList>
+        </addEnvironmentVariable>
+        <addEnvironmentVariable>
+            <name>JAVA_HOME</name>
+            <scope>system</scope>
+            <value>${installdir}\java</value>
+            <ruleList>
+                <platformTest>
+                    <type>windows</type>
+                </platformTest>
+            </ruleList>
         </addEnvironmentVariable>
         <addEnvironmentVariable>
             <name>R_HOME</name>
             <scope>system</scope>
             <value>${r_install_dir}</value>
         </addEnvironmentVariable>
+        <addEnvironmentVariable>
+            <name>PATH</name>
+            <scope>system</scope>
+            <value>%PATH%;%JAVA_HOME%\bin;%R_HOME%\bin;%R_HOME%\bin\i386;%R_HOME%\library\rJava\jri;%JAVA_HOME%\jre\bin\server;</value>
+            <ruleList>
+                <platformTest>
+                    <type>windows-x86</type>
+                </platformTest>
+            </ruleList>
+        </addEnvironmentVariable>
+        <addEnvironmentVariable>
+            <name>PATH</name>
+            <scope>system</scope>
+            <value>%PATH%;%JAVA_HOME%\bin;%R_HOME%\bin;%R_HOME%\bin\x64;%R_HOME%\library\rJava\jri\x64;%JAVA_HOME%\jre\bin\server;</value>
+            <ruleList>
+                <platformTest>
+                    <type>windows-x64</type>
+                </platformTest>
+            </ruleList>
+        </addEnvironmentVariable>
+        <runProgram>
+            <program>${installdir}/R-linux/install.sh</program>
+            <programArguments></programArguments>
+            <progressText>Installing required R packages</progressText>
+            <useMSDOSPath>0</useMSDOSPath>
+            <workingDirectory>${installdir}/R-linux/</workingDirectory>
+            <ruleList>
+                <platformTest>
+                    <type>linux</type>
+                </platformTest>
+            </ruleList>
+        </runProgram>
+        <runProgram>
+            <program>${installdir}/R-mac/install.sh</program>
+            <programArguments></programArguments>
+            <progressText>Installing required R packages</progressText>
+            <useMSDOSPath>0</useMSDOSPath>
+            <workingDirectory>${installdir}/R-mac/</workingDirectory>
+            <ruleList>
+                <platformTest>
+                    <type>osx</type>
+                </platformTest>
+            </ruleList>
+        </runProgram>
+        <runProgram>
+            <program>${installdir}/R-windows/install.cmd</program>
+            <programArguments>${installdir}/R-windows/</programArguments>
+            <progressText>Installing required R packages</progressText>
+            <ruleList>
+                <platformTest>
+                    <type>windows</type>
+                </platformTest>
+            </ruleList>
+        </runProgram>
+        <runProgram>
+            <program>${installdir}/change_file_permissions.sh</program>
+            <programArguments></programArguments>
+            <progressText>Changing file permissions</progressText>
+            <ruleList>
+                <platformTest>
+                    <negate>1</negate>
+                    <type>windows</type>
+                </platformTest>
+            </ruleList>
+        </runProgram>
     </postInstallationActionList>
+    <postUninstallationActionList>
+        <deleteFile>
+            <path>${installdir}/calc-server</path>
+        </deleteFile>
+    </postUninstallationActionList>
     <compressionAlgorithm>lzma-ultra</compressionAlgorithm>
     <enableRollback>1</enableRollback>
     <enableTimestamp>1</enableTimestamp>
+    <requireInstallationByRootUser>1</requireInstallationByRootUser>
     <saveRelativePaths>1</saveRelativePaths>
     <vendor>Open Foris</vendor>
     <parameterList>
@@ -198,7 +300,7 @@
             <description></description>
             <explanation></explanation>
             <value></value>
-            <default></default>
+            <default>${env(R_HOME)}</default>
             <allowEmptyValue>0</allowEmptyValue>
             <mustBeWritable>0</mustBeWritable>
             <mustExist>1</mustExist>

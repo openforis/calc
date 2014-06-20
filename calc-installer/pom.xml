@@ -1,7 +1,5 @@
-<project 
-	xmlns="http://maven.apache.org/POM/4.0.0" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">	
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -9,12 +7,38 @@
 		<artifactId>calc</artifactId>
 		<version>1.0-a8-SNAPSHOT</version>
 	</parent>
-	
+
 	<artifactId>calc-installer</artifactId>
 	<packaging>pom</packaging>
 
 	<name>Open Foris Calc Installer</name>
 	<description>Module to create the installer for Open Foris Calc</description>
-	
-	
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.1</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<executable>/opt/installbuilder-9.0.1/bin/builder</executable>
+<!-- 					<executable>${installbuilder-home}/bin/builder</executable> -->
+					<arguments>
+						<argument>build</argument>
+						<argument>${basedir}/src/main/resources/openforiscalc_installbuilder.xml</argument>
+<!-- 						<argument>windows-x86;windows-x64;linux-x86;linux-x64</argument> -->
+						<argument>windows-x86</argument>
+					</arguments>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
 </project>
