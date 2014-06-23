@@ -1,7 +1,7 @@
 <project>
     <shortName>openforiscalc</shortName>
     <fullName>Open Foris Calc</fullName>
-    <version>1.0</version>
+    <version>PROJECT_VERSION</version>
     <readmeFile>../../../../README</readmeFile>
     <licenseFile>../../../../License.txt</licenseFile>
     <leftImage>img/left-side.png</leftImage>
@@ -19,7 +19,7 @@
                     <filePath>${installdir}/calc-server/startup.sh</filePath>
                     <icon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo.png</icon>
                     <name>StartupOpenForisCalc</name>
-                    <platforms>all</platforms>
+                    <platforms>linux</platforms>
                     <runAsAdmin>0</runAsAdmin>
                     <runInTerminal>0</runInTerminal>
                     <windowsIcon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo.png</windowsIcon>
@@ -29,7 +29,7 @@
                     <filePath>${installdir}/calc-server/shutdown.sh</filePath>
                     <icon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo.png</icon>
                     <name>ShutdownOpenForisCalc</name>
-                    <platforms>all</platforms>
+                    <platforms>linux</platforms>
                     <runAsAdmin>0</runAsAdmin>
                     <runInTerminal>0</runInTerminal>
                     <windowsIcon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo.png</windowsIcon>
@@ -111,7 +111,7 @@
                     <runInTerminal>0</runInTerminal>
                     <windowsExec>${installdir}/${uninstallerName}.exe</windowsExec>
                     <windowsExecArgs></windowsExecArgs>
-                    <windowsIcon></windowsIcon>
+                    <windowsIcon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo-small-ico.ico</windowsIcon>
                     <windowsPath>${installdir}/</windowsPath>
                 </startMenuShortcut>
                 <startMenuShortcut>
@@ -121,7 +121,7 @@
                     <runInTerminal>0</runInTerminal>
                     <windowsExec>${installdir}/calc-server/startup.cmd</windowsExec>
                     <windowsExecArgs></windowsExecArgs>
-                    <windowsIcon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo.png</windowsIcon>
+                    <windowsIcon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo.png${installdir}/calc-server/tomcat/webapps/calc/img/of-logo-small-ico.ico</windowsIcon>
                     <windowsPath></windowsPath>
                 </startMenuShortcut>
                 <startMenuFileShortcut>
@@ -130,15 +130,15 @@
                     <name>Shutdown OF Calc</name>
                     <runAsAdmin>0</runAsAdmin>
                     <runInTerminal>0</runInTerminal>
-                    <windowsIcon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo.png</windowsIcon>
+                    <windowsIcon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo.png${installdir}/calc-server/tomcat/webapps/calc/img/of-logo-small-ico.ico</windowsIcon>
                 </startMenuFileShortcut>
                 <startMenuLinkShortcut>
                     <comment></comment>
-                    <name>Open Open Foris Calc</name>
+                    <name>Open OFCalc in browser </name>
                     <runAsAdmin>0</runAsAdmin>
                     <runInTerminal>0</runInTerminal>
                     <url>http://localhost:8080/calc</url>
-                    <windowsIcon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo.png</windowsIcon>
+                    <windowsIcon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo.png${installdir}/calc-server/tomcat/webapps/calc/img/of-logo-small-ico.ico</windowsIcon>
                 </startMenuLinkShortcut>
             </startMenuShortcutList>
         </component>
@@ -273,11 +273,15 @@
         <deleteFile>
             <path>${installdir}/calc-server</path>
         </deleteFile>
+        <deleteFile>
+            <path>${project.rollbackBackupDirectory}</path>
+        </deleteFile>
     </postUninstallationActionList>
     <compressionAlgorithm>lzma-ultra</compressionAlgorithm>
     <enableRollback>1</enableRollback>
     <enableTimestamp>1</enableTimestamp>
     <requireInstallationByRootUser>1</requireInstallationByRootUser>
+    <rollbackBackupDirectory>${system_temp_directory}/${product_shortname}/backup</rollbackBackupDirectory>
     <saveRelativePaths>1</saveRelativePaths>
     <vendor>Open Foris</vendor>
     <parameterList>

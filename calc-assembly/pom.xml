@@ -17,38 +17,6 @@
 		<output.finalName>calc-server</output.finalName>
 	</properties>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.openforis.calc</groupId>
-			<artifactId>calc-webapp</artifactId>
-			<type>war</type>
-		</dependency>
-		<dependency>
-			<groupId>commons-dbcp</groupId>
-			<artifactId>commons-dbcp</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>commons-pool</groupId>
-			<artifactId>commons-pool</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>meteorite.bi</groupId>
-			<artifactId>saiku-webapp</artifactId>
-			<version>${saiku.version}</version>
-			<type>war</type>
-		</dependency>
-		<dependency>
-			<groupId>meteorite.bi</groupId>
-			<artifactId>saiku-ui</artifactId>
-			<version>${saiku.version}</version>
-			<type>war</type>
-		</dependency>
-	</dependencies>
-
 	<profiles>
 		<profile>
 			<id>assembly</id>
@@ -112,4 +80,37 @@
 			</build>
 		</profile>
 	</profiles>
+	
+	<dependencies>
+		<dependency>
+			<groupId>org.openforis.calc</groupId>
+			<artifactId>calc-webapp</artifactId>
+			<type>war</type>
+		</dependency>
+		<dependency>
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-pool</groupId>
+			<artifactId>commons-pool</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>meteorite.bi</groupId>
+			<artifactId>saiku-webapp</artifactId>
+			<version>${saiku.version}</version>
+			<type>war</type>
+		</dependency>
+		<dependency>
+			<groupId>meteorite.bi</groupId>
+			<artifactId>saiku-ui</artifactId>
+			<version>${saiku.version}</version>
+			<type>war</type>
+		</dependency>
+	</dependencies>
+	
 </project>

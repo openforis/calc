@@ -1,7 +1,7 @@
 <project>
     <shortName>openforiscalc</shortName>
     <fullName>Open Foris Calc</fullName>
-    <version>PROJECT_VERSION</version>
+    <version>1.0-a8-SNAPSHOT</version>
     <readmeFile>../../../../README</readmeFile>
     <licenseFile>../../../../License.txt</licenseFile>
     <leftImage>img/left-side.png</leftImage>
