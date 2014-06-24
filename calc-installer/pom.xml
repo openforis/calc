@@ -24,8 +24,6 @@
 		<windows-installer-file-name>openforiscalc-${project.version}-windows-installer.exe</windows-installer-file-name>
 	</properties>
 	
-	
-	
 	<profiles>
 		<profile>
 			<id>assembly</id>
@@ -57,24 +55,6 @@
 								</configuration>
 							</execution>
 						
-<!-- 							<execution> -->
-<!-- 								<id>copy-installers</id> -->
-<!-- 								<phase>package</phase> -->
-<!-- 								<goals> -->
-<!-- 									<goal>copy-resources</goal> -->
-<!-- 								</goals> -->
-<!-- 								<configuration> -->
-<!-- 									<outputDirectory>${project.build.directory}</outputDirectory> -->
-<!-- 									<resources> -->
-<!-- 										<resource> -->
-<!-- 											<directory>${installbuilder-home}/output</directory> -->
-<!-- 											<includes> -->
-<!-- 								                <include>openforiscalc-${project.version}-windows-installer.exe</include> -->
-<!-- 								            </includes> -->
-<!-- 										</resource> -->
-<!-- 									</resources> -->
-<!-- 								</configuration> -->
-<!-- 							</execution> -->
 						</executions>
 					</plugin>
 					

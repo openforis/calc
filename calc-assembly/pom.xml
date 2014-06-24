@@ -22,6 +22,8 @@
 			<id>assembly</id>
 			<build>
 				<plugins>
+				
+					<!-- 1. unpack tomcat -->
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-dependency-plugin</artifactId>
@@ -56,6 +58,86 @@
 							</execution>
 						</executions>
 					</plugin>
+					
+					<!-- 2. replace default tomcat ports -->
+					<plugin>
+						<groupId>com.google.code.maven-replacer-plugin</groupId>
+						<artifactId>maven-replacer-plugin</artifactId>
+						<version>1.4.0</version>
+						<executions>
+							<execution>
+								<id>replace-1</id>
+								<phase>package</phase>
+								<goals>
+									<goal>replace</goal>
+								</goals>
+								<configuration>
+									<includes>
+										<include>target/apache-tomcat-${tomcat.version}/conf/server.xml</include>
+									</includes>
+									<regex>false</regex>
+									<!-- the name of the token to replace -->
+									<token>8005</token>
+									<!-- replace it with the Maven project version -->
+									<value>8006</value>
+								</configuration>
+							</execution>
+							<execution>
+								<id>replace-2</id>
+								<phase>package</phase>
+								<goals>
+									<goal>replace</goal>
+								</goals>
+								<configuration>
+									<includes>
+										<include>target/apache-tomcat-${tomcat.version}/conf/server.xml</include>
+									</includes>
+									<regex>false</regex>
+									<!-- the name of the token to replace -->
+									<token>8080</token>
+									<!-- replace it with the Maven project version -->
+									<value>8081</value>
+								</configuration>
+							</execution>
+							<execution>
+								<id>replace-3</id>
+								<phase>package</phase>
+								<goals>
+									<goal>replace</goal>
+								</goals>
+								<configuration>
+									<includes>
+										<include>target/apache-tomcat-${tomcat.version}/conf/server.xml</include>
+									</includes>
+									<regex>false</regex>
+									<!-- the name of the token to replace -->
+									<token>8443</token>
+									<!-- replace it with the Maven project version -->
+									<value>8444</value>
+								</configuration>
+							</execution>
+							<execution>
+								<id>replace-4</id>
+								<phase>package</phase>
+								<goals>
+									<goal>replace</goal>
+								</goals>
+								<configuration>
+									<includes>
+										<include>target/apache-tomcat-${tomcat.version}/conf/server.xml</include>
+									</includes>
+									<regex>false</regex>
+									<!-- the name of the token to replace -->
+									<token>8009</token>
+									<!-- replace it with the Maven project version -->
+									<value>8010</value>
+								</configuration>
+							</execution>
+						</executions>
+						
+					</plugin>
+					
+					<!-- 3. prepare the assembly file -->
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-assembly-plugin</artifactId>

@@ -121,7 +121,7 @@
                     <runInTerminal>0</runInTerminal>
                     <windowsExec>${installdir}/calc-server/startup.cmd</windowsExec>
                     <windowsExecArgs></windowsExecArgs>
-                    <windowsIcon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo.png${installdir}/calc-server/tomcat/webapps/calc/img/of-logo-small-ico.ico</windowsIcon>
+                    <windowsIcon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo-small-ico.ico</windowsIcon>
                     <windowsPath></windowsPath>
                 </startMenuShortcut>
                 <startMenuFileShortcut>
@@ -130,7 +130,7 @@
                     <name>Shutdown OF Calc</name>
                     <runAsAdmin>0</runAsAdmin>
                     <runInTerminal>0</runInTerminal>
-                    <windowsIcon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo.png${installdir}/calc-server/tomcat/webapps/calc/img/of-logo-small-ico.ico</windowsIcon>
+                    <windowsIcon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo-small-ico.ico</windowsIcon>
                 </startMenuFileShortcut>
                 <startMenuLinkShortcut>
                     <comment></comment>
@@ -138,7 +138,7 @@
                     <runAsAdmin>0</runAsAdmin>
                     <runInTerminal>0</runInTerminal>
                     <url>http://localhost:8080/calc</url>
-                    <windowsIcon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo.png${installdir}/calc-server/tomcat/webapps/calc/img/of-logo-small-ico.ico</windowsIcon>
+                    <windowsIcon>${installdir}/calc-server/tomcat/webapps/calc/img/browser.ico</windowsIcon>
                 </startMenuLinkShortcut>
             </startMenuShortcutList>
         </component>
