@@ -6,6 +6,7 @@ package org.openforis.calc.collect;
 import java.io.File;
 import java.io.IOException;
 import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
 
 import org.apache.commons.io.IOUtils;
 import org.jooq.Configuration;
@@ -47,7 +48,8 @@ public class CollectDataImportTask extends Task {
 		CollectSurvey survey = ((CollectSurveyImportJob) getJob()).getSurvey();
 		BackupDataExtractor recordExtractor = null;
 		try {
-			recordExtractor = new BackupDataExtractor(survey, dataFile, step);
+			ZipFile zipFile = new ZipFile(dataFile);
+			recordExtractor = new BackupDataExtractor(survey, zipFile, step);
 			recordExtractor.init();
 			totalRecords += recordExtractor.countRecords();
 		} catch (Exception e) {
@@ -75,7 +77,8 @@ public class CollectDataImportTask extends Task {
 		CollectSurvey survey = ((CollectSurveyImportJob) getJob()).getSurvey();
 		BackupDataExtractor recordExtractor = null;
 		try {
-			recordExtractor = new BackupDataExtractor(survey, dataFile, step);
+			ZipFile zipFile = new ZipFile(dataFile);
+			recordExtractor = new BackupDataExtractor(survey, zipFile, step);
 			recordExtractor.init();
 			ParseRecordResult parseRecordResult = recordExtractor.nextRecord();
 			while ( parseRecordResult != null ) {
