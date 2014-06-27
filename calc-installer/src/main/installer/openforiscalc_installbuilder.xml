@@ -137,7 +137,7 @@
                     <name>Open OFCalc in browser </name>
                     <runAsAdmin>0</runAsAdmin>
                     <runInTerminal>0</runInTerminal>
-                    <url>http://localhost:8080/calc</url>
+                    <url>http://localhost:8081/calc</url>
                     <windowsIcon>${installdir}/calc-server/tomcat/webapps/calc/img/browser.ico</windowsIcon>
                 </startMenuLinkShortcut>
             </startMenuShortcutList>

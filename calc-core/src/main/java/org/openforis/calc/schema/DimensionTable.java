@@ -7,6 +7,7 @@ import static org.openforis.calc.psql.Psql.DOUBLE_PRECISION;
 import java.math.BigDecimal;
 
 import org.jooq.Record;
+import org.jooq.Schema;
 import org.jooq.TableField;
 import org.jooq.UniqueKey;
 
@@ -30,7 +31,7 @@ public class DimensionTable extends AbstractTable {
 
 	private UniqueKey<Record> primaryKey;
 
-	DimensionTable(String name, RelationalSchema schema) {
+	DimensionTable(String name, Schema schema) {
 		super(name, schema);
 
 		// initFields();

@@ -88,6 +88,10 @@ public class EquationManager {
 		for ( FlatRecord record = csvReader.nextRecord(); record != null; record = csvReader.nextRecord() ) {
 			String code = record.getValue( 0, String.class );
 			String equationString = record.getValue( 1, String.class );
+			// don't know why NA is considered null?!?!?
+			if( equationString == null ){
+				equationString = "NA";
+			}
 			String condition = record.getValue( 2, String.class );
 			
 			Equation equation = new Equation();

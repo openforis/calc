@@ -12,7 +12,6 @@ import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.VariableManager;
 import org.openforis.calc.schema.CategoryDimensionTable;
-import org.openforis.calc.schema.Schemas;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -52,20 +51,17 @@ public class VariableController {
 		Workspace workspace = workspaceService.getActiveWorkspace();
 		Variable<?> variable = workspace.getVariableById( variableId );
 		if( variable instanceof MultiwayVariable ) {
-
-			CategoryDimensionTable table = new Schemas( workspace ).getDataSchema().getCategoryDimensionTable( (MultiwayVariable) variable );
-			if( table != null ){
+			CategoryDimensionTable table = new CategoryDimensionTable( (MultiwayVariable) variable );
 				
-				boolean readCategories = true;			
-				if( max != null ) {
-					long count = variableManager.countCategoryClasses( table );
-					readCategories = count <= max;
-				}
-				
-				if( readCategories ) {
-					List<JSONObject> categories = variableManager.getCategoryClasses( table );
-					response.addField( "categories", categories );
-				}
+			boolean readCategories = true;
+			if( max != null ) {
+				long count = variableManager.countCategoryClasses( table );
+				readCategories = count <= max;
+			}
+			
+			if( readCategories ) {
+				List<JSONObject> categories = variableManager.getCategoryClasses( table );
+				response.addField( "categories", categories );
 			}
 			
 		} else {
