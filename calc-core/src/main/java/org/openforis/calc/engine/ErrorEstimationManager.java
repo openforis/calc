@@ -23,7 +23,6 @@ import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.psql.Psql;
-import org.openforis.calc.r.CheckError;
 import org.openforis.calc.r.DbConnect;
 import org.openforis.calc.r.R;
 import org.openforis.calc.r.REnvironment;
@@ -32,7 +31,6 @@ import org.openforis.calc.r.RLogger;
 import org.openforis.calc.r.RLogger.RLoggerLine;
 import org.openforis.calc.r.RScript;
 import org.openforis.calc.r.RVariable;
-import org.openforis.calc.r.SetValue;
 import org.openforis.calc.schema.DataSchema;
 import org.openforis.calc.schema.DataTable;
 import org.openforis.calc.schema.EntityAoiTable;
@@ -248,13 +246,18 @@ public class ErrorEstimationManager {
 	}
 	
 	protected String scriptsToString( List<RScript> scripts, RVariable connection ) {
-		RVariable result = r().variable( "errorResult" );
-		SetValue setValue = r().setValue(result, r().rTry(scripts.toArray(new RScript[scripts.size()])));
-		CheckError checkError = r().checkError(result, connection);
-		
 		StringBuilder sb = new StringBuilder();
-		sb.append(setValue.toString());
-		sb.append(checkError);
+		
+		for ( RScript rScript : scripts ) {
+			sb.append(rScript.toString());
+		}
+		
+//		RVariable result = r().variable( "errorResult" );
+//		SetValue setValue = r().setValue(result, r().rTry(scripts.toArray(new RScript[scripts.size()])));
+//		CheckError checkError = r().checkError(result, connection);
+		
+//		sb.append(setValue.toString());
+//		sb.append(checkError);
 		return sb.toString();
 	}
 }
