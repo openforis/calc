@@ -21,9 +21,9 @@
 		<installbuilder-file-name>openforiscalc_installbuilder.xml</installbuilder-file-name>
 		
 		<!-- installer file names -->
-		<windows-installer-file-name>openforiscalc-${project.version}-windows-installer.exe</windows-installer-file-name>
-		<linux-installer-file-name>openforiscalc-${project.version}-linux-installer.run</linux-installer-file-name>
-		<osx-installer-file-name>openforiscalc-${project.version}-osx-installer.run</osx-installer-file-name>	
+		<windows-installer-file-name>OpenForisCalc-${project.version}-windows-installer.exe</windows-installer-file-name>
+		<linux-installer-file-name>OpenForisCalc-${project.version}-linux-installer.run</linux-installer-file-name>
+		<osx-installer-file-name>OpenForisCalc-${project.version}-osx-installer.run</osx-installer-file-name>	
 	</properties>
 	
 	<profiles>
