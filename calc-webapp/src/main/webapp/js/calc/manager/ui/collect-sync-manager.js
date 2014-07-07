@@ -34,7 +34,7 @@ CollectSyncManager.prototype.init = function () {
 		} else {
 			var errors = response.errors;
 			var message = UI.Form.getFieldErrorMessage(errors);
-			UI.showError(message, true);
+			UI.showError(message);
 		}
 	};
 	//form file upload manager

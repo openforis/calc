@@ -31,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping(value = "/rest/collect")
 public class CollectDataController {
 
+	private static final String COLLECT_BACKUP_FILE_EXTENSION = "collect";
 	private static final String TEMP_FILE_PREFIX = "collect";
 	private static final String TEMP_FILE_SUFFIX = "metadata.zip";
 	private static final String ZIP = "zip";
@@ -94,12 +95,14 @@ public class CollectDataController {
 		String fileName = file.getOriginalFilename();
 		String extension = FilenameUtils.getExtension(fileName);
 		String contentType = file.getContentType();
-		boolean valid = ZIP.equalsIgnoreCase(extension) && ( ZIP_CONTENT_TYPE.equals(contentType) || ZIP_COMPRESSED_CONTENT_TYPE.equals(contentType) );
+		boolean valid = (
+				ZIP.equalsIgnoreCase(extension) && ( ZIP_CONTENT_TYPE.equals(contentType) || ZIP_COMPRESSED_CONTENT_TYPE.equals(contentType) )) ||
+				COLLECT_BACKUP_FILE_EXTENSION.equalsIgnoreCase(extension);
 		if ( valid ) {
 			return true;
 		} else {
 			response.setStatusError();
-			response.addError(new ObjectError("fileFormat", "Only valid Collect backup file is expected, found: " + extension));
+			response.addError(new ObjectError("fileFormat", "Only valid Collect backup file is expected.\nExpected file extensions are .zip or .collect but " + extension + " was found."));
 			return false;
 		}
 	}
