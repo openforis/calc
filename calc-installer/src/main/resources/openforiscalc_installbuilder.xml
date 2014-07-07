@@ -53,6 +53,9 @@
                         <distributionFile>
                             <origin>../../../../calc-assembly/target/calc-server.zip</origin>
                         </distributionFile>
+                        <distributionFile>
+                            <origin>../../../../calc-control-panel/target/OpenForisCalc.jar</origin>
+                        </distributionFile>
                     </distributionFileList>
                     <shortcutList>
                         <shortcut>
@@ -122,48 +125,24 @@
                     <windowsIcon></windowsIcon>
                     <windowsPath>${installdir}/</windowsPath>
                 </startMenuShortcut>
-                <startMenuShortcut>
-                    <comment>Startup Open Foris Calc Server</comment>
-                    <name>Startup OF Calc</name>
-                    <runAsAdmin>0</runAsAdmin>
-                    <runInTerminal>0</runInTerminal>
-                    <windowsExec>${installdir}/calc-server/startup.cmd</windowsExec>
-                    <windowsExecArgs></windowsExecArgs>
-                    <windowsIcon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo-small-ico.ico</windowsIcon>
-                    <windowsPath></windowsPath>
-                </startMenuShortcut>
-                <startMenuShortcut>
-                    <comment>Shutdown Open Foris Calc Server</comment>
-                    <name>Shutdown OF Calc</name>
-                    <runAsAdmin>0</runAsAdmin>
-                    <runInTerminal>0</runInTerminal>
-                    <windowsExec>${installdir}/calc-server/shutdown.cmd</windowsExec>
-                    <windowsExecArgs></windowsExecArgs>
-                    <windowsIcon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo-small-ico.ico</windowsIcon>
-                    <windowsPath></windowsPath>
-                </startMenuShortcut>
-                <startMenuLinkShortcut>
-                    <comment>Open your default browser</comment>
-                    <name>Open OFCalc in browser </name>
-                    <runAsAdmin>0</runAsAdmin>
-                    <runInTerminal>0</runInTerminal>
-                    <url>http://localhost:8081/calc</url>
-                    <windowsIcon>${installdir}/calc-server/tomcat/webapps/calc/img/browser.ico</windowsIcon>
-                </startMenuLinkShortcut>
             </startMenuShortcutList>
         </component>
-
-	<include>
-            <file>JDK1.7/java.xml</file>
+        <include>
+            <file>java.xml</file>
         </include>
     </componentList>
     <preInstallationActionList>
         <setInstallerVariable>
             <name>installdir</name>
-            <value>${env(SYSTEMDRIVE)}/opt/${product_shortname}/${product_version}</value>
+            <value>${env(SYSTEMDRIVE)}/opt/${product_shortname}-${product_version}</value>
         </setInstallerVariable>
     </preInstallationActionList>
     <postInstallationActionList>
+        <addEnvironmentVariable>
+            <name>CALC_HOME</name>
+            <scope>system</scope>
+            <value>${installdir}</value>
+        </addEnvironmentVariable>
         <unzip>
             <destinationDirectory>${installdir}</destinationDirectory>
             <zipFile>${installdir}/calc-server.zip</zipFile>
@@ -219,7 +198,6 @@
             <scope>system</scope>
             <value>${r_install_dir}</value>
         </addEnvironmentVariable>
-
         <substitute>
             <files>${installdir}/R-windows/install.cmd</files>
             <type>exact</type>
@@ -250,7 +228,6 @@
                 </substitution>
             </substitutionList>
         </substitute>
-
         <runProgram>
             <program>${installdir}/R-linux/install.sh</program>
             <programArguments></programArguments>
@@ -296,7 +273,6 @@
                 </platformTest>
             </ruleList>
         </runProgram>
-
         <addDirectoryToPath>
             <insertAt>end</insertAt>
             <path>%JAVA_HOME%\bin;%R_HOME%\bin\i386;%R_HOME%\library\rJava\jri;%JAVA_HOME%\jre\bin\server;</path>
@@ -315,7 +291,6 @@
                 </platformTest>
             </ruleList>
         </addDirectoryToPath>
-
     </postInstallationActionList>
     <postUninstallationActionList>
         <deleteFile>
@@ -326,6 +301,8 @@
         </deleteFile>
     </postUninstallationActionList>
     <compressionAlgorithm>lzma-ultra</compressionAlgorithm>
+    <defaultUnixDirectoryPermissions>777</defaultUnixDirectoryPermissions>
+    <defaultUnixFilePermissions>777</defaultUnixFilePermissions>
     <enableRollback>1</enableRollback>
     <enableTimestamp>1</enableTimestamp>
     <requireInstallationByRootUser>1</requireInstallationByRootUser>
@@ -338,11 +315,10 @@
             <description>Installer.Parameter.installdir.description</description>
             <explanation>Installer.Parameter.installdir.explanation</explanation>
             <value></value>
-            <default>${platform_install_prefix}/${product_shortname}/${product_version}</default>
+            <default>${platform_install_prefix}/${product_shortname}-${product_version}</default>
             <allowEmptyValue>0</allowEmptyValue>
-            <ask>yes</ask>
             <cliOptionName>prefix</cliOptionName>
-            <mustBeWritable>yes</mustBeWritable>
+            <mustBeWritable>1</mustBeWritable>
             <mustExist>0</mustExist>
             <width>30</width>
         </directoryParameter>
