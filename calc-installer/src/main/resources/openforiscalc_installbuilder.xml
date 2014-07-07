@@ -1,5 +1,5 @@
 <project>
-    <shortName>openforiscalc</shortName>
+    <shortName>OpenForisCalc</shortName>
     <fullName>Open Foris Calc</fullName>
     <version>PROJECT_VERSION</version>
     <readmeFile>../../../../README</readmeFile>
@@ -14,26 +14,34 @@
             <selected>1</selected>
             <show>1</show>
             <desktopShortcutList>
-                <fileShortcut>
-                    <comment></comment>
-                    <filePath>${installdir}/calc-server/startup.sh</filePath>
+                <shortcut>
+                    <comment>Startup Open Foris Calc server</comment>
+                    <exec>${installdir}/calc-server/startup.sh</exec>
                     <icon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo.png</icon>
                     <name>StartupOpenForisCalc</name>
+                    <path></path>
                     <platforms>linux</platforms>
                     <runAsAdmin>0</runAsAdmin>
                     <runInTerminal>0</runInTerminal>
-                    <windowsIcon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo.png</windowsIcon>
-                </fileShortcut>
-                <fileShortcut>
+                    <windowsExec></windowsExec>
+                    <windowsExecArgs></windowsExecArgs>
+                    <windowsIcon></windowsIcon>
+                    <windowsPath></windowsPath>
+                </shortcut>
+                <shortcut>
                     <comment>Shutdown Open Foris Calc server</comment>
-                    <filePath>${installdir}/calc-server/shutdown.sh</filePath>
+                    <exec>${installdir}/calc-server/shutdown.sh</exec>
                     <icon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo.png</icon>
                     <name>ShutdownOpenForisCalc</name>
+                    <path></path>
                     <platforms>linux</platforms>
                     <runAsAdmin>0</runAsAdmin>
                     <runInTerminal>0</runInTerminal>
-                    <windowsIcon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo.png</windowsIcon>
-                </fileShortcut>
+                    <windowsExec></windowsExec>
+                    <windowsExecArgs></windowsExecArgs>
+                    <windowsIcon></windowsIcon>
+                    <windowsPath></windowsPath>
+                </shortcut>
             </desktopShortcutList>
             <folderList>
                 <folder>
@@ -111,7 +119,7 @@
                     <runInTerminal>0</runInTerminal>
                     <windowsExec>${installdir}/${uninstallerName}.exe</windowsExec>
                     <windowsExecArgs></windowsExecArgs>
-                    <windowsIcon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo-small-ico.ico</windowsIcon>
+                    <windowsIcon></windowsIcon>
                     <windowsPath>${installdir}/</windowsPath>
                 </startMenuShortcut>
                 <startMenuShortcut>
@@ -124,16 +132,18 @@
                     <windowsIcon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo-small-ico.ico</windowsIcon>
                     <windowsPath></windowsPath>
                 </startMenuShortcut>
-                <startMenuFileShortcut>
+                <startMenuShortcut>
                     <comment>Shutdown Open Foris Calc Server</comment>
-                    <filePath>${installdir}/calc-server/shutdown.cmd</filePath>
                     <name>Shutdown OF Calc</name>
                     <runAsAdmin>0</runAsAdmin>
                     <runInTerminal>0</runInTerminal>
+                    <windowsExec>${installdir}/calc-server/shutdown.cmd</windowsExec>
+                    <windowsExecArgs></windowsExecArgs>
                     <windowsIcon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo-small-ico.ico</windowsIcon>
-                </startMenuFileShortcut>
+                    <windowsPath></windowsPath>
+                </startMenuShortcut>
                 <startMenuLinkShortcut>
-                    <comment></comment>
+                    <comment>Open your default browser</comment>
                     <name>Open OFCalc in browser </name>
                     <runAsAdmin>0</runAsAdmin>
                     <runInTerminal>0</runInTerminal>
@@ -142,14 +152,15 @@
                 </startMenuLinkShortcut>
             </startMenuShortcutList>
         </component>
-        <include>
+
+	<include>
             <file>JDK1.7/java.xml</file>
         </include>
     </componentList>
     <preInstallationActionList>
         <setInstallerVariable>
             <name>installdir</name>
-            <value>${env(SYSTEMDRIVE)}/opt/${product_shortname}-${product_version}</value>
+            <value>${env(SYSTEMDRIVE)}/opt/${product_shortname}/${product_version}</value>
         </setInstallerVariable>
     </preInstallationActionList>
     <postInstallationActionList>
@@ -170,6 +181,11 @@
         <substitute>
             <files>${installdir}/R-windows/install.R;</files>
             <type>exact</type>
+            <ruleList>
+                <platformTest>
+                    <type>windows</type>
+                </platformTest>
+            </ruleList>
             <substitutionList>
                 <substitution>
                     <pattern>\</pattern>
@@ -203,26 +219,38 @@
             <scope>system</scope>
             <value>${r_install_dir}</value>
         </addEnvironmentVariable>
-        <addEnvironmentVariable>
-            <name>PATH</name>
-            <scope>system</scope>
-            <value>%PATH%;%JAVA_HOME%\bin;%R_HOME%\bin;%R_HOME%\bin\i386;%R_HOME%\library\rJava\jri;%JAVA_HOME%\jre\bin\server;</value>
+
+        <substitute>
+            <files>${installdir}/R-windows/install.cmd</files>
+            <type>exact</type>
             <ruleList>
                 <platformTest>
                     <type>windows-x86</type>
                 </platformTest>
             </ruleList>
-        </addEnvironmentVariable>
-        <addEnvironmentVariable>
-            <name>PATH</name>
-            <scope>system</scope>
-            <value>%PATH%;%JAVA_HOME%\bin;%R_HOME%\bin;%R_HOME%\bin\x64;%R_HOME%\library\rJava\jri\x64;%JAVA_HOME%\jre\bin\server;</value>
+            <substitutionList>
+                <substitution>
+                    <pattern>R_BIN_DIRECTORY</pattern>
+                    <value>${r_install_dir}\bin\i386</value>
+                </substitution>
+            </substitutionList>
+        </substitute>
+        <substitute>
+            <files>${installdir}/R-windows/install.cmd</files>
+            <type>exact</type>
             <ruleList>
                 <platformTest>
                     <type>windows-x64</type>
                 </platformTest>
             </ruleList>
-        </addEnvironmentVariable>
+            <substitutionList>
+                <substitution>
+                    <pattern>R_BIN_DIRECTORY</pattern>
+                    <value>${r_install_dir}\bin\x64</value>
+                </substitution>
+            </substitutionList>
+        </substitute>
+
         <runProgram>
             <program>${installdir}/R-linux/install.sh</program>
             <programArguments></programArguments>
@@ -268,10 +296,30 @@
                 </platformTest>
             </ruleList>
         </runProgram>
+
+        <addDirectoryToPath>
+            <insertAt>end</insertAt>
+            <path>%JAVA_HOME%\bin;%R_HOME%\bin\i386;%R_HOME%\library\rJava\jri;%JAVA_HOME%\jre\bin\server;</path>
+            <ruleList>
+                <platformTest>
+                    <type>windows-x86</type>
+                </platformTest>
+            </ruleList>
+        </addDirectoryToPath>
+        <addDirectoryToPath>
+            <insertAt>end</insertAt>
+            <path>%JAVA_HOME%\bin;%R_HOME%\bin\x64;%R_HOME%\library\rJava\jri\x64;%JAVA_HOME%\jre\bin\server;</path>
+            <ruleList>
+                <platformTest>
+                    <type>windows-x64</type>
+                </platformTest>
+            </ruleList>
+        </addDirectoryToPath>
+
     </postInstallationActionList>
     <postUninstallationActionList>
         <deleteFile>
-            <path>${installdir}/calc-server</path>
+            <path>${installdir}</path>
         </deleteFile>
         <deleteFile>
             <path>${project.rollbackBackupDirectory}</path>
@@ -290,7 +338,7 @@
             <description>Installer.Parameter.installdir.description</description>
             <explanation>Installer.Parameter.installdir.explanation</explanation>
             <value></value>
-            <default>${platform_install_prefix}/${product_shortname}-${product_version}</default>
+            <default>${platform_install_prefix}/${product_shortname}/${product_version}</default>
             <allowEmptyValue>0</allowEmptyValue>
             <ask>yes</ask>
             <cliOptionName>prefix</cliOptionName>
@@ -308,7 +356,7 @@
             <allowEmptyValue>0</allowEmptyValue>
             <mustBeWritable>0</mustBeWritable>
             <mustExist>1</mustExist>
-            <width>40</width>
+            <width>30</width>
         </directoryParameter>
     </parameterList>
 </project>

@@ -71,11 +71,15 @@ $(document).ready(function() {
 		var chainButtons 	= $( document ).find( ".default-chain-completed-required" );
 		var stepsButtons 	= $( document ).find( ".calculation-steps-required" );
 		
+		var errorButton 	= $( document ).find( ".error-button" );
+		
 		UI.disable( wsButtons );
 		UI.disable( aoiButtons );
 		UI.disable( sdButtons );
 		UI.disable( chainButtons );
 		UI.disable( stepsButtons );
+		
+		UI.disable( errorButton );
 		
 		WorkspaceManager.getInstance().activeWorkspace( function(ws){
 			if ( ws ) {
@@ -83,11 +87,17 @@ $(document).ready(function() {
 				if( ws.aoiHierarchies.length > 0 ) {
 					UI.enable( aoiButtons );
 					
-					if( ws.samplingDesign ){
+					var sd = ws.samplingDesign;
+					if( sd ){
 						UI.enable( sdButtons );
 						var chain = ws.getDefaultProcessingChain();
 						if( chain.status === "COMPLETED" ){
 							UI.enable( chainButtons );
+						}
+						
+						// for now error button enabled only for 2phases/cluster/stratified
+						if( sd.stratified === true && sd.cluster === true && sd.twoPhases === true ){
+							UI.enable( errorButton );
 						}
 					}
 				}

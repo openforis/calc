@@ -112,7 +112,7 @@ AoiManager.prototype.initSvg = function(){
     	height = this.aoiTreeSection.height()  - padding;
 	
 	this.diameter = Math.min(width, height);
-	this.format = d3.format(",d");
+	this.format = d3.format("0,000");
 	
 	this.pack = d3.layout.pack()
     .size([this.diameter - padding, this.diameter])

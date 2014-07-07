@@ -77,16 +77,16 @@ public class CalculateSamplingUnitWeightTask extends CalcRTask {
 
 		// add plot weight script
 		
-		RScript weightScript = new RScript().rScript( samplingUnitWeightScript, samplingUnit.getOriginalVariables() );
+		RScript weightScript = new RScript().rScript( samplingUnitWeightScript, samplingUnit.getHierarchyVariables() );
 		
 		RVariable dataFrame = new RScript().variable( samplingUnit.getName() );
 		
 		// select data
 		SelectQuery<Record> select = new Psql().selectQuery();
-		select.addFrom(table);
-		select.addSelect(table.getIdField());
+		select.addFrom( view );
+		select.addSelect( view.getIdField());
 		for (String var : weightScript.getVariables() ) {
-			select.addSelect(table.field(var));
+			select.addSelect( view.field(var) );
 		}
 		addScript(r().setValue( dataFrame, r().dbGetQuery(getrConnection(), select)) );
 					

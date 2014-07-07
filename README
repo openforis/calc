@@ -59,6 +59,9 @@
 ==============
  * Ubuntu
 ============== 
+
+	You can follow the instructions here:  http://ubuntuhandbook.org/index.php/2013/08/install-r-statistical-package-ubuntu-13-04/ there's a good 
+
 	Download R and follow the instructions to install it on http://cran.rstudio.com/
 	
 	add repository to sources list: 

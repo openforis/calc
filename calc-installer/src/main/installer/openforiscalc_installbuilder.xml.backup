@@ -1,7 +1,7 @@
 <project>
     <shortName>openforiscalc</shortName>
     <fullName>Open Foris Calc</fullName>
-    <version>1.0</version>
+    <version>1.0-a8-SNAPSHOT</version>
     <readmeFile>../../../../README</readmeFile>
     <licenseFile>../../../../License.txt</licenseFile>
     <leftImage>img/left-side.png</leftImage>
@@ -121,7 +121,7 @@
                     <runInTerminal>0</runInTerminal>
                     <windowsExec>${installdir}/calc-server/startup.cmd</windowsExec>
                     <windowsExecArgs></windowsExecArgs>
-                    <windowsIcon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo.png${installdir}/calc-server/tomcat/webapps/calc/img/of-logo-small-ico.ico</windowsIcon>
+                    <windowsIcon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo-small-ico.ico</windowsIcon>
                     <windowsPath></windowsPath>
                 </startMenuShortcut>
                 <startMenuFileShortcut>
@@ -130,15 +130,15 @@
                     <name>Shutdown OF Calc</name>
                     <runAsAdmin>0</runAsAdmin>
                     <runInTerminal>0</runInTerminal>
-                    <windowsIcon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo.png${installdir}/calc-server/tomcat/webapps/calc/img/of-logo-small-ico.ico</windowsIcon>
+                    <windowsIcon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo-small-ico.ico</windowsIcon>
                 </startMenuFileShortcut>
                 <startMenuLinkShortcut>
                     <comment></comment>
                     <name>Open OFCalc in browser </name>
                     <runAsAdmin>0</runAsAdmin>
                     <runInTerminal>0</runInTerminal>
-                    <url>http://localhost:8080/calc</url>
-                    <windowsIcon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo.png${installdir}/calc-server/tomcat/webapps/calc/img/of-logo-small-ico.ico</windowsIcon>
+                    <url>http://localhost:8081/calc</url>
+                    <windowsIcon>${installdir}/calc-server/tomcat/webapps/calc/img/browser.ico</windowsIcon>
                 </startMenuLinkShortcut>
             </startMenuShortcutList>
         </component>
@@ -203,26 +203,24 @@
             <scope>system</scope>
             <value>${r_install_dir}</value>
         </addEnvironmentVariable>
-        <addEnvironmentVariable>
-            <name>PATH</name>
-            <scope>system</scope>
-            <value>%PATH%;%JAVA_HOME%\bin;%R_HOME%\bin;%R_HOME%\bin\i386;%R_HOME%\library\rJava\jri;%JAVA_HOME%\jre\bin\server;</value>
+        <addDirectoryToPath>
+            <insertAt>end</insertAt>
+            <path>%JAVA_HOME%\bin;${r_install_dir}\bin;${r_install_dir}\bin\i386;%R_HOME%\library\rJava\jri;%JAVA_HOME%\jre\bin\server;</path>
             <ruleList>
                 <platformTest>
                     <type>windows-x86</type>
                 </platformTest>
             </ruleList>
-        </addEnvironmentVariable>
-        <addEnvironmentVariable>
-            <name>PATH</name>
-            <scope>system</scope>
-            <value>%PATH%;%JAVA_HOME%\bin;%R_HOME%\bin;%R_HOME%\bin\x64;%R_HOME%\library\rJava\jri\x64;%JAVA_HOME%\jre\bin\server;</value>
+        </addDirectoryToPath>
+        <addDirectoryToPath>
+            <insertAt>end</insertAt>
+            <path>%JAVA_HOME%\bin;%R_HOME%\bin;%R_HOME%\bin\x64;%R_HOME%\library\rJava\jri\x64;%JAVA_HOME%\jre\bin\server;</path>
             <ruleList>
                 <platformTest>
                     <type>windows-x64</type>
                 </platformTest>
             </ruleList>
-        </addEnvironmentVariable>
+        </addDirectoryToPath>
         <runProgram>
             <program>${installdir}/R-linux/install.sh</program>
             <programArguments></programArguments>
@@ -273,15 +271,15 @@
         <deleteFile>
             <path>${installdir}/calc-server</path>
         </deleteFile>
-	<deleteFile>
+        <deleteFile>
             <path>${project.rollbackBackupDirectory}</path>
         </deleteFile>
     </postUninstallationActionList>
     <compressionAlgorithm>lzma-ultra</compressionAlgorithm>
     <enableRollback>1</enableRollback>
-    <rollbackBackupDirectory>${system_temp_directory}/${product_shortname}/backup</rollbackBackupDirectory>
     <enableTimestamp>1</enableTimestamp>
     <requireInstallationByRootUser>1</requireInstallationByRootUser>
+    <rollbackBackupDirectory>${system_temp_directory}/${product_shortname}/backup</rollbackBackupDirectory>
     <saveRelativePaths>1</saveRelativePaths>
     <vendor>Open Foris</vendor>
     <parameterList>

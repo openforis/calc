@@ -6,6 +6,7 @@ package org.openforis.calc.engine;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import javax.sql.DataSource;
 
@@ -173,6 +174,8 @@ public class CalcJob extends Job {
 			}
 			readDataTask.addScript(r().dbSendQuery(connection, upd));
 
+			RScript plotArea = group.getPlotAreaScript(entityId);
+			
 			// 2. append select data
 			SelectQuery<Record> select = new Psql().selectQuery();
 			select.addFrom(view);
@@ -180,11 +183,19 @@ public class CalcJob extends Job {
 			for (String var : group.getInputVariables(entityId) ) {
 				select.addSelect(view.field(var));
 			}
+			// add plot area variables to select as well
+			if( plotArea != null ){
+				Set<String> variables = plotArea.getVariables();
+				for ( String var : variables ) {
+					select.addSelect(view.field(var));	
+				}
+			}
+			
 			readDataTask.addScript(r().setValue(dataFrame, r().dbGetQuery(connection, select)));
 			addTask(readDataTask);
 			 
 			// append plot_area script
-			RScript plotArea = group.getPlotAreaScript(entityId);
+			
 			if( plotArea != null ) {
 				RVariable results = r().variable( "results" );
 				SetValue setValue = r().setValue(results, r().rTry(plotArea) );

@@ -325,7 +325,9 @@ CategoricalVariableQueryCondition.prototype.appendUIElements = function( contain
 			var optionBtn = new OptionButton( btn );
 			
 			optionBtn.select( function(){
-				$this.values.push( code );
+				if( $.inArray( code , $this.values) < 0  ) {
+					$this.values.push( code );
+				}
 			} );
 			
 			optionBtn.deselect( function() {
@@ -337,7 +339,7 @@ CategoricalVariableQueryCondition.prototype.appendUIElements = function( contain
 					}
 				}
 			}  );
-			
+
 			// select button
 			if( $.inArray( code , $this.values) > -1  ) {
 				optionBtn.select();

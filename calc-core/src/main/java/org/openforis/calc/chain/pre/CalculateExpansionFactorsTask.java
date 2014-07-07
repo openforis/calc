@@ -79,7 +79,12 @@ public final class CalculateExpansionFactorsTask extends Task {
 		
 		psql()
 			.update(expf)
-			.set( expf.EXPF, expf.AREA.div(expf.WEIGHT) )
+			.set( expf.EXPF, 
+					DSL.decode()
+						.when( expf.WEIGHT.gt( BigDecimal.ZERO ), expf.AREA.div(expf.WEIGHT) )
+						.otherwise(  BigDecimal.ZERO )
+						
+					 )
 			.execute();
 	}
 
@@ -213,7 +218,7 @@ public final class CalculateExpansionFactorsTask extends Task {
 			ColumnJoin stratumJoin = getSamplingDesign().getStratumJoin();
 			
 			Field<Integer> stratumField = (Field<Integer>) dataView.field(stratumJoin.getColumn());
-			select.addSelect( stratumField );
+			select.addSelect( stratumField.as(expf.STRATUM.getName()) );
 			select.addGroupBy( stratumField );
 		}
 		
@@ -275,7 +280,7 @@ public final class CalculateExpansionFactorsTask extends Task {
 			ColumnJoin stratumJoin = getSamplingDesign().getStratumJoin();
 			
 			Field<Integer> stratumField = phase1Table.getIntegerField(stratumJoin.getColumn());
-			select.addSelect( stratumField );
+			select.addSelect( stratumField.as(expf.STRATUM.getName()) );
 			select.addGroupBy( stratumField );
 		}
 		
