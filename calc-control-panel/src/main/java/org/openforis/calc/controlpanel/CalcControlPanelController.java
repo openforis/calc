@@ -45,7 +45,7 @@ public class CalcControlPanelController implements Initializable {
 	@Override
 	public void initialize( URL url , ResourceBundle resourceBundle ) {
 		this.server = new Server();
-		this.server.clearLog();
+//		this.server.clearLog();
 		
 		executorService = Executors.newScheduledThreadPool( 5 );
 		

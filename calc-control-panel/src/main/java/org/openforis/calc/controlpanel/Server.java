@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.Socket;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javafx.scene.control.TextArea;
 
@@ -32,7 +34,9 @@ public class Server {
 
 		startup = applicationPath.resolve( "calc-server/startup." + fileExtension );
 		shutdown = applicationPath.resolve( "calc-server/shutdown." + fileExtension );
-		log = applicationPath.resolve( "calc-server/tomcat/logs/catalina.out" );
+//		/catalina.2014-06-20.log
+		String dateFormat = new SimpleDateFormat( "yyyy-MM-dd" ).format( new Date() );
+		log = applicationPath.resolve( "calc-server/tomcat/logs/catalina."+dateFormat+".log" );
 	}
 
 	public Path getLog() {
