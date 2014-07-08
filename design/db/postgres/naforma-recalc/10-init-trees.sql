@@ -49,7 +49,7 @@ INSERT INTO _commercial_tree_class (code, label) VALUES ('2', 'IB');
 INSERT INTO _commercial_tree_class (code, label) VALUES ('3', 'II');
 INSERT INTO _commercial_tree_class (code, label) VALUES ('4', 'III');
 INSERT INTO _commercial_tree_class (code, label) VALUES ('5', 'IV');
-
+INSERT INTO _commercial_tree_class (code, label) VALUES ('6', 'V');
 
 
 alter table tree 
@@ -99,7 +99,12 @@ add column commercial_class varchar;
 update tree
 set commercial_class =
     case
-        when 
+        when     
+            species in ( 'ACA/MEL' , 'CSR', 'CSR/EQU', 'CUP', 'CUP/LUS', 
+            'EUC' , 'EUC/CAM', 'EUC/CLO', 'EUC/GLO', 'EUC/GRA', 'EUC/MAC', 'EUC/MAI', 'EUC/SAL', 'EUC/TER', 
+            'GRE' , 'GRE/ROB' , 'PIN' , 'PIN/CAR' , 'PIN/ELL' , 'PIN/PAT' , 'PIN/RAD' , 'TCT/GRA')             
+            then '6'
+        when         
             species in ('DAL/MEL','DSP/MES','CMB/SCH') or species like 'OLE%' then '1'
         when 
             species in ('MLT/STU','MIL/EXC','BEI/KWE','BRC/HUI','SWA/MAD','KHA/ANT','ALK/STU','BRE/SAL','AFZ/QUA','CEP/USA','FAG/ANG','HAG/ABY','BRH/TAM','JUN/PRO','MRK','OCO/USA')                
@@ -112,7 +117,7 @@ set commercial_class =
             then '3'
         when     
             species in ('FCL/LAU','CSP/MAL','LOV/SWY','LOV/BRO','CRL/AFR','XYM/MON','RPN/RHO','PTL/MYR','BOM/RHO','MSP/EMI')             
-            then '4'
+            then '4'                    
         --when species_group != 1 and dbh_class = '4' and health != '7' then 1
         else '5'
     end;        
@@ -131,7 +136,7 @@ set commercial_tree =
             --species in ('DAL/MEL','DSP/MES','CMB/SCH','MLT/STU','MIL/EXC','BEI/KWE','BRC/HUI','SWA/MAD','KHA/ANT','ALK/STU','BRE/SAL','AFZ/QUA','CEP/USA','FAG/ANG','HAG/ABY','BRH/TAM','JUN/PRO','MRK','OCO/USA')
             --or species like 'NEW%' or species like 'ENN%' or species like 'RHI%'or species like 'PTR%' or species like 'OLE%'
             --then 1
-        when commercial_class in ('1','2','3','4') and dbh >= 20 and health != '7' then 1
+        when commercial_class in ('1','2','3','4','6') and dbh >= 20 and health != '7' then 1
         else 0
     end;        
     
