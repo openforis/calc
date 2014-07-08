@@ -150,7 +150,7 @@
             <allowEmptyValue>1</allowEmptyValue>
             <width>30</width>
         </stringParameter>
-        <stringParameter name="java_launcher_startmenu_shortcut_name" value="Launch ${project.fullName}" ask="0">
+        <stringParameter name="java_launcher_startmenu_shortcut_name" value="OpenForisCalc Control Panel" ask="0">
             <description></description>
             <explanation></explanation>
             <default></default>
@@ -1138,7 +1138,7 @@
                             <runInTerminal>0</runInTerminal>
                             <windowsExec>${java_launcher_destination}/${java_launcher_binary_name}</windowsExec>
                             <windowsExecArgs></windowsExecArgs>
-                            <windowsIcon></windowsIcon>
+                            <windowsIcon>${installdir}/calc-server/tomcat/webapps/calc/img/of-logo-small-ico.ico</windowsIcon>
                             <windowsPath>${java_launcher_destination}</windowsPath>
                         </startMenuShortcut>
                     </shortcutList>

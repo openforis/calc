@@ -12,8 +12,8 @@
 	</parent>
 
 	<description>Open Foris Calc - Control panel</description>
+	<name>Open Foris Calc Control Panel</name>
 	<artifactId>calc-control-panel</artifactId>
-	<name>calc-control-panel</name>
 
 	<url>http://maven.apache.org</url>
 	<properties>

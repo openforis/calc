@@ -1,5 +1,4 @@
 package org.openforis.calc.controlpanel;
-import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
 import java.nio.file.Path;
@@ -36,7 +35,7 @@ public class Server {
 		shutdown = applicationPath.resolve( "calc-server/shutdown." + fileExtension );
 //		/catalina.2014-06-20.log
 		String dateFormat = new SimpleDateFormat( "yyyy-MM-dd" ).format( new Date() );
-		log = applicationPath.resolve( "calc-server/tomcat/logs/catalina."+dateFormat+".log" );
+		log = applicationPath.resolve( "calc-server/tomcat/logs/catalina." + dateFormat + ".log" );
 	}
 
 	public Path getLog() {
@@ -78,9 +77,9 @@ public class Server {
 		return running;
 	}
 	
-	void clearLog() {
-		File file = this.log.toFile();
-		file.delete();
-	}
+//	void clearLog() {
+//		File file = this.log.toFile();
+//		file.delete();
+//	}
 	
 }

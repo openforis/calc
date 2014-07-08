@@ -11,9 +11,9 @@
 		<module>calc-core</module>
 		<module>calc-server</module>
 		<module>calc-webapp</module>
-		<module>calc-assembly</module>
 		<module>calc-jooq-code-gen</module>
     	<module>calc-control-panel</module>
+		<module>calc-assembly</module>
 		<module>calc-installer</module>
   </modules>
 

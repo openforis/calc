@@ -31,7 +31,7 @@ public class CalcControlPanel extends Application {
 		primaryStage.setScene( myScene );
 		primaryStage.show();
 		
-		controller.openBrowser( this );
+		controller.openBrowser( this , 3000 );
 	}
 
 	@Override

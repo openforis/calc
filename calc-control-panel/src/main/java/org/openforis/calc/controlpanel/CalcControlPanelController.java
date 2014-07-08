@@ -112,14 +112,14 @@ public class CalcControlPanelController implements Initializable {
 		this.executorService.shutdownNow();
 	}
 	
-	void openBrowser( Application application ) {
+	void openBrowser( Application application , final long delay ) {
 		
 		final HostServicesDelegate hostServices = HostServicesFactory.getInstance( application );
 		executorService.submit( new Runnable() {
 			@Override
 			public void run() {
 					try {
-						Thread.sleep( 3000 );
+						Thread.sleep( delay );
 						
 						String url = "http://localhost:8081/calc";
 						hostServices.showDocument( url);
