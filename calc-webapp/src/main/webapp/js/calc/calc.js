@@ -274,7 +274,7 @@ $(document).ready(function() {
 	// history methods
 	Calc.pushToHistory = function( section ) {
 		window.history.replaceState( window.history.state , "load" , location.pathname + "#" + section );
-		window.history.pushState( { section: section} );
+		window.history.pushState( { section: section} , section , null );
 	};
 	
 	//private static utility method to load Calc info model object

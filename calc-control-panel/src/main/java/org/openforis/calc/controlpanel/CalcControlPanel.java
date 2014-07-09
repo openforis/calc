@@ -4,6 +4,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 /**
  * @author Mino Togna
@@ -18,18 +19,21 @@ public class CalcControlPanel extends Application {
 	}
 
 	@Override
-	public void start( Stage primaryStage ) throws Exception {
-		primaryStage.setTitle( "OpenForis Calc - Control Panel" );
+	public void start( Stage stage ) throws Exception {
+		stage.setTitle( "OpenForis Calc - Control Panel" );
+		stage.setResizable( false );
 		
 		FXMLLoader fxmlLoader = new FXMLLoader();
 		Pane pane = (Pane) fxmlLoader.load( getClass().getResource( "calc_control_panel.fxml" ).openStream() );
-
+		
 		controller = fxmlLoader.getController();
 		controller.startServer( null );
 			
-		Scene myScene = new Scene( pane );
-		primaryStage.setScene( myScene );
-		primaryStage.show();
+		Scene scene = new Scene( pane );
+		stage.setScene( scene );
+		Window window = scene.getWindow();
+		window.setHeight( 150 );
+		stage.show();
 		
 		controller.openBrowser( this , 3000 );
 	}
