@@ -1,11 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
 		<groupId>org.openforis.calc</groupId>
 		<artifactId>calc</artifactId>
-		<version>1.0-a8-SNAPSHOT</version>
+		<version>1.0-a8</version>
 	</parent>
 
 	<artifactId>calc-installer</artifactId>
@@ -140,14 +139,8 @@
 								</goals>
 								<configuration>
 									<tasks>
-										<move
-											file="${installbuilder-home}/output/${windows-installer-file-name}"
-											tofile="${project.build.directory}/${windows-installer-file-name}" 
-											failonerror="false" />
-										<move
-											file="${installbuilder-home}/output/${linux-installer-file-name}"
-											tofile="${project.build.directory}/${linux-installer-file-name}" 
-											failonerror="false" />
+										<move file="${installbuilder-home}/output/${windows-installer-file-name}" tofile="${project.build.directory}/${windows-installer-file-name}" failonerror="false" />
+										<move file="${installbuilder-home}/output/${linux-installer-file-name}" tofile="${project.build.directory}/${linux-installer-file-name}" failonerror="false" />
 <!-- 										<move -->
 <!-- 											file="${installbuilder-home}/output/${osx-installer-file-name}" -->
 <!-- 											tofile="${project.build.directory}/${osx-installer-file-name}"  -->
