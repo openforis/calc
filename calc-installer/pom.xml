@@ -27,7 +27,7 @@
 	
 	<profiles>
 		<profile>
-			<id>installer</id>
+			<id>assembly</id>
 			<build>
 				<plugins>
 				
