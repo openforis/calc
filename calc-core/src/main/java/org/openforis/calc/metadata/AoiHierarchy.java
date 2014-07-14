@@ -38,6 +38,7 @@ public class AoiHierarchy extends AoiHierarchyBase {
 
 	public void setWorkspace(Workspace workspace) {
 		this.workspace = workspace;
+		this.setWorkspaceId( workspace.getId() );
 	}
 
 	public List<AoiLevel> getLevels() {

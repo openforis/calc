@@ -197,9 +197,9 @@ public class VariableManager {
 			switch ( calculationStep.getType() ) {
 			case EQUATION:
 				
-				Integer codeVariableId = parameters.getInteger( "code_variable" );
+				Integer codeVariableId = parameters.getInteger( "codeVariable" );
 				Integer newCodeVariableId = variableIds.get( codeVariableId );
-				parameters.setInteger( "code_variable" , newCodeVariableId );
+				parameters.setInteger( "codeVariable" , newCodeVariableId );
 				
 				List<ParameterMap> list = parameters.getList( "variables" );
 				for ( ParameterMap param : list ) {
