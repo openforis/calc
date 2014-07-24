@@ -783,8 +783,8 @@ ul.scroll-menu {
 /* #sampling-design .sampling-unit-section .variables button { */
 	width: 100%;
 	margin-bottom : 1px;
-	padding-top: 20px;
-	padding-bottom: 20px;
+	padding-top: 10px;
+	padding-bottom: 10px;
 	font-weight: 200;
 }
 #aggregation-settings .sampling-unit-section .variables, 

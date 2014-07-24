@@ -151,7 +151,6 @@ public class CalcJob extends Job {
 
 			Entity entity = getWorkspace().getEntityById(entityId);
 			EntityDataView view = getSchemas().getDataSchema().getDataView(entity);
-//			DataTable table = getSchemas().getDataSchema().getDataTable(entity);
 			Field<?> primaryKeyField = view.getPrimaryKey().getFields().get(0);
 			String primaryKey = primaryKeyField.getName();
 			RVariable dataFrame = r().variable(entity.getName());
@@ -172,9 +171,7 @@ public class CalcJob extends Job {
 					upd.addValue(f, DSL.val(null, Double.class));
 				}
 			}
-			readDataTask.addScript(r().dbSendQuery(connection, upd));
-
-			RScript plotArea = group.getPlotAreaScript(entityId);
+			readDataTask.addScript( r().dbSendQuery(connection, upd) );
 			
 			// 2. append select data
 			SelectQuery<Record> select = new Psql().selectQuery();
@@ -183,11 +180,13 @@ public class CalcJob extends Job {
 			for (String var : group.getInputVariables(entityId) ) {
 				select.addSelect(view.field(var));
 			}
+			
 			// add plot area variables to select as well
+			RScript plotArea = group.getPlotAreaScript(entityId);
 			if( plotArea != null ){
 				Set<String> variables = plotArea.getVariables();
 				for ( String var : variables ) {
-					select.addSelect(view.field(var));	
+					select.addSelect( view.field(var) );	
 				}
 			}
 			
@@ -272,9 +271,6 @@ public class CalcJob extends Job {
 				UpdateWithStep update = new Psql().updateWith(cursor, updateResults, finalResultTable.getIdField().eq((Field<Long>) cursor.field(resultTable.getIdField().getName())));
 	
 				writeResultsTask.addScript(r().dbSendQuery(connection, update));
-				
-				
-				
 			}
 			
 			// recreate view
@@ -296,7 +292,7 @@ public class CalcJob extends Job {
 		if( aggregates ) {
 				
 			CreateAggregateTablesTask aggTask = new CreateAggregateTablesTask();
-			((AutowireCapableBeanFactory) beanFactory).autowireBean(aggTask);
+			((AutowireCapableBeanFactory) beanFactory).autowireBean( aggTask );
 			addTask( aggTask );
 			
 			PublishRolapSchemaTask publishRolapSchemaTask = new PublishRolapSchemaTask();

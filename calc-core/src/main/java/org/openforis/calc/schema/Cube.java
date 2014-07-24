@@ -40,7 +40,7 @@ public class Cube {
 	Cube(RolapSchema rolapSchema, FactTable factTable) {
 		Entity entity = factTable.getEntity();
 		this.name = entity.getName();
-		if( entity.getParent() != null && entity.getParent().isSamplingUnit() ){
+		if( entity.getParent() != null && entity.getParent().isInSamplingUnitHierarchy() ){
 			this.name += "_"; 
 		}
 		

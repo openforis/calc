@@ -99,6 +99,9 @@ AggregationManager.prototype.init = function() {
  */
 AggregationManager.prototype.samplingUnitUpdate = function( entityId ) {
     if (entityId) {
+    // add header to entities section
+    this.entitiesSection.append($('<div class="name">Entities</div>'));
+
 	WorkspaceManager.getInstance().activeWorkspace($.proxy(function( ws ) {
 	    var entities = ws.getAggregableEntities(entityId);
 	    this.entitiesUpdate(entities);
@@ -118,58 +121,66 @@ AggregationManager.prototype.emptyAllSections = function() {
 /**
  * update entities section
  */
-AggregationManager.prototype.entitiesUpdate = function( entities ) {
+AggregationManager.prototype.entitiesUpdate = function( entities , margin ) {	
+	margin = margin ? margin : 0;
     var $this = this;
     // empty entity and variable sections
     // $this.entitiesSection.empty();
     // $this.variablesSection.empty();
     // $this.variableSection.empty();
     // $this.variablePerHaSection.empty();
-    
-    // add header to entities section
-    $this.entitiesSection.append($('<div class="name">Entity</div>'));
-    //
-    // show entities
-    //
+
     var t = 80;
+    var addEntity = function( i , ent ) {
+		var btn = $( '<button type="button" class="btn default-btn"></button>' );
+		btn.css( "margin-left" , margin +"px");
+		btn.hide();
+		btn.html(ent.name);
+		
+		btn.click(function( e ) {
+		    WorkspaceManager.getInstance().activeWorkspace(function( ws ) {
+			var entity = ws.getEntityById(ent.id);
+			// disable current entity button
+			UI.enable($this.entitiesSection.find("button"));
+			UI.disable($(e.currentTarget));
+			
+			// empty variables section
+			$this.variablesSection.empty();
+			$this.variableSection.empty();
+			$this.variablePerHaSection.empty();
+			
+			// set current entity
+			$this.currentEntity = entity;
+			// update rScript with current entity
+			$this.rScript.entity = entity;
+			$this.rScriptInput.val(entity.plotAreaScript);
+			// show plot area section
+			$this.plotAreaSection.show();
+			
+			// show variables
+	//		$.proxy(variablesUpdate, $this)(entity.quantitativeVariables);
+			
+		    });
+		});
+		
+		$this.entitiesSection.append(btn);
+		
+		setTimeout(function() {
+		    btn.fadeIn();
+		}, t);
+		
+		t += 15;
+    };
+    
     $.each(entities, function( i , ent ) {
-	var btn = $('<button type="button" class="btn default-btn"></button>');
-	btn.hide();
-	btn.html(ent.name);
-	
-	btn.click(function( e ) {
-	    WorkspaceManager.getInstance().activeWorkspace(function( ws ) {
-		var entity = ws.getEntityById(ent.id);
-		// disable current entity button
-		UI.enable($this.entitiesSection.find("button"));
-		UI.disable($(e.currentTarget));
-		
-		// empty variables section
-		$this.variablesSection.empty();
-		$this.variableSection.empty();
-		$this.variablePerHaSection.empty();
-		
-		// set current entity
-		$this.currentEntity = entity;
-		// update rScript with current entity
-		$this.rScript.entity = entity;
-		$this.rScriptInput.val(entity.plotAreaScript);
-		// show plot area section
-		$this.plotAreaSection.show();
-		
-		// show variables
-//		$.proxy(variablesUpdate, $this)(entity.quantitativeVariables);
-		
-	    });
-	});
-	
-	$this.entitiesSection.append(btn);
-	
-	setTimeout(function() {
-	    btn.fadeIn();
-	}, t);
-	
-	t += 15;
+    	addEntity( i, ent );
+    	
+    	WorkspaceManager.getInstance().activeWorkspace( function( ws ) {
+    	    var childEntities = ws.getAggregableEntities( ent.id );
+    	    if( childEntities.length > 0 ){
+    	    	$this.entitiesUpdate( childEntities , margin + 10);
+    	    }
+    	} );
     });
 };
 

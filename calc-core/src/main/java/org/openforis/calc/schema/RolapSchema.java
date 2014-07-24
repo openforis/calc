@@ -73,20 +73,25 @@ public class RolapSchema {
 		
 		Entity samplingUnit = this.workspace.getSamplingUnit();
 		if( samplingUnit != null ) {
+		
 			Cube suCube = cubes.get( samplingUnit.getId() );
-			
-			for ( Entity child : samplingUnit.getChildren() ) {
-				Cube cube = cubes.get( child.getId() );
-				
-				// if cube is defined then it creates a virtual cube to join with sampling unit cube (used to calculate per ha measures)
-				if( cube != null ) {
-					VirtualCube virtualCube = new VirtualCube( suCube, cube );
-					this.virtualCubes.add( virtualCube );
-				}
-				
-			}
+			createVirtualCubes( suCube , samplingUnit.getChildren() );
+		
 		}
 		
+	}
+
+	private void createVirtualCubes( Cube suCube , List<Entity> entities ) {
+		for ( Entity entity : entities ) {
+			Cube cube = cubes.get( entity.getId() );
+			
+			// if cube is defined then it creates a virtual cube to join with sampling unit cube (used to calculate per ha measures)
+			if( cube != null ) {
+				VirtualCube virtualCube = new VirtualCube( suCube, cube );
+				this.virtualCubes.add( virtualCube );
+			}
+			createVirtualCubes( suCube , entity.getChildren() );
+		}
 	}
 
 	private void createSharedDimensions() {

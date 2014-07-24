@@ -87,28 +87,24 @@ public class FactTable extends DataTable {
 			Field<BigDecimal> field = createField(var.getName(), Psql.DOUBLE_PRECISION, this);
 			measureFields.put(var, field);
 		}
-
-		// List<VariableAggregate> aggregates = entity.getVariableAggregates();
-		// for ( VariableAggregate agg : aggregates ) {
-		// }
 	}
 
 	protected void createAggregateTables() {
 		this.aoiAggregateTables = new LinkedHashMap<AoiLevel, AoiAggregateTable>();
-		Entity entity = getEntity();
 
 		DataTable sourceTable = null;
-		if (entity.getParent().isSamplingUnit()) {
+		Entity parent = getEntity().getParent();
+		if ( parent != null && parent.isInSamplingUnitHierarchy() ) {
 			this.samplingUnitAggregateTable = new SamplingUnitAggregateTable(this);
 			sourceTable = this.samplingUnitAggregateTable;
 		}
 
-		if (this.isGeoreferenced()) {
+		if ( this.isGeoreferenced() ) {
 			sourceTable = sourceTable == null ? this : sourceTable;
 			createAoiAggregateTables(sourceTable);
 		}
 	}
-
+	
 	private void createAoiAggregateTables(DataTable sourceTable) {
 		Workspace workspace = getEntity().getWorkspace();
 		for (AoiHierarchy aoiHierarchy : workspace.getAoiHierarchies()) {

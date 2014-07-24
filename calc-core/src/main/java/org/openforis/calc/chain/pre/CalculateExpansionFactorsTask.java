@@ -20,6 +20,9 @@ import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.SamplingDesign;
 import org.openforis.calc.metadata.SamplingDesign.ColumnJoin;
 import org.openforis.calc.metadata.SamplingDesign.TableJoin;
+import org.openforis.calc.persistence.jooq.Tables;
+import org.openforis.calc.persistence.jooq.tables.AoiLevelTable;
+import org.openforis.calc.persistence.jooq.tables.AoiTable;
 import org.openforis.calc.psql.Psql;
 import org.openforis.calc.psql.UpdateWithStep;
 import org.openforis.calc.schema.DataAoiTable;
@@ -73,12 +76,12 @@ public final class CalculateExpansionFactorsTask extends Task {
 
 	private void addExpfField(ExpansionFactorTable expf) {
 		psql()
-			.alterTable(expf)
+			.alterTable( expf )
 			.addColumn( expf.EXPF )
 			.execute();
 		
 		psql()
-			.update(expf)
+			.update( expf )
 			.set( expf.EXPF, 
 					DSL.decode()
 						.when( expf.WEIGHT.gt( BigDecimal.ZERO ), expf.AREA.div(expf.WEIGHT) )
@@ -182,7 +185,7 @@ public final class CalculateExpansionFactorsTask extends Task {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void createExpfTable1phase(ExpansionFactorTable expf) {
+	private void createExpfTable1phase( ExpansionFactorTable expf ){
 //		DynamicTable<Record> phase1Table = new DynamicTable<Record>( getWorkspace().getPhase1PlotTable(), "calc" );
 //		Phase1AoiTable phase1AoiTable = getInputSchema().getPhase1AoiTable();
 		DataAoiTable dataAoiTable = getInputSchema().getSamplingUnitAoiTable();
@@ -194,25 +197,52 @@ public final class CalculateExpansionFactorsTask extends Task {
 		Field<Long> aoiIdField = dataAoiTable.getAoiIdField(aoiLevel);
 		Field<BigDecimal> aoiAreaField = dataAoiTable.getAoiAreaField(aoiLevel);
 		
+		AoiTable a = Tables.AOI;
+		AoiLevelTable l = Tables.AOI_LEVEL;
+		
 		// select totals for aoi
-		Select<?> selectTotals = psql()
-			.select( dataView.getIdField().count() , aoiIdField )
-			.from( dataView )
-			.join( dataAoiTable )
-			.on( dataView.getIdField().eq( dataAoiTable.getIdField() ) )
-			.groupBy( aoiIdField );
+		SelectQuery<Record> selectTotals = psql().selectQuery();
+		
+		selectTotals.addSelect( dataView.getIdField().count() );
+		selectTotals.addSelect( a.ID.as(aoiIdField.getName()) );
+		
+		selectTotals.addFrom( a );
+		selectTotals.addJoin( l , 
+								a.AOI_LEVEL_ID.eq(l.ID)
+								.and( l.ID.eq(aoiLevel.getId())) );
+		
+		selectTotals.addJoin( 
+				dataAoiTable , 
+				JoinType.LEFT_OUTER_JOIN , 
+				a.ID.cast(Long.class).eq(aoiIdField) );
+		
+		selectTotals.addJoin( 
+				dataView , 
+				JoinType.LEFT_OUTER_JOIN , 
+				dataView.getIdField().eq( dataAoiTable.getIdField() ) );
+		
+		selectTotals.addGroupBy( a.ID );
+		
+//		Select<?> selectTotals1 = psql()
+//			.select( dataView.getIdField().count() , aoiIdField )
+//			.from( dataView )
+//			.join( dataAoiTable )
+//			.on( dataView.getIdField().eq( dataAoiTable.getIdField() ) )
+//			.groupBy( aoiIdField );
+		
 		Table<?> totals = selectTotals.asTable( "totals" );
 //		
 		// select proportions
 		SelectQuery<Record> select = psql().selectQuery();
+		
 		select.addSelect( dataView.getIdField().count() );
 		select.addFrom( dataView );
 		
 		// join with aoi_table to calculate proportions. if no stratification is applied, then results will be the same
-		select.addSelect( aoiIdField );
+		select.addSelect( totals.field(aoiIdField.getName())  );
 //		select.addSelect( dataAoiTable.getAoiAreaField(aoiLevel).as(expf.AREA.getName()) );
 		select.addJoin( dataAoiTable, dataView.getIdField().eq(dataAoiTable.getIdField()) );
-		select.addGroupBy( aoiIdField );
+		select.addGroupBy( totals.field(aoiIdField.getName()) );
 		
 		if( stratified ) {
 			ColumnJoin stratumJoin = getSamplingDesign().getStratumJoin();
@@ -225,11 +255,22 @@ public final class CalculateExpansionFactorsTask extends Task {
 		// join with totals inner query
 		Field<?> totalField = totals.field("count");
 		select.addSelect( totalField.as("total") );
-		select.addJoin(totals, aoiIdField.eq( (Field<Long>)totals.field(aoiIdField.getName())) );
+		select.addJoin(totals , JoinType.RIGHT_OUTER_JOIN , aoiIdField.eq( (Field<Long>)totals.field(aoiIdField.getName())) );
 		select.addGroupBy( totalField );
 		
-		select.addSelect( dataView.getIdField().count().div( DSL.cast(totalField, Psql.DOUBLE_PRECISION) ).as(expf.PROPORTION.getName()) );
-		select.addSelect( dataView.getIdField().count().div( DSL.cast(totalField, Psql.DOUBLE_PRECISION) ).mul(aoiAreaField).as(expf.AREA.getName()) );
+		Field<BigDecimal> countField = DSL.cast(totalField, Psql.DOUBLE_PRECISION);
+		Field<Integer> proportion = DSL.decode()
+			.when( countField.gt(BigDecimal.ZERO), dataView.getIdField().count().div( DSL.cast(totalField, Psql.DOUBLE_PRECISION) ) )
+			.otherwise(0)
+			.as( expf.PROPORTION.getName() );		
+		select.addSelect( proportion );
+		
+		Field<Integer> area = DSL.decode()
+				.when( countField.gt(BigDecimal.ZERO), dataView.getIdField().count().div( DSL.cast(totalField, Psql.DOUBLE_PRECISION) ).mul(aoiAreaField) )
+				.otherwise(0)
+				.as(expf.AREA.getName() );
+		select.addSelect( area );
+		
 		select.addGroupBy( aoiAreaField );
 //		( count(p.id) / total.count::double precision ) as proportion,
 //        ( count(p.id) / total.count::double precision ) * a._administrative_unit_level_1_area as area

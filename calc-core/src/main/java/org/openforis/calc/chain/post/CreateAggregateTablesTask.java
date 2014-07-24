@@ -55,9 +55,9 @@ public final class CreateAggregateTablesTask extends Task {
 		DataSchema schema = getDataSchema();
 		
 		List<FactTable> factTables = schema.getFactTables();
-		for (FactTable factTable : factTables) {
+		for ( FactTable factTable : factTables ){
 			// create fact table
-			createFactTable(factTable);
+			createFactTable( factTable );
 		
 			// create plot aggregate table
 			SamplingUnitAggregateTable suAggregateTable = factTable.getSamplingUnitAggregateTable();

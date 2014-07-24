@@ -16,3 +16,4 @@ downloadPackages <- function( packages ){
 
 packages <- getPackages( c("RPostgreSQL" , "sqldf" , "rJava") );
 downloadPackages(  packages = packages );
+

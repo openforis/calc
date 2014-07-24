@@ -183,11 +183,24 @@ public class Entity extends EntityBase {
 	
 	@JsonIgnore	
 	public boolean isGeoreferenced() {
-		// right now only if this is sampling unit or parent entity is sampling unit
-		return ( this.isSamplingUnit() ) || ( this.parent!=null && this.parent.isSamplingUnit() ); 
+		// right now only if this is sampling unit or an ancestor entity is sampling unit
+		return this.isInSamplingUnitHierarchy() ;
+		//return ( this.isSamplingUnit() ) || ( this.parent!=null && this.parent.isSamplingUnit() ); 
 //		return ((xColumn != null && yColumn != null) || locationColumn != null);
 	}
 
+	@JsonIgnore
+	public boolean  isInSamplingUnitHierarchy() {
+		Entity entity = this;
+		while( entity != null ){
+			if( entity.isSamplingUnit() ){
+				return true;
+			}
+			entity = entity.getParent();
+		}
+		return false;
+	}
+	
 	public boolean isSamplingUnit() {
 		if( this.getId() == null ){
 			return false;
@@ -472,27 +485,13 @@ public class Entity extends EntityBase {
 	// or if this is the sampling unit
 	@JsonIgnore
 	public boolean isAggregable() {
-		// for now only if output variables have been defined
-		return isSamplingUnit() || getDefaultProcessingChainQuantitativeOutputVariables().size() > 0 || getDefaultProcessingChainCategoricalOutputVariables().size() > 0;
-//		
-//		if( this.isSamplingUnit() ) {
-//			return true;
-//		}
-//		
-//		
-//		for (QuantitativeVariable var : getQuantitativeVariables()) {
-//			if( var.getAggregates().size() > 0 ){
-//				return true;
-//			}
-//			QuantitativeVariable variablePerHa = var.getVariablePerHa();
-//			if( variablePerHa != null ){
-//				if( variablePerHa.getAggregates().size() >0 ){
-//					return true;
-//				}
-//			}
-//		}
-//		
-//		return false;
+		// for now only if output variables have been defined in the default processing chain
+		return 
+				isSamplingUnit() 
+				|| 
+				getDefaultProcessingChainQuantitativeOutputVariables().size() > 0 
+				|| 
+				getDefaultProcessingChainCategoricalOutputVariables().size() > 0;
 	}
 
 	public QuantitativeVariable getOutputVariable(String variable) {

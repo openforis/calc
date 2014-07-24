@@ -138,8 +138,8 @@ public class DataSchema extends RelationalSchema {
 		List<FactTable> tables = new ArrayList<FactTable>();
 		for ( Entity entity : workspace.getEntities() ) {
 			if( entity.isAggregable() ) {
-				FactTable factTable = getFactTable(entity);
-				tables.add(factTable);
+				FactTable factTable = getFactTable( entity );
+				tables.add( factTable );
 			}
 		}
 		return tables;
