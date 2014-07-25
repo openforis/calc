@@ -69,6 +69,7 @@ public class FactTable extends DataTable {
 		createQuantityFields(false, true);
 		createMeasureFields();
 		createParentIdField();
+		createSamplingUnitIdField();
 		createAggregateTables();
 		createClusterField();
 		

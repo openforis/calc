@@ -69,11 +69,13 @@ public abstract class DataTable extends AbstractTable {
 	private Field<BigDecimal> yField;
 	private Field<String> srsIdField;
 	private Field<Long> parentIdField;
+	private Field<Long> samplingUnitIdField;
 
 	private Map<CategoricalVariable<?>, Field<Integer>> dimensionIdFields;
 	private Field<Integer> stratumField;
 
 	private Field<BigDecimal> weightField;
+
 	
 	protected DataTable(Entity entity, String name, Schema schema) {
 		super(name, schema);
@@ -296,6 +298,14 @@ public abstract class DataTable extends AbstractTable {
 		}
 	}
 	
+	protected void createSamplingUnitIdField() {
+		if( entity.isInSamplingUnitHierarchy() ){
+			Entity samplingUnit = entity.getWorkspace().getSamplingUnit();
+			String suIdColumn = samplingUnit.getIdColumn();
+			this.samplingUnitIdField = createField( suIdColumn, BIGINT, this );
+		}
+	}
+	
 	protected void createTextFields() {
 		Entity entity = getEntity();
 		createTextFields(entity);
@@ -312,6 +322,10 @@ public abstract class DataTable extends AbstractTable {
 
 	public Field<Long> getParentIdField() {
 		return parentIdField;
+	}
+	
+	public Field<Long> getSamplingUnitIdField() {
+		return samplingUnitIdField;
 	}
 
 	public Collection<Field<?>> getCategoryValueFields() {

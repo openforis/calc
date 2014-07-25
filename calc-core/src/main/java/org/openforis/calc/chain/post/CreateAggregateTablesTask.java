@@ -152,8 +152,8 @@ public final class CreateAggregateTablesTask extends Task {
 		
 		select.addFrom( sourceTable );
 		
-		select.addSelect( sourceTable.getParentIdField() );
-		select.addGroupBy( sourceTable.getParentIdField() );
+		select.addSelect( sourceTable.getSamplingUnitIdField() );
+		select.addGroupBy( sourceTable.getSamplingUnitIdField() );
 //		select.addSelect( sourceTable.getDimensionIdFields() );
 		for (Field<Integer> dimField : sourceTable.getDimensionIdFields()) {
 			select.addSelect( DSL.coalesce(dimField,-1).as( dimField.getName() ) );
@@ -201,8 +201,12 @@ public final class CreateAggregateTablesTask extends Task {
 //		Entity entity = dataTable.getEntity();
 		
 		SelectQuery<?> select = new Psql().selectQuery(dataTable);
-		select.addSelect(dataTable.getIdField());
-		select.addSelect(dataTable.getParentIdField());
+		select.addSelect( dataTable.getIdField() );
+		select.addSelect( dataTable.getParentIdField() );
+
+		if( !dataTable.getEntity().isSamplingUnit() ){
+			select.addSelect( dataTable.getSamplingUnitIdField() );
+		}
 		
 		// add dimensions to select
 		for (Field<Integer> field : factTable.getDimensionIdFields()) {
@@ -241,7 +245,7 @@ public final class CreateAggregateTablesTask extends Task {
 			DataAoiTable aoiTable = getJob().getInputSchema().getSamplingUnitAoiTable();
 			select.addSelect( aoiTable.getAoiIdFields() );
 			
-			Field<Long> joinField = ( dataTable.getEntity().isSamplingUnit() ) ? dataTable.getIdField() : dataTable.getParentIdField();
+			Field<Long> joinField = ( dataTable.getEntity().isSamplingUnit() ) ? dataTable.getIdField() : dataTable.getSamplingUnitIdField();
 			select.addJoin(aoiTable, joinField.eq(aoiTable.getIdField()) );
 		}
 		

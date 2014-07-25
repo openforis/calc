@@ -36,6 +36,7 @@ public class EntityDataView extends DataTable {
 		this.schema = schema;
 		createPrimaryKeyField();
 		createParentIdField();
+		createSamplingUnitIdField();
 		// TODO: coordinates disabled now
 		// createCoordinateFields();
 		createCategoryFields(entity);

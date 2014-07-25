@@ -109,7 +109,8 @@ public class CollectDataController {
 
 	private String extractName(String uri) {
 		String name = uri.replaceFirst(".*/([^/?]+).*", "$1");
+		name = name.replaceAll( "\\W", "_" );
 		return name;
 	}
-
+	
 }
