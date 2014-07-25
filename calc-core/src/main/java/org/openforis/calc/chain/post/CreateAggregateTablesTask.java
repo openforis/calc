@@ -202,7 +202,7 @@ public final class CreateAggregateTablesTask extends Task {
 		
 		SelectQuery<?> select = new Psql().selectQuery(dataTable);
 		select.addSelect( dataTable.getIdField() );
-		select.addSelect( dataTable.getParentIdField() );
+//		select.addSelect( dataTable.getParentIdField() );
 
 		if( !dataTable.getEntity().isSamplingUnit() ){
 			select.addSelect( dataTable.getSamplingUnitIdField() );
