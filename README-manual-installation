@@ -1,0 +1,202 @@
+==============================================================
+		* Download links
+==============================================================
+		
+- Open Foris Calc:		
+	http://www.openforis.org/nexus/service/local/artifact/maven/redirect?r=releases&g=org.openforis.calc&a=calc-assembly&v=LATEST&e=zip
+
+- Open Foris Collect:
+	http://www.openforis.org/nexus/service/local/artifact/maven/redirect?r=releases&g=org.openforis.collect&a=collect-assembly&v=LATEST&e=zip
+
+- Open Foris Test Data:
+	http://www.openforis.org/nexus/service/local/artifact/maven/redirect?r=releases&g=org.openforis.test-data&a=test-data&v=LATEST&e=zip
+
+==============================================================
+		* Calc Installation instructions
+==============================================================
+1. Install Jdk 1.7  ( http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html )
+
+1. Install postgres 9.2+ with preferably user and password ‘postgres’
+	http://www.enterprisedb.com/products-services-training/pgdownload
+	
+2. Optional (not needed at the moment). After installation,  run stackbuilder to install PostGis
+
+3. Install R 3.x ( http://www.r-project.org/ )
+	
+	Follow specific operating system instructions in the next section ( R Installation instructions )
+	
+	* Note: after having installed R and all libraries, check that rJava has been properly installed:
+		inside R terminal type: library(rJava)
+		
+4. Start Calc
+	execute command startup.cmd (windows only) or ./startup.sh (MacOs and linux)
+					
+5. Stop Calc	
+	execute command shutdown.cmd (windows only) or ./shutdown.sh (MacOs and linux)
+
+
+==============================================================
+		* R installation instructions
+==============================================================
+
+==============
+ * Mac Os X
+==============
+	- Download (http://cran.r-project.org/bin/macosx/) and install r
+		( If using OS X Mountain Lion install X11  (http://support.apple.com/kb/HT5293?viewlocale=en_US&locale=en_US) )
+
+	- Install R required packages
+		sudo R
+		install.packages("RPostgreSQL")
+	 	install.packages("rJava")
+		install.packages("sqldf");
+		
+	- set R_HOME environment variable
+		1. add to the file /etc/launchd.con (sudo vi /etc/launchd.conf) the following line:
+			setenv R_HOME /Library/Frameworks/R.framework/Resources
+		2. reboot computer
+		
+==============
+ * Ubuntu
+============== 
+
+	You can follow the instructions here:  http://ubuntuhandbook.org/index.php/2013/08/install-r-statistical-package-ubuntu-13-04/ there's a good 
+
+	Download R and follow the instructions to install it on http://cran.rstudio.com/
+	
+	add repository to sources list: 
+		sudo gedit /etc/apt/sources.list
+			add a new entry:
+			deb http://cran.rstudio.com/bin/linux/ubuntu precise/
+	
+	
+	gpg --keyserver pgp.mit.edu --recv-key 51716619E084DAB9
+	gpg -a --export E084DAB9 | apt-key add -
+	
+	sudo apt-get update
+	sudo apt-get install r-base
+	
+
+	Set enviroment variable  (e.g. sudo gedit /etc/environment)
+		R_HOME=/usr/lib/R
+		(if using x64 os: R_HOME=/usr/lib64/R)
+	
+	
+- Install R required packages:
+		
+		sudo apt-get install libpq-dev
+
+		tar -xvf calc/lib/lmfor_1.1_R_i686-pc-linux-gnu.tar.gz 
+		sudo R CMD INSTALL --build lmfor
+		rm -r lmfor
+		
+		sudo R
+			install.packages("RPostgreSQL")
+			install.packages("sqldf")
+	
+- Install rJava
+	 	install.packages("rJava")
+
+		If having problem (like : libjvm.so: cannot open shared object file: No such file or directory):
+			- check with ll command the permission of libjvm file
+			
+			- modify /etc/environment file and add:
+				LD_LIBRARY_PATH=$JAVA_HOME/jre/lib/i386:$JAVA_HOME/jre/lib/i386/client
+			(log out and login again)
+			
+			- run javareconf:
+				sudo R CMD javareconf
+
+==============
+ * Linux RedHat 6
+==============
+	(64bit)
+	sudo rpm -Uvh http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+	(32 bit)
+	sudo rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
+	
+	sudo yum update
+	sudo yum install R
+	
+	- in case of missing required packages error (texinfo, texinfo-tex):
+	
+		sudo yum install texinfo
+	
+		sudo rpm -Uvh http://mirror.centos.org/centos/6/os/x86_64/Packages/texinfo-tex-4.13a-8.el6.x86_64.rpm
+		
+		sudo yum install R
+	
+	- continue installing required R libraries (see Ubuntu instructions but skip installing libpq-dev)
+	
+	Set environment variable (see above)
+
+==============
+ * Windows
+==============
+
+	- Download R for Windows (http://cran.r-project.org/bin/windows/base/)
+	
+	- Run the installer
+	 
+		IMPORTANT: If installing R under Windows Vista/7, please install it outside of c:\program files, e.g. c:\opt\r
+		( In case of troubles installing R under Windows Vista/7, please see the R FAQ (http://cran.r-project.org/bin/windows/base/rw-FAQ.html) ) 
+	
+	- Set up environment variables:
+	
+		- Define R_HOME environment variable ( e.g. R_HOME=c:\opt\R\R-VERSION_NUMBER )
+		
+		- Define JAVA_HOME environment variable ( e.g. JAVA_HOME=c:\opt\java\jdk-1.7 )
+		
+		- Add to PATH environment variable:
+		
+			- Windows 32 bit (i386):
+				%JAVA_HOME%\bin;%R_HOME%\bin;%R_HOME%\bin\i386;%R_HOME%\library\rJava\jri;%JAVA_HOME%\jre\bin\server;
+				
+			- Windows 64 bit (x64):				
+				%JAVA_HOME%\bin;%R_HOME%\bin;%R_HOME%\bin\x64;%R_HOME%\library\rJava\jri\x64;%JAVA_HOME%\jre\bin\server;
+					
+	- Install R required packages:
+		- From command line type:
+			R
+			
+		- Make sure .libPaths() are pointing to the current R installation before installing the libraries.
+			You can restore it by typing 
+			.libPaths( paste(R.home() , 'library' , sep='/') )
+				
+		- Inside R terminal type:
+				
+				install.packages("RPostgreSQL")
+				install.packages("rJava")
+				install.packages("sqldf")
+				
+	- Troubleshooting								
+			- if getting an error, check that JAVA_HOME and PATH have been properly defined
+			
+			- If OF calc cannot read libraries (e.g. you see a message in the console: Error in library("RPostgreSQL") : there is no package called ‘RPostgreSQL’) 
+			you have probably installed R into the Program Files folder. Please read carefully how to install R on windows.
+	
+============================================================================
+	* Tomcat 7 database parameters configuration
+============================================================================
+
+	- The file calc.xml (calc-server/tomcat/conf/Catalina/localhost/calc.xml) contains the database settings as follow. Change them if you don't have the default settings
+		
+		<?xml version="1.0" encoding="UTF-8"?>
+		<Context path="/calc" reloadable="false">
+			<Parameter name="calc.jdbc.driver" 			value="org.postgresql.Driver" />
+			<Parameter name="calc.jdbc.host" 			value="localhost" />
+			<Parameter name="calc.jdbc.port" 			value="5432" />
+			<Parameter name="calc.jdbc.db" 				value="calc" />
+			<Parameter name="calc.jdbc.url" 			value="jdbc:postgresql://${calc.jdbc.host}:${calc.jdbc.port}/${calc.jdbc.db}" />
+			<Parameter name="calc.jdbc.schema" 			value="calc" />
+			<Parameter name="calc.jdbc.username" 		value="calc" />
+			<Parameter name="calc.jdbc.password" 		value="calc" />
+			<Parameter name="calc.jdbc.adminuser" 		value="postgres" />
+			<Parameter name="calc.jdbc.adminpassword" 	value="postgres" />
+			<Parameter name="calc.jdbc.maxActive" 		value="10" />
+			<Parameter name="calc.jdbc.minIdle" 		value="5" />
+			
+			<Parameter name="saiku.home" 				value="${catalina.home}/webapps/saiku" />
+			<Parameter name="saiku.ui.url" 				value="/saiku-ui" />
+		</Context>
+		
