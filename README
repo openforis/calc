@@ -3,7 +3,7 @@
 ==============================================================
 		
 - Open Foris Calc:		
-	http://goo.gl/8GKyVA
+	https://www.dropbox.com/sh/dal2upm2tu7jtx2/AAC5u-lgXRNGpIb7laAQYFWWa
 
 - Open Foris Collect:
 	http://www.openforis.org/nexus/service/local/artifact/maven/redirect?r=releases&g=org.openforis.collect&a=collect-assembly&v=LATEST&e=zip
@@ -15,15 +15,18 @@
 		* Calc Installation instructions
 ==============================================================
 1. Download and install  Postgres 9.2 + [http://www.enterprisedb.com/products-services-training/pgdownload]. 
-	Note: the required password should be set as ‘postgres’.
+	Note: the required password should be set as 'postgres'.
  
 2. Download and install  R 3.1 + [http://cran.r-project.org/]. 
-	Note: for Windows users, R should be installed in a folder that contains no spaces (“ “), for example  “C:\Opt\R\R-3.1.0”.
+	Note: for Windows users, R should be installed in a folder that 
+			contains no spaces, for example "C:\Opt\R\R-3.1.0".
  
 3. Download and install Open Foris Calc [http://goo.gl/8GKyVA]. 
-	Note 1: for Windows users, CALC should be installed in a folder that contains no spaces (“ “), for example “C:\opt\OpenForisCalc”.
+	Note 1: for Windows users, CALC should be installed in a folder that contains no spaces, 
+			for example "C:\opt\OpenForisCalc".
 	Note 2:	Administration rights are required.
-	Note 3: Both Windows and Linux users will be required to re-start the computer in order to update the required system settings.		
+	Note 3: Both Windows and Linux users will be required to re-start 
+			the computer in order to update the required system settings.		
 
 4. Start Calc
 	Double click on the "Open Foris Calc Control Panel" located on your desktop.
@@ -39,7 +42,8 @@
 	* Tomcat 7 database parameters configuration
 ============================================================================
 
-	- The file calc.xml (calc-server/tomcat/conf/Catalina/localhost/calc.xml) contains the database settings as follow. Change them if you don't have the default settings
+	- The file calc.xml (calc-server/tomcat/conf/Catalina/localhost/calc.xml) contains the database settings as follow. 
+		Change them if you don't have the default settings
 		
 		<?xml version="1.0" encoding="UTF-8"?>
 		<Context path="/calc" reloadable="false">
