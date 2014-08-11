@@ -1,12 +1,12 @@
 <project>
     <shortName>OpenForisCalc</shortName>
     <fullName>Open Foris Calc</fullName>
-    <version>1.0-a8-SNAPSHOT</version>
+    <version>PROJECT_VERSION</version>
+    <outputDirectory>OUTPUT_DIRECTORY</outputDirectory>
     <readmeFile>../../../../README</readmeFile>
     <licenseFile>../../../../License.txt</licenseFile>
     <leftImage>img/left-side.png</leftImage>
     <logoImage>../../../../calc-webapp/src/main/webapp/img/of-logo-small.png</logoImage>
-<rebootRequired>1</rebootRequired>
     <componentList>
         <component>
             <name>default</name>
@@ -280,12 +280,13 @@
             <path>${project.rollbackBackupDirectory}</path>
         </deleteFile>
     </postUninstallationActionList>
-    <compressionAlgorithm>lzma</compressionAlgorithm>
+    <compressionAlgorithm>lzma-ultra</compressionAlgorithm>
     <defaultUnixDirectoryPermissions>777</defaultUnixDirectoryPermissions>
     <defaultUnixFilePermissions>777</defaultUnixFilePermissions>
     <defaultUnixOwner>${env(SUDO_USER)}</defaultUnixOwner>
     <enableRollback>1</enableRollback>
     <enableTimestamp>1</enableTimestamp>
+    <rebootRequired>1</rebootRequired>
     <requireInstallationByRootUser>1</requireInstallationByRootUser>
     <rollbackBackupDirectory>${system_temp_directory}/${product_shortname}/backup</rollbackBackupDirectory>
     <saveRelativePaths>1</saveRelativePaths>
@@ -296,7 +297,7 @@
             <description>Installer.Parameter.installdir.description</description>
             <explanation>Installer.Parameter.installdir.explanation</explanation>
             <value></value>
-            <default>${platform_install_prefix}/${product_shortname}-${product_version}</default>
+            <default>${platform_install_prefix}/${product_shortname}</default>
             <allowEmptyValue>0</allowEmptyValue>
             <cliOptionName>prefix</cliOptionName>
             <mustBeWritable>1</mustBeWritable>

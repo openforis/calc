@@ -1,37 +1,43 @@
 <project>
-    <shortName>OpenForisCalc</shortName>
+	<shortName>OpenForisCalc</shortName>
     <fullName>Open Foris Calc</fullName>
     <version>PROJECT_VERSION</version>
     <outputDirectory>OUTPUT_DIRECTORY</outputDirectory>
-    <!--readmeFile>../../../../README</readmeFile-->	
-	<installerFilename>${product_shortname}-${product_version}-${platform_name}-installer.${platform_exec_suffix}</installerFilename>
+    <!--readmeFile>../../../../README</readmeFile-->
+	<installerFilename>${product_shortname}-${product_version}-${platform_name}-installer-with-jdk.${platform_exec_suffix}</installerFilename>
     <licenseFile>../../../../License.txt</licenseFile>
     <leftImage>img/left-side.png</leftImage>
     <logoImage>../../../../calc-webapp/src/main/webapp/img/of-logo-small.png</logoImage>
-    <componentList>
+	<componentList>
+        <include>
+			<file>java.xml</file>
+		</include>
         <include>
             <file>openforiscalc_installbuilder_main.xml</file>
-        </include>
-    </componentList>
-    <preInstallationActionList>
-        <autodetectJava>
-            <promptUser>0</promptUser>
-            <selectionOrder>newest</selectionOrder>
-            <validVersionList>
-                <validVersion>
-                    <bitness></bitness>
-                    <maxVersion></maxVersion>
-                    <minVersion>1.8</minVersion>
-                    <requireJDK>1</requireJDK>
-                    <vendor></vendor>
-                </validVersion>
-            </validVersionList>
-        </autodetectJava>
-    </preInstallationActionList>
-	<postInstallationActionList>       
-		<dirName path="${java_executable}" variable="java_bin_dir"/>
-		<dirName path="${java_bin_dir}" variable="java_home"/>
-		<addEnvironmentVariable name="JAVA_HOME" value="${java_home}"/>	
+        </include>    
+	</componentList>
+	<postInstallationActionList>
+        <addEnvironmentVariable>
+            <name>JAVA_HOME</name>
+            <scope>system</scope>
+            <value>${installdir}/java</value>
+            <ruleList>
+                <platformTest>
+                    <negate>1</negate>
+                    <type>windows</type>
+                </platformTest>
+            </ruleList>
+        </addEnvironmentVariable>
+        <addEnvironmentVariable>
+            <name>JAVA_HOME</name>
+            <scope>system</scope>
+            <value>${installdir}\java</value>
+            <ruleList>
+                <platformTest>
+                    <type>windows</type>
+                </platformTest>
+            </ruleList>
+        </addEnvironmentVariable>
 	</postInstallationActionList>
 	<compressionAlgorithm>lzma-ultra</compressionAlgorithm>
     <defaultUnixDirectoryPermissions>777</defaultUnixDirectoryPermissions>

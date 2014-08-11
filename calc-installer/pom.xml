@@ -18,7 +18,7 @@
 		<installer-dir>src/main/installer</installer-dir>
 		
 		<installbuilder-file-name>openforiscalc_installbuilder.xml</installbuilder-file-name>
-		
+		<installbuilder-with-jdk-file-name>openforiscalc_installbuilder_jdk.xml</installbuilder-with-jdk-file-name>
 		<!-- installer file names -->
 		<windows-installer-file-name>OpenForisCalc-${project.version}-windows-installer.exe</windows-installer-file-name>
 		<linux-installer-file-name>OpenForisCalc-${project.version}-linux-installer.run</linux-installer-file-name>
@@ -31,7 +31,7 @@
 			<build>
 				<plugins>
 				
-					<!-- 1. copy installbuilder-source-file -->
+					<!-- 1. copy installbuilder source files -->
 					<plugin>
 						<artifactId>maven-resources-plugin</artifactId>
 						<version>2.6</version>
@@ -50,6 +50,7 @@
 											<directory>src/main/resources</directory>
 											<includes>
 								                <include>${installbuilder-file-name}</include>
+								                <include>${installbuilder-with-jdk-file-name}</include>
 								            </includes>
 										</resource>
 									</resources>
@@ -60,32 +61,57 @@
 						</executions>
 					</plugin>
 					
-					<!-- 2. replace calc version into the xml installbuilder source file -->
 					<plugin>
 						<groupId>com.google.code.maven-replacer-plugin</groupId>
 						<artifactId>maven-replacer-plugin</artifactId>
 						<version>1.4.0</version>
 						<executions>
+						
+							<!-- 2. replace calc version into the xml installbuilder source file -->
 							<execution>
+								<id>replace-project-version</id>
 								<phase>package</phase>
 								<goals>
 									<goal>replace</goal>
 								</goals>
+								<configuration>
+									<includes>
+										<include>${installer-dir}/${installbuilder-file-name}</include>
+										<include>${installer-dir}/${installbuilder-with-jdk-file-name}</include>
+									</includes>
+									<regex>false</regex>
+									<!-- the name of the token to replace -->
+									<token>PROJECT_VERSION</token>
+									<!-- replace it with the Maven project version -->
+									<value>${project.version}</value>
+								</configuration>
 							</execution>
+							
+							<!-- 3. replace the output directory of the installer with the project.build.directory property-->
+							<execution>
+								<id>replace-output-directory</id>
+								<phase>package</phase>
+								<goals>
+									<goal>replace</goal>
+								</goals>
+								<configuration>
+									<includes>
+										<include>${installer-dir}/${installbuilder-file-name}</include>
+										<include>${installer-dir}/${installbuilder-with-jdk-file-name}</include>
+									</includes>
+									<regex>false</regex>
+									<!-- the name of the token to replace -->
+									<token>OUTPUT_DIRECTORY</token>
+									<!-- replace it with the Maven project version -->
+									<value>${project.build.directory}</value>
+								</configuration>
+							</execution>
+							
 						</executions>
-						<configuration>
-							<includes>
-								<include>${installer-dir}/${installbuilder-file-name}</include>
-							</includes>
-							<regex>false</regex>
-							<!-- the name of the token to replace -->
-							<token>PROJECT_VERSION</token>
-							<!-- replace it with the Maven project version -->
-							<value>${project.version}</value>
-						</configuration>
+						
 					</plugin>
 				
-					<!-- 3. execute installbuilder to produce the installers -->
+					<!-- 4. execute installbuilder to produce the installers -->
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>exec-maven-plugin</artifactId>
@@ -109,6 +135,22 @@
 							</execution>
 							
 							<execution>
+								<id>linux-installer-with-jdk</id>
+								<phase>package</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<executable>${installbuilder-home}/bin/builder</executable>
+									<arguments>
+										<argument>build</argument>
+										<argument>${basedir}/${installer-dir}/${installbuilder-with-jdk-file-name}</argument>
+										<argument>linux</argument>
+									</arguments>
+								</configuration>
+							</execution>
+							
+							<execution>
 								<id>windows-installer</id>
 								<phase>package</phase>
 								<goals>
@@ -124,29 +166,19 @@
 								</configuration>
 							</execution>
 							
-						</executions>
-					</plugin>
-					
-					<!--  4. move the installers into the target folder -->
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-antrun-plugin</artifactId>
-						<executions>
 							<execution>
-								<id>run-ant-rename</id>
+								<id>windows-installer-with-jdk</id>
 								<phase>package</phase>
 								<goals>
-									<goal>run</goal>
+									<goal>exec</goal>
 								</goals>
 								<configuration>
-									<tasks>
-										<move file="${installbuilder-home}/output/${windows-installer-file-name}" tofile="${project.build.directory}/${windows-installer-file-name}" failonerror="false" />
-										<move file="${installbuilder-home}/output/${linux-installer-file-name}" tofile="${project.build.directory}/${linux-installer-file-name}" failonerror="false" />
-<!-- 										<move -->
-<!-- 											file="${installbuilder-home}/output/${osx-installer-file-name}" -->
-<!-- 											tofile="${project.build.directory}/${osx-installer-file-name}"  -->
-<!-- 											failonerror="false" /> -->
-									</tasks>
+									<executable>${installbuilder-home}/bin/builder</executable>
+									<arguments>
+										<argument>build</argument>
+										<argument>${basedir}/${installer-dir}/${installbuilder-with-jdk-file-name}</argument>
+										<argument>windows</argument>
+									</arguments>
 								</configuration>
 							</execution>
 						</executions>
