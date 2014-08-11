@@ -11,8 +11,37 @@
 - Open Foris Test Data:
 	http://www.openforis.org/nexus/service/local/artifact/maven/redirect?r=releases&g=org.openforis.test-data&a=test-data&v=LATEST&e=zip
 
+	
 ==============================================================
-		* Calc Installation instructions
+		* Calc Installation instructions (Without JDK) [Required for Windows 64bit)
+==============================================================
+1. Download and install Jdk 1.8 + [ http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html ]
+
+2. Download and install  Postgres 9.2 + [http://www.enterprisedb.com/products-services-training/pgdownload]. 
+	Note: the required password should be set as 'postgres'.
+ 
+3. Download and install  R 3.1 + [http://cran.r-project.org/]. 
+	Note: for Windows users, R should be installed in a folder that 
+			contains no spaces, for example "C:\Opt\R\R-3.1.0".
+ 
+4. Download and install Open Foris Calc [ OpenForisCalc-VERSION-PLATFORM-installer.EXTENSION ] 
+	at https://www.dropbox.com/sh/dal2upm2tu7jtx2/AAC5u-lgXRNGpIb7laAQYFWWa 
+	
+	Note 1: for Windows users, CALC should be installed in a folder that contains no spaces, 
+			for example "C:\opt\OpenForisCalc".
+	Note 2:	Administration rights are required.
+	Note 3: Both Windows and Linux users will be required to re-start 
+			the computer in order to update the required system settings.		
+
+5. Start Calc
+	Double click on the "Open Foris Calc Control Panel" located on your desktop.
+					
+6. Stop Calc	
+	Click the stop button available on "Open Foris Calc Control Panel"
+	
+	
+==============================================================
+		* Calc Installation instructions (JDK included) [Only for Linux and Windows 32 bit]
 ==============================================================
 1. Download and install  Postgres 9.2 + [http://www.enterprisedb.com/products-services-training/pgdownload]. 
 	Note: the required password should be set as 'postgres'.
@@ -21,7 +50,7 @@
 	Note: for Windows users, R should be installed in a folder that 
 			contains no spaces, for example "C:\Opt\R\R-3.1.0".
  
-3. Download and install Open Foris Calc [http://goo.gl/8GKyVA]. 
+3. Download and install Open Foris Calc [ OpenForisCalc-VERSION-PLATFORM-installer-with-jdk.EXTENSION ] at https://www.dropbox.com/sh/dal2upm2tu7jtx2/AAC5u-lgXRNGpIb7laAQYFWWa  [ https://www.dropbox.com/sh/dal2upm2tu7jtx2/AAC5u-lgXRNGpIb7laAQYFWWa ]. 
 	Note 1: for Windows users, CALC should be installed in a folder that contains no spaces, 
 			for example "C:\opt\OpenForisCalc".
 	Note 2:	Administration rights are required.
