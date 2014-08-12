@@ -76,7 +76,7 @@ public class Saiku {
 		Marshaller marshaller = jaxbContext.createMarshaller();
 		marshaller.setProperty("jaxb.formatted.output", true);
 
-		File mdxPath = getMdxDirectory(workspace); // new File(saikuHome, "WEB-INF/classes/"+workspace.getName()+"/"+workspace.getName()+".xml" );
+		File mdxPath = getMdxDirectory(workspace);
 		String wsName = workspace.getName();
 		File f = new File( mdxPath, wsName+".xml" );
 		if ( f.exists() ) {

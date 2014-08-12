@@ -9,10 +9,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.impl.DynamicTable;
+import org.jooq.impl.SQLDataType;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.AoiLevel;
@@ -48,7 +51,7 @@ public class DataSchema extends RelationalSchema {
 	private Map<MultiwayVariable, CategoryDimensionTable> categoryDimensionTables;
 	
 	public DataSchema(Workspace workspace) {
-		this(workspace.getInputSchema() , workspace);
+		this( workspace.getInputSchema() , workspace );
 	}
 
 	public DataSchema(String name, Workspace workspace){
@@ -223,25 +226,28 @@ public class DataSchema extends RelationalSchema {
 	
 	protected void initCategoryDimensionTables() {
 		this.categoryDimensionTables = new HashMap<MultiwayVariable, CategoryDimensionTable>();
+		
+	
 		List<Entity> entities = workspace.getEntities();
 		for ( Entity entity : entities ) {
 			if( entity.isAggregable() ) {
 				
 				// Add dimensions for categorical variables
-				for (CategoricalVariable<?> var : entity.getCategoricalVariables()) {
+//				for (CategoricalVariable<?> var : entity.getCategoricalVariables()) {
+				for (CategoricalVariable<?> var : entity.getDimensions()) {
 					if( var instanceof MultiwayVariable ){
 						MultiwayVariable multiVar = (MultiwayVariable) var;
 						CategoryLevel categoryLevel = var.getCategoryLevel();
 						if( categoryLevel != null ){
 							String schemaName = categoryLevel.getSchemaName();
-							if ( schemaName.equals(this.getName()) && !var.getDegenerateDimension() && var.getDisaggregate() ) {
+							if ( schemaName.equals(this.getName()) ) { // && !var.getDegenerateDimension() && var.getDisaggregate() 
 								// last test . if not input variable, it has to be in the output chain
-								if( !var.isUserDefined() || entity.getDefaultProcessingChainCategoricalOutputVariables().contains(multiVar) ){
+//								if( !var.isUserDefined() || entity.getDefaultProcessingChainCategoricalOutputVariables().contains(multiVar) ){
 									CategoryDimensionTable table = new CategoryDimensionTable( this, multiVar );
 									addTable(table);
 									categoryDimensionTables.put( multiVar, table );
 									
-								}
+//								}
 							}
 						}
 					}

@@ -367,33 +367,40 @@ public abstract class DataTable extends AbstractTable {
 	protected void createDimensionFieldsRecursive(Entity entity) {
 //		this.dimensionIdFields = new HashMap<CategoricalVariable<?>, Field<Integer>>();
 		
-		Entity parent = entity.getParent();
-		// it stops if the entity is the sampling unit. cannot aggregate at higher level
-		if ( parent != null && !entity.isSamplingUnit() ) {
-			createDimensionFieldsRecursive(parent);
+		List<CategoricalVariable<?>> dimensions = entity.getDimensions();
+		for (CategoricalVariable<?> var : dimensions) {
+			String fieldName = ((MultiwayVariable) var).getInputCategoryIdColumn();  // String.format(DIMENSION_ID_COLUMN_FORMAT, var.getName());
+			Field<Integer> fld = createField(fieldName, SQLDataType.INTEGER, this);
+			dimensionIdFields.put(var, fld);
 		}
-		createDimensionIdFields(entity);
-		createCategoryValueFields(entity, false);
+		
+//		Entity parent = entity.getParent();
+//		// it stops if the entity is the sampling unit. cannot aggregate at higher level
+//		if ( parent != null && !entity.isSamplingUnit() ) {
+//			createDimensionFieldsRecursive(parent);
+//		}
+//		createDimensionIdFields(entity);
+//		createCategoryValueFields(entity, false);
 	}
 
-	private void createDimensionIdFields(Entity entity) {
-		List<CategoricalVariable<?>> variables = entity.getCategoricalVariables();
-		for ( CategoricalVariable<?> var : variables ) {
-			createDimensionIdField(var);
-		}
-	}
+//	private void createDimensionIdFields( Entity entity ) {
+//		List<CategoricalVariable<?>> variables = entity.getCategoricalVariables();
+//		for ( CategoricalVariable<?> var : variables ) {
+//			createDimensionIdField(var);
+//		}
+//	}
 
-	protected void createDimensionIdField(CategoricalVariable<?> var) {
-		if ( !var.getDegenerateDimension() && var.getDisaggregate() ) {
-			if( var instanceof MultiwayVariable){
-				if( !var.isUserDefined() ||var.getEntity().getDefaultProcessingChainCategoricalOutputVariables().contains(var) ){
-					String fieldName = ((MultiwayVariable) var).getInputCategoryIdColumn();  // String.format(DIMENSION_ID_COLUMN_FORMAT, var.getName());
-					Field<Integer> fld = createField(fieldName, SQLDataType.INTEGER, this);
-					dimensionIdFields.put(var, fld);
-				}
-			}
-		}
-	}
+//	protected void createDimensionIdField(CategoricalVariable<?> var) {
+//		if ( !var.getDegenerateDimension() && var.getDisaggregate() ) {
+//			if( var instanceof MultiwayVariable){
+//				if( !var.isUserDefined() ||var.getEntity().getDefaultProcessingChainCategoricalOutputVariables().contains(var) ){
+//					String fieldName = ((MultiwayVariable) var).getInputCategoryIdColumn();  // String.format(DIMENSION_ID_COLUMN_FORMAT, var.getName());
+//					Field<Integer> fld = createField(fieldName, SQLDataType.INTEGER, this);
+//					dimensionIdFields.put(var, fld);
+//				}
+//			}
+//		}
+//	}
 
 	protected void createStratumField() {
 		if( getEntity().getWorkspace().hasStratifiedSamplingDesign() ){
@@ -409,6 +416,10 @@ public abstract class DataTable extends AbstractTable {
 	public Collection<Field<Integer>> getDimensionIdFields() {
 		return Collections.unmodifiableCollection(dimensionIdFields.values());
 	}
+	
+//	public Map<CategoricalVariable<?>, Field<Integer>> getDimensionIdFieldsMap() {
+//		return Collections.unmodifiableMap( dimensionIdFields );
+//	}
 	
 	public Field<Integer> getDimensionIdField(CategoricalVariable<?> variable) {
 		return dimensionIdFields.get(variable);

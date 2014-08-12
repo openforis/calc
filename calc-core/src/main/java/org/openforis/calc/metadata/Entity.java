@@ -265,7 +265,39 @@ public class Entity extends EntityBase {
 	@JsonIgnore
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public List<CategoricalVariable<?>> getCategoricalVariables() {
-		return Collections.unmodifiableList(selectInstancesOf((List)variables, CategoricalVariable.class));
+		return Collections.unmodifiableList( selectInstancesOf((List)variables, CategoricalVariable.class) );
+	}
+	
+	/**
+	 * Returns a list of categorical variables that can be represented as dimensions 
+	 * @return 
+	 */
+	@JsonIgnore
+	public List<CategoricalVariable<?>> getDimensions(){
+		List<CategoricalVariable<?>> vars = new ArrayList<CategoricalVariable<?>>();
+		createDimensionsRecursively( this , vars );
+		return  org.openforis.commons.collection.CollectionUtils.unmodifiableList( vars );
+	}
+
+	private void createDimensionsRecursively( Entity entity, List<CategoricalVariable<?>> vars ){
+		if( entity.isInSamplingUnitHierarchy() ){
+			Entity parent = entity.getParent();
+			// it stops if the entity is the sampling unit. cannot aggregate at higher level
+			if ( parent != null && !entity.isSamplingUnit() ) {
+				createDimensionsRecursively( parent , vars );
+			}
+		}
+		
+		List<CategoricalVariable<?>> variables = entity.getCategoricalVariables();
+		for ( CategoricalVariable<?> var : variables ) {
+			if ( !var.getDegenerateDimension() && var.getDisaggregate() ) {
+				if( var instanceof MultiwayVariable){
+					if( !var.isUserDefined() || var.getEntity().getDefaultProcessingChainCategoricalOutputVariables().contains(var) ) {
+						vars.add(var);
+					}
+				}
+			}
+		}
 	}
 
 	@JsonIgnore
