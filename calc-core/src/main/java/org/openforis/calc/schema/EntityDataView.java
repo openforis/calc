@@ -15,19 +15,14 @@ import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.psql.Psql;
 
 /**
- * @author S. Ricci
  * @author Mino Togna
+ * @author S. Ricci
  */
 public class EntityDataView extends DataTable {
 
 	private static final long serialVersionUID = 1L;
 
 	private DataSchema schema;
-
-	/**
-	 * Select to create this view
-	 */
-//	private SelectQuery<Record> select;
 
 	private TableField<Record, BigDecimal> plotAreaField;
 

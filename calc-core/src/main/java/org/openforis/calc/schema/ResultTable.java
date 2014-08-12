@@ -32,7 +32,9 @@ public class ResultTable extends DataTable {
 		
 		// for now it always creates the plot area column
 //		if( entity.getPlotAreaRScript() != null ){
+		if( entity.isInSamplingUnitHierarchy() ){
 			plotArea = super.createField( PLOT_AREA_COLUMN_NAME, Psql.DOUBLE_PRECISION , this );
+		}
 //		}
 	}
 	

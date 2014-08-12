@@ -269,7 +269,8 @@ public class Entity extends EntityBase {
 	}
 	
 	/**
-	 * Returns a list of categorical variables that can be represented as dimensions 
+	 * Returns a list of categorical variables that can be represented as dimensions.
+	 * If the entity is in the sampling unit hierarchy, also the categorical variables up to the sampling unit entity will be added
 	 * @return 
 	 */
 	@JsonIgnore

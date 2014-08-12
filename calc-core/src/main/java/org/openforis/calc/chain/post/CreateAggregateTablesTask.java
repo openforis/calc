@@ -204,10 +204,6 @@ public final class CreateAggregateTablesTask extends Task {
 		select.addSelect( dataTable.getIdField() );
 //		select.addSelect( dataTable.getParentIdField() );
 
-		if( !dataTable.getEntity().isSamplingUnit() ){
-			select.addSelect( dataTable.getSamplingUnitIdField() );
-		}
-		
 		// add dimensions to select
 		for (Field<Integer> field : factTable.getDimensionIdFields()) {
 			select.addSelect(dataTable.field(field));
@@ -215,7 +211,7 @@ public final class CreateAggregateTablesTask extends Task {
 		for (Field<?> field : factTable.getCategoryValueFields() ) {
 			select.addSelect( dataTable.field(field) );
 		}
-
+		
 		// add quantities to select
 		Entity entity = factTable.getEntity();
 		Collection<QuantitativeVariable> vars = entity.getOriginalQuantitativeVariables();
@@ -228,67 +224,74 @@ public final class CreateAggregateTablesTask extends Task {
 			Field<BigDecimal> fld = dataTable.getQuantityField(var);
 			select.addSelect(fld);
 		}
-		// in case of sampling unit, it adds the weight (area) measure
-		Field<BigDecimal> weightField = dataTable.getWeightField();
-		if( weightField != null ){
-			select.addSelect( weightField );
-		}
 		
-		// add plot area to select
-		Field<BigDecimal> plotAreaField = factTable.getPlotAreaField();
-		if (plotAreaField != null) {
-			select.addSelect( dataTable.field(plotAreaField) );
-		}
-		
-		// add aoi ids to fact table if it's geo referenced
-		if( factTable.isGeoreferenced() ) {
-			DataAoiTable aoiTable = getJob().getInputSchema().getSamplingUnitAoiTable();
-			select.addSelect( aoiTable.getAoiIdFields() );
+		// in case entities that need to be aggregated based on their sampling design 
+		if( entity.isInSamplingUnitHierarchy() ){
 			
-			Field<Long> joinField = ( dataTable.getEntity().isSamplingUnit() ) ? dataTable.getIdField() : dataTable.getSamplingUnitIdField();
-			select.addJoin(aoiTable, joinField.eq(aoiTable.getIdField()) );
-		}
-		
-		// add stratum and cluster columns to fact table based on the sampling design
-		if( getWorkspace().getSamplingDesign().getTwoPhases() ){
-			
-			// add join in case of two phase sampling
-			DynamicTable<Record> phase1Table = factTable.getDataSchema().getPhase1Table();
-			TableJoin phase1Join = getWorkspace().getSamplingDesign().getPhase1Join();
-			Condition conditions = phase1Table.getJoinConditions( dataTable, phase1Join );
-			select.addJoin(phase1Table, conditions);
-			
-			// add stratum column
-			if( getWorkspace().hasStratifiedSamplingDesign() ) {
-				String stratumColumn = getWorkspace().getSamplingDesign().getStratumJoin().getColumn();
-				Field<Integer> stratumField = phase1Table.getIntegerField( stratumColumn ).cast(Integer.class).as( factTable.getStratumField().getName() ) ;
-				select.addSelect( stratumField );
+			if( !dataTable.getEntity().isSamplingUnit() ){
+				select.addSelect( dataTable.getSamplingUnitIdField() );
 			}
-			// add cluster column
-			if( getWorkspace().hasClusterSamplingDesign() ) {
-				String clusterColumn = getWorkspace().getSamplingDesign().getClusterColumn().getColumn();
-				Field<String> clusterField = phase1Table.getVarcharField( clusterColumn ).as( factTable.getClusterField().getName() ) ;
-				select.addSelect( clusterField );
-			}
-		} else {
-			// one phase sampling
 			
-			if( getWorkspace().hasStratifiedSamplingDesign() ) {
+			// in case of sampling unit, it adds the weight (area) measure
+			Field<BigDecimal> weightField = dataTable.getWeightField();
+			if( weightField != null ){
+				select.addSelect( weightField );
+			}
+			
+			// add plot area to select
+			Field<BigDecimal> plotAreaField = factTable.getPlotAreaField();
+			if (plotAreaField != null) {
+				select.addSelect( dataTable.field(plotAreaField) );
+			}
+			
+			// add aoi ids to fact table if it's geo referenced
+			if( factTable.isGeoreferenced() ) {
+				DataAoiTable aoiTable = getJob().getInputSchema().getSamplingUnitAoiTable();
+				select.addSelect( aoiTable.getAoiIdFields() );
+				
+				Field<Long> joinField = ( dataTable.getEntity().isSamplingUnit() ) ? dataTable.getIdField() : dataTable.getSamplingUnitIdField();
+				select.addJoin(aoiTable, joinField.eq(aoiTable.getIdField()) );
+			}
+			
+			// add stratum and cluster columns to fact table based on the sampling design
+			if( getWorkspace().getSamplingDesign().getTwoPhases() ){
+				
+				// add join in case of two phase sampling
+				DynamicTable<Record> phase1Table = factTable.getDataSchema().getPhase1Table();
+				TableJoin phase1Join = getWorkspace().getSamplingDesign().getPhase1Join();
+				Condition conditions = phase1Table.getJoinConditions( dataTable, phase1Join );
+				select.addJoin(phase1Table, conditions);
+				
 				// add stratum column
-				String stratumColumn = getWorkspace().getSamplingDesign().getStratumJoin().getColumn();
-				Field<Integer> stratumField = dataTable.field( stratumColumn ).cast(Integer.class).as( factTable.getStratumField().getName() ) ;
-				select.addSelect( stratumField );
-			}
-			
-			// add cluster column
-			if( getWorkspace().hasClusterSamplingDesign() ) {
-				String clusterColumn = getWorkspace().getSamplingDesign().getClusterColumn().getColumn();
-				Field<String> clusterField = dataTable.field( clusterColumn ).cast(String.class).as( factTable.getClusterField().getName() ) ;
-				select.addSelect( clusterField );
+				if( getWorkspace().hasStratifiedSamplingDesign() ) {
+					String stratumColumn = getWorkspace().getSamplingDesign().getStratumJoin().getColumn();
+					Field<Integer> stratumField = phase1Table.getIntegerField( stratumColumn ).cast(Integer.class).as( factTable.getStratumField().getName() ) ;
+					select.addSelect( stratumField );
+				}
+				// add cluster column
+				if( getWorkspace().hasClusterSamplingDesign() ) {
+					String clusterColumn = getWorkspace().getSamplingDesign().getClusterColumn().getColumn();
+					Field<String> clusterField = phase1Table.getVarcharField( clusterColumn ).as( factTable.getClusterField().getName() ) ;
+					select.addSelect( clusterField );
+				}
+			} else {
+				// one phase sampling
+				
+				if( getWorkspace().hasStratifiedSamplingDesign() ) {
+					// add stratum column
+					String stratumColumn = getWorkspace().getSamplingDesign().getStratumJoin().getColumn();
+					Field<Integer> stratumField = dataTable.field( stratumColumn ).cast(Integer.class).as( factTable.getStratumField().getName() ) ;
+					select.addSelect( stratumField );
+				}
+				
+				// add cluster column
+				if( getWorkspace().hasClusterSamplingDesign() ) {
+					String clusterColumn = getWorkspace().getSamplingDesign().getClusterColumn().getColumn();
+					Field<String> clusterField = dataTable.field( clusterColumn ).cast(String.class).as( factTable.getClusterField().getName() ) ;
+					select.addSelect( clusterField );
+				}
 			}
 		}
-			
-
 		
 		
 		// drop table
