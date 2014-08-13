@@ -532,6 +532,10 @@ Data vis options
 /**
 * == common styles
 */
+blockquote {
+	padding: 0px;
+	border-left: 0.1em solid #b4bcc2;
+}
 .no-padding {
 	padding: 0px;
 }
@@ -946,6 +950,23 @@ table.import-csv-table input[type=checkbox] {
 }
 .category-settings-form .code {
 	padding-top: 5px;
+}
+#step-edit-page .header-button-group {
+	width: 100%;
+	height: 5%;
+}
+#step-edit-page #calculation-step-edit-container , 
+#step-edit-page #calculation-step-exec-container ,
+#step-edit-page #calculation-step-results-container {
+	width: 100%;
+	height: 95%;
+	left:0;
+}
+#step-edit-page .aggregate-form {
+	margin-top: -20px;
+}
+#step-edit-page .aggregate-functions-form button {
+	min-width: 6em;
 }
 /**
 **

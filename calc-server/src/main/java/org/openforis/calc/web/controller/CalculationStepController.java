@@ -33,6 +33,7 @@ import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.module.r.CalcRModule;
 import org.openforis.calc.module.r.CustomROperation;
+import org.openforis.calc.persistence.jooq.ParameterMapConverter;
 import org.openforis.calc.web.form.CalculationStepForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -81,17 +82,19 @@ public class CalculationStepController {
 			ParameterMap params = new ParameterHashMap();
 			step.setParameters(params);
 			
+			String aggregateParameters = "{}";
 			switch ( step.getType() ) {
 			
 				case EQUATION:
 					populateStepTypeEquation( form, ws, step, params );
-//					break;
 				case SCRIPT:
 					step.setScript( form.getScript() );
 					
 					// quantitative output variable in case of script and equation
 					Variable<?> outputVariable = ws.getVariableById( form.getVariableId() );
 					step.setOutputVariable( outputVariable );
+					
+					aggregateParameters = form.getAggregateParameters();
 					
 					break;
 					
@@ -105,6 +108,7 @@ public class CalculationStepController {
 			
 			String rScript = calculationStepRScriptGenerator.generateRScript( step );
 			step.setScript(rScript);
+			step.setAggregateParameters( new ParameterMapConverter().from(aggregateParameters) );
 			processingChainManager.saveCalculationStep( step );
 
 			response.addField( "calculationStep", step );

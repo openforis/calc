@@ -21,6 +21,13 @@ CalculationStepEditManager = function (container) {
 	
 	this.categoryCombo			= this.$form.find( '[name=categoryId]' ).combobox();
 	
+	// aggregate
+	this.aggregateParametersInput		= this.$form.find( "[name='aggregateParameters']" );
+	this.aggregateParameters 			= {};
+	this.aggregateParameters.functions 	= [];
+	this.aggregateForm					= this.container.find( ".aggregate-form" );
+	this.aggregateFunctionButtons		= [];
+	
 	// sections to show / hide based on the type selection
 	this.outputVariableForm 	= this.container.find( ".output-variable-form" );
 	this.outputCategoryForm 	= this.container.find( ".output-category-form" );
@@ -103,6 +110,7 @@ CalculationStepEditManager.prototype.init = function( callback ) {
 		} else {
 			// default settings
 			$this.rScriptButton.select();
+			$this.aggregateParametersInput.val( "{}" );
 		}
 
 	});
@@ -162,12 +170,14 @@ CalculationStepEditManager.prototype.initEventHandlers = function() {
 		
 		$this.typeInput.val( "SCRIPT" );
 		$this.rScriptForm.fadeIn( 300 );
+		$this.aggregateForm.fadeIn( 300 );
 	});
 	this.rScriptButton.deselect( function() {
 		UI.enable( this.button );
 		
 		$this.typeInput.val( "" );
 		$this.rScriptForm.hide();
+		$this.aggregateForm.hide();
 	});
 
 	this.categoryButton.select( function() {
@@ -200,18 +210,51 @@ CalculationStepEditManager.prototype.initEventHandlers = function() {
 		
 		$this.typeInput.val( "EQUATION" );
 		$this.equationForm.fadeIn( 300 );
+		$this.aggregateForm.fadeIn( 300 );
 	});
 	this.equationButton.deselect( function() {
 		UI.enable( this.button );
 		
 		$this.typeInput.val( "" );
 		$this.equationForm.hide();
+		$this.aggregateForm.hide();
 	});
 	
 	
 	this.equationListCombo.change( $.proxy( this.equationListChange , $this ) ) ;
 	
 	this.categoryCombo.change( $.proxy( this.categoryChange , $this ) ) ;
+	
+	//init aggregate functions
+	var functionBtns = this.aggregateForm.find( '.aggregate-functions-form button' );
+	$.each( functionBtns , function( i , functionBtn ){
+		var functionOptionBtn = new OptionButton( functionBtn );
+		$this.aggregateFunctionButtons[ $(functionBtn).val() ] = functionOptionBtn;
+		
+		functionOptionBtn.select( function(){
+			var aggFunction = $(this.button).val();
+			if( $.inArray( aggFunction , $this.aggregateParameters.functions ) < 0  ) {
+				$this.aggregateParameters.functions.push( aggFunction );
+			}
+			$this.aggregateParametersInput.val( JSON.stringify($this.aggregateParameters) );
+		} );
+		
+		functionOptionBtn.deselect( function(){
+			var aggFunction = $(this.button).val();
+			
+			for( var i in $this.aggregateParameters.functions ) {
+				var c = $this.aggregateParameters.functions[ i ]; 
+				if( c === aggFunction ){
+					$this.aggregateParameters.functions.splice( i , 1 );
+					
+					$this.aggregateParametersInput.val( JSON.stringify($this.aggregateParameters) );
+					return;
+				}
+			}
+		});
+		
+	});
+
 };
 
 /**
@@ -286,6 +329,7 @@ CalculationStepEditManager.prototype.updateForm = function() {
 		
 		case "SCRIPT" :
 			this.rScriptButton.select();
+			this.updateAggregateForm( this.currentCalculationStep );
 			break;
 		
 		case "EQUATION" :
@@ -307,6 +351,7 @@ CalculationStepEditManager.prototype.updateForm = function() {
 			}
 			
 			this.$RScript.$inputField.val( "" );
+			this.updateAggregateForm( this.currentCalculationStep );
 			break;
 		
 		case "CATEGORY" :
@@ -338,7 +383,17 @@ CalculationStepEditManager.prototype.updateForm = function() {
 	//reset changed state 
 	this.$form.data( 'changed', false );
 };
-	
+
+CalculationStepEditManager.prototype.updateAggregateForm = function( calculationStep ){
+	this.aggregateParameters = calculationStep.aggregateParameters;
+	if( this.aggregateParameters.functions ){
+		for( var i in this.aggregateParameters.functions ){
+			var aggFunction = this.aggregateParameters.functions[ i ];
+			var optionBtn 	= this.aggregateFunctionButtons[ aggFunction ];
+			optionBtn.select();
+		}
+	}
+};	
 /**
  * Returns the selected entity in the form
  */

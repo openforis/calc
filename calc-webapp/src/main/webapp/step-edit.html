@@ -2,7 +2,7 @@
 <div class="page-section" id="step-edit-page">
 
 	<!--  Header button bar  -->
-	<div class="row no-margin-no-padding header-button-group" style="width: 100%; height: 7%">
+	<div class="row no-margin-no-padding header-button-group" >
 		<div class="col-md-2 col-md-offset-4 no-padding">
 			<button class="btn blue-btn" name="show-edit-btn" >Edit</button>
 		</div>
@@ -13,12 +13,10 @@
 	</div>
 	
 	<!-- edit form -->
-	<div class="row" id="calculation-step-edit-container" style="width: 100%; height: 93%; left:0">
-<!-- 		<div class="col-md-2"> -->
-<!-- 		</div> -->
+	<div class="row" id="calculation-step-edit-container">
 		<form id="step-form" class="form-horizontal" method="POST" action="rest/calculationstep/save.json">
-		<input type="hidden" class="form-control" name="id" /> 
-		<div class="row col-md-8 col-md-offset-2">
+			<input type="hidden" class="form-control" name="id" /> 
+			<div class="row col-md-8 col-md-offset-2">
 				<fieldset>
 					<div class="form-group">
 						<label class="col-md-2 control-label">Type</label>
@@ -48,34 +46,29 @@
 						<div class="col-md-9">
 							<select class="form-control" name="variableId"></select>
 						</div>
-							<button name="add-variable" type="button" class="calculation btn btn-info col-md-1" disabled="disabled">
-								<i class="icon-plus-sign-alt"></i>
-							</button>
+						<button name="add-variable" type="button" class="calculation btn btn-info col-md-1" disabled="disabled">
+							<i class="icon-plus-sign-alt"></i>
+						</button>
 					</div>
 					
 					<div class="form-group r-script-form">
-							<label class="col-md-2 control-label">Script</label>
-							<div class="col-md-10">
-								<div class="row" style="margin-top: 5px;">
-									<textarea class="form-control" rows="13" name="script"></textarea>
-								</div>
-							</div>
+						<label class="col-md-2 control-label">Script</label>
+						<div class="col-md-10">
+							<textarea class="form-control" rows="13" name="script"></textarea>
+						</div>
 					</div>
 					
-					<div class="form-group equation-form no-padding">
-<!-- 						<label class="col-md-2 control-label">Equation</label> -->
-						<div class="col-md-12 form-container">
-							<div class="form-group">
-								<label class="col-md-2 control-label">Equation list</label>
-								<div class="col-md-10">
-									<select class="form-control" name="equationList"></select>
-								</div>
+					<div class="equation-form no-padding">
+						<div class="form-group">
+							<label class="col-md-2 control-label">Equation list</label>
+							<div class="col-md-10">
+								<select class="form-control" name="equationList"></select>
 							</div>
-							<div class="form-group">
-								<label class="col-md-2 control-label">Code variable</label>
-								<div class="col-md-10">
-									<select class="form-control" name="codeVariable"></select>
-								</div>
+						</div>
+						<div class="form-group">
+							<label class="col-md-2 control-label">Code variable</label>
+							<div class="col-md-10">
+								<select class="form-control" name="codeVariable"></select>
 							</div>
 						</div>
 					</div>
@@ -85,13 +78,34 @@
 						<div class="col-md-9">
 							<select class="form-control" name="categoryId"></select>
 						</div>
-							<button name="add-category" type="button" class="calculation btn btn-info col-md-1" >
-								<i class="icon-plus-sign-alt"></i>
-							</button>
+						<button name="add-category" type="button" class="calculation btn btn-info col-md-1" >
+							<i class="icon-plus-sign-alt"></i>
+						</button>
 					</div>
 					
 					<div class="form-group category-form">
 						<div class="col-md-12 form-container category-settings-form">
+						</div>
+					</div>
+					
+					<div class="form-group aggregate-form no-padding">
+						<div class="col-md-12 form-container">
+							<div class="form-group">
+								<label class="col-md-2 control-label">Aggregate function</label>
+								<div class="col-md-10 aggregate-functions-form">
+									<input type="hidden" name="aggregateParameters" value="aaaa">
+									<blockquote>
+										<small>Available only for those entities that won't be aggregated using the sampling design</small>
+										<small>Sum will be applied by default if none of the functions is selected</small>
+										<button class="btn option-btn" name="sum" value="sum">sum</button>
+										<button class="btn option-btn" name="min" value="min">min</button>
+										<button class="btn option-btn" name="max" value="max">max</button>
+										<button class="btn option-btn" name="avg" value="avg">avg</button>
+										<button class="btn option-btn" name="count" value="count">count</button>
+										<button class="btn option-btn" name="distinct-count" value="distinct-count">distinct-count</button>
+									</blockquote>
+								</div>
+							</div>
 						</div>
 					</div>
 					
@@ -124,16 +138,12 @@
 					</div>
 				</div>
 				
-				
-		</div>
+			</div>
 		</form>
-<!-- 		<div class="col-md-2"> -->
-<!-- 		</div> -->
-<!-- 		</div> -->
 	</div>
 	
 	<!-- Execution  -->
-	<div class="row" id="calculation-step-exec-container" style="width: 100%; height: 93%; padding-top:10px; ">
+	<div class="row" id="calculation-step-exec-container" >
 		<!-- step information section -->
 		<div class="row header">
 <!-- 			<div class="col-md-1 col-md-offset-3" style="text-align: right;"> -->
@@ -217,7 +227,7 @@
 	</div>
 	
 	<!-- Results section -->
-	<div class="row" id="calculation-step-results-container" style="width: 100%; height: 93%; padding-top:10px; ">
+	<div class="row" id="calculation-step-results-container" >
 		<div class="row" style="height: 100%;">
 			<div class="col-md-12 results-container" style="height: 97%">
 			</div>

@@ -15,6 +15,7 @@ public class VariableAggregate extends VariableAggregateBase {
 
 	private static final long serialVersionUID = 1L;
 
+	@Deprecated
 	public static enum AGGREGATE_TYPE {
 		MIN, MAX, SUM, MEAN, STDDEV, AREA, PER_UNIT_AREA;
 

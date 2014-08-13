@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CalculationStepTable extends org.jooq.impl.TableImpl<org.openforis.calc.persistence.jooq.tables.records.CalculationStepRecord> {
 
-	private static final long serialVersionUID = 741542960;
+	private static final long serialVersionUID = 783054221;
 
 	/**
 	 * The singleton instance of <code>calc.calculation_step</code>
@@ -90,6 +90,11 @@ public class CalculationStepTable extends org.jooq.impl.TableImpl<org.openforis.
 	 * The column <code>calc.calculation_step.equation_list_id</code>.
 	 */
 	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.CalculationStepRecord, java.lang.Long> EQUATION_LIST_ID = createField("equation_list_id", org.jooq.impl.SQLDataType.BIGINT.defaulted(true), this, "");
+
+	/**
+	 * The column <code>calc.calculation_step.aggregate_parameters</code>.
+	 */
+	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.CalculationStepRecord, org.openforis.calc.engine.ParameterMap> AGGREGATE_PARAMETERS = createField("aggregate_parameters", org.jooq.impl.SQLDataType.CLOB.defaulted(true).asConvertedDataType(new org.openforis.calc.persistence.jooq.ParameterMapConverter()), this, "");
 
 	/**
 	 * Create a <code>calc.calculation_step</code> table reference

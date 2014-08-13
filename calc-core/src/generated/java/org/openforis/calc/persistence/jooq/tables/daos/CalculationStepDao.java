@@ -132,4 +132,11 @@ public class CalculationStepDao extends org.jooq.impl.DAOImpl<org.openforis.calc
 	public java.util.List<CalculationStep> fetchByEquationListId(java.lang.Long... values) {
 		return fetch(org.openforis.calc.persistence.jooq.tables.CalculationStepTable.CALCULATION_STEP.EQUATION_LIST_ID, values);
 	}
+
+	/**
+	 * Fetch records that have <code>aggregate_parameters IN (values)</code>
+	 */
+	public java.util.List<CalculationStep> fetchByAggregateParameters(org.openforis.calc.engine.ParameterMap... values) {
+		return fetch(org.openforis.calc.persistence.jooq.tables.CalculationStepTable.CALCULATION_STEP.AGGREGATE_PARAMETERS, values);
+	}
 }

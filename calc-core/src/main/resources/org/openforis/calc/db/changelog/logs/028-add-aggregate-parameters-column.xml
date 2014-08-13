@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+	<changeSet author="mino togna" id="028-add-aggregate-parameters-column">
+
+		<sql>			
+			ALTER TABLE
+    			calc.calculation_step ADD COLUMN aggregate_parameters text;
+    			
+			ALTER TABLE
+			    calc.calculation_step ALTER COLUMN aggregate_parameters SET DEFAULT '{}';
+			    
+			UPDATE     
+				calc.calculation_step set aggregate_parameters = '{}';
+    	</sql>
+    	
+	</changeSet>
+</databaseChangeLog>

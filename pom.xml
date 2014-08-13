@@ -15,7 +15,7 @@
     	<module>calc-control-panel</module>
 		<module>calc-assembly</module>
 		<module>calc-installer</module>
-  </modules>
+	</modules>
 
 	<properties>
 		<spring.version>3.2.3.RELEASE</spring.version>

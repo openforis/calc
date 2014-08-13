@@ -46,6 +46,8 @@ public class CalculationStepForm {
 	private Map<Integer, String> categoryClassLeftConditions;
 	private Map<Integer, String> categoryClassRightConditions;
 	
+	private String aggregateParameters;
+	
 	public Integer getId() {
 		return id;
 	}
@@ -164,6 +166,14 @@ public class CalculationStepForm {
 
 	public void setCategoryClassRightConditions(Map<Integer, String> categoryClassRightConditions) {
 		this.categoryClassRightConditions = categoryClassRightConditions;
+	}
+
+	public String getAggregateParameters() {
+		return aggregateParameters;
+	}
+
+	public void setAggregateParameters(String aggregateParameters) {
+		this.aggregateParameters = aggregateParameters;
 	}
 
 }

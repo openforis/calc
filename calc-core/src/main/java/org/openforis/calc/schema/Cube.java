@@ -13,7 +13,6 @@ import org.openforis.calc.metadata.AoiLevel;
 import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
-import org.openforis.calc.metadata.VariableAggregate;
 import org.openforis.commons.collection.CollectionUtils;
 
 /**
@@ -113,7 +112,7 @@ public class Cube {
 		
 		if( entity.isSamplingUnit() ) {
 			Field<BigDecimal> weightField = factTable.getWeightField();
-			Measure measure = new Measure( getRolapSchema(), this, weightField.getName() , "Area" , VariableAggregate.AGGREGATE_TYPE.SUM.toString() );
+			Measure measure = new Measure( getRolapSchema(), this, weightField.getName() , "Area" , Measure.AGGREGATE_FUNCTION.SUM );
 			measures.put( measure, weightField );
 		}
 	}

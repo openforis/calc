@@ -76,7 +76,6 @@
 						<strategy>
 							<name>org.openforis.jooq.codegen.CustomGeneratorStrategy</name>
 						</strategy>
-						
 						<database>
 							<name>org.jooq.util.postgres.PostgresDatabase</name>
 <!-- 							<includes>.*</includes> -->
@@ -141,6 +140,10 @@
 								<forcedType>
 									<name>org.openforis.calc.engine.Worker.Status</name>
 									<expression>.*\.processing_chain\.status</expression>
+								</forcedType>
+								<forcedType>
+									<name>org.openforis.calc.engine.ParameterMap</name>
+									<expression>.*\.calculation_step\.aggregate_parameters</expression>
 								</forcedType>
 							</forcedTypes>
 						</database>
@@ -442,6 +445,11 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 		</dependency>
-		
+		<dependency>
+			<groupId>org.openforis.calc</groupId>
+			<artifactId>calc-jooq-code-gen</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 </project>

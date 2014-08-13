@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables.pojos;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CalculationStepBase implements java.io.Serializable {
 
-	private static final long serialVersionUID = 527091990;
+	private static final long serialVersionUID = 141090334;
 
 	private java.lang.Integer                             id;
 	private java.lang.Integer                             chainId;
@@ -26,6 +26,7 @@ public class CalculationStepBase implements java.io.Serializable {
 	private java.lang.Integer                             outputVariableId;
 	private org.openforis.calc.chain.CalculationStep.Type type;
 	private java.lang.Long                                equationListId;
+	private org.openforis.calc.engine.ParameterMap        aggregateParameters;
 
 	public CalculationStepBase() {}
 
@@ -42,7 +43,8 @@ public class CalculationStepBase implements java.io.Serializable {
 		java.lang.String                              description,
 		java.lang.Integer                             outputVariableId,
 		org.openforis.calc.chain.CalculationStep.Type type,
-		java.lang.Long                                equationListId
+		java.lang.Long                                equationListId,
+		org.openforis.calc.engine.ParameterMap        aggregateParameters
 	) {
 		this.id = id;
 		this.chainId = chainId;
@@ -57,6 +59,7 @@ public class CalculationStepBase implements java.io.Serializable {
 		this.outputVariableId = outputVariableId;
 		this.type = type;
 		this.equationListId = equationListId;
+		this.aggregateParameters = aggregateParameters;
 	}
 
 	public java.lang.Integer getId() {
@@ -161,5 +164,13 @@ public class CalculationStepBase implements java.io.Serializable {
 
 	public void setEquationListId(java.lang.Long equationListId) {
 		this.equationListId = equationListId;
+	}
+
+	public org.openforis.calc.engine.ParameterMap getAggregateParameters() {
+		return this.aggregateParameters;
+	}
+
+	public void setAggregateParameters(org.openforis.calc.engine.ParameterMap aggregateParameters) {
+		this.aggregateParameters = aggregateParameters;
 	}
 }

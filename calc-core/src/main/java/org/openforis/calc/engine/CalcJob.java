@@ -25,6 +25,7 @@ import org.openforis.calc.chain.ProcessingChainManager;
 import org.openforis.calc.chain.post.CreateAggregateTablesTask;
 import org.openforis.calc.chain.post.PublishRolapSchemaTask;
 import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.persistence.jooq.ParameterMapConverter;
 import org.openforis.calc.psql.AlterTableStep.AlterColumnStep;
 import org.openforis.calc.psql.CreateViewStep.AsStep;
 import org.openforis.calc.psql.DropViewStep;
@@ -390,5 +391,19 @@ public class CalcJob extends Job {
 		if( this.processingChain != null ){
 			processingChainService.updateProcessingChainStatus( processingChain, status );
 		}
+	}
+
+	public static void main(String[] args) {
+		String str = "{\"functions\":[\"a\",\"b\",\"c\"]}";
+		ParameterMapConverter c = new ParameterMapConverter();
+		ParameterMap map = c.from( str );
+		System.out.println( map.toString() );
+		Collection<? extends Object> array = map.getArray("functions");
+		for (Object object : array) {
+			System.out.println( object );
+		}
+//		ParameterHashMap m = new ParameterHashMap();
+		
+		
 	}
 }
