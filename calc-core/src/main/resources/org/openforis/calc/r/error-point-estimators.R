@@ -4,14 +4,7 @@
 #
 # @author Mino Togna
 ### ==============================================================
-library( "sqldf" );
-# sqldf options. 
-# driver is SQLLite in order to read from dataframe , otherwise it uses PostgreSQL which is the default driver used by Calc
-# https://code.google.com/p/sqldf/#Troubleshooting
-options (
-  #gsubfn.engine = "R" , 
-  sqldf.driver = "SQLite"
-);
+
 # ====
 # extract a dataframe of unique clusters included in the data argument
 # ====

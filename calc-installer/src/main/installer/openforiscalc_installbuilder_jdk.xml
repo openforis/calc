@@ -1,7 +1,7 @@
 <project>
 	<shortName>OpenForisCalc</shortName>
     <fullName>Open Foris Calc</fullName>
-    <version>1.0-a14</version>
+    <version>1.0-a15-SNAPSHOT</version>
     <outputDirectory>C:\openforis\calc\calc-installer\target</outputDirectory>
     <!--readmeFile>../../../../README</readmeFile-->
 	<installerFilename>${product_shortname}-${product_version}-${platform_name}-installer-with-jdk.${platform_exec_suffix}</installerFilename>

@@ -23,10 +23,6 @@ public class Measure extends Member {
 		this( rolapSchema, cube, variable.getName(), variable.getCaption(), AGGREGATE_FUNCTION.SUM );
 	}
 	
-	Measure( RolapSchema rolapSchema, Cube cube, QuantitativeVariable variable, AGGREGATE_FUNCTION aggregateFunction ) {
-		this( rolapSchema, cube, variable.getName(), variable.getCaption(), aggregateFunction );
-	}
-	
 	Measure(RolapSchema rolapSchema, Cube cube, String name, String caption, AGGREGATE_FUNCTION aggregateFunction) {
 		super( rolapSchema );
 		
@@ -77,6 +73,16 @@ public class Measure extends Member {
 			}
 			return false;
 		}
+		
+		public static AGGREGATE_FUNCTION getEnum(String value){
+			for( AGGREGATE_FUNCTION f : values() ){
+				if( f.toString().equals(value) ){
+					return f;
+				}
+			}
+			throw new IllegalArgumentException( "No enum constant org.openforis.calc.schema.Measure.AGGREGATE_FUNCTION." + value );
+		}
+		
 	}
 
 }

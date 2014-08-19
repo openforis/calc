@@ -85,6 +85,14 @@ Workspace.prototype.isSamplingUnit = function(entity) {
     return result;
 };
 
+Workspace.prototype.getRootAoi = function() {
+	var aoi = {};
+	if( this.aoiHierarchies && this.aoiHierarchies.length >0 ) {
+		aoi = this.aoiHierarchies[0].rootAoi;		
+	}
+	return aoi;
+};
+
 Workspace.prototype.getAdminUnitFlatAois = function() {
 	var addAoi = function( aoi , aois , captionPrefix ) {
 		var a = {};

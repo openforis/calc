@@ -392,6 +392,9 @@ CalculationStepEditManager.prototype.updateAggregateForm = function( calculation
 			var optionBtn 	= this.aggregateFunctionButtons[ aggFunction ];
 			optionBtn.select();
 		}
+	} else {
+		this.aggregateParameters.functions = [];
+		this.aggregateParametersInput.val( JSON.stringify(this.aggregateParameters) );
 	}
 };	
 /**
@@ -507,7 +510,7 @@ CalculationStepEditManager.prototype.equationListChange = function () {
 			div.append( divSelect );
 			
 			div.hide();
-			this.equationForm.find( ".form-container" ).append( div );
+			this.equationForm.append( div );
 			div.fadeIn();
 		}
 	} else {

@@ -1,7 +1,10 @@
 package org.openforis.calc.chain;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.openforis.calc.engine.ParameterHashMap;
 import org.openforis.calc.engine.ParameterMap;
@@ -101,4 +104,24 @@ public class CalculationStep extends CalculationStepBase {
 		}
 		return params;
 	}
+	
+	@JsonIgnore
+	public Set<String> getAggregateFunctions(){
+		Set<String> aggFunctions = new HashSet<String>();
+		
+		ParameterMap aggregateParameters = getAggregateParameters();
+		if( aggregateParameters != null ){
+			
+			Collection<? extends Object> functions = aggregateParameters.getArray( "functions" );
+			if( functions != null ){
+				for (Object function : functions) {
+					aggFunctions.add( function.toString() );
+				}
+			}
+			
+		}
+		
+		return aggFunctions;
+	}
+	
 }

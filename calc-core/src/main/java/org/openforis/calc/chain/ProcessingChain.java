@@ -1,13 +1,13 @@
 package org.openforis.calc.chain;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.openforis.calc.engine.ParameterHashMap;
 import org.openforis.calc.engine.ParameterMap;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.persistence.jooq.tables.pojos.ProcessingChainBase;
+import org.openforis.commons.collection.CollectionUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -32,7 +32,7 @@ public class ProcessingChain extends ProcessingChainBase {
 	}
 	
 	public List<CalculationStep> getCalculationSteps() {
-		return Collections.unmodifiableList(calculationSteps);
+		return CollectionUtils.unmodifiableList(calculationSteps);
 	}
 	
 	public void clearCalculationSteps() {

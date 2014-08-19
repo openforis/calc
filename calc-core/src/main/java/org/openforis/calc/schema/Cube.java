@@ -6,13 +6,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jooq.Field;
+import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.AoiLevel;
 import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
+import org.openforis.calc.schema.Measure.AGGREGATE_FUNCTION;
 import org.openforis.commons.collection.CollectionUtils;
 
 /**
@@ -98,17 +102,41 @@ public class Cube {
 		measures = new HashMap<Measure, Field<BigDecimal>>();
 		Entity entity = factTable.getEntity();
 
-		for ( QuantitativeVariable var : entity.getDefaultProcessingChainQuantitativeOutputVariables() ) {
+		Map<QuantitativeVariable, CalculationStep> stepMap = entity.getDefaultProcessingChainCalculationStepQuantitativeVariablesMap();
+		for ( QuantitativeVariable var : stepMap.keySet() ){
+			CalculationStep calcStep = stepMap.get( var );
+			Set<String> aggregateFunctions = calcStep.getAggregateFunctions();
+			
 			Field<BigDecimal> measureField = factTable.getMeasureField(var);
-			Measure measure = new Measure( getRolapSchema(), this, var );
-			measures.put(measure, measureField);
-			// not used now
-//			for ( VariableAggregate varAgg : var.getAggregates() ) {
-//				Field<BigDecimal> measureField = factTable.getMeasureField(varAgg);
-//				Measure measure = new Measure(getRolapSchema(), this, varAgg);
-//				measures.put(measure, measureField);
-//			}
+			if( entity.isInSamplingUnitHierarchy() || aggregateFunctions.isEmpty() ){
+				
+				Measure measure = new Measure( getRolapSchema(), this, var );
+				measures.put(measure, measureField);
+				
+			} else {
+				
+				for (String aggregateFunction : aggregateFunctions) {
+					String name = var.getName() + " (" + aggregateFunction + ")";
+					String caption = ( (StringUtils.isBlank(var.getCaption()) ) ? var.getName() : var.getCaption() ) + " (" + aggregateFunction + ")";
+					Measure measure = new Measure( getRolapSchema(), this, name , caption, AGGREGATE_FUNCTION.getEnum(aggregateFunction) );
+					measures.put(measure, measureField);
+				}
+				
+			}
+			
 		}
+		
+//		for ( QuantitativeVariable var : entity.getDefaultProcessingChainQuantitativeOutputVariables() ) {
+//			Field<BigDecimal> measureField = factTable.getMeasureField(var);
+//			Measure measure = new Measure( getRolapSchema(), this, var );
+//			measures.put(measure, measureField);
+//			// not used now
+////			for ( VariableAggregate varAgg : var.getAggregates() ) {
+////				Field<BigDecimal> measureField = factTable.getMeasureField(varAgg);
+////				Measure measure = new Measure(getRolapSchema(), this, varAgg);
+////				measures.put(measure, measureField);
+////			}
+//		}
 		
 		if( entity.isSamplingUnit() ) {
 			Field<BigDecimal> weightField = factTable.getWeightField();
@@ -277,7 +305,6 @@ public class Cube {
 		public String getAggColumn() {
 			return aggColumn;
 		}
-
 	}
 
 	public class AggMeasure {

@@ -5,7 +5,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
@@ -397,28 +399,30 @@ public class Entity extends EntityBase {
 	 */
 	@JsonIgnore
 	public Collection<QuantitativeVariable> getDefaultProcessingChainQuantitativeOutputVariables() {
-		Set<QuantitativeVariable> variables = new HashSet<QuantitativeVariable>();
+		Map<QuantitativeVariable, CalculationStep> map = getDefaultProcessingChainCalculationStepQuantitativeVariablesMap();
+		Set<QuantitativeVariable> vars = org.openforis.commons.collection.CollectionUtils.unmodifiableSet( map.keySet() );
+		return vars;
+	}
+	
+	@JsonIgnore
+	public Map<QuantitativeVariable, CalculationStep> getDefaultProcessingChainCalculationStepQuantitativeVariablesMap(){
+		Map<QuantitativeVariable, CalculationStep> map = new LinkedHashMap<QuantitativeVariable, CalculationStep>();
 		
 		ProcessingChain processingChain = getWorkspace().getDefaultProcessingChain();
-		List<CalculationStep> steps = processingChain.getCalculationSteps();
-		for (CalculationStep step : steps) {
+		for (CalculationStep step : processingChain.getCalculationSteps()) {
+			
 			Variable<?> var = step.getOutputVariable();
 			if( var instanceof QuantitativeVariable){
-				QuantitativeVariable variable = (QuantitativeVariable) var;
-				Entity outputEntity = variable.getEntity();
+				QuantitativeVariable qtyVar = (QuantitativeVariable) var;
+				Entity outputEntity = qtyVar.getEntity();
 				if( outputEntity.getId().equals( this.getId() ) ){
-					variables.add( variable );
+					map.put( qtyVar, step );
 				}
 			}
+			
 		}
-//		if( this.isSamplingUnit() ){
-//			QuantitativeVariable weightVar = getOutputVariable("weight");
-//			if( weightVar != null ) {
-//				variables.add( weightVar);
-//			}
-//		}
 		
-		return variables;
+		return map;
 	}
 	
 	@JsonIgnore

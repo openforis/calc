@@ -35,8 +35,8 @@ public class CollectDataController {
 	private static final String TEMP_FILE_PREFIX = "collect";
 	private static final String TEMP_FILE_SUFFIX = "metadata.zip";
 	private static final String ZIP = "zip";
-	private static final String ZIP_CONTENT_TYPE = "application/zip";
-	private static final String ZIP_COMPRESSED_CONTENT_TYPE = "application/x-zip-compressed";
+//	private static final String ZIP_CONTENT_TYPE = "application/zip";
+//	private static final String ZIP_COMPRESSED_CONTENT_TYPE = "application/x-zip-compressed";
 
 	private Log LOG = LogFactory.getLog(CollectDataController.class);
 	
@@ -95,9 +95,9 @@ public class CollectDataController {
 		String fileName = file.getOriginalFilename();
 		String extension = FilenameUtils.getExtension(fileName);
 		String contentType = file.getContentType();
-		boolean valid = (
-				ZIP.equalsIgnoreCase(extension) && ( ZIP_CONTENT_TYPE.equals(contentType) || ZIP_COMPRESSED_CONTENT_TYPE.equals(contentType) )) ||
-				COLLECT_BACKUP_FILE_EXTENSION.equalsIgnoreCase(extension);
+		System.out.println("Uploading collect backup with content type: " + contentType );
+//		 ZIP_CONTENT_TYPE.equals(contentType) || ZIP_COMPRESSED_CONTENT_TYPE.equals(contentType) )
+		boolean valid = ( ZIP.equalsIgnoreCase(extension) || COLLECT_BACKUP_FILE_EXTENSION.equalsIgnoreCase(extension) );
 		if ( valid ) {
 			return true;
 		} else {

@@ -248,7 +248,7 @@ public class CollectMetadataImportTask extends Task {
 		Workspace ws = getWorkspace();
 		List<Entity> entities = createEntities();
 		
-		printToLog( entities );
+//		printToLog( entities );
 		
 		//remove deleted entities
 		Collection<Entity> entitiesToBeRemoved = new HashSet<Entity>();
