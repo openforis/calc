@@ -446,6 +446,28 @@ WorkspaceManager.prototype.export = function() {
 	});
 };
 
+WorkspaceManager.prototype.setErrorSettings = function( data , callback ) {
+	var $this = this;
+	UI.lock();
+//	this.activeWorkspace( function(ws){
+//		
+//		$.ajax({
+//			url 		: $this.contextPath + "error",
+//			dataType 	: "json",
+//			method 		: "PUT",
+//			data 		: data
+//		}).done( function(response) {
+//			Utils.applyFunction( callback , this._activeWorkspace );
+//			UI.unlock();
+//		}).error( function() {
+//			Calc.error.apply( this , arguments );
+//		});
+//		
+//	});
+	Utils.applyFunction( callback , this._activeWorkspace );
+	UI.unlock();
+};
+
 // singleton instance of workspace manager
 var _workspaceManager = null;
 WorkspaceManager.getInstance = function() { 

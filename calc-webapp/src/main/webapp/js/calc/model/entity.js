@@ -73,6 +73,43 @@ Entity.prototype.hierarchyVariables = function() {
     return result;
 };
 
+Entity.prototype.isInSamplingUnitHierarchy = function(){
+	var entity = this;
+	while ( entity != null ) {
+    	if( entity.workspace.isSamplingUnit( entity ) ){
+    		return true;
+    	}
+    	
+    	entity = entity.parent();
+    }
+	return false;
+};
+
+/**
+ * Returns all the categorical variables up to the sampling unit entity
+ */
+Entity.prototype.samplingUnitHierarchyCategoricalVariables = function() {
+    var vars = [];
+    vars = $.merge( vars, this.categoricalVariables() );
+    
+    if( this.isInSamplingUnitHierarchy() ){
+    	
+    	var entity = this.parent();    	
+    	while ( entity != null ){
+//    		vars.push( entity.categoricalVariables() );
+    		vars = $.merge( vars, entity.categoricalVariables() );
+    		if( entity.workspace.isSamplingUnit( entity ) ){
+    			break ;
+    		}
+    		entity = entity.parent();
+    	}
+    	
+    }
+
+    
+    return vars;
+};
+
 /**
  * Returns the variable with the given id
  */

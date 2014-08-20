@@ -8,3 +8,9 @@ Utils = function(){};
 Utils.isFunction = function( obj ) {
 	return !!(obj && obj.constructor && obj.call && obj.apply);
 };
+
+Utils.applyFunction = function( functx , params ) {
+	if( Utils.isFunction(functx) ){
+		functx( params );
+	}
+};

@@ -10,10 +10,15 @@ Workspace = function(object) {
 	
 	//replace json entity objects with custom Entity objects
 	$.each($this.entities, function(i, entity) {
-		var newEntity = new Entity($this, entity);
+		var newEntity = new Entity( $this, entity );
 		$this.entities[i] = newEntity;
 	});
 	
+	this.entities.sort( function( a, b ){
+		if(a.name < b.name) return -1;
+	    if(a.name > b.name) return 1;
+	    return 0;
+	});
 };
 
 /**
