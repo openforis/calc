@@ -5,6 +5,7 @@ import org.openforis.calc.metadata.AoiManager;
 import org.openforis.calc.metadata.CategoryManager;
 import org.openforis.calc.metadata.EntityManager;
 import org.openforis.calc.metadata.EquationManager;
+import org.openforis.calc.metadata.ErrorSettingsManager;
 import org.openforis.calc.metadata.SamplingDesignManager;
 import org.openforis.calc.metadata.VariableManager;
 import org.openforis.calc.psql.Psql;
@@ -31,7 +32,8 @@ public class DeleteOutputMetadataTask extends Task {
 	private VariableManager variableManager;
 	@Autowired
 	private EntityManager entityManager;
-	
+	@Autowired
+	private ErrorSettingsManager errorSettingsManager;
 	@Autowired
 	private Psql psql;
 	
@@ -40,7 +42,7 @@ public class DeleteOutputMetadataTask extends Task {
 	
 	@Override
 	protected long countTotalItems() {
-		return 8;
+		return 9;
 	}
 	
 	@Override
@@ -78,6 +80,8 @@ public class DeleteOutputMetadataTask extends Task {
 		variableManager.deleteUserDefinedVariables( workspace );
 		incrementItemsProcessed();
 		
+		errorSettingsManager.delete( workspace );
+		incrementItemsProcessed();
 	}
 	
 	@Override

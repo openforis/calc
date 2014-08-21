@@ -287,12 +287,12 @@ public class AoiManager {
 	public void importBackup( Workspace workspace, WorkspaceBackup workspaceBackup ) {
 		List<AoiHierarchy> aoiHierarchies = workspaceBackup.getWorkspace().getAoiHierarchies();
 		for ( AoiHierarchy aoiHierarchy : aoiHierarchies ) {
-			this.createFromBackup( workspace , aoiHierarchy );
+			this.createFromBackup( workspace , workspaceBackup , aoiHierarchy );
 		}
 	}
 	
 	@Transactional
-	private void createFromBackup( Workspace workspace , AoiHierarchy aoiHierarchy ) {
+	private void createFromBackup( Workspace workspace , WorkspaceBackup workspaceBackup, AoiHierarchy aoiHierarchy ) {
 		
 		aoiHierarchy.setId( psql.nextval(Sequences.AOI_HIERARCHY_ID_SEQ).intValue() );
 		workspace.addAoiHierarchy(aoiHierarchy);
@@ -311,6 +311,21 @@ public class AoiManager {
 		Aoi aoi = aoiHierarchy.getRootAoi();
 		createAoiFromBackup( aoi, levels, aoiIds, 0 );
 		
+		
+		// replace aoiIds in error settings
+		ErrorSettings errorSettings = workspaceBackup.getWorkspace().getErrorSettings();
+		if( errorSettings != null ){
+			for ( String key : errorSettings.getParameters().keys() ) {
+				long variableId = Long.parseLong(key);
+				Collection<? extends Number> aois = errorSettings.getAois( variableId );
+				List<Long> newAoiIds = new ArrayList<Long>();
+				for ( Number aoiId : aois ) {
+					long newAoiId = aoiIds.get( aoiId.intValue() ).longValue();
+					newAoiIds.add( newAoiId );
+				}
+				errorSettings.setAois( variableId, newAoiIds );
+			}
+		}
 	}
 	
 	@Transactional

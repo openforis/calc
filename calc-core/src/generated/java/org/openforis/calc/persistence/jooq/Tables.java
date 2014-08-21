@@ -64,6 +64,11 @@ public class Tables {
 	public static final org.openforis.calc.persistence.jooq.tables.EquationListTable EQUATION_LIST = org.openforis.calc.persistence.jooq.tables.EquationListTable.EQUATION_LIST;
 
 	/**
+	 * The table calc.error_settings
+	 */
+	public static final org.openforis.calc.persistence.jooq.tables.ErrorSettingsTable ERROR_SETTINGS = org.openforis.calc.persistence.jooq.tables.ErrorSettingsTable.ERROR_SETTINGS;
+
+	/**
 	 * The table calc.processing_chain
 	 */
 	public static final org.openforis.calc.persistence.jooq.tables.ProcessingChainTable PROCESSING_CHAIN = org.openforis.calc.persistence.jooq.tables.ProcessingChainTable.PROCESSING_CHAIN;

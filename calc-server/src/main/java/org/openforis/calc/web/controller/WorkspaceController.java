@@ -13,6 +13,7 @@ import javax.sql.DataSource;
 import javax.validation.Valid;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -26,6 +27,7 @@ import org.openforis.calc.engine.WorkspaceBackupService;
 import org.openforis.calc.engine.WorkspaceLockedException;
 import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.ErrorSettings;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.web.form.VariableForm;
 import org.openforis.commons.versioning.Version;
@@ -98,6 +100,8 @@ public class WorkspaceController {
 	}
 	
 	// TODO change rest call /active/job.json
+	// move to JobController
+	@Deprecated
 	@RequestMapping(value = "/job.json", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	Job getJob() {
@@ -110,55 +114,6 @@ public class WorkspaceController {
 		}
 	}
 
-//	/**
-//	 * Set the sampling unit to the workspace
-//	 * 
-//	 * @return
-//	 */
-//	@Deprecated
-//	@RequestMapping(value = "/active/samplingDesign/samplingUnit/{entityId}.json", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
-//	public @ResponseBody
-//	Workspace activeWorkspaceSetSamplingUnit(@PathVariable Integer entityId) {
-//		Workspace workspace = workspaceService.setActiveWorkspaceSamplingUnit(entityId);
-//		return workspace;
-//	}
-
-//	@RequestMapping(value = "/active/entity/{entityId}/variable/{variableId}/aggregates/{agg}.json", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
-//	public @ResponseBody
-//	QuantitativeVariable activeWorkspaceCreateVariableAggregate(@PathVariable int entityId, @PathVariable int variableId, @PathVariable String agg) {
-//		Workspace workspace = workspaceService.getActiveWorkspace();
-//		QuantitativeVariable variable = workspaceService.createVariableAggregate(workspace, entityId, variableId, agg);
-//		return variable;
-//	}
-//
-//	@RequestMapping(value = "/active/entity/{entityId}/variable/{variableId}/aggregates/{agg}.json", method = RequestMethod.DELETE, produces = APPLICATION_JSON_VALUE)
-//	public @ResponseBody
-//	QuantitativeVariable activeWorkspaceDeleteVariableAggregate(@PathVariable int entityId, @PathVariable int variableId, @PathVariable String agg) {
-//		Workspace workspace = workspaceService.getActiveWorkspace();
-//		QuantitativeVariable variable = workspaceService.deleteVariableAggregate(workspace, entityId, variableId, agg);
-//		return variable;
-//	}
-//
-//	// rest/workspace/active/entity/"+entityId+"/variable/"+variable.id+"/variable-per-ha.json
-//	@RequestMapping(value = "/active/entity/{entityId}/variable/{variableId}/variable-per-ha", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
-//	public @ResponseBody
-//	QuantitativeVariable activeWorkspaceAddVariablePerHa(@PathVariable int entityId, @PathVariable int variableId) {
-//		Workspace workspace = workspaceService.getActiveWorkspace();
-//		Entity entity = workspace.getEntityById(entityId);
-//		QuantitativeVariable variable = entity.getQtyVariableById(variableId);
-//		variable = workspaceService.addVariablePerHa(variable);
-//		return variable;
-//	}
-//
-//	@RequestMapping(value = "/active/entity/{entityId}/variable/{variableId}/variable-per-ha", method = RequestMethod.DELETE, produces = APPLICATION_JSON_VALUE)
-//	public @ResponseBody
-//	QuantitativeVariable activeWorkspaceDeleteVariablePerHa(@PathVariable int entityId, @PathVariable int variableId) {
-//		Workspace workspace = workspaceService.getActiveWorkspace();
-//		Entity entity = workspace.getEntityById(entityId);
-//		QuantitativeVariable variable = entity.getQtyVariableById(variableId);
-//		variable = workspaceService.deleteVariablePerHa(variable);
-//		return variable;
-//	}
 
 	@RequestMapping(value = "/active/entity/{entityId}/variable/quantitative", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody
@@ -274,11 +229,31 @@ public class WorkspaceController {
 		return response;
 	}
 
-	public Version parseVersion( String versionString ) {
+	private Version parseVersion( String versionString ) {
 		if( versionString.equals( WorkspaceBackupService.DEV_VERSION ) ){
 			versionString = "0.0";
 		}
 		Version version = new Version( versionString );
 		return version;
+	}
+	
+	/**
+	 * =========================
+	 * Error settings methods
+	 * =======================
+	 * @return 
+	 */
+	@RequestMapping(value = "/active/errorSettings.json", method = RequestMethod.PUT, produces =  MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody 
+	ErrorSettings setErrorSettings( String settings ){
+		if( StringUtils.isNotEmpty(settings) ){
+			ErrorSettings errorSettings = new ErrorSettings(settings) ; 
+			Workspace workspace = workspaceService.getActiveWorkspace();
+			workspaceService.setErrorSettings( workspace , errorSettings );
+			
+			return errorSettings;
+		}
+		return null;
+		
 	}
 }

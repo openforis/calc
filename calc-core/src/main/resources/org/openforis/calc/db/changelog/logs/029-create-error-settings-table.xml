@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+	<changeSet author="mino togna" id="029-create-error-settings-table">
+
+		<sql>			
+		CREATE TABLE
+		    calc.error_settings
+		    (
+		        id bigserial NOT NULL,
+		        workspace_id bigint NOT NULL,
+		        parameters text NOT NULL,
+		        PRIMARY KEY (id),
+		        CONSTRAINT error_settings_workspace_fk FOREIGN KEY (workspace_id) REFERENCES
+		        calc.workspace (id)
+		    );
+    	</sql>
+    	
+	</changeSet>
+</databaseChangeLog>

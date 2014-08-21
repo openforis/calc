@@ -8,6 +8,7 @@ import org.openforis.calc.metadata.AoiManager;
 import org.openforis.calc.metadata.CategoryManager;
 import org.openforis.calc.metadata.EntityManager;
 import org.openforis.calc.metadata.EquationManager;
+import org.openforis.calc.metadata.ErrorSettingsManager;
 import org.openforis.calc.metadata.SamplingDesignManager;
 import org.openforis.calc.metadata.VariableManager;
 import org.openforis.calc.psql.Psql;
@@ -38,7 +39,8 @@ public class ImportOutputMetadataTask extends Task {
 	private VariableManager variableManager;
 	@Autowired
 	private ProcessingChainManager processingChainManager;
-	
+	@Autowired
+	private ErrorSettingsManager errorSettingsManager;
 	@Autowired
 	private WorkspaceService workspaceService;
 	@Autowired
@@ -47,7 +49,7 @@ public class ImportOutputMetadataTask extends Task {
 	
 	@Override
 	protected long countTotalItems() {
-		return 10;
+		return 11;
 	}
 	
 	@Override
@@ -79,6 +81,9 @@ public class ImportOutputMetadataTask extends Task {
 		incrementItemsProcessed();
 		
 		processingChainManager.importBackup( workspace, workspaceBackup );
+		incrementItemsProcessed();
+		
+		errorSettingsManager.importBackup( workspace, workspaceBackup );
 		incrementItemsProcessed();
 		
 		// reload workspace

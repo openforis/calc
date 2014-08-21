@@ -11,6 +11,8 @@ import java.util.Set;
 import org.jooq.tools.json.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * 
  * @author G. Miceli
@@ -221,5 +223,11 @@ public class ParameterHashMap implements ParameterMap {
 			newMap.put(name, value);
 		}
 		return new ParameterHashMap(newMap);
+	}
+	
+	@JsonIgnore
+	@Override
+	public Set<String> keys(){
+		return map.keySet();
 	}
 }

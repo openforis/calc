@@ -12,6 +12,8 @@ import org.openforis.calc.metadata.Category;
 import org.openforis.calc.metadata.CategoryLevel.CategoryLevelValue;
 import org.openforis.calc.metadata.CategoryManager;
 import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.ErrorSettings;
+import org.openforis.calc.metadata.ErrorSettingsManager;
 import org.openforis.calc.metadata.MetadataManager;
 import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.QuantitativeVariable;
@@ -74,6 +76,8 @@ public class WorkspaceService {
 	private CalculationStepDao calculationStepDao;
 	@Autowired
 	private CategoryManager categoryManager;
+	@Autowired
+	private ErrorSettingsManager errorSettingsManager;
 	
 	@Autowired
 	private Psql psql;
@@ -373,6 +377,12 @@ public class WorkspaceService {
 	 */
 	public void addCategory( Workspace workspace , Category category , List<CategoryLevelValue> values ) {
 		categoryManager.createCategory( workspace, category , values );
+	}
+
+	@Transactional
+	public void setErrorSettings( Workspace workspace , ErrorSettings errorSettings) {
+		workspace.setErrorSettings(errorSettings);
+		errorSettingsManager.save(workspace);
 	}
 
 //	private void setActiveWorkspace(Workspace activeWorkspace) {

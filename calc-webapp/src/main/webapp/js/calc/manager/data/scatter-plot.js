@@ -131,7 +131,7 @@ ScatterPlot.prototype = (function(){
 			var dataset = [[50,50]];
 			
 			//Create SVG element
-			this.svg = d3.select("#" + this.chartContainer.attr('id') )
+			this.svg = d3.select( "#" + this.chartContainer.attr('id') )
 						.append("svg")
 						.attr("width", w)
 						.attr("height", h);

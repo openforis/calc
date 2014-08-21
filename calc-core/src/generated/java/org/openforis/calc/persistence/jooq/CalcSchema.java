@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CalcSchema extends org.jooq.impl.SchemaImpl {
 
-	private static final long serialVersionUID = 1620912014;
+	private static final long serialVersionUID = 1274985200;
 
 	/**
 	 * The singleton instance of <code>calc</code>
@@ -44,6 +44,7 @@ public class CalcSchema extends org.jooq.impl.SchemaImpl {
 			org.openforis.calc.persistence.jooq.Sequences.ENTITY_ID_SEQ,
 			org.openforis.calc.persistence.jooq.Sequences.EQUATION_ID_SEQ,
 			org.openforis.calc.persistence.jooq.Sequences.EQUATION_LIST_ID_SEQ,
+			org.openforis.calc.persistence.jooq.Sequences.ERROR_SETTINGS_ID_SEQ,
 			org.openforis.calc.persistence.jooq.Sequences.PROCESSING_CHAIN_ID_SEQ,
 			org.openforis.calc.persistence.jooq.Sequences.SAMPLING_DESIGN_ID_SEQ,
 			org.openforis.calc.persistence.jooq.Sequences.SRS_ID_SEQ,
@@ -72,6 +73,7 @@ public class CalcSchema extends org.jooq.impl.SchemaImpl {
 			org.openforis.calc.persistence.jooq.tables.EntityTable.ENTITY,
 			org.openforis.calc.persistence.jooq.tables.EquationTable.EQUATION,
 			org.openforis.calc.persistence.jooq.tables.EquationListTable.EQUATION_LIST,
+			org.openforis.calc.persistence.jooq.tables.ErrorSettingsTable.ERROR_SETTINGS,
 			org.openforis.calc.persistence.jooq.tables.ProcessingChainTable.PROCESSING_CHAIN,
 			org.openforis.calc.persistence.jooq.tables.SamplingDesignTable.SAMPLING_DESIGN,
 			org.openforis.calc.persistence.jooq.tables.StratumTable.STRATUM,

@@ -145,6 +145,10 @@
 									<name>org.openforis.calc.engine.ParameterMap</name>
 									<expression>.*\.calculation_step\.aggregate_parameters</expression>
 								</forcedType>
+								<forcedType>
+									<name>org.openforis.calc.engine.ParameterMap</name>
+									<expression>.*\.error_settings\.parameters</expression>
+								</forcedType>
 							</forcedTypes>
 						</database>
 						

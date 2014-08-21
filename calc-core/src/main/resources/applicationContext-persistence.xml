@@ -131,4 +131,7 @@
     <bean name="categoryLevelDao" class="org.openforis.calc.persistence.jooq.tables.daos.CategoryLevelDao">
     	<constructor-arg ref="config" />
     </bean>
+    <bean name="errorSettingsDao" class="org.openforis.calc.persistence.jooq.tables.daos.ErrorSettingsDao">
+    	<constructor-arg ref="config" />
+    </bean>
 </beans>

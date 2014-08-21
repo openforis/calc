@@ -449,22 +449,22 @@ WorkspaceManager.prototype.export = function() {
 WorkspaceManager.prototype.setErrorSettings = function( data , callback ) {
 	var $this = this;
 	UI.lock();
-//	this.activeWorkspace( function(ws){
-//		
-//		$.ajax({
-//			url 		: $this.contextPath + "error",
-//			dataType 	: "json",
-//			method 		: "PUT",
-//			data 		: data
-//		}).done( function(response) {
-//			Utils.applyFunction( callback , this._activeWorkspace );
-//			UI.unlock();
-//		}).error( function() {
-//			Calc.error.apply( this , arguments );
-//		});
-//		
-//	});
-	Utils.applyFunction( callback , this._activeWorkspace );
+	this.activeWorkspace( function(ws){
+		
+		$.ajax({
+			url 		: $this.contextPath + "active/errorSettings.json",
+			dataType 	: "json",
+			method 		: "PUT",
+			data 		: { settings:data }
+		}).done( function(response) {
+			$this._activeWorkspace.errorSettings = response;
+			Utils.applyFunction( callback , $this._activeWorkspace );
+			UI.unlock();
+		}).error( function() {
+			Calc.error.apply( this , arguments );
+		});
+		
+	});
 	UI.unlock();
 };
 

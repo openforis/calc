@@ -18,6 +18,7 @@ import org.openforis.calc.metadata.CategoryHierarchy;
 import org.openforis.calc.metadata.CategoryLevel;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.EquationList;
+import org.openforis.calc.metadata.ErrorSettings;
 import org.openforis.calc.metadata.SamplingDesign;
 import org.openforis.calc.metadata.Stratum;
 import org.openforis.calc.metadata.Variable;
@@ -54,6 +55,8 @@ public class Workspace extends WorkspaceBase {
 	private List<Category> categories;
 	
 	private SamplingDesign samplingDesign;
+	
+	private ErrorSettings errorSettings; 
 	
 	public Workspace() {
 		this.processingChains = new ArrayList<ProcessingChain>();
@@ -176,6 +179,17 @@ public class Workspace extends WorkspaceBase {
 					return;
 				}
 			}
+		}
+	}
+	
+	public ErrorSettings getErrorSettings() {
+		return errorSettings;
+	}
+	
+	public void setErrorSettings(ErrorSettings errorSettings) {
+		this.errorSettings = errorSettings;
+		if( this.errorSettings != null ){
+			this.errorSettings.setWorkspace( this );
 		}
 	}
 	

@@ -64,6 +64,11 @@ public class Sequences {
 	public static final org.jooq.Sequence<java.lang.Long> EQUATION_LIST_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("equation_list_id_seq", org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
 
 	/**
+	 * The sequence <code>calc.error_settings_id_seq</code>
+	 */
+	public static final org.jooq.Sequence<java.lang.Long> ERROR_SETTINGS_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("error_settings_id_seq", org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
+
+	/**
 	 * The sequence <code>calc.processing_chain_id_seq</code>
 	 */
 	public static final org.jooq.Sequence<java.lang.Long> PROCESSING_CHAIN_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("processing_chain_id_seq", org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.jooq.impl.SQLDataType.BIGINT.nullable(false));

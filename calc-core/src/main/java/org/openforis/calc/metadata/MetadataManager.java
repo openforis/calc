@@ -52,6 +52,8 @@ public class MetadataManager {
 	@Autowired
 	private EquationManager equationManager;
 	
+	@Autowired
+	private ErrorSettingsManager errorSettingsManager; 
 	
 	@Autowired
 	private Psql psql;
@@ -123,6 +125,7 @@ public class MetadataManager {
 		processingChainManager.loadChains( workspace );
 		samplingDesignManager.loadSampligDesign( workspace );
 		equationManager.loadEquationLists( workspace );
+		errorSettingsManager.load( workspace );
 		
 		initEntityHierarchy( workspace );
 	}
@@ -161,6 +164,7 @@ public class MetadataManager {
 		
 		categoryManager.save( workspace );
 		entityManager.persistEntities( workspace );
+		errorSettingsManager.save( workspace );
 		
 		return fetchWorkspaceByCollectSurveyUri( workspace.getCollectSurveyUri() );
 	}

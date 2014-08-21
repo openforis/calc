@@ -1180,6 +1180,7 @@ ul.ui-sortable li {
 	color: rgb(44, 62, 80);
 	border: 1px solid #DDDDDD;
 	border-radius: 0px;
+	font-size: 1.3em;
 }
 #job-status .download-r-code button:hover {
 	display: block; 
@@ -1187,6 +1188,7 @@ ul.ui-sortable li {
 	border: 1px solid #DDDDDD;
 	border-radius: 0px;
 	background-color: #FDFDFD;
+	font-size: 1.3em;
 }
 
 #task-status {

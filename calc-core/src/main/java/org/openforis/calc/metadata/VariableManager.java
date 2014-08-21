@@ -188,8 +188,8 @@ public class VariableManager {
 			variableIds.put( variableId , variable.getId() );
 		}
 		
-		List<CalculationStep> calculationSteps = workspaceToImport.getDefaultProcessingChain().getCalculationSteps();
 		// replace variable references of calculation steps
+		List<CalculationStep> calculationSteps = workspaceToImport.getDefaultProcessingChain().getCalculationSteps();
 		for ( CalculationStep calculationStep : calculationSteps ) {
 			
 			ParameterMap parameters = calculationStep.getParameters();
@@ -239,6 +239,27 @@ public class VariableManager {
 				break;
 			}
 		}
+		
+		// replace variable ids in error settings
+		ErrorSettings errorSettings 	= workspaceToImport.getErrorSettings();
+		ErrorSettings newErrorSettings 	= new ErrorSettings();
+		if( errorSettings != null ){
+			for ( String key : errorSettings.getParameters().keys() ) {
+				long variableId 	= Long.parseLong(key);
+				long newVariableId	= variableIds.get( (int)variableId );
+				
+				Collection<? extends Number> categoricalVariableIds = errorSettings.getCategoricalVariables(variableId);
+				List<Long> newCategoricalVariableIds = new ArrayList<Long>();
+				for ( Number oldCategoryId : categoricalVariableIds ){
+					long newCategoryId = variableIds.get( oldCategoryId.intValue() ).longValue();
+					newCategoricalVariableIds.add( newCategoryId );
+				}
+				errorSettings.setCategoricalVariables(variableId, newCategoricalVariableIds);
+			
+				newErrorSettings.addErrorSettings( newVariableId, errorSettings.getAois(variableId), newCategoricalVariableIds );
+			}
+		}
+		workspaceToImport.setErrorSettings(newErrorSettings);
 	}
 
 	private void replaceOutputVariableId( Workspace workspace , Map<Integer, Integer> variableIds , CalculationStep calculationStep ) {

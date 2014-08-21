@@ -43,4 +43,6 @@ public interface ParameterMap {
 	ParameterMap deepCopy();
 	
 	Object get(String name);
+
+	Set<String> keys();
 }
