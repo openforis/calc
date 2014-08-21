@@ -46,7 +46,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping(value = "/rest/data")
 public class DataController {
 	
-	private static final String EXPORTED_FILE_DATE_FORMAT = "yyyy-MM-dd_HH_ss";
+	private static final String EXPORTED_FILE_DATE_FORMAT = "yyyy-MM-dd_HH_mm";
 
 	private static final Log log = LogFactory.getLog(DataController.class);
 

@@ -118,7 +118,10 @@
 		<servlet-name>spring</servlet-name>
 		<url-pattern>*.zip</url-pattern>
 	</servlet-mapping>
-	
+	<servlet-mapping>
+		<servlet-name>spring</servlet-name>
+		<url-pattern>*.R</url-pattern>
+	</servlet-mapping>
 	<!-- ====================================================== -->
 	<!-- MISCELLANEOUS -->
 	<!-- ====================================================== -->

@@ -386,7 +386,7 @@ CalculationStepEditManager.prototype.updateForm = function() {
 
 CalculationStepEditManager.prototype.updateAggregateForm = function( calculationStep ){
 	this.aggregateParameters = calculationStep.aggregateParameters;
-	if( this.aggregateParameters.functions ){
+	if( this.aggregateParameters.functions &&  this.aggregateParameters.functions.length > 0 ){
 		for( var i in this.aggregateParameters.functions ){
 			var aggFunction = this.aggregateParameters.functions[ i ];
 			var optionBtn 	= this.aggregateFunctionButtons[ aggFunction ];

@@ -25,6 +25,15 @@ JobStatus = function() {
 	
 	// current job
 	this.job = null;
+	
+	// to download r code in case of calc job
+	this.downloadRCodeButton	= this.container.find( '.download-r-code button' );
+	this.downloadRCodeButton.click( function(e){
+		e.preventDefault();
+		JobManager.getInstance().downloadRCode(function(){
+			
+		});
+	});
 };
 
 JobStatus.prototype = (function() {
@@ -203,6 +212,13 @@ JobStatus.prototype = (function() {
 		
 		$.proxy(showLog, $this)();
 		$.proxy(adjustSize, $this)();
+		
+		// show / hide download R code button
+		if( $this.job.rlogger ) {
+			this.downloadRCodeButton.show();
+		} else {
+			this.downloadRCodeButton.hide();
+		}
 	};
 
 	var showLog = function() {

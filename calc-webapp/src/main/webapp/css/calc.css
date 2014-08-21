@@ -1174,6 +1174,20 @@ ul.ui-sortable li {
 #job-status .status {
 	text-transform: capitalize;
 }
+#job-status .download-r-code button,
+#job-status .download-r-code button:focus {
+	display: block; 
+	color: rgb(44, 62, 80);
+	border: 1px solid #DDDDDD;
+	border-radius: 0px;
+}
+#job-status .download-r-code button:hover {
+	display: block; 
+	color: rgb(44, 62, 80);
+	border: 1px solid #DDDDDD;
+	border-radius: 0px;
+	background-color: #FDFDFD;
+}
 
 #task-status {
 	display: none;	

@@ -145,6 +145,14 @@ JobManager.prototype.updateJobStatus = function( complete, hideOnComplete ) {
 	});
 		
 };
+
+/**
+ * Downloads the last processing chain r code executed 
+ */
+JobManager.prototype.downloadRCode = function() {
+	var url = this.contextPath + "/processing-chain.R";
+	UI.Form.download( url );
+};
 	
 //singleton instance of job manager manager
 var _jobManager = null;

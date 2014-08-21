@@ -166,7 +166,6 @@ ErrorSettingsManager.prototype.showVariableSettings = function( variableId ){
 };
 
 ErrorSettingsManager.prototype.selectAoi = function( variableId, aoiId ){
-//	console.log( " select aoi " + aoiId + " for variable: " + variableId );
 	var settings = this.getVariableErrorSettings( variableId );
 	
 	var aoiSettings = settings.aois;
@@ -177,16 +176,12 @@ ErrorSettingsManager.prototype.selectAoi = function( variableId, aoiId ){
 	}
 	
 	aoiSettings.push( aoiId );
-	
-	console.log( this.errorSettings );
 };
 ErrorSettingsManager.prototype.deselectAoi = function( variableId, aoiId ){
-//	console.log( " deselect aoi " + aoiId + " for variable: " + variableId );
 	ArrayUtils.removeItem( this.errorSettings[ variableId ].aois , aoi );
 };
 
 ErrorSettingsManager.prototype.selectCategory = function( variableId, categoryId ){
-	console.log( " select category " + categoryId + " for variable: " + variableId );
 	var settings = this.getVariableErrorSettings( variableId );
 	
 	var categorySettings = settings.categories;
@@ -210,240 +205,9 @@ ErrorSettingsManager.prototype.getVariableErrorSettings = function( variableId )
 	if( settings ){
 //		console.log( "found");
 	} else {
-		console.log( "not found");
 		settings = {};
 		this.errorSettings[ variableId ] = settings;
 	}
 	
 	return settings;
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-ErrorSettingsManager.prototype.showCategory = function( vId ) {
-	var $this = this;
-	$this.category.find("div.option").remove();
-	var container = $( '<div class="height95 option" style="overflow: auto;"></div>' );
-	$this.category.append( container );
-	
-	WorkspaceManager.getInstance().activeWorkspace( function(ws) {
-		var v = ws.getVariableById( vId );
-		var entity 	= ws.getEntityById( v.entityId );
-		
-		var divs = [];
-		var btns = [];
-		while( entity ) {
-			
-			var vars = entity.categoricalVariables();
-			for( i in vars ) {
-				var variable = vars[i];
-				var variableId = variable.id;
-				
-				var initBtn = function(){
-					
-					var div = $( '<div class="option width100" style="padding-bottom: 2px"></div>' );
-					div.data( "variable" , variable );
-					var btn = $( '<button class="btn option-btn width100"></button>' );
-					btn.html( variable.name );
-					div.append( btn );
-					divs[variableId] = div;
-					container.append( div );
-					
-					var optBtn = new OptionButton( btn );
-					btns[variableId] = optBtn;
-					var selectFunction = function( vId ) {
-						// first deselect others
-						for( var j in btns ){
-							if( parseInt(j) != vId ) {
-								var b = btns[j];
-								b.deselect();
-							}
-						}
-						
-						$this.params.category 	= vId;
-						$this.params.classes 	= null;
-						
-						$this.showClasses( vId );
-					};
-					
-					var deselectFunction = function( vId ) {
-						$this.params.category 	= null;
-						$this.params.classes 	= null;
-						
-						$this.classes.hide();
-						$this.viewBtn.hide();
-						
-						$this.result.hide();
-					};
-					
-					optBtn.select( selectFunction , variableId );
-					optBtn.deselect( deselectFunction , variableId );
-				};
-				initBtn();
-			}
-			
-			
-			
-			entity = entity.parent();
-		}
-		$this.category.fadeIn();
-	});
-	
-};
-
-ErrorSettingsManager.prototype.showClasses = function( vId ) {
-	UI.lock();
-	var $this = this;
-	this.params.classes 	= [];
-	$this.classes.find("div.option").remove();
-	var container = $( '<div class="height95 option" style="overflow: auto;"></div>' );
-	$this.classes.append( container );
-	
-	VariableManager.getInstance().getCategories( vId , function(categories) {
-		
-		if( categories ) {
-			
-			for( var i in categories ){
-				var category	= categories[ i ];
-				
-				var addButton = function() {
-					var code 		= category.code;
-					var caption 	= category.caption;
-					
-					var div = $( '<div class="float-left width25 option" style="padding: 0.1em 0.1em;"></div>' );
-					container.append( div );
-					var btn = $( '<button class="btn option-btn width100">' );
-					btn.html( code );
-					div.append( btn );
-					
-					// enable caption tooltip
-					btn.tooltip({ title: caption, delay: { show: 200, hide: 100 }});
-					
-					var optionBtn = new OptionButton( btn );
-					
-					optionBtn.select( function(c){
-//						$this.values.push( code );
-						$this.params.classes.push( c );
-						if( $this.params.classes.length > 0 ){
-							$this.viewBtn.fadeIn();
-						} else {
-							$this.viewBtn.fadeOut();
-							$this.result.hide();
-						}
-					} , code );
-					
-					optionBtn.deselect( function(c) {
-						var index = $this.params.classes.indexOf( c );
-
-						if (index > -1) {
-							$this.params.classes.splice(index, 1);
-						}
-						if( $this.params.classes.length > 0 ){
-							$this.viewBtn.fadeIn();
-						} else {
-							$this.viewBtn.fadeOut();
-							$this.result.hide();
-						}
-					} , code  );
-					
-				};
-				
-				addButton();
-			}
-			
-			
-			$this.classes.fadeIn();
-		} else {
-			UI.showError( "Too many classes to show for this category. Not yet implemented for such categories." , true );
-		}
-		
-		UI.unlock();	
-	});
-	
-};
-
-
-ErrorSettingsManager.prototype.showResults = function( results ) {
-	var thead = this.resultTable.find( "thead" ); 
-	var tbody = this.resultTable.find( "tbody" );
-	var formatNumber = d3.format(".4n");
-	
-	thead.empty();
-	tbody.empty();
-	
-	var fieldNames = results[0].fields;
-	
-	var tr = $( "<tr></tr>" );
-	thead.append(tr);
-	for( var n in fieldNames ){
-		var th = $( "<th></th>" );
-		th.html( n );
-		tr.append( th );
-	}
-//	$.each( fieldNames , function(i,field) {
-//		var th = $( "<th></th>" );
-//		th.html( field );
-//		tr.append( th );
-//	});
-	
-	
-	$.each( results, function( i , record ) {
-		var tr = $( "<tr></tr>" );		
-		tbody.append( tr );
-		
-		$.each( fieldNames, function( j , f ) {
-			var value = record.fields[ j ];
-			// format only numbers with decimal points
-			var field = ( typeof value === "number" && value % 1 !== 0 ) ? formatNumber( value ) : value;
-			var td = $( "<td></td>" );
-			td.html( field );
-			tr.append( td );
-		});
-
-		
-	});
-	
-	this.result.fadeIn();
-	
 };

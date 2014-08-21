@@ -3,8 +3,17 @@
  */
 package org.openforis.calc.web.controller;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+
+import org.json.simple.parser.ParseException;
 import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.InvalidProcessingChainException;
 import org.openforis.calc.chain.ProcessingChain;
@@ -18,6 +27,7 @@ import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceLockedException;
 import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.persistence.jooq.ParameterMapConverter;
+import org.openforis.commons.io.OpenForisIOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -40,6 +50,42 @@ public class JobController {
 	@Autowired
 	private TaskManager taskManager;
 
+	@RequestMapping(value = "/processing-chain.R", method = RequestMethod.POST )
+	public void downloadRCode(HttpServletResponse response) throws ParseException {
+		
+		StringBuilder sb = new StringBuilder();
+		
+		Workspace activeWorkspace = workspaceService.getActiveWorkspace();
+		if (activeWorkspace != null) {
+			Job job = taskManager.getJob( activeWorkspace.getId() );
+			if( job instanceof CalcJob ){
+				String jobString = job.toString();
+				sb.append( jobString );
+			} 
+		}
+		
+		if( sb.length() <= 0 ){
+			sb.append( "print('No job foud');" );
+		}
+		
+		try {
+			//prepare response header
+			SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd-HH-mm" );
+			String formattedDate = dateFormat.format(new Date());
+			String fileName = String.format("%s-%s-%s.%s", "processing-chain" , activeWorkspace.getName() , formattedDate , "R" );
+			
+			response.setContentType( "text/plain" ); 
+			response.setHeader( "Content-Disposition", "attachment; filename=" + fileName );
+			
+			//create csv writer
+			ServletOutputStream outputStream = response.getOutputStream();
+			BufferedWriter writer = new BufferedWriter( new OutputStreamWriter(outputStream, OpenForisIOUtils.UTF_8) );
+			writer.write( sb.toString() );
+			writer.close();
+		} catch (IOException e) {
+			throw new RuntimeException( "Error exporting to R code" , e );
+		}
+	}
 	/**
 	 * Execute a job for the given calculation step id
 	 * 
@@ -145,5 +191,5 @@ public class JobController {
 		}
 		return (CalcTestJob) job;
 	}
-
+	
 }
