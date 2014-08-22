@@ -211,16 +211,15 @@ public class ErrorEstimationManager {
 		SelectQuery<Record> select = new Psql().selectQuery();
 		select.setDistinct(true);
 		
-		select.addSelect( factTable.getParentIdField().as("plot_id") );
-		select.addGroupBy( factTable.getParentIdField() );
+		select.addSelect( factTable.getSamplingUnitIdField().as("plot_id") );
+		select.addGroupBy( factTable.getSamplingUnitIdField() );
 		
 		select.addSelect( factTable.getStratumField().as("stratum") );
 		select.addGroupBy( factTable.getStratumField() );
 		
 		if( workspace.hasClusterSamplingDesign() ){
 			select.addSelect( factTable.getClusterField().as("cluster") );
-			select.addGroupBy( factTable.getClusterField() );
-			
+			select.addGroupBy( factTable.getClusterField() );		
 		}
 		
 		Field<BigDecimal> plotAreaField = factTable.getPlotAreaField();

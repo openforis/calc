@@ -204,5 +204,19 @@ public class WorkspaceBackupService {
 		byte[] decodedString = decodeBase64(writer.toString());
 		return new String(decodedString);
 	}
+	
+//	public static void main(String[] args) throws IOException {
+//		String filePath = "C:\\Users\\Togna\\Desktop\\CALC\\vietnam-calc-data\\workspace.json";
+//		InputStream inputStream = new FileInputStream(filePath);
+//		
+//		StringWriter writer = new StringWriter();
+//		IOUtils.copy(inputStream, writer);
+//		inputStream.close();
+//
+//		byte[] decodedString = decodeBase64(writer.toString());
+//		String s = new String(decodedString);
+//		System.out.println( s );
+//
+//	}
 
 }

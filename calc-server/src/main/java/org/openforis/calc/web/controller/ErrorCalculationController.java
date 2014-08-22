@@ -51,7 +51,7 @@ public class ErrorCalculationController {
 	synchronized Object execute(@RequestParam String params) throws InvalidProcessingChainException, WorkspaceLockedException, ParseException, RException {
 		Workspace workspace = workspaceService.getActiveWorkspace();
 
-		ParameterHashMap parameterMap = new ParameterHashMap((JSONObject) new JSONParser().parse(params));
+		ParameterHashMap parameterMap = new ParameterHashMap( (JSONObject) new JSONParser().parse(params) );
 
 		// { "classes":["101","102","103","104"],"aoi":1000,"category":292, "quantity":316 }
 		int aoiId = parameterMap.getInteger("aoi");

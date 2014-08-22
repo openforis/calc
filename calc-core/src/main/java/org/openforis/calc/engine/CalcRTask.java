@@ -32,7 +32,7 @@ public class CalcRTask extends Task {
 
 	private RVariable rConnection;
 
-	protected CalcRTask(REnvironment rEnvironment, String name) {
+	protected CalcRTask( REnvironment rEnvironment, String name ){
 		this.rEnvironment = rEnvironment;
 		this.scripts = new ArrayList<RScript>();
 		this.name = name;

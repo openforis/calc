@@ -78,7 +78,6 @@ public class FactTable extends DataTable {
 
 	private void createClusterField() {
 		this.clusterField = createField( "_cluster", SQLDataType.VARCHAR, this );
-		
 	}
 
 	protected void createMeasureFields() {

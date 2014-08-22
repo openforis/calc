@@ -32,7 +32,8 @@ public class CategoryDimension extends Dimension {
 		CategoryHierarchy categoryHierarchy = categoryLevel.getHierarchy();
 		Category category = categoryHierarchy.getCategory();
 		
-		setCaption(category.getCaption());
+		String caption = category.getCaption() + " [" + variable.getName()+"]";
+		setCaption( caption );
 		
 		String hName = categoryHierarchy.getName();
 //		if( variable.isUserDefined() ){

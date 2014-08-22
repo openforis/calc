@@ -24,7 +24,11 @@ import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.chain.ProcessingChainManager;
 import org.openforis.calc.chain.post.CreateAggregateTablesTask;
 import org.openforis.calc.chain.post.PublishRolapSchemaTask;
+import org.openforis.calc.metadata.Aoi;
+import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.ErrorSettings;
+import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.persistence.jooq.ParameterMapConverter;
 import org.openforis.calc.psql.AlterTableStep.AlterColumnStep;
 import org.openforis.calc.psql.CreateViewStep.AsStep;
@@ -141,16 +145,17 @@ public class CalcJob extends Job {
 	protected void initTasks() {
 		
 		// init task
-		openConnection();
+		CalcRTask intTask = openConnection();
 		
 		
 		// init entity groups
 		this.group.init(connection);
 		
 		// execute the calculation steps grouped by entity
+		Workspace workspace = getWorkspace();
 		for (Integer entityId : this.group.entityIds() ) {
 
-			Entity entity = getWorkspace().getEntityById(entityId);
+			Entity entity = workspace.getEntityById(entityId);
 			EntityDataView view = getSchemas().getDataSchema().getDataView(entity);
 			Field<?> primaryKeyField = view.getPrimaryKey().getFields().get(0);
 			String primaryKey = primaryKeyField.getName();
@@ -286,20 +291,48 @@ public class CalcJob extends Job {
 			
 		}
 		
-		// 9. close connection
-		closeConnection();
+		
 		
 		
 		if( aggregates ) {
 				
 			CreateAggregateTablesTask aggTask = new CreateAggregateTablesTask();
-			((AutowireCapableBeanFactory) beanFactory).autowireBean( aggTask );
+			( (AutowireCapableBeanFactory) beanFactory ).autowireBean( aggTask );
 			addTask( aggTask );
+			
+			// add error calculation tasks 
+			ErrorSettings errorSettings = workspace.getErrorSettings();
+			if( errorSettings != null ){
+				intTask.addScript( RScript.getErrorEstimationScript() );
+				Set<String> keys = errorSettings.getParameters().keys();
+				for ( String key : keys ) {
+					
+					Integer variableId = Integer.parseInt( key );
+					Collection<? extends Number> aois = errorSettings.getAois( variableId );
+					Collection<? extends Number> categoricalVariables = errorSettings.getCategoricalVariables( variableId );
+					
+					for ( Number aoiId : aois ){
+						for ( Number categoricalVariableId : categoricalVariables ){
+							QuantitativeVariable quantitativeVariable 	= (QuantitativeVariable) workspace.getVariableById( variableId );
+							CategoricalVariable<?> categoricalVariable 	= (CategoricalVariable<?>) workspace.getVariableById( categoricalVariableId.intValue() );
+							Aoi aoi 									= workspace.getAoiHierarchies().get(0).getAoiById( aoiId.intValue() );
+							
+							CalculateErrorTask calculateErrorTask = new CalculateErrorTask( rEnvironment, quantitativeVariable, aoi, categoricalVariable , getSchemas() );
+							
+							addTask( calculateErrorTask );
+						}
+					}
+					
+				}
+			}
 			
 			PublishRolapSchemaTask publishRolapSchemaTask = new PublishRolapSchemaTask();
 			((AutowireCapableBeanFactory) beanFactory).autowireBean(publishRolapSchemaTask);
 			addTask( publishRolapSchemaTask );
 		}
+		
+		// 9. close connection
+		closeConnection();
 	}
 
 	protected void closeConnection() {
@@ -308,7 +341,7 @@ public class CalcJob extends Job {
 		addTask(closeConnection);
 	}
 
-	protected void openConnection() {
+	protected CalcRTask openConnection() {
 		CalcRTask initTask = createTask("Open database connection");
 
 		// init libraries
@@ -328,6 +361,8 @@ public class CalcJob extends Job {
 		initTask.addScript(r().dbSendQuery(connection, new Psql().setDefaultSchemaSearchPath(getInputSchema(), new SchemaImpl("public"))));
 		
 		addTask(initTask);
+		
+		return initTask;
 	}
 
 	protected CalcRTask createTask(String name) {
@@ -349,7 +384,9 @@ public class CalcJob extends Job {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		for (Task task : tasks()) {
-			sb.append(task.toString());
+			if( task instanceof CalcRTask ){
+				sb.append(task.toString());
+			}
 		}
 		return sb.toString();
 	}

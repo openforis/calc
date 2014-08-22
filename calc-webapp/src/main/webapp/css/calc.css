@@ -51,18 +51,28 @@ button.blue-btn ,
 button.blue-btn:focus {
 	height:100%;
 	border-radius:0px;
-/* 	width: 70%; */
 	background-color: #496d7e;
 	border-color: #496d7e;
 	color:#e6e7e7;
-/* 	background-color:#b8b8b8; */
-/* 	border-color: #b8b8b8; */
 }
 button.blue-btn:hover {
 	color:#e6e7e7;
 	background-color: #36525f;
 	border-color: #36525f;
-	
+}
+
+button.blue-btn-selected ,
+button.blue-btn-selected:focus {
+	height:100%;
+	border-radius:0px;
+	background-color: #36525f;
+	border-color: #36525f;
+	color:#e6e7e7;
+}
+button.blue-btn-selected:hover {
+	color:#e6e7e7;
+	background-color: #496d7e;
+	border-color: #496d7e;	
 }
 
 button.no-background ,

@@ -85,6 +85,9 @@ public class CalculationStepRTask extends CalcRTask {
 		RVariable result = r().variable("result");
 		SetValue setValue = r().setValue(result, r().rTry(script, setOutputValuePerHa));
 
+		addScript( r().rScript("# ==========" ) );
+		addScript( r().rScript("# " + calculationStep.getCaption() ) );
+		addScript( r().rScript("# ==========" ) );
 		addScript(setValue);
 		addScript( r().checkError(result, connection) );
 	}

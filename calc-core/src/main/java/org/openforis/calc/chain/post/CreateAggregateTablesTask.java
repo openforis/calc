@@ -147,7 +147,7 @@ public final class CreateAggregateTablesTask extends Task {
 
 	private void createSamplingUnitAggregateTable( SamplingUnitAggregateTable suAggTable ) {
 //		SamplingUnitAggregateTable plotAgg = factTable.getPlotAggregateTable();
-		DataTable sourceTable = suAggTable.getSourceTable();
+		FactTable sourceTable = (FactTable) suAggTable.getSourceTable();
 		SelectQuery<Record> select = psql().selectQuery();
 		
 		select.addFrom( sourceTable );
@@ -163,7 +163,8 @@ public final class CreateAggregateTablesTask extends Task {
 		select.addGroupBy( sourceTable.getAoiIdFields() );
 		select.addSelect( sourceTable.getStratumField() );
 		select.addGroupBy( sourceTable.getStratumField() );
-		
+		select.addSelect( sourceTable.getClusterField() );
+		select.addGroupBy( sourceTable.getClusterField() );
 		// for now quantity fields. check if it needs to be done for each variable aggregate
 		Field<BigDecimal> plotArea = ((FactTable)sourceTable) .getPlotAreaField();
 		if( plotArea == null ){
@@ -253,6 +254,7 @@ public final class CreateAggregateTablesTask extends Task {
 				select.addJoin(aoiTable, joinField.eq(aoiTable.getIdField()) );
 			}
 			
+			Field<String> clusterField = null;
 			// add stratum and cluster columns to fact table based on the sampling design
 			if( getWorkspace().getSamplingDesign().getTwoPhases() ){
 				
@@ -271,9 +273,11 @@ public final class CreateAggregateTablesTask extends Task {
 				// add cluster column
 				if( getWorkspace().hasClusterSamplingDesign() ) {
 					String clusterColumn = getWorkspace().getSamplingDesign().getClusterColumn().getColumn();
-					Field<String> clusterField = phase1Table.getVarcharField( clusterColumn ).as( factTable.getClusterField().getName() ) ;
-					select.addSelect( clusterField );
+					clusterField = phase1Table.getVarcharField( clusterColumn ).as( factTable.getClusterField().getName() ) ;
+				} else {
+					clusterField = 	DSL.val( "1" ).as( factTable.getClusterField().getName() );
 				}
+				select.addSelect( clusterField );
 			} else {
 				// one phase sampling
 				
@@ -287,9 +291,11 @@ public final class CreateAggregateTablesTask extends Task {
 				// add cluster column
 				if( getWorkspace().hasClusterSamplingDesign() ) {
 					String clusterColumn = getWorkspace().getSamplingDesign().getClusterColumn().getColumn();
-					Field<String> clusterField = dataTable.field( clusterColumn ).cast(String.class).as( factTable.getClusterField().getName() ) ;
-					select.addSelect( clusterField );
+					clusterField = dataTable.field( clusterColumn ).cast(String.class).as( factTable.getClusterField().getName() ) ;
+				} else {
+					clusterField = 	DSL.val( "1" ).as( factTable.getClusterField().getName() );
 				}
+				select.addSelect( clusterField );
 			}
 		}
 		

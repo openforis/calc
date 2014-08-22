@@ -98,19 +98,22 @@ ErrorSettingsManager.prototype.showQuantity = function() {
 						
 						var div = $( '<div class="option row no-margin no-padding" style="padding-bottom: 2px"></div>' );
 						
-						var btn = $( '<button class="btn blue-btn col-md-8"></button>' );
+						var btn = $( '<button class="btn blue-btn col-md-12"></button>' );
 						btn.html( variable.name );
 						btn.click( function(e){
 							$this.showVariableSettings( variable.id );
+							
+							container.find( ".blue-btn-selected" ).removeClass( "blue-btn-selected" ).addClass( "blue-btn" );
+							btn.removeClass( "blue-btn" ).addClass( "blue-btn-selected" );
 						});
 						div.append( btn );
 						container.append( div );
 						
 						
-						var errorBtn = $( '<button class="btn no-background col-md-4" style="margin-top:3px;"><img alt="" src="img/cv.png" width="20em" height="20em"></button>' );
-						div.append( errorBtn );
+//						var errorBtn = $( '<button class="btn no-background col-md-4" style="margin-top:3px;"><img alt="" src="img/cv.png" width="20em" height="20em"></button>' );
+//						div.append( errorBtn );
+//						var optBtn = new OptionButton( errorBtn );
 						
-						var optBtn = new OptionButton( errorBtn );
 						vars.push( variableId );
 					};
 					initVariableButton();
