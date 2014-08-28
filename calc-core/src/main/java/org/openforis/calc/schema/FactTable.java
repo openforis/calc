@@ -4,6 +4,7 @@
 package org.openforis.calc.schema;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -15,9 +16,12 @@ import org.jooq.Record;
 import org.jooq.TableField;
 import org.jooq.impl.SQLDataType;
 import org.openforis.calc.engine.Workspace;
+import org.openforis.calc.metadata.Aoi;
 import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.AoiLevel;
+import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.ErrorSettings;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.psql.Psql;
 import org.openforis.commons.collection.CollectionUtils;
@@ -39,6 +43,8 @@ public class FactTable extends DataTable {
 	private DataSchema schema;
 	private Map<QuantitativeVariable, Field<BigDecimal>> measureFields;
 	private Field<String> clusterField; 
+	
+	private List<ErrorTable> errorTables;
 	
 	FactTable(Entity entity, DataSchema schema) {
 		this(entity, getName(entity), schema);
@@ -74,6 +80,8 @@ public class FactTable extends DataTable {
 		createClusterField();
 		
 		createWeightField();
+		
+		createErrorTables();
 	}
 
 	private void createClusterField() {
@@ -116,7 +124,37 @@ public class FactTable extends DataTable {
 
 		}
 	}
-
+	/**
+	 * creates error tables
+	 */
+	private void createErrorTables() {
+		this.errorTables = new ArrayList<ErrorTable>();
+		
+		Workspace workspace = getWorkspace();
+		ErrorSettings errorSettings = workspace.getErrorSettings();
+		
+		Collection<QuantitativeVariable> outputVariables = getEntity().getDefaultProcessingChainQuantitativeOutputVariables();
+		for ( QuantitativeVariable quantitativeVariable : outputVariables ){
+			long variableId = quantitativeVariable.getId().longValue();
+			if( errorSettings.hasErrorSettings(variableId) ){
+				
+				Collection<? extends Number> aois 					= errorSettings.getAois( variableId );
+				Collection<? extends Number> categoricalVariables 	= errorSettings.getCategoricalVariables( variableId );
+				
+				for ( Number aoiId : aois ){
+					for ( Number categoricalVariableId : categoricalVariables ){
+						CategoricalVariable<?> categoricalVariable = (CategoricalVariable<?>) workspace.getVariableById( categoricalVariableId.intValue() );
+						Aoi aoi = workspace.getAoiHierarchies().get(0).getAoiById( aoiId.intValue() );
+						
+						ErrorTable errorTable = new ErrorTable( quantitativeVariable, aoi, categoricalVariable, schema );
+						this.errorTables.add( errorTable );
+					}
+				}
+			}
+		}
+		
+	}
+	
 	public SamplingUnitAggregateTable getSamplingUnitAggregateTable() {
 		return samplingUnitAggregateTable;
 	}
@@ -156,5 +194,8 @@ public class FactTable extends DataTable {
 		return schema;
 	}
 	
+	public List<ErrorTable> getErrorTables() {
+		return CollectionUtils.unmodifiableList( errorTables );
+	}
 
 }

@@ -4,6 +4,7 @@
 package org.openforis.calc.engine;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -24,11 +25,8 @@ import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.chain.ProcessingChainManager;
 import org.openforis.calc.chain.post.CreateAggregateTablesTask;
 import org.openforis.calc.chain.post.PublishRolapSchemaTask;
-import org.openforis.calc.metadata.Aoi;
-import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
-import org.openforis.calc.metadata.ErrorSettings;
-import org.openforis.calc.metadata.QuantitativeVariable;
+import org.openforis.calc.metadata.Entity.Visitor;
 import org.openforis.calc.persistence.jooq.ParameterMapConverter;
 import org.openforis.calc.psql.AlterTableStep.AlterColumnStep;
 import org.openforis.calc.psql.CreateViewStep.AsStep;
@@ -43,6 +41,9 @@ import org.openforis.calc.r.RVariable;
 import org.openforis.calc.r.RVector;
 import org.openforis.calc.r.SetValue;
 import org.openforis.calc.schema.EntityDataView;
+import org.openforis.calc.schema.EntityDataViewDao;
+import org.openforis.calc.schema.ErrorTable;
+import org.openforis.calc.schema.FactTable;
 import org.openforis.calc.schema.ResultTable;
 import org.openforis.calc.schema.Schemas;
 import org.springframework.beans.factory.BeanFactory;
@@ -72,6 +73,10 @@ public class CalcJob extends Job {
 	@JsonIgnore
 	private BeanFactory beanFactory;
 
+	@Autowired
+	@JsonIgnore
+	private EntityDataViewDao entityDataViewDao;
+	
 	private ProcessingChain processingChain;
 	
 	/**
@@ -151,6 +156,10 @@ public class CalcJob extends Job {
 		// init entity groups
 		this.group.init(connection);
 		
+		List<Task> readDataTasks = new ArrayList<Task>();
+		List<Task> executeTasks = new ArrayList<Task>();
+		List<Task> writeResultsTasks = new ArrayList<Task>();
+		
 		// execute the calculation steps grouped by entity
 		Workspace workspace = getWorkspace();
 		for (Integer entityId : this.group.entityIds() ) {
@@ -197,19 +206,19 @@ public class CalcJob extends Job {
 			}
 			
 			readDataTask.addScript(r().setValue(dataFrame, r().dbGetQuery(connection, select)));
-			addTask(readDataTask);
-			 
 			// append plot_area script
-			
 			if( plotArea != null ) {
 				RVariable results = r().variable( "results" );
 				SetValue setValue = r().setValue(results, r().rTry(plotArea) );
 				readDataTask.addScript( setValue );
 			}
+			readDataTasks.add(readDataTask);
+//			addTask(readDataTask);
 			
 			
 			// ======= add all calculation step tasks
-			addTasks( group.getCalculationStepTasks(entityId) );
+//			addTasks( group.getCalculationStepTasks(entityId) );
+			executeTasks.addAll( group.getCalculationStepTasks(entityId) );
 
 			// ======= write results to db
 			CalcRTask writeResultsTask = createTask("Write " + entity.getName() + " results");
@@ -287,11 +296,13 @@ public class CalcJob extends Job {
 			AsStep createView = new Psql().createView(view).as(selectView);
 			writeResultsTask.addScript(r().dbSendQuery( connection, createView ));
 			
-			addTask(writeResultsTask);
-			
+//			addTask(writeResultsTask);
+			writeResultsTasks.add( writeResultsTask );
 		}
 		
-		
+		addTasks( readDataTasks );
+		addTasks( executeTasks );
+		addTasks( writeResultsTasks );
 		
 		
 		if( aggregates ) {
@@ -301,30 +312,47 @@ public class CalcJob extends Job {
 			addTask( aggTask );
 			
 			// add error calculation tasks 
-			ErrorSettings errorSettings = workspace.getErrorSettings();
-			if( errorSettings != null ){
-				intTask.addScript( RScript.getErrorEstimationScript() );
-				Set<String> keys = errorSettings.getParameters().keys();
-				for ( String key : keys ) {
+			boolean errorScriptAdded = false;
+			List<FactTable> factTables = getSchemas().getDataSchema().getFactTables();
+			for ( FactTable factTable : factTables ){
+				List<ErrorTable> errorTables = factTable.getErrorTables();
+				for ( ErrorTable errorTable : errorTables ){
 					
-					Integer variableId = Integer.parseInt( key );
-					Collection<? extends Number> aois = errorSettings.getAois( variableId );
-					Collection<? extends Number> categoricalVariables = errorSettings.getCategoricalVariables( variableId );
-					
-					for ( Number aoiId : aois ){
-						for ( Number categoricalVariableId : categoricalVariables ){
-							QuantitativeVariable quantitativeVariable 	= (QuantitativeVariable) workspace.getVariableById( variableId );
-							CategoricalVariable<?> categoricalVariable 	= (CategoricalVariable<?>) workspace.getVariableById( categoricalVariableId.intValue() );
-							Aoi aoi 									= workspace.getAoiHierarchies().get(0).getAoiById( aoiId.intValue() );
-							
-							CalculateErrorTask calculateErrorTask = new CalculateErrorTask( rEnvironment, quantitativeVariable, aoi, categoricalVariable , getSchemas() );
-							
-							addTask( calculateErrorTask );
-						}
+					if( !errorScriptAdded ){
+						intTask.addScript( RScript.getErrorEstimationScript() );
+						errorScriptAdded = true;
 					}
 					
+					CalculateErrorTask calculateErrorTask = new CalculateErrorTask( rEnvironment, errorTable , connection );
+					addTask( calculateErrorTask );
 				}
 			}
+			
+//			ErrorSettings errorSettings = workspace.getErrorSettings();
+//			if( errorSettings != null ){
+//				intTask.addScript( RScript.getErrorEstimationScript() );
+//				
+//				Set<String> keys = errorSettings.getParameters().keys();
+//				for ( String key : keys ) {
+//					
+//					Integer variableId = Integer.parseInt( key );
+//					Collection<? extends Number> aois = errorSettings.getAois( variableId );
+//					Collection<? extends Number> categoricalVariables = errorSettings.getCategoricalVariables( variableId );
+//					
+//					for ( Number aoiId : aois ){
+//						for ( Number categoricalVariableId : categoricalVariables ){
+//							QuantitativeVariable quantitativeVariable 	= (QuantitativeVariable) workspace.getVariableById( variableId );
+//							CategoricalVariable<?> categoricalVariable 	= (CategoricalVariable<?>) workspace.getVariableById( categoricalVariableId.intValue() );
+//							Aoi aoi 									= workspace.getAoiHierarchies().get(0).getAoiById( aoiId.intValue() );
+//							
+//							CalculateErrorTask calculateErrorTask = new CalculateErrorTask( rEnvironment, quantitativeVariable, aoi, categoricalVariable , getSchemas() );
+//							
+//							addTask( calculateErrorTask );
+//						}
+//					}
+//					
+//				}
+//			}
 			
 			PublishRolapSchemaTask publishRolapSchemaTask = new PublishRolapSchemaTask();
 			((AutowireCapableBeanFactory) beanFactory).autowireBean(publishRolapSchemaTask);
@@ -333,6 +361,17 @@ public class CalcJob extends Job {
 		
 		// 9. close connection
 		closeConnection();
+		
+		// 10 - hidden to users: recreates views for sampling unit and its descendant
+		Entity samplingUnit = workspace.getSamplingUnit();
+		samplingUnit.traverse( new Visitor() {
+			@Override
+			public void visit(Entity entity) {
+				entityDataViewDao.createOrUpdateView(entity);
+				
+			}
+		});
+		
 	}
 
 	protected void closeConnection() {

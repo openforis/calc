@@ -216,6 +216,10 @@ public abstract class DataTable extends AbstractTable {
 	public Entity getEntity() {
 		return entity;
 	}
+	
+	public Workspace getWorkspace(){
+		return entity.getWorkspace();
+	}
 
 	@Override
 	public UniqueKey<Record> getPrimaryKey() {

@@ -3,6 +3,7 @@
  */
 package org.openforis.calc.metadata;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.openforis.calc.engine.ParameterHashMap;
@@ -37,7 +38,7 @@ public class ErrorSettings extends ErrorSettingsBase {
 		setParameters( parameters );
 	}
 
-	public Workspace getWorkspace() {
+	public Workspace getWorkspace(){
 		return workspace;
 	}
 
@@ -58,15 +59,20 @@ public class ErrorSettings extends ErrorSettingsBase {
 	
 	public boolean hasErrorSettings( long variableId ){
 		return 	getErrorSettings( variableId ) != null &&
-				getAois(variableId).size() > 0 &&
-				getCategoricalVariables(variableId).size() > 0;
-				
+				getAois( variableId ).size() > 0 &&
+				getCategoricalVariables( variableId ).size() > 0;				
 	}
 	
+	@SuppressWarnings("unchecked")
 	public Collection<? extends Number> getAois( long variableId ){
 		ParameterMap map = getErrorSettings( variableId );
-		@SuppressWarnings("unchecked")
-		Collection<? extends Number> collection = (Collection<? extends Number>) map.getArray( AOIS );
+		Collection<? extends Object> array = map.getArray( AOIS );
+		Collection<? extends Number> collection = null;
+		if( array == null ){
+			collection = new ArrayList<Number>();
+		} else {
+			collection = (Collection<? extends Number>) array;
+		}
 		return CollectionUtils.unmodifiableCollection( collection );
 	}
 	
@@ -75,10 +81,16 @@ public class ErrorSettings extends ErrorSettingsBase {
 		errorSettings.setArray( AOIS , aois );
 	}
 	
+	@SuppressWarnings("unchecked")
 	public Collection<? extends Number> getCategoricalVariables( long variableId ){
 		ParameterMap map = getErrorSettings( variableId );
-		@SuppressWarnings("unchecked")
-		Collection<? extends Number> collection = (Collection<? extends Number>) map.getArray( CATEGORIES );
+		Collection<? extends Object> array = map.getArray( CATEGORIES );
+		Collection<? extends Number> collection = null;
+		if( array == null ){
+			collection = new ArrayList<Number>();
+		} else {
+			collection = (Collection<? extends Number>) array;
+		}
 		return CollectionUtils.unmodifiableCollection( collection );
 	}
 	

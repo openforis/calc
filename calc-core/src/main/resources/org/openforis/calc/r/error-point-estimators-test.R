@@ -3,21 +3,21 @@ library( "RPostgreSQL" );
 # === Open db connection
 driver <- dbDriver("PostgreSQL");
 connection <- dbConnect(driver, host="localhost", dbname="calc", user="calc", password="calc", port=5432);
-dbSendQuery(conn=connection, statement='set search_path to "laputa", "public"');
+dbSendQuery(conn=connection, statement='set search_path to "atlantis", "public"');
 
 # ============================== Read data =========================
 # ==== Input parameters (must be passed by CALC)
-workspaceId <- dbGetQuery(conn=connection, statement="select w.id from calc.workspace w where w.name = 'laputa'")$id;
-aoiId <- dbGetQuery(conn=connection, statement="select a.id from calc.aoi a where lower(a.caption) = 'laputa'")$id;
+workspaceId <- dbGetQuery(conn=connection, statement="select w.id from calc.workspace w where w.name = 'atlantis'")$id;
+aoiId <- dbGetQuery(conn=connection, statement="select a.id from calc.aoi a where lower(a.caption) = 'atlantis'")$id;
 
 # ======= strata
 select <- "select s.id , s.stratum_no as stratum, s.caption, e.area 
       from
       calc.stratum s
       join
-      laputa._level_1_expf    e
+      atlantis._country_expf    e
       on e.stratum = s.stratum_no";
-select <- paste( select , "and e._administrative_unit_level_1_id =", aoiId , sep = " " );
+select <- paste( select , "and e._administrative_unit_country_id =", aoiId , sep = " " );
 select <- paste( select , "and s.workspace_id = ", workspaceId , sep = " " );
 strata <- dbGetQuery( conn=connection , statement=select);
 
@@ -34,8 +34,8 @@ select <- paste( select , "case
                                 0
                             end as class   " , 
                  sep = " , " );
-select <- paste( select , "from _plot_fact p join laputa._plot_aoi a on p._plot_id = a.id" , sep = " " );
-select <- paste( select , "where a._administrative_unit_level_1_id =" , sep = " " );
+select <- paste( select , "from _plot_fact p join atlantis._plot_aoi a on p._plot_id = a.id" , sep = " " );
+select <- paste( select , "where a._administrative_unit_country_id =" , sep = " " );
 select <- paste( select , aoiId , sep = " " );
 plots <- dbGetQuery( conn=connection , statement = select );
 
@@ -55,11 +55,11 @@ select <- "SELECT distinct
 FROM
     _tree_fact t 
 JOIN
-    laputa._plot_aoi a
+    atlantis._plot_aoi a
 ON
     t._plot_id = a.id
 WHERE
-    a._administrative_unit_level_1_id = ";
+    a._administrative_unit_country_id = ";
 select <- paste( select, aoiId , sep = " " );
 select <- paste( select , "group by
                             t._plot_id,    

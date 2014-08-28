@@ -29,4 +29,5 @@ public abstract class AbstractTable extends TableImpl<Record> {
 	protected <T> TableField<Record, T> copyField(Field<T> field) {
 		return createField(field.getName(), field.getDataType(), this);
 	}
+	
 }

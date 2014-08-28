@@ -60,7 +60,7 @@ public class CategoryController {
 			Workspace workspace = workspaceService.getActiveWorkspace();
 			
 			String caption = form.getCaption();
-			String name = form.getCaption().replaceAll("\\W", "_").toLowerCase();
+			String name = form.getCaption().replaceAll( "\\W", "_" ).toLowerCase();
 			
 			Category category = new Category();
 			category.setCaption(caption);

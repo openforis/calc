@@ -268,7 +268,7 @@ public final class CalculateExpansionFactorsTask extends Task {
 		Field<Integer> area = DSL.decode()
 				.when( countField.gt(BigDecimal.ZERO), dataView.getIdField().count().div( DSL.cast(totalField, Psql.DOUBLE_PRECISION) ).mul(aoiAreaField) )
 				.otherwise(0)
-				.as(expf.AREA.getName() );
+				.as( expf.AREA.getName() );
 		select.addSelect( area );
 		
 		select.addGroupBy( aoiAreaField );

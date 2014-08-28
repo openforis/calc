@@ -34,6 +34,7 @@ import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.module.r.CalcRModule;
 import org.openforis.calc.module.r.CustomROperation;
 import org.openforis.calc.persistence.jooq.ParameterMapConverter;
+import org.openforis.calc.utils.StringUtils;
 import org.openforis.calc.web.form.CalculationStepForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -128,9 +129,10 @@ public class CalculationStepController {
 		CategoryLevel defualtLevel = category.getHierarchies().get(0).getLevels().get(0);
 		
 		Variable<?> variable = step.getOutputVariable();
-		String name = step.getCaption().replaceAll( "\\W" , "_" ).toLowerCase() ;
+		
 		if( variable == null || variable instanceof QuantitativeVariable) {
 			Entity entity = ws.getEntityById( form.getEntityId() );
+			String name = StringUtils.normalize( step.getCaption() ) ;
 			variable = workspaceService.addMultiwayVariable( entity , name );
 			step.setOutputVariable( variable );
 			varCreated = true;

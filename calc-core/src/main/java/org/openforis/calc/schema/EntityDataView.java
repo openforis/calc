@@ -99,7 +99,8 @@ public class EntityDataView extends DataTable {
 	}
 	
 	public Select<?> getSelect(boolean joinWithResults) {
-		DataTable table = schema.getDataTable(getEntity());
+		Entity entity = getEntity();
+		DataTable table = schema.getDataTable(entity);
 		SelectQuery<Record> select = new Psql().selectQuery();
 		select.addFrom(table);
 //		select.addSelect(table.fields());
@@ -109,24 +110,24 @@ public class EntityDataView extends DataTable {
 //		select.addSelect( table.getCategoryValueFields() );
 		select.addSelect( table.getTextFields() );
 		select.addSelect( table.getAoiIdFields() );
-		for (QuantitativeVariable var : getEntity().getOriginalQuantitativeVariables()) {
+		for (QuantitativeVariable var : entity.getOriginalQuantitativeVariables()) {
 			select.addSelect( table.getQuantityField(var) );
 		}
-		for (CategoricalVariable<?> var : getEntity().getOriginalCategoricalVariables()) {
+		for (CategoricalVariable<?> var : entity.getOriginalCategoricalVariables()) {
 			select.addSelect( table.getCategoryIdField(var) );
 			select.addSelect( table.getCategoryValueField(var) );
 		}
 		// add weight column if sampling unit
-		if( getEntity().isSamplingUnit() ) {
+		if(  table.getWeightField() != null ) {
 			select.addSelect( table.getWeightField() );
 		}
 		
 		// for every ancestor, add join condition and select fields
-		Entity currentEntity = getEntity();
+		Entity currentEntity = entity;
 		while (currentEntity.getParent() != null) {
 			DataTable currentTable = schema.getDataTable(currentEntity);
 			Entity parentEntity = currentEntity.getParent();
-			DataTable parentTable = schema.getDataTable(parentEntity);
+			DataTable parentTable = schema.getDataTable( parentEntity );
 
 			select.addSelect( parentTable.getIdField() );
 			select.addSelect( parentTable.getCategoryValueFields() );
@@ -135,21 +136,32 @@ public class EntityDataView extends DataTable {
 			for ( QuantitativeVariable var : parentEntity.getOriginalQuantitativeVariables() ) {
 				select.addSelect( parentTable.getQuantityField(var) );
 			}
+			if( parentTable.getWeightField() != null ){
+				select.addSelect( parentTable.getWeightField() );
+			}
+			select.addJoin( parentTable, currentTable.getParentIdField().eq(parentTable.getIdField()) );
 			
-			select.addJoin(parentTable, currentTable.getParentIdField().eq(parentTable.getIdField()));
-			
+			if( parentEntity.isSamplingUnit() ){
+				addJoinWithResultsTable(parentEntity, parentTable, select);
+			}
 //			addUniqueNameFields( select, parentTable.fields() );
 			currentEntity = parentEntity;
 		}
 		
 		// add join with results table if exits
-		ResultTable resultTable = schema.getResultTable(getEntity());
+		addJoinWithResultsTable(entity, table, select);
+		
+		return select;
+	}
+
+	private void addJoinWithResultsTable(Entity entity, DataTable table, SelectQuery<Record> select) {
+		ResultTable resultTable = schema.getResultTable(entity);
 		if( resultTable != null ){
 			// select output variables from results table
-			for (QuantitativeVariable var : getEntity().getDefaultProcessingChainQuantitativeOutputVariables()) {
+			for (QuantitativeVariable var : entity.getDefaultProcessingChainQuantitativeOutputVariables()) {
 				select.addSelect( resultTable.getQuantityField(var) );
 			}
-			for ( MultiwayVariable var : getEntity().getDefaultProcessingChainCategoricalOutputVariables() ){
+			for ( MultiwayVariable var : entity.getDefaultProcessingChainCategoricalOutputVariables() ){
 				select.addSelect( resultTable.getCategoryIdField(var) );
 				select.addSelect( resultTable.getCategoryValueField(var) );
 			}
@@ -159,8 +171,6 @@ public class EntityDataView extends DataTable {
 			
 			select.addJoin(resultTable, JoinType.LEFT_OUTER_JOIN, resultTable.getIdField().eq(table.getIdField()));
 		}
-		
-		return select;
 	}
 
 	public TableField<Record, BigDecimal> getPlotAreaField() {

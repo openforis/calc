@@ -166,12 +166,12 @@ public class CalculationStepRScriptGenerator {
 //		select.addSelect( dsl.decode().when(condition, expr) );
 		List<CalculationStepCategoryClassParameters> parameters = calculationStep.getCategoryClassParameters();
 		for (CalculationStepCategoryClassParameters param : parameters) {
-			Integer classId = param.getClassId();
-			String classCode = param.getClassCode();
-			Integer variableId = param.getVariableId();
-			String condition = param.getCondition();
-			String left = param.getLeft();
-			String right = param.getRight();
+			Integer classId 	= param.getClassId();
+			String classCode 	= param.getClassCode();
+			Integer variableId 	= param.getVariableId();
+			String condition 	= param.getCondition();
+			String left 		= param.getLeft();
+			String right 		= param.getRight();
 			
 			Variable<?> variable = workspace.getVariableById(variableId);
 			String variableName = variable.getName();
@@ -184,7 +184,7 @@ public class CalculationStepRScriptGenerator {
 			}
 			
 			caseIdStep = caseIdStep.when(sqlCondition, classId);
-			caseCodeStep = caseCodeStep.when(sqlCondition, "\\'"+classCode+"\\'");
+			caseCodeStep = caseCodeStep.when(sqlCondition, "'"+classCode+"'");
 		}
 		StringBuilder sb = new StringBuilder();
 		
@@ -193,7 +193,7 @@ public class CalculationStepRScriptGenerator {
 		select.addFrom(table);
 		select.addSelect( DSL.field(endId.toString()).as( outputVariable.getInputCategoryIdColumn()) );
 		
-		Sqldf sqldf = r().sqldf(select.toString());
+		Sqldf sqldf = r().sqldf( selectToString(select) );
 		RVariable tmp = r().variable("tmp");
 		SetValue setValue = r().setValue(tmp , sqldf);
 		sb.append(setValue.toString());
@@ -202,13 +202,13 @@ public class CalculationStepRScriptGenerator {
 		setValue = r().setValue( outputVar, r().variable(tmp,outputVariable.getInputCategoryIdColumn()) );
 		sb.append(setValue.toString());
 		
-		EndStep endCode = caseCodeStep.otherwise( "\\'NA\\'" ).end();
+		EndStep endCode = caseCodeStep.otherwise( "'NA'" ).end();
 		select.addSelect( DSL.field(endCode.toString()).as( outputVariable.getOutputValueColumn()) );
 		select = dsl.selectQuery();
 		select.addFrom(table);
 		select.addSelect( DSL.field(endCode.toString()).as( outputVariable.getOutputValueColumn()) );
 		
-		sqldf = r().sqldf(select.toString());
+		sqldf = r().sqldf( selectToString(select) );
 		tmp = r().variable("tmp");
 		setValue = r().setValue(tmp , sqldf);
 		sb.append(setValue.toString());
@@ -218,6 +218,18 @@ public class CalculationStepRScriptGenerator {
 		sb.append(setValue.toString());
 		
 		return sb.toString();
+	}
+
+	private String selectToString(SelectQuery<Record> select) {
+		String string = select.toString();
+		string = string.replaceAll( "'", "\\\\'" );
+		return string;
+	}
+
+	public static void main(String[] args) {
+		String string = "select case  when \"tree\".\"forest_status\" < '100' then 1  when \"tree\".\"forest_status\" < '200' then 2  when \"tree\".\"forest_status\" < '300' then 3  when \"tree\".\"forest_status\" < '400' then 4  when \"tree\".\"forest_status\" < '500' then 5  when \"tree\".\"forest_status\" = '630' then 6  when \"tree\".\"forest_status\" <> '630' then 7 else -1  end tree_major_forest_status_id from tree";
+		string = string.replaceAll( "'", "\\\\'" );
+		System.out.println( string );
 	}
 	
 	@SuppressWarnings("unchecked")

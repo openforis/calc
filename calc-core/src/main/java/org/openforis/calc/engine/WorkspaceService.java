@@ -1,6 +1,7 @@
 package org.openforis.calc.engine;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 
 import org.jooq.Field;
@@ -12,6 +13,7 @@ import org.openforis.calc.metadata.Category;
 import org.openforis.calc.metadata.CategoryLevel.CategoryLevelValue;
 import org.openforis.calc.metadata.CategoryManager;
 import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.Entity.Visitor;
 import org.openforis.calc.metadata.ErrorSettings;
 import org.openforis.calc.metadata.ErrorSettingsManager;
 import org.openforis.calc.metadata.MetadataManager;
@@ -210,10 +212,21 @@ public class WorkspaceService {
 	 */
 	@Transactional
 	public void resetResults( Workspace ws ){
-		List<Entity> entities = ws.getEntities();
-		for (Entity entity : entities) {
-			resetResults( entity );
+		Collection<Entity> rootEntities = ws.getRootEntities();
+		for ( Entity entity : rootEntities ){
+			entity.traverse( new Visitor() {
+				
+				@Override
+				public void visit(Entity entity) {
+					resetResults( entity );			
+				}
+			});
 		}
+		
+//		List<Entity> entities = ws.getEntities();
+//		for (Entity entity : entities) {
+//			resetResults( entity );
+//		}
 	}
 	
 	/**
@@ -232,6 +245,7 @@ public class WorkspaceService {
 			//drop data view first
 			psql
 				.dropTableIfExists( resultsTable )
+				.cascade()
 				.execute();
 			
 			psql
