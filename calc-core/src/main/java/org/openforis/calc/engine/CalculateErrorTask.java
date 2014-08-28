@@ -3,7 +3,10 @@
  */
 package org.openforis.calc.engine;
 
-import java.util.List;
+import static org.openforis.calc.r.RScript.COMMA;
+import static org.openforis.calc.r.RScript.NEW_LINE;
+
+import java.math.BigDecimal;
 
 import org.jooq.Field;
 import org.jooq.Record;
@@ -15,9 +18,9 @@ import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.psql.Psql;
-import org.openforis.calc.r.REnvironment;
-import org.openforis.calc.r.RScript;
+import org.openforis.calc.r.DbSendQuery;
 import org.openforis.calc.r.RVariable;
+import org.openforis.calc.r.SetValue;
 import org.openforis.calc.schema.DataSchema;
 import org.openforis.calc.schema.DataTable;
 import org.openforis.calc.schema.EntityAoiTable;
@@ -27,33 +30,21 @@ import org.openforis.calc.schema.FactTable;
 import org.openforis.calc.schema.StratumDimensionTable;
 
 /**
+ * Task responsible of calculating the error for the given error table
+ * Now based only on "Formulas for estimators and their variances in NFI 28.2.2014 K.T. Korhonen & Olli Salmensuu, point estimators"
+ *  
  * @author Mino Togna
  *
  */
 public class CalculateErrorTask extends CalcRTask {
 
-	
-//	private QuantitativeVariable quantitativeVariable;
-//	private Aoi aoi;
-//	private CategoricalVariable<?> categoricalVariable;
-//	private Schemas schemas;
 	private ErrorTable errorTable;
 	private RVariable connection;
 	private Workspace workspace;
-//
-//	protected CalculateErrorTask( REnvironment rEnvironment , QuantitativeVariable quantitativeVariable , Aoi aoi , CategoricalVariable<?> categoricalVariable, Schemas schemas ){
-//		super( rEnvironment , getName(quantitativeVariable, aoi, categoricalVariable) );
-//		
-//		this.quantitativeVariable = quantitativeVariable;
-//		this.aoi = aoi;
-//		this.categoricalVariable = categoricalVariable;
-//		this.schemas = schemas;
-//		
-//		initScript();
-//	}
-	
-	protected CalculateErrorTask( REnvironment rEnvironment, ErrorTable errorTable , RVariable connection ){
-		super( rEnvironment , getName(errorTable.getQuantitativeVariable(), errorTable.getAoi(), errorTable.getCategoricalVariable()) );
+
+	protected CalculateErrorTask( CalcJob job , ErrorTable errorTable , RVariable connection ){
+		super( job.getrEnvironment() , getName(errorTable.getQuantitativeVariable(), errorTable.getAoi(), errorTable.getCategoricalVariable()) );
+		setJob( job );
 		
 		this.errorTable = errorTable;
 		this.connection = connection;
@@ -62,7 +53,7 @@ public class CalculateErrorTask extends CalcRTask {
 		initScript();
 	}
 
-	private void initScript() {
+	void initScript() {
 		QuantitativeVariable quantitativeVariable = errorTable.getQuantitativeVariable();
 		Aoi aoi = errorTable.getAoi();
 		CategoricalVariable<?> categoricalVariable = errorTable.getCategoricalVariable();
@@ -70,19 +61,131 @@ public class CalculateErrorTask extends CalcRTask {
 		String name = getName( quantitativeVariable, aoi, categoricalVariable );
 
 		addScript( r().rScript( "# ==================== " + name + " ====================" ) );
-//		addScript( r().rScript("# " + name) );
-//		addScript( r().rScript("# ==========") );
 		
-		RScript rScript = r().rScript( "print('"+name+"')" );
-		addScript( rScript );
-		
-		Select<?> selectStrata = getStratumSelect( aoi, (DataSchema) this.errorTable.getSchema() );
-//		Select<?> selectPlots = getPlotSelect( aoi, schema, category, classes );
-//		Select<?> selectData = getDataSelect( aoi, schema, quantity, category, classes );
-		
+		DataSchema schema = (DataSchema) this.errorTable.getSchema();
+		// add read data scripts
+		// strata
+		Select<?> selectStrata = getStratumSelect( aoi, schema );
 		RVariable strata = r().variable("strata");
 		addScript( r().setValue( strata , r().dbGetQuery(connection, selectStrata) ) );
 		
+		Select<?> selectPlots = getPlotSelect( aoi, schema, this.errorTable.getCategoricalVariable() );
+		// plots
+		RVariable plots = r().variable("plots");
+		addScript( r().setValue( plots , r().dbGetQuery(connection, selectPlots) ) );
+		
+		// data (e.g. trees)
+		Select<?> selectData = getDataSelect( aoi, schema,  this.errorTable.getQuantitativeVariable(),  this.errorTable.getCategoricalVariable() );
+		RVariable data = r().variable("data");
+		addScript( r().setValue( data , r().dbGetQuery(connection, selectData) ) );
+		
+		
+		// drop error table
+		DbSendQuery dropErrorTable = r().dbSendQuery( connection, psql().dropTableIfExists(errorTable) );
+		addScript(dropErrorTable);
+		// create error table
+		DbSendQuery createErrorTable = r().dbSendQuery( connection , psql().createTable(errorTable, errorTable.fields()) );
+		addScript( createErrorTable );
+		
+		RVariable classes = r().variable( "classes" );
+		SetValue setClasses = r().setValue( classes, r().sqldf( "select distinct class_id from data" ) );
+		addScript( setClasses );
+		setClasses = r().setValue( classes, r().variable(classes, "class_id") );
+		addScript( setClasses );
+		
+		// for now hardcoded. let's see if in the future there's time for refactoring
+		StringBuilder sb = new StringBuilder();
+		sb.append("for( cls in classes ){");
+			sb.append( NEW_LINE );
+			sb.append("select <- \"select *, case when class_id ==\";");
+			sb.append( NEW_LINE );
+			sb.append("select <- paste( select , cls , sep=\" \" );");
+			sb.append( NEW_LINE );
+			sb.append("select  <- paste( select , \"then 1 else 0 end as class from plots\" , sep=\" \" );");
+			sb.append( NEW_LINE );
+			sb.append("plotsClone <-  sqldf( select );");
+			sb.append( NEW_LINE );
+			
+			sb.append("select <- \"select *, case when class_id ==\";");
+			sb.append( NEW_LINE );
+			sb.append("select <- paste( select , cls , sep=\" \" );");
+			sb.append( NEW_LINE );
+			sb.append("select  <- paste( select , \"then 1 else 0 end as class from data\" , sep=\" \" );");
+			sb.append( NEW_LINE );
+			sb.append("dataClone <-  sqldf( select );");
+			sb.append( NEW_LINE );
+			
+			if( workspace.hasStratifiedSamplingDesign() ){
+				sb.append("errors <- calculateQuantityErrorStratified( data = dataClone , plots = plotsClone , strata = strata ) ;");
+			} else {
+				sb.append("errors <- calculateQuantityError( data = dataClone , plots = plotsClone , strata = strata ) ;");
+			}
+			sb.append( NEW_LINE );
+			
+			
+			// insert results
+			sb.append( "query <- 'INSERT INTO " );
+			sb.append( NEW_LINE );
+			sb.append( errorTable.getName() );
+			sb.append( NEW_LINE );
+			sb.append( "(" );
+			sb.append( NEW_LINE );
+			sb.append( errorTable.getMeanQuantityAbsoluteError().getName() );
+			sb.append( COMMA );
+			sb.append( NEW_LINE );
+			sb.append( errorTable.getMeanQuantityRelativeError().getName() );
+			sb.append( COMMA );
+			sb.append( NEW_LINE );
+			sb.append( errorTable.getMeanQuantityVariance().getName() );
+			sb.append( COMMA );
+			sb.append( NEW_LINE );
+			sb.append( errorTable.getTotalQuantityAbsoluteError().getName() );
+			sb.append( COMMA );
+			sb.append( NEW_LINE );
+			sb.append( errorTable.getTotalQuantityRelativeError().getName() );
+			sb.append( COMMA );
+			sb.append( NEW_LINE );
+			sb.append( errorTable.getTotalQuantityVariance().getName() );
+			sb.append( COMMA );
+			sb.append( NEW_LINE );
+			sb.append( errorTable.getAoiField().getName() );
+			sb.append( COMMA );
+			sb.append( NEW_LINE );
+			sb.append( errorTable.getCategoryIdField().getName() );
+			sb.append( NEW_LINE );
+			sb.append( ")" );
+			sb.append( NEW_LINE );
+			
+			sb.append( "VALUES(';" );
+			sb.append( NEW_LINE );
+			
+			sb.append( "query <- paste( query , ifelse( is.na(errors$meanQuantityAbsolute) , -1 , errors$meanQuantityAbsolute) , sep=\"\" );" );
+			sb.append( NEW_LINE );
+			sb.append( "query <- paste( query , ifelse( is.na(errors$meanQuantityRelative) , -1 , errors$meanQuantityRelative ) , sep=\",\" );" );
+			sb.append( NEW_LINE );
+			sb.append( "query <- paste( query , ifelse( is.na(errors$meanQuantityVariance) , -1 , errors$meanQuantityVariance) , sep=\",\" );" );
+			sb.append( NEW_LINE );
+			sb.append( "query <- paste( query , ifelse( is.na(errors$totalQuantityAbsolute) , -1 , errors$totalQuantityAbsolute) , sep=\",\" );" );
+			sb.append( NEW_LINE );
+			sb.append( "query <- paste( query , ifelse( is.na(errors$totalQuantityRelative) , -1 , errors$totalQuantityRelative) , sep=\",\" );" );
+			sb.append( NEW_LINE );
+			sb.append( "query <- paste( query , ifelse( is.na(errors$totalQuantityVariance) , -1 , errors$totalQuantityVariance) , sep=\",\" );" );
+			sb.append( NEW_LINE );
+			sb.append( "query <- paste( query , "+aoi.getId()+" , sep=\",\"  );" );
+			sb.append( NEW_LINE );
+			sb.append( "query <- paste( query , cls , sep=\",\"  );" );
+			sb.append( NEW_LINE );
+					  
+			sb.append( "query <- paste( query , \")\" , sep=\"\"  );" );
+			sb.append( NEW_LINE );
+			
+			sb.append( "dbSendQuery( conn = connection , statement = query );" );
+			sb.append( NEW_LINE );
+			
+		sb.append("}");
+		sb.append( NEW_LINE );
+		
+		addScript( r().rScript(sb.toString()));
 	}
 
 	private Select<?> getStratumSelect( Aoi aoi , DataSchema schema ){
@@ -110,7 +213,6 @@ public class CalculateErrorTask extends CalcRTask {
 		return select;
 	}
 	
-	@SuppressWarnings("unchecked")
 	private Select<?> getPlotSelect( Aoi aoi , DataSchema schema , CategoricalVariable<?> category ){
 		Entity samplingUnit = workspace.getSamplingUnit();
 		FactTable suFactTable = schema.getFactTable( samplingUnit );
@@ -126,19 +228,53 @@ public class CalculateErrorTask extends CalcRTask {
 		}
 		select.addSelect( suFactTable.getClusterField().as("cluster") );
 		select.addSelect( suFactTable.field(DataTable.WEIGHT_COLUMN) );
-//		Field<String> categoryField = (Field<String>) suFactTable.getCategoryValueField( category );
+
 		Field<Integer> dimensionIdField = suFactTable.getDimensionIdField( category );
 		select.addSelect( dimensionIdField.as( "class_id" ) );
-//		select.addSelect( DSL.decode()
-//									.when( categoryField.in(classes), 1)
-//									.otherwise(0)
-//									.as("class")
-//							);
 		
 		select.addFrom( suFactTable );
 		
 		select.addJoin( suAoiTable, suAoiTable.getIdField().eq(suFactTable.getIdField()) );
 		
+		select.addConditions( suAoiTable.getAoiIdField(aoi.getAoiLevel()).eq( aoi.getId().longValue() ) );
+		
+		return select;
+	}
+	
+	private Select<?> getDataSelect( Aoi aoi , DataSchema schema , QuantitativeVariable quantity , CategoricalVariable<?> category ) {
+		Workspace workspace = schema.getWorkspace();
+		Entity samplingUnit = workspace.getSamplingUnit();
+		Entity entity = quantity.getEntity();
+		FactTable factTable = schema.getFactTable(entity);
+		EntityAoiTable suAoiTable = schema.getEntityAoiTable( samplingUnit );
+		
+		SelectQuery<Record> select = new Psql().selectQuery();
+		select.setDistinct(true);
+		
+		select.addSelect( factTable.getSamplingUnitIdField().as("plot_id") );
+		select.addGroupBy( factTable.getSamplingUnitIdField() );
+		
+		if( workspace.hasStratifiedSamplingDesign() ){
+			select.addSelect( factTable.getStratumField().as("stratum") );
+			select.addGroupBy( factTable.getStratumField() );
+		} else {
+			select.addSelect( DSL.val(1).as( "stratum") );
+		}
+		
+		if( workspace.hasClusterSamplingDesign() ){
+			select.addSelect( factTable.getClusterField().as("cluster") );
+			select.addGroupBy( factTable.getClusterField() );		
+		}
+		
+		Field<BigDecimal> plotAreaField = factTable.getPlotAreaField();
+		select.addSelect( DSL.sum( factTable.getQuantityField(quantity).div(plotAreaField) ).as("quantity") );
+		
+		Field<Integer> dimensionIdField = factTable.getDimensionIdField( category );
+		select.addSelect( dimensionIdField.as( "class_id" ) );
+		select.addGroupBy( dimensionIdField );
+		
+		select.addFrom( factTable );
+		select.addJoin( suAoiTable, suAoiTable.getIdField().eq( factTable.getParentIdField() ) );
 		select.addConditions( suAoiTable.getAoiIdField(aoi.getAoiLevel()).eq( aoi.getId().longValue() ) );
 		
 		return select;

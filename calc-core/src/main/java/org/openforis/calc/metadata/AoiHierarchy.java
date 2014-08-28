@@ -116,7 +116,7 @@ public class AoiHierarchy extends AoiHierarchyBase {
 
 	public AoiLevel getLevelById(Integer aoiLevelId) {
 		for (AoiLevel aoiLevel : this.levels) {
-			if( aoiLevel.getId().equals(aoiLevel.getId()) ){
+			if( aoiLevel.getId().equals(aoiLevelId) ){
 				return aoiLevel;
 			}
 		}

@@ -3,12 +3,15 @@
  */
 package org.openforis.calc.schema;
 
+import static org.jooq.impl.SQLDataType.INTEGER;
 import static org.jooq.util.postgres.PostgresDataType.DOUBLEPRECISION;
 
 import org.jooq.Field;
 import org.jooq.Schema;
+import org.jooq.impl.SQLDataType;
 import org.openforis.calc.metadata.Aoi;
 import org.openforis.calc.metadata.CategoricalVariable;
+import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.utils.StringUtils;
 
@@ -33,8 +36,12 @@ public class ErrorTable extends AbstractTable {
 	// instance variables 
 	private QuantitativeVariable quantitativeVariable;
 	private Aoi aoi;
+	private CategoricalVariable<?> categoricalVariable;
 	
 	// fields
+	private Field<Integer> aoiField;
+	private Field<Integer> categoryIdField;
+
 	private Field<Double> meanQuantityVariance;
 	private Field<Double> meanQuantityRelativeError;
 	private Field<Double> meanQuantityAbsoluteError;
@@ -42,7 +49,7 @@ public class ErrorTable extends AbstractTable {
 	private Field<Double> totalQuantityVariance;
 	private Field<Double> totalQuantityRelativeError;
 	private Field<Double> totalQuantityAbsoluteError;
-	private CategoricalVariable<?> categoricalVariable;
+	
 	
 	protected ErrorTable(QuantitativeVariable quantitativeVariable , Aoi aoi , CategoricalVariable<?> categoricalVariable , Schema schema){
 		super( getTableName(quantitativeVariable , aoi , categoricalVariable) , schema );
@@ -51,7 +58,7 @@ public class ErrorTable extends AbstractTable {
 		this.categoricalVariable = categoricalVariable;
 		this.aoi = aoi;
 		
-		this.columnNameFormat = "%s_"+this.quantitativeVariable.getName()+"_"+this.categoricalVariable.getName()+"_"+StringUtils.normalize(aoi.getCaption())+"_%s";
+		this.columnNameFormat = "%s_"+this.quantitativeVariable.getId()+"_"+this.categoricalVariable.getId()+"_"+aoi.getId()+"_%s";
 		
 		initFields();
 		
@@ -66,6 +73,11 @@ public class ErrorTable extends AbstractTable {
 		this.totalQuantityAbsoluteError = createField( getFieldName(TOTAL , ABSOLUTE_ERROR), DOUBLEPRECISION, this );
 		this.totalQuantityRelativeError = createField( getFieldName(TOTAL , RELATIVE_ERROR), DOUBLEPRECISION, this );
 		this.totalQuantityVariance		= createField( getFieldName(TOTAL , VARIANCE), DOUBLEPRECISION, this );
+		
+		this.aoiField = createField( this.aoi.getAoiLevel().getFkColumn() , INTEGER, this);
+		
+		String fieldName = ( (MultiwayVariable) this.categoricalVariable ).getInputCategoryIdColumn();
+		this.categoryIdField = createField(fieldName, SQLDataType.INTEGER, this);
 	}
 
 	private String getFieldName(String string1 , String string2){
@@ -73,7 +85,7 @@ public class ErrorTable extends AbstractTable {
 	}
 
 	private static String getTableName( QuantitativeVariable quantitativeVariable , Aoi aoi , CategoricalVariable<?> categoricalVariable ){
-		String name = String.format( TABLE_NAME_FORMAT, quantitativeVariable.getName() , categoricalVariable.getName() , aoi.getCaption() );
+		String name = String.format( TABLE_NAME_FORMAT, quantitativeVariable.getId() , categoricalVariable.getId() , aoi.getId() );
 		return StringUtils.normalize( name );
 	}
 	
@@ -90,6 +102,14 @@ public class ErrorTable extends AbstractTable {
 		return aoi;
 	}
 
+	public Field<Integer> getAoiField() {
+		return aoiField;
+	}
+	
+	public Field<Integer> getCategoryIdField() {
+		return categoryIdField;
+	}
+	
 	public Field<Double> getMeanQuantityVariance() {
 		return meanQuantityVariance;
 	}
@@ -113,5 +133,6 @@ public class ErrorTable extends AbstractTable {
 	public Field<Double> getTotalQuantityAbsoluteError() {
 		return totalQuantityAbsoluteError;
 	}
+
 
 }

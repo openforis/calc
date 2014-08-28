@@ -138,9 +138,9 @@ ErrorSettingsManager.prototype.showVariableSettings = function( variableId ){
 };
 ErrorSettingsManager.prototype.addVariableSettings = function( variableId ){
 	var $this 							= this;
-	var aoiButtons	= [];
+	var aoiButtons						= [];
 	this.aoiButtons[ variableId ] 		= aoiButtons;
-	var categoryButtons = [];
+	var categoryButtons 				= [];
 	this.categoryButtons[ variableId ] 	= categoryButtons;
 	
 	// init variable container
@@ -148,7 +148,7 @@ ErrorSettingsManager.prototype.addVariableSettings = function( variableId ){
 	variableSettingsContainer.addClass( "settings"+variableId ).addClass( "variable-error-settings" );
 	
 	// add aois
-	var aoisContainer 	= variableSettingsContainer.find( ".aoi" );
+	var aoisContainer 	= variableSettingsContainer.find( ".aoi .button-container" );
 	var addAoi 			= function( aoi , depth ){
 		var btn = $( '<button class="btn option-btn width100"></button>' );
 		btn.html( aoi.caption );
@@ -178,7 +178,7 @@ ErrorSettingsManager.prototype.addVariableSettings = function( variableId ){
 	var entity 		= this.workspace.getEntityById( variable.entityId );
 	var categories	= entity.samplingUnitHierarchyCategoricalVariables();
 	
-	var categoryContainer 	= variableSettingsContainer.find( ".category" );
+	var categoryContainer 	= variableSettingsContainer.find( ".category .button-container" );
 	var addCategory = function( category ){
 		var btn = $( '<button class="btn option-btn width100"></button>' );
 		btn.html( category.name );

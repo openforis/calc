@@ -97,10 +97,10 @@ calcualteAreaErrorStratified <- function(  plots , strata  ) {
   errors$areaRelativeError <- 100 * errors$areaAbsoluteError / sum( strata$areaInClass );  
   return ( errors );
 };
-calculateQuantityError <- function( data , strata ) {  
+calculateQuantityError <- function( data , plots, strata ) {  
   # add plot weight to data
-  #data <- sqldf( "select d.*, p.weight from data d inner join plots p on d.plot_id = p.plot_id" );  
-  results <- calcualteAreaError( plots=data , strata=strata );
+  data <- sqldf( "select d.*, p.weight from data d inner join plots p on d.plot_id = p.plot_id" );  
+  results <- calcualteAreaError( plots=plots , strata=strata );
   strata <-sqldf( "select s.* , 
                     r.areaInClass , 
                     r.areaVariance, 
@@ -143,8 +143,8 @@ calculateQuantityError <- function( data , strata ) {
   strata$totalQuantityRelative <- sqrt( strata$meanQuantityRelative^2 + strata$areaRelativeError^2 );  
   return (strata);
 };
-calculateQuantityErrorStratified <- function( data , strata ) {
-  results <- calculateQuantityError(data=data , strata=strata);
+calculateQuantityErrorStratified <- function( data , plots, strata ) {
+  results <- calculateQuantityError(data=data , plots=plots, strata=strata);
   strata <-sqldf( "select 
                     s.* , 
                     r.areaInClass,

@@ -50,6 +50,7 @@ import org.springframework.stereotype.Component;
  * @author Mino Togna
  *
  */
+@Deprecated
 @Component
 public class ErrorEstimationManager {
 	

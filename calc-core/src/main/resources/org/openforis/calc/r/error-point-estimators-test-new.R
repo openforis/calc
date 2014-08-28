@@ -75,6 +75,7 @@ select <- paste( select , "group by
                             t._cluster, 
                             t.vegetation_type_code_id", 
                  sep = " " );
+#print( select )
 data <- dbGetQuery(conn=connection, statement=select);
 
 

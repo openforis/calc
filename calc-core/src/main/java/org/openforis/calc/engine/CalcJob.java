@@ -323,36 +323,10 @@ public class CalcJob extends Job {
 						errorScriptAdded = true;
 					}
 					
-					CalculateErrorTask calculateErrorTask = new CalculateErrorTask( rEnvironment, errorTable , connection );
+					CalculateErrorTask calculateErrorTask = new CalculateErrorTask( this , errorTable , connection );
 					addTask( calculateErrorTask );
 				}
 			}
-			
-//			ErrorSettings errorSettings = workspace.getErrorSettings();
-//			if( errorSettings != null ){
-//				intTask.addScript( RScript.getErrorEstimationScript() );
-//				
-//				Set<String> keys = errorSettings.getParameters().keys();
-//				for ( String key : keys ) {
-//					
-//					Integer variableId = Integer.parseInt( key );
-//					Collection<? extends Number> aois = errorSettings.getAois( variableId );
-//					Collection<? extends Number> categoricalVariables = errorSettings.getCategoricalVariables( variableId );
-//					
-//					for ( Number aoiId : aois ){
-//						for ( Number categoricalVariableId : categoricalVariables ){
-//							QuantitativeVariable quantitativeVariable 	= (QuantitativeVariable) workspace.getVariableById( variableId );
-//							CategoricalVariable<?> categoricalVariable 	= (CategoricalVariable<?>) workspace.getVariableById( categoricalVariableId.intValue() );
-//							Aoi aoi 									= workspace.getAoiHierarchies().get(0).getAoiById( aoiId.intValue() );
-//							
-//							CalculateErrorTask calculateErrorTask = new CalculateErrorTask( rEnvironment, quantitativeVariable, aoi, categoricalVariable , getSchemas() );
-//							
-//							addTask( calculateErrorTask );
-//						}
-//					}
-//					
-//				}
-//			}
 			
 			PublishRolapSchemaTask publishRolapSchemaTask = new PublishRolapSchemaTask();
 			((AutowireCapableBeanFactory) beanFactory).autowireBean(publishRolapSchemaTask);
@@ -362,7 +336,7 @@ public class CalcJob extends Job {
 		// 9. close connection
 		closeConnection();
 		
-		// 10 - hidden to users: recreates views for sampling unit and its descendant
+		// 10 - hidden to users: re-creates views for sampling unit and its descendant
 		Entity samplingUnit = workspace.getSamplingUnit();
 		samplingUnit.traverse( new Visitor() {
 			@Override
@@ -406,8 +380,12 @@ public class CalcJob extends Job {
 
 	protected CalcRTask createTask(String name) {
 		CalcRTask task = new CalcRTask(rEnvironment, name);
-		((AutowireCapableBeanFactory) beanFactory).autowireBean(task);
+		autowire(task);
 		return task;
+	}
+
+	private void autowire( Object obj ){
+		((AutowireCapableBeanFactory) beanFactory).autowireBean(obj);
 	}
 
 	@Override

@@ -96,7 +96,7 @@ $(document).ready(function() {
 						}
 						
 						// for now error button enabled only for 2phases/cluster/stratified
-						if( sd.stratified === true && sd.cluster === true && sd.twoPhases === true ){
+						if( sd.cluster === true ){
 							UI.enable( errorButton );
 						}
 					}

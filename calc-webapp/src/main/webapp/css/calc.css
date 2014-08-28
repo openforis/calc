@@ -1416,3 +1416,11 @@ ul.ui-sortable li {
 .equation-lists button {
 	margin-bottom: 1px;
 }
+
+
+/**
+* Error settings
+*/
+#error-settings .button-container button {
+	margin-bottom: 2px;
+}

@@ -24,13 +24,13 @@ public class RScript {
 	// =====================================
 	// R symbols
 	// =====================================
-	protected static final String DOLLAR = "$";
-	protected static final String SPACE = " ";
-	protected static final String ASSIGN = "<-";
-	protected static final String COMMA = ",";
-	protected static final String NEW_LINE = "\n";
-	protected static final String NULL = "NULL";
-	protected static final String NOT = "!";
+	public static final String DOLLAR = "$";
+	public static final String SPACE = " ";
+	public static final String ASSIGN = "<-";
+	public static final String COMMA = ",";
+	public static final String NEW_LINE = "\n";
+	public static final String NULL = "NULL";
+	public static final String NOT = "!";
 	
 	// common static R scripts
 	private static RScript CALC_COMMON_SCRIPT;

@@ -215,18 +215,12 @@ public class WorkspaceService {
 		Collection<Entity> rootEntities = ws.getRootEntities();
 		for ( Entity entity : rootEntities ){
 			entity.traverse( new Visitor() {
-				
 				@Override
 				public void visit(Entity entity) {
 					resetResults( entity );			
 				}
 			});
 		}
-		
-//		List<Entity> entities = ws.getEntities();
-//		for (Entity entity : entities) {
-//			resetResults( entity );
-//		}
 	}
 	
 	/**
