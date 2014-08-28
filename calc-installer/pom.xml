@@ -117,38 +117,6 @@
 						<artifactId>exec-maven-plugin</artifactId>
 						<version>1.1</version>
 						<executions>
-						
-							<execution>
-								<id>linux-installer</id>
-								<phase>package</phase>
-								<goals>
-									<goal>exec</goal>
-								</goals>
-								<configuration>
-									<executable>${installbuilder-home}/bin/builder</executable>
-									<arguments>
-										<argument>build</argument>
-										<argument>${basedir}/${installer-dir}/${installbuilder-file-name}</argument>
-										<argument>linux</argument>
-									</arguments>
-								</configuration>
-							</execution>
-							
-							<execution>
-								<id>linux-installer-with-jdk</id>
-								<phase>package</phase>
-								<goals>
-									<goal>exec</goal>
-								</goals>
-								<configuration>
-									<executable>${installbuilder-home}/bin/builder</executable>
-									<arguments>
-										<argument>build</argument>
-										<argument>${basedir}/${installer-dir}/${installbuilder-with-jdk-file-name}</argument>
-										<argument>linux</argument>
-									</arguments>
-								</configuration>
-							</execution>
 							
 							<execution>
 								<id>windows-installer</id>
@@ -166,8 +134,24 @@
 								</configuration>
 							</execution>
 							
+<!-- 							<execution> -->
+<!-- 								<id>windows-installer-with-jdk</id> -->
+<!-- 								<phase>package</phase> -->
+<!-- 								<goals> -->
+<!-- 									<goal>exec</goal> -->
+<!-- 								</goals> -->
+<!-- 								<configuration> -->
+<!-- 									<executable>${installbuilder-home}/bin/builder</executable> -->
+<!-- 									<arguments> -->
+<!-- 										<argument>build</argument> -->
+<!-- 										<argument>${basedir}/${installer-dir}/${installbuilder-with-jdk-file-name}</argument> -->
+<!-- 										<argument>windows</argument> -->
+<!-- 									</arguments> -->
+<!-- 								</configuration> -->
+<!-- 							</execution> -->
+							
 							<execution>
-								<id>windows-installer-with-jdk</id>
+								<id>linux-installer</id>
 								<phase>package</phase>
 								<goals>
 									<goal>exec</goal>
@@ -176,11 +160,28 @@
 									<executable>${installbuilder-home}/bin/builder</executable>
 									<arguments>
 										<argument>build</argument>
-										<argument>${basedir}/${installer-dir}/${installbuilder-with-jdk-file-name}</argument>
-										<argument>windows</argument>
+										<argument>${basedir}/${installer-dir}/${installbuilder-file-name}</argument>
+										<argument>linux</argument>
 									</arguments>
 								</configuration>
 							</execution>
+							
+<!-- 							<execution> -->
+<!-- 								<id>linux-installer-with-jdk</id> -->
+<!-- 								<phase>package</phase> -->
+<!-- 								<goals> -->
+<!-- 									<goal>exec</goal> -->
+<!-- 								</goals> -->
+<!-- 								<configuration> -->
+<!-- 									<executable>${installbuilder-home}/bin/builder</executable> -->
+<!-- 									<arguments> -->
+<!-- 										<argument>build</argument> -->
+<!-- 										<argument>${basedir}/${installer-dir}/${installbuilder-with-jdk-file-name}</argument> -->
+<!-- 										<argument>linux</argument> -->
+<!-- 									</arguments> -->
+<!-- 								</configuration> -->
+<!-- 							</execution> -->
+							
 						</executions>
 					</plugin>
 					

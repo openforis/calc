@@ -184,7 +184,7 @@ public class Workspace extends WorkspaceBase {
 	
 	public ErrorSettings getErrorSettings(){
 		if( errorSettings == null ){
-			this.errorSettings = new ErrorSettings();
+			this.setErrorSettings( new ErrorSettings() );
 		}
 		return errorSettings;
 	}
