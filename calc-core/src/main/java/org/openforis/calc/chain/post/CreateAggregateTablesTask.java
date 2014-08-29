@@ -1,5 +1,7 @@
 package org.openforis.calc.chain.post;
 
+import static org.jooq.util.postgres.PostgresDataType.DOUBLEPRECISION;
+
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
@@ -25,6 +27,7 @@ import org.openforis.calc.schema.DataAoiTable;
 import org.openforis.calc.schema.DataSchema;
 import org.openforis.calc.schema.DataTable;
 import org.openforis.calc.schema.EntityDataView;
+import org.openforis.calc.schema.ErrorTable;
 import org.openforis.calc.schema.ExpansionFactorTable;
 import org.openforis.calc.schema.FactTable;
 import org.openforis.calc.schema.SamplingUnitAggregateTable;
@@ -201,7 +204,7 @@ public final class CreateAggregateTablesTask extends Task {
 		EntityDataView dataTable = factTable.getEntityView();
 //		Entity entity = dataTable.getEntity();
 		
-		SelectQuery<?> select = new Psql().selectQuery(dataTable);
+		SelectQuery<?> select = new Psql().selectQuery( dataTable );
 		select.addSelect( dataTable.getIdField() );
 //		select.addSelect( dataTable.getParentIdField() );
 
@@ -224,6 +227,19 @@ public final class CreateAggregateTablesTask extends Task {
 		for (QuantitativeVariable var : vars) {
 			Field<BigDecimal> fld = dataTable.getQuantityField(var);
 			select.addSelect(fld);
+			
+			// add error columns in case at least 1 error table has been defined for the given variable
+			List<ErrorTable> errorTables = factTable.getErrorTables( var );
+			if( errorTables.size() > 0 ){
+				ErrorTable errorTable = errorTables.get( 0 );
+				
+				select.addSelect( DSL.castNull( DOUBLEPRECISION ).as( errorTable.getTotalQuantityAbsoluteError().getName() ) );
+				select.addSelect( DSL.castNull( DOUBLEPRECISION ).as( errorTable.getTotalQuantityRelativeError().getName() ) );
+				select.addSelect( DSL.castNull( DOUBLEPRECISION ).as( errorTable.getTotalQuantityVariance().getName() ) );
+				select.addSelect( DSL.castNull( DOUBLEPRECISION ).as( errorTable.getMeanQuantityAbsoluteError().getName() ) );
+				select.addSelect( DSL.castNull( DOUBLEPRECISION ).as( errorTable.getMeanQuantityRelativeError().getName() ) );
+				select.addSelect( DSL.castNull( DOUBLEPRECISION ).as( errorTable.getMeanQuantityVariance().getName() ) );
+			}
 		}
 		
 		// in case entities that need to be aggregated based on their sampling design 

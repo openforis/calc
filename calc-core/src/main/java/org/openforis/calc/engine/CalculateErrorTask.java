@@ -14,6 +14,7 @@ import org.jooq.Select;
 import org.jooq.SelectQuery;
 import org.jooq.impl.DSL;
 import org.openforis.calc.metadata.Aoi;
+import org.openforis.calc.metadata.AoiLevel;
 import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
@@ -146,12 +147,24 @@ public class CalculateErrorTask extends CalcRTask {
 			sb.append( COMMA );
 			sb.append( NEW_LINE );
 			sb.append( errorTable.getTotalQuantityVariance().getName() );
-			sb.append( COMMA );
-			sb.append( NEW_LINE );
-			sb.append( errorTable.getAoiField().getName() );
+			
 			sb.append( COMMA );
 			sb.append( NEW_LINE );
 			sb.append( errorTable.getCategoryIdField().getName() );
+			sb.append( COMMA );
+			sb.append( NEW_LINE );
+			sb.append( errorTable.getAggregateFactCountField().getName() );
+//			sb.append( COMMA );
+//			sb.append( NEW_LINE );
+			Aoi aoiInsert = errorTable.getAoi();
+			while( aoiInsert != null ){
+				sb.append( COMMA );
+				sb.append( NEW_LINE );
+				AoiLevel aoiLevel = aoiInsert.getAoiLevel();
+				sb.append( errorTable.getAoiIdField(aoiLevel).getName() );
+				
+				aoiInsert = aoiInsert.getParentAoi() ;
+			}
 			sb.append( NEW_LINE );
 			sb.append( ")" );
 			sb.append( NEW_LINE );
@@ -171,11 +184,20 @@ public class CalculateErrorTask extends CalcRTask {
 			sb.append( NEW_LINE );
 			sb.append( "query <- paste( query , ifelse( is.na(errors$totalQuantityVariance) , -1 , errors$totalQuantityVariance) , sep=\",\" );" );
 			sb.append( NEW_LINE );
-			sb.append( "query <- paste( query , "+aoi.getId()+" , sep=\",\"  );" );
-			sb.append( NEW_LINE );
 			sb.append( "query <- paste( query , cls , sep=\",\"  );" );
 			sb.append( NEW_LINE );
-					  
+			sb.append( "query <- paste( query , 100 , sep=\",\"  );" );
+
+			aoiInsert = errorTable.getAoi();
+			while( aoiInsert != null ){
+				sb.append( NEW_LINE );
+				sb.append( "query <- paste( query , "+aoiInsert.getId()+" , sep=\",\"  );" );
+				
+				aoiInsert = aoiInsert.getParentAoi() ;
+			}
+			sb.append( NEW_LINE );
+			
+			sb.append( NEW_LINE );			
 			sb.append( "query <- paste( query , \")\" , sep=\"\"  );" );
 			sb.append( NEW_LINE );
 			

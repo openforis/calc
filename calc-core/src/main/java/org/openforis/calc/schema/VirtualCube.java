@@ -97,6 +97,10 @@ public class VirtualCube {
 		for (Measure measure : measures.keySet()) {
 			addVirtualMeasure( measure, true );
 		}
+		// add error measures
+		for ( Measure measure : this.childCube.getErrorMeasures() ){
+			addVirtualMeasure( measure, true );
+		}
 		// add virtual area measure
 		addVirtualMeasure(areaMeasure, false);
 	}

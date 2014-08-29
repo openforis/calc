@@ -1,4 +1,5 @@
 package org.openforis.calc.schema;
+import static org.openforis.calc.schema.ErrorTable.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.jooq.Field;
 import org.openforis.calc.chain.CalculationStep;
+import org.openforis.calc.metadata.Aoi;
 import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.AoiLevel;
 import org.openforis.calc.metadata.CategoricalVariable;
@@ -31,7 +33,8 @@ public class Cube {
 	private Map<Dimension, Field<Integer>> dimensionUsages;
 	private Map<AoiDimension, Field<Integer>> aoiDimensionUsages;
 	private Map<Measure, Field<BigDecimal>> measures;
-
+	private List<Measure> errorMeasures;
+	
 	private RolapSchema rolapSchema;
 	private FactTable factTable;
 
@@ -40,6 +43,8 @@ public class Cube {
 	private String table;
 	private List<AggName> aggNames;
 
+	private String errorColumnNameFormat = "%s %s %s";
+	
 	Cube(RolapSchema rolapSchema, FactTable factTable) {
 		Entity entity = factTable.getEntity();
 		this.name = entity.getName();
@@ -99,8 +104,9 @@ public class Cube {
 	}
 
 	private void createMeasures() {
-		measures = new HashMap<Measure, Field<BigDecimal>>();
-		Entity entity = factTable.getEntity();
+		this.measures 		= new HashMap<Measure, Field<BigDecimal>>();
+		this.errorMeasures 	= new ArrayList<Measure>();
+		Entity entity 		= factTable.getEntity();
 
 		Map<QuantitativeVariable, CalculationStep> stepMap = entity.getDefaultProcessingChainCalculationStepQuantitativeVariablesMap();
 		for ( QuantitativeVariable var : stepMap.keySet() ){
@@ -108,9 +114,10 @@ public class Cube {
 			Set<String> aggregateFunctions = calcStep.getAggregateFunctions();
 			
 			Field<BigDecimal> measureField = factTable.getMeasureField(var);
+			String measureColumn = measureField.getName();
 			if( entity.isInSamplingUnitHierarchy() || aggregateFunctions.isEmpty() ){
 				
-				Measure measure = new Measure( getRolapSchema(), this, var );
+				Measure measure = new Measure( getRolapSchema(), this, var , measureColumn );
 				measures.put(measure, measureField);
 				
 			} else {
@@ -118,10 +125,44 @@ public class Cube {
 				for (String aggregateFunction : aggregateFunctions) {
 					String name = var.getName() + " (" + aggregateFunction + ")";
 					String caption = ( (StringUtils.isBlank(var.getCaption()) ) ? var.getName() : var.getCaption() ) + " (" + aggregateFunction + ")";
-					Measure measure = new Measure( getRolapSchema(), this, name , caption, AGGREGATE_FUNCTION.getEnum(aggregateFunction) );
+					Measure measure = new Measure( getRolapSchema(), this, name , caption, measureColumn, AGGREGATE_FUNCTION.getEnum(aggregateFunction) );
 					measures.put(measure, measureField);
 				}
 				
+			}
+		
+			// add error measures in case at least 1 error table has been defined for the given variable
+			List<ErrorTable> errorTables = factTable.getErrorTables( var );
+			if( errorTables.size() > 0 ){
+				ErrorTable errorTable = errorTables.get( 0 );
+				
+				// relative error measures
+				QuantitativeVariable quantitativeVariable = errorTable.getQuantitativeVariable();
+				
+				String measureName = getErrorMeasureName( quantitativeVariable, RELATIVE_ERROR_LABEL , MEAN_LABEL );
+				Measure measure = new Measure( getRolapSchema(), this, measureName , measureName, errorTable.getMeanQuantityRelativeError().getName(), AGGREGATE_FUNCTION.SUM );
+				this.errorMeasures.add( measure );
+				
+				measureName = getErrorMeasureName( quantitativeVariable, ABSOLUTE_ERROR_LABEL , MEAN_LABEL );
+				measure = new Measure( getRolapSchema(), this, measureName , measureName, errorTable.getMeanQuantityAbsoluteError().getName(), AGGREGATE_FUNCTION.SUM );
+				this.errorMeasures.add( measure );
+				
+				measureName = getErrorMeasureName( quantitativeVariable,  VARIANCE_LABEL , MEAN_LABEL );
+				measure = new Measure( getRolapSchema(), this, measureName , measureName, errorTable.getMeanQuantityVariance().getName(), AGGREGATE_FUNCTION.SUM );
+				this.errorMeasures.add( measure );
+				
+				// absolute error measures
+				measureName = getErrorMeasureName( quantitativeVariable, RELATIVE_ERROR_LABEL , TOTAL_LABEL );
+				measure = new Measure( getRolapSchema(), this, measureName , measureName, errorTable.getTotalQuantityRelativeError().getName(), AGGREGATE_FUNCTION.SUM );
+				this.errorMeasures.add( measure );
+				
+				measureName = getErrorMeasureName( quantitativeVariable, ABSOLUTE_ERROR_LABEL , TOTAL_LABEL );
+				measure = new Measure( getRolapSchema(), this, measureName , measureName, errorTable.getTotalQuantityAbsoluteError().getName(), AGGREGATE_FUNCTION.SUM );
+				this.errorMeasures.add( measure );
+				
+				measureName = getErrorMeasureName( quantitativeVariable, VARIANCE_LABEL , TOTAL_LABEL );
+				measure = new Measure( getRolapSchema(), this, measureName , measureName, errorTable.getTotalQuantityVariance().getName(), AGGREGATE_FUNCTION.SUM );
+				this.errorMeasures.add( measure );
 			}
 			
 		}
@@ -140,27 +181,40 @@ public class Cube {
 		
 		if( entity.isSamplingUnit() ) {
 			Field<BigDecimal> weightField = factTable.getWeightField();
-			Measure measure = new Measure( getRolapSchema(), this, weightField.getName() , "Area" , Measure.AGGREGATE_FUNCTION.SUM );
+			Measure measure = new Measure( getRolapSchema(), this, weightField.getName() , "Area" , weightField.getName(), Measure.AGGREGATE_FUNCTION.SUM );
 			measures.put( measure, weightField );
 		}
 	}
-	
-	private void createAggNames() {
-	this.aggNames = new ArrayList<AggName>();
-	
-	for (AoiAggregateTable aggTable : factTable.getAoiAggregateTables()) {
-		AggName aggName = new AggName( aggTable );
-		this.aggNames.add(aggName);
+
+	private String getErrorMeasureName( QuantitativeVariable quantitativeVariable , String errorType1 , String errorType2 ){
+		String varName = quantitativeVariable.getName();
+		varName = StringUtils.capitalize(varName);
+		String string = String.format(errorColumnNameFormat, errorType1 , errorType2, varName);
+		string = StringUtils.capitalize( string );
+		return string;
 	}
 	
-//	if ( factTable.isGeoreferenced() ) {
-//		Collection<AggregateTable> aggregateTables = factTable.getAggregateTables();
-//		for ( AggregateTable aggregateTable : aggregateTables ) {
-//			AggName aggName = new AggName(aggregateTable);
-//			this.aggNames.add(aggName);
-//		}
-//	}
-}
+	private void createAggNames() {
+		this.aggNames = new ArrayList<AggName>();
+		
+		for (AoiAggregateTable aggTable : factTable.getAoiAggregateTables()) {
+			AggName aggName = new AggName( aggTable );
+			this.aggNames.add( aggName );
+		}
+		
+		for ( ErrorTable errorTable : factTable.getErrorTables() ){
+			AggName aggName = new AggErrorName( errorTable );
+			this.aggNames.add( aggName );
+		}
+		
+	//	if ( factTable.isGeoreferenced() ) {
+	//		Collection<AggregateTable> aggregateTables = factTable.getAggregateTables();
+	//		for ( AggregateTable aggregateTable : aggregateTables ) {
+	//			AggName aggName = new AggName(aggregateTable);
+	//			this.aggNames.add(aggName);
+	//		}
+	//	}
+	}
 	
 	public Field<Integer> getStratumField() {
 		return factTable.getStratumField();
@@ -182,6 +236,10 @@ public class Cube {
 		return CollectionUtils.unmodifiableMap(measures);
 	}
 
+	public List<Measure> getErrorMeasures() {
+		return CollectionUtils.unmodifiableList( errorMeasures );
+	}
+	
 	public RolapSchema getRolapSchema() {
 		return rolapSchema;
 	}
@@ -206,17 +264,23 @@ public class Cube {
 		return aggNames;
 	}
 	
-	
 
 	public class AggName {
 
-		private List<AggForeignKey> aggForeignKeys;
-		private List<AggMeasure> aggMeasures;
-		private List<AggLevel> aggLevels;
+		protected List<AggForeignKey> aggForeignKeys;
+		protected List<AggMeasure> aggMeasures;
+		protected List<AggLevel> aggLevels;
 
 		private AoiAggregateTable aggregateTable;
 
-		public AggName(AoiAggregateTable aggregateTable) {
+		private AggName() {
+			aggForeignKeys = new ArrayList<AggForeignKey>();
+			aggMeasures = new ArrayList<AggMeasure>();
+			aggLevels = new ArrayList<AggLevel>();
+		}
+		
+		private AggName(AoiAggregateTable aggregateTable){
+			this();
 			this.aggregateTable = aggregateTable;
 
 			createAggForeignKeys();
@@ -233,8 +297,6 @@ public class Cube {
 		}
 
 		private void createAggForeignKeys() {
-			aggForeignKeys = new ArrayList<AggForeignKey>();
-
 			Map<Dimension, Field<Integer>> dimUsages = Cube.this.getDimensionUsages();
 			for ( Entry<Dimension, Field<Integer>> entry : dimUsages.entrySet() ) {
 				Field<Integer> field = entry.getValue();
@@ -250,19 +312,16 @@ public class Cube {
 		}
 
 		private void createAggMeasures() {
-			aggMeasures = new ArrayList<AggMeasure>();
-
 			Map<Measure, Field<BigDecimal>> measures = Cube.this.getMeasures();
 			for ( Entry<Measure, Field<BigDecimal>> entry : measures.entrySet() ) {
 				Measure measure = entry.getKey();
-				Field<BigDecimal> field = entry.getValue();
-				AggMeasure aggMeasure = new AggMeasure(field.getName(), measure.getName());
+//				Field<BigDecimal> field = entry.getValue();
+				AggMeasure aggMeasure = new AggMeasure(measure.getColumn(), measure.getName());
 				aggMeasures.add(aggMeasure);
 			}
 		}
 
 		private void createAggLevels() {
-			aggLevels = new ArrayList<AggLevel>();
 			AoiLevel aggTableLevel = this.aggregateTable.getAoiLevel();
 			AoiHierarchy aoiHierarchy = this.aggregateTable.getAoiHierarchy();
 			
@@ -288,6 +347,85 @@ public class Cube {
 			return aggLevels;
 		}
 	}
+	
+	public class AggErrorName extends AggName{
+
+		private ErrorTable errorTable;
+
+		private AggErrorName( ErrorTable errorTable ) {
+			super();
+			this.errorTable = errorTable;
+			
+			createAggForeignKeys();
+			createAggMeasures();
+			createAggLevels();
+		}
+		
+		public String getName() {
+			return errorTable.getName();
+		}
+
+//		public Field<Integer> getFactCountField() {
+//			return aggregateTable.getAggregateFactCountField();
+//		}
+		
+		private void createAggMeasures() {
+			QuantitativeVariable quantitativeVariable = errorTable.getQuantitativeVariable();
+			
+			String measureName 		= getErrorMeasureName( quantitativeVariable, RELATIVE_ERROR_LABEL , MEAN_LABEL );
+			AggMeasure aggMeasure 	= new AggMeasure( errorTable.getMeanQuantityRelativeError().getName() , measureName );
+			aggMeasures.add(aggMeasure);
+			
+			measureName = getErrorMeasureName( quantitativeVariable, ABSOLUTE_ERROR_LABEL , MEAN_LABEL );
+			aggMeasure 	= new AggMeasure( errorTable.getMeanQuantityAbsoluteError().getName() , measureName );
+			aggMeasures.add(aggMeasure);
+			
+			measureName = getErrorMeasureName( quantitativeVariable,  VARIANCE_LABEL , MEAN_LABEL );
+			aggMeasure 	= new AggMeasure( errorTable.getMeanQuantityVariance().getName() , measureName );
+			aggMeasures.add(aggMeasure);
+			
+			// absolute error measures
+			measureName = getErrorMeasureName( quantitativeVariable, RELATIVE_ERROR_LABEL , TOTAL_LABEL );
+			aggMeasure 	= new AggMeasure( errorTable.getTotalQuantityRelativeError().getName() , measureName );
+			aggMeasures.add(aggMeasure);
+			
+			measureName = getErrorMeasureName( quantitativeVariable, ABSOLUTE_ERROR_LABEL , TOTAL_LABEL );
+			aggMeasure 	= new AggMeasure( errorTable.getTotalQuantityAbsoluteError().getName() , measureName );
+			aggMeasures.add(aggMeasure);
+			
+			measureName = getErrorMeasureName( quantitativeVariable,  VARIANCE_LABEL , TOTAL_LABEL );
+			aggMeasure 	= new AggMeasure( errorTable.getTotalQuantityVariance().getName() , measureName );
+			aggMeasures.add(aggMeasure);
+		}
+
+		private void createAggForeignKeys() {
+			String aggFKColumn = errorTable.getCategoryIdField().getName();
+			AggForeignKey aggFK = new AggForeignKey(aggFKColumn , aggFKColumn);
+			aggForeignKeys.add(aggFK);
+		}
+		
+		private void createAggLevels() {
+			Aoi aoi 					= errorTable.getAoi();
+			AoiLevel aggTableLevel		= aoi.getAoiLevel();
+			AoiHierarchy aoiHierarchy 	= aggTableLevel.getHierarchy();
+			AoiDimension aoiDim 		= getAoiDimension( aoiHierarchy );
+//			Field<Integer> aoiField 	= errorTable.getAoiField();
+			
+//			AggLevel aggLevel = new AggLevel( aoiDim.getHierarchy().getName() , aoiLevel.getName() , aoiField.getName() );
+//			aggLevels.add(aggLevel);
+//			
+			
+//			AoiDimension aoiDim = getAoiDimension(aoiHierarchy);
+			for ( AoiLevel level : aoiHierarchy.getLevels() ) {
+				if ( level.getRank() <= aggTableLevel.getRank() ) {
+					Field<Integer> field = errorTable.getAoiIdField( level );
+					AggLevel aggLevel = new AggLevel(aoiDim.getHierarchy().getName(), level.getName(), field.getName());
+					aggLevels.add(aggLevel);
+				}
+			}
+		}
+	}
+	
 
 	public class AggForeignKey {
 		private String factColumn;

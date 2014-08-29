@@ -18,17 +18,19 @@ public class Measure extends Member {
 	private String aggregator;
 	private String name;
 	private String caption;
+	private String column;
 
-	Measure( RolapSchema rolapSchema, Cube cube, QuantitativeVariable variable ) {
-		this( rolapSchema, cube, variable.getName(), variable.getCaption(), AGGREGATE_FUNCTION.SUM );
+	Measure( RolapSchema rolapSchema, Cube cube, QuantitativeVariable variable, String column ) {
+		this( rolapSchema, cube, variable.getName(), variable.getCaption(), column , AGGREGATE_FUNCTION.SUM );
 	}
 	
-	Measure(RolapSchema rolapSchema, Cube cube, String name, String caption, AGGREGATE_FUNCTION aggregateFunction) {
+	Measure(RolapSchema rolapSchema, Cube cube, String name, String caption, String column, AGGREGATE_FUNCTION aggregateFunction) {
 		super( rolapSchema );
 		
 		this.cube = cube;
 		this.name = capitalize( name );
 		this.caption = ( StringUtils.isBlank(caption) ) ? this.name : capitalize( caption );
+		this.column = column;
 		this.aggregator = aggregateFunction.toString();
 	}
 
@@ -53,6 +55,10 @@ public class Measure extends Member {
 		return caption;
 	}
 
+	public String getColumn() {
+		return column;
+	}
+	
 	public static enum AGGREGATE_FUNCTION {
 		MIN, MAX, SUM, AVG, COUNT, DISTINCT_COUNT;
 

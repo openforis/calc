@@ -23,7 +23,7 @@ public class AoiLevel extends AoiLevelBase {
 	private static final String CAPTION_COLUMN_FORMAT = "_%s_%s_caption";
 	private static final String CODE_COLUMN_FORMAT = "_%s_%s_code";
 	private static final String AREA_COLUMN_FORMAT = "_%s_%s_area";
-	
+
 	@JsonIgnore
 	private AoiHierarchy hierarchy;
 	@JsonIgnore
@@ -88,4 +88,33 @@ public class AoiLevel extends AoiLevelBase {
 		return normalize( getName() ) ;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AoiLevel other = (AoiLevel) obj;
+		
+		Integer id = getId();
+		if (id == null) {
+			if (other.getId() != null)
+				return false;
+		} else if ( !id.equals(other.getId()) )
+			return false;
+		return true;
+	}
+
+	
+	
 }

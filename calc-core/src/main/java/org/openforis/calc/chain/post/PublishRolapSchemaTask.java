@@ -238,9 +238,14 @@ public class PublishRolapSchemaTask extends Task {
 		// add measures
 		Map<org.openforis.calc.schema.Measure, Field<BigDecimal>> measures = rolapCube.getMeasures();
 		for ( org.openforis.calc.schema.Measure measure : measures.keySet() ) {
-			Field<BigDecimal> field = measures.get(measure);
-			Measure m = createMeasure(measure.getName(), measure.getCaption(), field.getName(), measure.getAggregator(), DATA_TYPE_NUMERIC, NUMBER_FORMAT_STRING);
+//			Field<BigDecimal> field = measures.get(measure);
+			Measure m = createMeasure(measure.getName(), measure.getCaption(), measure.getColumn(), measure.getAggregator(), DATA_TYPE_NUMERIC, NUMBER_FORMAT_STRING);
 
+			cube.getMeasure().add(m);
+		}
+		// add error measures
+		for ( org.openforis.calc.schema.Measure measure : rolapCube.getErrorMeasures() ){
+			Measure m = createMeasure(measure.getName(), measure.getCaption(), measure.getColumn(), measure.getAggregator(), DATA_TYPE_NUMERIC, NUMBER_FORMAT_STRING);
 			cube.getMeasure().add(m);
 		}
 	}

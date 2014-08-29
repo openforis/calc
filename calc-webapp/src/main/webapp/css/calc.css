@@ -270,7 +270,7 @@ button.settings:hover {
 /* 	font-weight: 200; */
 /* 	line-height: 2em; */
 	overflow: visible;
-	border-radius:8px;
+	border-radius: 1px;
 }
 /**
 * Default nav bar
@@ -293,6 +293,7 @@ button.settings:hover {
 /*   color: #ffffff; */
   background-color: #496d7e;
 }
+
 /**
 * Calculation
 */
@@ -301,21 +302,33 @@ button.settings:hover {
 	max-width: 90%;
 	margin: 2% auto 2% auto;
 }
+#calculation .calculation-steps-container {
+	padding: 0px 15px;
+}
 /* #calculation .btn-home-plus, #calculation .calculation-step { */
  #calculation .calculation-step, 
  	#calculation .calculation-step-placeholder {
 	width: 15em;
 	height: 6em;
-	padding: 0.1em 0.3em;
+	padding: 1px 2px;
 }
 
 #calculation li.calculation-step button {
 	width: 100%;
+	background-color: #4d5e75;
+	border-color: #4d5e75;
+/* 	border-color:  #5a5e6b; */
 }
 
+#calculation li.calculation-step button:hover {
+	width: 100%;
+	background-color: #5b718c;
+	border-color: #5b718c;
+/* 	border-color:  #5a5e6b; */
+}
 #calculation .calculation-step-placeholder {
-	border: 1px dashed #95a5a6;
-	border-radius: 8px;
+	border: 1px dashed #5b718c;
+	border-radius: 1px;
 }
 
 #calculation button.highlight {
@@ -356,6 +369,7 @@ button.settings:hover {
 	font-size:1.2em;
 	font-weight: 200;
 	letter-spacing: 0.03em;
+	border-radius: 1px;
 /* 	line-height: 2em; */
 /* 	overflow: visible; */
 /* 	border-radius:8px; */
@@ -1000,6 +1014,12 @@ table.import-csv-table input[type=checkbox] {
 .button-bar-left , .button-bar-left .button-bar-inner{
 	height: 12em;
 }
+.button-bar-inner{
+	border: 1px solid #5b718c;
+/* 	-webkit-box-shadow	: 1px 1px 0px 0px rgba(91,113,140,1); */
+/* 	-moz-box-shadow		: 1px 1px 0px 0px rgba(91,113,140,1); */
+/* 	box-shadow			: 1px 1px 0px 0px rgba(91,113,140,1); */
+}
 .button-bar-right {
 	width: 8em ;
 	float: right;
@@ -1010,7 +1030,7 @@ table.import-csv-table input[type=checkbox] {
 }
 .button-bar-inner {
 	margin: -0.2em;
-	background-color: #496d7e;
+	background-color: #2c3e50;
 	position: fixed; 
 	width: 16em ;
 /* 	height: 100%; */
@@ -1022,16 +1042,17 @@ table.import-csv-table input[type=checkbox] {
 .button-bar-inner button,
 .button-bar-inner button:focus {
 	width: 100%;
-	background-color: #496d7e;
-	border-color: #496d7e;
+	background-color: #2c3e50;
+/* 	background-color: #496d7e; */
+	border-color: #2c3e50;
 	color: #FFF;
 	border-radius: 0;
 	height: 100%;
 }
 .button-bar-inner button:hover, 
 .button-bar-inner button.blue-btn-hover {
-	background-color: #36525f;
-	border-color: #36525f;
+	background-color: #5b718c;
+	border-color: #5b718c;
 }
 .button-bar-inner button i{
 	font-size: 2em;

@@ -23,17 +23,17 @@ public class AggregateTable extends DataTable {
 
 	private static final long serialVersionUID = 1L;
 //	private static final String TABLE_NAME_FORMAT = "_%s_%s_stratum_agg";
-	private static final String AGG_FACT_CNT_COLUMN = "_agg_cnt";
+	public static final String AGG_FACT_CNT_COLUMN = "_agg_cnt";
 	
 	private AoiLevel aoiLevel;
 	private TableField<Record, Integer> aggregateFactCountField;
 	private DataTable sourceTable;
 
-	AggregateTable(DataTable sourceTable, String name, AoiLevel aoiLevel) {
-		super(sourceTable.getEntity(), name, sourceTable.getSchema());
+	AggregateTable( DataTable sourceTable, String name, AoiLevel aoiLevel ){
+		super( sourceTable.getEntity(), name, sourceTable.getSchema() );
 		
-		this.sourceTable = sourceTable;
-		this.aoiLevel = aoiLevel;
+		this.sourceTable 	= sourceTable;
+		this.aoiLevel 		= aoiLevel;
 		
 		initFields();
 	}

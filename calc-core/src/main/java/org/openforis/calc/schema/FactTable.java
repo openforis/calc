@@ -44,7 +44,10 @@ public class FactTable extends DataTable {
 	private Map<QuantitativeVariable, Field<BigDecimal>> measureFields;
 	private Field<String> clusterField; 
 	
-	private List<ErrorTable> errorTables;
+	/**
+	 * Map of variableId -> list of error tables
+	 */
+	private Map< Long, List<ErrorTable> > errorTables;
 	
 	FactTable(Entity entity, DataSchema schema) {
 		this(entity, getName(entity), schema);
@@ -128,7 +131,7 @@ public class FactTable extends DataTable {
 	 * creates error tables
 	 */
 	private void createErrorTables() {
-		this.errorTables = new ArrayList<ErrorTable>();
+		this.errorTables = new HashMap< Long, List<ErrorTable> >();
 		
 		Workspace workspace = getWorkspace();
 		ErrorSettings errorSettings = workspace.getErrorSettings();
@@ -147,14 +150,26 @@ public class FactTable extends DataTable {
 						Aoi aoi = workspace.getAoiHierarchies().get(0).getAoiById( aoiId.intValue() );
 						
 						ErrorTable errorTable = new ErrorTable( quantitativeVariable, aoi, categoricalVariable, schema );
-						this.errorTables.add( errorTable );
+						List<ErrorTable> variableErrorTables = getOrCreateErrorTables( variableId );
+						variableErrorTables.add( errorTable );
 					}
 				}
 			}
 		}
 		
 	}
-	
+
+	private List<ErrorTable> getOrCreateErrorTables( long variableId ){
+		List<ErrorTable> tables = null ;
+		if( this.errorTables.containsKey(variableId) ){
+			tables = this.errorTables.get( variableId );
+		} else {
+			tables = new ArrayList<ErrorTable>();
+			this.errorTables.put( variableId , tables );
+		}
+		return tables;
+	}
+
 	public SamplingUnitAggregateTable getSamplingUnitAggregateTable() {
 		return samplingUnitAggregateTable;
 	}
@@ -194,8 +209,17 @@ public class FactTable extends DataTable {
 		return schema;
 	}
 	
-	public List<ErrorTable> getErrorTables() {
-		return CollectionUtils.unmodifiableList( errorTables );
+	public List<ErrorTable> getErrorTables(){
+		List<ErrorTable> list = new ArrayList<ErrorTable>();
+		for ( List<ErrorTable> errorTables : this.errorTables.values() ){
+			list.addAll( errorTables );
+		}
+		return CollectionUtils.unmodifiableList( list );
 	}
 
+	public List<ErrorTable> getErrorTables( QuantitativeVariable variable ) {
+		List<ErrorTable> list = this.errorTables.get( variable.getId().longValue() );
+		return CollectionUtils.unmodifiableList( list );
+	}
+	
 }
