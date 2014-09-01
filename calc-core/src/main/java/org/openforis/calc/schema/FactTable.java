@@ -149,9 +149,13 @@ public class FactTable extends DataTable {
 						CategoricalVariable<?> categoricalVariable = (CategoricalVariable<?>) workspace.getVariableById( categoricalVariableId.intValue() );
 						Aoi aoi = workspace.getAoiHierarchies().get(0).getAoiById( aoiId.intValue() );
 						
-						ErrorTable errorTable = new ErrorTable( quantitativeVariable, aoi, categoricalVariable, schema );
-						List<ErrorTable> variableErrorTables = getOrCreateErrorTables( variableId );
-						variableErrorTables.add( errorTable );
+						// aoi might be null during collect import phase
+						if( aoi!= null && categoricalVariable !=null ){
+							ErrorTable errorTable = new ErrorTable( quantitativeVariable, aoi, categoricalVariable, schema );
+							List<ErrorTable> variableErrorTables = getOrCreateErrorTables( variableId );
+							variableErrorTables.add( errorTable );
+						}
+						
 					}
 				}
 			}

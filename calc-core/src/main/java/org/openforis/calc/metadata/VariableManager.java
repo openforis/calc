@@ -259,6 +259,7 @@ public class VariableManager {
 				newErrorSettings.addErrorSettings( newVariableId, errorSettings.getAois(variableId), newCategoricalVariableIds );
 			}
 		}
+		workspace.setErrorSettings(newErrorSettings);
 		workspaceToImport.setErrorSettings(newErrorSettings);
 	}
 

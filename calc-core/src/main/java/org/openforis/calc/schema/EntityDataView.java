@@ -136,9 +136,9 @@ public class EntityDataView extends DataTable {
 			for ( QuantitativeVariable var : parentEntity.getOriginalQuantitativeVariables() ) {
 				select.addSelect( parentTable.getQuantityField(var) );
 			}
-			if( parentTable.getWeightField() != null ){
-				select.addSelect( parentTable.getWeightField() );
-			}
+//			if( parentTable.getWeightField() != null ){
+//				select.addSelect( parentTable.getWeightField() );
+//			}
 			select.addJoin( parentTable, currentTable.getParentIdField().eq(parentTable.getIdField()) );
 			
 			if( parentEntity.isSamplingUnit() ){
