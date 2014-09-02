@@ -220,10 +220,14 @@ button.filter-btn-selected:hover {
 	border-color: #4d6b89;
 }
 .data {
-	background-color: #47253b;
-	border-color: #47253b;
+	background-color: #363D4B;
+/* 	background-color: #47253b; */
+	border-color: #363D4B;
+/* 	border-color: #47253b; */
 }
 .settings {
+/* 	background-color: #2F3638; */
+/* 	border-color: #2F3638; */
 	background-color: #44454d;
 	border-color: #44454d;
 }
@@ -238,8 +242,10 @@ button.results:hover {
 	border-color: #6c859f;
 }
 button.data:hover {
-	background-color: #6e455f;
-	border-color: #6e455f;
+/* 	background-color: #6e455f; */
+/* 	border-color: #6e455f; */
+	background-color: #4f586c;
+	border-color: #4f586c;
 }
 button.settings:hover {
 	background-color: #5f6066;
