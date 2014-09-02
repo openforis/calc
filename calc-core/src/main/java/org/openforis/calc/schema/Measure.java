@@ -20,16 +20,18 @@ public class Measure extends Member {
 	private String caption;
 	private String column;
 
+	public static String HA = "Ha";
+	
 	Measure( RolapSchema rolapSchema, Cube cube, QuantitativeVariable variable, String column ) {
-		this( rolapSchema, cube, variable.getName(), variable.getCaption(), column , AGGREGATE_FUNCTION.SUM );
+		this( rolapSchema, cube, getName( variable ), getCaption( variable ), column , AGGREGATE_FUNCTION.SUM );
 	}
 	
 	Measure(RolapSchema rolapSchema, Cube cube, String name, String caption, String column, AGGREGATE_FUNCTION aggregateFunction) {
 		super( rolapSchema );
 		
 		this.cube = cube;
-		this.name = capitalize( name );
-		this.caption = ( StringUtils.isBlank(caption) ) ? this.name : capitalize( caption );
+		this.name = org.openforis.calc.utils.StringUtils.capitalize( name );
+		this.caption = ( StringUtils.isBlank(caption) ) ? this.name : org.openforis.calc.utils.StringUtils.capitalize( caption );
 		this.column = column;
 		this.aggregator = aggregateFunction.toString();
 	}
@@ -90,5 +92,18 @@ public class Measure extends Member {
 		}
 		
 	}
+	
+	public static String getName( QuantitativeVariable quantitativeVariable ){
+		return StringUtils.capitalize( quantitativeVariable.getName() );
+	}
+	
+	public static String getCaption( QuantitativeVariable quantitativeVariable ){
+		String name 	= quantitativeVariable.getName(); 
+		String caption 	= quantitativeVariable.getCaption();
+		caption 		= ( StringUtils.isBlank(caption) ) ? name : caption;
+		
+		return org.openforis.calc.utils.StringUtils.capitalize( caption );
+	}
+	
 
 }

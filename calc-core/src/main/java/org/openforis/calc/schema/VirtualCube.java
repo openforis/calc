@@ -3,6 +3,7 @@ package org.openforis.calc.schema;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -122,8 +123,8 @@ public class VirtualCube {
 		Map<Measure, Field<BigDecimal>> measures = this.childCube.getMeasures();
 		for ( Measure measure : measures.keySet() ) {
 			
-			String name = measure.getName()+" Ha ";
-			String caption = measure.getCaption() + " / Ha";
+			String name = measure.getName()+" "+ Measure.HA;
+			String caption = measure.getCaption() + " " + Measure.HA;
 			formula = Rolap.getMdxMeasureName( measure.getName() ) + " / " + Rolap.getMdxMeasureName( AREA_CALCULATED_MEMBER_NAME );
 			
 			CalculatedMember calculatedMember = new CalculatedMember( Rolap.MEASURES, name, caption, formula, true);
@@ -144,7 +145,18 @@ public class VirtualCube {
 	}
 	
 	public Collection<VirtualCubeMeasure> getVirtualCubeMeasures() {
-		return CollectionUtils.unmodifiableCollection( virtualCubeMeasures );
+		ArrayList<VirtualCubeMeasure> list = new ArrayList<VirtualCubeMeasure>( virtualCubeMeasures );
+		list.sort( new Comparator<VirtualCubeMeasure>() {
+
+			@Override
+			public int compare(VirtualCubeMeasure o1, VirtualCubeMeasure o2) {
+				String o1Name = o1.getName();
+				String o2Name = o2.getName();
+				int compareTo = o1Name.compareTo(o2Name);
+				return compareTo;
+			}
+		});
+		return CollectionUtils.unmodifiableCollection( list );
 	}
 	
 	public Collection<CalculatedMember> getCalculatedMembers() {

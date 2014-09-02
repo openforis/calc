@@ -14,9 +14,10 @@ import java.util.Set;
 
 import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.QuantitativeVariable;
+import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.r.RScript;
 import org.openforis.calc.r.RVariable;
-import org.openforis.calc.schema.EntityDataView;
 import org.openforis.calc.schema.ResultTable;
 
 /**
@@ -37,9 +38,11 @@ public class CalcJobEntityGroup {
 
 	private CalcJob job;
 
-	public CalcJobEntityGroup(CalcJob job) {
+	public CalcJobEntityGroup( CalcJob job ){
+		
 		this.job = job;
 		this.calculationSteps = new LinkedHashMap<Integer, List<CalculationStep>>();
+		
 	}
 
 	public void addCalculationStep(CalculationStep step) {
@@ -154,6 +157,21 @@ public class CalcJobEntityGroup {
 
 	public RScript getPlotAreaScript(int entityId) {
 		return this.plotAreaScripts.get(entityId);
+	}
+	
+	public Set< QuantitativeVariable > uniqueOutputQuantitativeVariables(){
+		Set< QuantitativeVariable > uniqueOutputVariables = new HashSet< QuantitativeVariable > ();
+		
+		for ( List<CalculationStep> list : this.calculationSteps.values() ){
+			for ( CalculationStep calculationStep : list ){
+				Variable<?> variable = calculationStep.getOutputVariable();
+				if( variable instanceof QuantitativeVariable ){
+					uniqueOutputVariables.add( (QuantitativeVariable) variable );
+				}
+			}
+		}
+		
+		return uniqueOutputVariables;
 	}
 
 }

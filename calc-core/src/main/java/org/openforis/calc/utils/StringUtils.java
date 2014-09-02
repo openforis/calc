@@ -20,7 +20,7 @@ public class StringUtils {
 		return value;
 	}
 	
-	public String capitalize( String string ){
+	public static String capitalize( String string ){
 		return WordUtils.capitalize(string);
 	}
 	

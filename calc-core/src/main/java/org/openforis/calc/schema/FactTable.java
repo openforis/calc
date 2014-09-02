@@ -45,9 +45,9 @@ public class FactTable extends DataTable {
 	private Field<String> clusterField; 
 	
 	/**
-	 * Map of variableId -> list of error tables
+	 * Map of variableId --> map of aoiLevel id --> list of error tables
 	 */
-	private Map< Long, List<ErrorTable> > errorTables;
+	private Map< Long, Map< Long, List<ErrorTable> > > errorTables;
 	
 	FactTable(Entity entity, DataSchema schema) {
 		this(entity, getName(entity), schema);
@@ -66,7 +66,7 @@ public class FactTable extends DataTable {
 		TableField<Record, BigDecimal> plotArea = entityView.getPlotAreaField();
 
 		if (plotArea != null) {
-			this.plotAreaField = super.createField(plotArea.getName(), Psql.DOUBLE_PRECISION, this);
+			this.plotAreaField = super.createField( plotArea.getName(), Psql.DOUBLE_PRECISION, this );
 		}
 
 		this.measureFields = new HashMap<QuantitativeVariable, Field<BigDecimal>>();
@@ -131,7 +131,7 @@ public class FactTable extends DataTable {
 	 * creates error tables
 	 */
 	private void createErrorTables() {
-		this.errorTables = new HashMap< Long, List<ErrorTable> >();
+		this.errorTables = new HashMap< Long, Map< Long,List<ErrorTable> > >(); //new HashMap< Long, Map<List<ErrorTable>> >();
 		
 		Workspace workspace = getWorkspace();
 		ErrorSettings errorSettings = workspace.getErrorSettings();
@@ -151,9 +151,19 @@ public class FactTable extends DataTable {
 						
 						// aoi might be null during collect import phase
 						if( aoi!= null && categoricalVariable !=null ){
-							ErrorTable errorTable = new ErrorTable( quantitativeVariable, aoi, categoricalVariable, schema );
-							List<ErrorTable> variableErrorTables = getOrCreateErrorTables( variableId );
-							variableErrorTables.add( errorTable );
+							AoiLevel aoiLevel 						= aoi.getAoiLevel();
+							List<ErrorTable> variableErrorTables 	= getOrCreateErrorTables( variableId , aoiLevel.getId().longValue() );
+							ErrorTable variableErrorTable 			= null;
+							for ( ErrorTable errorTable : variableErrorTables ){
+								if( errorTable.getCategoricalVariable().equals(categoricalVariable) ){
+									variableErrorTable = errorTable;
+									break;
+								}
+							}
+							if( variableErrorTable == null ){
+								variableErrorTable = new ErrorTable( quantitativeVariable, aoiLevel, categoricalVariable, schema );
+								variableErrorTables.add( variableErrorTable );
+							}
 						}
 						
 					}
@@ -163,14 +173,19 @@ public class FactTable extends DataTable {
 		
 	}
 
-	private List<ErrorTable> getOrCreateErrorTables( long variableId ){
-		List<ErrorTable> tables = null ;
-		if( this.errorTables.containsKey(variableId) ){
-			tables = this.errorTables.get( variableId );
-		} else {
-			tables = new ArrayList<ErrorTable>();
-			this.errorTables.put( variableId , tables );
+	private List<ErrorTable> getOrCreateErrorTables( long variableId , long aoiLevelId ){
+		Map< Long , List<ErrorTable> > aoiLevelTables = this.errorTables.get( variableId );
+		if( aoiLevelTables == null ){
+			aoiLevelTables = new HashMap<Long, List<ErrorTable>>();
+			this.errorTables.put( variableId , aoiLevelTables );
 		}
+		
+		List<ErrorTable> tables = aoiLevelTables.get( aoiLevelId );
+		if( tables == null ){
+			tables = new ArrayList<ErrorTable>();
+			aoiLevelTables.put( aoiLevelId, tables );
+		}
+		
 		return tables;
 	}
 
@@ -215,15 +230,42 @@ public class FactTable extends DataTable {
 	
 	public List<ErrorTable> getErrorTables(){
 		List<ErrorTable> list = new ArrayList<ErrorTable>();
-		for ( List<ErrorTable> errorTables : this.errorTables.values() ){
-			list.addAll( errorTables );
+
+		for ( Map<Long, List<ErrorTable>> aoiLevelErrorTables : this.errorTables.values() ){
+			Collection<List<ErrorTable>> values = aoiLevelErrorTables.values();
+			for ( List<ErrorTable> errorTables : values ){
+				list.addAll( errorTables );
+			}
 		}
+		
 		return CollectionUtils.unmodifiableList( list );
 	}
 
 	public List<ErrorTable> getErrorTables( QuantitativeVariable variable ) {
-		List<ErrorTable> list = this.errorTables.get( variable.getId().longValue() );
+		List<ErrorTable> list = new ArrayList<ErrorTable>();
+
+		Map<Long, List<ErrorTable>> aoiLevelErrorTables = this.errorTables.get( variable.getId().longValue() );
+		if( aoiLevelErrorTables != null ){
+			for ( List<ErrorTable> errorTables : aoiLevelErrorTables.values() ){
+				list.addAll( errorTables );
+			}
+		}
+		
 		return CollectionUtils.unmodifiableList( list );
+	}
+	
+	public ErrorTable getErrorTable(  QuantitativeVariable variable , Aoi aoi, CategoricalVariable<?> categoricalVariable ){
+		Map<Long, List<ErrorTable>> aoiLevelErrorTables = this.errorTables.get( variable.getId().longValue() );
+		List<ErrorTable> errorTables = aoiLevelErrorTables.get( aoi.getAoiLevel().getId().longValue() );
+	
+		for ( ErrorTable errorTable : errorTables ){
+			CategoricalVariable<?> errorTableCategoricalVariable = errorTable.getCategoricalVariable();
+			if( errorTableCategoricalVariable.equals(categoricalVariable) ){
+				return errorTable;
+			}
+		}
+		
+		return null;
 	}
 	
 }

@@ -19,7 +19,6 @@ import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.psql.Psql;
-import org.openforis.calc.r.DbSendQuery;
 import org.openforis.calc.r.RVariable;
 import org.openforis.calc.r.SetValue;
 import org.openforis.calc.schema.DataSchema;
@@ -42,13 +41,15 @@ public class CalculateErrorTask extends CalcRTask {
 	private ErrorTable errorTable;
 	private RVariable connection;
 	private Workspace workspace;
+	private Aoi aoi;
 
-	protected CalculateErrorTask( CalcJob job , ErrorTable errorTable , RVariable connection ){
-		super( job.getrEnvironment() , getName(errorTable.getQuantitativeVariable(), errorTable.getAoi(), errorTable.getCategoricalVariable()) );
+	protected CalculateErrorTask( CalcJob job , ErrorTable errorTable , RVariable connection , Aoi aoi){
+		super( job.getrEnvironment() , getName(errorTable.getQuantitativeVariable(), aoi , errorTable.getCategoricalVariable()) );
 		setJob( job );
 		
 		this.errorTable = errorTable;
 		this.connection = connection;
+		this.aoi = aoi;
 		this.workspace = errorTable.getQuantitativeVariable().getEntity().getWorkspace();
 		
 		initScript();
@@ -56,7 +57,7 @@ public class CalculateErrorTask extends CalcRTask {
 
 	void initScript() {
 		QuantitativeVariable quantitativeVariable = errorTable.getQuantitativeVariable();
-		Aoi aoi = errorTable.getAoi();
+//		Aoi aoi = errorTable.getAoi();
 		CategoricalVariable<?> categoricalVariable = errorTable.getCategoricalVariable();
 		
 		String name = getName( quantitativeVariable, aoi, categoricalVariable );
@@ -80,22 +81,19 @@ public class CalculateErrorTask extends CalcRTask {
 		RVariable data = r().variable("data");
 		addScript( r().setValue( data , r().dbGetQuery(connection, selectData) ) );
 		
+		// for now hardcoded. let's see if in the future there's time for refactoring
+		StringBuilder sb = new StringBuilder();
 		
-		// drop error table
-		DbSendQuery dropErrorTable = r().dbSendQuery( connection, psql().dropTableIfExists(errorTable) );
-		addScript(dropErrorTable);
-		// create error table
-		DbSendQuery createErrorTable = r().dbSendQuery( connection , psql().createTable(errorTable, errorTable.fields()) );
-		addScript( createErrorTable );
+		sb.append( "if( nrow(data) > 0){" );
 		
 		RVariable classes = r().variable( "classes" );
 		SetValue setClasses = r().setValue( classes, r().sqldf( "select distinct class_id from data" ) );
-		addScript( setClasses );
+//		addScript( setClasses );
+		sb.append( setClasses.toString() );
 		setClasses = r().setValue( classes, r().variable(classes, "class_id") );
-		addScript( setClasses );
+		sb.append( setClasses.toString() );
+//		addScript( setClasses );
 		
-		// for now hardcoded. let's see if in the future there's time for refactoring
-		StringBuilder sb = new StringBuilder();
 		sb.append("for( cls in classes ){");
 			sb.append( NEW_LINE );
 			sb.append("select <- \"select *, case when class_id ==\";");
@@ -156,7 +154,7 @@ public class CalculateErrorTask extends CalcRTask {
 			sb.append( errorTable.getAggregateFactCountField().getName() );
 //			sb.append( COMMA );
 //			sb.append( NEW_LINE );
-			Aoi aoiInsert = errorTable.getAoi();
+			Aoi aoiInsert = aoi;
 			while( aoiInsert != null ){
 				sb.append( COMMA );
 				sb.append( NEW_LINE );
@@ -188,7 +186,7 @@ public class CalculateErrorTask extends CalcRTask {
 			sb.append( NEW_LINE );
 			sb.append( "query <- paste( query , 100 , sep=\",\"  );" );
 
-			aoiInsert = errorTable.getAoi();
+			aoiInsert = aoi;
 			while( aoiInsert != null ){
 				sb.append( NEW_LINE );
 				sb.append( "query <- paste( query , "+aoiInsert.getId()+" , sep=\",\"  );" );
@@ -204,6 +202,10 @@ public class CalculateErrorTask extends CalcRTask {
 			sb.append( "dbSendQuery( conn = connection , statement = query );" );
 			sb.append( NEW_LINE );
 			
+		// end for	
+		sb.append("}");
+		sb.append( NEW_LINE );
+		// end if
 		sb.append("}");
 		sb.append( NEW_LINE );
 		

@@ -8,9 +8,7 @@ import static org.jooq.util.postgres.PostgresDataType.DOUBLEPRECISION;
 
 import org.jooq.Field;
 import org.jooq.Schema;
-import org.jooq.TableField;
 import org.jooq.impl.SQLDataType;
-import org.openforis.calc.metadata.Aoi;
 import org.openforis.calc.metadata.AoiLevel;
 import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.MultiwayVariable;
@@ -44,13 +42,13 @@ public class ErrorTable extends DataTable {
 	
 	// instance variables 
 	private QuantitativeVariable quantitativeVariable;
-	private Aoi aoi;
+//	private Aoi aoi;
 	private CategoricalVariable<?> categoricalVariable;
 	private AoiLevel aoiLevel;
 	
 	// fields
-	@Deprecated
-	private Field<Integer> aoiField;
+//	@Deprecated
+//	private Field<Integer> aoiField;
 	private Field<Integer> categoryIdField;
 
 	private Field<Double> meanQuantityVariance;
@@ -64,16 +62,16 @@ public class ErrorTable extends DataTable {
 	private Field<Integer> aggregateFactCountField;
 
 	
-	protected ErrorTable(QuantitativeVariable quantitativeVariable , Aoi aoi , CategoricalVariable<?> categoricalVariable , Schema schema){
-		super( quantitativeVariable.getEntity(), getTableName(quantitativeVariable , aoi , categoricalVariable) , schema );
+	protected ErrorTable(QuantitativeVariable quantitativeVariable , AoiLevel aoiLevel , CategoricalVariable<?> categoricalVariable , Schema schema){
+		super( quantitativeVariable.getEntity(), getTableName(quantitativeVariable , aoiLevel , categoricalVariable) , schema );
 		
 //		super( getTableName(quantitativeVariable , aoi , categoricalVariable) , schema );
 		
 		this.quantitativeVariable 	= quantitativeVariable;
 		this.categoricalVariable 	= categoricalVariable;
-		this.aoi 					= aoi;
-		this.aoiLevel 				= this.aoi.getAoiLevel();
-		this.columnNameFormat 		= "%s_"+this.quantitativeVariable.getId()+"_"+this.categoricalVariable.getId()+"_"+aoi.getId()+"_%s";
+//		this.aoi 					= aoi;
+		this.aoiLevel 				= aoiLevel;
+		this.columnNameFormat 		= "%s_"+this.quantitativeVariable.getId()+"_"+this.categoricalVariable.getId()+"_"+aoiLevel.getId()+"_%s";
 		
 		initFields();
 		
@@ -91,7 +89,7 @@ public class ErrorTable extends DataTable {
 		
 //		this.aoiField = createField( this.aoi.getAoiLevel().getFkColumn() , INTEGER, this);
 		
-		super.createAoiIdFields( this.aoi.getAoiLevel() );
+		super.createAoiIdFields( this.aoiLevel );
 		
 		String fieldName = ( (MultiwayVariable) this.categoricalVariable ).getInputCategoryIdColumn();
 		this.categoryIdField = createField(fieldName, SQLDataType.INTEGER, this);
@@ -103,8 +101,8 @@ public class ErrorTable extends DataTable {
 		return String.format(columnNameFormat, string1 , string2);
 	}
 
-	private static String getTableName( QuantitativeVariable quantitativeVariable , Aoi aoi , CategoricalVariable<?> categoricalVariable ){
-		String name = String.format( TABLE_NAME_FORMAT, quantitativeVariable.getId() , categoricalVariable.getId() , aoi.getId() );
+	private static String getTableName( QuantitativeVariable quantitativeVariable , AoiLevel aoiLevel , CategoricalVariable<?> categoricalVariable ){
+		String name = String.format( TABLE_NAME_FORMAT, quantitativeVariable.getId() , categoricalVariable.getId() , aoiLevel.getId() );
 		return StringUtils.normalize( name );
 	}
 	
@@ -117,13 +115,13 @@ public class ErrorTable extends DataTable {
 		return categoricalVariable;
 	}
 	
-	public Aoi getAoi() {
-		return aoi;
-	}
+//	public Aoi getAoi() {
+//		return aoi;
+//	}
 
-	public Field<Integer> getAoiField() {
-		return aoiField;
-	}
+//	public Field<Integer> getAoiField() {
+//		return aoiField;
+//	}
 	
 	public Field<Integer> getCategoryIdField() {
 		return categoryIdField;

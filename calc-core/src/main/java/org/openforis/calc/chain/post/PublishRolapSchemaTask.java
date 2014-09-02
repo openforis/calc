@@ -21,7 +21,6 @@ import static org.openforis.calc.mondrian.Rolap.createVirtualCube;
 import static org.openforis.calc.mondrian.Rolap.createVirtualCubeDimension;
 import static org.openforis.calc.mondrian.Rolap.createVirtualCubeMeasure;
 
-import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -236,9 +235,8 @@ public class PublishRolapSchemaTask extends Task {
 		}
 
 		// add measures
-		Map<org.openforis.calc.schema.Measure, Field<BigDecimal>> measures = rolapCube.getMeasures();
-		for ( org.openforis.calc.schema.Measure measure : measures.keySet() ) {
-//			Field<BigDecimal> field = measures.get(measure);
+//		Map<org.openforis.calc.schema.Measure, Field<BigDecimal>> measures = rolapCube.getMeasures();
+		for ( org.openforis.calc.schema.Measure measure : rolapCube.getMeasuresOrdered() ) {
 			Measure m = createMeasure(measure.getName(), measure.getCaption(), measure.getColumn(), measure.getAggregator(), DATA_TYPE_NUMERIC, NUMBER_FORMAT_STRING);
 
 			cube.getMeasure().add(m);
