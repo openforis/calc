@@ -116,6 +116,7 @@ HomeCalculationManager.prototype.updateStep = function(step, callback) {
 	} else {
 		element.data("calculationStep", step);
 		element.find("button").text(step.caption);
+//		element.find("button").text(step.stepNo + ". " + step.caption);
 	}
 	if (callback) {
 		callback();
@@ -258,7 +259,8 @@ HomeCalculationManager.prototype.addStepElement = function(step) {
 	element.data("calculationStep", step);
 	element.attr("id", "calculation-step-" + step.id);
 
-	element.find("button").text(step.caption);
+//	element.find("button").text(step.stepNo + ". " + step.caption);
+	element.find("button").text( step.caption );
 	element.attr("href", "step-edit.html?id=" + step.id);
 
 	element.click($.proxy($this.stepClickHandler, $this));
