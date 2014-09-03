@@ -43,7 +43,7 @@ public class CalculationStepRScriptGenerator {
 		
 		switch( calculationStep.getType() ){
 		case CATEGORY:
-			script = createCategoryTypeScript( calculationStep );
+			script = calculationStep.getScript(); //= createCategoryTypeScript( calculationStep );
 			break;
 		case EQUATION:
 			script = createEquationTypeScript( calculationStep );
@@ -150,14 +150,15 @@ public class CalculationStepRScriptGenerator {
 		return script;
 	}
 	
-	private String createCategoryTypeScript( CalculationStep calculationStep ) {
+	@SuppressWarnings("unused")
+	private String createCategoryTypeScript( CalculationStep calculationStep ){
 		
 		Variable<?> outputVariable = calculationStep.getOutputVariable();
 		Entity entity = outputVariable.getEntity();
 		Workspace workspace = entity.getWorkspace();
 		DynamicTable<?> table = new DynamicTable<Record>(entity.getName());
 		
-		Psql dsl = new Psql(SQLDialect.SQLITE);
+		Psql dsl = new Psql( SQLDialect.SQLITE );
 		
 //		select.addSelect( DSL.field( entity.getName() + ".*") );
 		CaseStep caseIdStep = dsl.decode();

@@ -11,7 +11,6 @@ import org.openforis.calc.engine.ParameterMap;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.persistence.jooq.ParameterMapConverter;
 import org.openforis.calc.persistence.jooq.tables.pojos.ErrorSettingsBase;
-import org.openforis.commons.collection.CollectionUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -73,7 +72,9 @@ public class ErrorSettings extends ErrorSettingsBase {
 		} else {
 			collection = (Collection<? extends Number>) array;
 		}
-		return CollectionUtils.unmodifiableCollection( collection );
+		return collection;
+//		return CollectionUtils.unmodifiableCollection( collection );
+
 	}
 	
 	void setAois( long variableId , Collection<Long> aois ){
@@ -91,7 +92,8 @@ public class ErrorSettings extends ErrorSettingsBase {
 		} else {
 			collection = (Collection<? extends Number>) array;
 		}
-		return CollectionUtils.unmodifiableCollection( collection );
+		return collection;
+//		return CollectionUtils.unmodifiableCollection( collection );
 	}
 	
 	void setCategoricalVariables( long variableId , Collection<Long> categoricalVariables ){
@@ -116,6 +118,14 @@ public class ErrorSettings extends ErrorSettingsBase {
 			map = new ParameterHashMap();
 		}
 		return map;
+	}
+
+	/**
+	 * Delete the error setting parameters associated with the quantitative variable id passed as argument
+	 * @param varId
+	 */
+	public void removeParameters(long varId) {
+		getParameters().remove( varId + "" );
 	}
 	
 }

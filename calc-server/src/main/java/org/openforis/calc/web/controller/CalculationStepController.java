@@ -10,11 +10,8 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.CalculationStep.Type;
-import org.openforis.calc.chain.CalculationStepCategoryClassParameters;
 import org.openforis.calc.chain.CalculationStepRScriptGenerator;
 import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.chain.ProcessingChainManager;
@@ -142,42 +139,43 @@ public class CalculationStepController {
 		( (MultiwayVariable) variable ).setCategoryLevel( defualtLevel );
 		workspaceService.saveVariable( variable );
 		
+		step.setScript( form.getScript() );
 		// prepare params
-		
-		JSONArray categoryClasses = categoryManager.loadCategoryClasses( ws, categoryId );
-		List<ParameterMap> classParams = new ArrayList<ParameterMap>();
-		
-		for (Object object : categoryClasses) {
-			JSONObject categoryClass = (JSONObject) object;
-			
-			int classId = Integer.parseInt( categoryClass.get( "id" ).toString() );
-			if( classId != -1 ){
-				String code = form.getCategoryClassCodes().get( classId );
-				Integer variableId = form.getCategoryClassVariables().get( classId );
-				
-				String condition = form.getCategoryClassConditions().get( classId );
-				
-				CalculationStepCategoryClassParameters classParam = new CalculationStepCategoryClassParameters();
-				
-				classParam.setClassId( classId );
-				classParam.setClassCode( code );
-				classParam.setVariableId( variableId );
-				classParam.setCondition( condition );
-				
-				String left = form.getCategoryClassLeftConditions().get( classId );
-				String right = form.getCategoryClassRightConditions().get( classId );
-				
-				if( !(condition.equals("IS NULL") || condition.equals("IS NOT NULL")) ) {
-					classParam.setLeft( left );
-					if( condition.equals("BETWEEN") || condition.equals("NOT BETWEEN") ){
-						classParam.setRight( right );
-					}
-				}
-				
-				classParams.add( classParam );
-			}
-		}
-		params.setList( "categoryClassParameters", classParams );
+		// only r script at the moment
+//		JSONArray categoryClasses = categoryManager.loadCategoryClasses( ws, categoryId );
+//		List<ParameterMap> classParams = new ArrayList<ParameterMap>();
+//		
+//		for (Object object : categoryClasses) {
+//			JSONObject categoryClass = (JSONObject) object;
+//			
+//			int classId = Integer.parseInt( categoryClass.get( "id" ).toString() );
+//			if( classId != -1 ){
+//				String code = form.getCategoryClassCodes().get( classId );
+//				Integer variableId = form.getCategoryClassVariables().get( classId );
+//				
+//				String condition = form.getCategoryClassConditions().get( classId );
+//				
+//				CalculationStepCategoryClassParameters classParam = new CalculationStepCategoryClassParameters();
+//				
+//				classParam.setClassId( classId );
+//				classParam.setClassCode( code );
+//				classParam.setVariableId( variableId );
+//				classParam.setCondition( condition );
+//				
+//				String left = form.getCategoryClassLeftConditions().get( classId );
+//				String right = form.getCategoryClassRightConditions().get( classId );
+//				
+//				if( !(condition.equals("IS NULL") || condition.equals("IS NOT NULL")) ) {
+//					classParam.setLeft( left );
+//					if( condition.equals("BETWEEN") || condition.equals("NOT BETWEEN") ){
+//						classParam.setRight( right );
+//					}
+//				}
+//				
+//				classParams.add( classParam );
+//			}
+//		}
+//		params.setList( "categoryClassParameters", classParams );
 		
 		return varCreated;
 	}

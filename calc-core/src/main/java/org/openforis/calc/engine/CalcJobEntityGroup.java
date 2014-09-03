@@ -99,7 +99,7 @@ public class CalcJobEntityGroup {
 
 			// create a task for each step
 			for (CalculationStep step : this.calculationSteps.get(entityId)) {
-				CalculationStepRTask task = new CalculationStepRTask(step, job.getrEnvironment(), connection, dataFrame, plotAreaVariable);
+				CalculationStepRTask task = new CalculationStepRTask(step, job, connection, dataFrame, plotAreaVariable);
 				calculationStepTasks.add(task);
 
 				outputVariables.addAll(task.getOutputVariables());

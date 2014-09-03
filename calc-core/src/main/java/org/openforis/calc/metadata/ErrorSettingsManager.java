@@ -3,6 +3,10 @@
  */
 package org.openforis.calc.metadata;
 
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Set;
+
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceBackup;
 import org.openforis.calc.persistence.jooq.Sequences;
@@ -59,6 +63,32 @@ public class ErrorSettingsManager {
 	@Transactional
 	public void importBackup( Workspace workspace, WorkspaceBackup workspaceBackup ){
 		workspace.setErrorSettings( workspaceBackup.getWorkspace().getErrorSettings() );
+		save( workspace );
+	}
+	
+	@Transactional
+	public void removeVariable( Workspace workspace , Variable<?> variable ){
+		ErrorSettings errorSettings = workspace.getErrorSettings();
+		if( variable instanceof QuantitativeVariable ){
+			
+			errorSettings.removeParameters( variable.getId().longValue() );
+			
+		} else if( variable instanceof CategoricalVariable<?> ){
+			
+			Set<String> keys = errorSettings.getParameters().keys();
+			for ( String key : keys ){
+				
+				Collection<? extends Number> categoricalVariables = errorSettings.getCategoricalVariables( Long.parseLong(key) );
+				for ( Iterator<? extends Number> iterator = categoricalVariables.iterator() ; iterator.hasNext() ; ){
+					Long categoricalVariableId = iterator.next().longValue();
+					if( categoricalVariableId.equals( variable.getId().longValue() ) ){
+						iterator.remove();
+					}
+				}
+				
+			}
+		}
+		
 		save( workspace );
 	}
 }

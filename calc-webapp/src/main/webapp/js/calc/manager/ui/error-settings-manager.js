@@ -61,7 +61,7 @@ ErrorSettingsManager.prototype.init = function() {
 
 			}
 		}
-	});
+	} , true);
 }; 
 
 ErrorSettingsManager.prototype.initEventHandlers = function() {

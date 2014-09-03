@@ -97,9 +97,11 @@ public class CalculationStep extends CalculationStepBase {
 		if( this.getType() == Type.CATEGORY ){
 			ParameterMap map = getParameters();
 			List<ParameterMap> list = map.getList( "categoryClassParameters" );
-			for ( ParameterMap parameterMap : list) {
-				CalculationStepCategoryClassParameters s = new CalculationStepCategoryClassParameters( (ParameterHashMap) parameterMap );
-				params .add( s );
+			if( list != null){
+				for ( ParameterMap parameterMap : list) {
+					CalculationStepCategoryClassParameters s = new CalculationStepCategoryClassParameters( (ParameterHashMap) parameterMap );
+					params .add( s );
+				}
 			}
 		}
 		return params;

@@ -16,9 +16,9 @@ WorkspaceManager.prototype = (function(){
 	 * Returns the active workspace.
 	 * It gets loaded from the server if the instance variable is null
 	 */
-	var activeWorkspace = function(success) {
+	var activeWorkspace = function(success , forceReload) {
 		var $this = this;
-		if($this._activeWorkspace) {
+		if( $this._activeWorkspace && (!forceReload || forceReload === false) ) {
 			success( $this._activeWorkspace );
 		} else {
 			$.proxy(refreshActiveWorkspace, $this)( success );

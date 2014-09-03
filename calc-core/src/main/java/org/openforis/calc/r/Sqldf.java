@@ -8,15 +8,21 @@ package org.openforis.calc.r;
  * @author Mino Togna
  *
  */
-public class Sqldf extends RScript {
+public class Sqldf extends RVariable {
 	
 	Sqldf(RScript previous, String script) {
-		super(previous);
-		append("sqldf('");
-		append( RScript.NEW_LINE );
-		append( script );
-		append( RScript.NEW_LINE );
-		append("')");
+		super( previous , sqldfString(script) );
+	}
+
+	private static String sqldfString( String string ){
+		StringBuilder sb = new StringBuilder();
+		sb.append("sqldf('");
+		sb.append( RScript.NEW_LINE );
+		sb.append( string );
+		sb.append( RScript.NEW_LINE );
+		sb.append("')");
+		
+		return sb.toString();
 	}
 	
 }

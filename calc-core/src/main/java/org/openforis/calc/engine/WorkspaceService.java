@@ -307,9 +307,9 @@ public class WorkspaceService {
 
 	
 	@Transactional
-	public void deleteVariable(Variable<?> variable , boolean createView) {
+	public void deleteVariable( Variable<?> variable , boolean createView ){
 		Entity entity = variable.getEntity();
-		
+
 		if( variable.isUserDefined() ){
 
 			DataSchema schema = new Schemas( entity.getWorkspace() ).getDataSchema();
@@ -322,7 +322,7 @@ public class WorkspaceService {
 				Field<?> field = resultTable.field( variable.getOutputValueColumn() );
 				psql
 					.alterTable( resultTable )
-					.dropColumnIfExists( field )
+					.dropColumnIfExists( field , true )
 					.execute();
 				
 				if( variable instanceof MultiwayVariable ){
@@ -330,11 +330,21 @@ public class WorkspaceService {
 					Field<?> idField = resultTable.field( variable.getInputCategoryIdColumn() );
 					psql
 						.alterTable( resultTable )
-						.dropColumnIfExists( idField )
+						.dropColumnIfExists( idField , true )
 						.execute();
 				}
 				
-				metadataManager.deleteVariable(variable);
+				metadataManager.deleteVariable( variable );
+				errorSettingsManager.removeVariable( entity.getWorkspace() , variable);
+				// recreates views in the sampling unit hierarchy because other entity views might depend on that column
+				if( entity.isSamplingUnit() ){
+					entity.traverse( new Visitor() {
+						@Override
+						public void visit(Entity entity) {
+							entityDataViewDao.createOrUpdateView( entity );
+						}
+					});
+				}
 				
 				if( createView ){
 					entityDataViewDao.createOrUpdateView( entity );

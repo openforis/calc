@@ -305,10 +305,10 @@ button.settings:hover {
 */
 #calculation .calculation-steps-outer-container {
 	text-align: left;
-	max-width: 90%;
+	max-width: 100%;
 /* 	margin: 2% auto 2% auto; */
 	margin: 0px;
-	padding: 30px 10px 10px 80px;
+	padding: 30px 80px 10px 80px;
 }
 #calculation .calculation-steps-container {
 /* 	padding: 0px 15px; */
@@ -369,7 +369,11 @@ button.settings:hover {
 .button-bar-left , .button-bar-left .button-bar-inner {
 	height: 180px;
 }
-.button-bar-inner{
+.button-bar-inner {
+	padding: 10px;
+	background-color: #2c3e50;
+	position: fixed; 
+	width: 210px ;
 /* 	border-top: 1px solid #5b718c; */
 /* 	border-left: 1px solid #5b718c; */
 /* 	-webkit-box-shadow	: 1px 1px 0px 0px rgba(91,113,140,1); */
@@ -383,14 +387,6 @@ button.settings:hover {
 }
 .button-bar-right , .button-bar-right .button-bar-inner{
 	height: 90px;	
-}
-.button-bar-inner {
-/* 	margin: -0.2em; */
-	background-color: #2c3e50;
-	position: fixed; 
-	width: 210px ;
-/* 	height: 100%; */
-/* 	font-size: 2em; */
 }
 .button-bar-right .button-bar-inner {
 	width: 8em ;

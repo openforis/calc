@@ -50,14 +50,29 @@
 							<i class="icon-plus-sign-alt"></i>
 						</button>
 					</div>
+					<!-- category form -->
+					<div class="form-group output-category-form">
+						<label for="categoryId" class="col-md-2 control-label">Category</label>
+						<div class="col-md-9">
+							<select class="form-control" name="categoryId"></select>
+						</div>
+						<button name="add-category" type="button" class="calculation btn btn-info col-md-1" >
+							<i class="icon-plus-sign-alt"></i>
+						</button>
+					</div>
 					
+					<div class="form-group category-form">
+						<div class="col-md-12 form-container category-settings-form">
+						</div>
+					</div>
+					<!-- r script -->
 					<div class="form-group r-script-form">
 						<label class="col-md-2 control-label">Script</label>
 						<div class="col-md-10">
 							<textarea class="form-control" rows="13" name="script"></textarea>
 						</div>
 					</div>
-					
+					<!-- equation form -->
 					<div class="equation-form no-padding">
 						<div class="form-group">
 							<label class="col-md-2 control-label">Equation list</label>
@@ -73,21 +88,6 @@
 						</div>
 					</div>
 					
-					<div class="form-group output-category-form">
-						<label for="categoryId" class="col-md-2 control-label">Category</label>
-						<div class="col-md-9">
-							<select class="form-control" name="categoryId"></select>
-						</div>
-						<button name="add-category" type="button" class="calculation btn btn-info col-md-1" >
-							<i class="icon-plus-sign-alt"></i>
-						</button>
-					</div>
-					
-					<div class="form-group category-form">
-						<div class="col-md-12 form-container category-settings-form">
-						</div>
-					</div>
-					
 					<div class="form-group aggregate-form no-padding">
 						<div class="col-md-12 form-container">
 							<div class="form-group">
@@ -95,8 +95,8 @@
 								<div class="col-md-10 aggregate-functions-form">
 									<input type="hidden" name="aggregateParameters" value="aaaa">
 									<blockquote>
-										<small>Available only for those entities that won't be aggregated using the sampling design</small>
-										<small>Sum will be applied by default if none of the functions is selected</small>
+										<small><i>Available only for those entities that won't be aggregated using the sampling design</i></small>
+										<small><i>Sum will be applied by default if none of the functions is selected</i></small>
 										<button class="btn option-btn" name="sum" value="sum">sum</button>
 										<button class="btn option-btn" name="min" value="min">min</button>
 										<button class="btn option-btn" name="max" value="max">max</button>

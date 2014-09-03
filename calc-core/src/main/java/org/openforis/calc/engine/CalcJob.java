@@ -84,7 +84,7 @@ public class CalcJob extends Job {
 	
 	@Autowired
 	@JsonIgnore
-	private Psql psql;
+	Psql psql;
 	
 	private ProcessingChain processingChain;
 	

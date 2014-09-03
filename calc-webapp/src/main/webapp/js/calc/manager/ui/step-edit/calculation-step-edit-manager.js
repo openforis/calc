@@ -52,8 +52,8 @@ CalculationStepEditManager = function (container) {
 	
 	//initialized in the init method
 	//R script component manager
-	var rScriptField = this.$form.find("[name=script]");
-	this.$RScript = new RScript(rScriptField);
+	this.rScriptInputField = this.$form.find("[name=script]");
+	this.$RScript = new RScript( this.rScriptInputField );
 	
 	this.$addVariableButton = this.$form.find( "button[name='add-variable']" );	
 	this.addVariableModal 	= new AddVariableModal( this.$addVariableButton , this );
@@ -73,6 +73,7 @@ CalculationStepEditManager = function (container) {
  */
 CalculationStepEditManager.prototype.init = function( callback ) {
 	var $this = this;
+	
 	WorkspaceManager.getInstance().activeWorkspace( function(ws) {
 		// i can use workspace as instance because there aren't any changes here to it
 		$this.workspace = ws;
@@ -116,23 +117,6 @@ CalculationStepEditManager.prototype.init = function( callback ) {
 	});
 };
 
-/**
- * This functions disable the input fields when it's in the edit step (not add)
- */
-CalculationStepEditManager.prototype.lockForm = function() {
-	// disable all type buttons
-	UI.disable( this.rScriptButton.button );
-	UI.disable( this.equationButton.button );
-	UI.disable( this.categoryButton.button );
-	
-	UI.disable( this.addVariableModal.triggerButton );
-	UI.disable( this.addCategoryModal.triggerButton );
-	
-	this.$entityCombo.disable();
-	this.$variableCombo.disable();
-	this.categoryCombo.disable();
-};
-	
 /**
  * Init input fields event listeners
  */
@@ -180,29 +164,6 @@ CalculationStepEditManager.prototype.initEventHandlers = function() {
 		$this.aggregateForm.hide();
 	});
 
-	this.categoryButton.select( function() {
-		UI.disable( this.button );
-		$this.rScriptButton.deselect();
-		$this.equationButton.deselect();
-		
-		// hide variable from selection
-		$this.outputVariableForm.hide();
-		$this.outputCategoryForm.fadeIn();
-		
-		$this.typeInput.val( "CATEGORY" );
-		$this.categoryForm.fadeIn( 300 );
-	});
-	this.categoryButton.deselect( function() {
-		UI.enable( this.button );
-		
-		// show variable form section
-		$this.outputCategoryForm.hide();
-		$this.outputVariableForm.fadeIn();
-		
-		$this.typeInput.val( "" );
-		$this.categoryForm.hide();
-	});
-	
 	this.equationButton.select( function() {
 		UI.disable( this.button );
 		$this.rScriptButton.deselect();
@@ -220,6 +181,30 @@ CalculationStepEditManager.prototype.initEventHandlers = function() {
 		$this.aggregateForm.hide();
 	});
 	
+	this.categoryButton.select( function() {
+		UI.disable( this.button );
+		$this.rScriptButton.deselect();
+		$this.equationButton.deselect();
+		
+		// hide variable from selection
+		$this.outputVariableForm.hide();
+		$this.outputCategoryForm.fadeIn();
+		
+		$this.typeInput.val( "CATEGORY" );
+//		$this.categoryForm.fadeIn( 300 );
+		$this.rScriptForm.fadeIn( 300 );
+	});
+	this.categoryButton.deselect( function() {
+		UI.enable( this.button );
+		
+		// show variable form section
+		$this.outputCategoryForm.hide();
+		$this.outputVariableForm.fadeIn();
+		
+		$this.typeInput.val( "" );
+//		$this.categoryForm.hide();
+		$this.rScriptForm.hide();
+	});
 	
 	this.equationListCombo.change( $.proxy( this.equationListChange , $this ) ) ;
 	
@@ -255,6 +240,23 @@ CalculationStepEditManager.prototype.initEventHandlers = function() {
 		
 	});
 
+};
+
+/**
+ * This functions disable the input fields when it's in the edit step (not add)
+ */
+CalculationStepEditManager.prototype.lockForm = function() {
+	// disable all type buttons
+	UI.disable( this.rScriptButton.button );
+	UI.disable( this.equationButton.button );
+	UI.disable( this.categoryButton.button );
+	
+	UI.disable( this.addVariableModal.triggerButton );
+	UI.disable( this.addCategoryModal.triggerButton );
+	
+	this.$entityCombo.disable();
+	this.$variableCombo.disable();
+	this.categoryCombo.disable();
 };
 
 /**
@@ -356,7 +358,8 @@ CalculationStepEditManager.prototype.updateForm = function() {
 		
 		case "CATEGORY" :
 			this.categoryButton.select();
-			this.$RScript.$inputField.val( "" );
+			// # OLD procedure
+//			this.$RScript.$inputField.val( "" );
 			
 			this.categoryCombo.val( params.categoryId );
 			
@@ -528,23 +531,38 @@ CalculationStepEditManager.prototype.categoryChange = function( callback ){
 	if( categoryId ){
 		UI.lock();
 		CategoryManager.getInstance().getCategoryLevelClasses( categoryId, function(classes){
-			// add headers
-			var container = $( '<div class="row"></div>' );
-			var divCode = $( '<div class="col-md-2">Code</div>' );
-			container.append( divCode );
-			var divVar = $( '<div class="col-md-3">Variable</div>' );
-			container.append( divVar );
-			var divVarFiler = $( '<div class="col-md-6">Condition</div>' );
-			container.append( divVarFiler );
-			$this.categorySettingsForm.append( container );
 			
-			$.each( classes , function( i , cls ){
-				if( cls.code != '-1' ){
-					var option = new CategoryClassOption( cls , $this , $this.categorySettingsForm );
-//					$this.categorySettingsForm.append( option.container );
-					$this.categoryClassSettings[ cls.id ] = option;
-				}
-			});
+			// add headers
+//			OLD METHOD
+//			var container = $( '<div class="row"></div>' );
+//			var divCode = $( '<div class="col-md-2">Code</div>' );
+//			container.append( divCode );
+//			var divVar = $( '<div class="col-md-3">Variable</div>' );
+//			container.append( divVar );
+//			var divVarFiler = $( '<div class="col-md-6">Condition</div>' );
+//			container.append( divVarFiler );
+//			$this.categorySettingsForm.append( container );
+			
+			var script = $this.rScriptInputField.val();
+			if( Utils.isBlankString(script) ){
+				var comment = "#"; 
+				$.each( classes , function( i , cls ){
+					comment += " '" + cls.code + "' " + cls.caption;
+					if( i!= classes.length-1 ){
+						comment+=",";
+					}
+				});
+				
+				$this.rScriptInputField.val( comment );
+			}
+			
+//				OLD METHOD
+//			$.each( classes , function( i , cls ){
+//				if( cls.code != '-1' ){
+//					var option = new CategoryClassOption( cls , $this , $this.categorySettingsForm );
+//					$this.categoryClassSettings[ cls.id ] = option;
+//				}
+//			});
 			UI.unlock();
 			
 			if( Utils.isFunction( callback) ){

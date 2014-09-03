@@ -14,3 +14,11 @@ Utils.applyFunction = function( functx , params ) {
 		functx( params );
 	}
 };
+
+Utils.isBlankString = function( string ){
+	if( string ){
+		return $.trim( string ) == "";
+	}
+	
+	return true;
+}
