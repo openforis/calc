@@ -59,6 +59,20 @@ StringUtils.startsWith = function (str, value, caseSensitive) {
 };
 
 /**
+ * Returns true if the string contains the value
+ * Default is case insensitive
+ */
+StringUtils.contains = function( string , value , caseSensitive ){
+	if ( !caseSensitive ){
+		string = string.toLowerCase();
+		value = value.toLowerCase();
+	}
+	var result = string.indexOf(value) >= 0;
+	return result;
+};
+
+
+/**
  * Encodes a string into HTML
  * 
  * @param text

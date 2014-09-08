@@ -9,6 +9,9 @@ ErrorSettingsManager = function( container ) {
 	// placeholder variable for the workspace
 	this.workspace = null;
 	
+	// r editor
+	this.rEditor					= new REditor( "error-r-script" );
+	
 	this.formContainer				= this.container.find( ".form" );
 	
 	// variable selection container

@@ -23,6 +23,12 @@
 	<link rel="stylesheet" href="css/bootstrap-combobox.css">
 	<link rel="stylesheet" href="css/calc-bootstrap-combobox.css">
 	
+	<link rel="stylesheet" href="css/codemirror/codemirror.css">
+<!-- 	<link rel="stylesheet" href="css/codemirror/theme/neo.css"> -->
+	<link rel="stylesheet" href="css/codemirror/theme/elegant.css">
+	<link rel="stylesheet" href="js/codemirror/addon/hint/show-hint.css">
+	<link rel="stylesheet" href="css/calc/r-editor.css">
+	
 	<!-- ==== Custom style ==== -->
 	<link rel="stylesheet" href="css/calc.css">
 
@@ -429,10 +435,21 @@
 	<!-- d3 -->
 <!-- 	<script src="js/d3/d3.v3.min.js"></script> -->
 	<script src="js/d3/d3.v3.js"></script>
-	
-	<!-- chart jquery plugin -->
-<!-- 	<script src="js/highcharts.js"></script> -->
-	
+
+	<!-- codemirror -->
+	<script src="./js/codemirror/codemirror.js"></script>
+	<script src="./js/codemirror/mode/r/r.js"></script>
+	<script src="./js/codemirror/mode/javascript/javascript.js"></script>
+	<script src="./js/codemirror/addon/selection/active-line.js"></script>
+	<script src="./js/codemirror/addon/edit/matchbrackets.js"></script>
+  	<script src="./js/codemirror/addon/fold/foldcode.js"></script>
+  	<script src="./js/codemirror/addon/fold/foldgutter.js"></script>
+  	<script src="./js/codemirror/addon/fold/brace-fold.js"></script>
+  	<script src="./js/codemirror/addon/fold/xml-fold.js"></script>
+  	<script src="./js/codemirror/addon/fold/markdown-fold.js"></script>
+  	<script src="./js/codemirror/addon/fold/comment-fold.js"></script>
+  	<script src="./js/codemirror/addon/hint/show-hint.js"></script>
+  	
 	<!-- utils -->
 	<script src="./js/calc/utils/utils.js"></script>
 	<script src="./js/calc/utils/array-utils.js"></script>
@@ -444,6 +461,7 @@
 	<script src="./js/calc/calc-ui-form.js"></script>
 	<script src="./js/calc/calc-autocomplete.js"></script>
 	<script src="./js/calc/r-script.js"></script>
+	<script src="./js/calc/ui/r-editor.js"></script>
 	
 	<!-- ui components -->
 	<script src="./js/calc/ui/jquery-ext.js"></script>

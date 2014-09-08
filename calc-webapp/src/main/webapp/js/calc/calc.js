@@ -345,19 +345,11 @@ $(document).ready(function() {
 			JobManager.getInstance().checkJobStatus();
 		});
 	
-//		console.log( location );
-//		var section = location.hash.replace( "#" , "" );
-//		var indexOfQuestionMark = section.indexOf("?");
-//		if( indexOfQuestionMark > 0 ){
-//			section = section.substring( 0 , indexOfQuestionMark );
-//		}
-//		console.log( section );
-//		var btn = $( "[href='"+section+"']" );
-//		console.log( btn );
 		
 		Calc.pushToHistory( "home" );
 		
-//		console.log( $.url(location.) )
+		// init r editor
+		REditor.init();
 	};
 	
 	init();
