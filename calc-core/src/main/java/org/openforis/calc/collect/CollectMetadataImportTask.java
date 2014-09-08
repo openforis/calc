@@ -44,7 +44,6 @@ import org.openforis.collect.relational.model.RelationalSchema;
 import org.openforis.collect.relational.util.CodeListTables;
 import org.openforis.idm.metamodel.AttributeDefinition;
 import org.openforis.idm.metamodel.BooleanAttributeDefinition;
-import org.openforis.idm.metamodel.CalculatedAttributeDefinition;
 import org.openforis.idm.metamodel.CodeAttributeDefinition;
 import org.openforis.idm.metamodel.CodeList;
 import org.openforis.idm.metamodel.CodeListLabel.Type;
@@ -394,16 +393,16 @@ public class CollectMetadataImportTask extends Task {
 			v = new QuantitativeVariable();
 			v.setScale( Scale.RATIO );
 			//TODO set unit...
-		} else if ( attrDefn instanceof CalculatedAttributeDefinition) {
-			CalculatedAttributeDefinition calculatedAttrDefn = (CalculatedAttributeDefinition) attrDefn;
-			switch ( calculatedAttrDefn.getType() ) {
-			case INTEGER:
-			case REAL:
-				v = new QuantitativeVariable();
-				v.setScale( Scale.RATIO );
-				break;
-			default:
-			}
+//		} else if ( attrDefn instanceof CalculatedAttributeDefinition) {
+//			CalculatedAttributeDefinition calculatedAttrDefn = (CalculatedAttributeDefinition) attrDefn;
+//			switch ( calculatedAttrDefn.getType() ) {
+//			case INTEGER:
+//			case REAL:
+//				v = new QuantitativeVariable();
+//				v.setScale( Scale.RATIO );
+//				break;
+//			default:
+//			}
 		} else if ( attrDefn instanceof TaxonAttributeDefinition &&
 				(columnNodeDefnName.equals(TaxonAttributeDefinition.CODE_FIELD_NAME) ) ) {
 			v = new MultiwayVariable();
