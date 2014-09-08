@@ -12,6 +12,7 @@ import org.jooq.Table;
 import org.jooq.Update;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DynamicTable;
+import org.jooq.impl.SQLDataType;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.AoiHierarchy;
@@ -156,7 +157,7 @@ public final class CalculateExpansionFactorsTask extends Task {
 		
 		
 		if( stratumField != null ){
-			selectWeight.addSelect( stratumField );
+			selectWeight.addSelect( stratumField.cast(SQLDataType.INTEGER).as(stratumField.getName()) );
 			selectWeight.addGroupBy( stratumField );
 		} 
 		
@@ -248,7 +249,8 @@ public final class CalculateExpansionFactorsTask extends Task {
 			ColumnJoin stratumJoin = getSamplingDesign().getStratumJoin();
 			
 			Field<Integer> stratumField = (Field<Integer>) dataView.field(stratumJoin.getColumn());
-			select.addSelect( stratumField.as(expf.STRATUM.getName()) );
+//			select.addSelect( stratumField.as(expf.STRATUM.getName()) );
+			select.addSelect( stratumField.cast(SQLDataType.INTEGER).as(expf.STRATUM.getName()) );
 			select.addGroupBy( stratumField );
 		}
 		
@@ -321,7 +323,7 @@ public final class CalculateExpansionFactorsTask extends Task {
 			ColumnJoin stratumJoin = getSamplingDesign().getStratumJoin();
 			
 			Field<Integer> stratumField = phase1Table.getIntegerField(stratumJoin.getColumn());
-			select.addSelect( stratumField.as(expf.STRATUM.getName()) );
+			select.addSelect( stratumField.cast(SQLDataType.INTEGER).as(expf.STRATUM.getName()) );
 			select.addGroupBy( stratumField );
 		}
 		

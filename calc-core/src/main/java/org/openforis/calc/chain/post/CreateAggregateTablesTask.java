@@ -130,7 +130,7 @@ public final class CreateAggregateTablesTask extends Task {
 			}
 			Field<BigDecimal> weightField = sourceTable.getWeightField();
 			if( weightField != null ){
-				select.addSelect( weightField.mul( expfTable.EXPF ).sum().as(weightField.getName()) );
+				select.addSelect( weightField.mul( expfTable.EXPF ).sum().as( weightField.getName()) );
 			}
 			
 			// aggregate count field (used by mondrian)

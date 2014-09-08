@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+ <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- prevent caching -->
+<!-- 	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" /> -->
+	<meta http-equiv="Pragma" content="no-cache"> 
+    <meta http-equiv="Expires" content="-1"> 
+    <meta http-equiv="cache-control" content="no-store">
+	
+    <title>Open Foris Calc</title>
+
+    <!-- Bootstrap core CSS -->
+   	<link rel="stylesheet" href="css/bootstrap.css" media="screen">
+	<link rel="stylesheet" href="css/bootswatch.min.css">
+	<link rel="stylesheet" href="css/font-awesome-3.2.1.min.css">
+	<link rel="stylesheet" href="css/font-awesome-4.0.3.min.css">
+	<link rel="stylesheet" href="css/twitter-typeahead.css">
+	<link rel="stylesheet" href="css/bootstrap-combobox.css">
+	<link rel="stylesheet" href="css/calc-bootstrap-combobox.css">
+	
+	<link rel="stylesheet" href="css/codemirror/codemirror.css">
+<!-- 	<link rel="stylesheet" href="css/codemirror/theme/neo.css"> -->
+<!-- 	<link rel="stylesheet" href="css/codemirror/theme/eclipse.css"> -->
+	<link rel="stylesheet" href="css/codemirror/theme/elegant.css">
+	<link rel="stylesheet" href="js/codemirror/addon/hint/show-hint.css">
+	
+	<link rel="stylesheet" href="css/calc/r-editor.css">
+	
+	<!-- ==== Custom style ==== -->
+	<link rel="stylesheet" href="css/calc.css">
+
+	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	<!--[if lt IE 9]>
+      <script src="js/html5shiv.js"></script>
+      <script src="js/respond.min.js"></script>
+    <![endif]-->	
+  </head>
+<body>
+	
+	<div class="row width100 no-margin no-padding height100" style="padding-top: 20px; overflow: hidden;">
+		<div class="col-md-12 no-margin no-padding height10">
+			<button id="btn" value="Show text">AAAAAAAAAAAAAAAAAAAAAAA</button>
+		</div>
+		<div class="col-md-12 no-margin no-padding height90">
+			<div class="col-md-12 height10">Error script</div>
+			<div class="col-md-12 height90">
+				<textarea id="error-r-script" style="width: 100%; height: 100%;"></textarea>
+			</div>
+		</div>
+	</div>
+	
+	
+	
+<!-- ===================================================== -->
+    <!-- =============== JavaScript Libraries ================ -->
+    <!-- ===================================================== -->
+	
+	<!-- JQuery -->
+	<script src="./js/jquery/jquery-2.1.0.min.js"></script>
+<!-- 	<script src="./js/jquery/jquery.js"></script> -->
+	<script src="./js/jquery/plugin/jquery.form.min.js"></script>	
+	<script src="./js/jquery/plugin/jquery.easing.js"></script>	
+	<script src="./js/jquery/plugin/jquery-ui/jquery.ui.core.min.js"></script>
+	<script src="./js/jquery/plugin/jquery-ui/jquery.ui.widget.min.js"></script>
+	<script src="./js/jquery/plugin/jquery-ui/jquery.ui.mouse.min.js"></script>
+	<script src="./js/jquery/plugin/jquery-ui/jquery.ui.button.min.js"></script>
+	<script src="./js/jquery/plugin/jquery-ui/jquery.ui.effect.min.js"></script>
+	<script src="./js/jquery/plugin/jquery-ui/jquery.ui.draggable.min.js"></script>
+	<script src="./js/jquery/plugin/jquery-ui/jquery.ui.droppable.min.js"></script>
+	<script src="./js/jquery/plugin/jquery-ui/jquery.ui.sortable.min.js"></script>
+	<!-- Url parser jqeury plugin -->
+	<script src="./js/jquery/plugin/purl.js"></script>
+	<script src="./js/jquery/plugin/jquery.caret-1.5.0.min.js"></script>
+	<script src="./js/jquery/plugin/typeahead.min.js"></script>
+	<!-- caret position jquery plugin -->
+	<script src="./js/jquery/plugin/caretpixelpos/cursor_position.js"></script>
+	<script src="./js/jquery/plugin/caretpixelpos/jquery.caretpixelpos.js"></script>
+	<script src="./js/jquery/plugin/caretpixelpos/selection_range.js"></script>
+	<script src="./js/jquery/plugin/caretpixelpos/string_splitter.js"></script>
+	
+	<!-- Bootstrap -->
+	<script src="./js/bootstrap/bootstrap.min.js"></script>
+	<script src="./js/bootstrap/dropdown.js"></script>
+	<script src="./js/bootstrap/modal.js"></script>
+	<script src="./js/bootstrap/tooltip.js"></script>
+	<script src="./js/bootstrap/collapse.js"></script>
+	<script src="./js/bootstrap/transition.js"></script>
+	<script src="./js/bootstrap/popover.js"></script>
+	<script src="./js/bootstrap/plugin/bootstrap-combobox.js"></script>
+	
+	<!-- d3 -->
+<!-- 	<script src="js/d3/d3.v3.min.js"></script> -->
+	<script src="js/d3/d3.v3.js"></script>
+
+	
+	<!-- utils -->
+	<script src="./js/calc/utils/utils.js"></script>
+	<script src="./js/calc/utils/array-utils.js"></script>
+	
+	<!-- ==== Custom javascript -->
+	<script src="./js/calc/calc.js"></script>
+	<script src="./js/calc/calc-stringutils.js"></script>
+	<script src="./js/calc/calc-ui.js"></script>
+	<script src="./js/calc/calc-ui-form.js"></script>
+	<script src="./js/calc/calc-autocomplete.js"></script>
+	<script src="./js/calc/r-script.js"></script>
+	
+	<!-- ui components -->
+	<script src="./js/calc/ui/jquery-ext.js"></script>
+	<script src="./js/calc/ui/progress-bar.js"></script>
+	<script src="./js/calc/ui/option-button.js"></script>
+	<script src="./js/calc/ui/job-status.js"></script>
+	<script src="./js/calc/ui/variable-filters.js"></script>
+	<script src="./js/calc/ui/form-file-upload.js"></script>
+	
+	<!-- model objects -->
+	<script src="./js/calc/model/workspace.js"></script>
+	<script src="./js/calc/model/entity.js"></script>
+	
+	<!-- data managers -->
+	<script src="./js/calc/manager/data/workspace-manager.js"></script>
+	<script src="./js/calc/manager/data/variable-manager.js"></script>
+	<script src="./js/calc/manager/data/calculation-step-manager.js"></script>
+	<script src="./js/calc/manager/data/job-manager.js"></script>
+	<script src="./js/calc/manager/data/category-manager.js"></script>
+	
+	<!-- data manipulation managers -->
+	<script src="./js/calc/manager/data/data-visualisation-manager.js"></script>
+	<script src="./js/calc/manager/data/data-visualisation-options.js"></script>
+	<script src="./js/calc/manager/data/data-table.js"></script>
+	<script src="./js/calc/manager/data/scatter-plot.js"></script>
+	<script src="./js/calc/manager/data/data-view-provider.js"></script>
+	<script src="./js/calc/manager/data/table-data-provider.js"></script>
+	<script src="./js/calc/manager/data/calculation-step-test-data-provider.js"></script>
+	<script src="./js/calc/manager/data/csv-table-import-manager.js"></script>
+	<script src="./js/calc/manager/data/table-join.js"></script>
+	<script src="./js/calc/manager/data/table-column-selector.js"></script>
+	
+	<!-- ui managers -->
+	<script src="./js/calc/manager/ui/home-calculation-manager.js"></script>
+	<script src="./js/calc/manager/ui/collect-sync-manager.js"></script>
+	<script src="./js/calc/manager/ui/step-edit/calculation-step-edit-manager.js"></script>
+	<script src="./js/calc/manager/ui/step-edit/add-variable-modal.js"></script>
+	<script src="./js/calc/manager/ui/step-edit/add-category-modal.js"></script>
+	<script src="./js/calc/manager/ui/step-edit/category-class-option.js"></script>
+	<script src="./js/calc/manager/ui/calculation-step-exec-manager.js"></script>
+	<script src="./js/calc/manager/ui/calculation-step-results-manager.js"></script>
+	<script src="./js/calc/manager/ui/home-data-manager.js"></script>
+<!-- 	<script src="./js/calc/manager/ui/error-calculation-manager.js"></script> -->
+	<script src="./js/calc/manager/ui/error-settings-manager.js"></script>
+	<script src="./js/calc/manager/ui/equation-list-manager.js"></script>
+	
+	
+	<!-- settings  -->
+	<script src="./js/calc/manager/ui/sampling-design-manager.js"></script>
+	<script src="./js/calc/manager/ui/aggregation-manager.js"></script>
+	<script src="./js/calc/manager/ui/aoi-manager.js"></script>
+	<script src="./js/calc/manager/ui/stratum-manager.js"></script>
+	<script src="./js/calc/manager/ui/phase1-manager.js"></script>
+	<script src="./js/calc/manager/ui/cluster-manager.js"></script>
+	<script src="./js/calc/manager/ui/aoi-join-manager.js"></script>
+	<script src="./js/calc/manager/ui/workspace-settings-manager.js"></script>
+	
+	<!-- codemirror -->
+	<script src="./js/codemirror/codemirror.js"></script>
+	<script src="./js/codemirror/mode/r/r.js"></script>
+	<script src="./js/codemirror/mode/javascript/javascript.js"></script>
+	<script src="./js/codemirror/addon/selection/active-line.js"></script>
+	<script src="./js/codemirror/addon/edit/matchbrackets.js"></script>
+  	<script src="./js/codemirror/addon/fold/foldcode.js"></script>
+  	<script src="./js/codemirror/addon/fold/foldgutter.js"></script>
+  	<script src="./js/codemirror/addon/fold/brace-fold.js"></script>
+  	<script src="./js/codemirror/addon/fold/xml-fold.js"></script>
+  	<script src="./js/codemirror/addon/fold/markdown-fold.js"></script>
+  	<script src="./js/codemirror/addon/fold/comment-fold.js"></script>
+  	<script src="./js/codemirror/addon/hint/show-hint.js"></script>
+  	
+	<script src="./js/calc/ui/r-editor.js"></script>
+	
+	
+	<script type="text/javascript">
+	REditor.init();
+		var rEditor	= new REditor("error-r-script");
+		$("#btn").click(function(e){
+			console.log( rEditor.getText() );
+		});
+	</script>
+</body>
+</html>
