@@ -78,7 +78,7 @@ public class CollectDataImportTask extends Task {
 		BackupDataExtractor recordExtractor = null;
 		try {
 			ZipFile zipFile = new ZipFile(dataFile);
-			recordExtractor = new BackupDataExtractor(survey, zipFile, step);
+			recordExtractor = new BackupDataExtractor(survey, zipFile, step, false);
 			recordExtractor.init();
 			ParseRecordResult parseRecordResult = recordExtractor.nextRecord();
 			while ( parseRecordResult != null ) {
