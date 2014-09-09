@@ -27,28 +27,33 @@ REditor.prototype.init = function(){
 	
 	
 	CodeMirror.hint.r = function(cm) {
-		var inner = { from: cm.getCursor(), to: cm.getCursor(), list: [] };
-		var hints = $this.getHints();
-		
-		var doc 	= cm.getDoc();
-	    var POS 	= doc.getCursor();
-	    var mode 	= CodeMirror.innerMode(cm.getMode(), cm.getTokenAt(POS).state).mode.name;
-	    var line 	= doc.getLine( POS.line )
-		line		= StringUtils.getLastWord( line , [" ", "\n"], POS.ch ).trim();
-		
-		if( Utils.isBlankString(line) ){
-			inner.list = inner.list.concat( hints );
+		var hints 	= $this.getHints();
+	    var cur 	= cm.getCursor();
+	    
+	    var token 	= cm.getTokenAt(cur), start, end, search;
+	    if (token.string.match(/^[.\w@]\w*$/)) {
+	        search = token.string;
+	        start = token.start;
+	        end = token.end;
+	    } else {
+	        start = end = cur.ch;
+	        search = "";
+	    }
+	    
+	    var result = [];
+		if( StringUtils.isBlank(search) ){
+			result = hints ;
 		} else {
 			var list = [];
 			for( var i in hints ){
 				var hint =  hints[ i ];
-				if( StringUtils.contains( hint , line ) ){
+				if( StringUtils.contains( hint , search ) ){
 					list.push( hint );
 				}
 			}
-			inner.list = inner.list.concat( list );
+			result = list ;
 		}
-		return inner;
+		return {list: result, from: CodeMirror.Pos(cur.line, start), to: CodeMirror.Pos(cur.line, end)};
 	};
 	
 };
