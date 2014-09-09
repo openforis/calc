@@ -243,6 +243,7 @@ public class VariableManager {
 		// replace variable ids in error settings
 		ErrorSettings errorSettings 	= workspaceToImport.getErrorSettings();
 		ErrorSettings newErrorSettings 	= new ErrorSettings();
+		newErrorSettings.setScript( errorSettings.getScript() );
 		if( errorSettings != null ){
 			for ( String key : errorSettings.getParameters().keys() ) {
 				long variableId 	= Long.parseLong(key);

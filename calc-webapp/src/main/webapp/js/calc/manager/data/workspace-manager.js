@@ -157,11 +157,11 @@ WorkspaceManager.prototype = (function(){
 		});
 	};
 	
-	var activeWorkspaceAddQuantitativeVariable = function(variable, success, error, complete) {
+	var activeWorkspaceAddVariable = function(variable, success, error, complete) {
 		var $this = this;
 		
 		$.ajax({
-			url:  "rest/workspace/active/entity/" + variable.entityId + "/variable/quantitative.json",
+			url:  "rest/workspace/active/entity/" + variable.entityId + "/variable.json",
 			dataType: "json",
 			type: "POST",
 			data: variable
@@ -381,22 +381,7 @@ WorkspaceManager.prototype = (function(){
 	var setActiveWorkspace = function( data, callback ) {
 		this._activeWorkspace = data ? new Workspace( data ) : null;
 		
-		// load calculation steps for active workspace
-//		if( this._activeWorkspace && this._activeWorkspace.getDefaultProcessingChain() ) {
-//			var chain = this._activeWorkspace.getDefaultProcessingChain();
-//			CalculationStepManager.getInstance().loadAll(function(response){
-//				console.log( chain );
-//				
-//				if( callback ) {
-//					callback( this._activeWorkspace );
-//				}
-//			});
-//		} else {
-			if( callback ) {
-				callback( this._activeWorkspace );
-			}
-//		}
-		
+		Utils.applyFunction( callback, this._activeWorkspace );
 	};
 	
 	return {
@@ -414,7 +399,7 @@ WorkspaceManager.prototype = (function(){
 		,
 		activeWorkspaceDeleteVariablePerHa : activeWorkspaceDeleteVariablePerHa
 		,
-		activeWorkspaceAddQuantitativeVariable : activeWorkspaceAddQuantitativeVariable
+		activeWorkspaceAddVariable : activeWorkspaceAddVariable
 		,
 		activeWorkspaceSetEntityPlotArea : activeWorkspaceSetEntityPlotArea
 		,
@@ -467,6 +452,7 @@ WorkspaceManager.prototype.setErrorSettings = function( data , callback ) {
 	});
 	UI.unlock();
 };
+
 
 // singleton instance of workspace manager
 var _workspaceManager = null;

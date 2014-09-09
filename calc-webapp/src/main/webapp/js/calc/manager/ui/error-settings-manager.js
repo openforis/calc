@@ -23,8 +23,11 @@ ErrorSettingsManager = function( container ) {
 	// list of option buttons
 	this.aoiButtons = [];
 	this.categoryButtons = [];
+	
 	// error settings model object
-	this.errorSettings 	= {};
+	this.errorSettings 				= {};
+	this.errorSettings.parameters 	= {};
+	this.errorSettings.script	 	= "";
 	
 	this.saveBtn 		= this.container.find( ".save-btn button" );
 	
@@ -64,6 +67,15 @@ ErrorSettingsManager.prototype.init = function() {
 
 			}
 		}
+		
+		var errorScript	= $this.workspace.errorSettings.script;
+		if( StringUtils.isBlank(errorScript) ){
+			//TODO add default error functions
+		} else {
+			$this.rEditor.setValue( errorScript );
+		}
+		
+		
 	} , true);
 }; 
 
@@ -71,12 +83,17 @@ ErrorSettingsManager.prototype.initEventHandlers = function() {
 	var $this = this;
 	
 	this.saveBtn.click( function(e){
-		e.preventDefault();
-		UI.lock();
+//		e.preventDefault();
+//		UI.lock();
+		
+		$this.errorSettings.script	= $this.rEditor.getValue();
 		var data = JSON.stringify( $this.errorSettings );
 		WorkspaceManager.getInstance().setErrorSettings( data, function(ws){
 			$this.workspace = ws;
-			UI.unlock();
+			
+			UI.showSuccess( "Saved!", true );
+			
+//			UI.unlock();
 		});
 		
 	});
@@ -86,7 +103,7 @@ ErrorSettingsManager.prototype.showQuantity = function() {
 	var $this = this;
 	var container = $( '<div class="height95 option col-md-12" style="overflow: auto;"></div>' );
 	$this.quantity.append( container );
-	UI.lock();
+//	UI.lock();
 	
 	var vars = [];
 	CalculationStepManager.getInstance().loadAll( function(steps) {
@@ -123,7 +140,7 @@ ErrorSettingsManager.prototype.showQuantity = function() {
 					
 				}
 			}
-			UI.unlock();
+//			UI.unlock();
 			$this.quantity.fadeIn();
 	});
 }; 
@@ -223,7 +240,7 @@ ErrorSettingsManager.prototype.selectAoi = function( variableId, aoiId ){
 	aoiSettings.push( aoiId );
 };
 ErrorSettingsManager.prototype.deselectAoi = function( variableId, aoiId ){
-	ArrayUtils.removeItem( this.errorSettings[ variableId ].aois , aoiId );
+	ArrayUtils.removeItem( this.errorSettings.parameters[ variableId ].aois , aoiId );
 };
 
 /**
@@ -242,15 +259,15 @@ ErrorSettingsManager.prototype.selectCategory = function( variableId, categoryId
 	categorySettings.push( categoryId );
 };
 ErrorSettingsManager.prototype.deselectCategory = function( variableId, categoryId ){
-	ArrayUtils.removeItem( this.errorSettings[ variableId ].categories , categoryId );
+	ArrayUtils.removeItem( this.errorSettings.parameters[ variableId ].categories , categoryId );
 };
 
 ErrorSettingsManager.prototype.getVariableErrorSettings = function( variableId ){
-	var settings = this.errorSettings[ variableId ];
+	var settings = this.errorSettings.parameters[ variableId ];
 	if( settings ){
 	} else {
 		settings = {};
-		this.errorSettings[ variableId ] = settings;
+		this.errorSettings.parameters[ variableId ] = settings;
 	}
 	
 	return settings;

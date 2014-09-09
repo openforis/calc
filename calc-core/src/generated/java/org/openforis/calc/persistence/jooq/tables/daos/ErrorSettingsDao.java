@@ -62,4 +62,11 @@ public class ErrorSettingsDao extends org.jooq.impl.DAOImpl<org.openforis.calc.p
 	public java.util.List<ErrorSettings> fetchByParameters(org.openforis.calc.engine.ParameterMap... values) {
 		return fetch(org.openforis.calc.persistence.jooq.tables.ErrorSettingsTable.ERROR_SETTINGS.PARAMETERS, values);
 	}
+
+	/**
+	 * Fetch records that have <code>script IN (values)</code>
+	 */
+	public java.util.List<ErrorSettings> fetchByScript(java.lang.String... values) {
+		return fetch(org.openforis.calc.persistence.jooq.tables.ErrorSettingsTable.ERROR_SETTINGS.SCRIPT, values);
+	}
 }

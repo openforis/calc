@@ -11,22 +11,25 @@ package org.openforis.calc.persistence.jooq.tables.pojos;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ErrorSettingsBase implements java.io.Serializable {
 
-	private static final long serialVersionUID = -1916369862;
+	private static final long serialVersionUID = 751563434;
 
 	private java.lang.Long                         id;
 	private java.lang.Long                         workspaceId;
 	private org.openforis.calc.engine.ParameterMap parameters;
+	private java.lang.String                       script;
 
 	public ErrorSettingsBase() {}
 
 	public ErrorSettingsBase(
 		java.lang.Long                         id,
 		java.lang.Long                         workspaceId,
-		org.openforis.calc.engine.ParameterMap parameters
+		org.openforis.calc.engine.ParameterMap parameters,
+		java.lang.String                       script
 	) {
 		this.id = id;
 		this.workspaceId = workspaceId;
 		this.parameters = parameters;
+		this.script = script;
 	}
 
 	public java.lang.Long getId() {
@@ -51,5 +54,13 @@ public class ErrorSettingsBase implements java.io.Serializable {
 
 	public void setParameters(org.openforis.calc.engine.ParameterMap parameters) {
 		this.parameters = parameters;
+	}
+
+	public java.lang.String getScript() {
+		return this.script;
+	}
+
+	public void setScript(java.lang.String script) {
+		this.script = script;
 	}
 }

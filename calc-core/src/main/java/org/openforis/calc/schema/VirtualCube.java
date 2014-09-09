@@ -103,7 +103,7 @@ public class VirtualCube {
 			addVirtualMeasure( measure, true );
 		}
 		// add virtual area measure
-		addVirtualMeasure(areaMeasure, false);
+		addVirtualMeasure(areaMeasure, true );
 	}
 
 	private void addVirtualMeasure(Measure measure, boolean visible) {

@@ -278,7 +278,7 @@ public class WorkspaceService {
 			Field<?> field = resultTable.field( variable.getOutputValueColumn() );
 			psql
 				.alterTable( resultTable )
-				.dropColumnIfExists( field )
+				.dropColumnIfExists( field , true )
 				.execute();
 			psql
 				.alterTable( resultTable )
@@ -290,7 +290,7 @@ public class WorkspaceService {
 				Field<?> idField = resultTable.field( variable.getInputCategoryIdColumn() );
 				psql
 					.alterTable( resultTable )
-					.dropColumnIfExists( idField )
+					.dropColumnIfExists( idField , true )
 					.execute();
 				psql
 					.alterTable( resultTable )
@@ -298,7 +298,17 @@ public class WorkspaceService {
 					.execute();
 			}
 			
-			entityDataViewDao.createOrUpdateView( entity );
+			if( entity.isSamplingUnit() ){
+				entity.traverse( new Visitor() {
+					@Override
+					public void visit(Entity entity) {
+						entityDataViewDao.createOrUpdateView( entity );
+					}
+				});
+			} else {
+				entityDataViewDao.createOrUpdateView( entity );
+			}
+			 
 		} else if( !exists ) {
 			resetResults( entity );
 		}

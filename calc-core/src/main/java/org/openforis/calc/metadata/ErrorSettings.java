@@ -33,8 +33,9 @@ public class ErrorSettings extends ErrorSettingsBase {
 
 	public ErrorSettings( String params ){
 		ParameterMapConverter c = new ParameterMapConverter();
-		ParameterMap parameters = c.from(params);
-		setParameters( parameters );
+		ParameterMap errorSettingsMap = c.from(params);
+		setParameters( errorSettingsMap.getMap("parameters") );
+		setScript( errorSettingsMap.getString("script") );
 	}
 
 	public Workspace getWorkspace(){

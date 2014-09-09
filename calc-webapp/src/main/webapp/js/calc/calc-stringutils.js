@@ -1,3 +1,10 @@
+/**
+ * String utility functions
+ * 
+ * @author Mino Togna
+ * @author S. Ricci
+ */
+
 StringUtils = function() {};
 
 /**
@@ -90,4 +97,26 @@ StringUtils.encodeHtml = function (text) {
  */
 StringUtils.decodeHtml = function (html) {
 	return $('<div/>').html(html).text();
+};
+
+
+/**
+ * Returns true if the string passed as argument is blank
+ * @param string
+ * @returns {Boolean}
+ */
+StringUtils.isBlank = function( string ){
+	if( string ){
+		return $.trim( string ) == "";
+	}
+	return true;
+};
+
+/**
+ * Returns false if the string passed as argument is blank
+ * @param string
+ * @returns
+ */
+StringUtils.isNotBlank = function( string ){
+	return ! StringUtils.isBlank( string );
 };

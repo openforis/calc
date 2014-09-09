@@ -56,6 +56,9 @@ public class CalculateErrorTask extends CalcRTask {
 	}
 
 	void initScript() {
+		
+//		boolean stratified = this.workspace.hasStratifiedSamplingDesign();
+		
 		QuantitativeVariable quantitativeVariable = errorTable.getQuantitativeVariable();
 //		Aoi aoi = errorTable.getAoi();
 		CategoricalVariable<?> categoricalVariable = errorTable.getCategoricalVariable();
@@ -65,11 +68,13 @@ public class CalculateErrorTask extends CalcRTask {
 		addScript( r().rScript( "# ==================== " + name + " ====================" ) );
 		
 		DataSchema schema = (DataSchema) this.errorTable.getSchema();
+//		if( stratified ){
 		// add read data scripts
 		// strata
 		Select<?> selectStrata = getStratumSelect( aoi, schema );
 		RVariable strata = r().variable("strata");
-		addScript( r().setValue( strata , r().dbGetQuery(connection, selectStrata) ) );
+		addScript( r().setValue( strata , r().dbGetQuery(connection, selectStrata) ) );			
+//		}
 		
 		Select<?> selectPlots = getPlotSelect( aoi, schema, this.errorTable.getCategoricalVariable() );
 		// plots
@@ -114,11 +119,18 @@ public class CalculateErrorTask extends CalcRTask {
 			sb.append("dataClone <-  sqldf( select );");
 			sb.append( NEW_LINE );
 			
-			if( workspace.hasStratifiedSamplingDesign() ){
-				sb.append("errors <- calculateQuantityErrorStratified( data = dataClone , plots = plotsClone , strata = strata ) ;");
-			} else {
-				sb.append("errors <- calculateQuantityError( data = dataClone , plots = plotsClone , strata = strata ) ;");
-			}
+//			String setErrorsString = "errors <- calculateQuantityError( data = dataClone , plots = plotsClone ";
+//			if( stratified ){
+//				setErrorsString +=  ", strata = strata ";
+				
+//			} else {
+//				sb.append( setErrorsString );
+//			}
+//			}
+//			setErrorsString += ") ;";
+//			sb.append( setErrorsString );
+			
+			sb.append( "errors <- calculateQuantityError( dataClone , plotsClone , strata ) ;");
 			sb.append( NEW_LINE );
 			
 			

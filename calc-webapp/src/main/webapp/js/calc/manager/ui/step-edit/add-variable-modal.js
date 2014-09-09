@@ -4,16 +4,20 @@
 
 AddVariableModal = function( triggerButton , editManager ) {
 	// calculation step edit manager instance
-	this.calcStepEditManager = editManager;
+	this.calcStepEditManager 	= editManager;
+	
 	// button that triggers the opening of the add variable modal form
-	this.triggerButton = triggerButton;
+	this.triggerButton 			= triggerButton;
 	// modal container
-	this.container = $( '#add-variable-modal' );
+	this.container 				= $( '#add-variable-modal' );
 	// form to submit
-	this.form = this.container.find('form');
+	this.form 					= this.container.find('form');
 	// save button form
-	this.saveButton = this.container.find('.save');
-
+	this.saveButton 			= this.container.find('.save');
+	
+	// type
+	this.typeInputField			= this.form.find( "[name=type]" );
+	
 	this.init();
 };
 
@@ -54,7 +58,7 @@ AddVariableModal.prototype.init = function() {
 		
 		WorkspaceManager
 			.getInstance()
-			.activeWorkspaceAddQuantitativeVariable( variable, successCallback, errorCallback, completeCallback );
+			.activeWorkspaceAddVariable( variable, successCallback, errorCallback, completeCallback );
 	});
 	
 	//add variable button click
@@ -78,6 +82,8 @@ AddVariableModal.prototype.init = function() {
 	// add variable form: on save button click, it submits the form
 	$this.saveButton.click(function(event) {
 		event.preventDefault();
+		$this.typeInputField.val( $this.calcStepEditManager.getCalculationStepType() );
+		
 		$this.form.submit();
 	});
 

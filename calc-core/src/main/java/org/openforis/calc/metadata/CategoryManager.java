@@ -289,6 +289,7 @@ public class CategoryManager {
 		Result<Record> result = psql
 			.select(table.fields())
 			.from(table)
+			.orderBy(idField)
 			.fetch();
 		JSONArray array = new JSONArray();
 		for (Record record : result) {

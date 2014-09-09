@@ -77,8 +77,13 @@ public class CalculationStepController {
 			
 			CalculationStep step = convertFormToCalculationStep(form, chain);
 			
+			// set parameters place holder
 			ParameterMap params = new ParameterHashMap();
 			step.setParameters(params);
+			
+			// set output variable
+			Variable<?> outputVariable = ws.getVariableById( form.getVariableId() );
+			step.setOutputVariable( outputVariable );
 			
 			String aggregateParameters = "{}";
 			switch ( step.getType() ) {
@@ -87,26 +92,23 @@ public class CalculationStepController {
 					populateStepTypeEquation( form, ws, step, params );
 				case SCRIPT:
 					step.setScript( form.getScript() );
-					
-					// quantitative output variable in case of script and equation
-					Variable<?> outputVariable = ws.getVariableById( form.getVariableId() );
-					step.setOutputVariable( outputVariable );
-					
 					aggregateParameters = form.getAggregateParameters();
-					
 					break;
-					
 				case CATEGORY:
-					boolean varCreated = populateStepTypeCategory( form, ws, step, params );
-					if( varCreated ) {
-						response.addField( "addedVariable", step.getOutputVariable() );
-					}
+					populateStepTypeCategory( form, ws, step, params );
+//					boolean varCreated = populateStepTypeCategory( form, ws, step, params );
+//					if( varCreated ) {
+//						response.addField( "addedVariable", step.getOutputVariable() );
+//					}
 					break;
 			}
-			
+			// set r script
 			String rScript = calculationStepRScriptGenerator.generateRScript( step );
 			step.setScript(rScript);
+			// set aggregate parameters
 			step.setAggregateParameters( new ParameterMapConverter().from(aggregateParameters) );
+			
+			// save calc step
 			processingChainManager.saveCalculationStep( step );
 
 			response.addField( "calculationStep", step );
@@ -116,8 +118,8 @@ public class CalculationStepController {
 	}
 
 	// returns true if a new output variable has been created
-	protected boolean populateStepTypeCategory(CalculationStepForm form, Workspace ws, CalculationStep step, ParameterMap params) {
-		boolean varCreated = false;
+	protected void populateStepTypeCategory(CalculationStepForm form, Workspace ws, CalculationStep step, ParameterMap params) {
+//		boolean varCreated = false;
 		
 		Integer categoryId = form.getCategoryId();
 		params.setInteger( "categoryId", categoryId );
@@ -126,16 +128,16 @@ public class CalculationStepController {
 		CategoryLevel defualtLevel = category.getHierarchies().get(0).getLevels().get(0);
 		
 		Variable<?> variable = step.getOutputVariable();
-		
-		if( variable == null || variable instanceof QuantitativeVariable) {
-			Entity entity = ws.getEntityById( form.getEntityId() );
-			String name = StringUtils.normalize( step.getCaption() ) ;
-			variable = workspaceService.addMultiwayVariable( entity , name );
-			step.setOutputVariable( variable );
-			varCreated = true;
-		}
-		
-		// set level to variable
+//		
+//		if( variable == null || variable instanceof QuantitativeVariable) {
+//			Entity entity = ws.getEntityById( form.getEntityId() );
+//			String name = StringUtils.normalize( step.getCaption() ) ;
+//			variable = workspaceService.addMultiwayVariable( entity , name );
+//			step.setOutputVariable( variable );
+//			varCreated = true;
+//		}
+//		
+//		// set level to variable
 		( (MultiwayVariable) variable ).setCategoryLevel( defualtLevel );
 		workspaceService.saveVariable( variable );
 		
@@ -177,7 +179,7 @@ public class CalculationStepController {
 //		}
 //		params.setList( "categoryClassParameters", classParams );
 		
-		return varCreated;
+//		return varCreated;
 	}
 
 	protected void populateStepTypeEquation(CalculationStepForm form, Workspace ws, CalculationStep step, ParameterMap params) {

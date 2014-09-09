@@ -187,23 +187,27 @@ CalculationStepEditManager.prototype.initEventHandlers = function() {
 		$this.equationButton.deselect();
 		
 		// hide variable from selection
-		$this.outputVariableForm.hide();
+//		$this.outputVariableForm.hide();
 		$this.outputCategoryForm.fadeIn();
 		
 		$this.typeInput.val( "CATEGORY" );
 //		$this.categoryForm.fadeIn( 300 );
 		$this.rScriptForm.fadeIn( 300 );
+		
+		$this.updateVariableSelect();
 	});
 	this.categoryButton.deselect( function() {
 		UI.enable( this.button );
 		
 		// show variable form section
 		$this.outputCategoryForm.hide();
-		$this.outputVariableForm.fadeIn();
+//		$this.outputVariableForm.fadeIn();
 		
 		$this.typeInput.val( "" );
 //		$this.categoryForm.hide();
 		$this.rScriptForm.hide();
+		
+		$this.updateVariableSelect();
 	});
 	
 	this.equationListCombo.change( $.proxy( this.equationListChange , $this ) ) ;
@@ -319,13 +323,11 @@ CalculationStepEditManager.prototype.saveIfChanged = function( success ) {
  * Update form with currentCalculationStep instance
  */
 CalculationStepEditManager.prototype.updateForm = function() {
+	UI.Form.setFieldValues( this.$form, this.currentCalculationStep );
+	
 	this.$entityCombo.val( this.currentCalculationStep.outputEntityId );
 	this.entityChange();
 
-	this.$variableCombo.val( this.currentCalculationStep.outputVariableId );
-	
-	UI.Form.setFieldValues( this.$form, this.currentCalculationStep );
-	
 	var params = this.currentCalculationStep.parameters;
 	switch ( this.currentCalculationStep.type ) {
 		
@@ -380,7 +382,7 @@ CalculationStepEditManager.prototype.updateForm = function() {
 			
 			break;
 	}
-	
+	this.$variableCombo.val( this.currentCalculationStep.outputVariableId );
 	UI.unlock();
 	
 	//reset changed state 
@@ -467,11 +469,21 @@ CalculationStepEditManager.prototype.entityChange = function() {
 CalculationStepEditManager.prototype.updateVariableSelect = function() {
 	var entity = this.getSelectedEntity();
 	if( entity ) {
-		var variables = entity.quantitativeOutputVariables();
+		var variables	= [];
+		if( this.getCalculationStepType() == "CATEGORY"  ){
+			variables = entity.categoricalOutputVariables();
+		} else {
+			variables = entity.quantitativeOutputVariables();
+		}
+		
 		this.$variableCombo.data( variables, "id", "name" );
 	}
 };
 
+CalculationStepEditManager.prototype.getCalculationStepType = function() {
+	return this.typeInput.val();
+};
+	
 CalculationStepEditManager.prototype.show = function() {
 	this.container.fadeIn(400);
 };

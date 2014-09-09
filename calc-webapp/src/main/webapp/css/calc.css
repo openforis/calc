@@ -454,18 +454,21 @@ button.settings:hover {
 	font-weight: 100;
 /* 	margin-top: 30px; */
 	text-align: center;
-	position: relative;
-	top: 6px;
+/* 	position: relative; */
+/* 	top: 10px; */
 	height: auto;
 /* 	display:block; */
+	padding-top: 15px;
+	font-family: "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
+	letter-spacing: 3px; 
 }
 #footer .application-version {
-	position: relative;
+/* 	position: relative; */
 /* 	top: 12px; */
-	left: 30px;
+/* 	left: 30px; */
 	height: auto;
-	font-size: 0.7em;
-	text-align: center;
+	font-size: 0.5em;
+/* 	text-align: center; */
 }
 #footer .logo img {
 /* 	position:absolute; */

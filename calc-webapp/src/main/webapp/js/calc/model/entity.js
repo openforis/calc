@@ -164,3 +164,20 @@ Entity.prototype.quantitativeOutputVariables = function() {
 	}
 	return vars;
 };
+
+/**
+ * Returns user defined categorical variables
+ */
+Entity.prototype.categoricalOutputVariables = function() {
+	var vars = [];
+	
+	var catVars = this.categoricalVariables();
+	for( var i in catVars ){
+		var v = catVars[ i ];
+		if( v.userDefined === true ){
+			vars.push( v );
+		}
+	}
+	
+	return vars;
+};

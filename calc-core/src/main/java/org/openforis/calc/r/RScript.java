@@ -273,6 +273,7 @@ public class RScript {
 		return CALC_COMMON_SCRIPT;
 	}
 	
+	@Deprecated
 	public static RScript getErrorEstimationScript() {
 		if( ERROR_ESTIMATION_SCRIPT == null ) {
 			ERROR_ESTIMATION_SCRIPT = loadScript( "org/openforis/calc/r/error-point-estimators.R" );

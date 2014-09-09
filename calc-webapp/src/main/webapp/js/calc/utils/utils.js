@@ -15,10 +15,7 @@ Utils.applyFunction = function( functx , params ) {
 	}
 };
 
+// left for backwards compatibility
 Utils.isBlankString = function( string ){
-	if( string ){
-		return $.trim( string ) == "";
-	}
-	
-	return true;
+	return StringUtils.isBlank( string );
 }

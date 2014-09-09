@@ -9,14 +9,14 @@ REditor = function( textAreaId ){
 	var textArea 		= document.getElementById( textAreaId );
 	this.editor 		= CodeMirror.fromTextArea( textArea, {
 		mode 			: "r",
+		theme			: "neat",
 		lineNumbers		: true,
 		styleActiveLine	: true,
 		matchBrackets	: true,
 //		extraKeys: {"Ctrl-Q": function(cm){ cm.foldCode(cm.getCursor()); }},
 	    foldGutter: true,
 	    gutters: [ "CodeMirror-linenumbers" , "CodeMirror-foldgutter" ],
-		theme			: "elegant",
-		extraKeys: { "Ctrl-Space": "autocomplete" }
+		extraKeys: { "Ctrl-Space": "autocomplete" , "Ctrl-Q": function(cm){ cm.foldCode(cm.getCursor()); } }
 	});
 	
 	this.init();
@@ -61,13 +61,21 @@ REditor.prototype.getHints = function(){
 	
 	return hints;
 };
+
 /**
  * Returns the text entered into the editor
  */
-REditor.prototype.getText = function(){
+REditor.prototype.getValue = function(){
 	return this.editor.getValue();
 };
 
+/**
+ * Set the editor content.
+ * @param value
+ */
+REditor.prototype.setValue = function( value ){
+	return this.editor.setValue( value );
+};
 
 
 

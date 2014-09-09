@@ -323,12 +323,16 @@ public class CalcJob extends Job {
 			boolean errorScriptAdded = false;
 			CalcRTask createErrorTableTask = createTask( "Create error tables" );
 			List<FactTable> factTables = getSchemas().getDataSchema().getFactTables();
+			ErrorSettings errorSettings = workspace.getErrorSettings();
+
 			for ( FactTable factTable : factTables ){
 				List<ErrorTable> errorTables = factTable.getErrorTables();
 				for ( ErrorTable errorTable : errorTables ){
 					
 					if( !errorScriptAdded ){
-						intTask.addScript( RScript.getErrorEstimationScript() );
+						RScript errorScript = r().rScript( errorSettings.getScript() );
+						intTask.addScript( errorScript );
+//						intTask.addScript( RScript.getErrorEstimationScript() );
 						errorScriptAdded = true;
 						
 						addTask( createErrorTableTask );
@@ -343,7 +347,6 @@ public class CalcJob extends Job {
 			}
 			
 			// add error calculation tasks 
-			ErrorSettings errorSettings = workspace.getErrorSettings();
 			Set< QuantitativeVariable > outputVariables = this.group.uniqueOutputQuantitativeVariables();
 			for ( QuantitativeVariable outputVariable : outputVariables ){
 				long variableId = outputVariable.getId().longValue();

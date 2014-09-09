@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ErrorSettingsTable extends org.jooq.impl.TableImpl<org.openforis.calc.persistence.jooq.tables.records.ErrorSettingsRecord> {
 
-	private static final long serialVersionUID = 2133775836;
+	private static final long serialVersionUID = 167485871;
 
 	/**
 	 * The singleton instance of <code>calc.error_settings</code>
@@ -40,6 +40,11 @@ public class ErrorSettingsTable extends org.jooq.impl.TableImpl<org.openforis.ca
 	 * The column <code>calc.error_settings.parameters</code>.
 	 */
 	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.ErrorSettingsRecord, org.openforis.calc.engine.ParameterMap> PARAMETERS = createField("parameters", org.jooq.impl.SQLDataType.CLOB.nullable(false).defaulted(true).asConvertedDataType(new org.openforis.calc.persistence.jooq.ParameterMapConverter()), this, "");
+
+	/**
+	 * The column <code>calc.error_settings.script</code>.
+	 */
+	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.ErrorSettingsRecord, java.lang.String> SCRIPT = createField("script", org.jooq.impl.SQLDataType.CLOB.defaulted(true), this, "");
 
 	/**
 	 * Create a <code>calc.error_settings</code> table reference

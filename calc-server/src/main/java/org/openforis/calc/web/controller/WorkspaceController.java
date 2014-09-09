@@ -28,7 +28,7 @@ import org.openforis.calc.engine.WorkspaceLockedException;
 import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.ErrorSettings;
-import org.openforis.calc.metadata.QuantitativeVariable;
+import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.web.form.VariableForm;
 import org.openforis.commons.versioning.Version;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -115,16 +115,24 @@ public class WorkspaceController {
 	}
 
 
-	@RequestMapping(value = "/active/entity/{entityId}/variable/quantitative", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/active/entity/{entityId}/variable", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody
-	Response activeWorkspaceAddQuantitativeVariable(@PathVariable int entityId, @Valid VariableForm form, BindingResult result) {
+	Response activeWorkspaceAddVariable(@PathVariable int entityId, @Valid VariableForm form, BindingResult result) {
 		Response response = new Response(result.getAllErrors());
 		if (!response.hasErrors()) {
 			Workspace ws = workspaceService.getActiveWorkspace();
-			Entity entity = ws.getEntityById(entityId);
+			Entity entity 		= ws.getEntityById(entityId);
+			
 			String variableName = form.getName();
-			QuantitativeVariable variable = workspaceService.addQuantityVariable(entity, variableName);
+			String type			= form.getType();
+			Variable<?> variable = null;
+			if( type.equalsIgnoreCase("CATEGORY") ){
+				variable = workspaceService.addMultiwayVariable( entity, variableName );
+			} else {
+				variable = workspaceService.addQuantityVariable(entity, variableName);
+			}
 			response.addField("variable", variable);
+			
 		}
 		return response;
 	}
@@ -229,7 +237,7 @@ public class WorkspaceController {
 		return response;
 	}
 
-	private Version parseVersion( String versionString ) {
+	private Version parseVersion( String versionString ){
 		if( versionString.equals( WorkspaceBackupService.DEV_VERSION ) ){
 			versionString = "0.0";
 		}
@@ -243,11 +251,11 @@ public class WorkspaceController {
 	 * =======================
 	 * @return 
 	 */
-	@RequestMapping(value = "/active/errorSettings.json", method = RequestMethod.PUT, produces =  MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping( value = "/active/errorSettings.json", method = RequestMethod.PUT, produces =  MediaType.APPLICATION_JSON_VALUE )
 	public @ResponseBody 
 	ErrorSettings setErrorSettings( String settings ){
 		if( StringUtils.isNotEmpty(settings) ){
-			ErrorSettings errorSettings = new ErrorSettings(settings) ; 
+			ErrorSettings errorSettings = new ErrorSettings( settings ); 
 			Workspace workspace = workspaceService.getActiveWorkspace();
 			workspaceService.setErrorSettings( workspace , errorSettings );
 			
