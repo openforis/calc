@@ -14,9 +14,9 @@ REditor = function( textAreaId ){
 		styleActiveLine	: true,
 		matchBrackets	: true,
 //		extraKeys: {"Ctrl-Q": function(cm){ cm.foldCode(cm.getCursor()); }},
-	    foldGutter: true,
-	    gutters: [ "CodeMirror-linenumbers" , "CodeMirror-foldgutter" ],
-		extraKeys: { "Ctrl-Space": "autocomplete" , "Ctrl-Q": function(cm){ cm.foldCode(cm.getCursor()); } }
+	    foldGutter		: true,
+	    gutters			: [ "CodeMirror-linenumbers" , "CodeMirror-foldgutter" ],
+		extraKeys		: { "Ctrl-Space": "autocomplete" , "Ctrl-Q": function(cm){ cm.foldCode(cm.getCursor()); } }
 	});
 	
 	this.init();
@@ -25,13 +25,13 @@ REditor = function( textAreaId ){
 REditor.prototype.init = function(){
 	var $this	= this;
 	
-	
-	CodeMirror.hint.r = function(cm) {
+	CodeMirror.hint.r = function( cm ){
 		var hints 	= $this.getHints();
 	    var cur 	= cm.getCursor();
 	    
 	    var token 	= cm.getTokenAt(cur), start, end, search;
-	    if (token.string.match(/^[.\w@]\w*$/)) {
+	    if (token.string.match(/^\w+(\$\w*)?$/)) { 
+//    	if (token.string.match(/^\w*(\$\w)?$/)) { 
 	        search = token.string;
 	        start = token.start;
 	        end = token.end;
@@ -44,16 +44,14 @@ REditor.prototype.init = function(){
 		if( StringUtils.isBlank(search) ){
 			result = hints ;
 		} else {
-			var list = [];
 			for( var i in hints ){
 				var hint =  hints[ i ];
 				if( StringUtils.contains( hint , search ) ){
-					list.push( hint );
+					result.push( hint );
 				}
 			}
-			result = list ;
 		}
-		return {list: result, from: CodeMirror.Pos(cur.line, start), to: CodeMirror.Pos(cur.line, end)};
+		return { list: result, from: CodeMirror.Pos(cur.line, start), to: CodeMirror.Pos(cur.line, end) };
 	};
 	
 };

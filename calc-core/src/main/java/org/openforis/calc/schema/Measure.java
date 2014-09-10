@@ -101,8 +101,9 @@ public class Measure extends Member {
 		String name 	= quantitativeVariable.getName(); 
 		String caption 	= quantitativeVariable.getCaption();
 		caption 		= ( StringUtils.isBlank(caption) ) ? name : caption;
+		caption += " (Total)";
 		
-		return org.openforis.calc.utils.StringUtils.capitalize( caption );
+		return org.openforis.calc.utils.StringUtils.capitalize( caption);
 	}
 	
 

@@ -2,6 +2,8 @@ package org.openforis.calc.schema;
 import static org.openforis.calc.schema.ErrorTable.ABSOLUTE_ERROR_LABEL;
 import static org.openforis.calc.schema.ErrorTable.RELATIVE_ERROR_LABEL;
 import static org.openforis.calc.schema.ErrorTable.VARIANCE_LABEL;
+import static org.openforis.calc.schema.ErrorTable.MEAN_LABEL;
+import static org.openforis.calc.schema.ErrorTable.TOTAL_LABEL;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -45,7 +47,8 @@ public class Cube {
 	private String table;
 	private List<AggName> aggNames;
 
-	private String errorColumnNameFormat = "%s %s";
+	private String errorColumnNameFormat 	= "%s %s";
+	private String errorColumnCaptionFormat = "%s (%s) %s";
 	
 	Cube(RolapSchema rolapSchema, FactTable factTable) {
 		Entity entity = factTable.getEntity();
@@ -141,29 +144,35 @@ public class Cube {
 				// relative error measures
 				QuantitativeVariable quantitativeVariable = errorTable.getQuantitativeVariable();
 				
-				String measureName = getErrorMeasureName( quantitativeVariable, RELATIVE_ERROR_LABEL , true );
-				Measure measure = new Measure( getRolapSchema(), this, measureName , measureName, errorTable.getMeanQuantityRelativeError().getName(), AGGREGATE_FUNCTION.SUM );
+				String measureName		= getErrorMeasureName( quantitativeVariable, RELATIVE_ERROR_LABEL , true );
+				String measureCaption 	= getErrorMeasureCaption( quantitativeVariable, RELATIVE_ERROR_LABEL , MEAN_LABEL );
+				Measure measure = new Measure( getRolapSchema(), this, measureName , measureCaption, errorTable.getMeanQuantityRelativeError().getName(), AGGREGATE_FUNCTION.SUM );
 				this.errorMeasures.add( measure );
 				
-				measureName = getErrorMeasureName( quantitativeVariable, ABSOLUTE_ERROR_LABEL , true );
-				measure = new Measure( getRolapSchema(), this, measureName , measureName, errorTable.getMeanQuantityAbsoluteError().getName(), AGGREGATE_FUNCTION.SUM );
+				measureName 	= getErrorMeasureName( quantitativeVariable, ABSOLUTE_ERROR_LABEL , true );
+				measureCaption 	= getErrorMeasureCaption( quantitativeVariable, ABSOLUTE_ERROR_LABEL , MEAN_LABEL );
+				measure = new Measure( getRolapSchema(), this, measureName , measureCaption, errorTable.getMeanQuantityAbsoluteError().getName(), AGGREGATE_FUNCTION.SUM );
 				this.errorMeasures.add( measure );
 				
-				measureName = getErrorMeasureName( quantitativeVariable,  VARIANCE_LABEL , true );
-				measure = new Measure( getRolapSchema(), this, measureName , measureName, errorTable.getMeanQuantityVariance().getName(), AGGREGATE_FUNCTION.SUM );
+				measureName 	= getErrorMeasureName( quantitativeVariable,  VARIANCE_LABEL , true );
+				measureCaption 	= getErrorMeasureCaption( quantitativeVariable, VARIANCE_LABEL , MEAN_LABEL );
+				measure = new Measure( getRolapSchema(), this, measureName , measureCaption, errorTable.getMeanQuantityVariance().getName(), AGGREGATE_FUNCTION.SUM );
 				this.errorMeasures.add( measure );
 				
 				// absolute error measures
-				measureName = getErrorMeasureName( quantitativeVariable, RELATIVE_ERROR_LABEL , false );
-				measure = new Measure( getRolapSchema(), this, measureName , measureName, errorTable.getTotalQuantityRelativeError().getName(), AGGREGATE_FUNCTION.SUM );
+				measureName 	= getErrorMeasureName( quantitativeVariable, RELATIVE_ERROR_LABEL , false );
+				measureCaption 	= getErrorMeasureCaption( quantitativeVariable, RELATIVE_ERROR_LABEL , TOTAL_LABEL );
+				measure = new Measure( getRolapSchema(), this, measureName , measureCaption, errorTable.getTotalQuantityRelativeError().getName(), AGGREGATE_FUNCTION.SUM );
 				this.errorMeasures.add( measure );
 				
-				measureName = getErrorMeasureName( quantitativeVariable, ABSOLUTE_ERROR_LABEL , false );
-				measure = new Measure( getRolapSchema(), this, measureName , measureName, errorTable.getTotalQuantityAbsoluteError().getName(), AGGREGATE_FUNCTION.SUM );
+				measureName 	= getErrorMeasureName( quantitativeVariable, ABSOLUTE_ERROR_LABEL , false );
+				measureCaption 	= getErrorMeasureCaption( quantitativeVariable, ABSOLUTE_ERROR_LABEL , TOTAL_LABEL );
+				measure = new Measure( getRolapSchema(), this, measureName , measureCaption, errorTable.getTotalQuantityAbsoluteError().getName(), AGGREGATE_FUNCTION.SUM );
 				this.errorMeasures.add( measure );
 				
-				measureName = getErrorMeasureName( quantitativeVariable, VARIANCE_LABEL , false );
-				measure = new Measure( getRolapSchema(), this, measureName , measureName, errorTable.getTotalQuantityVariance().getName(), AGGREGATE_FUNCTION.SUM );
+				measureName 	= getErrorMeasureName( quantitativeVariable, VARIANCE_LABEL , false );
+				measureCaption 	= getErrorMeasureCaption( quantitativeVariable, VARIANCE_LABEL , TOTAL_LABEL );
+				measure = new Measure( getRolapSchema(), this, measureName , measureCaption, errorTable.getTotalQuantityVariance().getName(), AGGREGATE_FUNCTION.SUM );
 				this.errorMeasures.add( measure );
 			}
 			
@@ -192,7 +201,7 @@ public class Cube {
 		
 		String name = Measure.getName( quantitativeVariable );
 		if( meanValue ){
-			name += " " + Measure.HA;
+			name += " HA";
 		}
 		
 		String string = String.format( errorColumnNameFormat, name , errorType );
@@ -200,6 +209,15 @@ public class Cube {
 		return string;
 	}
 	
+	private String getErrorMeasureCaption( QuantitativeVariable quantitativeVariable , String errorType , String variableType ){
+		
+		String name = Measure.getName( quantitativeVariable );
+		
+		String string = String.format( errorColumnCaptionFormat, name , variableType , errorType );
+		string = StringUtils.capitalize( string );
+		return string;
+	}
+
 	private void createAggNames() {
 		this.aggNames = new ArrayList<AggName>();
 		

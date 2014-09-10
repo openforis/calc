@@ -73,9 +73,11 @@ public class Saiku {
 	public void writeSchema(Workspace workspace, Schema schema) throws IOException, JAXBException {
 		// write xml file
 		JAXBContext jaxbContext = JAXBContext.newInstance(Schema.class);
-		Marshaller marshaller = jaxbContext.createMarshaller();
-		marshaller.setProperty("jaxb.formatted.output", true);
-
+		
+		Marshaller marshaller 	= jaxbContext.createMarshaller();
+		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+		marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+		
 		File mdxPath = getMdxDirectory(workspace);
 		String wsName = workspace.getName();
 		File f = new File( mdxPath, wsName+".xml" );
@@ -105,7 +107,6 @@ public class Saiku {
 		BufferedOutputStream dataSourceFileStream = new BufferedOutputStream( new FileOutputStream(dataSourceFile) );
 		IOUtils.write( string, dataSourceFileStream );
 		IOUtils.closeQuietly( dataSourceFileStream );
-
 	}
 	
 	

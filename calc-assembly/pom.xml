@@ -23,7 +23,7 @@
 			<build>
 				<plugins>
 				
-					<!-- 1. unpack tomcat -->
+					<!-- 1. unpack tomcat and saiku web apps -->
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-dependency-plugin</artifactId>
@@ -53,6 +53,15 @@
 											<overWrite>false</overWrite>
 											<outputDirectory>${project.build.directory}/apache-tomcat-${tomcat.version}/webapps/saiku</outputDirectory>
 										</artifactItem>
+										<artifactItem>
+											<groupId>meteorite.bi</groupId>
+											<artifactId>saiku-ui</artifactId>
+											<version>${saiku.version}</version>
+											<type>war</type>
+											<overWrite>false</overWrite>
+											<outputDirectory>${project.build.directory}/apache-tomcat-${tomcat.version}/webapps/saiku-ui</outputDirectory>
+										</artifactItem>
+										
 									</artifactItems>
 								</configuration>
 							</execution>

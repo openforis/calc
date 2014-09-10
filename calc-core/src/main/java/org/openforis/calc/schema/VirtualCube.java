@@ -124,7 +124,7 @@ public class VirtualCube {
 		for ( Measure measure : measures.keySet() ) {
 			
 			String name = measure.getName()+" "+ Measure.HA;
-			String caption = measure.getCaption() + " " + Measure.HA;
+			String caption = measure.getName() + " (Mean)";
 			formula = Rolap.getMdxMeasureName( measure.getName() ) + " / " + Rolap.getMdxMeasureName( AREA_CALCULATED_MEMBER_NAME );
 			
 			CalculatedMember calculatedMember = new CalculatedMember( Rolap.MEASURES, name, caption, formula, true);

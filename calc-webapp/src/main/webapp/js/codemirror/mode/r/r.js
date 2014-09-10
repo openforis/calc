@@ -44,8 +44,10 @@ CodeMirror.defineMode("r", function(config) {
       return "string";
     } else if (ch == "." && stream.match(/.[.\d]+/)) {
       return "keyword";
-    } else if (/[\w\.]/.test(ch) && ch != "_") {
-      stream.eatWhile(/[\w\.]/);
+    } else if (/\w|\$/.test(ch) && ch != "_") {
+    	stream.eatWhile(/\w|\$/);
+//    } else if (/[\w\.]/.test(ch) && ch != "_") {
+//      stream.eatWhile(/[\w\.]/);
       var word = stream.current();
       if (atoms.propertyIsEnumerable(word)) return "atom";
       if (keywords.propertyIsEnumerable(word)) {
@@ -67,6 +69,7 @@ CodeMirror.defineMode("r", function(config) {
       return "arg-is";
     } else if (opChars.test(ch)) {
       if (ch == "$") return "dollar";
+//      if (ch == "$") return "variable";
       stream.eatWhile(opChars);
       return "operator";
     } else if (/[\(\){}\[\];]/.test(ch)) {

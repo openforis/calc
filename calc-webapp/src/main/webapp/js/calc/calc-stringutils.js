@@ -120,3 +120,18 @@ StringUtils.isBlank = function( string ){
 StringUtils.isNotBlank = function( string ){
 	return ! StringUtils.isBlank( string );
 };
+
+/**
+ * Compare the two string
+ * 
+ * @param string1
+ * @param string2
+ * @returns {Number} 
+ * 0 if the argument string1 is equal to string2, a value less than 0 if this string1 is lexicographically less than string 2 
+ * and a value greater than 0 if string1is lexicographically greater than string2.
+ */
+StringUtils.compare = function( string1 , string2 ){
+	if( string1 < string2 ) return -1;
+    if( string1 > string2 ) return 1;
+    return 0;
+};
