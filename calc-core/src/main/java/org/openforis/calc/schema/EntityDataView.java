@@ -2,17 +2,22 @@ package org.openforis.calc.schema;
 
 import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.jooq.Field;
 import org.jooq.JoinType;
 import org.jooq.Record;
 import org.jooq.Select;
 import org.jooq.SelectQuery;
 import org.jooq.TableField;
+import org.jooq.impl.SQLDataType;
 import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.psql.Psql;
+import org.openforis.commons.collection.CollectionUtils;
 
 /**
  * @author Mino Togna
@@ -26,6 +31,8 @@ public class EntityDataView extends DataTable {
 
 	private TableField<Record, BigDecimal> plotAreaField;
 
+	private Map<Integer, Field<Long>> ancestorIdFields;
+	
 	public EntityDataView(Entity entity, DataSchema schema) {
 		super(entity, entity.getDataView(), schema);
 		this.schema = schema;
@@ -38,6 +45,8 @@ public class EntityDataView extends DataTable {
 		createQuantityFields();
 		createTextFields();
 
+		createAncestorIdFields();
+		
 		ResultTable resultTable = this.schema.getResultTable(entity);
 		if (resultTable != null) {
 			TableField<Record, BigDecimal> plotArea = resultTable.getPlotArea();
@@ -47,6 +56,18 @@ public class EntityDataView extends DataTable {
 		}
 		
 		createWeightField();
+	}
+
+	private void createAncestorIdFields() {
+		this.ancestorIdFields = new HashMap<Integer, Field<Long>>();
+		Entity entity = getEntity();
+		Entity parent = entity.getParent();
+		while( parent != null ){
+			TableField<Record,Long> field = createField( parent.getIdColumn() , SQLDataType.BIGINT, this );
+			ancestorIdFields.put( parent.getId() , field );
+			
+			parent = parent.getParent();
+		}
 	}
 
 	private void createQuantityFields() {
@@ -94,6 +115,11 @@ public class EntityDataView extends DataTable {
 		}
 	}
 
+	public Collection<Field<Long>> getAncestorIdFields() {
+		Collection<Field<Long>> ids = ancestorIdFields.values();
+		return CollectionUtils.unmodifiableCollection( ids );
+	}
+	
 	public Select<?> getSelect() {
 		return getSelect( false );
 	}

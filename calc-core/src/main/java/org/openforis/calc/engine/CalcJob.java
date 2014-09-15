@@ -203,6 +203,11 @@ public class CalcJob extends Job {
 			for (String var : group.getInputVariables(entityId) ) {
 				select.addSelect(view.field(var));
 			}
+			// add ids up to the root
+			for ( Field<Long> field : view.getAncestorIdFields() ){
+				select.addSelect( field.as( "key" + field.getName()) );
+				
+			}
 			
 			// add plot area variables to select as well
 			RScript plotArea = group.getPlotAreaScript(entityId);
