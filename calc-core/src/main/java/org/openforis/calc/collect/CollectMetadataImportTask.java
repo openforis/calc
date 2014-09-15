@@ -604,6 +604,8 @@ public class CollectMetadataImportTask extends Task {
 		
 		if ( dest instanceof CategoricalVariable ) {
 			((CategoricalVariable<?>) dest).setCategoryLevel( ((CategoricalVariable<?>) from).getCategoryLevel()  );
+			
+			dest.setInputCategoryIdColumn( from.getInputCategoryIdColumn() );
 		}
 //		oldVariable.setInputValueColumn(newVariable.getInputValueColumn());
 		//oldVariable.setName(newVariable.getName());

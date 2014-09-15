@@ -200,13 +200,10 @@ public class CalcJob extends Job {
 			SelectQuery<Record> select = new Psql().selectQuery();
 			select.addFrom(view);
 			select.addSelect(view.getIdField());
+			// add ids up to the root
+			select.addSelect( view.getAncestorIdFields() );
 			for (String var : group.getInputVariables(entityId) ) {
 				select.addSelect(view.field(var));
-			}
-			// add ids up to the root
-			for ( Field<Long> field : view.getAncestorIdFields() ){
-				select.addSelect( field.as( "key" + field.getName()) );
-				
 			}
 			
 			// add plot area variables to select as well
