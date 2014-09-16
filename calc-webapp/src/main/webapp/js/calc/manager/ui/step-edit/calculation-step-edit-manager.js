@@ -573,7 +573,8 @@ CalculationStepEditManager.prototype.categoryChange = function( callback ){
 					}
 				});
 				
-				$this.rScriptInputField.val( comment );
+//				$this.rScriptInputField.val( comment );
+				$this.rEditor.setValue( comment );
 			}
 			
 //				OLD METHOD
