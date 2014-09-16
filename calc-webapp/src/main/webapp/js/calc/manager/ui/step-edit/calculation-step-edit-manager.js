@@ -52,8 +52,10 @@ CalculationStepEditManager = function (container) {
 	
 	//initialized in the init method
 	//R script component manager
-	this.rScriptInputField = this.$form.find("[name=script]");
-	this.$RScript = new RScript( this.rScriptInputField );
+	this.rScriptInputField 	= this.container.find("[name=script]");
+//	this.rScriptInputField 	= this.$form.find("[name=script]");
+//	this.$RScript = new RScript( this.rScriptInputField );
+	this.rEditor			= new REditor( this.rScriptInputField.attr("id") );
 	
 	this.$addVariableButton = this.$form.find( "button[name='add-variable']" );	
 	this.addVariableModal 	= new AddVariableModal( this.$addVariableButton , this );
@@ -269,6 +271,9 @@ CalculationStepEditManager.prototype.lockForm = function() {
 CalculationStepEditManager.prototype.save = function( successCallback, errorCallback ){
 	UI.lock();
 	var $this = this;
+	// set r input field value as the editor value
+	this.rScriptInputField.val( this.rEditor.getValue() );
+	
 	var $step = $this.$form.serialize();
 	CalculationStepManager.getInstance().save( $step,
 		//success
@@ -333,6 +338,7 @@ CalculationStepEditManager.prototype.updateForm = function() {
 		
 		case "SCRIPT" :
 			this.rScriptButton.select();
+			this.rEditor.setValue( this.currentCalculationStep.script );
 			this.updateAggregateForm( this.currentCalculationStep );
 			break;
 		
@@ -354,7 +360,8 @@ CalculationStepEditManager.prototype.updateForm = function() {
 				this.equationListVariableCombos[ eqVar ].val( equiationVariableId );
 			}
 			
-			this.$RScript.$inputField.val( "" );
+//			this.$RScript.$inputField.val( "" );
+			this.rEditor.setValue( "" );
 			this.updateAggregateForm( this.currentCalculationStep );
 			break;
 		
@@ -362,7 +369,7 @@ CalculationStepEditManager.prototype.updateForm = function() {
 			this.categoryButton.select();
 			// # OLD procedure
 //			this.$RScript.$inputField.val( "" );
-			
+			this.rEditor.setValue( this.currentCalculationStep.script );
 			this.categoryCombo.val( params.categoryId );
 			
 			var classes 	= params.categoryClassParameters;
@@ -424,8 +431,8 @@ CalculationStepEditManager.prototype.entityChange = function() {
 	if ( entity ){
 		// populate fields that need the entity
 		// r script
-		this.$RScript.entity = entity;
-		
+//		this.$RScript.entity = entity;
+		this.rEditor.entity = entity;
 		// variable select
 		this.$variableCombo.enable();
 		this.updateVariableSelect();
@@ -439,7 +446,8 @@ CalculationStepEditManager.prototype.entityChange = function() {
 		
 	} else {
 		// Entity not selected reset fields that need the entity
-		this.$RScript.entity = null;
+//		this.$RScript.entity = null;
+		this.rEditor.entity = null;
 		UI.disable( this.$addVariableButton );
 		
 		this.$variableCombo.reset();

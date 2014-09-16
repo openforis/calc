@@ -410,7 +410,13 @@ button.settings:hover {
 	font-size: 2em;
 }
 
-
+.button-bar-inner .badge {
+	background-color: #5b718c;
+	font-size: 0.7em;
+	font-weight: 100;
+	font-family: "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
+	border-radius: 3px;
+}
 /**
 * Footer
 */
@@ -1066,6 +1072,7 @@ table.import-csv-table input[type=checkbox] {
 }
 #step-edit-page .aggregate-form {
 	margin-top: -20px;
+	margin-bottom: -20px;
 }
 #step-edit-page .aggregate-functions-form button {
 	min-width: 6em;

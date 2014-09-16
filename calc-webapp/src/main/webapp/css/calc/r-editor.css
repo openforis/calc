@@ -6,3 +6,8 @@
 	text-align: left;
 	font-size: 0.9em;
 }
+
+.CodeMirror-scroll {
+  overflow-y: hidden;
+  overflow-x: auto;
+}

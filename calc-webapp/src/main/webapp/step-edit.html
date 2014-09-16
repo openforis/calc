@@ -13,11 +13,12 @@
 	</div>
 	
 	<!-- edit form -->
-	<div class="row" id="calculation-step-edit-container">
-		<form id="step-form" class="form-horizontal" method="POST" action="rest/calculationstep/save.json">
+	<div class="row width100" id="calculation-step-edit-container">
+	
+		<form id="step-form" class="form-horizontal width100" method="POST" action="rest/calculationstep/save.json">
 			<input type="hidden" class="form-control" name="id" /> 
 			<div class="row col-md-8 col-md-offset-2">
-				<fieldset>
+<!-- 				<fieldset class="width100"> -->
 					<div class="form-group">
 						<label class="col-md-2 control-label">Type</label>
 						<div class="col-md-10" style="text-align: left">
@@ -68,8 +69,15 @@
 					<!-- r script -->
 					<div class="form-group r-script-form">
 						<label class="col-md-2 control-label">Script</label>
-						<div class="col-md-10">
-							<textarea class="form-control" rows="13" name="script"></textarea>
+<!-- 						<div class="col-md-10" style="height: 350px"> -->
+<!-- 							<div class="row width100 no-padding no-margin"> -->
+<!-- 								<textarea name="script" id="r-script-text-area" style="width: 100%; height: 100%;"></textarea> -->
+<!-- 							</div> -->
+<!-- 						</div> -->
+						<div class="col-md-10" style="height: 350px">
+<!-- 							<div class="row width100 no-padding no-margin"> -->
+								<textarea name="script" id="r-script-text-area" style="width: 100%; height: 100%;"></textarea>
+<!-- 							</div> -->
 						</div>
 					</div>
 					<!-- equation form -->
@@ -109,12 +117,12 @@
 						</div>
 					</div>
 					
-					<div class="form-group buttons">
+					<div class="form-group buttons" style="margin: 0px">
 						<div class="col-md-2 col-md-offset-5" style="text-align: center;">
 							<button type="submit" class="btn btn-default" style="width: 100%">Save</button>
 						</div>
 					</div>
-				</fieldset>
+<!-- 				</fieldset> -->
 				
 				<!-- // NOT USED NOW -->
 				<!-- Input variable fields. //hidden by default -->

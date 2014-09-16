@@ -134,12 +134,18 @@ HomeCalculationManager.prototype.updateSteps = function(callback) {
 	
 	WorkspaceManager.getInstance().activeWorkspace( function(ws){
 		if( ws ){
+			var length = "";
 			var chain = ws.getDefaultProcessingChain();
 			if( chain ){
 				$.each( chain.calculationSteps , function( i, step ){
 					$this.addStepElement( step );
 				});
+				if( chain.calculationSteps ){
+					length = chain.calculationSteps.length > 0 ? chain.calculationSteps.length : "";
+				}
 			}
+			// update number of steps
+			$this.executeBtn.find( ".badge" ).html( length );
 		}
 	});
 };

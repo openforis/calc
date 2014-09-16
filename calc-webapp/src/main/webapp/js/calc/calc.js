@@ -330,7 +330,7 @@ $(document).ready(function() {
 		Calc.workspaceSettingsManager	= new WorkspaceSettingsManager( "#workspace-settings" );
 		
 		//set current home section to calculation
-		var calculation = $("#calculation");
+		var calculation = $( "#calculation" );
 		Calc.section = calculation;
 		
 		//hide other sections to avoid focus on their elements

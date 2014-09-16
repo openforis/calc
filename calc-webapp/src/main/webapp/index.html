@@ -25,11 +25,12 @@
 	
 	<link rel="stylesheet" href="css/codemirror/codemirror.css">
 <!-- 	<link rel="stylesheet" href="css/codemirror/theme/neo.css"> -->
-	<link rel="stylesheet" href="css/codemirror/theme/elegant.css">
-	<link rel="stylesheet" href="css/codemirror/theme/neat.css">
-	<link rel="stylesheet" href="js/codemirror/addon/fold/foldgutter.css">
-	<link rel="stylesheet" href="js/codemirror/addon/hint/show-hint.css">
-	<link rel="stylesheet" href="css/calc/r-editor.css">
+	<link rel="stylesheet" href="./css/codemirror/theme/elegant.css">
+	<link rel="stylesheet" href="./css/codemirror/theme/neat.css">
+	<link rel="stylesheet" href="./js/codemirror/addon/fold/foldgutter.css">
+	<link rel="stylesheet" href="./js/codemirror/addon/hint/show-hint.css">
+	<link rel="stylesheet" href="./js/codemirror/addon/display/fullscreen.css">
+	<link rel="stylesheet" href="./css/calc/r-editor.css">
 	
 	<!-- ==== Custom style ==== -->
 	<link rel="stylesheet" href="css/calc.css">
@@ -64,6 +65,7 @@
 				 				<div class="col-md-6 no-padding height50">
 				 					<button type="button" class="btn execute calculation-steps-required">
 					 					<i class="fa-play icon-5"></i>
+					 					<span class="badge"></span>
 					 				</button>
 				 				</div>
 				 				<div class="col-md-6 no-padding height50">
@@ -189,7 +191,7 @@
 			</div>
 			<div class="col-md-3">
 				<div class="logo">
-					CA<img src="img/of_calc_logo.png" width="40em">LC
+					<img src="img/of_calc_logo.png" width="40em">CALC
 <!-- 					<img src="img/of-logo.png" width="30em">pen Foris Calc -->
 					<div class="application-version"></div>
 				</div>
@@ -451,6 +453,7 @@
   	<script src="./js/codemirror/addon/fold/markdown-fold.js"></script>
   	<script src="./js/codemirror/addon/fold/comment-fold.js"></script>
   	<script src="./js/codemirror/addon/hint/show-hint.js"></script>
+  	<script src="./js/codemirror/addon/display/fullscreen.js"></script>
   	
 	<!-- utils -->
 	<script src="./js/calc/utils/utils.js"></script>
