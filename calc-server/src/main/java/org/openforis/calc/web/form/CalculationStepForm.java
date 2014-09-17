@@ -48,6 +48,8 @@ public class CalculationStepForm {
 	
 	private String aggregateParameters;
 	
+	private Boolean active;
+	
 	public Integer getId() {
 		return id;
 	}
@@ -175,5 +177,13 @@ public class CalculationStepForm {
 	public void setAggregateParameters(String aggregateParameters) {
 		this.aggregateParameters = aggregateParameters;
 	}
-
+	
+	public Boolean getActive() {
+		return active;
+	}
+	
+	public void setActive(Boolean active) {
+		this.active = active;
+	}
+	
 }

@@ -2,11 +2,13 @@
  * Manager for CalculationStep model class 
  */
 function CalculationStepManager() {
+	this.contextPath = "rest/calculationstep";
 	
 }
 
 CalculationStepManager.prototype = (function() {
-
+	
+	// why not using an instance variable?!
 	var contextPath = "rest/calculationstep";
 	
 	/**
@@ -190,6 +192,39 @@ CalculationStepManager.prototype.updateWorkspaceStatus = function( obj ,  callba
 		Calc.homeDataManager.refresh();
 	});
 };
+
+/**
+ * Set the active property of the calculation step passed as argument
+ * @param step
+ * @param active
+ * @param callback
+ * 
+ * @author Mino Togna
+ */
+CalculationStepManager.prototype.updateActive = function( step ,  active , callback ){
+	var $this = this;
+	UI.lock();
+	WorkspaceManager.getInstance().activeWorkspace(function ( ws ) {
+		
+		$.ajax({
+			url			: $this.contextPath + "/" + step.id + "/active/" + active + ".json",
+			dataType	:"json" ,
+			type		: "POST" 
+		})
+		.done(function(response){
+			var step = response.fields.calculationStep;
+			ws.updateCalculationStep( step );
+			
+			UI.unlock();
+			
+			Utils.applyFunction( callback , step );
+		})
+		.error( function() {
+			Calc.error.apply( this , arguments );
+		});
+	});
+	
+}
 
 //singleton instance
 var _calculationStepManager = null;

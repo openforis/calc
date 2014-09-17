@@ -487,7 +487,12 @@ public class CalcJob extends Job {
 	void setProcessingChain(ProcessingChain processingChain) {
 		this.processingChain = processingChain;
 		List<CalculationStep> steps = this.processingChain.getCalculationSteps();
-		this.addCalculationSteps( steps );
+		for (CalculationStep calculationStep : steps) {
+			if( calculationStep.getActive() ){
+				this.addCalculationStep(calculationStep);
+			}
+		}
+//		this.addCalculationSteps( steps );
 	}
 	
 	/**

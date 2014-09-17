@@ -67,7 +67,7 @@ public class ProcessingChainManager {
 	}
 	
 	@Transactional
-	public void saveCalculationStep( CalculationStep step ) {
+	public void saveCalculationStep( CalculationStep step , boolean resetResults ) {
 		if ( step.getId() == null ) {
 			Long nextval = psql.nextval( Sequences.CALCULATION_STEP_ID_SEQ );
 			step.setId( nextval.intValue() );
@@ -79,7 +79,14 @@ public class ProcessingChainManager {
 		
 		updateProcessingChainStatus( step.getProcessingChain() , Status.PENDING );
 		
-		workspaceService.resetResult( step.getOutputVariable() );
+		if( resetResults ){
+			workspaceService.resetResult( step.getOutputVariable() );
+		}
+		
+	}
+	@Transactional
+	public void saveCalculationStep( CalculationStep step ) {
+		this.saveCalculationStep( step , true );
 	}
 	
 	public CalculationStep loadCalculationStep( int stepId ){

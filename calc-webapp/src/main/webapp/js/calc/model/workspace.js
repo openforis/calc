@@ -159,6 +159,23 @@ Workspace.prototype.updateProcessingChain = function( processingChain ) {
 	}
 };
 /**
+ * Update the calculation step of the default processing chain passed as argument
+ * @param step
+ */
+Workspace.prototype.updateCalculationStep = function( step ){
+	var chain = this.getDefaultProcessingChain();
+	if( chain && chain.calculationSteps ){
+		for( var i in chain.calculationSteps ){
+			var chainStep = chain.calculationSteps[ i ];
+			if( chainStep.id == step.id ){
+				chain.calculationSteps[ i ] = step;
+				return;
+			}
+		}
+	}
+};
+
+/**
  * Returns the user defined categories
  */
 Workspace.prototype.userDefinedcategories = function(){

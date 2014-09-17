@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables.pojos;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CalculationStepBase implements java.io.Serializable {
 
-	private static final long serialVersionUID = 141090334;
+	private static final long serialVersionUID = 1260849944;
 
 	private java.lang.Integer                             id;
 	private java.lang.Integer                             chainId;
@@ -27,6 +27,7 @@ public class CalculationStepBase implements java.io.Serializable {
 	private org.openforis.calc.chain.CalculationStep.Type type;
 	private java.lang.Long                                equationListId;
 	private org.openforis.calc.engine.ParameterMap        aggregateParameters;
+	private java.lang.Boolean                             active;
 
 	public CalculationStepBase() {}
 
@@ -44,7 +45,8 @@ public class CalculationStepBase implements java.io.Serializable {
 		java.lang.Integer                             outputVariableId,
 		org.openforis.calc.chain.CalculationStep.Type type,
 		java.lang.Long                                equationListId,
-		org.openforis.calc.engine.ParameterMap        aggregateParameters
+		org.openforis.calc.engine.ParameterMap        aggregateParameters,
+		java.lang.Boolean                             active
 	) {
 		this.id = id;
 		this.chainId = chainId;
@@ -60,6 +62,7 @@ public class CalculationStepBase implements java.io.Serializable {
 		this.type = type;
 		this.equationListId = equationListId;
 		this.aggregateParameters = aggregateParameters;
+		this.active = active;
 	}
 
 	public java.lang.Integer getId() {
@@ -172,5 +175,13 @@ public class CalculationStepBase implements java.io.Serializable {
 
 	public void setAggregateParameters(org.openforis.calc.engine.ParameterMap aggregateParameters) {
 		this.aggregateParameters = aggregateParameters;
+	}
+
+	public java.lang.Boolean getActive() {
+		return this.active;
+	}
+
+	public void setActive(java.lang.Boolean active) {
+		this.active = active;
 	}
 }

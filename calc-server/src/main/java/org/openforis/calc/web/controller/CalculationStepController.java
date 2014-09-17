@@ -23,15 +23,12 @@ import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.Category;
 import org.openforis.calc.metadata.CategoryLevel;
 import org.openforis.calc.metadata.CategoryManager;
-import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.EquationList;
 import org.openforis.calc.metadata.MultiwayVariable;
-import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.module.r.CalcRModule;
 import org.openforis.calc.module.r.CustomROperation;
 import org.openforis.calc.persistence.jooq.ParameterMapConverter;
-import org.openforis.calc.utils.StringUtils;
 import org.openforis.calc.web.form.CalculationStepForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -218,10 +215,11 @@ public class CalculationStepController {
 			step = chain.getCalculationStepById( stepId );
 		}
 		
-		step.setModuleName(CalcRModule.MODULE_NAME);
-		step.setModuleVersion(CalcRModule.VERSION_1);
-		step.setOperationName(CustomROperation.NAME);
-		step.setCaption(form.getCaption());
+		step.setModuleName( CalcRModule.MODULE_NAME );
+		step.setModuleVersion( CalcRModule.VERSION_1 );
+		step.setOperationName( CustomROperation.NAME );
+		step.setCaption( form.getCaption() );
+		step.setActive( form.getActive() );
 		
 		Type type = CalculationStep.Type.valueOf( form.getType() );
 		step.setType(type);
@@ -284,5 +282,18 @@ public class CalculationStepController {
 		processingChainManager.shiftCalculationStep(step, stepNo);
 		return response;
 	}
+	
+	@RequestMapping(value = "/{stepId}/active/{active}.json", method = RequestMethod.POST)
+	public @ResponseBody Response updateActive(@PathVariable int stepId, @PathVariable Boolean active) {
+		
+		CalculationStep step = load( stepId );
+		step.setActive(active);
+		processingChainManager.saveCalculationStep( step , false );
+		
+		Response response	 = new Response();
+		response.addField( "calculationStep" , step );
+		return response;
+	}
+	
 	
 }

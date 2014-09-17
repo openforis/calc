@@ -112,15 +112,12 @@ HomeCalculationManager.prototype.sortUpdate = function(event, ui) {
 HomeCalculationManager.prototype.updateStep = function(step, callback) {
 	var element = this.getStepElement(step);
 	if (element.length == 0) {
-		this.addStepElement(step);
+		this.addStepElement( step );
 	} else {
-		element.data("calculationStep", step);
-		element.find("button").text(step.caption);
-//		element.find("button").text(step.stepNo + ". " + step.caption);
+		this.updateCalculationStepUI( element , step );
 	}
-	if (callback) {
-		callback();
-	}
+	this.updateActiveStepsCount();
+	Utils.applyFunction(callback);
 };
 
 /**
@@ -140,14 +137,42 @@ HomeCalculationManager.prototype.updateSteps = function(callback) {
 				$.each( chain.calculationSteps , function( i, step ){
 					$this.addStepElement( step );
 				});
-				if( chain.calculationSteps ){
-					length = chain.calculationSteps.length > 0 ? chain.calculationSteps.length : "";
-				}
 			}
-			// update number of steps
-			$this.executeBtn.find( ".badge" ).html( length );
+			$this.updateActiveStepsCount();
 		}
 	});
+};
+/**
+ * Update the count of the active calculation steps 
+ */
+HomeCalculationManager.prototype.updateActiveStepsCount = function() {
+	var $this = this;
+
+	var updateCount = function() {
+		WorkspaceManager.getInstance().activeWorkspace( function(ws){
+			if( ws ){
+				var count = 0;
+				var chain = ws.getDefaultProcessingChain();
+				if( chain ){
+					$.each( chain.calculationSteps , function( i, step ){
+						if( step.active == true ){
+							count++;
+						}
+						
+					});
+				}
+				var badge = $this.executeBtn.find( ".badge" );
+				badge.fadeTo( 0 , 0 );
+				badge.html( count );
+				if( count >0 ){
+					badge.fadeTo( 500 , 1 );
+				} 
+				
+			}
+		});
+	};
+	
+	setTimeout( updateCount, 0 );
 };
 
 /**
@@ -260,20 +285,57 @@ HomeCalculationManager.prototype.addStepElement = function(step) {
 	var $this = this;
 
 	var element = $this.calculationStepBtnTemplate.clone();
+	this.stepsContainer.append(element);
 	
-	element.removeClass("template");
-	element.data("calculationStep", step);
-	element.attr("id", "calculation-step-" + step.id);
+	element.removeClass( "template" );
+	element.attr( "id", "calculation-step-" + step.id );
+	element.attr( "href", "step-edit.html?id=" + step.id );
 
-//	element.find("button").text(step.stepNo + ". " + step.caption);
-	element.find("button").text( step.caption );
-	element.attr("href", "step-edit.html?id=" + step.id);
+	element.click( $.proxy($this.stepClickHandler, $this) );
 
-	element.click($.proxy($this.stepClickHandler, $this));
+	var button 	= element.find( "button" );
+	var badge 	= $( '<div class="badge"><i></i></div>' );
+	button.prepend( badge  );
+	
+	badge.click(function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		
+		var calcStep = element.data( "calculationStep" ); 
+		CalculationStepManager.getInstance().updateActive( step , !calcStep.active , function(step) {
+			$this.updateStep( step );
+		});
+	});
+	var invertBadgeClass = function( e ){
+		var i = $(this).find( 'i' );
+		if( i.hasClass('fa-toggle-on') ){
+			i.removeClass().addClass( 'icon-5 fa-toggle-off' );
+		} else {
+			i.removeClass().addClass( 'icon-5 fa-toggle-on' );
+		}
+	};
+	badge.mouseover( invertBadgeClass );
+	badge.mouseout( invertBadgeClass );
 
-	$this.stepsContainer.append(element);
+	this.updateCalculationStepUI( element , step );
 
+	
 	return element;
+};
+
+HomeCalculationManager.prototype.updateCalculationStepUI = function( element , step ){
+	element.data( "calculationStep", step );
+//	var step 	= element.data( "calculationStep" );
+	
+	var button = element.find( "button" );
+	button.find('.text').text( step.caption );
+	
+	var badge 		= button.find( ".badge" );
+	var cssClass	= "icon-5 fa-toggle-" + ( (step.active == true) ? "on" : "off" );
+	badge.find( "i" ).removeClass().addClass( cssClass );
+	
+	var opacity = ( step.active == true ) ? 1 : 0.4;
+	button.fadeTo( 1000 , opacity );
 };
 
 /**

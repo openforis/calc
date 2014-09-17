@@ -410,13 +410,15 @@ public class Entity extends EntityBase {
 		
 		ProcessingChain processingChain = getWorkspace().getDefaultProcessingChain();
 		for (CalculationStep step : processingChain.getCalculationSteps()) {
-			
-			Variable<?> var = step.getOutputVariable();
-			if( var instanceof QuantitativeVariable){
-				QuantitativeVariable qtyVar = (QuantitativeVariable) var;
-				Entity outputEntity = qtyVar.getEntity();
-				if( outputEntity.getId().equals( this.getId() ) ){
-					map.put( qtyVar, step );
+			if( step.getActive() ){
+				
+				Variable<?> var = step.getOutputVariable();
+				if( var instanceof QuantitativeVariable){
+					QuantitativeVariable qtyVar = (QuantitativeVariable) var;
+					Entity outputEntity = qtyVar.getEntity();
+					if( outputEntity.getId().equals( this.getId() ) ){
+						map.put( qtyVar, step );
+					}
 				}
 			}
 			
@@ -432,12 +434,14 @@ public class Entity extends EntityBase {
 		ProcessingChain processingChain = getWorkspace().getDefaultProcessingChain();
 		List<CalculationStep> steps = processingChain.getCalculationSteps();
 		for (CalculationStep step : steps) {
-			Variable<?> var = step.getOutputVariable();
-			if( var instanceof MultiwayVariable){
-				MultiwayVariable variable = (MultiwayVariable) var;
-				Entity outputEntity = variable.getEntity();
-				if( outputEntity.getId().equals( this.getId() ) ){
-					variables.add( variable );
+			if( step.getActive() ){
+				Variable<?> var = step.getOutputVariable();
+				if( var instanceof MultiwayVariable){
+					MultiwayVariable variable = (MultiwayVariable) var;
+					Entity outputEntity = variable.getEntity();
+					if( outputEntity.getId().equals( this.getId() ) ){
+						variables.add( variable );
+					}
 				}
 			}
 		}
