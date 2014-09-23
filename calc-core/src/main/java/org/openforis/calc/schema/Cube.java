@@ -1,9 +1,9 @@
 package org.openforis.calc.schema;
 import static org.openforis.calc.schema.ErrorTable.ABSOLUTE_ERROR_LABEL;
-import static org.openforis.calc.schema.ErrorTable.RELATIVE_ERROR_LABEL;
-import static org.openforis.calc.schema.ErrorTable.VARIANCE_LABEL;
 import static org.openforis.calc.schema.ErrorTable.MEAN_LABEL;
+import static org.openforis.calc.schema.ErrorTable.RELATIVE_ERROR_LABEL;
 import static org.openforis.calc.schema.ErrorTable.TOTAL_LABEL;
+import static org.openforis.calc.schema.ErrorTable.VARIANCE_LABEL;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

@@ -4,12 +4,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
 import java.util.List;
-import java.util.SortedMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.zip.ZipFile;
 
 import javax.servlet.ServletOutputStream;
@@ -18,7 +13,6 @@ import javax.sql.DataSource;
 import javax.validation.Valid;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
@@ -269,36 +263,6 @@ public class WorkspaceController {
 		}
 		return null;
 		
-	}
-	
-	
-	public static void main(String[] args) throws UnsupportedEncodingException {
-//		String string = "gfdsgbfd$";
-		
-//		Pattern p = Pattern.compile( "\\w+(\\$\\w*)?" );
-//		Pattern p = Pattern.compile("\\w*(\\$\\w)?");
-//		Matcher m = p.matcher(string);
-		
-//		System.out.println( m.matches() );
-		
-		String charsetName = "US-ASCII";
-//		String charsetName = "UTF-8";
-//		String charsetName = "ISO-8859-9";
-		Charset charset = Charset.forName(charsetName);
-		String s = "Kiểu rừng và sử dụng đất [forest_status]";
-		byte[] bytes = s.getBytes( "UTF-8" );
-		s = new String( bytes , "ISO-8859-1");
-		System.out.println( s );
-		
-		String string = StringEscapeUtils.ESCAPE_XML.translate(s);
-		System.out.println(string);
-
-		System.out.println( StringEscapeUtils.escapeHtml4(s).replaceAll("&", "&amp;") );
-		
-		//		SortedMap<String,Charset> charsets = Charset.availableCharsets();
-//		for ( String string : charsets.keySet()) {
-//			System.out.println( charsets.get(string));
-//		}
 	}
 	
 }
