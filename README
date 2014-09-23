@@ -3,11 +3,14 @@
 ==============================================================
 		
 - Open Foris Calc:		
-	https://www.dropbox.com/sh/dal2upm2tu7jtx2/AAC5u-lgXRNGpIb7laAQYFWWa
-
+	Windows:
+	http://www.openforis.org/nexus/service/local/artifact/maven/redirect?r=releases&g=org.openforis.calc&a=calc-installer&v=LATEST&c=windows&e=exe
+	
+	Linux:
+	http://www.openforis.org/nexus/service/local/artifact/maven/redirect?r=releases&g=org.openforis.calc&a=calc-installer&v=LATEST&c=linux&e=run
+	
 - Open Foris Collect:
 	http://www.openforis.org/nexus/service/local/artifact/maven/redirect?r=releases&g=org.openforis.collect&a=collect-assembly&v=LATEST&e=zip
-
 - Open Foris Test Data:
 	http://www.openforis.org/nexus/service/local/artifact/maven/redirect?r=releases&g=org.openforis.test-data&a=test-data&v=LATEST&e=zip
 
