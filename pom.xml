@@ -23,9 +23,9 @@
 		<postgres-driver.version>9.1-901-1.jdbc4</postgres-driver.version>
 		<sqlite-driver.version>3.7.2</sqlite-driver.version>
 		<jooq.version>3.3.1</jooq.version>
-		<collect.version>3.2.1-a8</collect.version>
+		<collect.version>3.2.2-a3</collect.version>
 		<mondrian.version>3.5.0</mondrian.version>	
-		<of-commons-version>0.0.11</of-commons-version>
+		<of-commons-version>0.0.13</of-commons-version>
 		<geotools.version>2.7.5</geotools.version>
 		<jackson.version>2.1.0</jackson.version>
 	</properties>
@@ -205,12 +205,12 @@
 			<dependency>
 				<groupId>org.openforis.collect</groupId>
 				<artifactId>collect-core</artifactId>
-				<version>3.2.1-a8</version>
+				<version>${collect.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.openforis.collect</groupId>
 				<artifactId>collect-rdb</artifactId>
-				<version>3.2.1-a8</version>
+				<version>${collect.version}</version>
 			</dependency>
 			
 			<!-- Open Foris Commmons -->
