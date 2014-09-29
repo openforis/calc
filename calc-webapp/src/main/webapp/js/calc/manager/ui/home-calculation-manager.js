@@ -290,7 +290,7 @@ HomeCalculationManager.prototype.addStepElement = function(step) {
 	element.removeClass( "template" );
 	element.attr( "id", "calculation-step-" + step.id );
 	element.attr( "href", "step-edit.html?id=" + step.id );
-
+	
 	element.click( $.proxy($this.stepClickHandler, $this) );
 
 	var button 	= element.find( "button" );
@@ -334,6 +334,9 @@ HomeCalculationManager.prototype.updateCalculationStepUI = function( element , s
 	var cssClass	= "icon-5 fa-toggle-" + ( (step.active == true) ? "on" : "off" );
 	badge.find( "i" ).removeClass().addClass( cssClass );
 	
+	// add or remove type css class
+	( step.active ) ? element.addClass( step.type ) : element.removeClass( step.type );
+
 	var opacity = ( step.active == true ) ? 1 : 0.4;
 	button.fadeTo( 1000 , opacity );
 };

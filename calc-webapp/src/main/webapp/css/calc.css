@@ -331,14 +331,20 @@ button.settings:hover {
 	height: 100%;
 	background-color: #4d5e75;
 	border-color: #4d5e75;
-/* 	border-color:  #5a5e6b; */
 }
 
 #calculation li.calculation-step button:hover {
 	width: 100%;
 	background-color: #5b718c;
 	border-color: #5b718c;
-/* 	border-color:  #5a5e6b; */
+}
+#calculation li.CATEGORY button {
+	background-color: #637471;
+	border-color: #637471;
+}
+#calculation li.EQUATION button {
+	background-color: #465160;
+	border-color: #465160;
 }
 
 #calculation li.calculation-step button .badge{
@@ -1259,6 +1265,9 @@ ul.ui-sortable li {
 .task-status {
 	padding: 6px 0px;
 /* 	border-bottom: 1px solid #ecf0f1; */
+}
+.task-status .percent {
+	font-size: 0.8em;
 }
 
 #job-status .log-section {

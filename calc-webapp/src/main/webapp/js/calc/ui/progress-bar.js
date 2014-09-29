@@ -31,7 +31,7 @@ ProgressBar.prototype = (function() {
 			
 			// update percent text if set
 			if( this.percentSection ){
-				var htmlPercent = (percent >= 0) ? percent + " %" : " -% ";
+				var htmlPercent = (percent >= 0) ? percent + "%" : "-%";
 				this.percentSection.text( htmlPercent );
 			}
 		} 
