@@ -13,8 +13,10 @@ DataVisualisationOptions = function ( container ) {
 	this.entityCombo 	= this.container.find( ".entity-select select" ).combobox();
 	this.quantities		= this.container.find( ".quantities" );
 	this.categories 	= this.container.find( ".categories" );
+	this.texts 			= this.container.find( ".texts" );
 	this.qBtn 			= this.container.find( "[name=q-btn]" ); 
 	this.cBtn 			= this.container.find( "[name=c-btn]" ); 
+	this.tBtn 			= this.container.find( "[name=t-btn]" ); 
 	this.viewResultsBtn	= this.container.find( ".view-results-btn button" ); 
 
 	// function to call after view results btn is clicked
@@ -34,6 +36,7 @@ DataVisualisationOptions.prototype.init = function() {
 	var $this = this;
 	
 	this.categories.hide();
+	this.texts.hide();
 	this.container.css( {"height" : this.optionButtonsHeight } );
 	
 	this.container.on( "show.bs.collapse" , function(e) {
@@ -56,6 +59,8 @@ DataVisualisationOptions.prototype.init = function() {
 		// empty sections
 		$this.quantities.empty();
 		$this.categories.empty();
+		$this.texts.empty();
+		
 		if ( entityId ) {
 			// create data provider
 			$this.dataProvider = new DataViewProvider( entityId, null, true );
@@ -74,12 +79,19 @@ DataVisualisationOptions.prototype.init = function() {
 	});
 	
 	this.qBtn.click( function(e) {
-		$this.quantities.show();
 		$this.categories.hide();
+		$this.texts.hide();
+		$this.quantities.show();
 	});
 	this.cBtn.click( function(e) {
-		$this.categories.show();
 		$this.quantities.hide();
+		$this.texts.hide();
+		$this.categories.show();
+	});
+	this.tBtn.click( function(e){
+		$this.quantities.hide();
+		$this.categories.hide();
+		$this.texts.show();
 	});
 	
 	this.viewResultsBtn.click( function(e){
@@ -99,9 +111,11 @@ DataVisualisationOptions.prototype.addVariableOptions = function( entity ) {
 
 		this.quantities.append( header );
 		this.categories.append( header.clone() );
+		this.texts.append( header.clone() );
 		
 		this.addVariableOptionButtons( entity.quantitativeVariables() , this.quantities );
 		this.addVariableOptionButtons( entity.categoricalVariables() , this.categories );
+		this.addVariableOptionButtons( entity.textVariables() , this.texts );
 		
 		entity = entity.parent();
 	}
@@ -110,6 +124,12 @@ DataVisualisationOptions.prototype.addVariableOptions = function( entity ) {
 DataVisualisationOptions.prototype.addVariableOptionButtons = function( variables , uiContainer ) {
 //    var filters  = ;
 	var $this = this;
+	
+	if( variables.length <= 0 ){
+		var div = $( '<div class="width100 clearfix"> --- </div>' );
+		uiContainer.append( div );
+	}
+	
     for( var i in variables ) {
 		var v = variables[i];
 		
@@ -168,6 +188,7 @@ DataVisualisationOptions.prototype.refresh = function() {
 		if( ws ) {
 			$this.categories.empty();
 			$this.quantities.empty();
+			$this.texts.empty();
 			
 			$this.entityCombo.data( ws.entities, 'id' , 'name' );
 		}
