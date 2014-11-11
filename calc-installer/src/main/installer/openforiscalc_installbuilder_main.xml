@@ -110,6 +110,7 @@
             <mustExist>1</mustExist>
             <width>30</width>
         </directoryParameter>
+
         <!-- parameters for creating Java launchers -->
         <stringParameter name="java_launcher_destination" value="${installdir}" ask="0">
             <description></description>
@@ -182,7 +183,6 @@
             <explanation></explanation>
             <default></default>
         </booleanParameter>
-        
     </parameterList>
     <postInstallationActionList>
         <addEnvironmentVariable>
@@ -219,6 +219,7 @@
                 </substitution>
             </substitutionList>
         </substitute>
+
         <!-- <addEnvironmentVariable>
             <name>JAVA_HOME</name>
             <scope>system</scope>
@@ -327,7 +328,6 @@
                 </platformTest>
             </ruleList>
         </addDirectoryToPath>
-        
         <createJavaLaunchers>
             <destination>${java_launcher_destination}</destination>
             <explanation>${msg(Installer.Java.CreateLaunchers.Explanation)}</explanation>
@@ -401,7 +401,6 @@
                 <isTrue value="${java_create_launcher}"/>
             </ruleList>
         </actionGroup>
-        
         <changeOwnerAndGroup>
             <files>/home/${env(SUDO_USER)}/Desktop/${java_launcher_binary_name}</files>
             <group></group>
