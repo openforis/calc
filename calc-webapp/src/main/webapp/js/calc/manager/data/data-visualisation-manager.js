@@ -20,10 +20,10 @@ function DataVisualisationManager( container ) {
 	this.tableOptions	= new DataVisualisationOptions( this.tableOptionsUi );
 
 	// scatter chart options
-	this.scatterOptionsUi 	= this.dataVisOptions.find( '.scatter-options' );
-	this.scatterOptions		= new DataVisualisationOptions( this.scatterOptionsUi );
-	this.scatterOptions.maxVariables = 2;
-	this.scatterOptions.disableCategories = true;
+	this.scatterOptionsUi 					= this.dataVisOptions.find( '.scatter-options' );
+	this.scatterOptions						= new DataVisualisationOptions( this.scatterOptionsUi );
+	this.scatterOptions.maxVariables 		= 2;
+	this.scatterOptions.disableCategories 	= true;
 	
 	// accordion option buttons
 	this.dataTableBtn 	= this.dataVisOptions.find(".table-btn");
