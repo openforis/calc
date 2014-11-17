@@ -6,6 +6,7 @@ package org.openforis.calc.engine;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -196,6 +197,7 @@ public class CalcJob extends Job {
 			}
 			readDataTask.addScript( r().dbSendQuery(connection, upd) );
 			
+			Set<String> selectFields = new HashSet<String>();
 			// 2. append select data
 			SelectQuery<Record> select = new Psql().selectQuery();
 			select.addFrom(view);
@@ -203,7 +205,10 @@ public class CalcJob extends Job {
 			// add ids up to the root
 			select.addSelect( view.getAncestorIdFields() );
 			for (String var : group.getInputVariables(entityId) ) {
-				select.addSelect(view.field(var));
+				if( !selectFields.contains(var)){
+					select.addSelect(view.field(var));
+					selectFields.add(var);
+				}
 			}
 			
 			// add plot area variables to select as well
@@ -211,7 +216,10 @@ public class CalcJob extends Job {
 			if( plotArea != null ){
 				Set<String> variables = plotArea.getVariables();
 				for ( String var : variables ) {
-					select.addSelect( view.field(var) );	
+					if( !selectFields.contains(var)){
+						select.addSelect( view.field(var) );	
+						selectFields.add(var);
+					}
 				}
 			}
 			
