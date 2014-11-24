@@ -230,7 +230,7 @@ SamplingDesignManager.prototype.validateStep0 = function(){
 /**
  * Two phases validation
  */
-SamplingDesignManager.prototype.validateStep2 = function(){
+SamplingDesignManager.prototype.validateStep1 = function(){
 	var $this = this;
 	if( this.samplingDesign.twoPhases === true ){
 		
@@ -260,7 +260,7 @@ SamplingDesignManager.prototype.validateStep2 = function(){
 /**
  * Validate strata settings
  */
-SamplingDesignManager.prototype.validateStep3 = function(){
+SamplingDesignManager.prototype.validateStep2 = function(){
 	var $this = this;
 	if( this.samplingDesign.stratified === true ){
 		
@@ -286,7 +286,7 @@ SamplingDesignManager.prototype.validateStep3 = function(){
 /**
  * Validate cluster settings
  */
-SamplingDesignManager.prototype.validateStep4 = function(){
+SamplingDesignManager.prototype.validateStep3 = function(){
 	var valid = true;
 	
 	if( this.samplingDesign.cluster === true ){
@@ -303,7 +303,7 @@ SamplingDesignManager.prototype.validateStep4 = function(){
 /**
  * Validate aoi column 
  */
-SamplingDesignManager.prototype.validateStep5 = function(){
+SamplingDesignManager.prototype.validateStep4 = function(){
 	var	valid =  this.aoiJoinManager.validate();
 	if(valid) {
 		this.samplingDesign.aoiJoinSettings = this.aoiJoinManager.joinOptions();
@@ -314,7 +314,7 @@ SamplingDesignManager.prototype.validateStep5 = function(){
 /**
  * Validate weight script 
  */
-SamplingDesignManager.prototype.validateStep6 = function(){
+SamplingDesignManager.prototype.validateStep5 = function(){
 	if( this.weightInput.val().trim() ){
 		this.samplingDesign.samplingUnitWeightScript = this.weightInput.val();
 		return true;
@@ -350,12 +350,12 @@ SamplingDesignManager.prototype.updateSamplingDesign = function() {
 					this.addToSdUi( "Sampling unit<br/>" + this.samplingUnit.name );
 					
 					// view properties
-					if( this.samplingDesign.srs === true ){
-						this.addToSdUi("Srs");
-					}
-					if( this.samplingDesign.systematic === true ){
-						this.addToSdUi("Systematic");
-					}
+//					if( this.samplingDesign.srs === true ){
+//						this.addToSdUi("Srs");
+//					}
+//					if( this.samplingDesign.systematic === true ){
+//						this.addToSdUi("Systematic");
+//					}
 					if( this.samplingDesign.twoPhases === true ){
 						this.addToSdUi("Two phases");
 					}
