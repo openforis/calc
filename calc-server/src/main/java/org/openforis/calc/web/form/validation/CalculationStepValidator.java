@@ -232,7 +232,9 @@ public class CalculationStepValidator implements ConstraintValidator<Calculation
 			valid = false;
 		}
 		
-		valid = validateRScript( form, ctx );
+		if ( !validateRScript( form, ctx ) ){
+			valid = false;
+		}
 		return valid;
 	}
 

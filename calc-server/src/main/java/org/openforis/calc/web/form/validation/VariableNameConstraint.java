@@ -22,7 +22,7 @@ import javax.validation.Payload;
 @Documented
 public @interface VariableNameConstraint {
 
-	String message() default "Variable name is not valid";
+	String message() default "Form not valid";
 	
 	Class<?>[] groups() default {};
 

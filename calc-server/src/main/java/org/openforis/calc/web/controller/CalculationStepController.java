@@ -270,7 +270,7 @@ public class CalculationStepController {
 		Integer variableId = processingChainManager.deleteCalculationStep(step);
 		
 		response.addField( "deletedStep" , stepId );
-		response.addField("deletedVariableId", variableId);
+		response.addField( "deletedVariableId", variableId );
 		response.addField( "processingChain", processingChain );
 		return response;
 	}

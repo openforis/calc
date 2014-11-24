@@ -110,25 +110,33 @@ public class ProcessingChainManager {
 		ProcessingChain processingChain = step.getProcessingChain();
 		
 		// 1. delete output variable
-		Variable<?> outputVariable = step.getOutputVariable();
-		Entity entity = outputVariable.getEntity();
-		// for now delete only categorical variable
-		Integer deletedVariable = null;
-		List<CalculationStep> steps = calculationStepDao.fetchByOutputVariableId(outputVariable.getId());
-		if( steps.size() == 1 ){
-			// set output var to null (foreign key constraint "calculation_step_variable_fkey" )
-			step.setOutputVariableId(null);
-			calculationStepDao.update(step);
-			
-			deletedVariable = outputVariable.getId();
-			workspaceService.deleteVariable(outputVariable, false);
+		Variable<?> outputVariable 	= step.getOutputVariable();
+		Integer deletedVariable 	= null;
+		Entity entity				=  null;
+		// it should never happen!
+		if( outputVariable != null ) {
+			entity = outputVariable.getEntity();
+			// for now delete only categorical variable
+			List<CalculationStep> steps = calculationStepDao.fetchByOutputVariableId(outputVariable.getId());
+			if( steps.size() == 1 ){
+				// set output var to null (foreign key constraint "calculation_step_variable_fkey" )
+				step.setOutputVariableId(null);
+				calculationStepDao.update(step);
+				
+				deletedVariable = outputVariable.getId();
+				workspaceService.deleteVariable(outputVariable, false);
+			}
 		}
+		
 		// 2. delete step from db
 		calculationStepDao.delete( step );
 		// 3. remove step from metadata
 		processingChain.removeCalculationStep( step );
+		
 		// 4. update entity view
-		entityDataViewDao.createOrUpdateView( entity );
+		if( entity != null ){
+			entityDataViewDao.createOrUpdateView( entity );
+		}
 		
 		updateProcessingChainStatus( processingChain, Status.PENDING );
 		

@@ -1,5 +1,6 @@
 package org.openforis.calc.metadata;
 
+import org.apache.commons.lang3.StringUtils;
 import org.openforis.calc.persistence.jooq.tables.pojos.VariableBase;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -23,6 +24,17 @@ public abstract class Variable<T> extends VariableBase {
 
 	public enum Type {
 		QUANTITATIVE, CATEGORICAL, BINARY, TEXT;
+		
+		public static Type fromString( String value ){
+			if( StringUtils.isNotBlank(value) ){
+				try {
+					return Type.valueOf( value.toUpperCase() );
+				} catch (Exception e) {
+					return null;
+				}
+			}
+			return null;
+		}
 	}
 
 	public enum Scale {

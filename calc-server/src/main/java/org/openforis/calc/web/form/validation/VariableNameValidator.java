@@ -7,8 +7,11 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.openforis.calc.chain.CalculationStep;
+import org.openforis.calc.chain.CalculationStep.Type;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceService;
+import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.web.form.VariableForm;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  */
 public class VariableNameValidator implements ConstraintValidator<VariableNameConstraint, VariableForm> {
-
+	
 	private static final String FIELD_NAME = "name";
 	private static final String[] RESERVED_WORDS = new String[] {
 		"aoi", 
@@ -33,7 +36,6 @@ public class VariableNameValidator implements ConstraintValidator<VariableNameCo
 	private static final String RESERVED_WORD_MESSAGE = "is a reserved word and cannot be used as variable name.";
 	private static final String NOT_UNIQUE_MESSAGE = "must be unique";
 	
-	
 	@Autowired
 	private WorkspaceService workspaceService;
 	
@@ -42,15 +44,22 @@ public class VariableNameValidator implements ConstraintValidator<VariableNameCo
 	}
 
 	@Override
-	public boolean isValid(VariableForm value,
-			ConstraintValidatorContext context) {
-		Integer variableId = value.getId();
-		String name = value.getName();
+	public boolean isValid(VariableForm form, ConstraintValidatorContext context) {
+		Workspace workspace = workspaceService.getActiveWorkspace();
+		Integer entityId	= form.getEntityId();
+		Entity entity 		= workspace.getEntityById( entityId );
+		Integer variableId 	= form.getId();
+		String variableName	= form.getName();
+		Type type 			= CalculationStep.Type.fromString( form.getType() );
 		
-		if ( isReservedWord(name) ) {
+		if( (type == Type.SCRIPT || type == Type.EQUATION ) && entity.isSamplingUnit() ){
+			addConstraintVialotion(context, "You cannot add a quantitative variable to the sampling unit entity" );
+			return false;
+		}		
+		if ( isReservedWord(variableName) ) {
 			addConstraintVialotion(context, RESERVED_WORD_MESSAGE);
 			return false;
-		} else if ( ! isUnique(variableId, name) ) {
+		} else if ( ! isUnique(variableId, variableName) ) {
 			addConstraintVialotion(context, NOT_UNIQUE_MESSAGE);
 			return false;
 		} else {

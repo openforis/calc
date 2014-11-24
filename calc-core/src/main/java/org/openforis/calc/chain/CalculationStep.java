@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.openforis.calc.engine.ParameterHashMap;
 import org.openforis.calc.engine.ParameterMap;
 import org.openforis.calc.engine.Workspace;
@@ -29,7 +30,18 @@ public class CalculationStep extends CalculationStepBase {
 	private static final long serialVersionUID = 1L;
 
 	public enum Type {
-		SCRIPT, EQUATION, CATEGORY
+		SCRIPT, EQUATION, CATEGORY;
+		
+		public static Type fromString( String value ){
+			if( StringUtils.isNotBlank(value) ){
+				try {
+					return Type.valueOf( value.toUpperCase() );
+				} catch (Exception e) {
+					return null;
+				}
+			}
+			return null;
+		}
 	}
 
 	@JsonIgnore
