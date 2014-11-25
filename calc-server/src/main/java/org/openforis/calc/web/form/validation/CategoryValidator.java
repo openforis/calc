@@ -39,7 +39,7 @@ public class CategoryValidator implements ConstraintValidator<CategoryContraint,
 		// caption must be unique
 		Workspace ws = workspaceService.getActiveWorkspace();
 		for ( Category category : ws.getCategories() ) {
-			if( category.getCaption().equalsIgnoreCase( form.getCaption().trim() ) ){
+			if( !category.getId().equals(form.getCategoryId()) && category.getCaption().equalsIgnoreCase( form.getCaption().trim() ) ){
 				ctx
 				.buildConstraintViolationWithTemplate( UNIQUE_CAPTION_MESSAGE )
 				.addPropertyNode( "caption" )

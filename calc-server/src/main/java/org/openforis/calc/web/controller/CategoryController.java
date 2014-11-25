@@ -12,6 +12,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.parser.ParseException;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceService;
+import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Category;
 import org.openforis.calc.metadata.CategoryHierarchy;
 import org.openforis.calc.metadata.CategoryLevel;
@@ -52,7 +53,7 @@ public class CategoryController {
 	 */
 	@RequestMapping(value = "create.json", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
-	synchronized Response create(@Valid CategoryForm form, BindingResult bindingResult) {
+	synchronized Response save(@Valid CategoryForm form, BindingResult bindingResult) {
 		Response response = new Response( bindingResult.getAllErrors() );
 		
 		if( response.getStatus() == Status.OK ){
@@ -62,28 +63,47 @@ public class CategoryController {
 			String caption = form.getCaption();
 			String name = form.getCaption().replaceAll( "\\W", "_" ).toLowerCase();
 			
-			Category category = new Category();
+			Category category = null;
+			Integer categoryId = form.getCategoryId();
+			if( categoryId == null ){
+				category = new Category();
+			} else {
+				category = workspace.getCategoryById( categoryId );
+			}
+			
 			category.setCaption(caption);
 			category.setName(name);
-			
-			CategoryHierarchy hierarchy = new CategoryHierarchy();
+
+			List<CategoryHierarchy> hierarchies = category.getHierarchies();
+			CategoryHierarchy hierarchy = null; 
+			if( hierarchies.isEmpty() ){
+				hierarchy = new CategoryHierarchy();
+				category.addHierarchy( hierarchy );
+			} else {
+				hierarchy = hierarchies.get(0);
+			}
 			hierarchy.setCaption(caption);
 			hierarchy.setName(name);
-			category.addHierarchy(hierarchy);
 			
-			CategoryLevel level = new CategoryLevel();
+			List<CategoryLevel> levels = hierarchy.getLevels();
+			CategoryLevel level = null;
+			if( levels.isEmpty() ){
+				level = new CategoryLevel();
+				hierarchy.addLevel(level);
+			} else {
+				level = levels.get(0);
+			}
 			level.setName(name);
 			level.setCaption(caption);
 			level.setRank(1);
-			hierarchy.addLevel(level);
 			
 			List<CategoryLevelValue> values = createCategoryLevelValues( form.getCodes() , form.getCaptions() );
 			
-			workspaceService.addCategory( workspace, category , values );
+			workspaceService.saveOrUpdateCategory( workspace, category , values );
 			
 			response.setStatusOk();
 			response.addField( "categoryId", category.getId() );
-			response.addField("categories", workspace.getCategories());
+			response.addField( "categories", workspace.getCategories() );
 			
 		}
 		
@@ -110,6 +130,7 @@ public class CategoryController {
 		}
 		return values;
 	}
+	
 	@RequestMapping(value = "{categoryId}/level/classes.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	Response getCategoryDefaultLevelValues(@PathVariable int categoryId ) {
@@ -120,5 +141,42 @@ public class CategoryController {
 		JSONArray categoryClasses = categoryManager.loadCategoryClasses( workspace, categoryId );
 		response.addField("classes", categoryClasses);
 		return response ;
+	}
+	
+	/**
+	 * Loads all user defined categories
+	 * @return
+	 */
+	@RequestMapping(value = "all/userdefined.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	List<Category> loadUserDefinedCategories() {
+		Workspace workspace = workspaceService.getActiveWorkspace();
+		
+		List<Category> categories = categoryManager.loadUserDefinedCategories( workspace );
+		
+		return categories;
+	}
+	
+	@RequestMapping(value = "{categoryId}/delete.json", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	synchronized Response delete(@PathVariable int categoryId) {
+		Response response 	= new Response();
+		
+		Workspace workspace = workspaceService.getActiveWorkspace();
+		Category category 	= workspace.getCategoryById( categoryId );
+		
+		List<CategoricalVariable<?>> variables = workspace.getVariablesByCategory( category );
+		if( variables.size() > 0 ){
+			response.setStatusError();
+			response.addField( "error" , "This category cannot be deleted. There is one or more calculation step associated with it." );
+		} else {
+			Integer cateogryId = category.getId();
+			categoryManager.delete( category );
+			
+			response.addField( "categories", workspace.getCategories() );
+			response.addField( "categoryId", cateogryId );
+			response.setStatusOk();
+		}
+		return response;
 	}
 }

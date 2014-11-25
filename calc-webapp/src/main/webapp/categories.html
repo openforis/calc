@@ -1,0 +1,70 @@
+<div class="page-section" id="category-edit-page" style="padding-top: 10px">
+
+	<div class="col-md-12 height100" style="overflow: hidden;">
+	
+		<div class="row col-md-3 list-section height100">
+			<div class="row no-margin no-padding list-header">
+				<div class="col-md-9 col-md-offset-1" style="padding-top: 8px;">Categories</div>
+				<div class="col-md-2 no-padding no-margin">
+					<button name="add" type="button" class="btn no-background width100">
+						<i class="fa fa-plus-square"></i>
+					</button>
+				</div>
+			</div>
+			<div class="row categories">
+			</div>	
+		</div>
+		
+		<div class="row col-md-9 form-section height100">
+			<form class="form-horizontal" method="POST">
+				<input type="hidden" class="form-control" name="categoryId" /> 
+				<fieldset>
+					
+					<div class="form-group">
+						<label class="col-md-2 control-label">Caption</label>
+						<div class="col-md-10">
+							<input type="text" class="form-control" name="caption">
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-md-2 control-label">Classes</label>
+						
+						<div class="col-md-10">
+							<div class="row no-margin">
+								<div class="col-md-3">
+									Code
+								</div>
+								<div class="col-md-7">
+									Caption
+								</div>
+							</div>
+							<div class="row no-margin category-classes">
+							</div>
+						</div>
+					</div>
+					
+					<div class="row" style="margin-top: 25px">
+						<div class="col-md-2 col-md-offset-5">
+							<button type="button" class="btn btn-default save" style="width:100%">Save</button>
+						</div>
+<!-- 						<div class="col-md-3"> -->
+<!-- 							<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true" style="width:100%">Cancel</button> -->
+<!-- 						</div> -->
+					</div>					
+				</fieldset>
+			</form>		
+		</div>
+		
+	</div>
+	
+	
+	
+		
+	<script>
+	$(function(){
+		
+		// Javascript here
+		var categoryEditManager = new CategoryEditManager( "#category-edit-page" );
+	});
+	</script>
+</div>

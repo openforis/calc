@@ -156,26 +156,41 @@ public class CategoryManager {
 	 * @param category
 	 */
 	@Transactional
-	public void createCategory( Workspace workspace , Category category , List<CategoryLevelValue> values ) {
+	public void saveOrUpdateCategory( Workspace workspace , Category category , List<CategoryLevelValue> values ) {
 		
-		category.setId( psql.nextval(Sequences.CATEGORY_ID_SEQ).intValue() );
+		if( category.getId() == null ){
+			category.setId( psql.nextval(Sequences.CATEGORY_ID_SEQ).intValue() );
+			workspace.addCategory(category);
+			
+			categoryDao.insert( category );
+		} else {
+			categoryDao.update( category );
+		}
 		
-		workspace.addCategory(category);
-		
-		categoryDao.insert(category);
 		
 		for (CategoryHierarchy categoryHierarchy : category.getHierarchies()) {
-			categoryHierarchy.setId( psql.nextval(Sequences.CATEGORY_HIERARCHY_ID_SEQ).intValue() );
-			categoryHierarchy.setCategory(category);
-			categoryHierarchyDao.insert(categoryHierarchy);
+			if( categoryHierarchy.getId() == null ){
+				categoryHierarchy.setId( psql.nextval(Sequences.CATEGORY_HIERARCHY_ID_SEQ).intValue() );
+				categoryHierarchy.setCategory(category);
+				
+				categoryHierarchyDao.insert( categoryHierarchy );
+			} else {
+				categoryHierarchyDao.update( categoryHierarchy );
+			}
 			
 			for (CategoryLevel categoryLevel : categoryHierarchy.getLevels()) {
 
 				createCategoryLevelTable( workspace, categoryLevel , values );
 				
-				categoryLevel.setId( psql.nextval(Sequences.CATEGORY_LEVEL_ID_SEQ).intValue() );
-				categoryLevel.setHierarchy( categoryHierarchy );
-				categoryLevelDao.insert( categoryLevel );
+				if( categoryLevel.getId() == null ){
+					categoryLevel.setId( psql.nextval(Sequences.CATEGORY_LEVEL_ID_SEQ).intValue() );
+					categoryLevel.setHierarchy( categoryHierarchy );
+
+					categoryLevelDao.insert( categoryLevel );
+				} else {
+					categoryLevelDao.update( categoryLevel );
+				}
+				
 			}
 		}
 	}
@@ -190,6 +205,10 @@ public class CategoryManager {
 		Field<Long> idField = table.getIdField();
 		Field<String> codeField = table.getVarcharField( "code" );
 		Field<String> captionField = table.getVarcharField( "caption" );
+		
+		psql
+			.dropTableIfExists( table )
+			.execute();
 		
 		psql
 			.createTable( table, table.fields() )
@@ -318,7 +337,7 @@ public class CategoryManager {
 				Integer oldCategoryLevelId = level.getId();
 				
 				List<CategoryLevelValue> values = workspaceBackup.getCategoryLevelValues().get( level.getId() );
-				this.createCategory( workspace, category , values );
+				this.saveOrUpdateCategory( workspace, category , values );
 				
 				// replace categoryId in calc step of type category  
 				Integer newCategoryId = category.getId();
@@ -362,5 +381,48 @@ public class CategoryManager {
 		}
 		
 	}
+	
+	/**
+	 * Loads all categories created from Calc (where original id is null)
+	 * @param workspace
+	 * @return
+	 */
+	@Transactional
+	public List<Category> loadUserDefinedCategories( Workspace workspace ){
+		CategoryTable C = Tables.CATEGORY;
+		List<Category> categories = psql
+			.select()
+			.from( C )
+			.where( C.WORKSPACE_ID.eq( workspace.getId().longValue() ) )
+			.and( C.ORIGINAL_ID.isNull() )
+			.fetch()
+			.into(Category.class);
+		
+		return categories;
+	}
 
+	/**
+	 * Permanently delete the category with given id
+	 * @param categoryId
+	 */
+	@Transactional
+	public void delete( Category category ) {
+		Workspace workspace = category.getWorkspace();
+		
+		for (CategoryHierarchy hierarchy : category.getHierarchies()) {
+			for (CategoryLevel level : hierarchy.getLevels()) {
+				
+				DynamicTable<Record> table = new DynamicTable<Record>( level.getTableName(), level.getSchemaName() );
+				psql
+					.dropTableIfExists( table )
+					.execute();
+				
+				categoryLevelDao.delete( level );
+			}
+			categoryHierarchyDao.delete( hierarchy );
+		}
+		categoryDao.delete( category );
+		
+		workspace.removeCategory(category);
+	}
 }

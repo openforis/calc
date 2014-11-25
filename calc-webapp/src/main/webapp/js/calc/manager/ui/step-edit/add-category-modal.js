@@ -2,6 +2,8 @@
 * Add category modal window manager
 * @author Mino Togna
 * 
+* @Deprecated (TODO Use CategoryEditFormManager object instead)
+* 
 */
 
 AddCategoryModal = function( triggerButton , calcStepEditManager ){

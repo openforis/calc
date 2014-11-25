@@ -187,7 +187,7 @@ UI.Form.getInputType = function(inputField) {
  */
 UI.Form.reset = function($form) {
 	//TODO support other field types: select, radio buttons, checkboxes...
-	$form.find("input[type=text], textarea").val("");
+	$form.find("input[type=text], input[type=hidden], textarea").val("");
 	UI.Form.removeErrors($form);
 };
 

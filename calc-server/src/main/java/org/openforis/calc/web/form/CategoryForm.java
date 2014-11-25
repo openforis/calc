@@ -23,6 +23,8 @@ public class CategoryForm {
 
 	@NotEmpty
 	private List<String> captions;
+	
+	private Integer categoryId;
 
 	public String getCaption() {
 		return caption;
@@ -48,4 +50,12 @@ public class CategoryForm {
 		this.captions = captions;
 	}
 
+	public Integer getCategoryId() {
+		return categoryId;
+	}
+
+	public void setCategoryId(Integer categoryId) {
+		this.categoryId = categoryId;
+	}
+	
 }

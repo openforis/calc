@@ -13,6 +13,7 @@ import org.apache.commons.collections.Predicate;
 import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.metadata.AoiHierarchy;
+import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Category;
 import org.openforis.calc.metadata.CategoryHierarchy;
 import org.openforis.calc.metadata.CategoryLevel;
@@ -229,6 +230,13 @@ public class Workspace extends WorkspaceBase {
 		}
 		category.setWorkspace( this );
 		this.categories.add( category );
+	}
+	
+	public void removeCategory( Category category ){
+		if( this.categories == null ){
+			return;
+		}
+		this.categories.remove(category);
 	}
 	
 	public Category getCategoryById( Integer categoryId ){
@@ -461,7 +469,26 @@ public class Workspace extends WorkspaceBase {
 		}
 		return result;
 	}
-
+	
+	public List<CategoricalVariable<?>> getVariablesByCategory(Category category){
+		ArrayList<CategoricalVariable<?>> variables = new ArrayList<CategoricalVariable<?>>();
+		
+		for (Variable<?> variable : getVariables()) {
+			if( variable instanceof CategoricalVariable ){
+				for (CategoryHierarchy hierarchy : category.getHierarchies()) {
+					for (CategoryLevel level : hierarchy.getLevels()) {
+						Long levelId = level.getId().longValue();
+						if( levelId.equals(variable.getCategoryLevelId()) ){
+							variables.add( (CategoricalVariable<?>) variable );
+						}
+					}
+				}
+			}
+		}
+		
+		return variables;
+	}
+	
 	/** =====================================
 	 * 		Sampling Design utility methods
 	 * 	=====================================
@@ -533,5 +560,5 @@ public class Workspace extends WorkspaceBase {
 	public Schemas schemas() {
 		return new Schemas( this );
 	}
-	
+
 }

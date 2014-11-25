@@ -403,8 +403,8 @@ public class WorkspaceService {
 	 * @param workspace
 	 * @param category
 	 */
-	public void addCategory( Workspace workspace , Category category , List<CategoryLevelValue> values ) {
-		categoryManager.createCategory( workspace, category , values );
+	public void saveOrUpdateCategory( Workspace workspace , Category category , List<CategoryLevelValue> values ) {
+		categoryManager.saveOrUpdateCategory( workspace, category , values );
 	}
 
 	@Transactional

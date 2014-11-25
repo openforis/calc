@@ -1481,3 +1481,15 @@ ul.ui-sortable li {
 #error-settings .button-container button {
 	margin-bottom: 2px;
 }
+
+
+/**
+* Categories edit form
+*/
+#category-edit-page .list-header ,
+#category-edit-page .categories{
+	padding: 0px 5px 5px 5px;	
+}
+#category-edit-page .categories button {
+	margin-bottom: 2px;
+}
