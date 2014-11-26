@@ -321,8 +321,6 @@ button.settings:hover {
  	#calculation .calculation-step-placeholder {
  	width: 210px;
 	height: 90px;
-/* 	width: 15em; */
-/* 	height: 6em; */
 	padding: 1px 1px;
 }
 
@@ -338,6 +336,20 @@ button.settings:hover {
 	background-color: #5b718c;
 	border-color: #5b718c;
 }
+
+#calculation li.entity {
+	width: 210px;
+	height: 90px;
+	padding: 1px 1px;
+}
+#calculation li.entity button {
+	width: 100%;
+	height: 100%;
+	background-color: #4d5e75;
+	border-color: #4d5e75;
+}
+
+
 #calculation li.CATEGORY button {
 	background-color: #637471;
 	border-color: #637471;
@@ -364,6 +376,18 @@ button.settings:hover {
 #calculation button.highlight {
 	color: #ffe29c;
 }
+
+/* settings */
+#calculation .options {
+	position: fixed;
+	right: 170px;
+	width: 320px;
+	background-color: #5b718c;
+	border: 1px solid #FFF;
+	height: 180px;
+	padding: 20px;
+	z-index: 2;
+}
 /**
 **
 ** button-bar
@@ -386,25 +410,19 @@ button.settings:hover {
 .button-bar-left , .button-bar-left .button-bar-inner {
 	height: 180px;
 }
-.button-bar-inner {
-	padding: 10px;
-	background-color: #2c3e50;
-	position: fixed; 
-	width: 210px ;
-/* 	z-index: 90; */
-/* 	border-top: 1px solid #5b718c; */
-/* 	border-left: 1px solid #5b718c; */
-/* 	-webkit-box-shadow	: 1px 1px 0px 0px rgba(91,113,140,1); */
-/* 	-moz-box-shadow		: 1px 1px 0px 0px rgba(91,113,140,1); */
-/* 	box-shadow			: 1px 1px 0px 0px rgba(91,113,140,1); */
-}
 .button-bar-right {
 	float: right;
 /* 	height: 90px;  */
 }
 .button-bar-right , .button-bar-right .button-bar-inner {
-	height: 90px;	
+	height: 180px;	
 	width: 105px ;
+}
+.button-bar-inner {
+	padding: 10px;
+	background-color: #2c3e50;
+	position: fixed; 
+	width: 210px ;
 }
 .button-bar-inner button,
 .button-bar-inner button:focus {
@@ -951,7 +969,7 @@ ul.scroll-menu {
 */
 #settings .settings-btn ,
 #settings .settings-btn:focus {
-	height: 7em;
+	height: 65%;
 	width: 15%;
 	font-size: 1.1em;
 /* 	font-weight: 200; */
@@ -967,22 +985,31 @@ ul.scroll-menu {
 	background-color: #676c7a;
 }
 
-#settings .group ,
-#settings .group-buttons {
+#settings .group {
 	height: 25%;
 	width: 100%;
+	padding: 0px;
+	margin: 0px;
 }
 #settings .group-header {
 	height: 25%;
 	width: 100%;
+	padding: 0px;
+	margin: 0px;
+}
+
+#settings .group-buttons {
+	height: 75%;
+	width: 100%;
+	padding: 2px 0px;
+	margin: 0px;
 }
 #settings .group-header div {
-	height: 40%;
 	border-bottom: 1px solid #8f91a0;
 	color: #8f91a0;
 	font-size: 1.1em;
-	padding: 1.3em 0em;
-	line-height: 1.5em;
+	padding: 10px 0px 0px 10px;
+	text-align: left;
 }
 
 /**

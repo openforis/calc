@@ -4,19 +4,25 @@
  * @author S. Ricci
  */
 function HomeCalculationManager(container) {
-	this.container = container;
+	this.container = $( container );
 	
 	//init ui elements
-	this.stepsContainer = this.container.find('.calculation-steps-container');
-	this.deleteBtn = this.container.find(".delete");
-	this.executeBtn = this.container.find(".execute");
+	this.stepsContainer = this.container.find( '.calculation-steps-container' );
+	this.deleteBtn 		= this.container.find( ".delete" );
+	this.executeBtn 	= this.container.find( ".execute" );
 	
 	this.calculationStepBtnTemplate = this.container.find(".calculation-step.template");
 	
 	//init managers
 	this.calculationStepManager = CalculationStepManager.getInstance();
 	this.workspaceManager = WorkspaceManager.getInstance();
-
+	
+	// options section 
+	var optionsSection 		= this.container.find( '.options' );
+	var optionsSectionBtn 	= this.container.find( '.options-section-btn' );''
+	// manager for calculations section otions
+	this.optionsManager		= new HomeCalculationOptionsManager( optionsSection, optionsSectionBtn );
+	
 	this.init();
 }
 
@@ -54,6 +60,7 @@ HomeCalculationManager.prototype.init = function() {
 //				console.log("response. executed?!");
 		});
 	});
+
 };
 
 /**
@@ -242,6 +249,8 @@ HomeCalculationManager.prototype.deleteStep = function(step) {
 				$this.workspaceManager.activeWorkspace(function(workspace) {
 					var entity = workspace.getEntityById(step.outputEntityId);
 					entity.deleteVariable(deletedVariableId);
+					// update home data section
+					Calc.homeDataManager.refresh();
 				});
 			}
 			$this.reset();

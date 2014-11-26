@@ -82,15 +82,40 @@
 		  				</div>
 		 			</div>
 		 			<div class="button-bar-right">
-		  				<div class="button-bar-inner">
-				 				<div class="col-md-12 no-padding height100">
-				 					<button type="button" class="btn delete" disabled="disabled">
-					 					<i class="fa-trash-o icon-5"></i>
+		 				<div class="options">
+		 					<div class="row no-margin no-padding height100 width100">
+		 						<div class="col-md-6">View calculations:</div>
+		 						<div class="col-md-3">
+		 							<button type="button" class="btn option-btn view-steps-list" href="saiku.html" data-toggle="tooltip" data-placement="left" title="As list">
+					 					<i class="fa fa-list"></i>
 					 				</button>
+		 						</div>
+		 						<div class="col-md-3">
+		 							<button type="button" class="btn option-btn view-steps-folder" href="saiku.html" data-toggle="tooltip" data-placement="left" title="By entity">
+					 					<i class="fa fa-folder"></i>
+					 				</button>
+		 						</div>
+		 					</div>
+		 				</div>
+		  				<div class="button-bar-inner">
+			 				<div class="col-md-12 no-padding height50">
+			 					<button type="button" class="btn delete" disabled="disabled">
+				 					<i class="fa-trash-o icon-5"></i>
+				 				</button>
+			 				</div>
+			 				<div class="col-md-12 no-padding height50">
+			 					<button type="button" class="btn options-section-btn">
+			 						<i class="fa fa-cog icon-5"></i>
+				 				</button>
 			 				</div>
 		  				</div>
 		 			</div>
 		 			<ul class="calculation-steps-container sortable">
+<!-- 		 				<li class="ui-state-default entity SCRIPT" href="step-edit.html?id=735"> -->
+<!-- 				 			<button type="button" class="btn btn-default btn-home" style="opacity: 1;"> -->
+<!-- 				 				<div class="badge"><i class="icon-5 fa-toggle-on"></i></div> -->
+<!-- 				 				<div class="height100 width100 text">Tree</div></button> -->
+<!-- 	  					</li> -->
 	  				</ul>
 	  				<ul style="display: none">
 	  					<li class="ui-state-default calculation-step template">
@@ -118,26 +143,22 @@
 	  			<!-- data import settings -->
 		  		<div class="row group">
 			  		<div class="row group-header">
-			  			<div class="col-md-2 col-md-offset-2">
+			  			<div class="col-md-8 col-md-offset-2">
 			  				Data Import
 			  			</div>
-			  			<div class="col-md-6"></div>
 			  		</div>
 		  			<div class="row group-buttons">
 			 			<button type="button" class="btn btn-default btn-home settings-btn" href="collect-sync.html">Collect</button>
 			 			<button type="button" class="btn btn-default btn-home settings-btn workspace-required" href="aoi.html">Areas of interest</button>
-<!-- 			 			<button type="button" class="btn btn-default btn-home settings-btn workspace-required" href="categories.html">Categories</button> -->
-<!-- 			 			<button type="button" class="btn btn-default btn-home settings-btn workspace-required" href="equation-list.html">External equations</button> -->
 		  			</div>
 		  		</div>
 		  		
 		  		<!-- inventory settings -->
 		 		<div class="row group">
 		 			<div class="row group-header">
-			  			<div class="col-md-2 col-md-offset-2">
+			  			<div class="col-md-8 col-md-offset-2">
 			  				Inventory
 			  			</div>
-			  			<div class="col-md-6"></div>
 			  		</div>
 		  			<div class="row group-buttons">
 		 				<button type="button" class="btn btn-default btn-home settings-btn aoi-required" href="sampling-design.html">Sampling design</button>
@@ -148,10 +169,9 @@
 		  		<!-- data import settings -->
 		  		<div class="row group">
 			  		<div class="row group-header">
-			  			<div class="col-md-2 col-md-offset-2">
+			  			<div class="col-md-8 col-md-offset-2">
 			  				Calc metadata
 			  			</div>
-			  			<div class="col-md-6"></div>
 			  		</div>
 		  			<div class="row group-buttons">
 			 			<button type="button" class="btn btn-default btn-home settings-btn workspace-required" href="categories.html">Categories</button>
@@ -162,10 +182,9 @@
 		  		<!-- workspace settings -->
 		 		<div class="row group" id="workspace-settings">
 		 			<div class="row group-header">
-			  			<div class="col-md-2 col-md-offset-2">
+			  			<div class="col-md-8 col-md-offset-2">
 			  				Workspace
 			  			</div>
-			  			<div class="col-md-6"></div>
 			  		</div>
 		  			<div class="row group-buttons">
 		 				<button type="button" class="btn btn-default btn-home settings-btn workspace-required" 
@@ -520,6 +539,7 @@
 	
 	<!-- ui managers -->
 	<script src="./js/calc/manager/ui/home-calculation-manager.js"></script>
+	<script src="./js/calc/manager/ui/home-calculation-options-manager.js"></script>
 	<script src="./js/calc/manager/ui/collect-sync-manager.js"></script>
 	<script src="./js/calc/manager/ui/step-edit/calculation-step-edit-manager.js"></script>
 	<script src="./js/calc/manager/ui/step-edit/add-variable-modal.js"></script>
