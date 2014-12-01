@@ -431,6 +431,11 @@ WorkspaceManager.prototype.export = function() {
 	});
 };
 
+/**
+ * Update the error settings based on the data passed as argument
+ * @param data
+ * @param callback
+ */
 WorkspaceManager.prototype.setErrorSettings = function( data , callback ) {
 	var $this = this;
 	UI.lock();
@@ -444,15 +449,40 @@ WorkspaceManager.prototype.setErrorSettings = function( data , callback ) {
 		}).done( function(response) {
 			$this._activeWorkspace.errorSettings = response;
 			Utils.applyFunction( callback , $this._activeWorkspace );
+			
 			UI.unlock();
 		}).error( function() {
 			Calc.error.apply( this , arguments );
 		});
 		
 	});
-	UI.unlock();
 };
 
+/**
+ * Set view steps option
+ * @param viewSteps
+ * @param callback
+ */
+WorkspaceManager.prototype.setViewSteps = function( viewSteps , callback ) {
+	var $this = this;
+	UI.lock();
+	this.activeWorkspace( function(ws){
+		
+		$.ajax({
+			url 		: $this.contextPath + "/settings/viewSteps/" + viewSteps + ".json",
+			dataType 	: "json",
+			method 		: "PUT"			
+		}).done( function(response) {
+			$this._activeWorkspace.settings = response;
+			Utils.applyFunction( callback , $this._activeWorkspace );
+			
+			UI.unlock();
+		}).error( function() {
+			Calc.error.apply( this , arguments );
+		});
+		
+	});
+};
 
 // singleton instance of workspace manager
 var _workspaceManager = null;

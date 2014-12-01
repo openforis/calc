@@ -7,9 +7,11 @@ function HomeCalculationManager(container) {
 	this.container = $( container );
 	
 	//init ui elements
-	this.stepsContainer = this.container.find( '.calculation-steps-container' );
-	this.deleteBtn 		= this.container.find( ".delete" );
-	this.executeBtn 	= this.container.find( ".execute" );
+	this.stepsContainer 		= this.container.find( '.calculation-steps-container' );
+	this.stepsEntityContainer	= this.container.find( '.calculation-steps-entity-container' );
+	
+	this.deleteBtn 				= this.container.find( ".delete" );
+	this.executeBtn 			= this.container.find( ".execute" );
 	
 	this.calculationStepBtnTemplate = this.container.find(".calculation-step.template");
 	
@@ -21,7 +23,9 @@ function HomeCalculationManager(container) {
 	var optionsSection 		= this.container.find( '.options' );
 	var optionsSectionBtn 	= this.container.find( '.options-section-btn' );''
 	// manager for calculations section otions
-	this.optionsManager		= new HomeCalculationOptionsManager( optionsSection, optionsSectionBtn );
+	this.optionsManager		= new HomeCalculationOptionsManager( this , optionsSection, optionsSectionBtn );
+	
+	this.stepsEntityMap		= [];
 	
 	this.init();
 }
@@ -136,6 +140,9 @@ HomeCalculationManager.prototype.updateSteps = function(callback) {
 	var stepElements = $this.stepsContainer.find(".calculation-step");
 	stepElements.remove();
 	
+	this.stepsEntityMap = [];
+	this.stepsEntityContainer.empty();
+	
 	WorkspaceManager.getInstance().activeWorkspace( function(ws){
 		if( ws ){
 			var length = "";
@@ -146,6 +153,8 @@ HomeCalculationManager.prototype.updateSteps = function(callback) {
 				});
 			}
 			$this.updateActiveStepsCount();
+			
+			$this.optionsManager.updateUI();
 		}
 	});
 };
@@ -186,7 +195,7 @@ HomeCalculationManager.prototype.updateActiveStepsCount = function() {
  * Returns the element associated to the specified CalculationStep
  */
 HomeCalculationManager.prototype.getStepElement = function(step) {
-	var element = this.container.find("#calculation-step-" + step.id);
+	var element = this.container.find( "#calculation-step-" + step.id );
 	return element;
 };
 
@@ -327,9 +336,86 @@ HomeCalculationManager.prototype.addStepElement = function(step) {
 	badge.mouseout( invertBadgeClass );
 
 	this.updateCalculationStepUI( element , step );
-
 	
+	element.hide();
+	
+	this.addEntityStepElement( step , element );
 	return element;
+};
+/**
+ * Add the entity container for the given step
+ * @param step
+ */
+HomeCalculationManager.prototype.addEntityStepElement = function( step , stepElement ){
+	var $this 		= this;
+	var variableId	= step.outputVariableId;
+	WorkspaceManager.getInstance().activeWorkspace( function(ws){
+		var variable 	= ws.getVariableById( variableId );
+		var entity		= ws.getEntityById( variable.entityId );
+		
+		var cssClass 	= 'calculation-step-entity-'+entity.id;
+		stepElement.addClass( cssClass );
+		
+		var element		= $this.stepsEntityMap[ entity.id ];
+		if( element ){
+			
+		} else {
+			element			= $( '<li class="entity"></li>' );
+			element.addClass( 'entity-'+entity.id );
+			
+			var btn = $( '<button type="button" class="btn option-btn"></button>' );
+			var optionBtn = new OptionButton( btn );
+			optionBtn.select( function(entityId) {
+				for( var i in $this.stepsEntityMap ){
+					var stepBtn = $this.stepsEntityMap[ i ];
+					if( entityId != parseInt( i ) ){
+						stepBtn.displayAsUnelected();
+//						stepBtn.button.parent().hide();
+						stepBtn.disable();
+					}
+				}
+				
+				var steps = $this.stepsContainer.find( "."+ cssClass );
+				$.each( steps , function(i,step){
+					setTimeout( function(){
+						$(step).fadeIn( 50 );	
+					}, 15*i );
+					
+				});
+				
+			} , entity.id );
+			optionBtn.deselect( function(){
+				var steps = $this.stepsContainer.find( "."+cssClass ).get().reverse();
+				$.each( steps , function(i,step){
+					setTimeout( function(){
+						$(step).fadeOut( 50 );	
+					}, 15*i );
+					
+				});
+				
+				for( var i in $this.stepsEntityMap ){
+					var stepBtn = $this.stepsEntityMap[ i ];
+//					stepBtn.button.parent().show();
+					stepBtn.enable();
+				}
+			});
+			element.append( btn );
+			
+			var div	= $( '<div class="height100 width100 text"></div>' );
+			var btnHtml = StringUtils.isBlank( entity.caption ) ? entity.name : ( entity.caption ) +" ("+entity.name+")";
+			div.html( btnHtml );
+			btn.append( div );
+			
+			$this.stepsEntityContainer.append( element );
+			$this.stepsEntityMap[ entity.id ] = optionBtn;
+		}
+//		console.log( step );
+	});
+//	<li class="entity">
+//		<button type="button" class="btn option-btn" style="opacity: 1;">
+//			<div class="badge"><i class="fa fa-eye-slash"></i></div>
+//			<div class="height100 width100 text">Tree</div></button>
+//	</li>
 };
 
 HomeCalculationManager.prototype.updateCalculationStepUI = function( element , step ){

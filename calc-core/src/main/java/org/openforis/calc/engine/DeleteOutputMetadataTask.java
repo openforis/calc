@@ -8,6 +8,7 @@ import org.openforis.calc.metadata.EquationManager;
 import org.openforis.calc.metadata.ErrorSettingsManager;
 import org.openforis.calc.metadata.SamplingDesignManager;
 import org.openforis.calc.metadata.VariableManager;
+import org.openforis.calc.metadata.WorkspaceSettingsManager;
 import org.openforis.calc.psql.Psql;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -36,18 +37,23 @@ public class DeleteOutputMetadataTask extends Task {
 	private ErrorSettingsManager errorSettingsManager;
 	@Autowired
 	private Psql psql;
+	@Autowired
+	private WorkspaceSettingsManager workspaceSettingsManager;
 	
 	public DeleteOutputMetadataTask() {
 	}
 	
 	@Override
 	protected long countTotalItems() {
-		return 9;
+		return 10;
 	}
 	
 	@Override
 	protected void execute() throws Throwable {
 		Workspace workspace = getWorkspace();
+		
+		workspaceSettingsManager.delete( workspace );
+		incrementItemsProcessed();
 		
 		// delete calc steps
 		processingChainManager.deleteCalculationSteps( workspace.getDefaultProcessingChain() );
@@ -82,6 +88,7 @@ public class DeleteOutputMetadataTask extends Task {
 		
 		errorSettingsManager.delete( workspace );
 		incrementItemsProcessed();
+		
 	}
 	
 	@Override

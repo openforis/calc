@@ -102,4 +102,9 @@ public class Tables {
 	 * The table calc.workspace
 	 */
 	public static final org.openforis.calc.persistence.jooq.tables.WorkspaceTable WORKSPACE = org.openforis.calc.persistence.jooq.tables.WorkspaceTable.WORKSPACE;
+
+	/**
+	 * The table calc.workspace_settings
+	 */
+	public static final org.openforis.calc.persistence.jooq.tables.WorkspaceSettingsTable WORKSPACE_SETTINGS = org.openforis.calc.persistence.jooq.tables.WorkspaceSettingsTable.WORKSPACE_SETTINGS;
 }

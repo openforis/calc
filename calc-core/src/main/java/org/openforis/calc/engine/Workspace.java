@@ -23,6 +23,7 @@ import org.openforis.calc.metadata.ErrorSettings;
 import org.openforis.calc.metadata.SamplingDesign;
 import org.openforis.calc.metadata.Stratum;
 import org.openforis.calc.metadata.Variable;
+import org.openforis.calc.metadata.WorkspaceSettings;
 import org.openforis.calc.persistence.jooq.tables.pojos.WorkspaceBase;
 import org.openforis.calc.schema.Schemas;
 
@@ -58,6 +59,8 @@ public class Workspace extends WorkspaceBase {
 	private SamplingDesign samplingDesign;
 	
 	private ErrorSettings errorSettings; 
+	
+	private WorkspaceSettings settings;
 	
 	public Workspace() {
 		this.processingChains = new ArrayList<ProcessingChain>();
@@ -194,6 +197,17 @@ public class Workspace extends WorkspaceBase {
 		this.errorSettings = errorSettings;
 		if( this.errorSettings != null ){
 			this.errorSettings.setWorkspace( this );
+		}
+	}
+	
+	public WorkspaceSettings getSettings() {
+		return settings;
+	}
+	
+	public void setSettings(WorkspaceSettings settings) {
+		this.settings = settings;
+		if( settings != null ){
+			settings.setWorkspace(this);
 		}
 	}
 	

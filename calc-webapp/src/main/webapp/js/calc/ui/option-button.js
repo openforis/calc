@@ -68,3 +68,21 @@ OptionButton.prototype.disable =function(){
 OptionButton.prototype.enable =function(){
 	UI.enable( this.button );
 };
+
+OptionButton.prototype.displayAsSelected = function(){
+	this.button.removeClass( "option-btn-selected" ).removeClass( "option-btn" );
+	this.button.addClass( "option-btn-selected" );
+};
+
+OptionButton.prototype.displayAsUnelected = function(){
+	this.button.removeClass( "option-btn-selected" ).removeClass( "option-btn" );
+	this.button.addClass( "option-btn" );
+};
+
+OptionButton.prototype.show = function(){
+	this.button.fadeIn();
+};
+
+OptionButton.prototype.hide = function(){
+	this.button.hide();
+};

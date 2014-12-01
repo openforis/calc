@@ -11,6 +11,7 @@ import org.openforis.calc.metadata.EquationManager;
 import org.openforis.calc.metadata.ErrorSettingsManager;
 import org.openforis.calc.metadata.SamplingDesignManager;
 import org.openforis.calc.metadata.VariableManager;
+import org.openforis.calc.metadata.WorkspaceSettingsManager;
 import org.openforis.calc.psql.Psql;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -44,17 +45,22 @@ public class ImportOutputMetadataTask extends Task {
 	@Autowired
 	private WorkspaceService workspaceService;
 	@Autowired
+	private WorkspaceSettingsManager workspaceSettingsManager;
+	@Autowired
 	private Psql psql;
 	
 	
 	@Override
 	protected long countTotalItems() {
-		return 11;
+		return 12;
 	}
 	
 	@Override
 	protected void execute() throws Throwable {
 		Workspace workspace = getWorkspace();
+		
+		workspaceSettingsManager.importBackup( workspace, workspaceBackup );
+		incrementItemsProcessed();
 		
 		samplingDesignManager.importBackupPhase1Data( workspace, workspaceBackup );
 		incrementItemsProcessed();

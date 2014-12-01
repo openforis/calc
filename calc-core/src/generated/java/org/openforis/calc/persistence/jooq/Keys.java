@@ -35,6 +35,7 @@ public class Keys {
 	public static final org.jooq.Identity<org.openforis.calc.persistence.jooq.tables.records.VariableRecord, java.lang.Integer> IDENTITY_VARIABLE = Identities0.IDENTITY_VARIABLE;
 	public static final org.jooq.Identity<org.openforis.calc.persistence.jooq.tables.records.VariableAggregateRecord, java.lang.Integer> IDENTITY_VARIABLE_AGGREGATE = Identities0.IDENTITY_VARIABLE_AGGREGATE;
 	public static final org.jooq.Identity<org.openforis.calc.persistence.jooq.tables.records.WorkspaceRecord, java.lang.Integer> IDENTITY_WORKSPACE = Identities0.IDENTITY_WORKSPACE;
+	public static final org.jooq.Identity<org.openforis.calc.persistence.jooq.tables.records.WorkspaceSettingsRecord, java.lang.Long> IDENTITY_WORKSPACE_SETTINGS = Identities0.IDENTITY_WORKSPACE_SETTINGS;
 
 	// -------------------------------------------------------------------------
 	// UNIQUE and PRIMARY KEY definitions
@@ -65,6 +66,7 @@ public class Keys {
 	public static final org.jooq.UniqueKey<org.openforis.calc.persistence.jooq.tables.records.VariableRecord> VARIABLE_PKEY = UniqueKeys0.VARIABLE_PKEY;
 	public static final org.jooq.UniqueKey<org.openforis.calc.persistence.jooq.tables.records.VariableAggregateRecord> VARIABLE_AGGREGATE_PKEY = UniqueKeys0.VARIABLE_AGGREGATE_PKEY;
 	public static final org.jooq.UniqueKey<org.openforis.calc.persistence.jooq.tables.records.WorkspaceRecord> WORKSPACE_PKEY = UniqueKeys0.WORKSPACE_PKEY;
+	public static final org.jooq.UniqueKey<org.openforis.calc.persistence.jooq.tables.records.WorkspaceSettingsRecord> WORKSPACE_SETTINGS_PKEY = UniqueKeys0.WORKSPACE_SETTINGS_PKEY;
 
 	// -------------------------------------------------------------------------
 	// FOREIGN KEY definitions
@@ -93,6 +95,7 @@ public class Keys {
 	public static final org.jooq.ForeignKey<org.openforis.calc.persistence.jooq.tables.records.VariableRecord, org.openforis.calc.persistence.jooq.tables.records.VariableRecord> VARIABLE__VARIABLE_VARIABLE_PER_HA_FKEY = ForeignKeys0.VARIABLE__VARIABLE_VARIABLE_PER_HA_FKEY;
 	public static final org.jooq.ForeignKey<org.openforis.calc.persistence.jooq.tables.records.VariableRecord, org.openforis.calc.persistence.jooq.tables.records.CategoryLevelRecord> VARIABLE__VARIABLE_CATEGORY_LEVEL_FK = ForeignKeys0.VARIABLE__VARIABLE_CATEGORY_LEVEL_FK;
 	public static final org.jooq.ForeignKey<org.openforis.calc.persistence.jooq.tables.records.VariableAggregateRecord, org.openforis.calc.persistence.jooq.tables.records.VariableRecord> VARIABLE_AGGREGATE__VARIABLE_AGGREGATE_VARIABLE_FKEY = ForeignKeys0.VARIABLE_AGGREGATE__VARIABLE_AGGREGATE_VARIABLE_FKEY;
+	public static final org.jooq.ForeignKey<org.openforis.calc.persistence.jooq.tables.records.WorkspaceSettingsRecord, org.openforis.calc.persistence.jooq.tables.records.WorkspaceRecord> WORKSPACE_SETTINGS__WORKSPACE_SETTINGS_WORKSPACEC_FKEY = ForeignKeys0.WORKSPACE_SETTINGS__WORKSPACE_SETTINGS_WORKSPACEC_FKEY;
 
 	// -------------------------------------------------------------------------
 	// [#1459] distribute members to avoid static initialisers > 64kb
@@ -116,6 +119,7 @@ public class Keys {
 		public static org.jooq.Identity<org.openforis.calc.persistence.jooq.tables.records.VariableRecord, java.lang.Integer> IDENTITY_VARIABLE = createIdentity(org.openforis.calc.persistence.jooq.tables.VariableTable.VARIABLE, org.openforis.calc.persistence.jooq.tables.VariableTable.VARIABLE.ID);
 		public static org.jooq.Identity<org.openforis.calc.persistence.jooq.tables.records.VariableAggregateRecord, java.lang.Integer> IDENTITY_VARIABLE_AGGREGATE = createIdentity(org.openforis.calc.persistence.jooq.tables.VariableAggregateTable.VARIABLE_AGGREGATE, org.openforis.calc.persistence.jooq.tables.VariableAggregateTable.VARIABLE_AGGREGATE.ID);
 		public static org.jooq.Identity<org.openforis.calc.persistence.jooq.tables.records.WorkspaceRecord, java.lang.Integer> IDENTITY_WORKSPACE = createIdentity(org.openforis.calc.persistence.jooq.tables.WorkspaceTable.WORKSPACE, org.openforis.calc.persistence.jooq.tables.WorkspaceTable.WORKSPACE.ID);
+		public static org.jooq.Identity<org.openforis.calc.persistence.jooq.tables.records.WorkspaceSettingsRecord, java.lang.Long> IDENTITY_WORKSPACE_SETTINGS = createIdentity(org.openforis.calc.persistence.jooq.tables.WorkspaceSettingsTable.WORKSPACE_SETTINGS, org.openforis.calc.persistence.jooq.tables.WorkspaceSettingsTable.WORKSPACE_SETTINGS.ID);
 	}
 
 	private static class UniqueKeys0 extends org.jooq.impl.AbstractKeys {
@@ -144,6 +148,7 @@ public class Keys {
 		public static final org.jooq.UniqueKey<org.openforis.calc.persistence.jooq.tables.records.VariableRecord> VARIABLE_PKEY = createUniqueKey(org.openforis.calc.persistence.jooq.tables.VariableTable.VARIABLE, org.openforis.calc.persistence.jooq.tables.VariableTable.VARIABLE.ID);
 		public static final org.jooq.UniqueKey<org.openforis.calc.persistence.jooq.tables.records.VariableAggregateRecord> VARIABLE_AGGREGATE_PKEY = createUniqueKey(org.openforis.calc.persistence.jooq.tables.VariableAggregateTable.VARIABLE_AGGREGATE, org.openforis.calc.persistence.jooq.tables.VariableAggregateTable.VARIABLE_AGGREGATE.ID);
 		public static final org.jooq.UniqueKey<org.openforis.calc.persistence.jooq.tables.records.WorkspaceRecord> WORKSPACE_PKEY = createUniqueKey(org.openforis.calc.persistence.jooq.tables.WorkspaceTable.WORKSPACE, org.openforis.calc.persistence.jooq.tables.WorkspaceTable.WORKSPACE.ID);
+		public static final org.jooq.UniqueKey<org.openforis.calc.persistence.jooq.tables.records.WorkspaceSettingsRecord> WORKSPACE_SETTINGS_PKEY = createUniqueKey(org.openforis.calc.persistence.jooq.tables.WorkspaceSettingsTable.WORKSPACE_SETTINGS, org.openforis.calc.persistence.jooq.tables.WorkspaceSettingsTable.WORKSPACE_SETTINGS.ID);
 	}
 
 	private static class ForeignKeys0 extends org.jooq.impl.AbstractKeys {
@@ -170,5 +175,6 @@ public class Keys {
 		public static final org.jooq.ForeignKey<org.openforis.calc.persistence.jooq.tables.records.VariableRecord, org.openforis.calc.persistence.jooq.tables.records.VariableRecord> VARIABLE__VARIABLE_VARIABLE_PER_HA_FKEY = createForeignKey(org.openforis.calc.persistence.jooq.Keys.VARIABLE_PKEY, org.openforis.calc.persistence.jooq.tables.VariableTable.VARIABLE, org.openforis.calc.persistence.jooq.tables.VariableTable.VARIABLE.VARIABLE_PER_HA_ID);
 		public static final org.jooq.ForeignKey<org.openforis.calc.persistence.jooq.tables.records.VariableRecord, org.openforis.calc.persistence.jooq.tables.records.CategoryLevelRecord> VARIABLE__VARIABLE_CATEGORY_LEVEL_FK = createForeignKey(org.openforis.calc.persistence.jooq.Keys.HIERARCHY_LEVEL_PKEY, org.openforis.calc.persistence.jooq.tables.VariableTable.VARIABLE, org.openforis.calc.persistence.jooq.tables.VariableTable.VARIABLE.CATEGORY_LEVEL_ID);
 		public static final org.jooq.ForeignKey<org.openforis.calc.persistence.jooq.tables.records.VariableAggregateRecord, org.openforis.calc.persistence.jooq.tables.records.VariableRecord> VARIABLE_AGGREGATE__VARIABLE_AGGREGATE_VARIABLE_FKEY = createForeignKey(org.openforis.calc.persistence.jooq.Keys.VARIABLE_PKEY, org.openforis.calc.persistence.jooq.tables.VariableAggregateTable.VARIABLE_AGGREGATE, org.openforis.calc.persistence.jooq.tables.VariableAggregateTable.VARIABLE_AGGREGATE.VARIABLE_ID);
+		public static final org.jooq.ForeignKey<org.openforis.calc.persistence.jooq.tables.records.WorkspaceSettingsRecord, org.openforis.calc.persistence.jooq.tables.records.WorkspaceRecord> WORKSPACE_SETTINGS__WORKSPACE_SETTINGS_WORKSPACEC_FKEY = createForeignKey(org.openforis.calc.persistence.jooq.Keys.WORKSPACE_PKEY, org.openforis.calc.persistence.jooq.tables.WorkspaceSettingsTable.WORKSPACE_SETTINGS, org.openforis.calc.persistence.jooq.tables.WorkspaceSettingsTable.WORKSPACE_SETTINGS.WORKSPACE_ID);
 	}
 }

@@ -337,6 +337,9 @@ public class CategoryManager {
 				Integer oldCategoryLevelId = level.getId();
 				
 				List<CategoryLevelValue> values = workspaceBackup.getCategoryLevelValues().get( level.getId() );
+				category.setId( null );
+				hierarchy.setId( null );
+				level.setId( null );
 				this.saveOrUpdateCategory( workspace, category , values );
 				
 				// replace categoryId in calc step of type category  
@@ -350,19 +353,7 @@ public class CategoryManager {
 						if( stepCategoryId.equals(oldCategoryId) ){
 							// replace category id parameter
 							calculationStep.getParameters().setInteger( "categoryId" , newCategoryId );
-//
-//							// replace category class ids in calculation steps
-//							List<CalculationStepCategoryClassParameters> categoryClassParameters = calculationStep.getCategoryClassParameters();
-//							for ( CalculationStepCategoryClassParameters classParameters : categoryClassParameters ) {
-//								String classCode = classParameters.getClassCode();
-//								
-//								CategoryLevelValue levelValue = this.loadCategoryLevelValue( level, classCode );
-//								classParameters.setClassId( levelValue.getId().intValue() );
-//								
-//								Integer variableOriginalId = workspaceBackup.getVariableOriginalIds().get( classParameters.getVariableId() );
-//								Variable<?> variable = workspace.getVariableByOriginalId( variableOriginalId );
-//								classParameters.setVariableId( variable.getId() );
-//							}
+
 						}
 					}
 				}

@@ -102,4 +102,9 @@ public class Sequences {
 	 * The sequence <code>calc.workspace_id_seq</code>
 	 */
 	public static final org.jooq.Sequence<java.lang.Long> WORKSPACE_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("workspace_id_seq", org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
+
+	/**
+	 * The sequence <code>calc.workspace_settings_id_seq</code>
+	 */
+	public static final org.jooq.Sequence<java.lang.Long> WORKSPACE_SETTINGS_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("workspace_settings_id_seq", org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
 }

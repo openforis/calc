@@ -60,9 +60,12 @@ public class MetadataManager {
 
 	@Autowired
 	private ProcessingChainManager processingChainManager;
-
+	
 	@Autowired
 	private TableDao tableDao;
+	
+	@Autowired
+	private WorkspaceSettingsManager workspaceSettingsManager;
 	
 	/*
 	 * ============================
@@ -126,6 +129,7 @@ public class MetadataManager {
 		samplingDesignManager.loadSampligDesign( workspace );
 		equationManager.loadEquationLists( workspace );
 		errorSettingsManager.load( workspace );
+		workspaceSettingsManager.load( workspace );
 		
 		initEntityHierarchy( workspace );
 	}
@@ -165,6 +169,7 @@ public class MetadataManager {
 		categoryManager.save( workspace );
 		entityManager.persistEntities( workspace );
 		errorSettingsManager.save( workspace );
+		workspaceSettingsManager.save( workspace );
 		
 		return fetchWorkspaceByCollectSurveyUri( workspace.getCollectSurveyUri() );
 	}

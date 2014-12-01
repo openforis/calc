@@ -134,4 +134,7 @@
     <bean name="errorSettingsDao" class="org.openforis.calc.persistence.jooq.tables.daos.ErrorSettingsDao">
     	<constructor-arg ref="config" />
     </bean>
+    <bean name="workspaceSettingsDao" class="org.openforis.calc.persistence.jooq.tables.daos.WorkspaceSettingsDao">
+    	<constructor-arg ref="config" />
+    </bean>
 </beans>
