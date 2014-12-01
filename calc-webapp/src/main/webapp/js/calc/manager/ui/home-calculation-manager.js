@@ -379,7 +379,7 @@ HomeCalculationManager.prototype.addEntityStepElement = function( step , stepEle
 				$.each( steps , function(i,step){
 					setTimeout( function(){
 						$(step).fadeIn( 50 );	
-					}, 15*i );
+					}, 100*i );
 					
 				});
 				
@@ -389,7 +389,7 @@ HomeCalculationManager.prototype.addEntityStepElement = function( step , stepEle
 				$.each( steps , function(i,step){
 					setTimeout( function(){
 						$(step).fadeOut( 50 );	
-					}, 15*i );
+					}, 100*i );
 					
 				});
 				
