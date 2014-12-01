@@ -342,6 +342,9 @@ button.settings:hover {
 
 #calculation .calculation-steps-entity-container {
 	display: table;
+	background-color: #4f586c;
+	padding: 20px 40px;
+/* 	margin: 5px 5px; */
 }
 #calculation .calculation-steps-entity-container li {
 	float: left;
@@ -404,7 +407,7 @@ button.settings:hover {
 **/
 .button-bar-left ,
 .button-bar-right {
-	border:1px solid #2c3e50; 
+/* 	border:1px solid #2c3e50;  */
 	display: block;
 /* 	background-color: #496d7e; */
 /* 	border-color: #496d7e; */

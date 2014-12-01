@@ -360,20 +360,20 @@ HomeCalculationManager.prototype.addEntityStepElement = function( step , stepEle
 		if( element ){
 			
 		} else {
-			element			= $( '<li class="entity"></li>' );
+			element			= $( '<li class="entity no-margin no-padding"></li>' );
 			element.addClass( 'entity-'+entity.id );
 			
 			var btn = $( '<button type="button" class="btn option-btn"></button>' );
 			var optionBtn = new OptionButton( btn );
 			optionBtn.select( function(entityId) {
-				for( var i in $this.stepsEntityMap ){
-					var stepBtn = $this.stepsEntityMap[ i ];
-					if( entityId != parseInt( i ) ){
-						stepBtn.displayAsUnelected();
+//				for( var i in $this.stepsEntityMap ){
+//					var stepBtn = $this.stepsEntityMap[ i ];
+//					if( entityId != parseInt( i ) ){
+//						stepBtn.displayAsUnelected();
 //						stepBtn.button.parent().hide();
-						stepBtn.disable();
-					}
-				}
+//						stepBtn.disable();
+//					}
+//				}
 				
 				var steps = $this.stepsContainer.find( "."+ cssClass );
 				$.each( steps , function(i,step){
@@ -393,11 +393,11 @@ HomeCalculationManager.prototype.addEntityStepElement = function( step , stepEle
 					
 				});
 				
-				for( var i in $this.stepsEntityMap ){
-					var stepBtn = $this.stepsEntityMap[ i ];
+//				for( var i in $this.stepsEntityMap ){
+//					var stepBtn = $this.stepsEntityMap[ i ];
 //					stepBtn.button.parent().show();
-					stepBtn.enable();
-				}
+//					stepBtn.enable();
+//				}
 			});
 			element.append( btn );
 			
