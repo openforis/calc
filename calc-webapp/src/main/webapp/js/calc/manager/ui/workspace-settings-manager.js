@@ -6,67 +6,49 @@ WorkspaceSettingsManager = function( container ) {
 	
 	this.container = $( container );
 	
-	// home settings ui components
-	this.activeWorkspaceLabel 	= this.container.find( ".active-workspace-label" );
-	
-	this.exportBtn 				= this.container.find( ".export-workspace" );
-	this.importBtn 				= this.container.find( ".import-workspace" );
-	this.importFormSection		= this.container.find( ".import-workspace-form-section" );
+	this.wsListContainer	= this.container.find( ".workspace-list" );	
+	this.activateBtn 		= this.container.find( "button[name=activate-btn]" );
+	this.deleteBtn 			= this.container.find( "button[name=delete-btn]" );
+	this.cloneBtn 			= this.container.find( "button[name=clone-btn]" );
 	
 	this.init();
 };
 
 WorkspaceSettingsManager.prototype.init = function(){
+
+	this.loadWorkspaces(); 
+	
 	var $this = this;
 	
-	var importCallback = function(response){
-		if ( response.status == "OK" ) {
-			var job = response.fields.job;
-			
-			JobManager.getInstance().start( job , function() {
-				
-				WorkspaceManager.getInstance().refreshActiveWorkspace(function(ws) {
-					Calc.workspaceChange();
-				});
-				
-			});
-		} else {
-			var error = response.fields.error;
-			UI.showError( error , false );
-		}
-	};
-	this.formFileUpload = new FormFileUpload( this.importFormSection, null, importCallback );
-	this.formFileUpload.showHideForm = false;
-	
-	// init event handlers
-	this.exportBtn.click( function(e){
+	this.activateBtn.click( function(e) {
 		e.preventDefault();
 		
-		WorkspaceManager.getInstance().export();
+		UI.lock();
+		WorkspaceManager.getInstance().changeActiveWorkspace( $this.selectedWorkspace , function(response){
+			UI.unlock();
+		});
 	});
 	
-	this.importBtn.click( function(e){
-		e.preventDefault();
-		$this.formFileUpload.fileInput.click();
+	this.deleteBtn.click( function(e){
+		var message = "Are you sure you want to delete this workspace? This operation cannot be undone."
+		var confirmDelete = function(){ 
+			WorkspaceManager.getInstance().deleteWorkspace( $this.selectedWorkspace , function(job){
+				Calc.workspaceChange( function(){
+					$this.loadWorkspaces();
+					UI.showSuccess( "Workspace deleted" , true );
+				});
+			});
+		};
+		
+		UI.showConfirm(message, confirmDelete );
 	});
 	
 };
 
-/**
- * Update UI settings for active workspace
- */
-WorkspaceSettingsManager.prototype.updateActive = function( ws ) {
-	var wsLabel = ( ws ) ? ws.name : "" ;
-	this.activeWorkspaceLabel.html( wsLabel );
-};
-
-WorkspaceSettingsManager.prototype.updateList = function( container ) {
+WorkspaceSettingsManager.prototype.loadWorkspaces = function(){
+	this.wsListContainer.empty();
+	
 	var $this = this;
-	
-	container 		= $( container );
-	var wsList 		= container.find( ".workspace-list" );	
-	var applyBtn 	= container.find( "button[name=apply-btn]" ); 
-	
 	/**
 	 * first loads all ws 
 	 */
@@ -77,7 +59,6 @@ WorkspaceSettingsManager.prototype.updateList = function( container ) {
 	}).done( function(response) {
 		var list = response;
 		if( list.length > 0 ) {
-//			console.log( list );
 			$this.selectedWorkspace = null;
 			$.each( list , function( i , ws ) {
 				
@@ -89,7 +70,7 @@ WorkspaceSettingsManager.prototype.updateList = function( container ) {
 					var optionBtn = new OptionButton( btn );
 					optionBtn.select( function(w) {						
 						// deselect others
-						var btns = wsList.find( "button.workspace-btn" );
+						var btns = $this.wsListContainer.find( "button.workspace-btn" );
 						$.each( btns , function(j,btn) { 
 							var opBtn = $(btn).data( "option-btn" );
 							if( opBtn !== optionBtn ) {
@@ -98,12 +79,17 @@ WorkspaceSettingsManager.prototype.updateList = function( container ) {
 						});
 						
 						$this.selectedWorkspace = w.id;
-						UI.enable( applyBtn );
+						UI.enable( $this.activateBtn );
+						UI.enable( $this.deleteBtn );
+//						UI.enable( $this.cloneBtn );
 						
 					} , ws );
 					optionBtn.deselect( function(w){
 						$this.selectedWorkspace = null;
-						UI.disable( applyBtn );
+						UI.disable( $this.activateBtn );
+						UI.disable( $this.deleteBtn );
+						UI.disable( $this.cloneBtn );
+						
 					} , ws );
 					
 					if( ws.active === true ) {
@@ -112,25 +98,15 @@ WorkspaceSettingsManager.prototype.updateList = function( container ) {
 					
 					btn.data( "option-btn" , optionBtn );
 					
-					wsList.append( btn );
+					$this.wsListContainer.append( btn );
 				}
 				
 				addWsButton();
 			});
 			
 			
-			applyBtn.click( function(e) {
-				e.preventDefault();
-				UI.lock();
-				WorkspaceManager.getInstance().changeActiveWorkspace( $this.selectedWorkspace , function(response){
-					UI.unlock();
-				});
-			});
-			
 		}
 	}).error( function() {
 		Calc.error.apply( this , arguments );
-	});
-	
+	});	
 };
-

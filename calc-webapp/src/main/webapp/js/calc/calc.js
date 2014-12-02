@@ -28,7 +28,7 @@ $(document).ready(function() {
 	 */
 	Calc.homeCalculationManager 	= null;
 	Calc.homeDataManager 			= null;
-	Calc.workspaceSettingsManager 	= null;
+	Calc.homeSettingsManager 		= null;
 	
 	/**
 	 * Ui elements
@@ -48,7 +48,7 @@ $(document).ready(function() {
 			// load entities and variables for home data query section
 			Calc.homeDataManager.refresh();
 			// update active workspace home settings ui
-			Calc.workspaceSettingsManager.updateActive( ws );
+			Calc.homeSettingsManager.updateActive( ws );
 			
 			// update ui buttons
 			Calc.updateButtonStatus();
@@ -327,7 +327,7 @@ $(document).ready(function() {
 		// init ui managers
 		Calc.homeCalculationManager 	= new HomeCalculationManager( $("#calculation") );
 		Calc.homeDataManager 			= new HomeDataManager( $("#data") );
-		Calc.workspaceSettingsManager	= new WorkspaceSettingsManager( "#workspace-settings" );
+		Calc.homeSettingsManager		= new HomeSettingsManager( "#workspace-settings" );
 		
 		//set current home section to calculation
 		var calculation = $( "#calculation" );

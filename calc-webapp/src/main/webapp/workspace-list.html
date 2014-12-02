@@ -3,8 +3,14 @@
 	<div class="row no-margin workspace-list">
 	</div>
 	<div class="row no-margin ">
-		<div class="col-md-2 col-md-offset-5">
-			<button type="button" class="btn btn-default width100" name="apply-btn">Apply</button>
+		<div class="col-md-2 col-md-offset-3">
+			<button type="button" class="btn btn-default width100" name="activate-btn">Activate</button>
+		</div>
+		<div class="col-md-2">
+			<button type="button" class="btn btn-default width100" name="clone-btn" disabled="disabled">Clone</button>
+		</div>
+		<div class="col-md-2">
+			<button type="button" class="btn btn-default width100" name="delete-btn">Delete</button>
 		</div>
 	</div>
 	
@@ -13,7 +19,7 @@
 	<script>
 	$(function(){
 		
-		Calc.workspaceSettingsManager.updateList( "#workspace-edit-settings" );
+		var workspaceSettingsManager = new WorkspaceSettingsManager( "#workspace-edit-settings" );
 		
 	});
 	</script>

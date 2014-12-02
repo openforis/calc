@@ -484,6 +484,31 @@ WorkspaceManager.prototype.setViewSteps = function( viewSteps , callback ) {
 	});
 };
 
+/**
+ * Delete the workspace with given id
+ * @param viewSteps
+ * @param callback
+ */
+WorkspaceManager.prototype.deleteWorkspace = function( workspaceId , callback ) {
+	var $this = this;
+	UI.lock();
+	this.activeWorkspace( function(ws){
+		
+		$.ajax({
+			url 		: $this.contextPath + "/"+workspaceId +"/delete.json",
+			dataType 	: "json",
+			method 		: "POST"			
+		}).done( function(response) {
+			Utils.applyFunction( callback , response.fields.job );
+			
+			UI.unlock();
+		}).error( function() {
+			Calc.error.apply( this , arguments );
+		});
+		
+	});
+};
+
 // singleton instance of workspace manager
 var _workspaceManager = null;
 WorkspaceManager.getInstance = function() { 

@@ -76,7 +76,9 @@ public class WorkspaceSettingsManager {
 	@Transactional
 	public void importBackup( Workspace workspace, WorkspaceBackup workspaceBackup ){
 		WorkspaceSettings settings = workspaceBackup.getWorkspace().getSettings();
-		settings.setId( null );
+		if( settings != null ){
+			settings.setId( null );
+		}
 		workspace.setSettings( settings );
 		
 		save( workspace );

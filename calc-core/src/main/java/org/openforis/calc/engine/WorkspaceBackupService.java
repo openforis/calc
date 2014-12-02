@@ -56,10 +56,9 @@ public class WorkspaceBackupService {
 	@Autowired
 	private ObjectMapper jsonObjectMapper;
 
-//	@Autowired
-//	private WorkspaceService workspaceService;
 	@Autowired
 	private MetadataManager metadataManager;
+	
 	@Autowired
 	private CategoryManager categoryManager;
 	
@@ -205,18 +204,4 @@ public class WorkspaceBackupService {
 		return new String(decodedString);
 	}
 	
-//	public static void main(String[] args) throws IOException {
-//		String filePath = "C:\\Users\\Togna\\Desktop\\CALC\\vietnam-calc-data\\workspace.json";
-//		InputStream inputStream = new FileInputStream(filePath);
-//		
-//		StringWriter writer = new StringWriter();
-//		IOUtils.copy(inputStream, writer);
-//		inputStream.close();
-//
-//		byte[] decodedString = decodeBase64(writer.toString());
-//		String s = new String(decodedString);
-//		System.out.println( s );
-//
-//	}
-
 }

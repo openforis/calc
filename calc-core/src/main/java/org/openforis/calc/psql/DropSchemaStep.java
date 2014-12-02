@@ -9,13 +9,20 @@ import org.jooq.Schema;
  */
 public class DropSchemaStep extends ExecutablePsqlPart {
 
-	DropSchemaStep(Psql psql, boolean ifExists, Schema schema) {
+	DropSchemaStep(Psql psql, boolean ifExists, Schema schema, boolean cascade) {
 		super(psql);
 		append("drop schema ");
 		if ( ifExists ) {
 			append("if exists ");
 		}
 		append(schema);
+		if( cascade ) {
+			append(" cascade");
+		}
+	}
+	
+	DropSchemaStep(Psql psql, boolean ifExists, Schema schema) {
+		this( psql, ifExists , schema , false );
 	}
 
 	public CascadeStep cascade() {

@@ -185,13 +185,14 @@ DataVisualisationOptions.prototype.addVariableOptionButtons = function( variable
 DataVisualisationOptions.prototype.refresh = function() {
 	var $this = this;
 	WorkspaceManager.getInstance().activeWorkspace(function(ws){
+		$this.categories.empty();
+		$this.quantities.empty();
+		$this.texts.empty();
+		var entities = [];
 		if( ws ) {
-			$this.categories.empty();
-			$this.quantities.empty();
-			$this.texts.empty();
-			
-			$this.entityCombo.data( ws.entities, 'id' , 'name' );
-		}
+			entities = ws.entities;
+		} 
+		$this.entityCombo.data( entities, 'id' , 'name' );
 	});
 };
 

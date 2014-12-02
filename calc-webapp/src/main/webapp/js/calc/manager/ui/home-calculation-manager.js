@@ -143,6 +143,8 @@ HomeCalculationManager.prototype.updateSteps = function(callback) {
 	this.stepsEntityContainer.empty();
 	
 	WorkspaceManager.getInstance().activeWorkspace( function(ws){
+		$this.stepsEntityContainer.hide();
+		
 		if( ws ){
 			var length = "";
 			var chain = ws.getDefaultProcessingChain();
@@ -154,7 +156,7 @@ HomeCalculationManager.prototype.updateSteps = function(callback) {
 			$this.updateActiveStepsCount();
 			
 			$this.optionsManager.updateUI();
-		}
+		} 
 	});
 };
 /**

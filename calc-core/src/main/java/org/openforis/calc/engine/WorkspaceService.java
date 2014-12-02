@@ -83,6 +83,8 @@ public class WorkspaceService {
 	
 	@Autowired
 	private Psql psql;
+	@Autowired
+	private TaskManager taskManager;
 
 	public WorkspaceService() {
 	}
@@ -411,6 +413,31 @@ public class WorkspaceService {
 	public void setErrorSettings( Workspace workspace , ErrorSettings errorSettings) {
 		workspace.setErrorSettings(errorSettings);
 		errorSettingsManager.save(workspace);
+	}
+
+	/**
+	 * Create a job responsible for deleting the workspace with given id
+	 * @param workspaceId
+	 * @return
+	 * @throws Throwable 
+	 */
+	@Transactional
+	public void deleteWorkspace( int workspaceId ) throws Throwable{
+		Workspace workspace = get( workspaceId );
+
+		Job job = taskManager.createJob( workspace );
+		
+		DeleteOutputMetadataTask task = taskManager.createTask( DeleteOutputMetadataTask.class );
+		task.setJob( job );
+		task.execute();
+		
+		DeleteCollectDataTask task2 = taskManager.createTask( DeleteCollectDataTask.class );
+		task2.setJob( job );
+		task2.execute();
+		
+		DeleteWorkspaceTask task3 = taskManager.createTask( DeleteWorkspaceTask.class );
+		task3.setJob( job );
+		task3.execute();
 	}
 
 //	private void setActiveWorkspace(Workspace activeWorkspace) {

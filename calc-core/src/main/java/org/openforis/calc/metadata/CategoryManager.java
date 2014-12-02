@@ -147,7 +147,6 @@ public class CategoryManager {
 			}
 		}
 		workspace.setCategories( categories );
-		
 	}
 	
 	/**

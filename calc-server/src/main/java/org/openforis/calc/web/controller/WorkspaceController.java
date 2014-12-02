@@ -99,6 +99,14 @@ public class WorkspaceController {
 		return response;
 	}
 	
+	@RequestMapping(value = "/{workspaceId}/delete.json", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	Response deleteWorkspace( @PathVariable int workspaceId ) throws Throwable {
+		workspaceService.deleteWorkspace( workspaceId );
+		
+		return getActiveWorkspace();
+	}
+	
 	// TODO change rest call /active/job.json
 	// move to JobController
 	@Deprecated

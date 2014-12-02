@@ -135,6 +135,10 @@ public final class Psql extends DefaultDSLContext {
 		return new DropSchemaStep(this, true, schema);
 	}
 
+	public DropSchemaStep dropSchemaIfExistsCascade(Schema schema) {
+		return new DropSchemaStep(this, true, schema, true );
+	}
+	
 	public SetDefaultSchemaSearchPathStep setDefaultSchemaSearchPath(Schema... schemas) {
 		return new SetDefaultSchemaSearchPathStep(this, schemas);
 	}

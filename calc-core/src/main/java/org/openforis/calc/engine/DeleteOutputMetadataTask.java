@@ -13,6 +13,7 @@ import org.openforis.calc.psql.Psql;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
+ * Task responsible for deleting all calc metadata associated with the job workspace
  * 
  * @author Mino Togna
  *

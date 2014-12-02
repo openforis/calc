@@ -75,10 +75,8 @@ DataVisualisationManager.prototype.refresh = function() {
 	
 	var $this = this;
 	WorkspaceManager.getInstance().activeWorkspace(function(ws){
-		if( ws ) {
-			$this.tableOptions.refresh();
-			$this.scatterOptions.refresh();
-		}
+		$this.tableOptions.refresh();
+		$this.scatterOptions.refresh();
 	});
 };
 
