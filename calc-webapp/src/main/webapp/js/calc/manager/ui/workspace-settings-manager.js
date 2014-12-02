@@ -9,7 +9,7 @@ WorkspaceSettingsManager = function( container ) {
 	this.wsListContainer	= this.container.find( ".workspace-list" );	
 	this.activateBtn 		= this.container.find( "button[name=activate-btn]" );
 	this.deleteBtn 			= this.container.find( "button[name=delete-btn]" );
-	this.cloneBtn 			= this.container.find( "button[name=clone-btn]" );
+//	this.cloneBtn 			= this.container.find( "button[name=clone-btn]" );
 	
 	this.init();
 };
@@ -88,7 +88,7 @@ WorkspaceSettingsManager.prototype.loadWorkspaces = function(){
 						$this.selectedWorkspace = null;
 						UI.disable( $this.activateBtn );
 						UI.disable( $this.deleteBtn );
-						UI.disable( $this.cloneBtn );
+//						UI.disable( $this.cloneBtn );
 						
 					} , ws );
 					

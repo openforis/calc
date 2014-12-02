@@ -1475,9 +1475,9 @@ ul.ui-sortable li {
 *	Workspace settings 
 */
 #workspace-settings .active-workspace-label {
-	color: #363a53;
+/* 	color: #363a53; */
 /* 	font-size: 1.2em; */
-	border: 1px solid; 
+	border: 1px solid #363a53; 
 }
 
 /** workspace list settings (change active workspace) */
