@@ -26,7 +26,13 @@ OptionButton = function(button) {
 	
 	this.button.click( click );
 	
+	// set to true when disable is not allowed
+	this.disableUnselect	= false;
+	this.disableOpacity		= 1;
 };
+
+OptionButton.cssClassSelected 	= "option-btn-selected";
+OptionButton.cssClassUnselected = "option-btn";
 
 OptionButton.prototype.select = function( select ) {
 	var args = Array.prototype.slice.call( arguments );
@@ -36,9 +42,7 @@ OptionButton.prototype.select = function( select ) {
 	
 	var $this = this;
 	this.select = function(){
-		$this.button.removeClass("option-btn");
-		$this.button.addClass("option-btn-selected");
-		
+		$this.updateUI( true );
 		if( select ) {
 			select.apply( this , args );
 		} 		
@@ -46,15 +50,15 @@ OptionButton.prototype.select = function( select ) {
 };
 
 OptionButton.prototype.deselect = function( deselect ) {
-    	var args = Array.prototype.slice.call( arguments );
+	var args = Array.prototype.slice.call( arguments );
 	if ( args.length > 1 ) { 
 	    args.shift(); 
 	}
 	
 	var $this = this;
 	this.deselect = function(){
-		$this.button.removeClass("option-btn-selected");
-		$this.button.addClass("option-btn");
+		$this.updateUI( false );
+		
 		if( deselect ) {
 			deselect.apply( this , args );
 		}
@@ -70,13 +74,39 @@ OptionButton.prototype.enable =function(){
 };
 
 OptionButton.prototype.displayAsSelected = function(){
-	this.button.removeClass( "option-btn-selected" ).removeClass( "option-btn" );
-	this.button.addClass( "option-btn-selected" );
+	this.updateUI( true );
 };
 
 OptionButton.prototype.displayAsUnelected = function(){
-	this.button.removeClass( "option-btn-selected" ).removeClass( "option-btn" );
-	this.button.addClass( "option-btn" );
+	this.updateUI( false );
+};
+
+/**
+ * Update UI state based on the selected argument
+ * @param selected
+ */
+OptionButton.prototype.updateUI = function( selected ){
+	this.button.removeClass( OptionButton.cssClassSelected ).removeClass( OptionButton.cssClassUnselected );
+	this.enable();
+	var $this = this;
+	if( selected ){
+		this.button.addClass( OptionButton.cssClassSelected );
+		if( this.disableUnselect ){
+			this.disable();
+		}
+		if( this.disableOpacity != 1 ){
+			setTimeout( function(){
+				$this.button.animate( {opacity:1} , 400 );
+			}, 100);
+		}
+	} else {
+		this.button.addClass( OptionButton.cssClassUnselected );
+		if( this.disableOpacity != 1 ){
+			setTimeout( function(){
+				$this.button.animate( {opacity:$this.disableOpacity} , 400 );
+			}, 100);
+		}
+	}
 };
 
 OptionButton.prototype.show = function(){

@@ -12,8 +12,11 @@ HomeCalculationOptionsManager = function( homeCalculationManager, container , tr
 	// view step option buttons
 	var viewStepList 		= this.container.find( 'button.view-steps-list' );
 	this.viewStepListBtn 	= new OptionButton( viewStepList );
+	this.viewStepListBtn.disableUnselect = true;
+	
 	var viewStepFolder		= this.container.find( 'button.view-steps-folder' );
 	this.viewStepFolderBtn 	= new OptionButton( viewStepFolder );
+	this.viewStepFolderBtn.disableUnselect = true;
 	
 	this.workspaceManager 	= WorkspaceManager.getInstance();
 	
@@ -38,7 +41,7 @@ HomeCalculationOptionsManager.prototype.init	= function(){
 			$this.container.animate( {width :'0px'} , {'duration': 500} );
 		} else {
 			$this.container.show( 0 );
-			$this.container.animate( {width :'320px'} , { 'duration': 500} ); 
+			$this.container.animate( {width :'320px'} , {'duration': 500} ); 
 		}
 	});
 	
@@ -46,7 +49,6 @@ HomeCalculationOptionsManager.prototype.init	= function(){
 	this.viewStepListBtn.select( function(){
 		$this.viewStepFolderBtn.deselect();
 		$this.setViewSteps( HomeCalculationOptionsManager.viewStepsAsList );
-		
 	});
 	this.viewStepListBtn.deselect( function(){ });
 
@@ -66,6 +68,7 @@ HomeCalculationOptionsManager.prototype.setViewSteps = function( viewStepsOption
 	var $this = this;
 	this.workspaceManager.setViewSteps( viewStepsOption , function(ws){
 		$this.updateUI();
+		$this.triggerBtn.click();
 	});
 };
 
@@ -90,12 +93,17 @@ HomeCalculationOptionsManager.prototype.updateUI = function(){
 				
 			});
 		} else if( ws.settings.viewSteps == HomeCalculationOptionsManager.viewStepsByEntity ){
+			steps.hide();
+			
 			$this.viewStepListBtn.displayAsUnelected();
 			$this.viewStepFolderBtn.displayAsSelected();
 			
 			$this.homeCalculationManager.stepsEntityContainer.fadeIn( 500 );
 			
-			steps.hide();
+			for( var i in $this.homeCalculationManager.stepsEntityMap ){
+				var stepBtn = $this.homeCalculationManager.stepsEntityMap[ i ];
+				stepBtn.displayAsUnelected();
+			}
 		}
 	});
 };

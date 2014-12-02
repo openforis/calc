@@ -61,7 +61,6 @@ HomeCalculationManager.prototype.init = function() {
 	// exec button click
 	this.executeBtn.click(function(e){
 		JobManager.getInstance().execute(function(response){
-//				console.log("response. executed?!");
 		});
 	});
 
@@ -365,40 +364,29 @@ HomeCalculationManager.prototype.addEntityStepElement = function( step , stepEle
 			
 			var btn = $( '<button type="button" class="btn option-btn"></button>' );
 			var optionBtn = new OptionButton( btn );
+			optionBtn.disableOpacity = 0.7;
+			
 			optionBtn.select( function(entityId) {
-//				for( var i in $this.stepsEntityMap ){
-//					var stepBtn = $this.stepsEntityMap[ i ];
-//					if( entityId != parseInt( i ) ){
-//						stepBtn.displayAsUnelected();
-//						stepBtn.button.parent().hide();
-//						stepBtn.disable();
-//					}
-//				}
-				
 				var steps = $this.stepsContainer.find( "."+ cssClass );
 				$.each( steps , function(i,step){
 					setTimeout( function(){
 						$(step).fadeIn( 50 );	
-					}, 100*i );
+					}, 15*i );
 					
 				});
 				
 			} , entity.id );
+			
 			optionBtn.deselect( function(){
 				var steps = $this.stepsContainer.find( "."+cssClass ).get().reverse();
 				$.each( steps , function(i,step){
 					setTimeout( function(){
 						$(step).fadeOut( 50 );	
-					}, 100*i );
+					}, 15*i );
 					
 				});
-				
-//				for( var i in $this.stepsEntityMap ){
-//					var stepBtn = $this.stepsEntityMap[ i ];
-//					stepBtn.button.parent().show();
-//					stepBtn.enable();
-//				}
 			});
+			
 			element.append( btn );
 			
 			var div	= $( '<div class="height100 width100 text"></div>' );
@@ -409,18 +397,12 @@ HomeCalculationManager.prototype.addEntityStepElement = function( step , stepEle
 			$this.stepsEntityContainer.append( element );
 			$this.stepsEntityMap[ entity.id ] = optionBtn;
 		}
-//		console.log( step );
 	});
-//	<li class="entity">
-//		<button type="button" class="btn option-btn" style="opacity: 1;">
-//			<div class="badge"><i class="fa fa-eye-slash"></i></div>
-//			<div class="height100 width100 text">Tree</div></button>
-//	</li>
+	
 };
 
 HomeCalculationManager.prototype.updateCalculationStepUI = function( element , step ){
 	element.data( "calculationStep", step );
-//	var step 	= element.data( "calculationStep" );
 	
 	var button = element.find( "button" );
 	button.find('.text').text( step.caption );
