@@ -10,7 +10,7 @@ FormFileUpload = function ( formSection, progressSection, uploadCallback ) {
 	this.progressSection 	= progressSection == null ? null : $(progressSection);
 
 	//success function called when upload completes successfully
-	this.uploadCallback = uploadCallback;
+	this.uploadCallback 	= uploadCallback;
 	
 	//upload UI elements
 	this.form 				= this.formSection.find("form");

@@ -30,6 +30,7 @@ import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.ErrorSettings;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.web.form.VariableForm;
+import org.openforis.calc.web.form.WorkspaceForm;
 import org.openforis.commons.versioning.Version;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -105,6 +106,21 @@ public class WorkspaceController {
 		workspaceService.deleteWorkspace( workspaceId );
 		
 		return getActiveWorkspace();
+	}
+	
+		
+	@RequestMapping(value = "/create.json", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
+	public @ResponseBody
+	Response createWorkspace(@Valid WorkspaceForm form , BindingResult result ) throws Throwable {
+		
+		Response response = new Response(result.getAllErrors());
+		if ( !response.hasErrors() ){
+			String name = form.getName();
+			Workspace workspace = workspaceService.createAndActivate( name, Workspace.DEFAULT_URI, name );
+			response.addField( "workspace" , workspace );
+		}
+		
+		return response;
 	}
 	
 	// TODO change rest call /active/job.json

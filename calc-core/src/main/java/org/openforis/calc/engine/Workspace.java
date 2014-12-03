@@ -39,8 +39,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * @author M. Togna
  */
 public class Workspace extends WorkspaceBase {
+	private static final long serialVersionUID 	= 1L;
 
-	private static final long serialVersionUID = 1L;
+	public static final String DEFAULT_URI 		= "http://calc-default-uri";
+	public static final String DEFAULT_SCHEMA 	= "calc-temp-schema";
 
 	public static final String DEFAULT_CHAIN_CAPTION = "default";
 

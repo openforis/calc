@@ -998,9 +998,9 @@ ul.scroll-menu {
 }
 
 #settings .group {
-	height: 25%;
+	height: 33%;
 	width: 100%;
-	padding: 0px;
+	padding: 10px 0px 0px 0px;
 	margin: 0px;
 }
 #settings .group-header {
@@ -1485,14 +1485,20 @@ ul.ui-sortable li {
 	padding-top: 30px;	
 }
 
-#workspace-edit-settings .workspace-list button.option-btn, 
-#workspace-edit-settings .workspace-list button.option-btn-selected {
+#workspace-edit-settings .workspace-list button {
 	width: 10em;
 	height: 7em;
 	margin: 0.2em 0.5em;
 }
-
-
+#workspace-edit-settings .workspace-list button.add-ws i {
+	font-size: 2em;
+}
+#workspace-edit-settings .workspace-list button.add-ws {
+	color: #FFF;	
+}
+#workspace-edit-settings .upload-progress-section {
+	display: none;
+}
 /**
 * Equation list settings 
 */

@@ -6,25 +6,39 @@ WorkspaceSettingsManager = function( container ) {
 	
 	this.container = $( container );
 	
-	this.wsListContainer	= this.container.find( ".workspace-list" );	
+	this.wsListContainer			= this.container.find( ".workspace-list" );	
+	this.wsListBtnsContainer		= this.container.find( ".workspace-list-buttons" );	
+	this.addWsFormContainer			= this.container.find( ".add-workspace-form" );	
+	this.addWsForm					= this.addWsFormContainer.find( "form" );	
+	
+	this.uploadCollectFormContainer 			= this.container.find( '.upload-collect-backup' );
+	this.uploadCollectFormProgressContainer 	= this.container.find(".upload-progress-section");
+	//form file upload manager
+	this.formFileUpload							= null; 
+	
 	this.activateBtn 		= this.container.find( "button[name=activate-btn]" );
 	this.deleteBtn 			= this.container.find( "button[name=delete-btn]" );
+	
+//	this.saveBtn 			= this.addWsFormContainer.find( "button[name=save]" );
+	this.cancelBtn 			= this.addWsFormContainer.find( "button[name=cancel]" );
 //	this.cloneBtn 			= this.container.find( "button[name=clone-btn]" );
 	
+	this.workspaceManager 	= WorkspaceManager.getInstance();
 	this.init();
 };
 
 WorkspaceSettingsManager.prototype.init = function(){
-
-	this.loadWorkspaces(); 
-	
 	var $this = this;
+	
+	this.addWsFormContainer.hide();
+	
+	this.loadWorkspaces(); 
 	
 	this.activateBtn.click( function(e) {
 		e.preventDefault();
 		
 		UI.lock();
-		WorkspaceManager.getInstance().changeActiveWorkspace( $this.selectedWorkspace , function(response){
+		$this.workspaceManager.changeActiveWorkspace( $this.selectedWorkspace , function(response){
 			UI.unlock();
 		});
 	});
@@ -32,7 +46,7 @@ WorkspaceSettingsManager.prototype.init = function(){
 	this.deleteBtn.click( function(e){
 		var message = "Are you sure you want to delete this workspace? This operation cannot be undone."
 		var confirmDelete = function(){ 
-			WorkspaceManager.getInstance().deleteWorkspace( $this.selectedWorkspace , function(job){
+			$this.workspaceManager.deleteWorkspace( $this.selectedWorkspace , function(job){
 				Calc.workspaceChange( function(){
 					$this.loadWorkspaces();
 					UI.showSuccess( "Workspace deleted" , true );
@@ -43,6 +57,58 @@ WorkspaceSettingsManager.prototype.init = function(){
 		UI.showConfirm(message, confirmDelete );
 	});
 	
+	this.addWsForm.submit(function(e){
+		e.preventDefault();
+		e.stopPropagation();
+
+		var data = $this.addWsForm.serialize();
+		$this.workspaceManager.createWorkspace( data , function(response){
+	    	if(response.status == "ERROR" ) {
+	    		UI.Form.updateErrors( $this.addWsForm , response.errors );
+	    		UI.showError("There are errors in the form. Please fix them before proceeding.", true);
+	    	} else {
+	    		Calc.workspaceChange( function(){
+	    			$this.loadWorkspaces();
+	    			$this.showList();
+	    			UI.showSuccess( "Workspace created" , true );
+	    		});
+	    	}
+			
+			
+		});
+	});
+	
+	this.cancelBtn.click( function(){
+		$this.showList();
+	});
+	
+	// upload collect backup 
+
+	//file upload success handler
+	var uploadSuccess = function ( response ) {
+		if ( response.status == "OK" ) {
+			var job = response.fields.job;
+			
+			JobManager.getInstance().start( job , function() {
+				Calc.workspaceChange();
+				$this.loadWorkspaces();
+			});
+		} else {
+			var errors = response.errors;
+			var message = UI.Form.getFieldErrorMessage(errors);
+			UI.showError(message);
+		}
+	};
+	
+	this.formFileUpload					= new FormFileUpload( this.uploadCollectFormContainer, this.uploadCollectFormProgressContainer , uploadSuccess);
+	this.formFileUpload.showHideForm 	= false;
+};
+
+WorkspaceSettingsManager.prototype.showList = function(){
+	this.addWsFormContainer.hide();
+
+	this.wsListContainer.fadeIn();
+	this.wsListBtnsContainer.fadeIn();
 };
 
 WorkspaceSettingsManager.prototype.loadWorkspaces = function(){
@@ -68,6 +134,7 @@ WorkspaceSettingsManager.prototype.loadWorkspaces = function(){
 					btn.html( ws.name );
 					
 					var optionBtn = new OptionButton( btn );
+					
 					optionBtn.select( function(w) {						
 						// deselect others
 						var btns = $this.wsListContainer.find( "button.workspace-btn" );
@@ -79,17 +146,15 @@ WorkspaceSettingsManager.prototype.loadWorkspaces = function(){
 						});
 						
 						$this.selectedWorkspace = w.id;
-						UI.enable( $this.activateBtn );
-						UI.enable( $this.deleteBtn );
-//						UI.enable( $this.cloneBtn );
+						
+						UI.enable( $this.wsListBtnsContainer.find( 'button' ) );
 						
 					} , ws );
+					
 					optionBtn.deselect( function(w){
 						$this.selectedWorkspace = null;
-						UI.disable( $this.activateBtn );
-						UI.disable( $this.deleteBtn );
-//						UI.disable( $this.cloneBtn );
 						
+						UI.disable( $this.wsListBtnsContainer.find( 'button' ) );
 					} , ws );
 					
 					if( ws.active === true ) {
@@ -106,7 +171,29 @@ WorkspaceSettingsManager.prototype.loadWorkspaces = function(){
 			
 			
 		}
+		
+		$this.addAddWsButton();
+		
 	}).error( function() {
 		Calc.error.apply( this , arguments );
 	});	
+};
+
+/**
+ * Add the add workspace button
+ */
+WorkspaceSettingsManager.prototype.addAddWsButton = function(){
+	var addBtn = $( '<button class="btn blue-btn add-ws"></button>' );
+	addBtn.append( $('<i class="fa fa-plus-square-o"></i>') );
+	this.wsListContainer.append( addBtn );	
+	
+	var $this = this;
+	addBtn.click( function(e){
+		UI.Form.reset( $this.addWsForm );
+		
+		$this.wsListContainer.hide();
+		$this.wsListBtnsContainer.hide();
+		
+		$this.addWsFormContainer.fadeIn();
+	});
 };

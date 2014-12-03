@@ -509,6 +509,30 @@ WorkspaceManager.prototype.deleteWorkspace = function( workspaceId , callback ) 
 	});
 };
 
+/**
+ * Create a new workspace with formd data passed as argument
+ * @param data
+ * @param callback
+ */
+WorkspaceManager.prototype.createWorkspace = function( data , callback ) {
+	var $this = this;
+	UI.lock();
+		
+	$.ajax({
+		url 		: $this.contextPath + "create.json",
+		dataType 	: "json",
+		method 		: "POST",
+		data		: data
+	}).done( function(response) {
+		Utils.applyFunction( callback , response );
+		
+		UI.unlock();
+	}).error( function() {
+		Calc.error.apply( this , arguments );
+	});
+		
+};
+
 // singleton instance of workspace manager
 var _workspaceManager = null;
 WorkspaceManager.getInstance = function() { 

@@ -25,11 +25,7 @@ CollectSyncManager.prototype.init = function () {
 			var job = response.fields.job;
 			
 			JobManager.getInstance().start( job , function() {
-				
-				WorkspaceManager.getInstance().refreshActiveWorkspace(function(ws) {
-					Calc.workspaceChange();
-				});
-				
+				Calc.workspaceChange();
 			});
 		} else {
 			var errors = response.errors;
@@ -39,5 +35,6 @@ CollectSyncManager.prototype.init = function () {
 	};
 	//form file upload manager
 	this.formFileUpload = new FormFileUpload(this.formSection, this.progressSection, uploadSuccess);
+	this.formFileUpload.showHideForm = false;
 	
 };

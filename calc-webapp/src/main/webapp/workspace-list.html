@@ -2,20 +2,54 @@
 	
 	<div class="row no-margin workspace-list">
 	</div>
-	<div class="row no-margin ">
-		<div class="col-md-2 col-md-offset-4">
+	<div class="row no-margin workspace-list-buttons">
+		<div class="col-md-2 col-md-offset-3">
 			<button type="button" class="btn btn-default width100" name="activate-btn">Activate</button>
 		</div>
-<!-- 		<div class="col-md-2"> -->
-<!-- 			<button type="button" class="btn btn-default width100" name="clone-btn" disabled="disabled">Clone</button> -->
-<!-- 		</div> -->
+		<div class="col-md-2 upload-collect-backup">
+			<form  method="post" enctype="multipart/form-data" action="rest/collect/data.json">
+<!-- 				<button type="button" class="btn btn-default" name="upload-btn">Upload backup file</button> -->
+				<button type="button" class="btn btn-default width100" name="upload-btn">Upload collect backup</button>
+			    <input type="file" name="file" style="display:none" accept=".zip,.collect" />
+			</form>
+		</div>
 		<div class="col-md-2">
 			<button type="button" class="btn btn-default width100" name="delete-btn">Delete</button>
 		</div>
 	</div>
 	
-	<!-- ==== Everything has to go inside page-section === -->
-	
+	<div class="row no-margin add-workspace-form">
+		<div class="col-md-8 col-md-offset-2" style="padding-top: 40px">
+			<form class="form-horizontal width100">
+				<div class="form-group">
+					<label class="col-md-2 control-label">Name</label>
+					<div class="col-md-10">
+						<input type="text" class="form-control" name="name">
+					</div>
+				</div>
+				
+				<div class="form-group buttons no-margin">
+					<div class="col-md-2 col-md-offset-4" style="text-align: center; padding-top: 30px">
+						<button type="submit" class="btn btn-default width100" name="save">Save</button>
+					</div>
+					<div class="col-md-2" style="text-align: center; padding-top: 30px">
+						<button type="button" class="btn btn-default width100" name="cancel">Cancel</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<div class="upload-progress-section row no-margin no-padding">
+		<div class="col-md-5 col-md-offset-3" style="padding-top: 6px;">
+			<div class="progress progress-striped active">
+	        	<div class="progress-bar progress-bar-info"></div>
+	        </div>	        
+	    </div>
+	    <div class="col-md-1">
+	    	<div class="percent">0%</div>
+	    </div>
+	</div>	
 	<script>
 	$(function(){
 		
