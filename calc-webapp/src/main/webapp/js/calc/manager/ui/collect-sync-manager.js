@@ -1,5 +1,7 @@
 /**
  * Manages Collect sync page
+ * 
+ * @deprecated
  */
 CollectSyncManager = function(container) {
 	
@@ -35,6 +37,5 @@ CollectSyncManager.prototype.init = function () {
 	};
 	//form file upload manager
 	this.formFileUpload = new FormFileUpload(this.formSection, this.progressSection, uploadSuccess);
-	this.formFileUpload.showHideForm = false;
 	
 };

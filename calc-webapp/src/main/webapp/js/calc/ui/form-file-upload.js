@@ -10,7 +10,10 @@ FormFileUpload = function ( formSection, progressSection, uploadCallback ) {
 	this.progressSection 	= progressSection == null ? null : $(progressSection);
 
 	//success function called when upload completes successfully
-	this.uploadCallback 	= uploadCallback;
+	this.uploadCallback 			= uploadCallback;
+	// before serialize function to ovveride externally in case you want to change form parameters
+	this.beforeSerializeFunction 	= null;
+	
 	
 	//upload UI elements
 	this.form 				= this.formSection.find("form");
@@ -36,7 +39,12 @@ FormFileUpload.prototype.init = function() {
 	this.form.ajaxForm( {
 	    dataType : 'json',
 	    
+	    beforeSerialize : function(){
+	    	Utils.applyFunction( $this.beforeSerializeFunction );
+	    },
+	    
 	    beforeSubmit: function() {
+	    	
 	    	UI.lock();
 	    	
 	        $this.form.addClass('loading');
@@ -61,9 +69,8 @@ FormFileUpload.prototype.init = function() {
 	    	if ( $this.progressSection ) {
 	    		$this.progressBar.progressSuccess();
 	    	}
-	    	if ( $this.uploadCallback ) {
-	    		$this.uploadCallback( response );
-	    	}
+	    	
+	    	Utils.applyFunction( $this.uploadCallback , response );
 	    },
 	    
 	    error: function () {

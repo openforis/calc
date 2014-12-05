@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.openforis.calc.chain.ProcessingChainManager;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.Variable.Scale;
@@ -81,19 +80,19 @@ public class MetadataManager {
 		return workspace;
 	}
 	
-	@Transactional
-	public Workspace fetchWorkspaceByCollectSurveyUri( String uri ) {
-		List<Workspace> list = workspaceDao.fetchByCollectSurveyUri( uri );
-		if( CollectionUtils.isNotEmpty(list) ) {
-			if( list.size() > 1 ){
-				throw new IllegalStateException( "Found more than one workspace with survey uri: " + uri );
-			}
-			Workspace workspace = list.get(0);
-			loadMetadata( workspace );
-			return workspace;
-		}
-		return null;
-	}
+//	@Transactional
+//	public Workspace fetchWorkspaceByCollectSurveyUri( String uri ) {
+//		List<Workspace> list = workspaceDao.fetchByCollectSurveyUri( uri );
+//		if( CollectionUtils.isNotEmpty(list) ) {
+//			if( list.size() > 1 ){
+//				throw new IllegalStateException( "Found more than one workspace with survey uri: " + uri );
+//			}
+//			Workspace workspace = list.get(0);
+//			loadMetadata( workspace );
+//			return workspace;
+//		}
+//		return null;
+//	}
 	
 	@Transactional
 	public List<Workspace> findAllWorkspaces() {
@@ -171,7 +170,8 @@ public class MetadataManager {
 		errorSettingsManager.save( workspace );
 		workspaceSettingsManager.save( workspace );
 		
-		return fetchWorkspaceByCollectSurveyUri( workspace.getCollectSurveyUri() );
+//		return fetchWorkspaceByCollectSurveyUri( workspace.getCollectSurveyUri() );
+		return fetchWorkspaceById( workspace.getId() );
 	}
 	
 	/* 

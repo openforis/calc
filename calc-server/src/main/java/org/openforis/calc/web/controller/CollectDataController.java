@@ -19,6 +19,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -51,8 +52,9 @@ public class CollectDataController {
 
 	@RequestMapping(value = "/data.json", method = RequestMethod.POST, produces =  MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
-	Response importCollectData(@ModelAttribute("file") MultipartFile file) {
+	Response importCollectData(@ModelAttribute("file") MultipartFile file, @RequestParam(required=true) int workspaceId) {
 		Response response = new Response();
+		
 		
 		if ( checkValidFile(response, file) ) {
 			// upload file
@@ -62,22 +64,37 @@ public class CollectDataController {
 				
 				// extract survey from xml file and creates it if it doesn't exist in the db
 				CollectSurvey survey = idmExtractor.extractSurvey(tempFile);
-				String surveyUri = survey.getUri();
-				Workspace ws = workspaceService.fetchByCollectSurveyUri(surveyUri);
-				if (ws == null) {
-					String name = extractName(surveyUri);
-					ws = workspaceService.createAndActivate(name, surveyUri, name);
-				} else {
-					workspaceService.activate(ws);
-				}
-	
-				// start import job
-				Job job = taskManager.createCollectSurveyImportJob( ws, survey, tempFile );
-				taskManager.startJob(job);
-				
-	//			workspaceService.activate(ws);
+				String collectSurveyUri = survey.getUri();
 
-				response.addField("job", job);
+				Workspace workspace = workspaceService.get( workspaceId );
+				String wsCollectSurveyUri = workspace.getCollectSurveyUri();
+				
+				// upload is allowed only to a newly created workspace (it has default uri) or to a workspace with the same survey uri
+				if( wsCollectSurveyUri.equals(Workspace.DEFAULT_URI) || wsCollectSurveyUri.equals( collectSurveyUri) ) {
+					
+					workspace.setCollectSurveyUri(collectSurveyUri);
+					
+					workspaceService.activate( workspace );
+					
+//				Workspace ws = workspaceService.fetchByCollectSurveyUri(collectSurveyUri);
+//				if (ws == null) {
+//					String name = extractName(collectSurveyUri);
+//					ws = workspaceService.createAndActivate(name, collectSurveyUri, name);
+//				} else {
+//					
+//				}
+					// start import job
+					Job job = taskManager.createCollectSurveyImportJob( workspace, survey, tempFile );
+					taskManager.startJob(job);
+					
+					response.addField("job", job);
+				} else {
+					response.setStatusError();
+					response.addError( new ObjectError("fileFormat", "Unable to import.\nThe workspace " + workspace.getName() + " is linked to another collect survey.") );
+				}
+				
+				
+				
 			} catch (Exception e) {
 				String message = "Error extracting survey from Collect backup file";
 				LOG.error(message, e);
@@ -107,10 +124,10 @@ public class CollectDataController {
 		}
 	}
 
-	private String extractName(String uri) {
-		String name = uri.replaceFirst(".*/([^/?]+).*", "$1");
-		name = name.replaceAll( "\\W", "_" );
-		return name;
-	}
+//	private String extractName(String uri) {
+//		String name = uri.replaceFirst(".*/([^/?]+).*", "$1");
+//		name = name.replaceAll( "\\W", "_" );
+//		return name;
+//	}
 	
 }

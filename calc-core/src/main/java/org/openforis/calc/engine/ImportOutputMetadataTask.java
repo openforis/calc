@@ -98,7 +98,8 @@ public class ImportOutputMetadataTask extends Task {
 	}
 
 	private void updateWorkspace( Workspace workspace ) {
-		workspace = workspaceService.fetchByCollectSurveyUri( workspace.getCollectSurveyUri() );
+//		workspace = workspaceService.fetchByCollectSurveyUri( workspace.getCollectSurveyUri() );
+		workspace = workspaceService.get( workspace.getId() );
 		workspaceService.resetResults(workspace);
 		getJob().setWorkspace( workspace );
 		getJob().setSchemas( workspace.schemas() );

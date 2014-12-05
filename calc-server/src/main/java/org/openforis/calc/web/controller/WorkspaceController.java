@@ -236,14 +236,19 @@ public class WorkspaceController {
 		if( version.compareTo( calcVersion ) <= 0 ){
 			
 			Workspace workspace = backup.getWorkspace();
-			Workspace originalWorkspace = workspaceService.fetchByCollectSurveyUri( workspace.getCollectSurveyUri() );
+			Workspace originalWorkspace = workspaceService.getActiveWorkspace();
 			// it fails if the survey to import doesn't exist
 			if( originalWorkspace == null ){
+				
 				response.setStatusError();
 				response.addField( "error", "Workspace " + workspace.getName() + " not found. Unable to import." );
+				
+			} else if( !StringUtils.equals( originalWorkspace.getCollectSurveyUri() , workspace.getCollectSurveyUri())){
+				// it fails if active workspace doesn't use the same collect survey
+				response.setStatusError();
+				response.addField( "error" , "Unable to import.\n The workspace you are trying to import is linked to a different collect survey" );
+				
 			} else {
-				// activate first the workspace
-				workspaceService.activate(originalWorkspace);
 				// then it stars the import job
 				Job job = workspaceBackupService.createImportBackupJob( originalWorkspace, backup );
 				taskManager.startJob(job);

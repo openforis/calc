@@ -49,12 +49,16 @@ WorkspaceSettingsManager.prototype.init = function(){
 			$this.workspaceManager.deleteWorkspace( $this.selectedWorkspace , function(job){
 				Calc.workspaceChange( function(){
 					$this.loadWorkspaces();
+					UI.enableAll();
 					UI.showSuccess( "Workspace deleted" , true );
 				});
 			});
 		};
-		
-		UI.showConfirm(message, confirmDelete );
+		var position = $this.deleteBtn.offset();
+		position.top -= 50; 
+		position.left -= 50;
+		UI.disableAll();
+		UI.showConfirm( message, confirmDelete , function(){ UI.enableAll(); } , position );
 	});
 	
 	this.addWsForm.submit(function(e){
@@ -102,6 +106,9 @@ WorkspaceSettingsManager.prototype.init = function(){
 	
 	this.formFileUpload					= new FormFileUpload( this.uploadCollectFormContainer, this.uploadCollectFormProgressContainer , uploadSuccess);
 	this.formFileUpload.showHideForm 	= false;
+	this.formFileUpload.beforeSerializeFunction = function(){
+		$this.uploadCollectFormContainer.find( '[name=workspaceId]' ).val( $this.selectedWorkspace );
+	};
 };
 
 WorkspaceSettingsManager.prototype.showList = function(){

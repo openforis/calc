@@ -93,9 +93,9 @@ public class WorkspaceService {
 		return metadataManager.fetchWorkspaceById( workspaceId );
 	}
 
-	public Workspace fetchByCollectSurveyUri( String uri ) {
-		return metadataManager.fetchWorkspaceByCollectSurveyUri( uri );
-	}
+//	public Workspace fetchByCollectSurveyUri( String uri ) {
+//		return metadataManager.fetchWorkspaceByCollectSurveyUri( uri );
+//	}
 
 	public Workspace save(Workspace workspace) {
 		return metadataManager.saveWorkspace( workspace );

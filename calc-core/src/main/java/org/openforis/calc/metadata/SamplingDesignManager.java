@@ -152,13 +152,18 @@ public class SamplingDesignManager {
 	@Transactional
 	public <T extends Object> void importBackupPhase1Data(Workspace workspace, WorkspaceBackup workspaceBackup ) {
 		Phase1Data phase1Data = workspaceBackup.getPhase1Data();
-		Workspace workspaceToImport = workspaceBackup.getWorkspace();
+//		Workspace workspaceToImport = workspaceBackup.getWorkspace();
 		
 		if( phase1Data != null ){
-			DynamicTable<?> table = new DynamicTable<Record>( workspaceToImport.getPhase1PlotTableName(), CalcSchema.CALC.getName() );
+			DynamicTable<?> table = new DynamicTable<Record>( workspace.getPhase1PlotTableName(), CalcSchema.CALC.getName() );
 			table.initFields( phase1Data.getTableInfo() );
 			@SuppressWarnings( "unchecked" )
 			Field<T>[] tableFields = (Field<T>[]) table.fields();
+			
+			// drop table first
+			psql
+				.dropTableIfExists( table )
+				.execute();
 			
 			// create table
 			psql
