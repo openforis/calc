@@ -112,6 +112,7 @@ public class WorkspaceService {
 	public void deleteInputCategories(Workspace workspace) {
 		categoryManager.deleteInputCategories(workspace);
 	}
+	
 	/**
 	 * It returns the active workspace
 	 * 

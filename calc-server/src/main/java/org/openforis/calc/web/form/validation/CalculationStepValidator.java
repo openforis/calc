@@ -82,6 +82,10 @@ public class CalculationStepValidator implements ConstraintValidator<Calculation
 	private boolean validateTypeCategory(CalculationStepForm form, ConstraintValidatorContextImpl ctx, Workspace ws) {
 		boolean valid = true;
 		
+		if (!validateVariable(form, ctx, ws)) {
+			valid = false;
+		}
+		
 		Integer categoryId = form.getCategoryId();
 		Category category = ws.getCategoryById(categoryId);
 		if( category == null ){
@@ -91,70 +95,11 @@ public class CalculationStepValidator implements ConstraintValidator<Calculation
 			.addConstraintViolation();
 			
 			valid = false;
-		} else {
-			
-			// This part has been left out at the moment. only r script is valid now
-//			JSONArray categoryClasses = categoryManager.loadCategoryClasses( ws, categoryId );
-//			for (Object object : categoryClasses) {
-//				JSONObject o = (JSONObject) object;
-//				
-//				int classId = Integer.parseInt( o.get( "id" ).toString() );
-//				if( classId != -1 ){
-//					
-//					Integer variableId = form.getCategoryClassVariables().get( classId );
-//					
-//					Variable<?> variable = ws.getVariableById(variableId);
-//					if( variable == null ){
-//						ctx
-//						.buildConstraintViolationWithTemplate( IS_REQUIRED )
-//						.addPropertyNode( "categoryClassVariables['" + classId + "']" )
-//						.addConstraintViolation();
-//						
-//						valid = false;
-//					}
-//					
-//					String condition = form.getCategoryClassConditions().get(classId);
-//					if( StringUtils.isBlank(condition) ){
-//						ctx
-//						.buildConstraintViolationWithTemplate( IS_REQUIRED )
-//						.addPropertyNode( "categoryClassConditions['" + classId + "']" )
-//						.addConstraintViolation();
-//						
-//						valid = false;
-//					} else {
-//						
-//						String left = form.getCategoryClassLeftConditions().get(classId);
-//						String right = form.getCategoryClassRightConditions().get(classId);
-//						
-//						if( !(condition.equals("IS NULL") || condition.equals("IS NOT NULL")) ){
-//							if( StringUtils.isBlank(left) ){
-//								ctx
-//								.buildConstraintViolationWithTemplate( IS_REQUIRED )
-//								.addPropertyNode( "categoryClassLeftConditions['" + classId + "']" )
-//								.addConstraintViolation();
-//								
-//								valid = false;
-//							}
-//							
-//							if( condition.equals("BETWEEN") || condition.equals("NOT BETWEEN") ){
-//								if( StringUtils.isBlank(right) ){
-//									ctx
-//									.buildConstraintViolationWithTemplate( IS_REQUIRED )
-//									.addPropertyNode( "categoryClassRightConditions['" + classId + "']" )
-//									.addConstraintViolation();
-//									
-//									valid = false;
-//								}	
-//							}
-//						}
-//						
-//					}
-//				
-//				}
-//			}
 		}
 		
-		valid = validateRScript( form, ctx );
+		if ( !validateRScript( form, ctx ) ){
+			valid = false;
+		}
 		
 		return valid;
 	}
