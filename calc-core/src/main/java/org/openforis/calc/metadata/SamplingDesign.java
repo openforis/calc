@@ -108,6 +108,7 @@ public class SamplingDesign extends SamplingDesignBase {
 		public String getColumn() {
 			return column;
 		}
+		
 	}
 	
 	public class TableJoin {

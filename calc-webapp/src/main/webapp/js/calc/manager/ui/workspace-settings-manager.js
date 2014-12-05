@@ -120,6 +120,7 @@ WorkspaceSettingsManager.prototype.showList = function(){
 
 WorkspaceSettingsManager.prototype.loadWorkspaces = function(){
 	this.wsListContainer.empty();
+	UI.disable( this.wsListBtnsContainer.find( 'button' ) );
 	
 	var $this = this;
 	/**

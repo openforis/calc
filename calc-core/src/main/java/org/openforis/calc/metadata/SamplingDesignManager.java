@@ -12,6 +12,7 @@ import org.jooq.Query;
 import org.jooq.Record;
 import org.jooq.impl.DynamicTable;
 import org.openforis.calc.engine.DataRecord;
+import org.openforis.calc.engine.ParameterMap;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceBackup;
 import org.openforis.calc.engine.WorkspaceBackup.Phase1Data;
@@ -137,6 +138,26 @@ public class SamplingDesignManager {
 			
 			samplingDesign.setSamplingUnit(samplingUnit);
 			
+			if( samplingDesign.getTwoPhases() ){
+				// replace phase 1 table name
+				String originalPhase1PlotTableName = workspaceToImport.getPhase1PlotTableName();
+				String phase1PlotTableName = workspace.getPhase1PlotTableName();
+				
+				if( samplingDesign.getAoiJoinSettings().getString("table").equals(originalPhase1PlotTableName)){
+					samplingDesign.getAoiJoinSettings().setString( "table" , phase1PlotTableName );
+				}
+				if( samplingDesign.getClusterColumnSettings().getString( "table" ).equals(originalPhase1PlotTableName)){
+					samplingDesign.getClusterColumnSettings().setString( "table" , phase1PlotTableName );
+				}
+				if( samplingDesign.getStratumJoinSettings().getString( "table" ).equals(originalPhase1PlotTableName)){
+					samplingDesign.getStratumJoinSettings().setString( "table" , phase1PlotTableName );
+				}
+				ParameterMap map = samplingDesign.getPhase1JoinSettings().getMap( "leftTable" );
+				if( map.getString( "table" ).equals(originalPhase1PlotTableName)){
+					map.setString( "table" , phase1PlotTableName );
+				}
+			}
+			
 			this.insert( workspace, samplingDesign  );
 			
 			DataTable table = workspace.schemas().getDataSchema().getDataTable(samplingUnit);
@@ -194,7 +215,6 @@ public class SamplingDesignManager {
 			psql
 				.batch(queries)
 				.execute();
-			
 			
 			workspace.setPhase1PlotTable( table.getName() );
 			workspaceDao.update( workspace );
