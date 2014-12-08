@@ -10,6 +10,8 @@ import org.openforis.calc.engine.WorkspaceLockedException;
 import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.AoiManager;
+import org.openforis.calc.metadata.ErrorSettings;
+import org.openforis.calc.metadata.ErrorSettingsManager;
 import org.openforis.calc.metadata.Stratum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -37,6 +39,9 @@ public class DataImportSettingsController {
 	@Autowired
 	private TaskManager taskManager;
 	
+	@Autowired
+	private ErrorSettingsManager errorSettingsManager;
+	
 	@RequestMapping(value = "/aoi/import.json", method = RequestMethod.POST, produces = "application/json")
 	public @ResponseBody
 	Response aoisCsvImport(@RequestParam("filepath") String filepath, @RequestParam("captions") String[] captions) throws IOException, WorkspaceLockedException {
@@ -47,6 +52,14 @@ public class DataImportSettingsController {
 		
 		AoiHierarchy aoiHierarchy = workspace.getAoiHierarchies().get(0);
 		response.addField( "aoiHierarchy", aoiHierarchy );
+		
+		ErrorSettings errorSettings = workspace.getErrorSettings();
+		if( errorSettings != null ){
+			errorSettings.resetParameters();
+			errorSettingsManager.save( workspace );
+			
+			response.addField( "errorSettings" , errorSettings );
+		}
 		
 		if( workspace.hasSamplingDesign() ){
 			Job job = taskManager.createPreProcessingJob( workspace );

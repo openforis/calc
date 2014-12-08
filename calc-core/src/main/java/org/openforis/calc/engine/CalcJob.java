@@ -370,8 +370,6 @@ public class CalcJob extends Job {
 							CategoricalVariable<?> categoricalVariable = (CategoricalVariable<?>) workspace.getVariableById( categoricalVariableId.intValue() );
 							Aoi aoi = workspace.getAoiHierarchies().get(0).getAoiById( aoiId.intValue() );
 							
-							
-							
 							// aoi might be null during collect import phase
 //							if( aoi!= null && categoricalVariable !=null ){
 							FactTable factTable = getSchemas().getDataSchema().getFactTable( outputVariable.getEntity() );

@@ -250,6 +250,11 @@ WorkspaceManager.prototype = (function(){
 				var aoiHierarchy = response.fields.aoiHierarchy;
 				ws.aoiHierarchies[0] = aoiHierarchy;
 				
+				var errorSettings = response.fields.errorSettings;
+				if( errorSettings ){
+					ws.errorSettings = errorSettings;
+				}
+				
 				UI.unlock();
 				Calc.updateButtonStatus();
 				

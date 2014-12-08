@@ -83,7 +83,7 @@ Entity.prototype.hierarchyVariables = function() {
 Entity.prototype.isInSamplingUnitHierarchy = function(){
 	var entity = this;
 	while ( entity != null ) {
-    	if( entity.workspace.isSamplingUnit( entity ) ){
+    	if( entity.isSamplingUnit() ){
     		return true;
     	}
     	
@@ -92,27 +92,26 @@ Entity.prototype.isInSamplingUnitHierarchy = function(){
 	return false;
 };
 
+Entity.prototype.isSamplingUnit = function(){
+	return this.workspace.isSamplingUnit( this );
+};
 /**
  * Returns all the categorical variables up to the sampling unit entity
  */
 Entity.prototype.samplingUnitHierarchyCategoricalVariables = function() {
     var vars = [];
-    vars = $.merge( vars, this.categoricalVariables() );
     
-    if( this.isInSamplingUnitHierarchy() ){
-    	
-    	var entity = this.parent();    	
-    	while ( entity != null ){
-//    		vars.push( entity.categoricalVariables() );
+    var entity = this;
+    while ( entity != null ){
+    	if( entity.isInSamplingUnitHierarchy() ){
     		vars = $.merge( vars, entity.categoricalVariables() );
-    		if( entity.workspace.isSamplingUnit( entity ) ){
+    		
+    		if( entity.isSamplingUnit() ){
     			break ;
     		}
     		entity = entity.parent();
     	}
-    	
     }
-
     
     return vars;
 };

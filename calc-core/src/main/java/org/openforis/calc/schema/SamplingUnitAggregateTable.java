@@ -18,6 +18,7 @@ public class SamplingUnitAggregateTable extends AggregateTable {
 		super(table, getName(table));
 		
 		createClusterField();
+		createSamplingUnitIdField();
 	}
 
 	private static String getName( DataTable table ){

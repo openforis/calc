@@ -157,15 +157,19 @@ public final class CreateAggregateTablesTask extends Task {
 		
 		select.addSelect( sourceTable.getSamplingUnitIdField() );
 		select.addGroupBy( sourceTable.getSamplingUnitIdField() );
-//		select.addSelect( sourceTable.getDimensionIdFields() );
+
+		//		select.addSelect( sourceTable.getDimensionIdFields() );
 		for (Field<Integer> dimField : sourceTable.getDimensionIdFields()) {
 			select.addSelect( DSL.coalesce(dimField,-1).as( dimField.getName() ) );
 		}
 		select.addGroupBy( sourceTable.getDimensionIdFields() );
+		
 		select.addSelect( sourceTable.getAoiIdFields() );
 		select.addGroupBy( sourceTable.getAoiIdFields() );
+		
 		select.addSelect( sourceTable.getStratumField() );
 		select.addGroupBy( sourceTable.getStratumField() );
+		
 		select.addSelect( sourceTable.getClusterField() );
 		select.addGroupBy( sourceTable.getClusterField() );
 		// for now quantity fields. check if it needs to be done for each variable aggregate

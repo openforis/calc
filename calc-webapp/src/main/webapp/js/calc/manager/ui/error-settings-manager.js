@@ -83,8 +83,6 @@ ErrorSettingsManager.prototype.initEventHandlers = function() {
 	var $this = this;
 	
 	this.saveBtn.click( function(e){
-//		e.preventDefault();
-//		UI.lock();
 		
 		$this.errorSettings.script	= $this.rEditor.getValue();
 		var data = JSON.stringify( $this.errorSettings );
@@ -93,7 +91,6 @@ ErrorSettingsManager.prototype.initEventHandlers = function() {
 			
 			UI.showSuccess( "Saved!", true );
 			
-//			UI.unlock();
 		});
 		
 	});
@@ -103,7 +100,6 @@ ErrorSettingsManager.prototype.showQuantity = function() {
 	var $this = this;
 	var container = $( '<div class="height95 option col-md-12" style="overflow: auto;"></div>' );
 	$this.quantity.append( container );
-//	UI.lock();
 	
 	var vars = [];
 	CalculationStepManager.getInstance().loadAll( function(steps) {
@@ -140,7 +136,6 @@ ErrorSettingsManager.prototype.showQuantity = function() {
 					
 				}
 			}
-//			UI.unlock();
 			$this.quantity.fadeIn();
 	});
 }; 
@@ -196,7 +191,8 @@ ErrorSettingsManager.prototype.addVariableSettings = function( variableId ){
 	// add categories
 	var variable 	= this.workspace.getVariableById( variableId );
 	var entity 		= this.workspace.getEntityById( variable.entityId );
-	var categories	= entity.samplingUnitHierarchyCategoricalVariables();
+//	var categories	= entity.samplingUnitHierarchyCategoricalVariables();
+	var categories	= this.workspace.samplingUnit().samplingUnitHierarchyCategoricalVariables();
 	
 	var categoryContainer 	= variableSettingsContainer.find( ".category .button-container" );
 	var addCategory = function( category ){

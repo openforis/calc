@@ -76,7 +76,7 @@ public class CalculateErrorTask extends CalcRTask {
 		addScript( r().setValue( strata , r().dbGetQuery(connection, selectStrata) ) );			
 //		}
 		
-		Select<?> selectPlots = getPlotSelect( aoi, schema, this.errorTable.getCategoricalVariable() );
+		Select<?> selectPlots = getPlotSelect( aoi, schema, this.errorTable.getQuantitativeVariable(), this.errorTable.getCategoricalVariable() );
 		// plots
 		RVariable plots = r().variable("plots");
 		addScript( r().setValue( plots , r().dbGetQuery(connection, selectPlots) ) );
@@ -249,28 +249,43 @@ public class CalculateErrorTask extends CalcRTask {
 		return select;
 	}
 	
-	private Select<?> getPlotSelect( Aoi aoi , DataSchema schema , CategoricalVariable<?> category ){
-		Entity samplingUnit = workspace.getSamplingUnit();
-		FactTable suFactTable = schema.getFactTable( samplingUnit );
-		EntityAoiTable suAoiTable = schema.getEntityAoiTable( samplingUnit );
+	private Select<?> getPlotSelect( Aoi aoi , DataSchema schema , QuantitativeVariable quantitativeVariable, CategoricalVariable<?> category ){
+		Entity samplingUnit 					= workspace.getSamplingUnit();
+		FactTable suFactTable 					= schema.getFactTable( samplingUnit );
+		
+		EntityAoiTable suAoiTable 				= schema.getEntityAoiTable( samplingUnit );
+		
+//		FactTable factTable 					= schema.getFactTable( quantitativeVariable.getEntity() );
+//		SamplingUnitAggregateTable suAggTable 	= factTable.getSamplingUnitAggregateTable();
+		
 		
 		SelectQuery<Record> select = new Psql().selectQuery();
 		select.setDistinct(true);
-		select.addSelect( suFactTable.getIdField().as("plot_id") );
+		select.addSelect( suFactTable.getSamplingUnitIdField().as("plot_id") );
 		if( workspace.hasStratifiedSamplingDesign() ){
 			select.addSelect( suFactTable.getStratumField().as("stratum") );
 		} else {
 			select.addSelect( DSL.val(1).as( "stratum") );
 		}
 		select.addSelect( suFactTable.getClusterField().as("cluster") );
-		select.addSelect( suFactTable.field(DataTable.WEIGHT_COLUMN) );
 
-		Field<Integer> dimensionIdField = suFactTable.getDimensionIdField( category );
-		select.addSelect( dimensionIdField.as( "class_id" ) );
+		select.addSelect( suFactTable.field(DataTable.WEIGHT_COLUMN) );
 		
 		select.addFrom( suFactTable );
 		
-		select.addJoin( suAoiTable, suAoiTable.getIdField().eq(suFactTable.getIdField()) );
+//		if( category.getEntity().isSamplingUnit() ){
+		Field<Integer> dimensionIdField = suFactTable.getDimensionIdField( category );
+		select.addSelect( dimensionIdField.as( "class_id" ) );
+			
+//		} else {
+//			select.addJoin( suAggTable , JoinType.LEFT_OUTER_JOIN , suAggTable.getSamplingUnitIdField().eq(suFactTable.getIdField()) );
+//			
+//			Field<Integer> dimensionIdField = suAggTable.getDimensionIdField( category );
+//			select.addSelect( dimensionIdField.as( "class_id" ) );
+//		}
+		
+		
+		select.addJoin( suAoiTable, suAoiTable.getIdField().eq(suFactTable.getSamplingUnitIdField()) );
 		
 		select.addConditions( suAoiTable.getAoiIdField(aoi.getAoiLevel()).eq( aoi.getId().longValue() ) );
 		

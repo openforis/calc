@@ -129,4 +129,8 @@ public class ErrorSettings extends ErrorSettingsBase {
 		getParameters().remove( varId + "" );
 	}
 	
+	public void resetParameters(){
+		this.setParameters( new ParameterHashMap() );
+	}
+	
 }

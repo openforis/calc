@@ -17,7 +17,15 @@ REditor = function( textAreaId ){
 		extraKeys		: { 
 							"Ctrl-Space"	: "autocomplete" , 
 							"Ctrl-Q"		: function(cm) { cm.foldCode(cm.getCursor()); } ,
-							"F11"			: function(cm) { cm.setOption("fullScreen", !cm.getOption("fullScreen")); } ,
+							"F11"			: function(cm) {
+													var fullScreen = !cm.getOption("fullScreen");
+													if( fullScreen ){
+														Calc.footer.hide();
+													} else {
+														Calc.footer.show();
+													}
+													cm.setOption( "fullScreen", fullScreen ); 
+												} ,
 							"Esc"			: function(cm) { if ( cm.getOption("fullScreen") ) cm.setOption("fullScreen", false); }
 						  }
 	});

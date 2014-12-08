@@ -82,12 +82,25 @@ Workspace.prototype.updateEntity = function(entity) {
 };
 
 Workspace.prototype.isSamplingUnit = function(entity) {
-	var result = false;
+	var isSamplingUnit = false;
 	if( this.samplingDesign ){
 		var suId = this.samplingDesign.samplingUnitId;
-		result = ( suId === entity.id);
+		isSamplingUnit = ( suId === entity.id);
 	}
-    return result;
+    return isSamplingUnit;
+};
+
+/**
+ * return the entity defined as sampling unit, if there is
+ */
+Workspace.prototype.samplingUnit = function(){
+	for( var i in this.entities ){
+		var entity = this.entities[ i ];
+		if( this.isSamplingUnit(entity) ){
+			return entity;
+		}
+	}
+	return null;
 };
 
 Workspace.prototype.getRootAoi = function() {
