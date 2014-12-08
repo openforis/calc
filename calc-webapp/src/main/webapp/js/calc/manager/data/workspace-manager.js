@@ -246,13 +246,22 @@ WorkspaceManager.prototype = (function(){
 				method : "POST",
 				data : { "filepath":filepath, "captions":captions.join(",") } 
 			}).done(function(response) {
-				var aoiHierarchy = response;
-				ws.aoiHierarchies[0] = response;
+				
+				var aoiHierarchy = response.fields.aoiHierarchy;
+				ws.aoiHierarchies[0] = aoiHierarchy;
 				
 				UI.unlock();
 				Calc.updateButtonStatus();
 				
-				complete( ws );
+				var job = response.fields.job;
+				if( job ){
+					JobManager.getInstance().start( job , function() {
+						Utils.applyFunction( complete , ws );
+					});
+				} else {
+					Utils.applyFunction( complete , ws );
+				}
+//				complete( ws );
 			}).error( function() {
 				Calc.error.apply( this , arguments );
 			});

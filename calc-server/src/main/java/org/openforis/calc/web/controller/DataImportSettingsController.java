@@ -3,7 +3,10 @@ package org.openforis.calc.web.controller;
 import java.io.IOException;
 import java.util.List;
 
+import org.openforis.calc.engine.Job;
+import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
+import org.openforis.calc.engine.WorkspaceLockedException;
 import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.AoiManager;
@@ -31,14 +34,28 @@ public class DataImportSettingsController {
 	@Autowired
 	private AoiManager aoiManager;
 	
+	@Autowired
+	private TaskManager taskManager;
+	
 	@RequestMapping(value = "/aoi/import.json", method = RequestMethod.POST, produces = "application/json")
 	public @ResponseBody
-	AoiHierarchy aoisCsvImport(@RequestParam("filepath") String filepath, @RequestParam("captions") String[] captions) throws IOException {
-		Workspace activeWorkspace = workspaceService.getActiveWorkspace();
-		aoiManager.csvImport(activeWorkspace, filepath, captions);
+	Response aoisCsvImport(@RequestParam("filepath") String filepath, @RequestParam("captions") String[] captions) throws IOException, WorkspaceLockedException {
+		Response response = new Response();
 		
-		AoiHierarchy aoiHierarchy = activeWorkspace.getAoiHierarchies().get(0);
-		return aoiHierarchy;
+		Workspace workspace = workspaceService.getActiveWorkspace();
+		aoiManager.csvImport(workspace, filepath, captions);
+		
+		AoiHierarchy aoiHierarchy = workspace.getAoiHierarchies().get(0);
+		response.addField( "aoiHierarchy", aoiHierarchy );
+		
+		if( workspace.hasSamplingDesign() ){
+			Job job = taskManager.createPreProcessingJob( workspace );
+			taskManager.startJob( job );
+			
+			response.addField( "job" , job );
+		}
+		
+		return response;
 	}
 
 	
