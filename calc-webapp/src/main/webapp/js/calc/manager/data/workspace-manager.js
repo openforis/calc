@@ -547,6 +547,31 @@ WorkspaceManager.prototype.createWorkspace = function( data , callback ) {
 		
 };
 
+
+/**
+ * Returns the hierarchy structure of the workspace id passed as argument
+ * @param data
+ * @param callback
+ */
+WorkspaceManager.prototype.getHierarchy = function( workspaceId , callback ) {
+	var $this = this;
+	UI.lock();
+		
+	$.ajax({
+		url 		: $this.contextPath + workspaceId + "/hierarchy.json",
+		dataType 	: "json",
+		method 		: "GET"		
+	}).done( function(response) {
+		Utils.applyFunction( callback , response );
+		
+		UI.unlock();
+	}).error( function() {
+		Calc.error.apply( this , arguments );
+	});
+		
+};
+
+
 // singleton instance of workspace manager
 var _workspaceManager = null;
 WorkspaceManager.getInstance = function() { 

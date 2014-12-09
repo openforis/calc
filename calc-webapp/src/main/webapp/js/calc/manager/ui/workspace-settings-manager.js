@@ -23,6 +23,9 @@ WorkspaceSettingsManager = function( container ) {
 	this.cancelBtn 			= this.addWsFormContainer.find( "button[name=cancel]" );
 //	this.cloneBtn 			= this.container.find( "button[name=clone-btn]" );
 	
+	var workspaceTreeContainer	= this.container.find( '.workspace-tree' );
+	this.tree = new Tree( workspaceTreeContainer );
+	
 	this.workspaceManager 	= WorkspaceManager.getInstance();
 	this.init();
 };
@@ -54,9 +57,9 @@ WorkspaceSettingsManager.prototype.init = function(){
 				});
 			});
 		};
-		var position = $this.deleteBtn.offset();
-		position.top -= 50; 
-		position.left -= 50;
+		var position = $this.wsListContainer.offset();
+		position.top += 150; 
+		position.left += 150;
 		UI.disableAll();
 		UI.showConfirm( message, confirmDelete , function(){ UI.enableAll(); } , position );
 	});
@@ -84,6 +87,7 @@ WorkspaceSettingsManager.prototype.init = function(){
 	
 	this.cancelBtn.click( function(){
 		$this.showList();
+		$this.loadHierarchy();
 	});
 	
 	// upload collect backup 
@@ -120,6 +124,8 @@ WorkspaceSettingsManager.prototype.showList = function(){
 
 WorkspaceSettingsManager.prototype.loadWorkspaces = function(){
 	this.wsListContainer.empty();
+	this.tree.hide();
+	
 	UI.disable( this.wsListBtnsContainer.find( 'button' ) );
 	
 	var $this = this;
@@ -155,13 +161,15 @@ WorkspaceSettingsManager.prototype.loadWorkspaces = function(){
 						
 						$this.selectedWorkspace = w.id;
 						
+						$this.loadHierarchy();
+						
 						UI.enable( $this.wsListBtnsContainer.find( 'button' ) );
 						
 					} , ws );
 					
 					optionBtn.deselect( function(w){
 						$this.selectedWorkspace = null;
-						
+						$this.tree.hide();
 						UI.disable( $this.wsListBtnsContainer.find( 'button' ) );
 					} , ws );
 					
@@ -177,7 +185,6 @@ WorkspaceSettingsManager.prototype.loadWorkspaces = function(){
 				addWsButton();
 			});
 			
-			
 		}
 		
 		$this.addAddWsButton();
@@ -185,6 +192,19 @@ WorkspaceSettingsManager.prototype.loadWorkspaces = function(){
 	}).error( function() {
 		Calc.error.apply( this , arguments );
 	});	
+};
+
+
+WorkspaceSettingsManager.prototype.loadHierarchy = function(){
+	var $this = this;
+	this.workspaceManager.getHierarchy( this.selectedWorkspace , function(entity){
+		if( entity ){
+			$this.tree.show();
+			$this.tree.init( entity );
+		} else {
+			$this.tree.hide();
+		}
+	});
 };
 
 /**
@@ -201,6 +221,7 @@ WorkspaceSettingsManager.prototype.addAddWsButton = function(){
 		
 		$this.wsListContainer.hide();
 		$this.wsListBtnsContainer.hide();
+		$this.tree.hide();
 		
 		$this.addWsFormContainer.fadeIn();
 	});

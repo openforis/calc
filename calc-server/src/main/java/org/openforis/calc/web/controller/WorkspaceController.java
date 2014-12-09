@@ -4,6 +4,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.zip.ZipFile;
 
@@ -44,7 +45,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
 /**
  * 
@@ -200,6 +208,50 @@ public class WorkspaceController {
 		taskManager.startJob(job);
 		
 		return job;
+	}
+	
+	@RequestMapping(value = "/{workspaceId}/hierarchy.json", method = RequestMethod.GET, produces = APPLICATION_JSON_VALUE)
+	public void getEntityHierarchy(HttpServletResponse response , @PathVariable int workspaceId) throws JsonGenerationException, JsonMappingException, IOException{
+		
+		ObjectMapper mapper = new ObjectMapper();
+		SimpleModule module = new SimpleModule("CalcSimpleModule", new com.fasterxml.jackson.core.Version(1, 0, 0, "alpha", "org.openforis.calc", "calc-webapp"));
+		module.addSerializer( Entity.class , new JsonSerializer<Entity>() {
+
+			@Override
+			public void serialize(Entity entity, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
+				jgen.writeStartObject();
+				
+				jgen.writeObjectField( "id", entity.getId() );
+				jgen.writeObjectField( "name", entity.getName() );
+				jgen.writeObjectField( "caption", entity.getCaption() );
+				
+				jgen.writeArrayFieldStart( "children" );
+				for (Entity child : entity.getChildren()) {
+					jgen.writeObject( child );
+				}
+				jgen.writeEndArray();
+				
+				jgen.writeEndObject();
+			}
+		}
+		);
+		mapper.registerModule( module );
+		
+		ServletOutputStream outputStream = response.getOutputStream();
+		
+		Workspace workspace = workspaceService.get( workspaceId );
+		Collection<Entity> rootEntities = workspace.getRootEntities();
+		if( !rootEntities.isEmpty() ){
+			Entity entity = rootEntities.iterator().next();
+		
+			mapper.writeValue( outputStream, entity );
+			
+		} else {
+			mapper.writeValue( outputStream, null );
+		}
+		
+		outputStream.flush();
+		outputStream.close();
 	}
 	
 	/**

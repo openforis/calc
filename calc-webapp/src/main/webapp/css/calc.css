@@ -1366,8 +1366,8 @@ ul.ui-sortable li {
 */
 .svg-tree-node circle {
   fill: #fff;
-  stroke: steelblue;2
-  stroke-width: 1.5px;22
+  stroke: steelblue;
+  stroke-width: 1.5px;
 }
 
 .svg-tree-node {
@@ -1409,7 +1409,32 @@ ul.ui-sortable li {
   fill: rgb(236, 240, 241);
 }
 
-
+/** tree layout **/
+.tree-layout {
+/* 	font: 9px; */
+	font-size: 12px;
+}
+.tree-layout  circle.leaf {
+	fill: rgb(236, 240, 241);
+ 	fill-opacity: .37;
+}
+.tree-layout circle.node {
+	fill: #52849b;
+ 	fill-opacity: .60;
+ 	cursor: pointer;
+}
+.tree-layout .node text {
+	fill: #FFF;
+}
+.tree-layout text.node {
+	cursor: pointer;
+}
+.tree-layout path.link {
+	fill: none;
+	stroke: #BCE2F4;
+	stroke-width: 1.5px;
+	stroke-opacity: .2;
+}
 /**
 *	Variable filter popover (data query component)
 */
