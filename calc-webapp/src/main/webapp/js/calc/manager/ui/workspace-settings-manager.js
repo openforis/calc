@@ -198,14 +198,16 @@ WorkspaceSettingsManager.prototype.loadWorkspaces = function(){
 
 WorkspaceSettingsManager.prototype.loadHierarchy = function(){
 	var $this = this;
-	this.workspaceManager.getHierarchy( this.selectedWorkspace , function(entity){
-		if( entity ){
-			$this.tree.show();
-			$this.tree.init( entity );
-		} else {
-			$this.tree.hide();
-		}
-	});
+	if( this.selectedWorkspace ){
+		this.workspaceManager.getHierarchy( this.selectedWorkspace , function(entity){
+			if( entity ){
+				$this.tree.show();
+				$this.tree.init( entity );
+			} else {
+				$this.tree.hide();
+			}
+		});
+	}
 };
 
 /**
