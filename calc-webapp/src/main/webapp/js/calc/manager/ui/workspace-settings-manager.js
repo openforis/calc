@@ -130,13 +130,16 @@ WorkspaceSettingsManager.prototype.loadWorkspaces = function(){
 	
 	var $this = this;
 	/**
-	 * first loads all ws 
+	 * loads all ws 
 	 */
 	$.ajax({
 		url : $this.REST_URI + "list.json" ,
 		dataType : "json",
 		method : "GET"
 	}).done( function(response) {
+		
+		$this.addAddWsButton();
+		
 		var list = response;
 		if( list.length > 0 ) {
 			$this.selectedWorkspace = null;
@@ -186,8 +189,6 @@ WorkspaceSettingsManager.prototype.loadWorkspaces = function(){
 			});
 			
 		}
-		
-		$this.addAddWsButton();
 		
 	}).error( function() {
 		Calc.error.apply( this , arguments );

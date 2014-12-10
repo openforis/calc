@@ -101,7 +101,7 @@ HomeCalculationManager.prototype.sortStop = function(event, ui) {
 	var element = ui.item;
 	// if element has not been dropped (ui-draggable-drop) and has not been sorted (ui-sortable-updating) reset ui to its original state
 	if ( ! (element.hasClass("ui-draggable-drop") || element.hasClass("ui-sortable-updating") ) ) {				
-		this.reset();
+//		this.reset();
 	}
 };
 
@@ -289,8 +289,9 @@ HomeCalculationManager.prototype.updateStepNumber = function(step, stepNo) {
 				ArrayUtils.shiftItem(chain.calculationSteps, step, stepNo - 1);
 			});
 			
-			$this.reset();
+//			$this.reset();
 			
+			UI.enableAll();
 			UI.unlock();
 		}
 	);

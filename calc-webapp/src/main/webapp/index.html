@@ -220,11 +220,11 @@
 			</div>
 			<div class="col-md-6 col-md-offset-1" >
 				<div class="links">
-					<button type="button" class="calculation btn btn-default" href="#calculation">Calculation</button>
+					<button type="button" class="btn calculation" href="#calculation">Calculation</button>
 					<!-- Result section didsabled for now -->
 <!-- 					<button type="button" class="results btn btn-default" href="#results">Results</button> -->
-					<button type="button" class="data btn btn-default" href="#data">Data</button>
-					<button type="button" class="settings btn btn-default" href="#settings">Settings</button>
+					<button type="button" class="btn data" href="#data">Data</button>
+					<button type="button" class="btn settings" href="#settings">Settings</button>
 				</div>
 			</div>
 			<div class="col-md-3">
@@ -300,9 +300,19 @@
 				<!-- accordion selection -->
 				<div class="data-vis-options height100">
 				
-					  <div class="heading height5">
-					      <button class="btn blue-btn table-btn workspace-enabled">Data table</button>
+					  <div class="heading height5 width100">
+					  	<div class="row no-margin no-padding">
+					  		<div class="col-md-6" style="padding: 0px 1px">
+					  			<button class="btn blue-btn table-btn workspace-enabled"
+					      			data-toggle="tooltip" data-placement="bottom" title="Data table"><i class="fa fa-table"></i></button>
+					  		</div>
+					  		<div class="col-md-6" style="padding: 0px 1px">
+					  			<button class="btn blue-btn scatter-btn workspace-enabled"
+					      			data-toggle="tooltip" data-placement="bottom" title="Scatter chart"><i class="fa fa-line-chart"></i></button>
+					  		</div>
+					  	</div>
 					  </div>
+					  
 					  <div class="data-table-options collapse in" >
 					  	<div class="entity-select col-md-12 height10">
 							<select class="form-control"></select>
@@ -318,14 +328,15 @@
 					  	<div class="quantities variables width100"></div>
 					  	<div class="categories variables width100"></div>
 					  	<div class="texts variables width100"></div>
-					  	<div class="view-results-btn height10">
+					  	<div class="view-results-btn height5">
 					  		<button class="btn btn-default workspace-enabled">View <i class="fa fa-caret-right"></i></button>
 					  	</div>
 					  </div>
 					  
-					  <div class="heading height5">
-					      <button class="btn blue-btn scatter-btn workspace-enabled">Scatter chart</button>
-					  </div>
+<!-- 					  <div class="heading height5"> -->
+<!-- 					      <button class="btn blue-btn scatter-btn workspace-enabled" -->
+<!-- 					      	data-toggle="tooltip" data-placement="bottom" title="Scatter chart"><i class="fa fa-line-chart"></i></button> -->
+<!-- 					  </div> -->
 					  <div class="scatter-options collapse" >
 					  	<div class="entity-select col-md-12 height10">
 							<select class="form-control"></select>
@@ -338,7 +349,7 @@
 					  	</div>
 					  	<div class="quantities variables width100"></div>
 					  	<div class="categories variables width100"></div>
-					  	<div class="view-results-btn height10">
+					  	<div class="view-results-btn height5">
 					  		<button class="btn btn-default workspace-enabled">View <i class="fa fa-caret-right"></i></button>
 					  	</div>
 					  </div>

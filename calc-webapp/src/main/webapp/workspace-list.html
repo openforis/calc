@@ -2,22 +2,34 @@
 	
 	<div class="row no-margin workspace-list height20">
 	</div>
+
+	<div class="upload-progress-section row no-margin no-padding">
+		<div class="col-md-5 col-md-offset-3" style="padding-top: 6px;">
+			<div class="progress progress-striped active">
+	        	<div class="progress-bar progress-bar-info"></div>
+	        </div>	        
+	    </div>
+	    <div class="col-md-1">
+	    	<div class="percent">0%</div>
+	    </div>
+	</div>	
+	
 	<div class="row no-margin workspace-tree height70">
 	</div>
 	<div class="row no-margin workspace-list-buttons height10">
 		<div class="col-md-2 col-md-offset-3">
-			<button type="button" class="btn btn-default width100" name="activate-btn">Activate</button>
+			<button type="button" class="btn btn-default width100" name="activate-btn"><i class="fa fa-check-circle-o"></i>&nbsp;Activate</button>
 		</div>
 		<div class="col-md-2 upload-collect-backup">
 			<form  method="post" enctype="multipart/form-data" action="rest/collect/data.json">
 <!-- 				<button type="button" class="btn btn-default" name="upload-btn">Upload backup file</button> -->
-				<button type="button" class="btn btn-default width100" name="upload-btn">Upload collect backup</button>
+				<button type="button" class="btn btn-default width100" name="upload-btn"><i class="fa fa-cloud-upload"></i>&nbsp;Collect</button>
 				<input type="hidden" name="workspaceId" />
 			    <input type="file" name="file" style="display:none" accept=".zip,.collect" />
 			</form>
 		</div>
 		<div class="col-md-2">
-			<button type="button" class="btn btn-default width100" name="delete-btn">Delete</button>
+			<button type="button" class="btn btn-default width100" name="delete-btn"><i class="fa fa-trash"></i>&nbsp;Delete</button>
 		</div>
 	</div>
 	
@@ -43,16 +55,7 @@
 		</div>
 	</div>
 
-	<div class="upload-progress-section row no-margin no-padding">
-		<div class="col-md-5 col-md-offset-3" style="padding-top: 6px;">
-			<div class="progress progress-striped active">
-	        	<div class="progress-bar progress-bar-info"></div>
-	        </div>	        
-	    </div>
-	    <div class="col-md-1">
-	    	<div class="percent">0%</div>
-	    </div>
-	</div>	
+
 	<script>
 	$(function(){
 		

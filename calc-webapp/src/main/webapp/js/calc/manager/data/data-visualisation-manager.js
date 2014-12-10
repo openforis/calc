@@ -41,18 +41,28 @@ DataVisualisationManager.prototype.init = function() {
 	var $this = this;
 	
 	this.refresh();
+	// init ui buttons
+	this.dataTableBtn.addClass( 'selected' );
+	this.scatterPlotBtn.removeClass( 'selected' );
 	
 	// events handlers
 	this.dataTableBtn.click(function(e) {
 		e.preventDefault();
+		
 		$this.tableOptions.show();
 		$this.scatterOptions.hide();
+		
+		$this.dataTableBtn.addClass( 'selected' );
+		$this.scatterPlotBtn.removeClass( 'selected' );
 	});
 
 	this.scatterPlotBtn.click(function(e) {
 		e.preventDefault();
 		$this.scatterOptions.show();
 		$this.tableOptions.hide();
+		
+		$this.dataTableBtn.removeClass( 'selected' );
+		$this.scatterPlotBtn.addClass( 'selected' );
 	});
 	
 	this.tableOptions.viewResults = function() {
@@ -64,6 +74,8 @@ DataVisualisationManager.prototype.init = function() {
 		$this.scatterPlot.setDataProvider( $this.scatterOptions.dataProvider);
 		$this.showScatterPlot();
 	};
+	
+//	this.dataTableBtn.click();
 };
 
 /**

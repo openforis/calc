@@ -116,7 +116,7 @@ Tree.prototype.init = function(node) {
 
 
 		// Transition exiting nodes to the parent's new position.
-		var nodeExit = node.exit().transition().duration(duration).attr(
+		var nodeExit = node.exit().transition().duration(duration).ease( "out" ).attr(
 				"transform", function(d) {
 					return "translate(" + source.y + "," + source.x + ")";
 				}).remove();

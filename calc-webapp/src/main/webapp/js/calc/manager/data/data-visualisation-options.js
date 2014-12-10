@@ -27,7 +27,7 @@ DataVisualisationOptions = function ( container ) {
 	// disable category  (e.g. scatter plot only qty vars can be selected)
 	this.disableCategories = false;
 	
-	this.optionButtonsHeight = "90%";
+	this.optionButtonsHeight = "95%";
 	
 	this.init();
 };

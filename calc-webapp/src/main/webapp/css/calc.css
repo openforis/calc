@@ -30,6 +30,21 @@ html, body {
 /*
 * Buttons
 */
+button.btn{
+	color: #FFF;
+}
+/** Bootstrap default button **/
+button.btn-default ,
+button.btn-default:focus {
+	border: none;
+	border-radius: 2px;
+	background-color: rgba(135, 142, 142, 0.53);
+/* 	border-color: rgba(135, 142, 142, 0.76); */
+}
+button.btn-default:hover {
+	background-color: rgba(135, 142, 142, 0.8);
+}
+/** Calc default button **/
 button.default-btn {
 	height:100%;
 	border-radius:0px;
@@ -628,19 +643,29 @@ Data vis options
 .data-vis-options {
 
 }
+.data-table-options ,
+.scatter-options {
+	padding-bottom: 5px;
+}
+
 .data-vis-options .heading {
-	padding: 2px;
+	padding: 3px;
+	border-bottom: 1px solid rgba(73, 109, 126, 0.56);
 }
 .data-vis-options .heading button {
-	width:90%;
+	width:100%;
 	padding: 0.3em;
+}
+.data-vis-options .heading button.selected {
+	background-color: #36525f;
+	border-color: #36525f; 
 }
 .data-vis-options .entity-select {
 	padding: 1em;
 }
 .data-vis-options .variables {
 	width	: 100%;
-	height 	: 75%;
+	height 	: 80%;
 	overflow: auto;
 	padding: 0.3em 0px;
 }
@@ -1329,7 +1354,9 @@ ul.ui-sortable li {
 	color: #2c3e50;
 	white-space: pre-wrap;
 }
-
+#job-status .close-btn {
+	background-color: rgba(135, 142, 142, 0.8);
+}
 
 
 
@@ -1502,18 +1529,23 @@ ul.ui-sortable li {
 #workspace-settings .active-workspace-label {
 /* 	color: #363a53; */
 /* 	font-size: 1.2em; */
-	border: 1px solid #363a53; 
+	border: 1px solid rgba(137, 143, 161, 0.7);
 }
 
 /** workspace list settings (change active workspace) */
 #workspace-edit-settings .row {
 	padding-top: 30px;	
 }
-
+#workspace-edit-settings .workspace-list{	
+	overflow : hidden; 
+	overflow-y : auto;
+	width: 100%; 
+}
 #workspace-edit-settings .workspace-list button {
 	width: 10em;
-	height: 7em;
+	height: 4em;
 	margin: 0.2em 0.5em;
+/* 	float: left; */
 }
 #workspace-edit-settings .workspace-list button.add-ws i {
 	font-size: 2em;
