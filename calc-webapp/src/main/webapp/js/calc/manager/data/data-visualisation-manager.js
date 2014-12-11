@@ -6,7 +6,7 @@
 function DataVisualisationManager( container ) {
 	//init container
 	this.container = $dataVisualization.clone();
-	container.append(this.container);
+	container.append( this.container );
 
 	/**
 	 * Ui components
@@ -101,8 +101,8 @@ DataVisualisationManager.prototype.show = function(dataProvider) {
 		this.dataProvider = dataProvider;
 		
 		// set data provider
-		this.dataTable.setDataProvider(dataProvider);
-		this.scatterPlot.setDataProvider(dataProvider);
+		this.dataTable.setDataProvider( dataProvider );
+		this.scatterPlot.setDataProvider( dataProvider );
 		
 		// by default shows data table
 		this.showDataTable();

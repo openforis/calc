@@ -191,7 +191,9 @@ DataVisualisationOptions.prototype.refresh = function() {
 		var entities = [];
 		if( ws ) {
 			entities = ws.entities;
-		} 
+		} else {
+			$this.dataProvider = null;
+		}
 		$this.entityCombo.data( entities, 'id' , 'name' );
 	});
 };

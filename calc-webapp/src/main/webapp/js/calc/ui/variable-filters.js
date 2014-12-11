@@ -62,7 +62,7 @@ VariableFilters.prototype.show = function( element ) {
 		setTimeout(
 			$.proxy( function(){
 			    this.container.stop().animate( {top: btnOffset.top}, 100, "easeOutQuart" );
-			    this.container.css( "opacity" , 0.97  );
+			    this.container.css( "opacity" , 0.95 );
 			} , this)
 			, 150 
 		);
@@ -313,7 +313,7 @@ CategoricalVariableQueryCondition.prototype.appendUIElements = function( contain
 			var code 		= category.code;
 			var caption 	= category.caption;
 			
-			var div = $( '<div class="float-left width25" style="padding: 0.1em 0.1em;"></div>');
+			var div = $( '<div class="float-left width20" style="padding: 0.1em 0.1em;"></div>');
 			categoriesContainer.append( div );
 			var btn = $( '<button class="btn option-btn width100" style="font-size: 0.8em;">' );
 			btn.html( code );

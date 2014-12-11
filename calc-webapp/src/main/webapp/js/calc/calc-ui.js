@@ -4,8 +4,9 @@ function UI() {
 };
 
 
-UI.messageContainer = $("#messageContainer");
-UI.messageContainerClosBtn = UI.messageContainer.find(".close");
+UI.messageContainer 		= $( "#messageContainer" );
+UI.messageContainerClosBtn 	= UI.messageContainer.find( ".close" );
+UI.modalLock 				= $( "#ui-lock-modal" );
 
 UI.messageContainerClosBtn.click(function(e){	
 	UI.messageContainer.fadeOut( 800 );
@@ -65,8 +66,7 @@ UI.showMessage = function(type, message, autoHide) {
  * Shows a modal with static backdrop to avoid user interaction
  */
 UI.lock = function() {
-	$uiLockModal = $("#ui-lock-modal");
-	$uiLockModal.modal({keyboard:false, backdrop:"static"});
+	UI.modalLock.modal({keyboard:false, backdrop:"static"});
 	$('body').addClass('locked');
 };
 
@@ -74,8 +74,8 @@ UI.lock = function() {
  * Remove the lock modal
  */
 UI.unlock = function() {
-	$uiLockModal.modal('hide');
-	$uiLockModal.modal('removeBackdrop');
+	UI.modalLock.modal('hide');
+	UI.modalLock.modal('removeBackdrop');
 	$('body').removeClass('locked');
 };
 

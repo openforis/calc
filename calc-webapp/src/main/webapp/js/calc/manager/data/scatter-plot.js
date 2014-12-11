@@ -8,8 +8,8 @@ function ScatterPlot(container) {
 	
 	// options section
 	var optionsSection = this.container.find('.options');	
-	this.xCombo = optionsSection.find('[name=x]').combobox();
-	this.yCombo = optionsSection.find('[name=y]').combobox();	
+//	this.xCombo = optionsSection.find('[name=x]').combobox();
+//	this.yCombo = optionsSection.find('[name=y]').combobox();	
 	this.refreshBtn = optionsSection.find('[name=refresh]');
 	
 	// progress for data loading
@@ -42,14 +42,14 @@ ScatterPlot.prototype = (function(){
 		var $this = this;
 		//event handlers
 		//change x and y variables
-		$this.xCombo.change(function(e) {
-			e.preventDefault();
-			$this.xVariable = $this.xCombo.val();
-		});
-		$this.yCombo.change(function(e){
-			e.preventDefault();
-			$this.yVariable = $this.yCombo.val();
-		});
+//		$this.xCombo.change(function(e) {
+//			e.preventDefault();
+//			$this.xVariable = $this.xCombo.val();
+//		});
+//		$this.yCombo.change(function(e){
+//			e.preventDefault();
+//			$this.yVariable = $this.yCombo.val();
+//		});
 		
 		//refresh chart button
 		$this.refreshBtn.click(function(e){
@@ -78,17 +78,17 @@ ScatterPlot.prototype = (function(){
 		this.yVariable = null;
 		
 		// populate input combos
-		this.workspaceManager.activeWorkspace(function(ws) {
-			var entity = ws.getEntityById($this.dataProvider.entityId);
-			var variables = entity.quantitativeVariables();
+//		this.workspaceManager.activeWorkspace(function(ws) {
+//			var entity = ws.getEntityById($this.dataProvider.entityId);
+//			var variables = entity.quantitativeVariables();
 			
-			$this.xCombo.data(variables, 'name', 'name');
-			$this.yCombo.data(variables, 'name', 'name');
-		});
+//			$this.xCombo.data(variables, 'name', 'name');
+//			$this.yCombo.data(variables, 'name', 'name');
+//		});
 		
 		// reset options
-		this.xCombo.val("");
-		this.yCombo.val("");
+//		this.xCombo.val("");
+//		this.yCombo.val("");
 		
 		// reset chart
 //		$.proxy(resetChart, this)();
@@ -96,22 +96,25 @@ ScatterPlot.prototype = (function(){
 	
 	// show / hide functions
 	var show = function() {
-		this.container.fadeIn();
+		if( this.dataProvider ){
 		
-		if( !this.svg ){
-			$.proxy(initSvg, this)();
-		}
-		// if it hasn't started yet and there are 2 variables to show, then it starts
-		if ( this.dataProvider.variables.length == 2 && this.totalItems < 0) {
-			// update combo boxes
-			var xVar = this.dataProvider.variables[0];
-			var yVar = this.dataProvider.variables[1];
-			this.xVariable = xVar;
-			this.yVariable = yVar;
-			this.xCombo.val(xVar);
-			this.yCombo.val(yVar);
+			this.container.fadeIn();
 			
-			$.proxy(start, this)();
+			if( !this.svg ){
+				$.proxy(initSvg, this)();
+			}
+			// if it hasn't started yet and there are 2 variables to show, then it starts
+			if ( this.dataProvider.variables.length == 2 && this.totalItems < 0) {
+				// update combo boxes
+				var xVar = this.dataProvider.variables[0];
+				var yVar = this.dataProvider.variables[1];
+				this.xVariable = xVar;
+				this.yVariable = yVar;
+//				this.xCombo.val(xVar);
+//				this.yCombo.val(yVar);
+				
+				$.proxy(start, this)();
+			}
 		}
 	};
 	

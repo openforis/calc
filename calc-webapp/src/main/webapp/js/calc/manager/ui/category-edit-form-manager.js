@@ -34,7 +34,6 @@ CategoryEditFormManager.prototype.init = function( categoryId ){
 	
 	this.saveButton.click( function(e){
 		e.preventDefault();
-		UI.lock();
 		
 		// update input field names
 		var codes = $this.container.find(".category-class-row input.code");
@@ -58,7 +57,6 @@ CategoryEditFormManager.prototype.init = function( categoryId ){
 					Utils.applyFunction( $this.onSave , categoryId );
 				});
 			}
-			UI.unlock();
 		};
 		
 		CategoryManager
@@ -92,21 +90,22 @@ CategoryEditFormManager.prototype.show = function( categoryId ) {
 	};
 	
 	if( categoryId ){
-		UI.lock();
+//		UI.lock();
 		// populate form with category fields
 		$this.categoryManager.getCategory( categoryId , function(category){
 			$this.captionField.val( category.caption );
 			$this.categoryIdField.val( category.id );
-		} );
-		// populate form with category classes
-		$this.categoryManager.getCategoryLevelClasses( categoryId , function(classes){
-			UI.unlock();
-			$.each( classes , function( i , cls ){
-				$this.addRow( cls.code, cls.caption );
+
+			// populate form with category classes
+			$this.categoryManager.getCategoryLevelClasses( categoryId , function(classes){
+//				UI.unlock();
+				$.each( classes , function( i , cls ){
+					$this.addRow( cls.code, cls.caption );
+				});
 			});
-		});
-		
-		showForm();
+			
+			showForm();
+		} );
 		
 	} else {
 		this.addRow();

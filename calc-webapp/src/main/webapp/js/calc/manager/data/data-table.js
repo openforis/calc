@@ -108,15 +108,18 @@ DataTable.prototype = (function(){
 	var start = function() {
 		var $this = this;
 
-		// count total items 
-		this.dataProvider.count(function(cnt){
-			// set total items
-			$this.totalItems = cnt;
-			
-			//update table headers and data
-			$.proxy(updateHeaders, $this)();
-			$.proxy(updateData, $this)();
-		});
+		if( this.dataProvider ){
+			// count total items 
+			this.dataProvider.count(function(cnt){
+				// set total items
+				$this.totalItems = cnt;
+				
+				//update table headers and data
+				$.proxy(updateHeaders, $this)();
+				$.proxy(updateData, $this)();
+			});
+		}
+		
 	};
 	
 	//update table headers

@@ -29,15 +29,17 @@ CategoryManager.prototype.getCategory = function( categoryId , callback ){
  */
 CategoryManager.prototype.create = function( params , successCallback ){
 	var $this = this;
-	
 	WorkspaceManager.getInstance().activeWorkspace( function(ws){
 		
+		UI.lock();
 		$.ajax({
 			url		: $this.contextPath + "/create.json" ,
 			method 	: "PUT" ,
 			type	: "json" ,
 			data	: params
 		}).done(function(response){
+			UI.unlock();
+			
 			if( response.status == "OK" ){
 				ws.categories = response.fields.categories;
 			}

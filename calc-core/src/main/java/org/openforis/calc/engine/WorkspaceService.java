@@ -29,6 +29,7 @@ import org.openforis.calc.persistence.jooq.tables.daos.EntityDao;
 import org.openforis.calc.persistence.jooq.tables.daos.SamplingDesignDao;
 import org.openforis.calc.persistence.jooq.tables.daos.WorkspaceDao;
 import org.openforis.calc.psql.Psql;
+import org.openforis.calc.saiku.Saiku;
 import org.openforis.calc.schema.DataSchema;
 import org.openforis.calc.schema.DataSchemaDao;
 import org.openforis.calc.schema.DataTable;
@@ -85,6 +86,9 @@ public class WorkspaceService {
 	private Psql psql;
 	@Autowired
 	private TaskManager taskManager;
+	
+	@Autowired
+	private Saiku saiku;
 
 	public WorkspaceService() {
 	}
@@ -259,7 +263,17 @@ public class WorkspaceService {
 			insert.execute();
 			
 		}
-		entityDataViewDao.createOrUpdateView( entity );
+//		if( entity.isSamplingUnit() ){
+//			entity.traverse( new Visitor() {
+//				@Override
+//				public void visit(Entity e) {
+//					entityDataViewDao.createOrUpdateView( e , false );
+////					resetResults( e );
+//				}
+//			});
+//		} else {
+			entityDataViewDao.createOrUpdateView( entity );
+//		}
 	}
 	
 	/**
@@ -439,6 +453,8 @@ public class WorkspaceService {
 		DeleteWorkspaceTask task3 = taskManager.createTask( DeleteWorkspaceTask.class );
 		task3.setJob( job );
 		task3.execute();
+		
+		saiku.deleteSchema( workspace );
 	}
 
 //	private void setActiveWorkspace(Workspace activeWorkspace) {

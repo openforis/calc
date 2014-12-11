@@ -99,7 +99,7 @@ public class Saiku {
 		string = string.replaceAll( "\\$\\{saiku.datasource.catalog}", String.format( "%s/%s.xml", wsName, wsName) );
 		string = string.replaceAll( "\\$\\{saiku.datasource.name}", wsName );
 
-		File dataSourceFile = new File( dataSourcesFolder , wsName );
+		File dataSourceFile = getDataSource( workspace );
 		if( !dataSourceFile.exists() ){
 			dataSourceFile.createNewFile();
 		}
@@ -108,7 +108,14 @@ public class Saiku {
 		IOUtils.write( string, dataSourceFileStream );
 		IOUtils.closeQuietly( dataSourceFileStream );
 	}
-	
+
+	public void deleteSchema( Workspace workspace ){
+		File mdxDirectory = getMdxDirectory( workspace );
+		mdxDirectory.delete();
+		
+		File dataSource = getDataSource( workspace );
+		dataSource.delete();
+	}
 	
 	public String getDataSource() {
 		return dataSource;
@@ -122,7 +129,12 @@ public class Saiku {
 		return dataSourcesFolder;
 	}
 	
-	public File getMdxDirectory(Workspace workspace){
+	private File getDataSource( Workspace workspace ) {
+		String wsName = workspace.getName();
+		return new File( dataSourcesFolder , wsName );
+	}
+	
+	private File getMdxDirectory(Workspace workspace){
 		String dir = String.format( "WEB-INF/classes/%s", workspace.getName() ); 
 		File mdxPath = new File( this.saikuHome , dir );
 		if( !mdxPath.exists() ){

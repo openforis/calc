@@ -69,9 +69,10 @@ JobStatus.prototype = (function() {
 					case "RUNNING":
 						progressBar.progressStriped();
 						break;
-//					case "FAILED":
+					case "FAILED":
 //						progressBar.progressDanger();
-//						break;
+						console.log( "aaaaaaaaaaaaaaa" );
+						break;
 					case "COMPLETED":
 						progressBar.progressSuccess();
 						break;

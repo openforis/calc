@@ -395,22 +395,46 @@ public class CalcJob extends Job {
 		closeConnection();
 		
 		// 10 - hidden to users: re-creates views for sampling unit and its descendant
+//		if( workspace.hasSamplingDesign() ){
+//			Entity samplingUnit = workspace.getSamplingUnit();
+//			samplingUnit.traverse( new Visitor() {
+//				@Override
+//				public void visit(Entity entity) {
+//					entityDataViewDao.createOrUpdateView(entity);
+//					
+//				}
+//			});
+//		}
+		
+	}
+
+	protected void closeConnection() {
+		final CalcRTask closeConnection = createTask("Close database connection");
+		
+		Workspace workspace = getWorkspace();
+		// recreate view
 		if( workspace.hasSamplingDesign() ){
 			Entity samplingUnit = workspace.getSamplingUnit();
 			samplingUnit.traverse( new Visitor() {
 				@Override
 				public void visit(Entity entity) {
-					entityDataViewDao.createOrUpdateView(entity);
+					
+					EntityDataView view = getSchemas().getDataSchema().getDataView(entity);
+					DropViewStep dropViewIfExists = new Psql().dropViewIfExists(view);
+					closeConnection.addScript(r().dbSendQuery( connection, dropViewIfExists ));
+					
+					Select<?> selectView = view.getSelect(true);
+					AsStep createView = new Psql().createView(view).as(selectView);
+					closeConnection.addScript(r().dbSendQuery( connection, createView ));
+//					entityDataViewDao.createOrUpdateView(entity);
 					
 				}
 			});
 		}
+					
 		
-	}
-
-	protected void closeConnection() {
-		CalcRTask closeConnection = createTask("Close database connection");
 		closeConnection.addScript( r().dbDisconnect(connection) );
+
 		addTask(closeConnection);
 	}
 

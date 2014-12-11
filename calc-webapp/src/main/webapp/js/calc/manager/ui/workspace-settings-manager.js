@@ -108,9 +108,11 @@ WorkspaceSettingsManager.prototype.init = function(){
 		}
 	};
 	
-	this.formFileUpload					= new FormFileUpload( this.uploadCollectFormContainer, this.uploadCollectFormProgressContainer , uploadSuccess);
+	this.formFileUpload					= new FormFileUpload( this.uploadCollectFormContainer, this.uploadCollectFormProgressContainer , uploadSuccess );
 	this.formFileUpload.showHideForm 	= false;
 	this.formFileUpload.beforeSerializeFunction = function(){
+		$this.tree.hide();
+		
 		$this.uploadCollectFormContainer.find( '[name=workspaceId]' ).val( $this.selectedWorkspace );
 	};
 };

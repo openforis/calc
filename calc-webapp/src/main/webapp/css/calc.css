@@ -236,9 +236,14 @@ button.filter-btn-selected:hover {
 	border-color: #4d6b89;
 }
 .data {
-	background-color: #363D4B;
+	background-color: #3F4A5F;
+	border-color: #3F4A5F;
+	
+	
+/* 	background-color: #363D4B; */
+/* 	border-color: #363D4B; */
+	
 /* 	background-color: #47253b; */
-	border-color: #363D4B;
 /* 	border-color: #47253b; */
 }
 .settings {
@@ -344,6 +349,7 @@ button.settings:hover {
 	height: 100%;
 	background-color: #4d5e75;
 	border-color: #4d5e75;
+	border-radius: 0px;	
 }
 
 #calculation li.CATEGORY button {
@@ -499,9 +505,10 @@ button.settings:hover {
 }
 #footer .links {
 /* 	margin-top:40px; */
-	padding: 5px 0px;
-	text-align:center;
-	width:100%;
+	padding : 5px 0px;
+	text-align: center;
+	width:100% ;
+	border-top: 1px solid rgba(184, 157, 157, 0.3);
 }
 #footer .links  button {
 	height: 100%;
@@ -528,6 +535,8 @@ button.settings:hover {
 	padding-top: 15px;
 	font-family: "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
 	letter-spacing: 3px; 
+	color: rgba(190, 194, 191, 0.67);
+	
 }
 #footer .application-version {
 /* 	position: relative; */
@@ -550,9 +559,14 @@ button.settings:hover {
 
 
 #footer button.back {
-	font-size:2em;	
-	display:none;	
-	width: 70%;
+	font-size: 	3em;	
+	display: 	none;	
+	width: 		70%;
+	border: 	none;
+	color: 		#FFF;
+}
+#footer button.back:hover {
+	color: 		#676c7a;
 }
 /**
 formula editor
@@ -1469,8 +1483,9 @@ ul.ui-sortable li {
 	display: none;
 	position: absolute;
 	color : #888889;
-	min-width: 25em;
-	width: auto;
+	min-width: 525px;
+/* 	width: auto; */
+
 }
 
 .variable-filter-popover .arrow {
@@ -1508,6 +1523,8 @@ ul.ui-sortable li {
 	padding: 7px 10px;
 	width: 98%;
 	height: 100%;
+	border: 1px solid rgba(195, 195, 195, 0.43);
+	border-radius: 0px;
 }
 .variable-filter-popover .conditions .form-item {
 	padding: 0.2em;

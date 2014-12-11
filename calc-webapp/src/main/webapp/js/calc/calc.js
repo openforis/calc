@@ -18,6 +18,11 @@ $(document).ready(function() {
 	 */
 	Calc = {};
 	
+	Calc.bgColors = [];
+	Calc.bgColors[ 'calculation' ] 	= '#2c3e50';
+	Calc.bgColors[ 'data' ] 		= '#3F4A5F';
+	Calc.bgColors[ 'settings' ] 	= '#44454d';
+	
 	/**
 	 * current working section
 	 */
@@ -34,6 +39,7 @@ $(document).ready(function() {
 	 * Ui elements
 	 */
 	Calc.footer 			= $( "#footer" );
+	
 	Calc.footerHomeLinks 	= Calc.footer.find( ".links" );
 	Calc.backHomeBtn 		= Calc.footer.find( "button.back" );
 	
@@ -148,7 +154,10 @@ $(document).ready(function() {
 	
 	var scrollToSection = function (animate) {
 		//calculate the scroll offset
-		var scrollTop = Calc.section[0].offsetTop;
+		var section 	= Calc.section[0];
+		var sectionId	= $( section ).attr( 'id' );
+		var color 		= Calc.bgColors[ sectionId ]; 
+		var scrollTop 	= section.offsetTop;
 		
 		if ( animate ) {
 			//show all siblings temporarily during scrolling
@@ -165,11 +174,21 @@ $(document).ready(function() {
 			};
 			//scroll to the current section offset
 			$container.stop().animate( {scrollTop: scrollTop}, 700, "easeOutQuart", onAnimationComplete );
+			
+			// update footer background color
+//			setTimeout( function(){
+				 Calc.footer.stop().animate( {'background-color' : color} , 400 , 'easeInOutSine');// .css( 'background-color' , Calc.bgColors[ sectionId ] );
+//			} , 100 );
+			Calc.backHomeBtn.css( 'background-color' , color );
 		} else {
 			//scroll to the current section offset
 			$container.css( 'overflow' , 'auto' );
 			$container[0].scrollTop = scrollTop;
 			$container.css( 'overflow' , 'hidden' );
+			
+			// update footer background color			
+			Calc.footer.css( 'background-color' , color );
+			Calc.backHomeBtn.css( 'background-color' , color );
 		}
 	};
 
@@ -332,6 +351,9 @@ $(document).ready(function() {
 		//set current home section to calculation
 		var calculation = $( "#calculation" );
 		Calc.section = calculation;
+
+		Calc.footer.css( 'background-color' , Calc.bgColors[ 'calculation' ] );
+		Calc.backHomeBtn.css( 'background-color' , Calc.bgColors[ 'calculation' ] );
 		
 		//hide other sections to avoid focus on their elements
 		calculation.siblings().invisible();

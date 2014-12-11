@@ -121,7 +121,7 @@ public class EntityDataView extends DataTable {
 	}
 	
 	public Select<?> getSelect() {
-		return getSelect( false );
+		return getSelect( true );
 	}
 	
 	public Select<?> getSelect(boolean joinWithResults) {
@@ -167,15 +167,17 @@ public class EntityDataView extends DataTable {
 //			}
 			select.addJoin( parentTable, currentTable.getParentIdField().eq(parentTable.getIdField()) );
 			
-			if( parentEntity.isSamplingUnit() ){
+			if( parentEntity.isSamplingUnit() && joinWithResults ){
 				addJoinWithResultsTable(parentEntity, parentTable, select);
 			}
 //			addUniqueNameFields( select, parentTable.fields() );
 			currentEntity = parentEntity;
 		}
 		
-		// add join with results table if exits
-		addJoinWithResultsTable(entity, table, select);
+		if( joinWithResults ){
+			// add join with results table if exits
+			addJoinWithResultsTable(entity, table, select);
+		}
 		
 		return select;
 	}
