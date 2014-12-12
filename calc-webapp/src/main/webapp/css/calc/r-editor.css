@@ -14,3 +14,7 @@
   overflow-y: hidden;
   overflow-x: auto;
 }
+
+.CodeMirror-hints {
+	z-index: 200;
+}

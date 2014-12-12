@@ -50,16 +50,16 @@ WorkspaceSettingsManager.prototype.init = function(){
 		var message = "Are you sure you want to delete this workspace? This operation cannot be undone."
 		var confirmDelete = function(){ 
 			$this.workspaceManager.deleteWorkspace( $this.selectedWorkspace , function(job){
+				UI.enableAll();
 				Calc.workspaceChange( function(){
 					$this.loadWorkspaces();
-					UI.enableAll();
 					UI.showSuccess( "Workspace deleted" , true );
 				});
 			});
 		};
 		var position = $this.wsListContainer.offset();
 		position.top += 150; 
-		position.left += 150;
+		position.left += 250;
 		UI.disableAll();
 		UI.showConfirm( message, confirmDelete , function(){ UI.enableAll(); } , position );
 	});

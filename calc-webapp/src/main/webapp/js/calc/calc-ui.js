@@ -9,7 +9,7 @@ UI.messageContainerClosBtn 	= UI.messageContainer.find( ".close" );
 UI.modalLock 				= $( "#ui-lock-modal" );
 
 UI.messageContainerClosBtn.click(function(e){	
-	UI.messageContainer.fadeOut( 800 );
+	UI.messageContainer.fadeOut( 100 );
 });
 
 /**

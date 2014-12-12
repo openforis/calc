@@ -90,7 +90,6 @@ CategoryEditFormManager.prototype.show = function( categoryId ) {
 	};
 	
 	if( categoryId ){
-//		UI.lock();
 		// populate form with category fields
 		$this.categoryManager.getCategory( categoryId , function(category){
 			$this.captionField.val( category.caption );
@@ -98,7 +97,6 @@ CategoryEditFormManager.prototype.show = function( categoryId ) {
 
 			// populate form with category classes
 			$this.categoryManager.getCategoryLevelClasses( categoryId , function(classes){
-//				UI.unlock();
 				$.each( classes , function( i , cls ){
 					$this.addRow( cls.code, cls.caption );
 				});

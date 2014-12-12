@@ -58,7 +58,7 @@ JobStatus.prototype = (function() {
 		$.each(tasks, function(i, task) {
 			var taskStatus =  $this.taskSection.find("#" + task.id);
 
-			var progressBar = taskStatus.data("progress-bar");
+			var progressBar = taskStatus.data( "progress-bar" );
 			progressBar.update( task.itemsProcessed, task.totalItems );
 			
 			if( task.totalItems <= 0 ) {
@@ -69,10 +69,9 @@ JobStatus.prototype = (function() {
 					case "RUNNING":
 						progressBar.progressStriped();
 						break;
-					case "FAILED":
+//					case "FAILED":
 //						progressBar.progressDanger();
-						console.log( "aaaaaaaaaaaaaaa" );
-						break;
+//						break;
 					case "COMPLETED":
 						progressBar.progressSuccess();
 						break;

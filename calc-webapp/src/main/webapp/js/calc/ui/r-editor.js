@@ -26,7 +26,12 @@ REditor = function( textAreaId ){
 													}
 													cm.setOption( "fullScreen", fullScreen ); 
 												} ,
-							"Esc"			: function(cm) { if ( cm.getOption("fullScreen") ) cm.setOption("fullScreen", false); }
+							"Esc"			: function(cm) { 
+												if ( cm.getOption("fullScreen") ) {
+													Calc.footer.show();
+													cm.setOption("fullScreen", false);
+													} 
+												}
 						  }
 	});
 	
