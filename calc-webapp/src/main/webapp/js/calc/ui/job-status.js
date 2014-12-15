@@ -48,7 +48,6 @@ JobStatus.prototype = (function() {
 	// update task status
 	var update = function(job, complete, hideOnComplete) {
 		var $this = this;
-		
 		if(!this.job) {
 			$.proxy(init, this)(job);
 		}

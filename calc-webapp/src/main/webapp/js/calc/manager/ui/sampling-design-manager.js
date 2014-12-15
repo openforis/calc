@@ -484,11 +484,16 @@ SamplingDesignManager.prototype.saveSamplingDesign = function(){
 	var validate = this[ "validateStep" + this.stepMax ] ;
 	if( !validate || $.proxy(validate, this)() ){
 		
-		WorkspaceManager.getInstance().activeWorkspaceSetSamplingDesign( this.samplingDesign, $.proxy( function(ws){
-			JobManager.getInstance().checkJobStatus(function(){
+		WorkspaceManager.getInstance().activeWorkspaceSetSamplingDesign( this.samplingDesign, $.proxy( function(job) {
+			var complete = function(){
 				$this.updateSamplingDesign();
 				Calc.updateButtonStatus();
-			});
+			};
+			JobManager.getInstance().start( job , complete, false );
+//			JobManager.getInstance().checkJobStatus(function(){
+//				$this.updateSamplingDesign();
+//				Calc.updateButtonStatus();
+//			});
 		} , this) );
 		
 	}

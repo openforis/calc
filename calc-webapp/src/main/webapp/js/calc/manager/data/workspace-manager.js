@@ -338,7 +338,10 @@ WorkspaceManager.prototype = (function(){
 			}).done(function(response) {
 				var sd = response.fields.samplingDesign;
 				ws.samplingDesign = sd;
-				success( ws );
+				
+				var job = response.fields.job;
+				Utils.applyFunction( success , job );
+//				success( job );
 				UI.unlock();
 			}).error( function() {
 				Calc.error.apply( this , arguments );
