@@ -364,23 +364,28 @@ public class WorkspaceService {
 				metadataManager.deleteVariable( variable );
 				errorSettingsManager.removeVariable( entity.getWorkspace() , variable);
 				// recreates views in the sampling unit hierarchy because other entity views might depend on that column
-				if( entity.isSamplingUnit() ){
-					entity.traverse( new Visitor() {
-						@Override
-						public void visit(Entity entity) {
-							entityDataViewDao.createOrUpdateView( entity );
-						}
-					});
-				}
-				
 				if( createView ){
-					entityDataViewDao.createOrUpdateView( entity );
+					resetView(entity);
 				}
 				
 			} else if( !exists ) {
 				resetResults( entity );
 			}
 		
+		}
+	}
+
+	@Transactional
+	public void resetView(Entity entity) {
+		if( entity.isSamplingUnit() ){
+			entity.traverse( new Visitor() {
+				@Override
+				public void visit(Entity entity) {
+					entityDataViewDao.createOrUpdateView( entity );
+				}
+			});
+		} else {
+			entityDataViewDao.createOrUpdateView( entity );
 		}
 	}
 	

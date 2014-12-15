@@ -14,7 +14,6 @@ import org.openforis.calc.persistence.jooq.Sequences;
 import org.openforis.calc.persistence.jooq.tables.daos.CalculationStepDao;
 import org.openforis.calc.persistence.jooq.tables.daos.ProcessingChainDao;
 import org.openforis.calc.psql.Psql;
-import org.openforis.calc.schema.EntityDataViewDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,9 +37,6 @@ public class ProcessingChainManager {
 	
 	@Autowired
 	private CalculationStepDao calculationStepDao;
-	
-	@Autowired
-	private EntityDataViewDao entityDataViewDao;
 	
 	@Autowired
 	private Psql psql;
@@ -112,7 +108,7 @@ public class ProcessingChainManager {
 		// 1. delete output variable
 		Variable<?> outputVariable 	= step.getOutputVariable();
 		Integer deletedVariable 	= null;
-		Entity entity				=  null;
+		Entity entity				= null;
 		// it should never happen!
 		if( outputVariable != null ) {
 			entity = outputVariable.getEntity();
@@ -120,11 +116,11 @@ public class ProcessingChainManager {
 			List<CalculationStep> steps = calculationStepDao.fetchByOutputVariableId(outputVariable.getId());
 			if( steps.size() == 1 ){
 				// set output var to null (foreign key constraint "calculation_step_variable_fkey" )
-				step.setOutputVariableId(null);
+				step.setOutputVariableId( null );
 				calculationStepDao.update(step);
 				
 				deletedVariable = outputVariable.getId();
-				workspaceService.deleteVariable(outputVariable, false);
+				workspaceService.deleteVariable( outputVariable, false );
 			}
 		}
 		
@@ -135,7 +131,7 @@ public class ProcessingChainManager {
 		
 		// 4. update entity view
 		if( entity != null ){
-			entityDataViewDao.createOrUpdateView( entity );
+			workspaceService.resetView( entity );
 		}
 		
 		updateProcessingChainStatus( processingChain, Status.PENDING );

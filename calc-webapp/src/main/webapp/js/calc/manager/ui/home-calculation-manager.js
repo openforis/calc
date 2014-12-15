@@ -313,7 +313,8 @@ HomeCalculationManager.prototype.addStepElement = function(step) {
 	
 	element.click( $.proxy($this.stepClickHandler, $this) );
 
-	var button 	= element.find( "button" );
+//	var button 	= element.find( "button" );
+	var button 	= element.children().first();
 	var badge 	= $( '<div class="badge"><i></i></div>' );
 	button.prepend( badge  );
 	
@@ -407,7 +408,8 @@ HomeCalculationManager.prototype.addEntityStepElement = function( step , stepEle
 HomeCalculationManager.prototype.updateCalculationStepUI = function( element , step ){
 	element.data( "calculationStep", step );
 	
-	var button = element.find( "button" );
+	var button = element.children().first();
+//	var button = element.find( "button" );
 	button.find('.text').text( step.caption );
 	
 	var badge 		= button.find( ".badge" );
