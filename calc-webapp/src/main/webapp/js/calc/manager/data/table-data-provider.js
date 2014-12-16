@@ -1,6 +1,7 @@
 /**
  * data provider for dynamic tables. 
  * constructor gets schema and table in order to send the requests
+ * 
  * @author Mino Togna
  */
 TableDataProvider = function ( schema, table ){

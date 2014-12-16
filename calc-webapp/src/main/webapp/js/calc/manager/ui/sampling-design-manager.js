@@ -5,30 +5,30 @@
 
 SamplingDesignManager = function(container) {
 	//main ui sections
-	this.container = $( container );
+	this.container 			= $( container );
 	
 	// view section
-	this.viewSd = this.container.find(".view-sd");
-	this.editBtn = this.viewSd.find("[name=edit-btn]");
-	this.samplingDesignUI = this.viewSd.find(".sampling-design");
+	this.viewSd 			= this.container.find( ".view-sd" );
+	this.editBtn 			= this.viewSd.find( "[name=edit-btn]" );
+	this.samplingDesignUI 	= this.viewSd.find( ".sampling-design" );
 	
 	// edit section
-	this.editSd = this.container.find(".edit-sd");
-	this.prevBtn = this.editSd.find("button.prev");
-	this.nextBtn = this.editSd.find("button.next");
+	this.editSd 	= this.container.find( ".edit-sd" );
+	this.prevBtn 	= this.editSd.find( "button.prev" );
+	this.nextBtn 	= this.editSd.find( "button.next" );
 	this.editSd.hide();
 	
 	// edit ui buttons
-	this.srsBtn = new OptionButton( this.container.find('[name=srs]') );
-	this.systematicBtn = new OptionButton( this.container.find('[name=systematic]') );
-	this.twoPhasesBtn = new OptionButton( this.container.find('[name=twoPhases]') );
-	this.stratifiedBtn = new OptionButton( this.container.find('[name=stratified]') );
-	this.clusterBtn = new OptionButton( this.container.find('[name=cluster]') );
+//	this.srsBtn 		= new OptionButton( this.container.find('[name=srs]') );
+//	this.systematicBtn 	= new OptionButton( this.container.find('[name=systematic]') );
+	this.twoPhasesBtn 	= new OptionButton( this.container.find('[name=twoPhases]') );
+	this.stratifiedBtn 	= new OptionButton( this.container.find('[name=stratified]') );
+	this.clusterBtn 	= new OptionButton( this.container.find('[name=cluster]') );
 	// save btn
-	this.saveBtn = this.container.find("[name=save-btn]");
+	this.saveBtn 		= this.container.find( "[name=save-btn]" );
 	
 	// sampling unit combo
-	this.samplingUnitCombo =  this.container.find('[name=sampling-unit]').combobox();
+	this.samplingUnitCombo =  this.container.find( '[name=sampling-unit]' ).combobox();
 	
 	// additional managers used in the edit phase
 	this.phase1Manager = new Phase1Manager( this.editSd.find(".phase1_section") , this);
@@ -44,8 +44,11 @@ SamplingDesignManager = function(container) {
 	this.aoiJoinManager.hide();
 	
 	// r script
-	this.weightInput = this.editSd.find( "[name=sampling-unit-weigth]" );
-	this.weightScript = new RScript(this.weightInput);
+	this.weightInput 	= this.editSd.find( "[name=sampling-unit-weigth]" );
+	this.weightScript 	= new REditor( this.weightInput.attr('id') );
+	this.weightScript.customVariables.push( "weight" );
+	
+//	this.weightScript = new RScript( this.weightInput );
 	
 	// inatance variable that contains all sampling design settings
 	this.samplingDesign = {};
@@ -84,23 +87,23 @@ SamplingDesignManager.prototype.init = function(){
 	} , this) );
 	
 	// simple random sampling
-	this.srsBtn.select( $.proxy(function(){
-		this.samplingDesign.srs = true;
-		this.samplingDesign.systematic = false;
-		this.systematicBtn.deselect();
-	}, this) );	
-	this.srsBtn.deselect( $.proxy(function(){
-		this.samplingDesign.srs = false;
-	}, this) );
+//	this.srsBtn.select( $.proxy(function(){
+//		this.samplingDesign.srs = true;
+//		this.samplingDesign.systematic = false;
+//		this.systematicBtn.deselect();
+//	}, this) );	
+//	this.srsBtn.deselect( $.proxy(function(){
+//		this.samplingDesign.srs = false;
+//	}, this) );
 	// systematic
-	this.systematicBtn.select( $.proxy(function(){
-		this.samplingDesign.srs = false;
-		this.samplingDesign.systematic = true;
-		this.srsBtn.deselect();
-	}, this) );	
-	this.systematicBtn.deselect( $.proxy(function(){
-		this.samplingDesign.systematic = false;
-	}, this) );
+//	this.systematicBtn.select( $.proxy(function(){
+//		this.samplingDesign.srs = false;
+//		this.samplingDesign.systematic = true;
+//		this.srsBtn.deselect();
+//	}, this) );	
+//	this.systematicBtn.deselect( $.proxy(function(){
+//		this.samplingDesign.systematic = false;
+//	}, this) );
 	
 	//2 phases
 	this.twoPhasesBtn.select( $.proxy(function(){
@@ -175,7 +178,12 @@ SamplingDesignManager.prototype.startEdit = function() {
  */
 SamplingDesignManager.prototype.showStep = function(step) {
 	this.editSd.find(".step").hide();
-	this.editSd.find(".step-"+step).fadeIn(200);
+	this.editSd.find(".step-"+step).fadeIn( 200 );
+	
+	if( step == this.stepMax ){
+		this.weightScript.refresh();
+	}
+	
 	this.updateEditNavigationBtns();
 };
 /**
@@ -315,12 +323,14 @@ SamplingDesignManager.prototype.validateStep4 = function(){
  * Validate weight script 
  */
 SamplingDesignManager.prototype.validateStep5 = function(){
-	if( this.weightInput.val().trim() ){
-		this.samplingDesign.samplingUnitWeightScript = this.weightInput.val();
-		return true;
-	} else {
+	var script = this.weightScript.getValue();
+	if( StringUtils.isBlank(script) ){
 		UI.showError("Sampling unit weigth script must be filled", true);
 		return false;
+	} else {
+//		this.samplingDesign.samplingUnitWeightScript = this.weightInput.val();
+		this.samplingDesign.samplingUnitWeightScript = this.weightScript.getValue();
+		return true;
 	}
 };
 
@@ -385,17 +395,17 @@ SamplingDesignManager.prototype.updateSamplingDesign = function() {
  * Update edit form with current sampling design
  */
 SamplingDesignManager.prototype.updateEditView = function(){
-	if( this.samplingDesign.srs === true ){
-		this.srsBtn.select();
-	} else {
-		this.srsBtn.deselect();
-	}
+//	if( this.samplingDesign.srs === true ){
+//		this.srsBtn.select();
+//	} else {
+//		this.srsBtn.deselect();
+//	}
 	
-	if( this.samplingDesign.systematic === true ){
-		this.systematicBtn.select();
-	} else {
-		this.systematicBtn.deselect(); 
-	}
+//	if( this.samplingDesign.systematic === true ){
+//		this.systematicBtn.select();
+//	} else {
+//		this.systematicBtn.deselect(); 
+//	}
 	
 	if( this.samplingDesign.twoPhases === true ){
 		this.twoPhasesBtn.select();
@@ -423,7 +433,8 @@ SamplingDesignManager.prototype.updateEditView = function(){
 		} , this ) );
 		
 		if( this.samplingDesign.samplingUnitWeightScript ){
-			this.weightInput.val( this.samplingDesign.samplingUnitWeightScript );
+//			this.weightInput.html( this.samplingDesign.samplingUnitWeightScript );
+			this.weightScript.setValue( this.samplingDesign.samplingUnitWeightScript );
 		}
 	}
 	
@@ -442,19 +453,37 @@ SamplingDesignManager.prototype.addToSdUi = function(text) {
 };
 
 /**
- * Load plot data table info
+ * Load sampling unit data table info
  */
 SamplingDesignManager.prototype.loadSamplingUnitTableInfo = function(callback){
 	if( this.samplingDesign.samplingUnitId ) {
 		WorkspaceManager.getInstance().activeWorkspace( $.proxy( function(ws){
 			var entity = ws.getEntityById( this.samplingDesign.samplingUnitId );
-			// load sampling unit table info
-			new TableDataProvider( ws.inputSchema , entity.name +"_view" ).tableInfo( $.proxy( function(response){
-				this.samplingUnitTableInfo = response;
-				if(callback){
-					callback();
+			
+			var tableInfo = function(){
+				this.table 			= entity.name;
+				this.fields 		= {};
+				this.fields.table 	= entity.name;
+				this.fields.columns = [];
+				
+				var vars = entity.hierarchyVariables();
+				for( var i in vars ){
+					var variable = vars[ i ];
+					this.fields.columns.push( { 'column_name' : variable.name } );
 				}
-			} , this ) );
+			};
+			
+			this.samplingUnitTableInfo = new tableInfo();
+			Utils.applyFunction( callback );
+			
+			// load sampling unit table info
+//			new TableDataProvider( ws.inputSchema , entity.name +"_view" ).tableInfo( $.proxy( function(response){
+//				this.samplingUnitTableInfo = response;
+//				if(callback){
+//					callback();
+//				}
+//			} , this ) );
+			
 		} , this ) );
 	}
 };
@@ -466,12 +495,12 @@ SamplingDesignManager.prototype.loadPhase1TableInfo = function(callback){
 	var $this  = this;
 	WorkspaceManager.getInstance().activeWorkspace(function(ws){
 		if( ws.phase1PlotTable ) {
+
 			new TableDataProvider( "calc" , ws.phase1PlotTable ).tableInfo( function(response) {
 				$this.phase1TableInfo = response;
-				if( callback ){
-					callback();
-				}
+				Utils.applyFunction( callback );
 			});
+			
 		}
 	});
 };

@@ -23,8 +23,9 @@ AggregationManager = function( container ) {
     this.variablePerHaSection 		= this.container.find(".variable-per-ha");
     
     // r script
-    this.rScriptInput 	= this.container.find("[name=plot-area]");
-    this.rScript 		= new RScript( this.rScriptInput );
+    var rScriptInput 	= this.container.find( "[name=plot-area]" );
+    this.rEditor 		= new REditor( rScriptInput.attr('id') );
+    this.rEditor.customVariables.push( 'plot_area' );
     
     // save button
     this.saveBtn 	=	this.container.find( 'button[name=save-btn]' );
@@ -32,7 +33,6 @@ AggregationManager = function( container ) {
     this.init();
 };
 
-// AggregationManager.prototype = (function(){
 
 AggregationManager.prototype.init = function() {
     var $this = this;
@@ -57,7 +57,9 @@ AggregationManager.prototype.init = function() {
     		UI.lock();
     	    var entityId = $this.currentEntity.id;
     	    
-    	    WorkspaceManager.getInstance().activeWorkspaceSetEntityPlotArea( entityId, $this.rScriptInput.val(), function( ws ) {
+//    	    var value = $this.rScriptInput.val();
+    	    var value = $this.rEditor.getValue();
+    	    WorkspaceManager.getInstance().activeWorkspaceSetEntityPlotArea( entityId, value , function( ws ) {
     	    		$this.currentEntity = ws.getEntityById(entityId);
     	    		UI.unlock();
     	    		
@@ -76,23 +78,6 @@ AggregationManager.prototype.init = function() {
     } );
 };
 
-/**
- * Handler for samplingUnit combo change event
- */
-//AggregationManager.prototype.samplingUnitChange = function( entityId ) {
-//    var $this = this;
-//    $.proxy(emptyAllSections, $this)();
-//    
-//    UI.lock();
-//    WorkspaceManager.getInstance().activeWorkspace(function( ws ) {
-//	var entity = ws.getEntityById(entityId);
-//	
-//	WorkspaceManager.getInstance().activeWorkspaceSetSamplingUnit(entity, function( ws ) {
-//	    UI.unlock();
-//	    $.proxy(samplingUnitUpdate, $this)(entityId);
-//	});
-//    });
-//};
 
 /**
  * update sampling unit ui
@@ -100,22 +85,13 @@ AggregationManager.prototype.init = function() {
 AggregationManager.prototype.samplingUnitUpdate = function( entityId ) {
     if (entityId) {
     // add header to entities section
-    this.entitiesSection.append($('<div class="name">Entities</div>'));
-
-	WorkspaceManager.getInstance().activeWorkspace($.proxy(function( ws ) {
-	    var entities = ws.getAggregableEntities(entityId);
-	    this.entitiesUpdate(entities);
-	}, this));
+    	this.entitiesSection.append( $('<div class="name" style="text-align:center">Entities</div>') );
+    	this.optionBtns = [];
+		WorkspaceManager.getInstance().activeWorkspace($.proxy(function( ws ) {
+		    var entities = ws.getAggregableEntities(entityId);
+		    this.entitiesUpdate(entities);
+		}, this));
     }
-};
-
-AggregationManager.prototype.emptyAllSections = function() {
-    var $this = this;
-    $this.entitiesSection.empty();
-    $this.variablesSection.empty();
-    $this.variableSection.empty();
-    $this.variablePerHaSection.empty();
-    $this.aggregateSettingsSection.hide();
 };
 
 /**
@@ -124,51 +100,58 @@ AggregationManager.prototype.emptyAllSections = function() {
 AggregationManager.prototype.entitiesUpdate = function( entities , margin ) {	
 	margin = margin ? margin : 0;
     var $this = this;
-    // empty entity and variable sections
-    // $this.entitiesSection.empty();
-    // $this.variablesSection.empty();
-    // $this.variableSection.empty();
-    // $this.variablePerHaSection.empty();
-
+    
     var t = 80;
     var addEntity = function( i , ent ) {
-		var btn = $( '<button type="button" class="btn default-btn"></button>' );
+		var btn = $( '<button type="button" class="btn option-btn"></button>' );
 		btn.css( "margin-left" , margin +"px");
 		btn.hide();
 		btn.html(ent.name);
 		
-		btn.click(function( e ) {
-		    WorkspaceManager.getInstance().activeWorkspace(function( ws ) {
-			var entity = ws.getEntityById(ent.id);
-			// disable current entity button
-			UI.enable($this.entitiesSection.find("button"));
-			UI.disable($(e.currentTarget));
-			
-			// empty variables section
-			$this.variablesSection.empty();
-			$this.variableSection.empty();
-			$this.variablePerHaSection.empty();
-			
-			// set current entity
-			$this.currentEntity = entity;
-			// update rScript with current entity
-			$this.rScript.entity = entity;
-			$this.rScriptInput.val(entity.plotAreaScript);
-			// show plot area section
-			$this.plotAreaSection.show();
-			
-			// show variables
-	//		$.proxy(variablesUpdate, $this)(entity.quantitativeVariables);
-			
-		    });
-		});
+		var optionBtn = new OptionButton( btn );
+		$this.optionBtns.push( optionBtn );
 		
-		$this.entitiesSection.append(btn);
+		var select = function(){
+			var currentButton = this;
+			WorkspaceManager.getInstance().activeWorkspace(function( ws ) {
+				
+				for( var i in $this.optionBtns ){
+					var button = $this.optionBtns[ i ];
+					if( button != currentButton ){
+						button.deselect();
+					}
+				}
+				
+				var entity = ws.getEntityById(ent.id);
+				
+				// empty variables section
+				$this.variablesSection.empty();
+				$this.variableSection.empty();
+				$this.variablePerHaSection.empty();
+				
+				// set current entity
+				$this.currentEntity = entity;
+				// update rScript with current entity
+				$this.rEditor.entity = entity;
+				var script = StringUtils.isNotBlank( entity.plotAreaScript ) ? entity.plotAreaScript : "";
+				$this.rEditor.setValue( script );
+				// show plot area section
+				$this.plotAreaSection.show();
+				$this.rEditor.refresh();
+			});
+		};
+		var deselect = function(){
+			$this.currentEntity = null;
+			$this.plotAreaSection.hide();
+		};
+		optionBtn.select( select );
+		optionBtn.deselect( deselect );
+		
+		$this.entitiesSection.append( btn );
 		
 		setTimeout(function() {
 		    btn.fadeIn();
 		}, t);
-		
 		t += 15;
     };
     
@@ -187,11 +170,40 @@ AggregationManager.prototype.entitiesUpdate = function( entities , margin ) {
 
 
 
+
+
+
+
 /*
  * ==========================================
- * variable aggregation section not used now
+ * OLD CODE: variable aggregation section not used now
  * ==========================================
  */
+/**
+ * Handler for samplingUnit combo change event
+ */
+//AggregationManager.prototype.samplingUnitChange = function( entityId ) {
+//    var $this = this;
+//    $.proxy(emptyAllSections, $this)();
+//    
+//    UI.lock();
+//    WorkspaceManager.getInstance().activeWorkspace(function( ws ) {
+//	var entity = ws.getEntityById(entityId);
+//	
+//	WorkspaceManager.getInstance().activeWorkspaceSetSamplingUnit(entity, function( ws ) {
+//	    UI.unlock();
+//	    $.proxy(samplingUnitUpdate, $this)(entityId);
+//	});
+//    });
+//};
+AggregationManager.prototype.emptyAllSections = function() {
+    var $this = this;
+    $this.entitiesSection.empty();
+    $this.variablesSection.empty();
+    $this.variableSection.empty();
+    $this.variablePerHaSection.empty();
+    $this.aggregateSettingsSection.hide();
+};
 /**
  * update variables section
  */

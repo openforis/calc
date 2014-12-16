@@ -934,13 +934,19 @@ ul.scroll-menu {
 /* 	width: 100%; */
 /* } */
 
+#sampling-design button.prev:disabled ,
+#sampling-design button.next:disabled {
+	color: rgba(255, 255, 255, 0.5);	
+}
+
 #sampling-design button.prev ,
 #sampling-design button.next {
 	display: inline-block;
 	border: none;
 	border-radius: 0px;
 	font-size: 5em;
-	color: #676c7a;
+/* 	color: #676c7a; */
+	color: #FFF;
 	background: none;
 }
 #sampling-design .step {
@@ -986,7 +992,7 @@ ul.scroll-menu {
 }
 
 #aggregation-settings .sampling-unit-section div {
-	text-align: center;
+/* 	text-align: center; */
 }
 
 #aggregation-settings .sampling-unit-section .aggregates button  {

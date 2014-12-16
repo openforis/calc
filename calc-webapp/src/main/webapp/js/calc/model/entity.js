@@ -67,7 +67,7 @@ Entity.prototype.addVariable = function( variable ) {
 /**
  * Returns all the variables up to the root entity
  */
-Entity.prototype.hierarchyVariables = function() {
+Entity.prototype.hierarchyVariables = function(){
     var result = this.variables;
     var currentParent = this.parent();
 

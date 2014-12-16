@@ -38,7 +38,9 @@ REditor = function( textAreaId ){
 	/**
 	 * entity instance variable used to populate the autocomplete dropdown in case it's set
 	 */
-	this.entity	= null;
+	this.entity					= null;
+	// custom variables to populate externally
+	this.customVariables 		= [];
 	
 	this.init();
 };
@@ -94,6 +96,13 @@ REditor.prototype.getHints = function(){
 			var item = this.entity.name + "$" + variableName;
 			hints.push( item );
 		}
+		
+		for( var i in this.customVariables ){
+			var customVariable = this.customVariables[ i ];
+			var item = this.entity.name + "$" + customVariable;
+			hints.push( item );
+		}
+		
 		hints.sort();
 	}
 	
@@ -117,7 +126,9 @@ REditor.prototype.setValue = function( value ){
 	return this.editor.setValue( value );
 };
 
-
+REditor.prototype.refresh = function(){
+	this.editor.refresh();
+};
 
 // r functions used for content assist
 REditor.rFunctions = [];
