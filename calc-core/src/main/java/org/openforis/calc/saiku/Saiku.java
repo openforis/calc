@@ -11,6 +11,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.mondrian.Schema;
@@ -109,12 +110,12 @@ public class Saiku {
 		IOUtils.closeQuietly( dataSourceFileStream );
 	}
 
-	public void deleteSchema( Workspace workspace ){
+	public void deleteSchema( Workspace workspace ) throws IOException{
 		File mdxDirectory = getMdxDirectory( workspace );
-		mdxDirectory.delete();
+		FileUtils.deleteQuietly( mdxDirectory );
 		
 		File dataSource = getDataSource( workspace );
-		dataSource.delete();
+		FileUtils.deleteQuietly( dataSource );
 	}
 	
 	public String getDataSource() {

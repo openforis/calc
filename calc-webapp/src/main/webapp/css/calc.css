@@ -392,7 +392,7 @@ button.settings:hover {
 }
 
 
-#calculation li.calculation-step button .badge{
+#calculation li.calculation-step button .badge {
 	background-color: transparent;
 	margin: 0px 0px 0px 150px;
 	right: -80px;
@@ -535,9 +535,9 @@ button.settings:hover {
 	padding-top: 15px;
 	font-family: "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
 	letter-spacing: 3px; 
-	color: rgba(190, 194, 191, 0.67);
-	
+	color: rgba(212, 224, 215, 0.6);
 }
+
 #footer .application-version {
 /* 	position: relative; */
 /* 	top: 12px; */

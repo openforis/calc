@@ -153,10 +153,10 @@ HomeCalculationManager.prototype.updateSteps = function(callback) {
 					$this.addStepElement( step );
 				});
 			}
-			$this.updateActiveStepsCount();
 			
 			$this.optionsManager.updateUI();
 		} 
+		$this.updateActiveStepsCount();
 	});
 };
 /**
@@ -167,6 +167,9 @@ HomeCalculationManager.prototype.updateActiveStepsCount = function() {
 
 	var updateCount = function() {
 		WorkspaceManager.getInstance().activeWorkspace( function(ws){
+			var badge = $this.executeBtn.find( ".badge" );
+			badge.fadeTo( 0 , 0 );
+			
 			if( ws ){
 				var count = 0;
 				var chain = ws.getDefaultProcessingChain();
@@ -178,8 +181,6 @@ HomeCalculationManager.prototype.updateActiveStepsCount = function() {
 						
 					});
 				}
-				var badge = $this.executeBtn.find( ".badge" );
-				badge.fadeTo( 0 , 0 );
 				badge.html( count );
 				if( count >0 ){
 					badge.fadeTo( 500 , 1 );
