@@ -32,6 +32,7 @@
 		<dirName path="${java_executable}" variable="java_bin_dir"/>
 		<dirName path="${java_bin_dir}" variable="java_home"/>
 		<addEnvironmentVariable name="JAVA_HOME" value="${java_home}"/>	
+		<addEnvironmentVariable name="JRE_HOME" value="${java_home}"/>
 	</postInstallationActionList>
 	<compressionAlgorithm>lzma-ultra</compressionAlgorithm>
     <defaultUnixDirectoryPermissions>777</defaultUnixDirectoryPermissions>

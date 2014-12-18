@@ -1,10 +1,13 @@
 package org.openforis.calc.controlpanel;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.Socket;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Properties;
 
 import javafx.scene.control.TextArea;
 
@@ -20,6 +23,12 @@ public class Server {
 	private Path shutdown;
 	private Path log;
 
+	private Properties calcProperties;
+
+	private String url;
+	private int port;
+	private String host;
+	
 	public Server() {
 		
 		String calcHome = System.getenv( "CALC_HOME" );
@@ -36,10 +45,28 @@ public class Server {
 //		/catalina.2014-06-20.log
 		String dateFormat = new SimpleDateFormat( "yyyy-MM-dd" ).format( new Date() );
 		log = applicationPath.resolve( "calc-server/tomcat/logs/catalina." + dateFormat + ".log" );
+		
+		Path calcPropertiesPath = applicationPath.resolve( "calc-server/tomcat/calc.properties" );
+		try {
+			InputStream inputStream = Files.newInputStream( calcPropertiesPath );
+			calcProperties 			= new Properties();
+			calcProperties.load( inputStream );
+			inputStream.close();
+			
+			port 	= Integer.parseInt( calcProperties.getProperty( "http_port" ) );
+			host 	= "127.0.0.1";
+			url 	= "http://" + host + ":" + port + "/calc";
+		} catch (Exception e) {
+			throw new IllegalStateException( "Unable to find calc.properties" );
+		}
 	}
 
 	public Path getLog() {
 		return log;
+	}
+	
+	public String getUrl() {
+		return url;
 	}
 	
 	public void start( final TextArea textArea  ) throws IOException {
@@ -68,7 +95,7 @@ public class Server {
 		
 		try {
 			@SuppressWarnings( { "unused", "resource" } )
-			Socket socket = new Socket( "127.0.0.1" , 8081 );
+			Socket socket = new Socket( host , port );
 			running = true;
 		} catch ( Exception e ) {
 			running = false;

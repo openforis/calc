@@ -144,8 +144,8 @@ public class CalcControlPanelController implements Initializable {
 					try {
 						Thread.sleep( delay );
 						
-						String url = "http://127.0.0.1:8081/calc";
-						hostServices.showDocument( url);
+						String url = server.getUrl();
+						hostServices.showDocument( url );
 		
 					} catch ( Exception e ) {
 						e.printStackTrace();

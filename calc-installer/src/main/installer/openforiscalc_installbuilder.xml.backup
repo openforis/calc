@@ -2,9 +2,9 @@
     <shortName>OpenForisCalc</shortName>
     <fullName>Open Foris Calc</fullName>
     <version>1.0-a25-SNAPSHOT</version>
-    <outputDirectory>C:\opt\openforis\calc\calc-installer\target</outputDirectory>
-    <!--readmeFile>../../../../README</readmeFile-->	
-	<installerFilename>${product_shortname}-${product_version}-${platform_name}-installer.${platform_exec_suffix}</installerFilename>
+
+    <!--readmeFile>../../../../README</readmeFile-->
+    <installerFilename>${product_shortname}-${product_version}-${platform_name}-installer.${platform_exec_suffix}</installerFilename>
     <licenseFile>../../../../License.txt</licenseFile>
     <leftImage>img/left-side.png</leftImage>
     <logoImage>../../../../calc-webapp/src/main/webapp/img/of-logo-small.png</logoImage>
@@ -28,17 +28,20 @@
             </validVersionList>
         </autodetectJava>
     </preInstallationActionList>
-	<postInstallationActionList>       
-		<dirName path="${java_executable}" variable="java_bin_dir"/>
-		<dirName path="${java_bin_dir}" variable="java_home"/>
-		<addEnvironmentVariable name="JAVA_HOME" value="${java_home}"/>	
-	</postInstallationActionList>
-	<compressionAlgorithm>lzma-ultra</compressionAlgorithm>
+    <postInstallationActionList>
+        <dirName path="${java_executable}" variable="java_bin_dir"/>
+        <dirName path="${java_bin_dir}" variable="java_home"/>
+        <addEnvironmentVariable name="JAVA_HOME" value="${java_home}">
+            <scope>system</scope>
+        </addEnvironmentVariable>
+    </postInstallationActionList>
+    <compressionAlgorithm>lzma-ultra</compressionAlgorithm>
     <defaultUnixDirectoryPermissions>777</defaultUnixDirectoryPermissions>
     <defaultUnixFilePermissions>777</defaultUnixFilePermissions>
     <defaultUnixOwner>${env(SUDO_USER)}</defaultUnixOwner>
     <enableRollback>1</enableRollback>
     <enableTimestamp>1</enableTimestamp>
+    <outputDirectory>../../../target</outputDirectory>
     <rebootRequired>1</rebootRequired>
     <requireInstallationByRootUser>1</requireInstallationByRootUser>
     <rollbackBackupDirectory>${system_temp_directory}/${product_shortname}/backup</rollbackBackupDirectory>

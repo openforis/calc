@@ -10,7 +10,7 @@
 	<Parameter name="calc.jdbc.username" 		value="calc" />
 	<Parameter name="calc.jdbc.password" 		value="calc" />
 	<Parameter name="calc.jdbc.adminuser" 	value="postgres" />
-	<Parameter name="calc.jdbc.adminpassword" 	value="postgres" />
+	<Parameter name="calc.jdbc.adminpassword" value="ADMIN_PASSWORD" />
 	<Parameter name="calc.jdbc.maxActive" 		value="10" />
 	<Parameter name="calc.jdbc.minIdle" 		value="5" />
 	

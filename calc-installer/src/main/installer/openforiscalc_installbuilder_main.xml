@@ -183,6 +183,16 @@
             <explanation></explanation>
             <default></default>
         </booleanParameter>
+        <stringParameter>
+            <name>postgres_password</name>
+            <title>Please enter your admin postsgres password</title>
+            <description></description>
+            <explanation></explanation>
+            <value>postgres</value>
+            <default>postgres</default>
+            <allowEmptyValue>0</allowEmptyValue>
+            <width>40</width>
+        </stringParameter>
     </parameterList>
     <postInstallationActionList>
         <addEnvironmentVariable>
@@ -411,6 +421,91 @@
                 </platformTest>
             </ruleList>
         </changeOwnerAndGroup>
+        <substitute>
+            <files>${installdir}/calc-server/tomcat/conf/Catalina/localhost/calc.xml</files>
+            <type>exact</type>
+            <substitutionList>
+                <substitution>
+                    <pattern>ADMIN_PASSWORD</pattern>
+                    <value>${postgres_password}</value>
+                </substitution>
+            </substitutionList>
+        </substitute>
+		
+        <getFreePort>
+            <finalPort>8046</finalPort>
+            <initialPort>8006</initialPort>
+            <variable>tomcat_shutdown</variable>
+        </getFreePort>
+        <substitute>
+            <files>${installdir}/calc-server/tomcat/conf/server.xml</files>
+            <type>exact</type>
+            <substitutionList>
+                <substitution>
+                    <pattern>8006</pattern>
+                    <value>${tomcat_shutdown}</value>
+                </substitution>
+            </substitutionList>
+        </substitute>
+		
+		<getFreePort>
+            <finalPort>8121</finalPort>
+            <initialPort>8081</initialPort>
+            <variable>tomcat_http</variable>
+        </getFreePort>
+        <substitute>
+            <files>${installdir}/calc-server/tomcat/conf/server.xml</files>
+            <type>exact</type>
+            <substitutionList>
+                <substitution>
+                    <pattern>8081</pattern>
+                    <value>${tomcat_http}</value>
+                </substitution>
+            </substitutionList>
+        </substitute>
+		<substitute>
+            <files>${installdir}/calc-server/tomcat/calc.properties</files>
+            <type>exact</type>
+            <substitutionList>
+                <substitution>
+                    <pattern>{HTTP_PORT}</pattern>
+                    <value>${tomcat_http}</value>
+                </substitution>
+            </substitutionList>
+        </substitute>
+		
+		<getFreePort>
+            <finalPort>8484</finalPort>
+            <initialPort>8444</initialPort>
+            <variable>tomcat_redirect</variable>
+        </getFreePort>
+        <substitute>
+            <files>${installdir}/calc-server/tomcat/conf/server.xml</files>
+            <type>exact</type>
+            <substitutionList>
+                <substitution>
+                    <pattern>8444</pattern>
+                    <value>${tomcat_redirect}</value>
+                </substitution>
+            </substitutionList>
+        </substitute>
+		
+		<getFreePort>
+            <finalPort>8050</finalPort>
+            <initialPort>8010</initialPort>
+            <variable>tomcat_ajp</variable>
+        </getFreePort>
+        <substitute>
+            <files>${installdir}/calc-server/tomcat/conf/server.xml</files>
+            <type>exact</type>
+            <substitutionList>
+                <substitution>
+                    <pattern>8010</pattern>
+                    <value>${tomcat_ajp}</value>
+                </substitution>
+            </substitutionList>
+        </substitute>
+
     </postInstallationActionList>
     <postUninstallationActionList>
         <deleteFile>
@@ -423,8 +518,11 @@
     <preInstallationActionList>
         <setInstallerVariable>
             <name>installdir</name>
-            <value>${env(SYSTEMDRIVE)}/opt/${product_shortname}-${product_version}</value>
+            <value>${env(SYSTEMDRIVE)}/opt/${product_shortname}</value>
         </setInstallerVariable>
+        <deleteFile>
+            <path>${installdir}</path>
+        </deleteFile>
     </preInstallationActionList>
     <startMenuShortcutList>
         <startMenuShortcut>
