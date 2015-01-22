@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Result;
@@ -58,6 +59,19 @@ public class TableDao extends AbstractJooqDao {
 	
 	public JSONArray info( Table<?> table ){
 		return info( table.getSchema().getName() , table.getName() );
+	}
+	
+	// to test
+	public boolean hasColumn(  Table<?> table , Field<?> field ){
+		JSONArray info = info( table );
+		for ( Object object : info ){
+			JSONObject o = (JSONObject) object;
+			Object columnName = o.get( Columns.COLUMNS.COLUMN_NAME );
+			if( StringUtils.equalsIgnoreCase( columnName.toString() , field.getName() ) ){
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	@SuppressWarnings("unchecked")

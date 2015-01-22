@@ -347,18 +347,23 @@ public class WorkspaceService {
 				entityDataViewDao.drop( entity );
 				
 				Field<?> field = resultTable.field( variable.getOutputValueColumn() );
-				psql
+				if( field != null ){
+					psql
 					.alterTable( resultTable )
 					.dropColumnIfExists( field , true )
 					.execute();
+				}
 				
 				if( variable instanceof MultiwayVariable ){
 					
 					Field<?> idField = resultTable.field( variable.getInputCategoryIdColumn() );
-					psql
+					if( idField != null ){
+						psql
 						.alterTable( resultTable )
 						.dropColumnIfExists( idField , true )
 						.execute();
+					}
+					
 				}
 				
 				metadataManager.deleteVariable( variable );
