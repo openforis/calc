@@ -52,10 +52,23 @@
 		install.packages("sqldf");
 		
 	- set R_HOME environment variable
-		1. add to the file /etc/launchd.con (sudo vi /etc/launchd.conf) the following line:
+		1. add to the file /etc/launchd.conf (sudo vi /etc/launchd.conf) the following line:
 			setenv R_HOME /Library/Frameworks/R.framework/Resources
 		2. reboot computer
 		
+Problems under OSX Yosemite (10.10.x):
+1) If you see the message:
+	package 'RPostgreSQL' is available as a source package but not as a binary
+
+	Warning in install.packages :
+  		package 'RPostgreSQL' is not available (for R version 3.1.2)
+
+Install R version 3.1.2 (2014-10-31) -- "Pumpkin Helmet”. Which is R-3.1.2-snowleopard.pkg<http://cran.mirror.garr.it/mirrors/CRAN/bin/macosx/R-3.1.2-snowleopard.pkg>
+Install Xquartz http://xquartz.macosforge.org/landing/
+Then run the command install.packages(‘RPostgreSQL’) inside R terminal.
+		
+2) If having problems installing rJava under OS X Yosemite (10.10.x)
+Install Java for OS X 2014-001 : http://support.apple.com/kb/DL1572		
 ==============
  * Ubuntu
 ============== 
