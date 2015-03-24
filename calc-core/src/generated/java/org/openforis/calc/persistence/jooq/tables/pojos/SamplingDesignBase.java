@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables.pojos;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class SamplingDesignBase implements java.io.Serializable {
 
-	private static final long serialVersionUID = 1487030418;
+	private static final long serialVersionUID = -1199179674;
 
 	private java.lang.Integer                      id;
 	private java.lang.Integer                      samplingUnitId;
@@ -26,6 +26,8 @@ public class SamplingDesignBase implements java.io.Serializable {
 	private org.openforis.calc.engine.ParameterMap clusterColumnSettings;
 	private org.openforis.calc.engine.ParameterMap aoiJoinSettings;
 	private java.lang.String                       samplingUnitWeightScript;
+	private java.lang.Boolean                      twoStages;
+	private org.openforis.calc.engine.ParameterMap twoStagesSettings;
 
 	public SamplingDesignBase() {}
 
@@ -42,7 +44,9 @@ public class SamplingDesignBase implements java.io.Serializable {
 		org.openforis.calc.engine.ParameterMap stratumJoinSettings,
 		org.openforis.calc.engine.ParameterMap clusterColumnSettings,
 		org.openforis.calc.engine.ParameterMap aoiJoinSettings,
-		java.lang.String                       samplingUnitWeightScript
+		java.lang.String                       samplingUnitWeightScript,
+		java.lang.Boolean                      twoStages,
+		org.openforis.calc.engine.ParameterMap twoStagesSettings
 	) {
 		this.id = id;
 		this.samplingUnitId = samplingUnitId;
@@ -57,6 +61,8 @@ public class SamplingDesignBase implements java.io.Serializable {
 		this.clusterColumnSettings = clusterColumnSettings;
 		this.aoiJoinSettings = aoiJoinSettings;
 		this.samplingUnitWeightScript = samplingUnitWeightScript;
+		this.twoStages = twoStages;
+		this.twoStagesSettings = twoStagesSettings;
 	}
 
 	public java.lang.Integer getId() {
@@ -161,5 +167,21 @@ public class SamplingDesignBase implements java.io.Serializable {
 
 	public void setSamplingUnitWeightScript(java.lang.String samplingUnitWeightScript) {
 		this.samplingUnitWeightScript = samplingUnitWeightScript;
+	}
+
+	public java.lang.Boolean getTwoStages() {
+		return this.twoStages;
+	}
+
+	public void setTwoStages(java.lang.Boolean twoStages) {
+		this.twoStages = twoStages;
+	}
+
+	public org.openforis.calc.engine.ParameterMap getTwoStagesSettings() {
+		return this.twoStagesSettings;
+	}
+
+	public void setTwoStagesSettings(org.openforis.calc.engine.ParameterMap twoStagesSettings) {
+		this.twoStagesSettings = twoStagesSettings;
 	}
 }

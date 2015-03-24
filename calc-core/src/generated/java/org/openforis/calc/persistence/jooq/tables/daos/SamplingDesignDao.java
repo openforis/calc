@@ -132,4 +132,18 @@ public class SamplingDesignDao extends org.jooq.impl.DAOImpl<org.openforis.calc.
 	public java.util.List<SamplingDesign> fetchBySamplingUnitWeightScript(java.lang.String... values) {
 		return fetch(org.openforis.calc.persistence.jooq.tables.SamplingDesignTable.SAMPLING_DESIGN.SAMPLING_UNIT_WEIGHT_SCRIPT, values);
 	}
+
+	/**
+	 * Fetch records that have <code>two_stages IN (values)</code>
+	 */
+	public java.util.List<SamplingDesign> fetchByTwoStages(java.lang.Boolean... values) {
+		return fetch(org.openforis.calc.persistence.jooq.tables.SamplingDesignTable.SAMPLING_DESIGN.TWO_STAGES, values);
+	}
+
+	/**
+	 * Fetch records that have <code>two_stages_settings IN (values)</code>
+	 */
+	public java.util.List<SamplingDesign> fetchByTwoStagesSettings(org.openforis.calc.engine.ParameterMap... values) {
+		return fetch(org.openforis.calc.persistence.jooq.tables.SamplingDesignTable.SAMPLING_DESIGN.TWO_STAGES_SETTINGS, values);
+	}
 }

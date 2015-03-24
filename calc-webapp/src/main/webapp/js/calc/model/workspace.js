@@ -35,6 +35,22 @@ Workspace.prototype.getEntityById = function(id) {
 	}
 	return null;
 };
+
+/**
+ * Returns the entity with the id passed as argument if there is.
+ */
+Workspace.prototype.getEntityByOriginalId = function(id) {
+	if( id ) {
+		for( var i in this.entities ) {
+			var entity = this.entities[i];
+			if( entity.originalId.toString() == id.toString() ) {
+				return entity;
+			}
+		}
+	}
+	return null;
+};
+
 /**
  * Returns the variable with the id passed as argument if there is.
  */

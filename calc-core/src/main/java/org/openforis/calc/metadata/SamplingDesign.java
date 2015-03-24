@@ -80,6 +80,12 @@ public class SamplingDesign extends SamplingDesignBase {
 		return new ColumnJoin( getAoiJoinSettings() );
 	}
 	
+	@Override
+	public ParameterMap getTwoStagesSettings() {
+		return super.getTwoStagesSettings();
+	}
+	
+	
 	// hard coded for now
 	public String getWeightVariable() {
 		return "weight";

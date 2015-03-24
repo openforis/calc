@@ -76,7 +76,11 @@ public class Workspace extends WorkspaceBase {
 	// TODO rename to dataSchema
 	public String getInputSchema(){
 		return super.getInputSchema();
-	} 
+	}
+	
+	public String getExtendedSchemaName(){
+		return this.getInputSchema() + "_ext";
+	}
 
 	public List<Entity> getEntities() {
 		return org.openforis.commons.collection.CollectionUtils.unmodifiableList( entities );
@@ -296,6 +300,11 @@ public class Workspace extends WorkspaceBase {
 	@JsonInclude
 	public String getPhase1PlotTableName() {
 		return String.format( "_phase1_plot_%s" , this.getName() );
+	}
+	
+	@JsonInclude
+	public String getPrimarySUTableName() {
+		return String.format( "_primary_sampling_unit_%s" , this.getName() );
 	}
 	
 	public void addProcessingChain(ProcessingChain chain) {

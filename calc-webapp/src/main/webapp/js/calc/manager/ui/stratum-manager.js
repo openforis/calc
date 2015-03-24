@@ -57,8 +57,19 @@ StratumManager.prototype.import = function(filepath) {
 StratumManager.prototype.updateStrata = function(ws) {
 	if( ws.strata && ws.strata.length > 0 ) {
 		
-		var tableInfo = ( this.sdManager.samplingDesign.twoPhases === true ) ? this.sdManager.phase1TableInfo : this.sdManager.samplingUnitTableInfo;
-		var header = ( this.sdManager.samplingDesign.twoPhases === true ) ? "phase 1 table join column" : this.sdManager.samplingUnitTableInfo.table + " table join column";
+		var tableInfo 	= null;
+		var header 		= null;
+		if(  this.sdManager.samplingDesign.twoPhases === true  ){
+			tableInfo 	= this.sdManager.phase1TableInfo;
+			header 		= "phase 1 table join column";
+		} else if(  this.sdManager.samplingDesign.twoStages === true  ){
+			tableInfo 	= this.sdManager.primarySUTableInfo;
+			header 		= "PSU table join column";
+		} else {
+			tableInfo 	= this.sdManager.samplingUnitTableInfo;
+			header		= this.sdManager.samplingUnitTableInfo.table + " table join column";	
+		}
+
 		this.tableColumnSelector.setTableInfo( tableInfo , header);
 		
 		var options = this.sdManager.samplingDesign.stratumJoinSettings; 

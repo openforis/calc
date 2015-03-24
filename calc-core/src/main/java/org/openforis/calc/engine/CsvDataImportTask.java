@@ -4,6 +4,7 @@
 package org.openforis.calc.engine;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,12 +32,11 @@ public class CsvDataImportTask extends Task {
 	private CsvReader csvReader;
 	private CsvFileTable table;
 
-	public CsvDataImportTask(String filepath, String table, JSONArray colOptions) throws IOException {
-		this.table = new CsvFileTable(table, colOptions);
+	public CsvDataImportTask(String filepath, String table, String schema, JSONArray colOptions) throws IOException {
+		this.table = new CsvFileTable( table, colOptions, schema );
 
 		this.csvReader = new CsvReader(filepath);
 		this.csvReader.readHeaders();
-		
 	}
 
 	@Override
@@ -62,6 +62,7 @@ public class CsvDataImportTask extends Task {
 	}
 
 	// iterate over records to import and creates insert queries
+	@SuppressWarnings("unchecked")
 	@Transactional
 	private <T extends Object> void populateTable(CsvFileTable table) throws IOException {
 
@@ -69,13 +70,22 @@ public class CsvDataImportTask extends Task {
 		for (FlatRecord record = this.csvReader.nextRecord(); record != null; record = this.csvReader.nextRecord()) {
 
 			InsertQuery<Record> insert = new Psql(this.getDataSource()).insertQuery(table);
-			@SuppressWarnings("unchecked")
+
 			Field<T>[] fields = (Field<T>[]) table.fields();
 			for (Field<T> field : fields) {
 				String name = field.getName();
 				if (table.ID != field) {
 					Class<T> type = field.getDataType().getType();
-					T value = record.getValue(name, type);
+
+					T value = null;
+					// added because BigDecimal is not supported by CsvLine?!
+					if(  type.isAssignableFrom(BigDecimal.class)  ){
+						double val = record.getValue( name, Double.class );
+						value = (T) BigDecimal.valueOf( val );
+					} else {
+						value = record.getValue(name, type);						
+					}
+					
 					insert.addValue(field, value);
 				}
 			}

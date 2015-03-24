@@ -30,6 +30,7 @@ import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.ErrorSettings;
 import org.openforis.calc.metadata.Variable;
+import org.openforis.calc.persistence.jooq.CalcSchema;
 import org.openforis.calc.web.form.VariableForm;
 import org.openforis.calc.web.form.WorkspaceForm;
 import org.openforis.commons.versioning.Version;
@@ -193,7 +194,7 @@ public class WorkspaceController {
 
 	@RequestMapping(value = "/active/import-table.json", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
 	public @ResponseBody
-	Job importTable(@RequestParam("filepath") String filepath, @RequestParam("table") String tableName, @RequestParam("columns") String columnOptions) throws ParseException,
+	Job importTable(@RequestParam("filepath") String filepath, @RequestParam("table") String tableName, @RequestParam("columns") String columnOptions,  @RequestParam(required=false,value="useExtSchema") Boolean useExtSchema) throws ParseException,
 			IOException, WorkspaceLockedException {
 		
 		Workspace workspace = workspaceService.getActiveWorkspace();
@@ -202,7 +203,8 @@ public class WorkspaceController {
 
 		JSONParser jsonParser = new JSONParser();
 		JSONArray array = (JSONArray) jsonParser.parse(columnOptions);
-		CsvDataImportTask task = new CsvDataImportTask(filepath, tableName, array);
+		String schema 	= ( useExtSchema!=null && useExtSchema ) ? workspace.getExtendedSchemaName() : CalcSchema.CALC.getName() ;
+		CsvDataImportTask task = new CsvDataImportTask(filepath, tableName, schema, array );
 		job.addTask(task);
 
 		taskManager.startJob(job);

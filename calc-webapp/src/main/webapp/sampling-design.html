@@ -29,17 +29,6 @@
 							</div>
 						</div>
 					</div>
-					<!-- srs or systematic -->
-<!-- 					<div class="row option step step-1" > -->
-<!-- 						<div class="row"> -->
-<!-- 							<div class="col-md-6"> -->
-<!-- 								<button class="btn" name="srs">Simple random</button> -->
-<!-- 							</div> -->
-<!-- 							<div class="col-md-6"> -->
-<!-- 								<button class="btn" name="systematic">Systematic</button> -->
-<!-- 							</div> -->
-<!-- 						</div> -->
-<!-- 					</div> -->
 					<!-- 2 phases -->					
 					<div class="row option step step-1 height100">
 						<div class="row height25">
@@ -79,8 +68,65 @@
 							
 						</div>
 					</div>
+					<!-- 2 stages with SRS -->
+					<div class="row option step step-2 height100">
+						<div class="row height25">
+							<div class="col-md-6 col-md-offset-3">
+								<button class="btn" name="twoStages">2 stages w/ SRS</button>
+							</div>
+						</div>
+						
+						<div class="row no-margin twostages-section height75" style="padding: 0px;">
+							<div class="row psu-section height30">
+								<div class="row">
+									<div class="col-md-12">Primary sampling unit</div>
+								</div>
+								<div class="row upload-section">
+									<form  method="post" enctype="multipart/form-data" action="rest/csv-upload.json">
+									<div class="col-md-6 col-md-offset-3" style="padding-top: 10px;">
+										<button type="button" class="btn btn-default width100" name="upload-btn">Upload Csv</button>
+									    <input type="file" name="file" style="display:none" />  
+									</div>
+									</form>
+								</div>
+								
+								<div class="row area-column">
+									<div class="col-md-6">Area column:</div>
+									<div class="col-md-6"><select class="form-control" name="area-column"></select></div>
+								</div>
+							</div>
+							
+							<div class="row ssu-section height20">
+								<div class="row ssu">
+									<div class="col-md-6">Secondary sampling unit:</div>
+									<div class="col-md-6"><select class="form-control" name="ssu"></select></div>
+								</div>
+															
+							</div>
+							<div class="row table-join">
+								
+							</div>
+															
+							<div class="row import-section height100 no-padding no-margin">
+								<div class="col-md-12" style="overflow: auto;">
+									<table style="width:100%" class="import-csv-table">
+										<thead>
+										</thead>
+										<tbody>
+										</tbody>
+									</table>
+								</div>
+								<div class="row col-md-6 col-md-offset-3" style="padding-top: 0.5em;">
+									<button type="button" class="btn btn-default width100" name="import-btn">Import</button>
+								</div>
+							</div>
+							
+						</div>
+						
+					</div>
+					
 					<!-- strata -->
-					<div class="row option step step-2">
+					<div class="row option step step-3">
 						<div class="row height25">
 							<div class="col-md-6 col-md-offset-3">
 								<button class="btn" name="stratified">Stratified</button>
@@ -103,7 +149,7 @@
 						
 					</div>
 					<!-- cluster -->
-					<div class="row option step step-3 height100">
+					<div class="row option step step-4 height100">
 						<div class="row height25">
 							<div class="col-md-6 col-md-offset-3">
 								<button class="btn" name="cluster">Cluster</button>
@@ -117,7 +163,7 @@
 						
 					</div>
 					<!-- aoi -->
-					<div class="row option step step-4 height100">
+					<div class="row option step step-5 height100">
 						<div class="row height25">
 							<div class="col-md-6 col-md-offset-3">
 								Area of Interest column join
@@ -134,7 +180,7 @@
 <!-- 						</div> -->
 					</div>
 					<!-- plot weigth script -->
-					<div class="row option step step-5 height100">
+					<div class="row option step step-6 height100">
 						<div class="row height20">
 							<div class="col-md-6 col-md-offset-3">
 								Sampling unit weight script

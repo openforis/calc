@@ -969,8 +969,38 @@ ul.scroll-menu {
 /* 	padding: 2em 0px; */
 /* 	font-size: 1.3em; */
 }
+.table-join {
+	padding-top: 10px;
+}
 
-
+#sampling-design .psu-section,
+#sampling-design .ssu-section, 
+#sampling-design .twostages-section .table-join
+{
+  border-top: 1px solid rgba(255, 255, 255, 0.29);
+  border-left: 1px solid rgba(255, 255, 255, 0.29);
+  border-right: 1px solid rgba(255, 255, 255, 0.29);
+  font-size: 16px;
+  /* font-weight: 100; */
+  padding: 20px;
+}
+#sampling-design .ssu-section {
+	border-bottom: 1px solid rgba(255, 255, 255, 0.29);
+}
+/* #sampling-design .twostages-section .table-join { */
+/*   min-height: 30%; */
+/*   height: auto; */
+/* } */
+#sampling-design .twostages-section .table-join {
+  border-top: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.29);
+  min-height: 30%;
+  height: auto;
+}
+.psu-section > .row ,
+.ssu-section > .row {
+  padding: 10px 0px;
+}
 /**
 * =====================
 * Aggregation settings

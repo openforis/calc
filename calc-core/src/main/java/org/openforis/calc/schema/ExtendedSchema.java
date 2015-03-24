@@ -18,7 +18,7 @@ public class ExtendedSchema extends DataSchema {
 	}
 
 	public static String getName(Workspace workspace) {
-		return workspace.getInputSchema() + "_ext";
+		return workspace.getExtendedSchemaName();
 	}
 	
 	@Override

@@ -150,10 +150,12 @@ public class InventorySettingsController {
 				samplingDesign.setSrs(getBooleanValue(json, "srs"));
 				samplingDesign.setSystematic(getBooleanValue(json, "systematic"));
 				samplingDesign.setTwoPhases(getBooleanValue(json, "twoPhases"));
+				samplingDesign.setTwoStages(getBooleanValue(json, "twoStages"));
 				samplingDesign.setStratified(getBooleanValue(json, "stratified"));
 				samplingDesign.setCluster(getBooleanValue(json, "cluster"));
 					
 				samplingDesign.setPhase1JoinSettings( getParameterMapValue( json , "phase1JoinSettings" ) );
+				samplingDesign.setTwoStagesSettings( getParameterMapValue( json , "twoStagesSettings" ) );
 				samplingDesign.setStratumJoinSettings( getParameterMapValue( json , "stratumJoinSettings" ) );
 				samplingDesign.setClusterColumnSettings( getParameterMapValue( json , "clusterColumnSettings" ) );
 				samplingDesign.setAoiJoinSettings( getParameterMapValue( json , "aoiJoinSettings" ) );

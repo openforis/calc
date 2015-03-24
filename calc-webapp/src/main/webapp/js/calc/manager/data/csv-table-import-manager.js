@@ -19,6 +19,9 @@ CsvTableImport = function(container, filepath, columns, tableName) {
 		$this.columns[i] = new ImportColumnOption(col);
 	});
 	
+	// set to true if you want to upload the file to the extended schema
+	this.extSchema = false;
+	
 	this.init();
 };
 
@@ -59,7 +62,7 @@ CsvTableImport.prototype.init = function(){
 		UI.lock();
 		
 		var cols = JSON.stringify( $this.columns );
-		var params = { "filepath":$this.filepath, "table":$this.tableName, "columns":cols };
+		var params = { "filepath":$this.filepath, "table":$this.tableName, "columns":cols , "useExtSchema": $this.extSchema };
 		
 		$.ajax({
 			url : "rest/workspace/active/import-table.json",
@@ -67,8 +70,8 @@ CsvTableImport.prototype.init = function(){
 			method : "POST",
 			data : params 
 		}).done(function(response){
-			
-			JobManager.getInstance().checkJobStatus( function(job){
+
+			JobManager.getInstance().start(null, function(job){
 				var task = job.tasks[0];				
 				$this.importCallback(task.schema, task.table); 
 			}, true );

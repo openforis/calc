@@ -94,10 +94,13 @@
     	}
     }
   	,
-  	data: function(items, valueKey, labelKey) {
+  	data: function(items, valueKey, labelKey, defaultValue) {
     	var $this = this;
 		$this.reset();
 		UI.Form.populateSelect($this.$source, items, valueKey, labelKey);
+		if( defaultValue ){
+			this.val( defaultValue , true );
+		}
 		$this.refresh();
     }
   	,

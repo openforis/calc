@@ -6,6 +6,7 @@ import org.jooq.TableField;
 import org.jooq.UniqueKey;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.openforis.calc.persistence.jooq.CalcSchema;
 import org.openforis.calc.psql.Psql;
 import org.openforis.calc.schema.KeyFactory;
 
@@ -24,7 +25,7 @@ public class CsvFileTable extends DynamicTable<Record> {
 	private UniqueKey<Record> primaryKey;
 
 	public CsvFileTable(String name, JSONArray columnOptions) {
-		this(name, columnOptions, "calc");
+		this(name, columnOptions, CalcSchema.CALC.getName() );
 	}
 
 	@SuppressWarnings("unchecked")
