@@ -52,17 +52,21 @@ public class ImportOutputMetadataTask extends Task {
 	
 	@Override
 	protected long countTotalItems() {
-		return 12;
+		return 13;
 	}
 	
 	@Override
 	protected void execute() throws Throwable {
 		Workspace workspace = getWorkspace();
 		
-		workspaceSettingsManager.importBackup( workspace, workspaceBackup );
-		incrementItemsProcessed();
-		
+		//the order matter
 		samplingDesignManager.importBackupPhase1Data( workspace, workspaceBackup );
+		incrementItemsProcessed();
+
+		samplingDesignManager.importBackupPrimarySUData( workspace, workspaceBackup );
+		incrementItemsProcessed();
+
+		workspaceSettingsManager.importBackup( workspace, workspaceBackup );
 		incrementItemsProcessed();
 		 
 	 	samplingDesignManager.importBackupStrata( workspace , workspaceBackup );

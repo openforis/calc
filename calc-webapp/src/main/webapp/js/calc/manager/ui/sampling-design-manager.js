@@ -115,12 +115,14 @@ SamplingDesignManager.prototype.init = function(){
 		this.twoStagesManager.show();
 		
 		this.twoPhasesBtn.disable();
+		this.clusterBtn.disable();
 	}, this) );	
 	this.twoStagesBtn.deselect( $.proxy(function(){
 		this.samplingDesign.twoStages = false;
 		this.twoStagesManager.hide();
 		
 		this.twoPhasesBtn.enable();
+		this.clusterBtn.enable();
 	}, this) );
 	
 	//stratified
@@ -137,10 +139,14 @@ SamplingDesignManager.prototype.init = function(){
 	this.clusterBtn.select( $.proxy(function(){
 		this.samplingDesign.cluster = true;
 		this.clusterManager.show();
+		
+		this.twoStagesBtn.disable();
 	}, this) );	
 	this.clusterBtn.deselect( $.proxy(function(){
 		this.samplingDesign.cluster = false;
 		this.clusterManager.hide();
+
+		this.twoStagesBtn.enable();
 	}, this) );
 	
 	// populate sampling unit select with workspace entities and update view ui 
@@ -378,7 +384,7 @@ SamplingDesignManager.prototype.updateSamplingDesign = function() {
 		if(ws.samplingDesign) {
 			UI.lock();
 			
-			this.samplingDesign = $.extend( {}, ws.samplingDesign );
+			this.samplingDesign = $.extend(true, {}, ws.samplingDesign );
 			
 			if(this.samplingDesign.samplingUnitId) {
 				this.samplingUnit = ws.getEntityById(this.samplingDesign.samplingUnitId);

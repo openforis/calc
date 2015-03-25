@@ -84,13 +84,39 @@ public class SamplingDesign extends SamplingDesignBase {
 	public ParameterMap getTwoStagesSettings() {
 		return super.getTwoStagesSettings();
 	}
-	
-	
+	@JsonIgnore
+	public TwoStageSettings getTwoStageSettings(){
+		return new TwoStageSettings(getTwoStagesSettings() );
+	}
 	// hard coded for now
 	public String getWeightVariable() {
 		return "weight";
 	}
 
+	public class TwoStageSettings {
+		private String areaColumn;
+		private int ssuOriginalId;
+		private TableJoin joinSettings;
+		
+		TwoStageSettings( ParameterMap map ){
+			this.areaColumn = map.getString( "areaColumn" );
+			this.ssuOriginalId = map.getInteger( "ssuOriginalId" );
+			this.joinSettings = new TableJoin( map.getMap("joinSettings") );
+		}
+		
+		public String getAreaColumn() {
+			return areaColumn;
+		}
+		public int getSsuOriginalId() {
+			return ssuOriginalId;
+		}
+		public TableJoin getJoinSettings() {
+			return joinSettings;
+		}
+		
+		
+	}
+	
 	//		{"schema":"","column":"","table":""}
 	public class ColumnJoin {
 		private String schema;

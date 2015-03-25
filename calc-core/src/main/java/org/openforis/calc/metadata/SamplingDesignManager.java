@@ -15,7 +15,7 @@ import org.openforis.calc.engine.DataRecord;
 import org.openforis.calc.engine.ParameterMap;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceBackup;
-import org.openforis.calc.engine.WorkspaceBackup.Phase1Data;
+import org.openforis.calc.engine.WorkspaceBackup.ExternalData;
 import org.openforis.calc.persistence.jooq.CalcSchema;
 import org.openforis.calc.persistence.jooq.Sequences;
 import org.openforis.calc.persistence.jooq.Tables;
@@ -120,6 +120,23 @@ public class SamplingDesignManager {
 	}
 	
 	@Transactional
+	public void deletePrimarySUTable( Workspace workspace ) {
+		if( workspace.has2StagesSamplingDesign() ) {
+			
+			// remove primary su data if there is
+			DynamicTable<?> table = new DynamicTable<Record>( workspace.getPrimarySUTableName(), workspace.getExtendedSchemaName() );
+			if( tableDao.exists( table ) ){
+				psql
+					.dropTableIfExists(table)
+					.execute();
+			}
+			
+			workspaceDao.update( workspace );
+		}
+		
+	}
+	
+	@Transactional
 	public void deleteStrata( Workspace workspace ){
 		stratumDao.delete( workspace.getStrata() );
 		workspace.emptyStrata();
@@ -138,23 +155,52 @@ public class SamplingDesignManager {
 			
 			samplingDesign.setSamplingUnit(samplingUnit);
 			
+			String origInputSchema 	= workspaceToImport.getInputSchema();
+			String inputSchema		= workspace.getInputSchema();
+			String origExtSchema	= workspaceToImport.getExtendedSchemaName();
+			String extSchema 		= workspace.getExtendedSchemaName();
+			
+			// replace schema
+			ParameterMap aoiJoinSettings = samplingDesign.getAoiJoinSettings();
+			if( aoiJoinSettings.getString( "schema" ).equals( origExtSchema ) ){
+				aoiJoinSettings.setString( "schema" , extSchema );
+			}
+			
+			ParameterMap stratumJoinSettings = samplingDesign.getStratumJoinSettings();
+			if( stratumJoinSettings.getString( "schema" ).equals( origExtSchema ) ){
+				stratumJoinSettings.setString( "schema" , extSchema );
+			}
+			
 			if( samplingDesign.getTwoPhases() ){
 				// replace phase 1 table name
 				String originalPhase1PlotTableName = workspaceToImport.getPhase1PlotTableName();
 				String phase1PlotTableName = workspace.getPhase1PlotTableName();
 				
-				if( samplingDesign.getAoiJoinSettings().getString("table").equals(originalPhase1PlotTableName)){
-					samplingDesign.getAoiJoinSettings().setString( "table" , phase1PlotTableName );
+				if( aoiJoinSettings.getString("table").equals(originalPhase1PlotTableName)){
+					aoiJoinSettings.setString( "table" , phase1PlotTableName );
 				}
-				if( samplingDesign.getClusterColumnSettings().getString( "table" ).equals(originalPhase1PlotTableName)){
+				if( samplingDesign.getCluster() && samplingDesign.getClusterColumnSettings().getString( "table" ).equals(originalPhase1PlotTableName)){
 					samplingDesign.getClusterColumnSettings().setString( "table" , phase1PlotTableName );
 				}
-				if( samplingDesign.getStratumJoinSettings().getString( "table" ).equals(originalPhase1PlotTableName)){
-					samplingDesign.getStratumJoinSettings().setString( "table" , phase1PlotTableName );
+				if( samplingDesign.getStratified() && stratumJoinSettings.getString( "table" ).equals(originalPhase1PlotTableName)){
+					stratumJoinSettings.setString( "table" , phase1PlotTableName );
 				}
 				ParameterMap map = samplingDesign.getPhase1JoinSettings().getMap( "leftTable" );
 				if( map.getString( "table" ).equals(originalPhase1PlotTableName)){
 					map.setString( "table" , phase1PlotTableName );
+				}
+			}
+			
+			if( samplingDesign.getTwoStages() ){
+				ParameterMap twoStagesSettings = samplingDesign.getTwoStagesSettings();
+				ParameterMap left = twoStagesSettings.getMap("joinSettings").getMap( "leftTable" );
+				if( left.getString( "schema" ).equals( origExtSchema) ){
+					left.setString( "schema" , extSchema );
+				}
+				
+				ParameterMap right = twoStagesSettings.getMap("joinSettings").getMap( "rightTable" );
+				if( right.getString( "schema" ).equals( origInputSchema) ){
+					right.setString( "schema" , inputSchema );
 				}
 			}
 			
@@ -172,12 +218,27 @@ public class SamplingDesignManager {
 	
 	@Transactional
 	public <T extends Object> void importBackupPhase1Data(Workspace workspace, WorkspaceBackup workspaceBackup ) {
-		Phase1Data phase1Data = workspaceBackup.getPhase1Data();
-//		Workspace workspaceToImport = workspaceBackup.getWorkspace();
+		ExternalData externalData = workspaceBackup.getPhase1Data();
 		
-		if( phase1Data != null ){
-			DynamicTable<?> table = new DynamicTable<Record>( workspace.getPhase1PlotTableName(), CalcSchema.CALC.getName() );
-			table.initFields( phase1Data.getTableInfo() );
+		String tableName = workspace.getPhase1PlotTableName();
+		String schema = CalcSchema.CALC.getName();
+		importExternalData( workspace, externalData, tableName, schema );
+	}
+
+	@Transactional
+	public <T extends Object> void importBackupPrimarySUData(Workspace workspace, WorkspaceBackup workspaceBackup ) {
+		ExternalData externalData = workspaceBackup.getPrimarySuData();
+		
+		String tableName = workspace.getPrimarySUTableName();
+		String schema = workspace.getExtendedSchemaName();
+		importExternalData( workspace, externalData, tableName, schema );
+	}
+
+	private <T> void importExternalData( Workspace workspace, ExternalData externalData, String tableName, String schema ) {
+		if( externalData != null ){
+			
+			DynamicTable<?> table = new DynamicTable<Record>( tableName, schema );
+			table.initFields( externalData.getTableInfo() );
 			@SuppressWarnings( "unchecked" )
 			Field<T>[] tableFields = (Field<T>[]) table.fields();
 			
@@ -196,7 +257,7 @@ public class SamplingDesignManager {
 				.execute();
 			// populate table
 			List<Query> queries = new ArrayList<Query>();
-			for ( DataRecord dataRecord : phase1Data.getRecords() ) {
+			for ( DataRecord dataRecord : externalData.getRecords() ) {
 				InsertQuery<?> insert = psql.insertQuery( table );
 				for ( Field<T> field : tableFields ) {
 					@SuppressWarnings( "unchecked" )
@@ -219,7 +280,6 @@ public class SamplingDesignManager {
 			workspace.setPhase1PlotTable( table.getName() );
 			workspaceDao.update( workspace );
 		}
-		
 	}
 
 	@Transactional

@@ -23,7 +23,7 @@ import org.jooq.Record;
 import org.jooq.impl.DynamicTable;
 import org.json.simple.JSONArray;
 import org.openforis.calc.Calc;
-import org.openforis.calc.engine.WorkspaceBackup.Phase1Data;
+import org.openforis.calc.engine.WorkspaceBackup.ExternalData;
 import org.openforis.calc.metadata.Category;
 import org.openforis.calc.metadata.CategoryHierarchy;
 import org.openforis.calc.metadata.CategoryLevel;
@@ -90,8 +90,9 @@ public class WorkspaceBackupService {
 		metadataManager.deleteInputVariables( ws );
 		ws.removeInputCategories();
 		
-		// export phase1 data and user defined category values
+		// export phase1 data, primary sampling unit and user defined category values
 		loadPhase1Data( backup );
+		loadPrimarySUData( backup );
 		loadOutputCategoryLevelValues( backup );
 		
 		backup.setVersion( calc.getVersion() );
@@ -134,7 +135,25 @@ public class WorkspaceBackupService {
 			phase1Table.initFields(tableInfo);
 			List<DataRecord> records = tableDao.selectAll(phase1Table);
 			
-			backup.setPhase1Data( new Phase1Data( tableInfo , records ) );
+			backup.setPhase1Data( new ExternalData( tableInfo , records ) );
+		}
+	}
+	/**
+	 * Load the primary sampling unit data for export
+	 * @param ws
+	 */
+	private void loadPrimarySUData( WorkspaceBackup backup ) {
+		Workspace ws = backup.getWorkspace();
+		
+		if( ws.getSamplingDesign().getTwoStages() ) {
+			// read table information 
+			DynamicTable<?> table = new DynamicTable<Record>( ws.getPrimarySUTableName(), ws.getExtendedSchemaName() );
+			JSONArray tableInfo = tableDao.info( table );
+			
+			table.initFields(tableInfo);
+			List<DataRecord> records = tableDao.selectAll(table);
+			
+			backup.setPrimarySUData( new ExternalData( tableInfo , records ) );
 		}
 	}
 

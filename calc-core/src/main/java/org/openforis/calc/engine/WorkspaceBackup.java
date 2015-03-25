@@ -31,7 +31,9 @@ public class WorkspaceBackup {
 	 */
 	private Map<Integer, List<CategoryLevelValue>> categoryLevelValues;
 	
-	private Phase1Data phase1Data;
+	private ExternalData phase1Data;
+
+	private ExternalData primarySuData;
 	
 	public WorkspaceBackup(){
 		super();
@@ -53,8 +55,12 @@ public class WorkspaceBackup {
 		return version;
 	}
 
-	public Phase1Data getPhase1Data() {
+	public ExternalData getPhase1Data() {
 		return phase1Data;
+	}
+	
+	public ExternalData getPrimarySuData() {
+		return primarySuData;
 	}
 	
 	public Map<Integer, Integer> getVariableOriginalIds() {
@@ -77,16 +83,21 @@ public class WorkspaceBackup {
 		this.categoryLevelValues = categoryLevelValues;
 	}
 	
-	void setPhase1Data( Phase1Data phase1Data ) {
+	void setPhase1Data( ExternalData phase1Data ) {
 		this.phase1Data = phase1Data;
 	}
-
-	public static class Phase1Data {
+	
+	void setPrimarySUData(ExternalData externalData) {
+		this.primarySuData = externalData;
 		
-		public Phase1Data(){
+	}
+
+	public static class ExternalData {
+		
+		public ExternalData(){
 		}
 		
-		public Phase1Data( JSONArray tableInfo , List<DataRecord> records ){
+		public ExternalData( JSONArray tableInfo , List<DataRecord> records ){
 			this.tableInfo = tableInfo;
 			this.records = records;
 		}
@@ -102,4 +113,5 @@ public class WorkspaceBackup {
 		}
 		
 	}
+
 }

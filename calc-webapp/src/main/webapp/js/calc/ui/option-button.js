@@ -87,13 +87,15 @@ OptionButton.prototype.displayAsUnelected = function(){
  */
 OptionButton.prototype.updateUI = function( selected ){
 	this.button.removeClass( OptionButton.cssClassSelected ).removeClass( OptionButton.cssClassUnselected );
-	this.enable();
 	var $this = this;
 	if( selected ){
 		this.button.addClass( OptionButton.cssClassSelected );
 		if( this.disableUnselect ){
 			this.disable();
+		} else {
+			this.enable();
 		}
+		
 		if( this.disableOpacity != 1 ){
 			setTimeout( function(){
 				$this.button.animate( {opacity:1} , 400 );
