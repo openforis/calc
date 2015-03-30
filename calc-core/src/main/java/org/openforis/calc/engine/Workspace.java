@@ -304,7 +304,8 @@ public class Workspace extends WorkspaceBase {
 	
 	@JsonInclude
 	public String getPrimarySUTableName() {
-		return String.format( "_primary_sampling_unit_%s" , this.getName() );
+//		return String.format( "_primary_sampling_unit_%s" , this.getName() );
+		return "_primary_sampling_unit";
 	}
 	
 	public void addProcessingChain(ProcessingChain chain) {

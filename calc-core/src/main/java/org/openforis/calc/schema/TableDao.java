@@ -30,6 +30,15 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class TableDao extends AbstractJooqDao {
 	
+	public DynamicTable<Record> createJooqTable( String schema , String table ){
+		DynamicTable<Record> jooqTable = new DynamicTable<Record>( table , schema );
+		JSONArray tableInfo = this.info( jooqTable );
+		
+		jooqTable.initFields(tableInfo);
+		
+		return jooqTable;
+	}
+	
 	/**
 	 * Check if the given table exists in the database
 	 * @param schema

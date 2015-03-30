@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import org.jooq.Record;
 import org.jooq.Schema;
 import org.jooq.TableField;
+import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.AoiLevel;
 import org.openforis.calc.psql.Psql;
 
@@ -28,6 +29,16 @@ public class ExpansionFactorTable extends AbstractTable {
 	public final TableField<Record,BigDecimal> AREA = createField( "area", Psql.DOUBLE_PRECISION, this );
 	public final TableField<Record,BigDecimal> EXPF = createField( "expf", Psql.DOUBLE_PRECISION, this );
 	
+	// for two stages sampling
+	public TableField<Record,Integer> PSU_ID 						= null;
+	public final TableField<Record,BigDecimal> PSU_TOTAL 			= createField( "psu_total", Psql.DOUBLE_PRECISION, this );
+	public final TableField<Record,BigDecimal> PSU_SAMPLED_TOTAL 	= createField( "psu_sampled_total", Psql.DOUBLE_PRECISION, this );
+	public final TableField<Record,BigDecimal> PSU_AREA 			= createField( "psu_area", Psql.DOUBLE_PRECISION, this );
+	public final TableField<Record,BigDecimal> SSU_COUNT			= createField( "ssu_count", Psql.DOUBLE_PRECISION, this );
+
+	public final TableField<Record,BigDecimal> SSU_TOTAL			= createField( "ssu_total", Psql.DOUBLE_PRECISION, this );
+	public final TableField<Record,BigDecimal> BU_TOTAL				= createField( "bu_total", Psql.DOUBLE_PRECISION, this );
+	
 	private AoiLevel aoiLevel;
 	
 //	@SuppressWarnings("unchecked")
@@ -41,6 +52,12 @@ public class ExpansionFactorTable extends AbstractTable {
 		super( String.format(TABLE_NAME, level.getNormalizedName()), schema);
 		this.aoiLevel = level;
 		AOI_ID = createField( level.getFkColumn(), INTEGER, this );
+		
+		Workspace workspace = aoiLevel.getHierarchy().getWorkspace();
+		if( workspace.has2StagesSamplingDesign() ){
+			String psuIdColumn = workspace.getSamplingDesign().getTwoStagesSettingsObject().getPsuIdColumn();
+			PSU_ID = createField( psuIdColumn , INTEGER, this );
+		}
 	}
 	
 	@Deprecated

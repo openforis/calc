@@ -204,7 +204,8 @@ public class WorkspaceBackupService {
 	private void addZipEntry( String value , String name , ZipOutputStream stream ) throws IOException {
 		ZipEntry info = new ZipEntry( name );
 		stream.putNextEntry(info);
-		stream.write(  encodeBase64(value.getBytes()) );
+//		stream.write(  encodeBase64(value.getBytes()) );
+		stream.write(  value.getBytes() );
 		stream.closeEntry();
 	}
 	

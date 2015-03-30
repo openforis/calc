@@ -18,7 +18,7 @@ import org.openforis.calc.schema.AoiHierarchyFlatTable;
 import org.openforis.calc.schema.DataAoiTable;
 import org.openforis.calc.schema.DataSchema;
 import org.openforis.calc.schema.EntityDataView;
-import org.openforis.calc.schema.Phase1AoiTable;
+import org.openforis.calc.schema.ExtDataAoiTable;
 
 /**
  * Task responsible for assigning AOI codes and/or ids to an output table based on a Point column. <br/>
@@ -46,7 +46,8 @@ public final class AssignAoiColumnsTask extends Task {
 //			dataAoiTable = schema.getPhase1AoiTable();			
 			createAoiJoinTable2Phases( schema.getPhase1AoiTable() , hierarchyTable , samplingDesign.getAoiJoin() );
 			createSamplingUnitAoi();
-			
+		} else if ( samplingDesign.getTwoStages() ){
+			createAoiJoinTable2Phases( schema.getPrimarySUAoiTable() , hierarchyTable , samplingDesign.getAoiJoin() );
 		} else {
 			Entity samplingUnit = samplingDesign.getSamplingUnit();
 			EntityDataView suView = schema.getDataView( samplingUnit );
@@ -58,8 +59,9 @@ public final class AssignAoiColumnsTask extends Task {
 
 //	@SuppressWarnings("unchecked")
 	private void createSamplingUnitAoi() {
-		DynamicTable<Record> phase1Table = getInputSchema().getPhase1Table();// new DynamicTable<Record>( getWorkspace().getPhase1PlotTable(), "calc" );
-		Phase1AoiTable phase1AoiTable = getInputSchema().getPhase1AoiTable();
+		DynamicTable<Record> phase1Table = getInputSchema().getPhase1Table();
+		ExtDataAoiTable phase1AoiTable = getInputSchema().getPhase1AoiTable();
+		
 		EntityDataView suDataView = getInputSchema().getDataView( getWorkspace().getSamplingUnit() );
 		
 		DataAoiTable suAoiTable = getInputSchema().getSamplingUnitAoiTable();
@@ -106,7 +108,7 @@ public final class AssignAoiColumnsTask extends Task {
 			.execute();
 	}
 
-	private void createAoiJoinTable2Phases(DataAoiTable dataAoiTable, AoiHierarchyFlatTable hierarchyTable, ColumnJoin columnJoin) {
+	private void createAoiJoinTable2Phases(DataAoiTable dataAoiTable, AoiHierarchyFlatTable hierarchyTable, ColumnJoin columnJoin ) {
 		
 		// drop table first
 		psql()
@@ -122,7 +124,7 @@ public final class AssignAoiColumnsTask extends Task {
 		String aliasJoin = hierarchyTable.getAoiHierarchy().getLeafLevel().getNormalizedName();
 		select.addJoin( dataTable ,	Tables.AOI.as( aliasJoin ).CODE.eq(joinField) );
 		select.addSelect( dataTable.getIntegerField("id") );
-			
+
 		psql()
 			.createTable( dataAoiTable )
 			.as( select )

@@ -39,7 +39,8 @@ public class DataSchema extends RelationalSchema {
 	
 	private Map<Integer, EntityDataView> dataViews;
 	
-	private Phase1AoiTable phase1AoiTable;
+	private ExtDataAoiTable phase1AoiTable;
+	private ExtDataAoiTable primarySUAoiTable;
 	
 	// output tables
 	private List<AoiHierarchyFlatTable> aoiHierchyTables;
@@ -64,7 +65,8 @@ public class DataSchema extends RelationalSchema {
 		
 		initDataViews();
 		
-		this.phase1AoiTable = new Phase1AoiTable(this);
+		this.phase1AoiTable = new ExtDataAoiTable( "_phase1_aoi" , this);
+		this.primarySUAoiTable = new ExtDataAoiTable( "_primary_sampling_unit_aoi" , this);
 		
 		// output tables
 		initAoiHirerchyTables();		
@@ -153,8 +155,12 @@ public class DataSchema extends RelationalSchema {
 		return null;
 	}
 	
-	public Phase1AoiTable getPhase1AoiTable() {
+	public ExtDataAoiTable getPhase1AoiTable() {
 		return phase1AoiTable;
+	}
+	
+	public ExtDataAoiTable getPrimarySUAoiTable() {
+		return primarySUAoiTable;
 	}
 	
 	public DataAoiTable getSamplingUnitAoiTable() {

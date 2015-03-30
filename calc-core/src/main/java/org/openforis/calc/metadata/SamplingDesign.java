@@ -85,20 +85,20 @@ public class SamplingDesign extends SamplingDesignBase {
 		return super.getTwoStagesSettings();
 	}
 	@JsonIgnore
-	public TwoStageSettings getTwoStageSettings(){
-		return new TwoStageSettings(getTwoStagesSettings() );
+	public TwoStagesSettings getTwoStagesSettingsObject(){
+		return new TwoStagesSettings(getTwoStagesSettings() );
 	}
 	// hard coded for now
 	public String getWeightVariable() {
 		return "weight";
 	}
 
-	public class TwoStageSettings {
+	public class TwoStagesSettings {
 		private String areaColumn;
 		private int ssuOriginalId;
 		private TableJoin joinSettings;
 		
-		TwoStageSettings( ParameterMap map ){
+		TwoStagesSettings( ParameterMap map ){
 			this.areaColumn = map.getString( "areaColumn" );
 			this.ssuOriginalId = map.getInteger( "ssuOriginalId" );
 			this.joinSettings = new TableJoin( map.getMap("joinSettings") );
@@ -112,6 +112,10 @@ public class SamplingDesign extends SamplingDesignBase {
 		}
 		public TableJoin getJoinSettings() {
 			return joinSettings;
+		}
+
+		public String getPsuIdColumn() {
+			return getJoinSettings().getLeft().getColumnJoins().get( 0 ).getColumn();
 		}
 		
 		

@@ -21,6 +21,7 @@ import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.SamplingDesign;
 import org.openforis.calc.metadata.SamplingDesign.ColumnJoin;
 import org.openforis.calc.metadata.SamplingDesign.TableJoin;
+import org.openforis.calc.metadata.SamplingDesign.TwoStagesSettings;
 import org.openforis.calc.persistence.jooq.Tables;
 import org.openforis.calc.persistence.jooq.tables.AoiLevelTable;
 import org.openforis.calc.persistence.jooq.tables.AoiTable;
@@ -30,7 +31,7 @@ import org.openforis.calc.schema.DataAoiTable;
 import org.openforis.calc.schema.DataSchema;
 import org.openforis.calc.schema.EntityDataView;
 import org.openforis.calc.schema.ExpansionFactorTable;
-import org.openforis.calc.schema.Phase1AoiTable;
+import org.openforis.calc.schema.ExtDataAoiTable;
 
 /**
  * Task responsible for calculating the expansion factor for each stratum in all AOI levels. Results will be stored in a table called _expf in the output schema
@@ -38,8 +39,6 @@ import org.openforis.calc.schema.Phase1AoiTable;
  * @author M. Togna
  */
 public final class CalculateExpansionFactorsTask extends Task {
-
-	// public static final String EXPF_TABLE = "_expf";
 
 	@Override
 	protected long countTotalItems() {
@@ -58,10 +57,13 @@ public final class CalculateExpansionFactorsTask extends Task {
 		AoiHierarchy hierarchy = workspace.getAoiHierarchies().get(0);
 		for ( AoiLevel aoiLevel : hierarchy.getLevels() ) {
 			ExpansionFactorTable expf = schema.getExpansionFactorTable( aoiLevel );
-
+			
+			
 			// create expf table
-			if (samplingDesign.getTwoPhases()) {
+			if ( samplingDesign.getTwoPhases() ) {
 				createExpfTable2phases( expf );
+			} else if( samplingDesign.getTwoStages() ){
+				createExpfTable2stages( expf );
 			} else {
 				createExpfTable1phase( expf);
 			}
@@ -69,9 +71,9 @@ public final class CalculateExpansionFactorsTask extends Task {
 			addWeightField( expf );
 			addExpfField( expf );
 			
+			
 			incrementItemsProcessed();
 		}
-
 	}
 
 
@@ -80,87 +82,116 @@ public final class CalculateExpansionFactorsTask extends Task {
 			.alterTable( expf )
 			.addColumn( expf.EXPF )
 			.execute();
+		Field<BigDecimal> expfFormula = null;
+		
+		if( getWorkspace().has2StagesSamplingDesign() ){
+
+			expfFormula = expf.PSU_TOTAL.div( expf.PSU_SAMPLED_TOTAL ).mul( 
+					expf.SSU_TOTAL.div( expf.BU_TOTAL )
+					)
+					.mul( expf.PSU_AREA.div(expf.SSU_COUNT));
+		
+		} else {
+			
+			expfFormula = DSL.decode()
+					.when( expf.WEIGHT.gt( BigDecimal.ZERO ), expf.AREA.div(expf.WEIGHT) )
+					.otherwise(  BigDecimal.ZERO );
+
+		}
 		
 		psql()
 			.update( expf )
 			.set( expf.EXPF, 
-					DSL.decode()
-						.when( expf.WEIGHT.gt( BigDecimal.ZERO ), expf.AREA.div(expf.WEIGHT) )
-						.otherwise(  BigDecimal.ZERO )
+					expfFormula
 						
 					 )
 			.execute();
 	}
 
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void addWeightField( ExpansionFactorTable expf ) {
-		Entity samplingUnit = getWorkspace().getSamplingUnit();
+		Workspace workspace 			= getWorkspace();
+		SamplingDesign samplingDesign 	= workspace.getSamplingDesign();
+
+		Entity samplingUnit 			= workspace.getSamplingUnit();
 		EntityDataView samplingUnitView = getInputSchema().getDataView(samplingUnit);
 		
+		AoiLevel aoiLevel 				= expf.getAoiLevel();
 		
-		AoiLevel aoiLevel = expf.getAoiLevel();
-		
+
 		SelectQuery<?> selectWeight = psql().selectQuery();
-				
+		
 		selectWeight.addFrom( samplingUnitView );
 		Field<BigDecimal> cntField = samplingUnitView.getWeightField().sum().as( "cnt" );
 		selectWeight.addSelect( cntField );
-		
-		DataAoiTable dataAoiTable = null;
-		Field<Long> dataIdField;
+
 		Field<Integer> stratumField = null;
-		
-		if( getSamplingDesign().getTwoPhases() ) {
-			DynamicTable<Record> phase1Table = new DynamicTable<Record>( getWorkspace().getPhase1PlotTable(), "calc" );
+		if( samplingDesign.getTwoStages() ){
 			
-			dataAoiTable = getInputSchema().getPhase1AoiTable();
-			dataIdField = phase1Table.getIdField();
+			TwoStagesSettings sdSettings 	= samplingDesign.getTwoStagesSettingsObject();
+			String psuIdColumn 				= sdSettings.getPsuIdColumn();
 			
-			// join with phase 1 table
-			TableJoin phase1Join = getSamplingDesign().getPhase1Join();
-			Condition conditions = null;
-			for ( int i =0; i < phase1Join.getColumnJoinSize(); i++ ) {
-				ColumnJoin leftColumn = phase1Join.getLeft().getColumnJoins().get(i);
-				ColumnJoin rightJoin = phase1Join.getRight().getColumnJoins().get(i);
-				Field<String> leftField = phase1Table.getVarcharField(leftColumn.getColumn());				
-				Field<String> rightField = (Field<String>)samplingUnitView.field(rightJoin.getColumn());
+			Field<?> psuIdField 			= samplingUnitView.field( psuIdColumn );
+			selectWeight.addSelect( psuIdField );
+			selectWeight.addGroupBy( psuIdField );
+			
+		} else {	
+			DataAoiTable dataAoiTable = null;
+			Field<Long> dataIdField;
+			
+			if( samplingDesign.getTwoPhases() ) {
+				DynamicTable<Record> phase1Table = new DynamicTable<Record>( workspace.getPhase1PlotTable(), "calc" );
 				
-				Condition joinCondition = leftField.eq( rightField );
-				if( conditions == null ) {
-					conditions = joinCondition;
-				} else {
-					conditions = conditions.and( joinCondition );
+				dataAoiTable = getInputSchema().getPhase1AoiTable();
+				dataIdField = phase1Table.getIdField();
+				
+				// join with phase 1 table
+				TableJoin phase1Join = samplingDesign.getPhase1Join();
+				Condition conditions = null;
+				for ( int i =0; i < phase1Join.getColumnJoinSize(); i++ ) {
+					ColumnJoin leftColumn = phase1Join.getLeft().getColumnJoins().get(i);
+					ColumnJoin rightJoin = phase1Join.getRight().getColumnJoins().get(i);
+					Field<String> leftField = phase1Table.getVarcharField(leftColumn.getColumn());				
+					Field<String> rightField = (Field<String>)samplingUnitView.field(rightJoin.getColumn());
+					
+					Condition joinCondition = leftField.eq( rightField );
+					if( conditions == null ) {
+						conditions = joinCondition;
+					} else {
+						conditions = conditions.and( joinCondition );
+					}
+				}
+				selectWeight.addJoin(phase1Table, JoinType.RIGHT_OUTER_JOIN, conditions);
+				selectWeight.setDistinct(true);
+				
+				if( samplingDesign.getStratified() ){
+					stratumField = phase1Table.getIntegerField( samplingDesign.getStratumJoin().getColumn() );
+				}
+				
+			} else {
+				dataAoiTable = getInputSchema().getSamplingUnitAoiTable();
+				dataIdField = samplingUnitView.getIdField();
+				
+				if( samplingDesign.getStratified() ){
+					stratumField = (Field<Integer>) samplingUnitView.field( samplingDesign.getStratumJoin().getColumn() );
 				}
 			}
-			selectWeight.addJoin(phase1Table, JoinType.RIGHT_OUTER_JOIN, conditions);
-			selectWeight.setDistinct(true);
 			
-			if( getSamplingDesign().getStratified() ){
-				stratumField = phase1Table.getIntegerField( getSamplingDesign().getStratumJoin().getColumn() );
-			}
+			// join with aoi 
+			Field<Long> aoiIdField = dataAoiTable.getAoiIdField(aoiLevel);
+			selectWeight.addSelect( aoiIdField );
+			selectWeight.addJoin(dataAoiTable, dataAoiTable.getIdField().eq(dataIdField) );
+			selectWeight.addGroupBy( aoiIdField );
 			
-		} else {
-			dataAoiTable = getInputSchema().getSamplingUnitAoiTable();
-			dataIdField = samplingUnitView.getIdField();
 			
-			if( getSamplingDesign().getStratified() ){
-				stratumField = (Field<Integer>) samplingUnitView.field( getSamplingDesign().getStratumJoin().getColumn() );
-			}
+			if( stratumField != null ){
+				selectWeight.addSelect( stratumField.cast(SQLDataType.INTEGER).as(stratumField.getName()) );
+				selectWeight.addGroupBy( stratumField );
+			} 
+			
 		}
-		
-		// join with aoi 
-		Field<Long> aoiIdField = dataAoiTable.getAoiIdField(aoiLevel);
-		selectWeight.addSelect( aoiIdField );
-		selectWeight.addJoin(dataAoiTable, dataAoiTable.getIdField().eq(dataIdField) );
-		selectWeight.addGroupBy( aoiIdField );
-		
-		
-		if( stratumField != null ){
-			selectWeight.addSelect( stratumField.cast(SQLDataType.INTEGER).as(stratumField.getName()) );
-			selectWeight.addGroupBy( stratumField );
-		} 
-		
+
 		// add weight column
 		psql()
 			.alterTable( expf )
@@ -174,14 +205,54 @@ public final class CalculateExpansionFactorsTask extends Task {
 			.update( expf )
 			.set( expf.WEIGHT, (Field<BigDecimal>)cursor.field( cntField.getName() ) );
 		
-		Condition joinCondition = expf.AOI_ID.eq( (Field<Integer>)cursor.field(expf.AOI_ID.getName()) );
-		if( getSamplingDesign().getStratified() ){
+		Condition joinCondition = null;
+		if( samplingDesign.getTwoStages() ){
+			String psuIdColumn = samplingDesign.getTwoStagesSettingsObject().getPsuIdColumn();
+			joinCondition 		= expf.PSU_ID.eq( (Field) cursor.field(psuIdColumn) );
+		} else {
+			joinCondition = expf.AOI_ID.eq( (Field<Integer>)cursor.field(expf.AOI_ID.getName()) );
+		}
+		if( samplingDesign.getStratified() ){
 			joinCondition = joinCondition.and( expf.STRATUM.eq( (Field<Integer>)cursor.field(stratumField.getName())) );
 		}
 		
 		// execute update
 		UpdateWithStep updateWith = psql().updateWith( cursor, update, joinCondition );
 		updateWith.execute();
+	
+		
+		// if ws two stages, add bu_total as well
+		if( samplingDesign.getTwoStages() ){
+			psql().alterTable( expf ).addColumn( expf.BU_TOTAL ).execute();
+
+			SelectQuery<Record> selectBUTotals = psql().selectQuery();
+			String weight = expf.WEIGHT.getName();
+			selectBUTotals.addSelect( expf.WEIGHT.sum().as(weight) );
+			selectBUTotals.addSelect( expf.AOI_ID );
+			selectBUTotals.addFrom( expf );
+			selectBUTotals.addGroupBy( expf.AOI_ID );
+			if( getWorkspace().hasStratifiedSamplingDesign() ){
+				selectBUTotals.addSelect( expf.STRATUM );
+				selectBUTotals.addGroupBy( expf.STRATUM );
+			}
+			
+			Table<Record> buTotals = selectBUTotals.asTable( "totals" );
+			
+			
+			Update<?> updateBUTotal = psql()
+					.update( expf )
+					.set( expf.BU_TOTAL , (Field<BigDecimal>) buTotals.field(weight) );
+			
+			
+			Condition join = expf.AOI_ID.eq( (Field<Integer>)buTotals.field(expf.AOI_ID.getName()) );
+			if( samplingDesign.getStratified() ){
+				join = join.and( expf.STRATUM.eq( (Field<Integer>)buTotals.field(expf.STRATUM.getName()) ) );
+			}
+			
+			psql()
+				.updateWith( buTotals, updateBUTotal , join  )
+				.execute();
+		}
 			
 	}
 
@@ -292,7 +363,7 @@ public final class CalculateExpansionFactorsTask extends Task {
 	@SuppressWarnings("unchecked")
 	private void createExpfTable2phases( ExpansionFactorTable expf ){
 		DynamicTable<Record> phase1Table = new DynamicTable<Record>( getWorkspace().getPhase1PlotTable(), "calc" );
-		Phase1AoiTable phase1AoiTable = getInputSchema().getPhase1AoiTable();
+		ExtDataAoiTable phase1AoiTable = getInputSchema().getPhase1AoiTable();
 		AoiLevel aoiLevel = expf.getAoiLevel();
 		boolean stratified = getWorkspace().hasStratifiedSamplingDesign();
 		
@@ -349,6 +420,165 @@ public final class CalculateExpansionFactorsTask extends Task {
 			.execute();
 			
 		
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void createExpfTable2stages( ExpansionFactorTable expf ){
+		DataSchema dataSchema 			= getInputSchema();
+		
+		Workspace workspace 			= getWorkspace();
+		TwoStagesSettings sdSettings 	= workspace.getSamplingDesign().getTwoStagesSettingsObject();
+		
+		DynamicTable<Record> psuTable 	= new DynamicTable<Record>( workspace.getPrimarySUTableName() , workspace.getExtendedSchemaName() );
+		ExtDataAoiTable psuAoiTable 	= dataSchema.getPrimarySUAoiTable();
+		
+		AoiLevel aoiLevel 				= expf.getAoiLevel();
+		boolean stratified 				= workspace.hasStratifiedSamplingDesign();
+		
+		Field<Long> aoiIdField 			= psuAoiTable.getAoiIdField(aoiLevel);
+
+		Field<BigDecimal> aoiPsuTotal 	= psuAoiTable.getAoiAreaField(aoiLevel);
+		
+		// select totals for aoi
+		Select<?> selectTotals = psql()
+			.select( 
+					psuTable.getIdField().count().as( expf.PSU_SAMPLED_TOTAL.getName() ) , 
+					aoiIdField , 
+					aoiPsuTotal.as(expf.PSU_TOTAL.getName())
+					)
+			.from( psuTable )
+			.join( psuAoiTable )
+			.on( psuTable.getIdField().eq( psuAoiTable.getIdField() ) )
+			.groupBy( aoiIdField , aoiPsuTotal );
+		Table<?> totals 		= selectTotals.asTable( "totals" );
+		
+		// main select
+		SelectQuery<?> select 	= psql().selectQuery();
+		// psu id field
+		select.addSelect( psuTable.getIdField() );
+		select.addSelect( psuTable.getVarcharField(sdSettings.getPsuIdColumn()) );
+		select.addFrom( psuTable );
+		
+		// join with aoi psu table
+		select.addSelect( aoiIdField );
+		select.addJoin( psuAoiTable, psuTable.getIdField().eq(psuAoiTable.getIdField()) );
+
+		// TODO test with stratification
+		if( stratified ){
+			ColumnJoin stratumJoin = getSamplingDesign().getStratumJoin();
+			
+			Field<Integer> stratumField = psuTable.getIntegerField(stratumJoin.getColumn());
+			select.addSelect( stratumField.cast(SQLDataType.INTEGER).as(expf.STRATUM.getName()) );
+			select.addGroupBy( stratumField );
+		}
+		
+		// add join with totals inner query
+		select.addJoin(totals, aoiIdField.eq( (Field<Long>)totals.field(aoiIdField.getName())) );
+		
+		// select totals
+		select.addSelect( totals.field(expf.PSU_TOTAL.getName()) , totals.field(expf.PSU_SAMPLED_TOTAL.getName()) );
+		
+		// add bu_total
+		// select psu area
+		select.addSelect( psuTable.getBigDecimalField(sdSettings.getAreaColumn()).as(expf.PSU_AREA.getName()) );
+		
+		
+		// Secondary sampling unit counts
+		Entity ssuEntity 				= workspace.getEntityByOriginalId( sdSettings.getSsuOriginalId() );
+		EntityDataView ssuTable 		= dataSchema.getDataView( ssuEntity );
+		Condition psuSsuJoinConditions 	= psuTable.getJoinConditions( ssuTable, sdSettings.getJoinSettings() );
+
+		
+		Select<?> selectSSUCounts 	= psql()
+				.select( psuTable.getIdField() , ssuTable.getIdField().count().as( expf.SSU_COUNT.getName() ) )
+				.from( psuTable )
+				.join( ssuTable )
+				.on( psuSsuJoinConditions)
+				.groupBy( psuTable.getIdField() );
+		Table<?> countSSU 		= selectSSUCounts.asTable( "countSSU" );
+			
+		// add join with secondary sampling unit counts inner query
+		select.addJoin( countSSU, psuTable.getIdField().eq( (Field<Long>)countSSU.field(psuTable.getIdField().getName())) );
+		// select ssu count per ssu
+		select.addSelect( countSSU.field( expf.SSU_COUNT.getName() ) );
+		
+		// SSU totals
+		Select<?> selectSSUTotals 	= psql()
+				.select( 
+//						psuTable.getIdField() , 
+						aoiIdField ,
+						ssuTable.getIdField().count().as( expf.SSU_TOTAL.getName() ) 
+						)
+				.from( psuTable )
+				.join( ssuTable )
+				.on( psuSsuJoinConditions)
+				.join( psuAoiTable )
+				.on( psuTable.getIdField().eq( psuAoiTable.getIdField() ) )
+				.groupBy( aoiIdField );
+		Table<?> totalSSU 		= selectSSUTotals.asTable( "totalSSU" );
+		
+		// add join with secondary sampling unit totals inner query
+		select.addJoin( totalSSU, aoiIdField.eq( (Field<Long>)totalSSU.field(aoiIdField.getName())) );
+		// select ssu count per ssu
+		select.addSelect( totalSSU.field( expf.SSU_TOTAL.getName() ) );
+	
+//		selectOLD.addGroupBy( aoiIdField );
+		
+		
+		// join with totals
+//		Field<?> totalField = totals.field("count");
+//		selectOLD.addGroupBy( totalField );
+		
+		psql()
+			.dropTableIfExists(expf)
+			.execute();
+
+		psql()
+			.createTable( expf )
+			.as( select )
+			.execute();
+		
+		
+		
+		// NOT USED
+		// select proportions
+//		SelectQuery<Record> selectOLD = psql().selectQuery();
+//		selectOLD.addSelect( psuTable.getIdField().count() );
+//		selectOLD.addFrom( psuTable );
+//		
+//		// join with phase1_aoi_table to calculate proportions. if no stratification is applied, then results will be the same
+//		selectOLD.addSelect( aoiIdField );
+//		selectOLD.addJoin( psuAoiTable, psuTable.getIdField().eq(psuAoiTable.getIdField()) );
+//		selectOLD.addGroupBy( aoiIdField );
+//		
+//		if( stratified ){
+//			ColumnJoin stratumJoin = getSamplingDesign().getStratumJoin();
+//			
+//			Field<Integer> stratumField = psuTable.getIntegerField(stratumJoin.getColumn());
+//			selectOLD.addSelect( stratumField.cast(SQLDataType.INTEGER).as(expf.STRATUM.getName()) );
+//			selectOLD.addGroupBy( stratumField );
+//		}
+//		
+//		// join with totals inner query
+//		Field<?> totalField = totals.field("count");
+//		selectOLD.addSelect( totalField.as("total") );
+//		selectOLD.addJoin(totals, aoiIdField.eq( (Field<Long>)totals.field(aoiIdField.getName())) );
+//		selectOLD.addGroupBy( totalField );
+//		
+//		selectOLD.addSelect( psuTable.getIdField().count().div( DSL.cast(totalField, Psql.DOUBLE_PRECISION) ).as(expf.PROPORTION.getName()) );
+//		selectOLD.addSelect( psuTable.getIdField().count().div( DSL.cast(totalField, Psql.DOUBLE_PRECISION) ).mul(aoiPsuTotal).as(expf.AREA.getName()) );
+//		selectOLD.addGroupBy( aoiPsuTotal );
+//		( count(p.id) / total.count::double precision ) as proportion,
+//        ( count(p.id) / total.count::double precision ) * a._administrative_unit_level_1_area as area
+		
+//		psql()
+//			.dropTableIfExists(expf)
+//			.execute();
+//		
+//		psql()
+//			.createTable(expf)
+//			.as( selectOLD )
+//			.execute();
 	}
 	
 	@Override

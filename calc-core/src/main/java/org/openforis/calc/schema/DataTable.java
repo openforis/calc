@@ -305,7 +305,7 @@ public abstract class DataTable extends AbstractTable {
 	protected void createSamplingUnitIdField() {
 		if( entity.isInSamplingUnitHierarchy() ){
 			Entity samplingUnit = entity.getWorkspace().getSamplingUnit();
-			String suIdColumn = samplingUnit.getIdColumn();
+			String suIdColumn 	= samplingUnit.getIdColumn();
 			this.samplingUnitIdField = createField( suIdColumn, BIGINT, this );
 		}
 	}

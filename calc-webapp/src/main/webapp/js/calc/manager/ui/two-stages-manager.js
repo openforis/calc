@@ -110,7 +110,8 @@ TwoStagesManager.prototype.showImport = function( filepath, headers ){
 		
 		$this.psuSection.hide(0);
 		$this.ssuSection.hide(0);
-
+		$this.tableJoin.hide();
+		
 		$this.importSection.fadeIn();
 	
 	});
