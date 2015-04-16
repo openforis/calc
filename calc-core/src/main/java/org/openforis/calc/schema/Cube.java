@@ -279,7 +279,7 @@ public class Cube {
 		return rolapSchema;
 	}
 
-	public FactTable getFactTable() {
+	public DataTable getFactTable() {
 		return factTable;
 	}
 

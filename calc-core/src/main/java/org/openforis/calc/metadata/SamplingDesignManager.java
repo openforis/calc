@@ -11,6 +11,8 @@ import org.jooq.InsertQuery;
 import org.jooq.Query;
 import org.jooq.Record;
 import org.jooq.impl.DynamicTable;
+import org.jooq.impl.PrimarySamplingUnitTable;
+import org.json.simple.JSONArray;
 import org.openforis.calc.engine.DataRecord;
 import org.openforis.calc.engine.ParameterMap;
 import org.openforis.calc.engine.Workspace;
@@ -53,7 +55,23 @@ public class SamplingDesignManager {
 	public void loadSampligDesign( Workspace workspace ) {
 		SamplingDesign samplingDesign = samplingDesignDao.fetchOne( Tables.SAMPLING_DESIGN.WORKSPACE_ID , workspace.getId() );
 		if( samplingDesign != null ){
+			
 			workspace.setSamplingDesign( samplingDesign );
+			loadExternalData(samplingDesign);
+		}
+	}
+	
+	@Transactional
+	private void loadExternalData(SamplingDesign samplingDesign) {
+		if( samplingDesign.getTwoStages() ){
+			Workspace workspace = samplingDesign.getWorkspace();
+			
+			PrimarySamplingUnitTable<?> psuTable = new PrimarySamplingUnitTable<Record>( workspace.getPrimarySUTableName(), workspace.getExtendedSchemaName() );
+			JSONArray info = tableDao.info( psuTable );
+			psuTable.initSamplingDesignFields( samplingDesign , info );
+			
+			samplingDesign.setPrimarySamplingUnitTable( psuTable );
+			
 		}
 	}
 	
@@ -75,6 +93,8 @@ public class SamplingDesignManager {
 		workspace.setSamplingDesign( samplingDesign );
 		
 		samplingDesignDao.insert( samplingDesign );
+		
+		loadExternalData(samplingDesign);
 	}
 	
 	@Transactional
@@ -162,12 +182,12 @@ public class SamplingDesignManager {
 			
 			// replace schema
 			ParameterMap aoiJoinSettings = samplingDesign.getAoiJoinSettings();
-			if( aoiJoinSettings.getString( "schema" ).equals( origExtSchema ) ){
+			if(aoiJoinSettings != null && aoiJoinSettings.getString( "schema" ).equals( origExtSchema ) ){
 				aoiJoinSettings.setString( "schema" , extSchema );
 			}
 			
 			ParameterMap stratumJoinSettings = samplingDesign.getStratumJoinSettings();
-			if( stratumJoinSettings.getString( "schema" ).equals( origExtSchema ) ){
+			if( samplingDesign.getStratified() && stratumJoinSettings.getString( "schema" ).equals( origExtSchema ) ){
 				stratumJoinSettings.setString( "schema" , extSchema );
 			}
 			

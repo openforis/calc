@@ -135,7 +135,7 @@ public class DynamicTable<R extends Record> extends TableImpl<R> {
 			String type = map.get("data_type").toString();
 			
 			DataType<?> dataType = Psql.POSTGRESQL_DATA_TYPES.get(type);
-			createField( name, dataType, this );
+			this.addField( name, dataType );
 		}
 	}
 	

@@ -1,7 +1,11 @@
 package org.openforis.calc.schema;
 
+import java.util.List;
+
 import org.jooq.Field;
 import org.jooq.impl.SQLDataType;
+import org.openforis.calc.metadata.SamplingDesign;
+import org.openforis.calc.metadata.SamplingDesign.ColumnJoin;
 
 /**
  * 
@@ -19,6 +23,7 @@ public class SamplingUnitAggregateTable extends AggregateTable {
 		
 		createClusterField();
 		createSamplingUnitIdField();
+		createPsuFields();
 	}
 
 	private static String getName( DataTable table ){
@@ -32,6 +37,21 @@ public class SamplingUnitAggregateTable extends AggregateTable {
 
 	public Field<String> getClusterField() {
 		return clusterField;
+	}
+	
+	@Override
+	protected void createPsuFields() {
+		if( getWorkspace().has2StagesSamplingDesign() ){
+
+			SamplingDesign samplingDesign = getWorkspace().getSamplingDesign();
+			List<ColumnJoin> columns = samplingDesign.getTwoStagesSettingsObject().getSamplingUnitPsuJoinColumns();
+			for (ColumnJoin columnJoin : columns) {
+				Field<?> sourceField = this.getSourceTable().field( columnJoin.getColumn() );
+				Field<?> field = super.copyField( sourceField );
+				addPsuField( field );
+			}
+		}
+	
 	}
 	
 }

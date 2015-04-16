@@ -3,12 +3,18 @@ package org.openforis.calc.schema;
 import static org.jooq.impl.SQLDataType.INTEGER;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Schema;
 import org.jooq.TableField;
+import org.jooq.impl.PrimarySamplingUnitTable;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.AoiLevel;
+import org.openforis.calc.metadata.SamplingDesign;
+import org.openforis.calc.metadata.SamplingDesign.TwoStagesSettings;
 import org.openforis.calc.psql.Psql;
 
 /**
@@ -30,7 +36,7 @@ public class ExpansionFactorTable extends AbstractTable {
 	public final TableField<Record,BigDecimal> EXPF = createField( "expf", Psql.DOUBLE_PRECISION, this );
 	
 	// for two stages sampling
-	public TableField<Record,Integer> PSU_ID 						= null;
+	public List<TableField<Record,?>> PSU_IDS 						= null;
 	public final TableField<Record,BigDecimal> PSU_TOTAL 			= createField( "psu_total", Psql.DOUBLE_PRECISION, this );
 	public final TableField<Record,BigDecimal> PSU_SAMPLED_TOTAL 	= createField( "psu_sampled_total", Psql.DOUBLE_PRECISION, this );
 	public final TableField<Record,BigDecimal> PSU_AREA 			= createField( "psu_area", Psql.DOUBLE_PRECISION, this );
@@ -55,8 +61,16 @@ public class ExpansionFactorTable extends AbstractTable {
 		
 		Workspace workspace = aoiLevel.getHierarchy().getWorkspace();
 		if( workspace.has2StagesSamplingDesign() ){
-			String psuIdColumn = workspace.getSamplingDesign().getTwoStagesSettingsObject().getPsuIdColumn();
-			PSU_ID = createField( psuIdColumn , INTEGER, this );
+			this.PSU_IDS = new ArrayList<TableField<Record,?>>();
+//			String psuIdColumn = workspace.getSamplingDesign().getTwoStagesSettingsObject().getPsuIdColumns();
+			SamplingDesign samplingDesign = workspace.getSamplingDesign();
+			PrimarySamplingUnitTable<?> psuTable = samplingDesign.getPrimarySamplingUnitTable();
+			List<Field<?>> psuIdColumn = psuTable.getPsuFields();
+			for (Field<?> psuIdField : psuIdColumn) {
+				TableField<Record,?> field = super.copyField( psuIdField );
+				this.PSU_IDS.add( field );
+			}
+//			PSU_ID = createField( psuIdColumn , INTEGER, this );
 		}
 	}
 	

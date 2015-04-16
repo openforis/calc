@@ -23,6 +23,8 @@ import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.ErrorSettings;
 import org.openforis.calc.metadata.QuantitativeVariable;
+import org.openforis.calc.metadata.SamplingDesign;
+import org.openforis.calc.metadata.SamplingDesign.ColumnJoin;
 import org.openforis.calc.psql.Psql;
 import org.openforis.commons.collection.CollectionUtils;
 
@@ -33,7 +35,6 @@ public class FactTable extends DataTable {
 
 	private static final long serialVersionUID = 1L;
 	private static final String TABLE_NAME_FORMAT = "_%s_fact";
-	// private static final String DIMENSION_ID_COLUMN_FORMAT = "%s_id";
 
 	private Map<AoiLevel, AoiAggregateTable> aoiAggregateTables;
 	private SamplingUnitAggregateTable samplingUnitAggregateTable;
@@ -43,7 +44,6 @@ public class FactTable extends DataTable {
 	private DataSchema schema;
 	private Map<QuantitativeVariable, Field<BigDecimal>> measureFields;
 	private Field<String> clusterField; 
-	
 	/**
 	 * Map of variableId --> map of aoiLevel id --> list of error tables
 	 */
@@ -79,14 +79,32 @@ public class FactTable extends DataTable {
 		createMeasureFields();
 		createParentIdField();
 		createSamplingUnitIdField();
+		
+		createPsuFields();
+		
 		createAggregateTables();
 		createClusterField();
+		
 		
 		createWeightField();
 		
 		createErrorTables();
 	}
 
+	@Override
+	protected void createPsuFields() {
+		if( getWorkspace().has2StagesSamplingDesign() ){
+
+			SamplingDesign samplingDesign = getWorkspace().getSamplingDesign();
+			List<ColumnJoin> columns = samplingDesign.getTwoStagesSettingsObject().getSamplingUnitPsuJoinColumns();
+			for (ColumnJoin columnJoin : columns) {
+				Field<?> field = super.copyField( this.entityView.field( columnJoin.getColumn() ) );
+				addPsuField( field );
+			}
+		}
+	
+	}
+	
 	private void createClusterField() {
 		this.clusterField = createField( "_cluster", SQLDataType.VARCHAR, this );
 	}

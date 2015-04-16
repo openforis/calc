@@ -9,6 +9,7 @@ import static org.jooq.impl.SQLDataType.INTEGER;
 import static org.jooq.impl.SQLDataType.VARCHAR;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -31,11 +32,14 @@ import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.QuantitativeVariable;
+import org.openforis.calc.metadata.SamplingDesign;
+import org.openforis.calc.metadata.SamplingDesign.ColumnJoin;
 import org.openforis.calc.metadata.TextVariable;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.VariableAggregate;
 import org.openforis.calc.psql.GeodeticCoordinate;
 import org.openforis.calc.psql.Psql;
+import org.openforis.commons.collection.CollectionUtils;
 
 /**
  * A table derived from a Calc entity; this includes input and output data tables as well as OLAP fact tables
@@ -75,6 +79,8 @@ public abstract class DataTable extends AbstractTable {
 	private Field<Integer> stratumField;
 
 	private Field<BigDecimal> weightField;
+
+	private List<Field<?>> psuFields;
 
 	
 	protected DataTable(Entity entity, String name, Schema schema) {
@@ -412,6 +418,32 @@ public abstract class DataTable extends AbstractTable {
 
 	public Field<BigDecimal> getWeightField() {
 		return weightField;
+	}
+
+	protected void createPsuFields() {
+		if( getWorkspace().has2StagesSamplingDesign() ){
+
+			SamplingDesign samplingDesign = getWorkspace().getSamplingDesign();
+			List<ColumnJoin> columns = samplingDesign.getTwoStagesSettingsObject().getSamplingUnitPsuJoinColumns();
+			for (ColumnJoin columnJoin : columns) {
+				Field<?> field = field( columnJoin.getColumn() );
+				addPsuField(field);
+			}
+		}
+		
+	}
+
+	protected void addPsuField(Field<?> field) {
+		if( this.psuFields == null ){
+			this.psuFields = new ArrayList<Field<?>>();
+		}
+		this.psuFields.add( field );
+	}
+	
+	
+	
+	public List<Field<?>> getPsuFields() {
+		return CollectionUtils.unmodifiableList( psuFields );
 	}
 	
 }

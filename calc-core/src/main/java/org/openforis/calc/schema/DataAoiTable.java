@@ -7,6 +7,7 @@ import static org.jooq.impl.SQLDataType.BIGINT;
 import static org.jooq.impl.SQLDataType.VARCHAR;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +17,7 @@ import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.TableField;
 import org.jooq.UniqueKey;
+import org.jooq.impl.PrimarySamplingUnitTable;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.AoiLevel;
@@ -37,6 +39,7 @@ public class DataAoiTable extends AbstractTable {
 	protected Map<AoiLevel, Field<String>> aoiCodeFields;
 	protected Map<AoiLevel, Field<BigDecimal>> aoiAreaFields;
 	private TableField<Record, Long> idField;
+	private List<TableField<Record, ?>> keyFields;
 
 	/**
 	 * @param name
@@ -54,8 +57,18 @@ public class DataAoiTable extends AbstractTable {
 
 	@SuppressWarnings("unchecked")
 	protected void createPrimaryKeyField() {
-		this.idField = createField("id", BIGINT, this);
-		this.primaryKey = KeyFactory.newUniqueKey(this, idField);
+		if( workspace.has2StagesSamplingDesign() ){
+			this.keyFields = new ArrayList<TableField<Record,?>>();
+			PrimarySamplingUnitTable<?> psuTable = workspace.getSamplingDesign().getPrimarySamplingUnitTable();
+			for (Field<?> psuField : psuTable.getPsuFields()) {
+				TableField<Record,?> field = super.copyField( psuField );
+				this.keyFields.add( field );
+			}
+		
+		} else {
+			this.idField = createField("id", BIGINT, this);
+			this.primaryKey = KeyFactory.newUniqueKey(this, idField);
+		}
 	}
 
 	protected void setIdField(TableField<Record, Long> idField) {

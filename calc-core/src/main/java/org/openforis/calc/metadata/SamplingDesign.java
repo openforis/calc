@@ -3,6 +3,7 @@ package org.openforis.calc.metadata;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jooq.impl.PrimarySamplingUnitTable;
 import org.openforis.calc.engine.ParameterMap;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.persistence.jooq.tables.pojos.SamplingDesignBase;
@@ -22,6 +23,8 @@ public class SamplingDesign extends SamplingDesignBase {
 	private Entity samplingUnit;
 	@JsonIgnore
 	private Workspace workspace;
+	@JsonIgnore
+	private PrimarySamplingUnitTable<?> psuTable;
 	
 	public Entity getSamplingUnit() {
 		if( workspace == null ) {
@@ -88,6 +91,16 @@ public class SamplingDesign extends SamplingDesignBase {
 	public TwoStagesSettings getTwoStagesSettingsObject(){
 		return new TwoStagesSettings(getTwoStagesSettings() );
 	}
+	
+	void setPrimarySamplingUnitTable( PrimarySamplingUnitTable<?> psuTable ){
+		this.psuTable = psuTable;
+	}
+	
+	@JsonIgnore
+	public PrimarySamplingUnitTable<?> getPrimarySamplingUnitTable() {
+		return psuTable;
+	}
+	
 	// hard coded for now
 	public String getWeightVariable() {
 		return "weight";
@@ -114,10 +127,16 @@ public class SamplingDesign extends SamplingDesignBase {
 			return joinSettings;
 		}
 
-		public String getPsuIdColumn() {
-			return getJoinSettings().getLeft().getColumnJoins().get( 0 ).getColumn();
+		public List<ColumnJoin> getPsuIdColumns() {
+			List<ColumnJoin> columnJoins = getJoinSettings().getLeft().getColumnJoins();
+			return columnJoins;
 		}
 		
+		public List<ColumnJoin> getSamplingUnitPsuJoinColumns(){
+//			return getJoinSettings().getRight().getColumnJoins().get( 0 ).getColumn();
+			List<ColumnJoin> columnJoins = getJoinSettings().getRight().getColumnJoins();
+			return columnJoins;
+		}
 		
 	}
 	

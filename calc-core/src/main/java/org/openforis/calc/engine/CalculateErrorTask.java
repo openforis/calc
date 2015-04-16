@@ -267,8 +267,9 @@ public class CalculateErrorTask extends CalcRTask {
 		} else {
 			select.addSelect( DSL.val(1).as( "stratum") );
 		}
-		select.addSelect( suFactTable.getClusterField().as("cluster") );
-
+		if( workspace.hasClusterSamplingDesign() ){
+			select.addSelect( suFactTable.getClusterField().as("cluster") );
+		}
 		select.addSelect( suFactTable.field(DataTable.WEIGHT_COLUMN) );
 		
 		select.addFrom( suFactTable );

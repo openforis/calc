@@ -18,6 +18,8 @@ import org.openforis.calc.engine.Task;
 import org.openforis.calc.metadata.AoiLevel;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
+import org.openforis.calc.metadata.SamplingDesign;
+import org.openforis.calc.metadata.SamplingDesign.ColumnJoin;
 import org.openforis.calc.metadata.SamplingDesign.TableJoin;
 import org.openforis.calc.psql.CreateTableStep.AsStep;
 import org.openforis.calc.psql.Psql;
@@ -82,6 +84,7 @@ public final class CreateAggregateTablesTask extends Task {
 		return schema;
 	}
 
+	@SuppressWarnings("unchecked")
 	private void createAoiAggregateTables(FactTable factTable) {
 		Collection<AoiAggregateTable> aggregateTables = factTable.getAoiAggregateTables();
 		for ( AoiAggregateTable aggTable : aggregateTables ) {
@@ -105,11 +108,48 @@ public final class CreateAggregateTablesTask extends Task {
 			}
 
 			// join with expf table
-			AoiLevel aoiLevel = aggTable.getAoiLevel();
-			ExpansionFactorTable expfTable = getDataSchema().getExpansionFactorTable( aoiLevel );
+			AoiLevel aoiLevel 				= aggTable.getAoiLevel();
+			ExpansionFactorTable expfTable 	= getDataSchema().getExpansionFactorTable( aoiLevel );
 
-			Field<Integer> aoiField = sourceTable.getAoiIdField(aoiLevel);
-			Condition conditions = expfTable.AOI_ID.eq( aoiField );
+			Condition conditions = null;
+			if( getWorkspace().has2StagesSamplingDesign() ){
+				
+//				TwoStagesSettings sdSettings 			= getWorkspace().getSamplingDesign().getTwoStagesSettingsObject();
+				SamplingDesign samplingDesign = getWorkspace().getSamplingDesign();
+//				PrimarySamplingUnitTable<?> psuTable 	= samplingDesign.getPrimarySamplingUnitTable();
+				List<ColumnJoin> psuJoinColumns = samplingDesign.getTwoStagesSettingsObject().getPsuIdColumns();
+				List<ColumnJoin> suPsuJoinColumns = samplingDesign.getTwoStagesSettingsObject().getSamplingUnitPsuJoinColumns();
+				
+				for (int i = 0; i < psuJoinColumns.size(); i++) {
+					ColumnJoin psuCol = psuJoinColumns.get(i);
+					ColumnJoin suCol = suPsuJoinColumns.get(i);
+					Field expfField = expfTable.field( psuCol.getColumn() );
+					Condition join = expfField.eq( sourceTable.field(suCol.getColumn()) );
+					if( conditions == null ){
+						conditions = join;
+					} else {
+						conditions = conditions.and( join );
+					}
+				}
+				
+//				select.addJoin( aoiTable, condition );
+				
+				
+//				for ( Field<?> psuKeyField : psuTable.getPsuFields() ) {
+//					@SuppressWarnings("rawtypes")
+//					Field expfField 			= expfTable.field( psuKeyField.getName() );
+//					Condition psuJoinCondition 	= expfField.eq( psuKeyField );
+//
+//					if( conditions == null ){
+//						conditions = psuJoinCondition;
+//					} else {
+//						conditions = conditions.and( psuJoinCondition );
+//					}
+//				}
+			} else {
+				Field<Integer> aoiField = sourceTable.getAoiIdField(aoiLevel);
+				conditions = expfTable.AOI_ID.eq( aoiField );
+			}
 			if( getWorkspace().hasStratifiedSamplingDesign() ) {
 				
 				conditions = conditions.and( expfTable.STRATUM.eq( sourceTable.getStratumField() ) );
@@ -169,9 +209,24 @@ public final class CreateAggregateTablesTask extends Task {
 		
 		select.addSelect( sourceTable.getStratumField() );
 		select.addGroupBy( sourceTable.getStratumField() );
+
+		if( getWorkspace().hasClusterSamplingDesign() ){
+			select.addSelect( sourceTable.getClusterField() );
+			select.addGroupBy( sourceTable.getClusterField() );
+		}
 		
-		select.addSelect( sourceTable.getClusterField() );
-		select.addGroupBy( sourceTable.getClusterField() );
+		if( getWorkspace().has2StagesSamplingDesign() ){
+			
+			SamplingDesign samplingDesign = getWorkspace().getSamplingDesign();
+			List<ColumnJoin> joinColumns = samplingDesign.getTwoStagesSettingsObject().getSamplingUnitPsuJoinColumns();
+			for (ColumnJoin columnJoin : joinColumns) {
+				Field field 			= sourceTable.field( columnJoin.getColumn() );
+				select.addSelect( field );
+				select.addGroupBy( field );
+			}
+		}
+		
+		
 		// for now quantity fields. check if it needs to be done for each variable aggregate
 		Field<BigDecimal> plotArea = ((FactTable)sourceTable) .getPlotAreaField();
 		if( plotArea == null ){
@@ -204,6 +259,7 @@ public final class CreateAggregateTablesTask extends Task {
 	
 	
 	
+	@SuppressWarnings("unchecked")
 	private void createFactTable(FactTable factTable) {
 		EntityDataView dataTable = factTable.getEntityView();
 //		Entity entity = dataTable.getEntity();
@@ -266,36 +322,64 @@ public final class CreateAggregateTablesTask extends Task {
 			}
 			
 			// add aoi ids to fact table if it's geo referenced
+			SamplingDesign samplingDesign = getWorkspace().getSamplingDesign();
 			if( factTable.isGeoreferenced() ) {
-				DataAoiTable aoiTable = getJob().getInputSchema().getSamplingUnitAoiTable();
-				select.addSelect( aoiTable.getAoiIdFields() );
 				
-				Field<Long> joinField = ( dataTable.getEntity().isSamplingUnit() ) ? dataTable.getIdField() : dataTable.getSamplingUnitIdField();
-				select.addJoin(aoiTable, joinField.eq(aoiTable.getIdField()) );
+				if( getWorkspace().has2StagesSamplingDesign() ){
+					DataAoiTable aoiTable = getJob().getInputSchema().getPrimarySUAoiTable();
+					select.addSelect( aoiTable.getAoiIdFields() );
+					
+					List<ColumnJoin> psuJoinColumns = samplingDesign.getTwoStagesSettingsObject().getPsuIdColumns();
+					List<ColumnJoin> suPsuJoinColumns = samplingDesign.getTwoStagesSettingsObject().getSamplingUnitPsuJoinColumns();
+					
+					Condition condition = null;
+					for (int i = 0; i < psuJoinColumns.size(); i++) {
+						ColumnJoin psuCol = psuJoinColumns.get(i);
+						ColumnJoin suCol = suPsuJoinColumns.get(i);
+						Field aoiField = aoiTable.field( psuCol.getColumn() );
+						Condition join = aoiField.eq( dataTable.field(suCol.getColumn()) );
+						if( condition == null ){
+							condition = join;
+						} else {
+							condition = condition.and( join );
+						}
+					}
+					
+					select.addJoin( aoiTable, condition );
+					
+				} else {
+					
+					DataAoiTable aoiTable = getJob().getInputSchema().getSamplingUnitAoiTable();
+					select.addSelect( aoiTable.getAoiIdFields() );
+					
+					Field<Long> joinField = ( dataTable.getEntity().isSamplingUnit() ) ? dataTable.getIdField() : dataTable.getSamplingUnitIdField();
+					select.addJoin(aoiTable, joinField.eq(aoiTable.getIdField()) );
+				}
+				
 			}
 			
 			Field<String> clusterField = null;
 			// add stratum and cluster columns to fact table based on the sampling design
-			if( getWorkspace().getSamplingDesign().getTwoPhases() ){
+			if( samplingDesign.getTwoPhases() ){
 				
 				// add join in case of two phase sampling
 				DynamicTable<Record> phase1Table = factTable.getDataSchema().getPhase1Table();
-				TableJoin phase1Join = getWorkspace().getSamplingDesign().getPhase1Join();
+				TableJoin phase1Join = samplingDesign.getPhase1Join();
 				Condition conditions = phase1Table.getJoinConditions( dataTable, phase1Join );
 				select.addJoin(phase1Table, conditions);
 				
 				// add stratum column
 				if( getWorkspace().hasStratifiedSamplingDesign() ) {
-					String stratumColumn = getWorkspace().getSamplingDesign().getStratumJoin().getColumn();
+					String stratumColumn = samplingDesign.getStratumJoin().getColumn();
 					Field<Integer> stratumField = phase1Table.getIntegerField( stratumColumn ).cast(Integer.class).as( factTable.getStratumField().getName() ) ;
 					select.addSelect( stratumField );
 				}
 				// add cluster column
 				if( getWorkspace().hasClusterSamplingDesign() ) {
-					String clusterColumn = getWorkspace().getSamplingDesign().getClusterColumn().getColumn();
+					String clusterColumn = samplingDesign.getClusterColumn().getColumn();
 					clusterField = phase1Table.getVarcharField( clusterColumn ).as( factTable.getClusterField().getName() ) ;
 				} else {
-					clusterField = 	DSL.val( "1" ).as( factTable.getClusterField().getName() );
+//					clusterField = 	DSL.val( "1" ).as( factTable.getClusterField().getName() );
 				}
 				select.addSelect( clusterField );
 			} else {
@@ -303,19 +387,27 @@ public final class CreateAggregateTablesTask extends Task {
 				
 				if( getWorkspace().hasStratifiedSamplingDesign() ) {
 					// add stratum column
-					String stratumColumn = getWorkspace().getSamplingDesign().getStratumJoin().getColumn();
+					String stratumColumn = samplingDesign.getStratumJoin().getColumn();
 					Field<Integer> stratumField = dataTable.field( stratumColumn ).cast(Integer.class).as( factTable.getStratumField().getName() ) ;
 					select.addSelect( stratumField );
 				}
 				
 				// add cluster column
 				if( getWorkspace().hasClusterSamplingDesign() ) {
-					String clusterColumn = getWorkspace().getSamplingDesign().getClusterColumn().getColumn();
+					String clusterColumn = samplingDesign.getClusterColumn().getColumn();
 					clusterField = dataTable.field( clusterColumn ).cast(String.class).as( factTable.getClusterField().getName() ) ;
 				} else {
-					clusterField = 	DSL.val( "1" ).as( factTable.getClusterField().getName() );
+//					clusterField = 	DSL.val( "1" ).as( factTable.getClusterField().getName() );
 				}
 				select.addSelect( clusterField );
+			}
+			
+			if( getWorkspace().has2StagesSamplingDesign() ){
+				
+				List<ColumnJoin> samplingUnitPsuJoinColumns = samplingDesign.getTwoStagesSettingsObject().getSamplingUnitPsuJoinColumns();
+				for( ColumnJoin columnJoin : samplingUnitPsuJoinColumns ){
+					select.addSelect( dataTable.field(columnJoin.getColumn()) );
+				}
 			}
 		}
 		
@@ -338,67 +430,4 @@ public final class CreateAggregateTablesTask extends Task {
 		return String.format( "Create aggregate tables" );
 	}
 	
-//	@Override
-//	protected void oldExecute() throws Throwable {
-//		// TODO threshold
-//		OutputSchema outputSchema = getOutputSchema();
-//		Collection<AggregateTable> aggTables = outputSchema.getAggregateTables();
-//		ExpansionFactorTable expf = outputSchema.getExpansionFactorTable();
-//		for (AggregateTable aggTable : aggTables) {
-//			AoiLevel level = null;// aggTable.getAoiHierarchyLevel();
-//			NewFactTable f = (NewFactTable) aggTable.getSourceTable();
-//			Field<Integer> aoiId = f.getAoiIdField(level);
-//			Field<Integer> stratumId = f.getStratumField();
-//			Entity entity = aggTable.getEntity();
-//			Integer entityId = entity.getId();
-//			
-//			SelectQuery<?> select = new Psql().selectQuery(f);
-//			select.addSelect(f.getCategoryValueFields());
-//			select.addSelect(f.getDimensionIdFields());
-//			select.addSelect(stratumId);
-//			
-//			// Select AOI ID columns
-//			Collection<Field<Integer>> aoiIdFields = aggTable.getAoiIdFields();
-//			for (Field<Integer> aoiIdField : aoiIdFields) {
-//				select.addSelect(f.field(aoiIdField));
-//			}
-//			
-//			select.addGroupBy( select.getSelect() );
-//			select.addGroupBy( expf.EXPF );
-//			
-//			// Add aggregate columns
-//			List<VariableAggregate> variableAggregates = entity.getVariableAggregates();
-//			for (VariableAggregate varAgg : variableAggregates) {
-//				if( !varAgg.isVirtual() ){
-//					String formula = varAgg.getAggregateFormula();
-//					String aggCol = varAgg.getAggregateColumn();
-//					select.addSelect(DSL.field(formula).as(aggCol));
-//				}
-//			}
-//			
-//			//add aggregate fact count column
-//			select.addSelect(DSL.count().as(aggTable.getAggregateFactCountField().getName()));
-//			
-//			if ( isDebugMode() ) {
-//				psql()
-//					.dropTableIfExists(aggTable)
-//					.execute();
-//				
-//
-//			select.addJoin(expf, stratumId.eq(expf.STRATUM_ID)
-//				  .and(aoiId.eq(expf.AOI_ID))
-//				  .and(expf.ENTITY_ID.eq(entityId)));
-//
-//			psql().createTable(aggTable).as(select).execute();
-//
-//			// Grant access to system user
-//			psql()
-//				.grant(Privilege.ALL)
-//				.on(aggTable)
-//				.to(getSystemUser())
-//				.execute();
-//				
-//			}
-//		}
-//	}
 }
