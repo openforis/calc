@@ -182,16 +182,22 @@ public class SamplingDesignManager {
 			
 			// replace schema
 			ParameterMap aoiJoinSettings = samplingDesign.getAoiJoinSettings();
-			if(aoiJoinSettings != null && aoiJoinSettings.getString( "schema" ).equals( origExtSchema ) ){
-				aoiJoinSettings.setString( "schema" , extSchema );
+			if(aoiJoinSettings != null ) {
+				String schema = aoiJoinSettings.getString( "schema" );
+				if( origExtSchema.equals( schema ) ){
+					aoiJoinSettings.setString( "schema" , extSchema );
+				}
 			}
 			
 			ParameterMap stratumJoinSettings = samplingDesign.getStratumJoinSettings();
-			if( samplingDesign.getStratified() && stratumJoinSettings.getString( "schema" ).equals( origExtSchema ) ){
-				stratumJoinSettings.setString( "schema" , extSchema );
+			if( samplingDesign.getStratified() ){
+				String schema = stratumJoinSettings.getString( "schema" );
+				if( origExtSchema.equals( schema ) ){
+					stratumJoinSettings.setString( "schema" , extSchema );
+				}
 			}
 			
-			if( samplingDesign.getTwoPhases() ){
+			if( workspaceToImport.has2PhasesSamplingDesign() ){
 				// replace phase 1 table name
 				String originalPhase1PlotTableName = workspaceToImport.getPhase1PlotTableName();
 				String phase1PlotTableName = workspace.getPhase1PlotTableName();
@@ -211,7 +217,7 @@ public class SamplingDesignManager {
 				}
 			}
 			
-			if( samplingDesign.getTwoStages() ){
+			if( workspaceToImport.has2StagesSamplingDesign() ){
 				ParameterMap twoStagesSettings = samplingDesign.getTwoStagesSettings();
 				ParameterMap left = twoStagesSettings.getMap("joinSettings").getMap( "leftTable" );
 				if( left.getString( "schema" ).equals( origExtSchema) ){

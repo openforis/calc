@@ -562,7 +562,7 @@ public class Workspace extends WorkspaceBase {
 	
 	@JsonIgnore
 	public boolean has2StagesSamplingDesign() {
-		return this.hasSamplingDesign() && getSamplingDesign().getTwoStages();
+		return this.hasSamplingDesign() && getSamplingDesign().getTwoStages() != null && getSamplingDesign().getTwoStages();
 	}
 	
 	@JsonIgnore

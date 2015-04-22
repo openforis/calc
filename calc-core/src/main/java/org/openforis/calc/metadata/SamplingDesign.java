@@ -84,6 +84,11 @@ public class SamplingDesign extends SamplingDesignBase {
 	}
 	
 	@Override
+	public Boolean getTwoStages() {
+		return super.getTwoStages() != null ? super.getTwoStages() : false;
+	}
+	
+	@Override
 	public ParameterMap getTwoStagesSettings() {
 		return super.getTwoStagesSettings();
 	}
