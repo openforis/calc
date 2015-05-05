@@ -102,9 +102,9 @@ $(document).ready(function() {
 						}
 						
 						// for now error button enabled only for 2phases/cluster/stratified
-						if( sd.cluster === true ){
+//						if( sd.cluster === true ){
 							UI.enable( errorButton );
-						}
+//						}
 					}
 				}
 				var chain = ws.getDefaultProcessingChain();

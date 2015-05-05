@@ -166,6 +166,9 @@ public final class CreateAggregateTablesTask extends Task {
 				Field<BigDecimal> quantityField = sourceTable.getQuantityField(var);				
 				Field<BigDecimal> aggregateField = quantityField.mul( expfTable.EXPF ).sum();
 				
+//				Field<BigDecimal> aggregateField = sourceTable.getWeightField().div( expfTable.WEIGHT ).mul( expfTable.AREA ).mul( quantityField ).sum();
+				
+				
 				select.addSelect( aggregateField.as(quantityField.getName() ) );
 			}
 			Field<BigDecimal> weightField = sourceTable.getWeightField();
@@ -224,6 +227,9 @@ public final class CreateAggregateTablesTask extends Task {
 				select.addSelect( field );
 				select.addGroupBy( field );
 			}
+		} else {
+			select.addSelect( sourceTable.getWeightField() );
+			select.addGroupBy( sourceTable.getWeightField() );
 		}
 		
 		

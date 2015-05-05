@@ -103,7 +103,7 @@ public class VirtualCube {
 			addVirtualMeasure( measure, true );
 		}
 		// add virtual area measure
-		addVirtualMeasure(areaMeasure, true );
+		addVirtualMeasure(areaMeasure, false );
 	}
 
 	private void addVirtualMeasure(Measure measure, boolean visible) {
@@ -117,7 +117,7 @@ public class VirtualCube {
 		this.calculatedMembers = new ArrayList<VirtualCube.CalculatedMember>();
 		
 		String formula = Rolap.validMeasure( Rolap.getMdxMeasureName(this.areaMeasure.getName()) );
-		CalculatedMember areaClaculatedMember = new CalculatedMember( Rolap.MEASURES, AREA_CALCULATED_MEMBER_NAME, "Area / Ha", formula , false );
+		CalculatedMember areaClaculatedMember = new CalculatedMember( Rolap.MEASURES, AREA_CALCULATED_MEMBER_NAME, "Area", formula , true );
 		this.calculatedMembers.add( areaClaculatedMember );
 		
 		Map<Measure, Field<BigDecimal>> measures = this.childCube.getMeasures();

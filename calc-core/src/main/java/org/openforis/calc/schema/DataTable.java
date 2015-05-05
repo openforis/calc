@@ -411,7 +411,7 @@ public abstract class DataTable extends AbstractTable {
 	}
 
 	protected void createWeightField() {
-		if( getEntity().isSamplingUnit() ) {
+		if( getEntity().isInSamplingUnitHierarchy() ) {
 			weightField = createField( WEIGHT_COLUMN, Psql.DOUBLE_PRECISION, this );
 		}
 	}

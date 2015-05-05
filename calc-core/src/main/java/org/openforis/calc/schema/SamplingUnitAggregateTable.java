@@ -24,6 +24,7 @@ public class SamplingUnitAggregateTable extends AggregateTable {
 		createClusterField();
 		createSamplingUnitIdField();
 		createPsuFields();
+		createWeightField();
 	}
 
 	private static String getName( DataTable table ){

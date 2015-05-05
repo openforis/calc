@@ -144,7 +144,7 @@ public class EntityDataView extends DataTable {
 			select.addSelect( table.getCategoryValueField(var) );
 		}
 		// add weight column if sampling unit
-		if(  table.getWeightField() != null ) {
+		if(  entity.isSamplingUnit() ) {
 			select.addSelect( table.getWeightField() );
 		}
 		
@@ -159,6 +159,9 @@ public class EntityDataView extends DataTable {
 			select.addSelect( parentTable.getCategoryValueFields() );
 			select.addSelect( parentTable.getCategoryIdFields() );
 			select.addSelect( parentTable.getTextFields() );
+			if(  parentEntity.isSamplingUnit() ) {
+				select.addSelect( parentTable.getWeightField() );
+			}
 			for ( QuantitativeVariable var : parentEntity.getOriginalQuantitativeVariables() ) {
 				select.addSelect( parentTable.getQuantityField(var) );
 			}
