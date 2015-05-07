@@ -5,7 +5,18 @@
  */
 REditor = function( textAreaId ){
 	
-	this.textArea		= $( "#"+textAreaId );
+	this.textArea			= $( "#"+textAreaId );
+	
+	var toggleFullScreen 	= function(cm) {
+		var fullScreen = !cm.getOption("fullScreen");
+		if( fullScreen ){
+			Calc.footer.hide();
+		} else {
+			Calc.footer.show();
+		}
+		cm.setOption( "fullScreen", fullScreen ); 
+	};
+	
 	this.editor 		= CodeMirror.fromTextArea( document.getElementById( textAreaId ) , {
 		mode 			: "r",
 		theme			: "neat",
@@ -17,15 +28,8 @@ REditor = function( textAreaId ){
 		extraKeys		: { 
 							"Ctrl-Space"	: "autocomplete" , 
 							"Ctrl-Q"		: function(cm) { cm.foldCode(cm.getCursor()); } ,
-							"F11"			: function(cm) {
-													var fullScreen = !cm.getOption("fullScreen");
-													if( fullScreen ){
-														Calc.footer.hide();
-													} else {
-														Calc.footer.show();
-													}
-													cm.setOption( "fullScreen", fullScreen ); 
-												} ,
+							"F11"			: function(cm) { toggleFullScreen(cm) },
+							"F10"			: function(cm) { toggleFullScreen(cm) },
 							"Esc"			: function(cm) { 
 												if ( cm.getOption("fullScreen") ) {
 													Calc.footer.show();

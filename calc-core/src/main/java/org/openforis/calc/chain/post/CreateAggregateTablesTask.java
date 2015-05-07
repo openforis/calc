@@ -164,9 +164,9 @@ public final class CreateAggregateTablesTask extends Task {
 			// for now quantity fields. check if it needs to be done for each variable aggregate
 			for ( QuantitativeVariable var : sourceTable.getEntity().getDefaultProcessingChainQuantitativeOutputVariables() ) {
 				Field<BigDecimal> quantityField = sourceTable.getQuantityField(var);				
-				Field<BigDecimal> aggregateField = quantityField.mul( expfTable.EXPF ).sum();
+//				Field<BigDecimal> aggregateField = quantityField.mul( expfTable.EXPF ).sum();
 				
-//				Field<BigDecimal> aggregateField = sourceTable.getWeightField().div( expfTable.WEIGHT ).mul( expfTable.AREA ).mul( quantityField ).sum();
+				Field<BigDecimal> aggregateField = sourceTable.getWeightField().div( expfTable.WEIGHT ).mul( expfTable.AREA ).mul( quantityField ).sum();
 				
 				
 				select.addSelect( aggregateField.as(quantityField.getName() ) );

@@ -32,6 +32,8 @@ public class CalcRTask extends Task {
 
 	private RVariable rConnection;
 
+//	private boolean shutDown;
+	
 	protected CalcRTask( REnvironment rEnvironment, String name ){
 		this.rEnvironment = rEnvironment;
 		this.scripts = new ArrayList<RScript>();
@@ -46,15 +48,19 @@ public class CalcRTask extends Task {
 	@Override
 	protected void execute() throws Throwable {
 		RLogger logger = getJobLogger();
-		
+
 		String script = toString();
-		
-		rEnvironment.eval( script, logger );
+
+		rEnvironment.eval(script, logger);
 
 		// an R error has been detected by the logger
-		if ( logger.containsCalcErrorSignal() ) {
+		if (logger.containsCalcErrorSignal()) {
 			throw new RException("R error while evaluating " + this.name);
 		}
+
+//		if (isShutDown()) {
+//			getJob().r.shutdown();
+//		}
 	}
 
 	protected RLogger getJobLogger() {
@@ -113,4 +119,12 @@ public class CalcRTask extends Task {
 		// set search path to current and public schemas
 		addScript(r().dbSendQuery(rConnection, new Psql().setDefaultSchemaSearchPath(getInputSchema(), new SchemaImpl("public"))));
 	}
+
+//	boolean isShutDown() {
+//		return shutDown;
+//	}
+//
+//	void setShutDown(boolean shutDown) {
+//		this.shutDown = shutDown;
+//	}
 }

@@ -434,7 +434,7 @@ public class CalcJob extends Job {
 					
 		
 		closeConnection.addScript( r().dbDisconnect(connection) );
-
+//		closeConnection.setShutDown( true );
 		addTask(closeConnection);
 	}
 
@@ -464,6 +464,7 @@ public class CalcJob extends Job {
 
 	protected CalcRTask createTask(String name) {
 		CalcRTask task = new CalcRTask(rEnvironment, name);
+//		task.setJob( this );
 		autowire(task);
 		return task;
 	}
