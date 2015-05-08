@@ -1,7 +1,5 @@
 package org.openforis.calc.engine;
 
-import static org.apache.commons.codec.binary.Base64.decodeBase64;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;

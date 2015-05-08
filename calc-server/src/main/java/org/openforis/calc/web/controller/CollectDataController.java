@@ -1,6 +1,10 @@
 package org.openforis.calc.web.controller;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -32,10 +36,9 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping(value = "/rest/collect")
 public class CollectDataController {
 
-	private static final String COLLECT_BACKUP_FILE_EXTENSION = "collect";
+	private List<String> collectBackupFileExtensions ; ;
 	private static final String TEMP_FILE_PREFIX = "collect";
 	private static final String TEMP_FILE_SUFFIX = "metadata.zip";
-	private static final String ZIP = "zip";
 //	private static final String ZIP_CONTENT_TYPE = "application/zip";
 //	private static final String ZIP_COMPRESSED_CONTENT_TYPE = "application/x-zip-compressed";
 
@@ -114,7 +117,7 @@ public class CollectDataController {
 		String contentType = file.getContentType();
 		System.out.println("Uploading collect backup with content type: " + contentType );
 //		 ZIP_CONTENT_TYPE.equals(contentType) || ZIP_COMPRESSED_CONTENT_TYPE.equals(contentType) )
-		boolean valid = ( ZIP.equalsIgnoreCase(extension) || COLLECT_BACKUP_FILE_EXTENSION.equalsIgnoreCase(extension) );
+		boolean valid = collectBackupFileExtensions.contains(extension);
 		if ( valid ) {
 			return true;
 		} else {
@@ -124,6 +127,14 @@ public class CollectDataController {
 		}
 	}
 
+	@PostConstruct
+	public void init(){
+		collectBackupFileExtensions = new ArrayList<String>();
+		collectBackupFileExtensions.add( "collect" );
+		collectBackupFileExtensions.add( "collect-data" );
+		collectBackupFileExtensions.add( "zip" );
+	}
+	
 //	private String extractName(String uri) {
 //		String name = uri.replaceFirst(".*/([^/?]+).*", "$1");
 //		name = name.replaceAll( "\\W", "_" );

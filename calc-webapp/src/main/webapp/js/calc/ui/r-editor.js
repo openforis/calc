@@ -28,8 +28,8 @@ REditor = function( textAreaId ){
 		extraKeys		: { 
 							"Ctrl-Space"	: "autocomplete" , 
 							"Ctrl-Q"		: function(cm) { cm.foldCode(cm.getCursor()); } ,
-							"F11"			: function(cm) { toggleFullScreen(cm) },
-							"F10"			: function(cm) { toggleFullScreen(cm) },
+							"F11"			: function(cm) { toggleFullScreen(cm); },
+							"F10"			: function(cm) { toggleFullScreen(cm); },
 							"Esc"			: function(cm) { 
 												if ( cm.getOption("fullScreen") ) {
 													Calc.footer.show();
