@@ -290,7 +290,8 @@ public final class CalculateExpansionFactorsTask extends Task {
 		// select totals for aoi
 		SelectQuery<Record> selectTotals = psql().selectQuery();
 		
-		selectTotals.addSelect( dataView.getIdField().count() );
+		selectTotals.addSelect( dataView.getWeightField().sum().as( "count" ) );
+//		selectTotals.addSelect( dataView.getIdField().count() );
 		selectTotals.addSelect( a.ID.as(aoiIdField.getName()) );
 		
 		selectTotals.addFrom( a );

@@ -148,7 +148,7 @@ public final class CreateAggregateTablesTask extends Task {
 //				}
 			} else {
 				Field<Integer> aoiField = sourceTable.getAoiIdField(aoiLevel);
-				conditions = expfTable.AOI_ID.eq( aoiField );
+				conditions = expfTable.AOI_ID.eq( aoiField ).and( expfTable.WEIGHT.gt(BigDecimal.ZERO) );
 			}
 			if( getWorkspace().hasStratifiedSamplingDesign() ) {
 				

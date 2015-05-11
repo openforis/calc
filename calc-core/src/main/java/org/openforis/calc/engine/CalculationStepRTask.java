@@ -86,9 +86,14 @@ public class CalculationStepRTask extends CalcRTask {
 		}
 
 		// assign also category class ids to data 
+		SetValue convertCodeToCharacter = null;
 		SetValue setCategoryClasses 	= null;
 		SetValue setClassId				= null;
 		if( this.calculationStep.getType() == Type.CATEGORY ){
+			
+			
+			convertCodeToCharacter = r().setValue( outputVar ,  r().asCharacter( outputVar ) );
+			
 			MultiwayVariable variable = (MultiwayVariable) this.calculationStep.getOutputVariable();
 			CategoryDimensionTable T = job.getSchemas().getDataSchema().getCategoryDimensionTable( variable  );
 			if( T == null ){
@@ -114,7 +119,7 @@ public class CalculationStepRTask extends CalcRTask {
 		// assign the result of the scripts (surrounded by a try statement)
 		// execution to the variable result
 		RVariable result = r().variable("result");
-		SetValue setValue = r().setValue( result, r().rTry( script, setOutputValuePerHa , setCategoryClasses , setClassId) );
+		SetValue setValue = r().setValue( result, r().rTry( script, convertCodeToCharacter , setOutputValuePerHa , setCategoryClasses , setClassId) );
 
 		addScript( r().rScript("# ==================== " + calculationStep.getCaption() + " ====================") );
 //		addScript( r().rScript("# ==========" ) );
