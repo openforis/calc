@@ -87,10 +87,14 @@ public final class CalculateExpansionFactorsTask extends Task {
 		
 		if( getWorkspace().has2StagesSamplingDesign() ){
 
-			expfFormula = expf.PSU_TOTAL.div( expf.PSU_SAMPLED_TOTAL ).mul( 
-					expf.SSU_TOTAL.div( expf.BU_TOTAL )
-					)
-					.mul( expf.PSU_AREA.div(expf.SSU_COUNT));
+			expfFormula = expf.PSU_TOTAL.div( expf.PSU_SAMPLED_TOTAL )
+					.mul( expf.PSU_AREA.div(expf.SSU_COUNT) ) 
+					.mul( expf.BU_TOTAL.div(expf.WEIGHT) );
+//					.div( expf.BU_TOTAL );
+			
+//			.mul( 
+////			expf.SSU_TOTAL.div( expf.BU_TOTAL )
+//			)
 		
 		} else {
 			
@@ -125,8 +129,11 @@ public final class CalculateExpansionFactorsTask extends Task {
 		
 		selectWeight.addFrom( samplingUnitView );
 		Field<BigDecimal> cntField = samplingUnitView.getWeightField().sum().as( "cnt" );
+		Field<Integer> totField 	= samplingUnitView.getWeightField().count().as( "total" );
 		selectWeight.addSelect( cntField );
-
+		selectWeight.addSelect( totField );
+		
+		
 		Field<Integer> stratumField = null;
 		if( samplingDesign.getTwoStages() ){
 			
@@ -196,10 +203,15 @@ public final class CalculateExpansionFactorsTask extends Task {
 			
 		}
 
-		// add weight column
+		// add weight column and base unit total
 		psql()
 			.alterTable( expf )
 			.addColumn( expf.WEIGHT )
+			.execute();
+		
+		psql()
+			.alterTable( expf )
+			.addColumn( expf.BU_TOTAL )
 			.execute();
 		
 		// update weight
@@ -207,7 +219,8 @@ public final class CalculateExpansionFactorsTask extends Task {
 		//cursor.field( expf.AOI_ID. );
 		Update<?> update = psql()
 			.update( expf )
-			.set( expf.WEIGHT, (Field<BigDecimal>)cursor.field( cntField.getName() ) );
+			.set( expf.WEIGHT, (Field<BigDecimal>)cursor.field( cntField.getName() ) )
+			.set( expf.BU_TOTAL, (Field<BigDecimal>)cursor.field( totField.getName() ));
 		
 		Condition joinCondition = null;
 		if( samplingDesign.getTwoStages() ){
@@ -238,7 +251,7 @@ public final class CalculateExpansionFactorsTask extends Task {
 		
 		// if ws two stages, add bu_total as well
 		if( samplingDesign.getTwoStages() ){
-			psql().alterTable( expf ).addColumn( expf.BU_TOTAL ).execute();
+//			psql().alterTable( expf ).addColumn( expf.BU_TOTAL ).execute();
 
 			SelectQuery<Record> selectBUTotals = psql().selectQuery();
 			String weight = expf.WEIGHT.getName();
@@ -253,20 +266,22 @@ public final class CalculateExpansionFactorsTask extends Task {
 			
 			Table<Record> buTotals = selectBUTotals.asTable( "totals" );
 			
-			
-			Update<?> updateBUTotal = psql()
-					.update( expf )
-					.set( expf.BU_TOTAL , (Field<BigDecimal>) buTotals.field(weight) );
-			
+//			
+//			Update<?> updateBUTotal = psql()
+//					.update( expf )
+//					.set( expf.BU_TOTAL , (Field<BigDecimal>) buTotals.field(weight) );
+//			
 			
 			Condition join = expf.AOI_ID.eq( (Field<Integer>)buTotals.field(expf.AOI_ID.getName()) );
 			if( samplingDesign.getStratified() ){
 				join = join.and( expf.STRATUM.eq( (Field<Integer>)buTotals.field(expf.STRATUM.getName()) ) );
 			}
 			
-			psql()
-				.updateWith( buTotals, updateBUTotal , join  )
-				.execute();
+			
+//			UpdateWithStep updateWith2 = psql()
+//				.updateWith( buTotals, updateBUTotal , join  );
+//			updateWith2
+//				.execute();
 		}
 			
 	}
@@ -571,6 +586,7 @@ public final class CalculateExpansionFactorsTask extends Task {
 	
 //		selectOLD.addGroupBy( aoiIdField );
 		
+		select.addSelect( psuTable.getNoTheoreticalBu().as(expf.NO_THEORETICAL_BU.getName()) );
 		
 		// join with totals
 //		Field<?> totalField = totals.field("count");

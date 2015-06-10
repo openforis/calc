@@ -3,11 +3,13 @@
  */
 package org.jooq.impl;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.jooq.Field;
 import org.jooq.Record;
+import org.jooq.TableField;
 import org.json.simple.JSONArray;
 import org.openforis.calc.metadata.SamplingDesign;
 import org.openforis.calc.metadata.SamplingDesign.ColumnJoin;
@@ -23,7 +25,7 @@ public class PrimarySamplingUnitTable<R extends Record> extends DynamicTable<R> 
 
 	private List<Field<?>> psuFields;
 //	private List<Field<?>> suFields;
-	
+	private TableField<Record,BigDecimal> noTheoreticalBu = null ;
 	/**
 	 * @param name
 	 * @param schema
@@ -41,6 +43,8 @@ public class PrimarySamplingUnitTable<R extends Record> extends DynamicTable<R> 
 		TwoStagesSettings settings = samplingDesign.getTwoStagesSettingsObject();
 		List<ColumnJoin> psuIdColumns = settings.getPsuIdColumns();
 //		List<ColumnJoin> suIdColumns = settings.getSamplingUnitPsuJoinColumns();
+		
+		noTheoreticalBu = (TableField<Record, BigDecimal>) field( settings.getNoBaseUnitColumn() );
 		
 		for (Field<?> field : getFields()) {
 			String fieldName = field.getName();
@@ -63,6 +67,10 @@ public class PrimarySamplingUnitTable<R extends Record> extends DynamicTable<R> 
 	
 	public List<Field<?>> getPsuFields() {
 		return psuFields;
+	}
+	
+	public TableField<Record, BigDecimal> getNoTheoreticalBu() {
+		return noTheoreticalBu;
 	}
 	
 //	public List<Field<?>> getSuFields() {

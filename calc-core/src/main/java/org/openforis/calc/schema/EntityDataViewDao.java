@@ -24,6 +24,7 @@ import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.QuantitativeVariable;
+import org.openforis.calc.metadata.TextVariable;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.persistence.jooq.AbstractJooqDao;
 import org.springframework.stereotype.Repository;
@@ -183,6 +184,9 @@ public class EntityDataViewDao extends AbstractJooqDao {
 				} else if( variable instanceof QuantitativeVariable ) {
 					Field<BigDecimal> field = view.getQuantityField( (QuantitativeVariable) variable );
 					addFieldConditions( select, field, conditionParams , BigDecimal.class );
+				} else if ( variable instanceof TextVariable ){
+					Field<String> field = view.getTextField( (TextVariable) variable );
+					addFieldConditions( select, field, conditionParams , String.class );
 				}
 			}
 		}

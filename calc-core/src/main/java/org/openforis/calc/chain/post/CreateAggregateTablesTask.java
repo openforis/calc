@@ -163,17 +163,33 @@ public final class CreateAggregateTablesTask extends Task {
 			// add sum( quantity * expf )
 			// for now quantity fields. check if it needs to be done for each variable aggregate
 			for ( QuantitativeVariable var : sourceTable.getEntity().getDefaultProcessingChainQuantitativeOutputVariables() ) {
-				Field<BigDecimal> quantityField = sourceTable.getQuantityField(var);				
-//				Field<BigDecimal> aggregateField = quantityField.mul( expfTable.EXPF ).sum();
+				Field<BigDecimal> quantityField = sourceTable.getQuantityField(var);	
+				Field<BigDecimal> aggregateField = null;
 				
-				Field<BigDecimal> aggregateField = sourceTable.getWeightField().div( expfTable.WEIGHT ).mul( expfTable.AREA ).mul( quantityField ).sum();
+				if( getWorkspace().has2StagesSamplingDesign() ){
+					aggregateField = quantityField.mul( expfTable.EXPF ).sum();
+					
+				} else {
+					aggregateField = sourceTable.getWeightField().div( expfTable.WEIGHT ).mul( expfTable.AREA ).mul( quantityField ).sum();
+				}
 				
 				
 				select.addSelect( aggregateField.as(quantityField.getName() ) );
 			}
+			
 			Field<BigDecimal> weightField = sourceTable.getWeightField();
 			if( weightField != null ){
-				select.addSelect( weightField.mul( expfTable.EXPF ).sum().as( weightField.getName()) );
+				
+				Field<BigDecimal> areaField = null;
+				if( getWorkspace().has2StagesSamplingDesign() ){
+					areaField = weightField.mul( expfTable.EXPF ).div( expfTable.NO_THEORETICAL_BU ).sum();
+					
+				} else {
+					areaField = weightField.mul( expfTable.EXPF ).sum();
+				}
+				
+				
+				select.addSelect( areaField.as( weightField.getName()) );
 			}
 			
 			// aggregate count field (used by mondrian)
@@ -227,10 +243,11 @@ public final class CreateAggregateTablesTask extends Task {
 				select.addSelect( field );
 				select.addGroupBy( field );
 			}
-		} else {
+		} 
+//		else {
 			select.addSelect( sourceTable.getWeightField() );
 			select.addGroupBy( sourceTable.getWeightField() );
-		}
+//		}
 		
 		
 		// for now quantity fields. check if it needs to be done for each variable aggregate

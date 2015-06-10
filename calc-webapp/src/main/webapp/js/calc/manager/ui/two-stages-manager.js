@@ -11,7 +11,8 @@ TwoStagesManager = function(container , sdManager) {
 	// primary sampling unit section
 	this.psuSection 		= this.container.find(".psu-section");
 	this.areaCombo			= this.psuSection.find( '[name=area-column]' ).combobox({});
-
+	this.noBaseUnitCombo	= this.psuSection.find( '[name=no-base-unit-column]' ).combobox({});
+	
 	this.ssuSection 		= this.container.find(".ssu-section");
 	this.ssuCombo	 		= this.ssuSection.find( '[name=ssu]' ).combobox({});
 
@@ -71,6 +72,14 @@ TwoStagesManager.prototype.init = function(){
 		var areaCol	= $this.areaCombo.val();
 		$this.sdManager.samplingDesign.twoStagesSettings.areaColumn = areaCol;
 	});
+	this.noBaseUnitCombo.change( function(){
+		if( ! $this.sdManager.samplingDesign.twoStagesSettings ){
+			$this.sdManager.samplingDesign.twoStagesSettings = {};
+		}
+		
+		var noBaseUnitCol = $this.noBaseUnitCombo.val();
+		$this.sdManager.samplingDesign.twoStagesSettings.noBaseUnitColumn = noBaseUnitCol;
+	});
 	
 	// init ssu section
 	WorkspaceManager.getInstance().activeWorkspace( function(ws){
@@ -129,17 +138,24 @@ TwoStagesManager.prototype.updatePSUSection = function(){
 			$this.sdManager.loadPrimarySUTableInfo( function(){
 				// $this.sdManager.primarySUTableInfo
 				if( $this.sdManager.primarySUTableInfo ){
-					var defaultVal = null;
+					var defaultAreaColumnVal 	= null;
+					var defaultNoBaseUnitColumn = null;
 					if( $this.sdManager.samplingDesign.twoStagesSettings ){
 						
 						var areaCol = $this.sdManager.samplingDesign.twoStagesSettings.areaColumn;
 						if( StringUtils.isNotBlank(areaCol) ){
-//						$this.areaCombo.val( areaCol );
-							defaultVal = areaCol;
+							defaultAreaColumnVal = areaCol;
+						}
+						
+						var noBaseUnitCol = $this.sdManager.samplingDesign.twoStagesSettings.noBaseUnitColumn;
+						if( StringUtils.isNotBlank(noBaseUnitCol) ){
+							defaultNoBaseUnitColumn = noBaseUnitCol;
 						}
 						
 					}
-					$this.areaCombo.data(  $this.sdManager.primarySUTableInfo.fields.columns , 'column_name' , 'column_name' , defaultVal );
+					
+					$this.areaCombo.data(  $this.sdManager.primarySUTableInfo.fields.columns , 'column_name' , 'column_name' , defaultAreaColumnVal );
+					$this.noBaseUnitCombo.data(  $this.sdManager.primarySUTableInfo.fields.columns , 'column_name' , 'column_name' , defaultNoBaseUnitColumn );
 					
 				}
 				
@@ -221,6 +237,10 @@ TwoStagesManager.prototype.updateTableJoin = function(){
 TwoStagesManager.prototype.validate = function() {
 	if( StringUtils.isBlank( this.areaCombo.val() ) ){
 		UI.showError( "Select a valid area column" , true );
+		return false;
+	}
+	if( StringUtils.isBlank( this.noBaseUnitCombo.val() ) ){
+		UI.showError( "Select a valid number of base unit column" , true );
 		return false;
 	}
 	if( StringUtils.isBlank( this.ssuCombo.val() ) ){

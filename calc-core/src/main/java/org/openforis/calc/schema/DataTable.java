@@ -353,7 +353,11 @@ public abstract class DataTable extends AbstractTable {
 	public Collection<Field<String>> getTextFields() {
 		return Collections.unmodifiableCollection(textFields.values());
 	}
-
+	
+	public Field<String> getTextField(TextVariable var){
+		return this.textFields.get( var );
+	}
+	
 	public Field<BigDecimal> getQuantityField(QuantitativeVariable var) {
 		return quantityFields == null ? null : quantityFields.get(var);
 	}

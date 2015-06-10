@@ -14,7 +14,6 @@ import org.jooq.impl.PrimarySamplingUnitTable;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.AoiLevel;
 import org.openforis.calc.metadata.SamplingDesign;
-import org.openforis.calc.metadata.SamplingDesign.TwoStagesSettings;
 import org.openforis.calc.psql.Psql;
 
 /**
@@ -44,6 +43,7 @@ public class ExpansionFactorTable extends AbstractTable {
 
 	public final TableField<Record,BigDecimal> SSU_TOTAL			= createField( "ssu_total", Psql.DOUBLE_PRECISION, this );
 	public final TableField<Record,BigDecimal> BU_TOTAL				= createField( "bu_total", Psql.DOUBLE_PRECISION, this );
+	public final TableField<Record,BigDecimal> NO_THEORETICAL_BU	= createField( "no_theoretical_bu", Psql.DOUBLE_PRECISION, this );
 	
 	private AoiLevel aoiLevel;
 	

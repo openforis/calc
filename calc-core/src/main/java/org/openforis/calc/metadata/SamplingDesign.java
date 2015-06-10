@@ -113,11 +113,13 @@ public class SamplingDesign extends SamplingDesignBase {
 
 	public class TwoStagesSettings {
 		private String areaColumn;
+		private String noBaseUnitColumn;
 		private int ssuOriginalId;
 		private TableJoin joinSettings;
 		
 		TwoStagesSettings( ParameterMap map ){
 			this.areaColumn = map.getString( "areaColumn" );
+			this.noBaseUnitColumn = map.getString( "noBaseUnitColumn" );
 			this.ssuOriginalId = map.getInteger( "ssuOriginalId" );
 			this.joinSettings = new TableJoin( map.getMap("joinSettings") );
 		}
@@ -125,6 +127,11 @@ public class SamplingDesign extends SamplingDesignBase {
 		public String getAreaColumn() {
 			return areaColumn;
 		}
+		
+		public String getNoBaseUnitColumn() {
+			return noBaseUnitColumn;
+		}
+		
 		public int getSsuOriginalId() {
 			return ssuOriginalId;
 		}
