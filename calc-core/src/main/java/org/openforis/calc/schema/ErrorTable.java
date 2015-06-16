@@ -51,6 +51,10 @@ public class ErrorTable extends DataTable {
 //	private Field<Integer> aoiField;
 	private Field<Integer> categoryIdField;
 
+	private Field<Double> areaVariance;
+	private Field<Double> areaRelativeError;
+	private Field<Double> areaAbsoluteError;
+	
 	private Field<Double> meanQuantityVariance;
 	private Field<Double> meanQuantityRelativeError;
 	private Field<Double> meanQuantityAbsoluteError;
@@ -61,6 +65,19 @@ public class ErrorTable extends DataTable {
 	
 	private Field<Integer> aggregateFactCountField;
 
+//	protected ErrorTable( AoiLevel aoiLevel , CategoricalVariable<?> categoricalVariable , Schema schema){
+//		super( categoricalVariable.getEntity(), getTableName(null , aoiLevel , categoricalVariable) , schema );
+//		new QuantitativeVariable.
+////		super( getTableName(quantitativeVariable , aoi , categoricalVariable) , schema );
+//		
+//		this.categoricalVariable 	= categoricalVariable;
+////		this.aoi 					= aoi;
+//		this.aoiLevel 				= aoiLevel;
+//		this.columnNameFormat 		= "%s_-1_"+this.categoricalVariable.getId()+"_"+aoiLevel.getId()+"_%s";
+//		
+//		initFields();
+//		
+//	}
 	
 	protected ErrorTable(QuantitativeVariable quantitativeVariable , AoiLevel aoiLevel , CategoricalVariable<?> categoricalVariable , Schema schema){
 		super( quantitativeVariable.getEntity(), getTableName(quantitativeVariable , aoiLevel , categoricalVariable) , schema );
@@ -71,21 +88,39 @@ public class ErrorTable extends DataTable {
 		this.categoricalVariable 	= categoricalVariable;
 //		this.aoi 					= aoi;
 		this.aoiLevel 				= aoiLevel;
-		this.columnNameFormat 		= "%s_"+this.quantitativeVariable.getId()+"_"+this.categoricalVariable.getId()+"_"+aoiLevel.getId()+"_%s";
+		this.columnNameFormat 		= "%s_"+Math.abs( this.quantitativeVariable.getId() )+"_"+this.categoricalVariable.getId()+"_"+aoiLevel.getId()+"_%s";
 		
 		initFields();
 		
 	}
 	
 	private void initFields(){
-		// mean_volume_vegetation_type_atlantis_absolute_error
-		this.meanQuantityAbsoluteError	= createField( getFieldName(MEAN , ABSOLUTE_ERROR), DOUBLEPRECISION, this );
-		this.meanQuantityRelativeError	= createField( getFieldName(MEAN , RELATIVE_ERROR), DOUBLEPRECISION, this );
-		this.meanQuantityVariance		= createField( getFieldName(MEAN , VARIANCE), DOUBLEPRECISION, this );
+		// area error 
+		if( this.getQuantitativeVariable().getId() == -1 ){
+			this.areaAbsoluteError = createField( getFieldName("area" , ABSOLUTE_ERROR), DOUBLEPRECISION, this );
+			this.areaRelativeError = createField( getFieldName("area" , RELATIVE_ERROR), DOUBLEPRECISION, this );
+			this.areaVariance = createField( getFieldName("area" , VARIANCE), DOUBLEPRECISION, this );
+		} else {
+			
+			// mean_volume_vegetation_type_atlantis_absolute_error
+			this.meanQuantityAbsoluteError	= createField( getFieldName(MEAN , ABSOLUTE_ERROR), DOUBLEPRECISION, this );
+			this.meanQuantityRelativeError	= createField( getFieldName(MEAN , RELATIVE_ERROR), DOUBLEPRECISION, this );
+			this.meanQuantityVariance		= createField( getFieldName(MEAN , VARIANCE), DOUBLEPRECISION, this );
+			
+			this.totalQuantityAbsoluteError = createField( getFieldName(TOTAL , ABSOLUTE_ERROR), DOUBLEPRECISION, this );
+			this.totalQuantityRelativeError = createField( getFieldName(TOTAL , RELATIVE_ERROR), DOUBLEPRECISION, this );
+			this.totalQuantityVariance		= createField( getFieldName(TOTAL , VARIANCE), DOUBLEPRECISION, this );
+			
+			
+		}
 		
-		this.totalQuantityAbsoluteError = createField( getFieldName(TOTAL , ABSOLUTE_ERROR), DOUBLEPRECISION, this );
-		this.totalQuantityRelativeError = createField( getFieldName(TOTAL , RELATIVE_ERROR), DOUBLEPRECISION, this );
-		this.totalQuantityVariance		= createField( getFieldName(TOTAL , VARIANCE), DOUBLEPRECISION, this );
+//		 strata$areaVariance <- strata$area^2 * strata$var; 
+//		  #absolute error
+//		  strata$areaAbsoluteError <- sqrt( strata$areaVariance );
+//		  # add se%(A(f)) - relative error
+//		  strata$areaRelativeError <- 100 * strata$areaAbsoluteError / strata$areaInClass; 
+//		 
+		
 		
 //		this.aoiField = createField( this.aoi.getAoiLevel().getFkColumn() , INTEGER, this);
 		
@@ -102,7 +137,8 @@ public class ErrorTable extends DataTable {
 	}
 
 	private static String getTableName( QuantitativeVariable quantitativeVariable , AoiLevel aoiLevel , CategoricalVariable<?> categoricalVariable ){
-		String name = String.format( TABLE_NAME_FORMAT, quantitativeVariable.getId() , categoricalVariable.getId() , aoiLevel.getId() );
+		Integer id = quantitativeVariable == null ? -1 : quantitativeVariable.getId();
+		String name = String.format( TABLE_NAME_FORMAT, id , categoricalVariable.getId() , aoiLevel.getId() );
 		return StringUtils.normalize( name );
 	}
 	
@@ -149,6 +185,18 @@ public class ErrorTable extends DataTable {
 
 	public Field<Double> getTotalQuantityAbsoluteError() {
 		return totalQuantityAbsoluteError;
+	}
+	
+	public Field<Double> getAreaAbsoluteError() {
+		return areaAbsoluteError;
+	}
+	
+	public Field<Double> getAreaRelativeError() {
+		return areaRelativeError;
+	}
+	
+	public Field<Double> getAreaVariance() {
+		return areaVariance;
 	}
 	
 	public Field<Integer> getAggregateFactCountField() {

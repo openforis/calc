@@ -57,6 +57,8 @@ public class SamplingDesignManager {
 		if( samplingDesign != null ){
 			
 			workspace.setSamplingDesign( samplingDesign );
+			Entity su = workspace.getEntityById( samplingDesign.getSamplingUnitId() );
+			samplingDesign.setSamplingUnit(su);
 			loadExternalData(samplingDesign);
 		}
 	}

@@ -49,6 +49,7 @@ public class Cube {
 
 	private String errorColumnNameFormat 	= "%s %s";
 	private String errorColumnCaptionFormat = "%s (%s) %s";
+	private String areaErrorColumnCaptionFormat = "%s %s";
 	
 	Cube(RolapSchema rolapSchema, FactTable factTable) {
 		Entity entity = factTable.getEntity();
@@ -194,7 +195,33 @@ public class Cube {
 			Field<BigDecimal> weightField = factTable.getWeightField();
 			Measure measure = new Measure( getRolapSchema(), this, weightField.getName() , "Area" , weightField.getName(), Measure.AGGREGATE_FUNCTION.SUM );
 			measures.put( measure, weightField );
+	
+		
+			List<ErrorTable> errorTables = factTable.getErrorTables( factTable.getWorkspace().getAreaVariable() );
+			if( errorTables.size() > 0 ){
+				ErrorTable errorTable = errorTables.get( 0 );
+				
+				QuantitativeVariable quantitativeVariable = errorTable.getQuantitativeVariable();
+				
+				String measureName		= getErrorMeasureName( quantitativeVariable, RELATIVE_ERROR_LABEL , false );
+				String measureCaption 	= getAreaErrorMeasureCaption( quantitativeVariable, RELATIVE_ERROR_LABEL );
+				measure = new Measure( getRolapSchema(), this, measureName , measureCaption, errorTable.getAreaRelativeError().getName(), AGGREGATE_FUNCTION.SUM );
+				this.errorMeasures.add( measure );
+				
+				measureName 	= getErrorMeasureName( quantitativeVariable, ABSOLUTE_ERROR_LABEL , false );
+				measureCaption 	= getAreaErrorMeasureCaption( quantitativeVariable, ABSOLUTE_ERROR_LABEL );
+				measure = new Measure( getRolapSchema(), this, measureName , measureCaption, errorTable.getAreaAbsoluteError().getName(), AGGREGATE_FUNCTION.SUM );
+				this.errorMeasures.add( measure );
+				
+				measureName 	= getErrorMeasureName( quantitativeVariable,  VARIANCE_LABEL , false );
+				measureCaption 	= getAreaErrorMeasureCaption( quantitativeVariable, VARIANCE_LABEL );
+				measure = new Measure( getRolapSchema(), this, measureName , measureCaption, errorTable.getAreaVariance().getName(), AGGREGATE_FUNCTION.SUM );
+				this.errorMeasures.add( measure );
+			}
+		
+		
 		}
+
 	}
 
 	private String getErrorMeasureName( QuantitativeVariable quantitativeVariable , String errorType , boolean meanValue ){
@@ -214,6 +241,15 @@ public class Cube {
 		String name = Measure.getName( quantitativeVariable );
 		
 		String string = String.format( errorColumnCaptionFormat, name , variableType , errorType );
+		string = StringUtils.capitalize( string );
+		return string;
+	}
+	
+	private String getAreaErrorMeasureCaption( QuantitativeVariable quantitativeVariable , String errorType ){
+		
+		String name = Measure.getName( quantitativeVariable );
+		
+		String string = String.format( areaErrorColumnCaptionFormat, name , errorType );
 		string = StringUtils.capitalize( string );
 		return string;
 	}
@@ -407,30 +443,48 @@ public class Cube {
 		private void createAggMeasures() {
 			QuantitativeVariable quantitativeVariable = errorTable.getQuantitativeVariable();
 			
-			String measureName 		= getErrorMeasureName( quantitativeVariable, RELATIVE_ERROR_LABEL , true );
-			AggMeasure aggMeasure 	= new AggMeasure( errorTable.getMeanQuantityRelativeError().getName() , measureName );
-			aggMeasures.add(aggMeasure);
+			if( quantitativeVariable.getId() == -1 ){
+				
+				String measureName 		= getErrorMeasureName( quantitativeVariable, RELATIVE_ERROR_LABEL , false );
+				AggMeasure aggMeasure 	= new AggMeasure( errorTable.getAreaRelativeError().getName() , measureName );
+				aggMeasures.add(aggMeasure);
+				
+				measureName = getErrorMeasureName( quantitativeVariable, ABSOLUTE_ERROR_LABEL , false );
+				aggMeasure 	= new AggMeasure( errorTable.getAreaAbsoluteError().getName() , measureName );
+				aggMeasures.add(aggMeasure);
+				
+				measureName = getErrorMeasureName( quantitativeVariable,  VARIANCE_LABEL , false );
+				aggMeasure 	= new AggMeasure( errorTable.getAreaVariance().getName() , measureName );
+				aggMeasures.add(aggMeasure);
+				
+			} else {
+				
+				String measureName 		= getErrorMeasureName( quantitativeVariable, RELATIVE_ERROR_LABEL , true );
+				AggMeasure aggMeasure 	= new AggMeasure( errorTable.getMeanQuantityRelativeError().getName() , measureName );
+				aggMeasures.add(aggMeasure);
+				
+				measureName = getErrorMeasureName( quantitativeVariable, ABSOLUTE_ERROR_LABEL , true );
+				aggMeasure 	= new AggMeasure( errorTable.getMeanQuantityAbsoluteError().getName() , measureName );
+				aggMeasures.add(aggMeasure);
+				
+				measureName = getErrorMeasureName( quantitativeVariable,  VARIANCE_LABEL , true );
+				aggMeasure 	= new AggMeasure( errorTable.getMeanQuantityVariance().getName() , measureName );
+				aggMeasures.add(aggMeasure);
+				
+				// absolute error measures
+				measureName = getErrorMeasureName( quantitativeVariable, RELATIVE_ERROR_LABEL , false );
+				aggMeasure 	= new AggMeasure( errorTable.getTotalQuantityRelativeError().getName() , measureName );
+				aggMeasures.add(aggMeasure);
+				
+				measureName = getErrorMeasureName( quantitativeVariable, ABSOLUTE_ERROR_LABEL , false );
+				aggMeasure 	= new AggMeasure( errorTable.getTotalQuantityAbsoluteError().getName() , measureName );
+				aggMeasures.add(aggMeasure);
+				
+				measureName = getErrorMeasureName( quantitativeVariable,  VARIANCE_LABEL , false );
+				aggMeasure 	= new AggMeasure( errorTable.getTotalQuantityVariance().getName() , measureName );
+				aggMeasures.add(aggMeasure);
+			}
 			
-			measureName = getErrorMeasureName( quantitativeVariable, ABSOLUTE_ERROR_LABEL , true );
-			aggMeasure 	= new AggMeasure( errorTable.getMeanQuantityAbsoluteError().getName() , measureName );
-			aggMeasures.add(aggMeasure);
-			
-			measureName = getErrorMeasureName( quantitativeVariable,  VARIANCE_LABEL , true );
-			aggMeasure 	= new AggMeasure( errorTable.getMeanQuantityVariance().getName() , measureName );
-			aggMeasures.add(aggMeasure);
-			
-			// absolute error measures
-			measureName = getErrorMeasureName( quantitativeVariable, RELATIVE_ERROR_LABEL , false );
-			aggMeasure 	= new AggMeasure( errorTable.getTotalQuantityRelativeError().getName() , measureName );
-			aggMeasures.add(aggMeasure);
-			
-			measureName = getErrorMeasureName( quantitativeVariable, ABSOLUTE_ERROR_LABEL , false );
-			aggMeasure 	= new AggMeasure( errorTable.getTotalQuantityAbsoluteError().getName() , measureName );
-			aggMeasures.add(aggMeasure);
-			
-			measureName = getErrorMeasureName( quantitativeVariable,  VARIANCE_LABEL , false );
-			aggMeasure 	= new AggMeasure( errorTable.getTotalQuantityVariance().getName() , measureName );
-			aggMeasures.add(aggMeasure);
 		}
 
 		private void createAggForeignKeys() {

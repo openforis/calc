@@ -44,6 +44,10 @@ public class FactTable extends DataTable {
 	private DataSchema schema;
 	private Map<QuantitativeVariable, Field<BigDecimal>> measureFields;
 	private Field<String> clusterField; 
+	
+	
+	public final Field<Integer> SSU_ID = createField( "ssu_id", SQLDataType.INTEGER, this );
+	
 	/**
 	 * Map of variableId --> map of aoiLevel id --> list of error tables
 	 */
@@ -153,6 +157,39 @@ public class FactTable extends DataTable {
 		
 		Workspace workspace = getWorkspace();
 		ErrorSettings errorSettings = workspace.getErrorSettings();
+		
+		if( getEntity().isSamplingUnit() &&  errorSettings.hasErrorSettings(-1) ){
+			long variableId = -1;
+			Collection<? extends Number> aois 					= errorSettings.getAois( variableId );
+			Collection<? extends Number> categoricalVariables 	= errorSettings.getCategoricalVariables( variableId );
+			
+			for ( Number aoiId : aois ){
+				for ( Number categoricalVariableId : categoricalVariables ){
+					CategoricalVariable<?> categoricalVariable = (CategoricalVariable<?>) workspace.getVariableById( categoricalVariableId.intValue() );
+					Aoi aoi = workspace.getAoiHierarchies().get(0).getAoiById( aoiId.intValue() );
+					
+					// aoi might be null during collect import phase
+					if( aoi!= null && categoricalVariable !=null ){
+						AoiLevel aoiLevel 						= aoi.getAoiLevel();
+						List<ErrorTable> variableErrorTables 	= getOrCreateErrorTables( variableId , aoiLevel.getId().longValue() );
+						ErrorTable variableErrorTable 			= null;
+						for ( ErrorTable errorTable : variableErrorTables ){
+							if( errorTable.getCategoricalVariable().equals(categoricalVariable) ){
+								variableErrorTable = errorTable;
+								break;
+							}
+						}
+						if( variableErrorTable == null ){
+							
+							QuantitativeVariable areaVar = getWorkspace().getAreaVariable();
+							variableErrorTable = new ErrorTable(areaVar, aoiLevel, categoricalVariable, schema );
+							variableErrorTables.add( variableErrorTable );
+						}
+					}
+					
+				}
+			}
+		}
 		
 		Collection<QuantitativeVariable> outputVariables = getEntity().getDefaultProcessingChainQuantitativeOutputVariables();
 		for ( QuantitativeVariable quantitativeVariable : outputVariables ){

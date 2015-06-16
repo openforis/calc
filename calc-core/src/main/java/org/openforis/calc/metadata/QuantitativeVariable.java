@@ -126,6 +126,6 @@ public class QuantitativeVariable extends Variable<BigDecimal> {
 		VariableAggregate.AGGREGATE_TYPE[] aggTypes = { VariableAggregate.AGGREGATE_TYPE.SUM, VariableAggregate.AGGREGATE_TYPE.MAX , VariableAggregate.AGGREGATE_TYPE.MIN, VariableAggregate.AGGREGATE_TYPE.MEAN , VariableAggregate.AGGREGATE_TYPE.STDDEV };
 		return aggTypes;
 	}
-
+	
 	
 }

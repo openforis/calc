@@ -57,7 +57,7 @@ public abstract class Variable<T> extends VariableBase {
 		return this.entity;
 	}
 
-	void setEntity(Entity entity) {
+	public void setEntity(Entity entity) {
 		this.entity = entity;
 		if( entity != null ) {
 			setEntityId( entity.getId() );

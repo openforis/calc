@@ -7,17 +7,23 @@ import static org.openforis.calc.r.RScript.COMMA;
 import static org.openforis.calc.r.RScript.NEW_LINE;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Select;
 import org.jooq.SelectQuery;
+import org.jooq.TableField;
 import org.jooq.impl.DSL;
 import org.openforis.calc.metadata.Aoi;
 import org.openforis.calc.metadata.AoiLevel;
 import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
+import org.openforis.calc.metadata.SamplingDesign.ColumnJoin;
+import org.openforis.calc.metadata.SamplingDesign.TwoStagesSettings;
 import org.openforis.calc.psql.Psql;
 import org.openforis.calc.r.RVariable;
 import org.openforis.calc.r.SetValue;
@@ -60,6 +66,8 @@ public class CalculateErrorTask extends CalcRTask {
 //		boolean stratified = this.workspace.hasStratifiedSamplingDesign();
 		
 		QuantitativeVariable quantitativeVariable = errorTable.getQuantitativeVariable();
+		boolean areaError = quantitativeVariable.getId() == -1;
+		
 //		Aoi aoi = errorTable.getAoi();
 		CategoricalVariable<?> categoricalVariable = errorTable.getCategoricalVariable();
 		
@@ -76,23 +84,28 @@ public class CalculateErrorTask extends CalcRTask {
 		addScript( r().setValue( strata , r().dbGetQuery(connection, selectStrata) ) );			
 //		}
 		
-		Select<?> selectPlots = getPlotSelect( aoi, schema, this.errorTable.getQuantitativeVariable(), this.errorTable.getCategoricalVariable() );
+		Select<?> selectPlots = getPlotSelect( aoi, schema, quantitativeVariable, this.errorTable.getCategoricalVariable() );
 		// plots
 		RVariable plots = r().variable("plots");
 		addScript( r().setValue( plots , r().dbGetQuery(connection, selectPlots) ) );
 		
-		// data (e.g. trees)
-		Select<?> selectData = getDataSelect( aoi, schema,  this.errorTable.getQuantitativeVariable(),  this.errorTable.getCategoricalVariable() );
-		RVariable data = r().variable("data");
-		addScript( r().setValue( data , r().dbGetQuery(connection, selectData) ) );
+		if( ! areaError ){
+			// data (e.g. trees)
+			Select<?> selectData = getDataSelect( aoi, schema,  quantitativeVariable,  this.errorTable.getCategoricalVariable() );
+			RVariable data = r().variable("data");
+			addScript( r().setValue( data , r().dbGetQuery(connection, selectData) ) );
+		}
+		
+		
+		String dataFrameName = areaError ? "plots" : "data";
 		
 		// for now hardcoded. let's see if in the future there's time for refactoring
 		StringBuilder sb = new StringBuilder();
 		
-		sb.append( "if( nrow(data) > 0){" );
+		sb.append( "if( nrow("+dataFrameName+") > 0){" );
 		
 		RVariable classes = r().variable( "classes" );
-		SetValue setClasses = r().setValue( classes, r().sqldf( "select distinct class_id from data" ) );
+		SetValue setClasses = r().setValue( classes, r().sqldf( "select distinct class_id from " + dataFrameName ) );
 //		addScript( setClasses );
 		sb.append( setClasses.toString() );
 		setClasses = r().setValue( classes, r().variable(classes, "class_id") );
@@ -110,14 +123,16 @@ public class CalculateErrorTask extends CalcRTask {
 			sb.append("plotsClone <-  sqldf( select );");
 			sb.append( NEW_LINE );
 			
-			sb.append("select <- \"select *, case when class_id ==\";");
-			sb.append( NEW_LINE );
-			sb.append("select <- paste( select , cls , sep=\" \" );");
-			sb.append( NEW_LINE );
-			sb.append("select  <- paste( select , \"then 1 else 0 end as class from data\" , sep=\" \" );");
-			sb.append( NEW_LINE );
-			sb.append("dataClone <-  sqldf( select );");
-			sb.append( NEW_LINE );
+			if( !areaError ){
+				sb.append("select <- \"select *, case when class_id ==\";");
+				sb.append( NEW_LINE );
+				sb.append("select <- paste( select , cls , sep=\" \" );");
+				sb.append( NEW_LINE );
+				sb.append("select  <- paste( select , \"then 1 else 0 end as class from data\" , sep=\" \" );");
+				sb.append( NEW_LINE );
+				sb.append("dataClone <-  sqldf( select );");
+				sb.append( NEW_LINE );
+			}
 			
 //			String setErrorsString = "errors <- calculateQuantityError( data = dataClone , plots = plotsClone ";
 //			if( stratified ){
@@ -129,9 +144,16 @@ public class CalculateErrorTask extends CalcRTask {
 //			}
 //			setErrorsString += ") ;";
 //			sb.append( setErrorsString );
-			
-			sb.append( "errors <- calculateQuantityError( dataClone , plotsClone , strata ) ;");
-			sb.append( NEW_LINE );
+			if( areaError ){
+				
+				sb.append( "errors <- calculateAreaError( plotsClone , strata ) ;");
+				sb.append( NEW_LINE );
+				
+			} else {
+				
+				sb.append( "errors <- calculateQuantityError( dataClone , plotsClone , strata ) ;");
+				sb.append( NEW_LINE );
+			}
 			
 			
 			// insert results
@@ -139,24 +161,40 @@ public class CalculateErrorTask extends CalcRTask {
 			sb.append( NEW_LINE );
 			sb.append( errorTable.getName() );
 			sb.append( NEW_LINE );
+			
+			
 			sb.append( "(" );
-			sb.append( NEW_LINE );
-			sb.append( errorTable.getMeanQuantityAbsoluteError().getName() );
-			sb.append( COMMA );
-			sb.append( NEW_LINE );
-			sb.append( errorTable.getMeanQuantityRelativeError().getName() );
-			sb.append( COMMA );
-			sb.append( NEW_LINE );
-			sb.append( errorTable.getMeanQuantityVariance().getName() );
-			sb.append( COMMA );
-			sb.append( NEW_LINE );
-			sb.append( errorTable.getTotalQuantityAbsoluteError().getName() );
-			sb.append( COMMA );
-			sb.append( NEW_LINE );
-			sb.append( errorTable.getTotalQuantityRelativeError().getName() );
-			sb.append( COMMA );
-			sb.append( NEW_LINE );
-			sb.append( errorTable.getTotalQuantityVariance().getName() );
+			if( areaError ){
+				sb.append( NEW_LINE );
+				sb.append( errorTable.getAreaAbsoluteError().getName() );
+				sb.append( COMMA );
+				sb.append( NEW_LINE );
+				sb.append( errorTable.getAreaRelativeError().getName() );
+				sb.append( COMMA );
+				sb.append( NEW_LINE );
+				sb.append( errorTable.getAreaVariance().getName() );
+
+			} else {
+				
+				sb.append( NEW_LINE );
+				sb.append( errorTable.getMeanQuantityAbsoluteError().getName() );
+				sb.append( COMMA );
+				sb.append( NEW_LINE );
+				sb.append( errorTable.getMeanQuantityRelativeError().getName() );
+				sb.append( COMMA );
+				sb.append( NEW_LINE );
+				sb.append( errorTable.getMeanQuantityVariance().getName() );
+				sb.append( COMMA );
+				sb.append( NEW_LINE );
+				sb.append( errorTable.getTotalQuantityAbsoluteError().getName() );
+				sb.append( COMMA );
+				sb.append( NEW_LINE );
+				sb.append( errorTable.getTotalQuantityRelativeError().getName() );
+				sb.append( COMMA );
+				sb.append( NEW_LINE );
+				sb.append( errorTable.getTotalQuantityVariance().getName() );
+			}
+			
 			
 			sb.append( COMMA );
 			sb.append( NEW_LINE );
@@ -181,18 +219,29 @@ public class CalculateErrorTask extends CalcRTask {
 			
 			sb.append( "VALUES(';" );
 			sb.append( NEW_LINE );
-			
-			sb.append( "query <- paste( query , ifelse( is.na(errors$meanQuantityAbsolute) , -1 , errors$meanQuantityAbsolute) , sep=\"\" );" );
-			sb.append( NEW_LINE );
-			sb.append( "query <- paste( query , ifelse( is.na(errors$meanQuantityRelative) , -1 , errors$meanQuantityRelative ) , sep=\",\" );" );
-			sb.append( NEW_LINE );
-			sb.append( "query <- paste( query , ifelse( is.na(errors$meanQuantityVariance) , -1 , errors$meanQuantityVariance) , sep=\",\" );" );
-			sb.append( NEW_LINE );
-			sb.append( "query <- paste( query , ifelse( is.na(errors$totalQuantityAbsolute) , -1 , errors$totalQuantityAbsolute) , sep=\",\" );" );
-			sb.append( NEW_LINE );
-			sb.append( "query <- paste( query , ifelse( is.na(errors$totalQuantityRelative) , -1 , errors$totalQuantityRelative) , sep=\",\" );" );
-			sb.append( NEW_LINE );
-			sb.append( "query <- paste( query , ifelse( is.na(errors$totalQuantityVariance) , -1 , errors$totalQuantityVariance) , sep=\",\" );" );
+		
+			if( areaError ){
+				
+				sb.append( "query <- paste( query , ifelse( is.na(errors$areaAbsolute) , -1 , errors$areaAbsolute) , sep=\"\" );" );
+				sb.append( NEW_LINE );
+				sb.append( "query <- paste( query , ifelse( is.na(errors$areaRelative) , -1 , errors$areaRelative ) , sep=\",\" );" );
+				sb.append( NEW_LINE );
+				sb.append( "query <- paste( query , ifelse( is.na(errors$areaVariance) , -1 , errors$areaVariance) , sep=\",\" );" );
+				
+			} else {
+				
+				sb.append( "query <- paste( query , ifelse( is.na(errors$meanQuantityAbsolute) , -1 , errors$meanQuantityAbsolute) , sep=\"\" );" );
+				sb.append( NEW_LINE );
+				sb.append( "query <- paste( query , ifelse( is.na(errors$meanQuantityRelative) , -1 , errors$meanQuantityRelative ) , sep=\",\" );" );
+				sb.append( NEW_LINE );
+				sb.append( "query <- paste( query , ifelse( is.na(errors$meanQuantityVariance) , -1 , errors$meanQuantityVariance) , sep=\",\" );" );
+				sb.append( NEW_LINE );
+				sb.append( "query <- paste( query , ifelse( is.na(errors$totalQuantityAbsolute) , -1 , errors$totalQuantityAbsolute) , sep=\",\" );" );
+				sb.append( NEW_LINE );
+				sb.append( "query <- paste( query , ifelse( is.na(errors$totalQuantityRelative) , -1 , errors$totalQuantityRelative) , sep=\",\" );" );
+				sb.append( NEW_LINE );
+				sb.append( "query <- paste( query , ifelse( is.na(errors$totalQuantityVariance) , -1 , errors$totalQuantityVariance) , sep=\",\" );" );
+			}
 			sb.append( NEW_LINE );
 			sb.append( "query <- paste( query , cls , sep=\",\"  );" );
 			sb.append( NEW_LINE );
@@ -230,8 +279,30 @@ public class CalculateErrorTask extends CalcRTask {
 		ExpansionFactorTable expfTable = schema.getExpansionFactorTable( aoi.getAoiLevel() );
 
 		SelectQuery<Record> select = new Psql().selectQuery();
+		if( workspace.has2StagesSamplingDesign() ){
+			
+			List<ColumnJoin> psuJoinColumns = workspace.getSamplingDesign().getTwoStagesSettingsObject().getPsuIdColumns();
+			List<Field<?>> psuIdFields = new LinkedList<Field<?>>();
+			for (ColumnJoin columnJoin : psuJoinColumns) {
+				Field<?> field = expfTable.field( columnJoin.getColumn() );
+				psuIdFields.add( field );
+			}
+			
+			Field<?> psuId = getPsuIdField( psuIdFields );
+			select.addSelect( psuId );
+			
+			select.addSelect( expfTable.PSU_TOTAL );
+			select.addSelect( expfTable.PSU_SAMPLED_TOTAL );
+			select.addSelect( expfTable.PSU_AREA );
+			select.addSelect( expfTable.SSU_TOTAL );
+			select.addSelect( expfTable.SSU_COUNT );
+			select.addSelect( expfTable.NO_THEORETICAL_BU );
+			select.addSelect( expfTable.WEIGHT );
+			
+		} else {
+			select.addSelect( expfTable.AREA );
+		}
 		
-		select.addSelect( expfTable.AREA );
 		select.addFrom( expfTable );
 		select.addConditions( expfTable.AOI_ID.eq(aoi.getId()) );
 		
@@ -247,6 +318,19 @@ public class CalculateErrorTask extends CalcRTask {
 		}
 	
 		return select;
+	}
+
+	private Field<?> getPsuIdField(List<? extends Field<?>> psuIdFields) {
+		Field<?> psuId = null;
+		for( Field<?> field : psuIdFields ){
+			if( psuId == null ){
+				psuId = DSL.concat( field );
+			} else {
+				psuId = psuId.concat( "_" ).concat( field );
+			}
+		}
+		psuId = psuId.as("psu_id");
+		return psuId;
 	}
 	
 	private Select<?> getPlotSelect( Aoi aoi , DataSchema schema , QuantitativeVariable quantitativeVariable, CategoricalVariable<?> category ){
@@ -270,6 +354,21 @@ public class CalculateErrorTask extends CalcRTask {
 		if( workspace.hasClusterSamplingDesign() ){
 			select.addSelect( suFactTable.getClusterField().as("cluster") );
 		}
+		if( workspace.has2StagesSamplingDesign() ){
+			TwoStagesSettings twoStagesSettings = workspace.getSamplingDesign().getTwoStagesSettingsObject();
+			List<ColumnJoin> psuJoinColumns = twoStagesSettings.getSamplingUnitPsuJoinColumns();
+			List<Field<?>> psuIdFields = new LinkedList<Field<?>>();
+			for (ColumnJoin columnJoin : psuJoinColumns) {
+				Field<?> field = suFactTable.field( columnJoin.getColumn() );
+				psuIdFields.add( field );
+			}
+			
+			Field<?> psuIdField = getPsuIdField( psuIdFields );
+			select.addSelect( psuIdField );
+			
+			select.addSelect( suFactTable.SSU_ID );
+		}
+		
 		select.addSelect( suFactTable.field(DataTable.WEIGHT_COLUMN) );
 		
 		select.addFrom( suFactTable );
@@ -285,10 +384,15 @@ public class CalculateErrorTask extends CalcRTask {
 //			select.addSelect( dimensionIdField.as( "class_id" ) );
 //		}
 		
+		if( workspace.has2StagesSamplingDesign() ){
+			
+			select.addConditions( suFactTable.getAoiIdField(aoi.getAoiLevel()).eq( aoi.getId().intValue() ) );
+			
+		} else {
+			select.addJoin( suAoiTable, suAoiTable.getIdField().eq(suFactTable.getSamplingUnitIdField()) );
+			select.addConditions( suAoiTable.getAoiIdField(aoi.getAoiLevel()).eq( aoi.getId().longValue() ) );
+		}
 		
-		select.addJoin( suAoiTable, suAoiTable.getIdField().eq(suFactTable.getSamplingUnitIdField()) );
-		
-		select.addConditions( suAoiTable.getAoiIdField(aoi.getAoiLevel()).eq( aoi.getId().longValue() ) );
 		
 		return select;
 	}
@@ -318,6 +422,23 @@ public class CalculateErrorTask extends CalcRTask {
 			select.addGroupBy( factTable.getClusterField() );		
 		}
 		
+		if( workspace.has2StagesSamplingDesign() ){
+			List<ColumnJoin> psuJoinColumns = workspace.getSamplingDesign().getTwoStagesSettingsObject().getSamplingUnitPsuJoinColumns();
+			List<Field<?>> psuIdFields = new LinkedList<Field<?>>();
+			for (ColumnJoin columnJoin : psuJoinColumns) {
+				Field<?> field = factTable.field( columnJoin.getColumn() );
+				psuIdFields.add( field );
+				
+				select.addGroupBy( field );
+			}
+			
+			Field<?> psuIdField = getPsuIdField( psuIdFields );
+			select.addSelect( psuIdField );
+			
+			select.addSelect( factTable.SSU_ID );
+			select.addGroupBy( factTable.SSU_ID );
+		}
+		
 		Field<BigDecimal> plotAreaField = factTable.getPlotAreaField();
 		select.addSelect( DSL.sum( factTable.getQuantityField(quantity).div(plotAreaField) ).as("quantity") );
 		
@@ -326,8 +447,15 @@ public class CalculateErrorTask extends CalcRTask {
 		select.addGroupBy( dimensionIdField );
 		
 		select.addFrom( factTable );
-		select.addJoin( suAoiTable, suAoiTable.getIdField().eq( factTable.getParentIdField() ) );
-		select.addConditions( suAoiTable.getAoiIdField(aoi.getAoiLevel()).eq( aoi.getId().longValue() ) );
+		
+		if( workspace.has2StagesSamplingDesign() ){
+			
+			select.addConditions( factTable.getAoiIdField(aoi.getAoiLevel()).eq( aoi.getId().intValue() ) );
+			
+		} else {
+			select.addJoin( suAoiTable, suAoiTable.getIdField().eq( factTable.getParentIdField() ) );
+			select.addConditions( suAoiTable.getAoiIdField(aoi.getAoiLevel()).eq( aoi.getId().longValue() ) );
+		}
 		
 		return select;
 	}

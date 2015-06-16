@@ -247,7 +247,7 @@ public class VariableManager {
 		if( errorSettings != null ){
 			for ( String key : errorSettings.getParameters().keys() ) {
 				long variableId 	= Long.parseLong(key);
-				long newVariableId	= variableIds.get( (int)variableId );
+				long newVariableId	= variableId == -1 ? -1 : variableIds.get( (int)variableId );
 				
 				Collection<? extends Number> categoricalVariableIds = errorSettings.getCategoricalVariables(variableId);
 				List<Long> newCategoricalVariableIds = new ArrayList<Long>();

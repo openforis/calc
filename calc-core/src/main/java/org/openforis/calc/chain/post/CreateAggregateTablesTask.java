@@ -21,6 +21,7 @@ import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.SamplingDesign;
 import org.openforis.calc.metadata.SamplingDesign.ColumnJoin;
 import org.openforis.calc.metadata.SamplingDesign.TableJoin;
+import org.openforis.calc.metadata.SamplingDesign.TwoStagesSettings;
 import org.openforis.calc.psql.CreateTableStep.AsStep;
 import org.openforis.calc.psql.Psql;
 import org.openforis.calc.psql.Psql.Privilege;
@@ -324,6 +325,16 @@ public final class CreateAggregateTablesTask extends Task {
 				select.addSelect( DSL.castNull( DOUBLEPRECISION ).as( errorTable.getMeanQuantityVariance().getName() ) );
 			}
 		}
+		if( entity.isSamplingUnit() ){
+			List<ErrorTable> errorTables = factTable.getErrorTables( getWorkspace().getAreaVariable() );
+			if( errorTables.size() > 0 ){
+				ErrorTable errorTable = errorTables.get( 0 );
+				
+				select.addSelect( DSL.castNull( DOUBLEPRECISION ).as( errorTable.getAreaAbsoluteError().getName() ) );
+				select.addSelect( DSL.castNull( DOUBLEPRECISION ).as( errorTable.getAreaRelativeError().getName() ) );
+				select.addSelect( DSL.castNull( DOUBLEPRECISION ).as( errorTable.getAreaVariance().getName() ) );
+			}
+		}
 		
 		// in case entities that need to be aggregated based on their sampling design 
 		if( entity.isInSamplingUnitHierarchy() ){
@@ -349,11 +360,12 @@ public final class CreateAggregateTablesTask extends Task {
 			if( factTable.isGeoreferenced() ) {
 				
 				if( getWorkspace().has2StagesSamplingDesign() ){
+					TwoStagesSettings twoStagesSettings = samplingDesign.getTwoStagesSettingsObject();
 					DataAoiTable aoiTable = getJob().getInputSchema().getPrimarySUAoiTable();
 					select.addSelect( aoiTable.getAoiIdFields() );
 					
-					List<ColumnJoin> psuJoinColumns = samplingDesign.getTwoStagesSettingsObject().getPsuIdColumns();
-					List<ColumnJoin> suPsuJoinColumns = samplingDesign.getTwoStagesSettingsObject().getSamplingUnitPsuJoinColumns();
+					List<ColumnJoin> psuJoinColumns = twoStagesSettings.getPsuIdColumns();
+					List<ColumnJoin> suPsuJoinColumns = twoStagesSettings.getSamplingUnitPsuJoinColumns();
 					
 					Condition condition = null;
 					for (int i = 0; i < psuJoinColumns.size(); i++) {
@@ -426,11 +438,16 @@ public final class CreateAggregateTablesTask extends Task {
 			}
 			
 			if( getWorkspace().has2StagesSamplingDesign() ){
-				
-				List<ColumnJoin> samplingUnitPsuJoinColumns = samplingDesign.getTwoStagesSettingsObject().getSamplingUnitPsuJoinColumns();
+				TwoStagesSettings twoStagesSettings = samplingDesign.getTwoStagesSettingsObject();
+
+				List<ColumnJoin> samplingUnitPsuJoinColumns = twoStagesSettings.getSamplingUnitPsuJoinColumns();
 				for( ColumnJoin columnJoin : samplingUnitPsuJoinColumns ){
 					select.addSelect( dataTable.field(columnJoin.getColumn()) );
 				}
+				
+				
+				Entity ssu = getWorkspace().getEntityByOriginalId( twoStagesSettings.getSsuOriginalId() );
+				select.addSelect( dataTable.field(ssu.getIdColumn()).as(factTable.SSU_ID.getName()) );
 			}
 		}
 		

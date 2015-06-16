@@ -20,6 +20,7 @@ import org.openforis.calc.metadata.CategoryLevel;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.EquationList;
 import org.openforis.calc.metadata.ErrorSettings;
+import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.SamplingDesign;
 import org.openforis.calc.metadata.Stratum;
 import org.openforis.calc.metadata.Variable;
@@ -590,6 +591,20 @@ public class Workspace extends WorkspaceBase {
 	 */
 	public Schemas schemas() {
 		return new Schemas( this );
+	}
+
+	@JsonIgnore
+	public QuantitativeVariable getAreaVariable() {
+		if( this.hasSamplingDesign() ){
+			QuantitativeVariable areaVar = new QuantitativeVariable();
+			areaVar.setEntity(  this.getSamplingUnit() );
+			areaVar.setId( -1 );
+			areaVar.setName( "area" );
+			areaVar.setCaption( "Area" );
+			
+			return areaVar;
+		}
+		return null;
 	}
 
 }

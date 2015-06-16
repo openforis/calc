@@ -356,6 +356,27 @@ public class CalcJob extends Job {
 				}
 			}
 			
+			// Area error
+			if( errorSettings.hasErrorSettings( -1 ) ){
+				Collection<? extends Number> aois 					= errorSettings.getAois( -1 );
+				Collection<? extends Number> categoricalVariables 	= errorSettings.getCategoricalVariables( -1 );
+				
+				for ( Number aoiId : aois ){
+					for ( Number categoricalVariableId : categoricalVariables ){
+						CategoricalVariable<?> categoricalVariable = (CategoricalVariable<?>) workspace.getVariableById( categoricalVariableId.intValue() );
+						Aoi aoi = workspace.getAoiHierarchies().get(0).getAoiById( aoiId.intValue() );
+						
+						// aoi might be null during collect import phase
+//						if( aoi!= null && categoricalVariable !=null ){
+						FactTable factTable = getSchemas().getDataSchema().getFactTable( getWorkspace().getSamplingUnit() );
+						ErrorTable errorTable = factTable.getErrorTable( getWorkspace().getAreaVariable(), aoi, categoricalVariable );
+//						}
+						CalculateErrorTask calculateErrorTask = new CalculateErrorTask( this , errorTable , connection , aoi );
+						addTask( calculateErrorTask );
+
+					}
+				}
+			}
 			// add error calculation tasks 
 			Set< QuantitativeVariable > outputVariables = this.group.uniqueOutputQuantitativeVariables();
 			for ( QuantitativeVariable outputVariable : outputVariables ){

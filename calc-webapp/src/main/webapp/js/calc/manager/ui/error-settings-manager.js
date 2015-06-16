@@ -103,6 +103,34 @@ ErrorSettingsManager.prototype.showQuantity = function() {
 	
 	var vars = [];
 	CalculationStepManager.getInstance().loadAll( function(steps) {
+		
+			if( steps.length > 0 ){
+				var initAreaButton = function(){
+//					var variable = $this.workspace.getVariableById( variableId ); 
+					
+					var div = $( '<div class="option row no-margin no-padding" style="padding-bottom: 2px"></div>' );
+					
+					var btn = $( '<button class="btn blue-btn col-md-12"></button>' );
+					btn.html( "Area" );
+					btn.click( function(e){
+						$this.showVariableSettings( -1 );
+						
+						container.find( ".blue-btn-selected" ).removeClass( "blue-btn-selected" ).addClass( "blue-btn" );
+						btn.removeClass( "blue-btn" ).addClass( "blue-btn-selected" );
+					});
+					div.append( btn );
+					container.append( div );
+					
+					
+//					var errorBtn = $( '<button class="btn no-background col-md-4" style="margin-top:3px;"><img alt="" src="img/cv.png" width="20em" height="20em"></button>' );
+//					div.append( errorBtn );
+//					var optBtn = new OptionButton( errorBtn );
+					
+					vars.push( -1 );
+				};
+				initAreaButton();
+			}
+		
 			for( var i in steps ) {
 				var step = steps[i];
 				var variableId = step.outputVariableId;
@@ -188,9 +216,16 @@ ErrorSettingsManager.prototype.addVariableSettings = function( variableId ){
 	var rootAoi 		= this.workspace.getRootAoi();
 	addAoi( rootAoi , 0 );
 	
-	// add categories
+	
+	var entity = null;
 	var variable 	= this.workspace.getVariableById( variableId );
-	var entity 		= this.workspace.getEntityById( variable.entityId );
+	if( variableId == -1 ){
+		entity = this.workspace.samplingUnit();
+	} else {
+		
+		// add categories
+		entity 		= this.workspace.getEntityById( variable.entityId );
+	}
 //	var categories	= entity.samplingUnitHierarchyCategoricalVariables();
 	var categories	= this.workspace.samplingUnit().samplingUnitHierarchyCategoricalVariables();
 	
