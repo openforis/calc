@@ -85,6 +85,7 @@ public class CalculateSamplingUnitWeightTask extends CalcRTask {
 		SelectQuery<Record> select = new Psql().selectQuery();
 		select.addFrom( view );
 		select.addSelect( view.getIdField());
+		select.addSelect( view.getAncestorIdFields() );
 		for (String var : weightScript.getVariables() ) {
 			select.addSelect( view.field(var) );
 		}

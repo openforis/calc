@@ -120,6 +120,10 @@ public class EntityDataView extends DataTable {
 		return CollectionUtils.unmodifiableCollection( ids );
 	}
 	
+	public Field<Long> getAncestorIdField( Integer entityId ){
+		return ancestorIdFields.get( entityId );
+	}
+	
 	public Select<?> getSelect() {
 		return getSelect( true );
 	}
