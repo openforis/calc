@@ -127,7 +127,7 @@ public class WorkspaceBackupService {
 		Workspace ws = backup.getWorkspace();
 		
 		String phase1PlotTable = ws.getPhase1PlotTable();
-		if( StringUtils.isNotBlank(phase1PlotTable) ) {
+		if( ws.has2PhasesSamplingDesign() && StringUtils.isNotBlank(phase1PlotTable) ){
 			// read table information 
 			DynamicTable<?> phase1Table = new DynamicTable<Record>( phase1PlotTable, CalcSchema.CALC.getName() );
 			JSONArray tableInfo = tableDao.info( phase1Table );

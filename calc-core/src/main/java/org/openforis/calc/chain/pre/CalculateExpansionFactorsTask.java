@@ -88,12 +88,7 @@ public final class CalculateExpansionFactorsTask extends Task {
 			expfFormula = expf.PSU_TOTAL.div(expf.PSU_SAMPLED_TOTAL)
 					.mul(expf.PSU_AREA.div(expf.SSU_COUNT))
 					.mul(expf.BU_TOTAL.div(expf.WEIGHT));
-			// .div( expf.BU_TOTAL );
-
-			// .mul(
-			// // expf.SSU_TOTAL.div( expf.BU_TOTAL )
-			// )
-
+			
 		} else {
 
 			expfFormula = DSL
