@@ -236,9 +236,9 @@ public class WorkspaceService {
 	 */
 	@Transactional
 	private void resetResults( Entity entity ) {
-		DataSchema schema = new Schemas( entity.getWorkspace() ).getDataSchema();
-		ResultTable resultsTable = schema.getResultTable(entity);
-		DataTable dataTable = schema.getDataTable(entity);
+		DataSchema schema 			= new Schemas( entity.getWorkspace() ).getDataSchema();
+		ResultTable resultsTable 	= schema.getResultTable(entity);
+		DataTable dataTable 		= schema.getDataTable(entity);
 		
 		entityDataViewDao.drop( entity );
 		

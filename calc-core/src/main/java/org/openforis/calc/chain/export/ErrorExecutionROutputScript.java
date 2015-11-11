@@ -1,30 +1,30 @@
-/**
- * 
- */
-package org.openforis.calc.engine;
+package org.openforis.calc.chain.export;
 
 import static org.openforis.calc.r.RScript.COMMA;
 import static org.openforis.calc.r.RScript.NEW_LINE;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Select;
 import org.jooq.SelectQuery;
-import org.jooq.TableField;
 import org.jooq.impl.DSL;
+import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.Aoi;
 import org.openforis.calc.metadata.AoiLevel;
 import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.ErrorSettings;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.SamplingDesign.ColumnJoin;
 import org.openforis.calc.metadata.SamplingDesign.TwoStagesSettings;
 import org.openforis.calc.psql.Psql;
+import org.openforis.calc.r.RScript;
 import org.openforis.calc.r.RVariable;
 import org.openforis.calc.r.SetValue;
 import org.openforis.calc.schema.DataSchema;
@@ -33,37 +33,59 @@ import org.openforis.calc.schema.EntityAoiTable;
 import org.openforis.calc.schema.ErrorTable;
 import org.openforis.calc.schema.ExpansionFactorTable;
 import org.openforis.calc.schema.FactTable;
+import org.openforis.calc.schema.Schemas;
 import org.openforis.calc.schema.StratumDimensionTable;
 
 /**
- * Task responsible of calculating the error for the given error table
- * Now based only on "Formulas for estimators and their variances in NFI 28.2.2014 K.T. Korhonen & Olli Salmensuu, point estimators"
- *  
- * @author Mino Togna
+ * 
+ * @author M. Togna
  *
  */
-@Deprecated
-public class CalculateErrorTask extends CalcRTask {
+public class ErrorExecutionROutputScript extends ROutputScript {
 
-	private ErrorTable errorTable;
-	private RVariable connection;
-	private Workspace workspace;
-	private Aoi aoi;
-
-	protected CalculateErrorTask( CalcJob job , ErrorTable errorTable , RVariable connection , Aoi aoi){
-		super( job.getrEnvironment() , getName(errorTable.getQuantitativeVariable(), aoi , errorTable.getCategoricalVariable()) );
-		setJob( job );
-		
-		this.errorTable = errorTable;
-		this.connection = connection;
-		this.aoi = aoi;
-		this.workspace = errorTable.getQuantitativeVariable().getEntity().getWorkspace();
-		
-		initScript();
+	public ErrorExecutionROutputScript( int index, ErrorSettings errorSettings , Schemas schemas ) {
+		super( "error-exec.R", createScript(errorSettings , schemas), Type.SYSTEM, index );
 	}
 
-	void initScript() {
+	private static RScript createScript( ErrorSettings errorSettings , Schemas schemas ) {
+		RScript r 			= r();
+		Workspace workspace = errorSettings.getWorkspace();
 		
+		if( workspace.hasSamplingDesign() ){
+
+			Set<Long> varIds 	= errorSettings.getQuantityVariablesWithSettings();
+			for (Long variableId : varIds) {
+				QuantitativeVariable variable 						= (QuantitativeVariable) (( variableId == -1 ) ? workspace.getAreaVariable() : workspace.getVariableById( variableId.intValue() )); 
+				Collection<? extends Number> aois 					= errorSettings.getAois( variableId );
+				Collection<? extends Number> categoricalVariables 	= errorSettings.getCategoricalVariables( variableId );
+				
+//				System.out.println( variable.getName() );
+				for ( Number aoiId : aois ){
+					for ( Number categoricalVariableId : categoricalVariables ){
+						CategoricalVariable<?> categoricalVariable = (CategoricalVariable<?>) workspace.getVariableById( categoricalVariableId.intValue() );
+						Aoi aoi = workspace.getAoiHierarchies().get(0).getAoiById( aoiId.intValue() );
+						
+						FactTable factTable = schemas.getDataSchema().getFactTable( variable.getEntity() );
+						ErrorTable errorTable = factTable.getErrorTable( variable, aoi, categoricalVariable );
+//						CalculateErrorTask calculateErrorTask = new CalculateErrorTask( this , errorTable , connection , aoi );
+//						addTask( calculateErrorTask );
+						
+						RScript script = getScript( workspace, errorTable, aoi );
+						r.addScript( script );
+					}
+				}
+			}
+		}
+
+		return r;
+	}
+	
+	
+	static RScript getScript( Workspace workspace , ErrorTable errorTable , Aoi aoi ) {
+		// for now hardcoded. let's see if in the future there's time for refactoring
+		StringBuilder sb 	= new StringBuilder();
+		
+		RVariable connection = CONNECTION_VAR;
 //		boolean stratified = this.workspace.hasStratifiedSamplingDesign();
 		
 		QuantitativeVariable quantitativeVariable = errorTable.getQuantitativeVariable();
@@ -74,36 +96,35 @@ public class CalculateErrorTask extends CalcRTask {
 		
 		String name = getName( quantitativeVariable, aoi, categoricalVariable );
 
-		addScript( r().rScript( "# ==================== " + name + " ====================" ) );
+		sb.append( RScript.NEW_LINE );
+		sb.append( r().rScript( "# ==================== " + name + " ====================" ) );
 		
-		DataSchema schema = (DataSchema) this.errorTable.getSchema();
+		DataSchema schema = (DataSchema) errorTable.getSchema();
 //		if( stratified ){
 		// add read data scripts
 		// strata
-		Select<?> selectStrata = getStratumSelect( aoi, schema );
+		Select<?> selectStrata = getStratumSelect( workspace, aoi, schema );
 		RVariable strata = r().variable("strata");
-		addScript( r().setValue( strata , r().dbGetQuery(connection, selectStrata) ) );			
+		sb.append( r().setValue( strata , r().dbGetQuery(connection, selectStrata) ) );			
 //		}
 		
-		Select<?> selectPlots = getPlotSelect( aoi, schema, quantitativeVariable, this.errorTable.getCategoricalVariable() );
+		Select<?> selectPlots = getPlotSelect( workspace, aoi, schema, quantitativeVariable, errorTable.getCategoricalVariable() );
 		// plots
 		RVariable plots = r().variable("plots");
-		addScript( r().setValue( plots , r().dbGetQuery(connection, selectPlots) ) );
+		sb.append( r().setValue( plots , r().dbGetQuery(connection, selectPlots) ) );
 		
 		if( ! areaError ){
 			// data (e.g. trees)
-			Select<?> selectData = getDataSelect( aoi, schema,  quantitativeVariable,  this.errorTable.getCategoricalVariable() );
+			Select<?> selectData = getDataSelect( aoi, schema,  quantitativeVariable,  errorTable.getCategoricalVariable() );
 			RVariable data = r().variable("data");
-			addScript( r().setValue( data , r().dbGetQuery(connection, selectData) ) );
+			sb.append( r().setValue( data , r().dbGetQuery(connection, selectData) ) );
 		}
 		
 		
 		String dataFrameName = areaError ? "plots" : "data";
 		
-		// for now hardcoded. let's see if in the future there's time for refactoring
-		StringBuilder sb = new StringBuilder();
-		
 		sb.append( "if( nrow("+dataFrameName+") > 0){" );
+		sb.append( NEW_LINE );
 		
 		RVariable classes = r().variable( "classes" );
 		SetValue setClasses = r().setValue( classes, r().sqldf( "select distinct class_id from " + dataFrameName ) );
@@ -270,11 +291,13 @@ public class CalculateErrorTask extends CalcRTask {
 		// end if
 		sb.append("}");
 		sb.append( NEW_LINE );
+		sb.append( NEW_LINE );
+		sb.append( NEW_LINE );
 		
-		addScript( r().rScript(sb.toString()));
+		return r().rScript( sb.toString() );
 	}
 
-	private Select<?> getStratumSelect( Aoi aoi , DataSchema schema ){
+	private static Select<?> getStratumSelect( Workspace workspace , Aoi aoi , DataSchema schema ){
 		
 		StratumDimensionTable stratumTable = schema.getStratumDimensionTable();
 		ExpansionFactorTable expfTable = schema.getExpansionFactorTable( aoi.getAoiLevel() );
@@ -321,7 +344,7 @@ public class CalculateErrorTask extends CalcRTask {
 		return select;
 	}
 
-	private Field<?> getPsuIdField(List<? extends Field<?>> psuIdFields) {
+	private static Field<?> getPsuIdField(List<? extends Field<?>> psuIdFields) {
 		Field<?> psuId = null;
 		for( Field<?> field : psuIdFields ){
 			if( psuId == null ){
@@ -334,7 +357,7 @@ public class CalculateErrorTask extends CalcRTask {
 		return psuId;
 	}
 	
-	private Select<?> getPlotSelect( Aoi aoi , DataSchema schema , QuantitativeVariable quantitativeVariable, CategoricalVariable<?> category ){
+	private static Select<?> getPlotSelect( Workspace workspace , Aoi aoi , DataSchema schema , QuantitativeVariable quantitativeVariable, CategoricalVariable<?> category ){
 		Entity samplingUnit 					= workspace.getSamplingUnit();
 		FactTable suFactTable 					= schema.getFactTable( samplingUnit );
 		
@@ -398,7 +421,7 @@ public class CalculateErrorTask extends CalcRTask {
 		return select;
 	}
 	
-	private Select<?> getDataSelect( Aoi aoi , DataSchema schema , QuantitativeVariable quantity , CategoricalVariable<?> category ) {
+	private static Select<?> getDataSelect( Aoi aoi , DataSchema schema , QuantitativeVariable quantity , CategoricalVariable<?> category ) {
 		Workspace workspace = schema.getWorkspace();
 		Entity samplingUnit = workspace.getSamplingUnit();
 		Entity entity = quantity.getEntity();
@@ -462,16 +485,16 @@ public class CalculateErrorTask extends CalcRTask {
 	}
 	
 	private static String getName( QuantitativeVariable quantitativeVariable , Aoi aoi, CategoricalVariable<?> categoricalVariable ){
-		StringBuilder taskName = new StringBuilder();
+		StringBuilder name = new StringBuilder();
 		
-		taskName.append( "Calculate error for " );
-		taskName.append( quantitativeVariable.getName() );
-		taskName.append( " " );
-		taskName.append( aoi.getCaption() );
-		taskName.append( " " );
-		taskName.append( categoricalVariable.getName() );
+		name.append( "Calculate error for " );
+		name.append( quantitativeVariable.getName() );
+		name.append( " " );
+		name.append( aoi.getCaption() );
+		name.append( " " );
+		name.append( categoricalVariable.getName() );
 		
-		return taskName.toString();
+		return name.toString();
 	}
-
+	
 }

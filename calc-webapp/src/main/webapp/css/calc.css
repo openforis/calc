@@ -512,9 +512,9 @@ button.settings:hover {
 }
 #footer .links  button {
 	height: 100%;
-	width: 25%;
+	width: 20%;
 	font-size:1.2em;
-	font-weight: 200;
+	font-weight: 100;
 	letter-spacing: 0.03em;
 	border-radius: 1px;
 	font-family: "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -568,6 +568,16 @@ button.settings:hover {
 #footer button.back:hover {
 	color: 		#676c7a;
 }
+
+.btn-saiku{
+	background-color: transparent;
+/* 	color: rgba(90, 22, 22, 0.7) !important; */
+	background-color: rgba(115, 41, 41, 0.4);
+}
+.btn-saiku:hover {
+	background-color: rgba(115, 41, 41, 0.55);
+}
+
 /**
 formula editor
 */

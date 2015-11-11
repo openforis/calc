@@ -10,7 +10,6 @@ import java.util.List;
 
 /**
  * @author Mino Togna
- * @author S. Ricci
  *
  */
 public class RVector extends RScript {
@@ -18,6 +17,7 @@ public class RVector extends RScript {
 	private List<Object> values ;
 	private boolean changed;
 	
+	@SafeVarargs
 	<T extends Object> RVector(RScript previous, T... values) {
 		super(previous);
 		

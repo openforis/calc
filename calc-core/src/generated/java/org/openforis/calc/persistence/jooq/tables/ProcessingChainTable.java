@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ProcessingChainTable extends org.jooq.impl.TableImpl<org.openforis.calc.persistence.jooq.tables.records.ProcessingChainRecord> {
 
-	private static final long serialVersionUID = 2055419433;
+	private static final long serialVersionUID = -1218460472;
 
 	/**
 	 * The singleton instance of <code>calc.processing_chain</code>
@@ -55,6 +55,11 @@ public class ProcessingChainTable extends org.jooq.impl.TableImpl<org.openforis.
 	 * The column <code>calc.processing_chain.status</code>.
 	 */
 	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.ProcessingChainRecord, org.openforis.calc.engine.Worker.Status> STATUS = createField("status", org.jooq.impl.SQLDataType.VARCHAR.length(255).defaulted(true).asConvertedDataType(new org.openforis.calc.persistence.jooq.WorkerStatusConverter()), this, "");
+
+	/**
+	 * The column <code>calc.processing_chain.common_script</code>.
+	 */
+	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.ProcessingChainRecord, java.lang.String> COMMON_SCRIPT = createField("common_script", org.jooq.impl.SQLDataType.CLOB.defaulted(true), this, "");
 
 	/**
 	 * Create a <code>calc.processing_chain</code> table reference

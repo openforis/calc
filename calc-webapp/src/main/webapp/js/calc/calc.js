@@ -192,7 +192,7 @@ $(document).ready(function() {
 		}
 	};
 
-	Calc.footer.find(".links button").click( function(event){
+	Calc.footer.find(".links button:not(.btn-saiku)").click( function(event){
 		event.preventDefault();
 
 		var target = $( $(this).attr("href") );
@@ -204,7 +204,7 @@ $(document).ready(function() {
 		}
 		
 	});
-
+	
 	// event handler for home button click
 	homeButtonClick = function(event){
 		event.preventDefault();
@@ -212,8 +212,6 @@ $(document).ready(function() {
 		var $button = $(event.currentTarget);
 		sectionUrl = $button.attr("href");
 		
-		//set the current working section (calculation,results,data or settings)
-		Calc.section = $button.parents( ".section-home" );
 		//home page section (contains the button links to the external pages)
 		$homeSection = Calc.section.find( ".page-section" );
 		if( !sectionUrl ) {
@@ -260,8 +258,22 @@ $(document).ready(function() {
 			});
 		}
 	};
-	
-	$(".section-home button.btn-home, .section-home button.btn-home-plus").click( homeButtonClick );
+//	Calc.footer.find("button.btn-saiku").click(function(event){
+//		event.preventDefault();
+//
+//		var $button = $(event.currentTarget);
+//		sectionUrl = $button.attr("href");
+//		
+//		//home page section (contains the button links to the external pages)
+//		$homeSection = Calc.section.find( ".page-section" );
+//		if( !sectionUrl ) {
+//			var msg = " Calc error. Section url is undefinded";		
+//			throw msg;
+//		}
+//		
+//		Calc.navigateToSection( sectionUrl );
+//	});
+	$(".section-home button.btn-home, .section-home button.btn-home-plus, button.btn-saiku").click( homeButtonClick );
 	
 	Calc.backHomeBtn.click( function(event){
 		event.preventDefault();

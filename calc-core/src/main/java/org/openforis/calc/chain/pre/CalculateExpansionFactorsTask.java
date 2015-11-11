@@ -41,6 +41,7 @@ import org.openforis.calc.schema.ExtDataAoiTable;
  * 
  * @author M. Togna
  */
+@Deprecated
 public final class CalculateExpansionFactorsTask extends Task {
 
 	@Override

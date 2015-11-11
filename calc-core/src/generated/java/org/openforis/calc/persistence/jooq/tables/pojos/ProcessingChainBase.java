@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables.pojos;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ProcessingChainBase implements java.io.Serializable {
 
-	private static final long serialVersionUID = 1362419575;
+	private static final long serialVersionUID = 1695184135;
 
 	private java.lang.Integer                       id;
 	private java.lang.Integer                       workspaceId;
@@ -19,6 +19,7 @@ public class ProcessingChainBase implements java.io.Serializable {
 	private java.lang.String                        caption;
 	private java.lang.String                        description;
 	private org.openforis.calc.engine.Worker.Status status;
+	private java.lang.String                        commonScript;
 
 	public ProcessingChainBase() {}
 
@@ -28,7 +29,8 @@ public class ProcessingChainBase implements java.io.Serializable {
 		org.openforis.calc.engine.ParameterMap  parameters,
 		java.lang.String                        caption,
 		java.lang.String                        description,
-		org.openforis.calc.engine.Worker.Status status
+		org.openforis.calc.engine.Worker.Status status,
+		java.lang.String                        commonScript
 	) {
 		this.id = id;
 		this.workspaceId = workspaceId;
@@ -36,6 +38,7 @@ public class ProcessingChainBase implements java.io.Serializable {
 		this.caption = caption;
 		this.description = description;
 		this.status = status;
+		this.commonScript = commonScript;
 	}
 
 	public java.lang.Integer getId() {
@@ -84,5 +87,13 @@ public class ProcessingChainBase implements java.io.Serializable {
 
 	public void setStatus(org.openforis.calc.engine.Worker.Status status) {
 		this.status = status;
+	}
+
+	public java.lang.String getCommonScript() {
+		return this.commonScript;
+	}
+
+	public void setCommonScript(java.lang.String commonScript) {
+		this.commonScript = commonScript;
 	}
 }

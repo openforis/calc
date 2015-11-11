@@ -24,13 +24,14 @@ public class RScript {
 	// =====================================
 	// R symbols
 	// =====================================
-	public static final String DOLLAR = "$";
-	public static final String SPACE = " ";
-	public static final String ASSIGN = "<-";
-	public static final String COMMA = ",";
-	public static final String NEW_LINE = "\n";
-	public static final String NULL = "NULL";
-	public static final String NOT = "!";
+	public static final String DOLLAR				= "$";
+	public static final String SPACE 				= " ";
+	public static final String ASSIGN 				= "<-";
+	public static final String COMMA 				= ",";
+	public static final String NEW_LINE 			= "\n";
+	public static final String NULL 				= "NULL";
+	public static final String NOT 					= "!";
+	public static final String PLATFORM$FILE_SEP 	= ".Platform$file.sep";
 	
 	// common static R scripts
 	private static RScript CALC_COMMON_SCRIPT;
@@ -67,7 +68,7 @@ public class RScript {
 		return new RVariable(this, dataframe, name);
 	}
 
-	public RVariable variable(RVariable dataframe, String name) {
+	public RVariable variable(RScript dataframe, String name) {
 		return new RVariable(this, dataframe.toScript(), name);
 	}
 
@@ -111,6 +112,19 @@ public class RScript {
 		return new DbExistsTable(this, connection, name);
 	}
 	
+	public DbDriver dbDriver(String name) {
+		return new DbDriver(this, name);
+	}
+	
+	public DbQuoteString dbQuoteString(RVariable conn, RVariable x){
+		return new DbQuoteString( this , conn, x );
+	}
+//	calc.getQuotedFileContent <- function( filename ){
+	
+	public CalcGetQuotedFileContent calcGetQuotedFileContent( RVariable fileName ){
+		return new CalcGetQuotedFileContent( this, fileName );
+	}
+	
 	public If rIf(RScript condition, RScript script) {
 		return new If(this, condition, script);
 	}
@@ -123,9 +137,6 @@ public class RScript {
 		return new Not(this, script);
 	}
 	
-	public DbDriver dbDriver(String name) {
-		return new DbDriver(this, name);
-	}
 
 	public Library library(String name) {
 		return new Library(this, name);
@@ -135,7 +146,7 @@ public class RScript {
 		return new Div(this, numerator, denumenator);
 	}
 
-	public<T extends Object> RVector c(T... values) {
+	public<T extends Object> RVector c(@SuppressWarnings("unchecked") T... values) {
 		return new RVector(this, values);
 	}
 	
@@ -155,6 +166,14 @@ public class RScript {
 		return new Sqldf(this, script);
 	}
 
+	public Source source( String fileName ){
+		return new Source( this, fileName);
+	}
+
+	public Setwd setWd( RScript script) {
+		return new Setwd(this, script);
+	}
+
 	public CheckError checkError(RVariable variable) {
 		return checkError(variable, null);
 	}
@@ -163,6 +182,18 @@ public class RScript {
 		return new CheckError(this, variable, connection);
 	}
 
+	public Paste paste( RVariable variable1 , RVariable variable2 , String sep ){
+		return new Paste(this, variable1, variable2, sep);
+	}
+	
+	public FileInfo fileInfo( RVariable rVariable ){
+		return new FileInfo( this , rVariable );
+	}
+	
+	public ReadChar readChar( RVariable con, RVariable nchars ){
+		return new ReadChar( this, con, nchars );
+	}
+	
 	public CalculateQuantityError calculateQuantityError( RVariable data, RVariable plots , RVariable strata ) {
 		return new CalculateQuantityError( this, data , plots , strata );
 	}
@@ -185,7 +216,24 @@ public class RScript {
 		rScript.parseVariables(variables);
 		return rScript;
 	}
-
+	
+	public RScript addNewLine() {
+		this.append( NEW_LINE );
+		return this;
+	}
+	
+	public RScript addScript(RScript script) {
+		if( script != null && !script.isEmpty() ){
+			this.append( script.toString() );
+			this.append( NEW_LINE );
+		}
+		return this;
+	}
+	
+	public boolean isEmpty(){
+		return sb.length() <= 0;
+	}
+	
 	// =====================================
 	// methods to convert the instance into an R script
 	// =====================================
@@ -209,7 +257,7 @@ public class RScript {
 		String script = this.toScript();
 		if (!StringUtils.isBlank(script)) {
 			script = script.trim();
-			script = script.replaceAll("[\r\n]+", "\n");
+//			script = script.replaceAll("[\r\n]+", "\n");
 			sb.append(script);
 			if (!script.endsWith(";")) {
 				sb.append(";");

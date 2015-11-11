@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.openforis.calc.engine;
+package org.openforis.calc.chain.export;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,9 +13,15 @@ import java.util.Map;
 import java.util.Set;
 
 import org.openforis.calc.chain.CalculationStep;
+import org.openforis.calc.chain.ProcessingChain;
+import org.openforis.calc.engine.CalcJob;
+import org.openforis.calc.engine.CalculationStepRTask;
+import org.openforis.calc.engine.Workspace;
+import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.Variable;
+import org.openforis.calc.r.Div;
 import org.openforis.calc.r.RScript;
 import org.openforis.calc.r.RVariable;
 import org.openforis.calc.schema.ResultTable;
@@ -27,49 +33,105 @@ import org.openforis.calc.schema.ResultTable;
  * @author Mino Togna
  * 
  */
-public class CalcJobEntityGroup {
+public class CalculationStepsGroup {
 
 	private Map<Integer, List<CalculationStep>> calculationSteps;
 	private Map<Integer, List<CalculationStepRTask>> calculationStepTasks;
 	private Map<Integer, Set<String>> outputVariables;
 	private Map<Integer, Set<String>> inputVariables;
-	private Map<Integer, Set<String>> allOutputVariables;
+	private Map<Integer, Set<String>> resultVariables;
 	private Map<Integer, RScript> plotAreaScripts;
 
 	private CalcJob job;
+	private Workspace workspace;
 
-	public CalcJobEntityGroup( CalcJob job ){
-		
+	@Deprecated
+	public CalculationStepsGroup( CalcJob job ){
 		this.job = job;
 		this.calculationSteps = new LinkedHashMap<Integer, List<CalculationStep>>();
 		
 	}
+	
+	public CalculationStepsGroup( Workspace workspace ){
+		this.workspace 			= workspace;
+		this.initCalculationSteps( Boolean.TRUE );
+	}
+	
+	private void initCalculationSteps( boolean onlyActive ){
 
+		ProcessingChain processingChain = this.workspace.getDefaultProcessingChain();
+		this.calculationSteps 			= new LinkedHashMap<Integer, List<CalculationStep>>();
+		this.resultVariables			= new LinkedHashMap<Integer, Set<String>>();
+		
+		List<CalculationStep> steps = processingChain.getCalculationSteps();
+		for (CalculationStep calculationStep : steps) {
+			if( !onlyActive || calculationStep.getActive() ){
+				this.addCalculationStep(calculationStep);
+			}
+		}
+		
+	}
+	
 	public void addCalculationStep(CalculationStep step) {
-		Integer entityId = step.getOutputVariable().getEntity().getId();
+		Integer entityId 			= step.getOutputVariable().getEntity().getId();
 		List<CalculationStep> steps = this.calculationSteps.get(entityId);
 		if (steps == null) {
 			steps = new ArrayList<CalculationStep>();
 			this.calculationSteps.put(entityId, steps);
 		}
 		steps.add(step);
-	}
-
-	public void addCalculationStep(List<CalculationStep> steps) {
-		for (CalculationStep calculationStep : steps) {
-			addCalculationStep(calculationStep);
+		
+		Set<String> resultVariables = this.resultVariables.get( entityId );
+		if (resultVariables == null) {
+			resultVariables = new HashSet<String>();
+			this.resultVariables.put( entityId, resultVariables );
 		}
+		
+		Variable<?> outputVariable 	= step.getOutputVariable();
+		Entity entity 				= outputVariable.getEntity();
+		String variableName 		= outputVariable.getName();
+		
+		resultVariables.add(variableName);
+		
+		if( outputVariable instanceof CategoricalVariable ) {
+			resultVariables.add(outputVariable.getInputCategoryIdColumn());
+		}
+		
+		if ( outputVariable instanceof QuantitativeVariable && entity.isInSamplingUnitHierarchy() && workspace.hasSamplingDesign() ) {
+			String variablePerHaName = ( (QuantitativeVariable)outputVariable ).getVariablePerHaName();
+			resultVariables.add(variablePerHaName);
+			
+			resultVariables.add( ResultTable.PLOT_AREA_COLUMN_NAME );
+		}
+		
 	}
-
+	
+	public Collection<Integer> entityIds() {
+		return this.calculationSteps.keySet();
+	}
+	
+	public Set<String> getResultVariables( int entityId ) {
+		return resultVariables.get( entityId );
+	}
+	
+	public List<CalculationStep> getCalculationSteps( int entityId ){
+		return this.calculationSteps.get( entityId );
+	}
+	
+	public Workspace getWorkspace() {
+		return workspace;
+	}
+	
+	@Deprecated
 	// init tasks with the given gonnection
-	void init(RVariable connection) {
+	public void init(RVariable connection) {
 
 		this.reset();
 
 		for (int entityId : this.entityIds()) {
 			// objects to initialize
 			List<CalculationStepRTask> calculationStepTasks = new ArrayList<CalculationStepRTask>();
-			Set<String> outputVariables = new HashSet<String>();
+			Set<String> rawOutputVariables = new HashSet<String>();
 			Set<String> inputVariables = new HashSet<String>();
 			// temp fix it contains all variables will be saved in the results
 			// table
@@ -102,7 +164,7 @@ public class CalcJobEntityGroup {
 				CalculationStepRTask task = new CalculationStepRTask(step, job, connection, dataFrame, plotAreaVariable);
 				calculationStepTasks.add(task);
 
-				outputVariables.addAll(task.getOutputVariables());
+				rawOutputVariables.addAll(task.getOutputVariables());
 				inputVariables.addAll(task.getInputVariables());
 				allOutputVariables.addAll(task.getAllOutputVariables());
 			}
@@ -120,45 +182,45 @@ public class CalcJobEntityGroup {
 			
 			
 			this.calculationStepTasks.put(entityId, calculationStepTasks);
-			this.outputVariables.put(entityId, outputVariables);
+			this.outputVariables.put(entityId, rawOutputVariables);
 			this.inputVariables.put(entityId, inputVariables);
-			this.allOutputVariables.put(entityId, allOutputVariables);
+			this.resultVariables.put(entityId, allOutputVariables);
 		}
 
 	}
 
+	@Deprecated
 	private void reset() {
 		calculationStepTasks = new HashMap<Integer, List<CalculationStepRTask>>();
 		outputVariables = new HashMap<Integer, Set<String>>();
 		inputVariables = new HashMap<Integer, Set<String>>();
-		allOutputVariables = new HashMap<Integer, Set<String>>();
+		resultVariables = new HashMap<Integer, Set<String>>();
 		this.plotAreaScripts = new HashMap<Integer, RScript>();
 	}
 
-	public Collection<Integer> entityIds() {
-		return this.calculationSteps.keySet();
-	}
-
+	
+	@Deprecated
 	public Collection<CalculationStepRTask> getCalculationStepTasks(int entityId) {
 		return calculationStepTasks.get(entityId);
 	}
-	
+	@Deprecated
 	public Collection<String> getOutputVariables(int entityId) {
 		return outputVariables.get(entityId);
 	}
-
+	@Deprecated
 	public Collection<String> getInputVariables(int entityId) {
 		return inputVariables.get(entityId);
 	}
 
+	@Deprecated
 	public Collection<String> getAllOutputVariables(int entityId) {
-		return allOutputVariables.get(entityId);
+		return resultVariables.get(entityId);
 	}
-
+	@Deprecated
 	public RScript getPlotAreaScript(int entityId) {
 		return this.plotAreaScripts.get(entityId);
 	}
-	
+	@Deprecated
 	public Set< QuantitativeVariable > uniqueOutputQuantitativeVariables(){
 		Set< QuantitativeVariable > uniqueOutputVariables = new HashSet< QuantitativeVariable > ();
 		

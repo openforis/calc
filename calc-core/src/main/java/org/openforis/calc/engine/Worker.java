@@ -200,7 +200,7 @@ public abstract class Worker {
 
 	// returns a new r script. left here now since this is the common super
 	// class between calcjob and calcrscript
-	protected RScript r() {
+	public RScript r() {
 		return new RScript();
 	}
 

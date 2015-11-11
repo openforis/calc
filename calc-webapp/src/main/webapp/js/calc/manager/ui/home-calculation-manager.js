@@ -12,18 +12,21 @@ function HomeCalculationManager(container) {
 	
 	this.deleteBtn 				= this.container.find( ".delete" );
 	this.executeBtn 			= this.container.find( ".execute" );
+	this.downloadChainBtn		= this.container.find( ".btn-R" );
 	
 	this.calculationStepBtnTemplate = this.container.find(".calculation-step.template");
 	
 	//init managers
 	this.calculationStepManager = CalculationStepManager.getInstance();
-	this.workspaceManager = WorkspaceManager.getInstance();
+	this.workspaceManager 		= WorkspaceManager.getInstance();
+	this.processingChainManager	= ProcessingChainManager.getInstance();
 	
 	// options section 
 	var optionsSection 		= this.container.find( '.options' );
 	var optionsSectionBtn 	= this.container.find( '.options-section-btn' );''
 	// manager for calculations section otions
 	this.optionsManager		= new HomeCalculationOptionsManager( this , optionsSection, optionsSectionBtn );
+	
 	
 	this.stepsEntityMap		= [];
 	
@@ -64,6 +67,12 @@ HomeCalculationManager.prototype.init = function() {
 		});
 	});
 
+	this.downloadChainBtn.click( function(e){
+		e.preventDefault();
+		
+		$this.processingChainManager.export();
+	});
+	
 };
 
 /**

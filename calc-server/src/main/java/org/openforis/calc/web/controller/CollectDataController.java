@@ -96,8 +96,6 @@ public class CollectDataController {
 					response.addError( new ObjectError("fileFormat", "Unable to import.\nThe workspace " + workspace.getName() + " is linked to another collect survey.") );
 				}
 				
-				
-				
 			} catch (Exception e) {
 				String message = "Error extracting survey from Collect backup file";
 				LOG.error(message, e);
@@ -132,6 +130,7 @@ public class CollectDataController {
 		collectBackupFileExtensions = new ArrayList<String>();
 		collectBackupFileExtensions.add( "collect" );
 		collectBackupFileExtensions.add( "collect-data" );
+		collectBackupFileExtensions.add( "collect-backup" );
 		collectBackupFileExtensions.add( "zip" );
 	}
 	

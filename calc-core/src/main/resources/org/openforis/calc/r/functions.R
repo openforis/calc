@@ -12,6 +12,22 @@ checkError <- function( e, connection=NULL ){
     stop(e);
   }
 };
+
+#===
+#=== Extracts the content of a file and returns it as an SQL quoted string  
+#===
+calc.getQuotedFileContent <- function( filename ){
+  filePath <- paste(scriptDir , filename , sep = .Platform$file.sep);
+  print( filePath )
+  fileContent <- readChar( filePath , file.info( filePath )$"size");
+  print( fileContent )
+  
+  fileContentQuoted <- dbQuoteString( conn = connection , x = fileContent );
+  print( fileContentQuoted )
+  
+  return ( fileContentQuoted );
+};
+
 library("RPostgreSQL");
 library("sqldf");
 # sqldf options. 

@@ -5,6 +5,8 @@ package org.openforis.calc.metadata;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.openforis.calc.engine.ParameterHashMap;
 import org.openforis.calc.engine.ParameterMap;
@@ -121,6 +123,18 @@ public class ErrorSettings extends ErrorSettingsBase {
 		return map;
 	}
 
+	public Set<Long> getQuantityVariablesWithSettings(){
+		Set<Long> variables 	= new HashSet<Long>();
+		Set<String> keys 		= getParameters().keys();
+		for (String key : keys) {
+			long varId = Long.parseLong(key);
+			if( hasErrorSettings(varId) ){
+				variables.add( varId );
+			}
+		}
+		return variables;
+	}
+	
 	/**
 	 * Delete the error setting parameters associated with the quantitative variable id passed as argument
 	 * @param varId

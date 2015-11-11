@@ -24,7 +24,6 @@ import org.jooq.impl.SchemaImpl;
 import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.chain.ProcessingChainManager;
-import org.openforis.calc.chain.export.CalculationStepsGroup;
 import org.openforis.calc.chain.post.CreateAggregateTablesTask;
 import org.openforis.calc.chain.post.PublishRolapSchemaTask;
 import org.openforis.calc.metadata.Aoi;
@@ -65,7 +64,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * @author Mino Togna
  * 
  */
-@Deprecated
 public class CalcJob extends Job {
 
 	// save results in a temporary results table 
@@ -165,11 +163,11 @@ public class CalcJob extends Job {
 		CalcRTask intTask = openConnection();
 		
 		// init entity groups
-		this.group.init( connection );
+		this.group.init(connection);
 		
-		List<Task> readDataTasks 		= new ArrayList<Task>();
-		List<Task> executeTasks 		= new ArrayList<Task>();
-		List<Task> writeResultsTasks 	= new ArrayList<Task>();
+		List<Task> readDataTasks = new ArrayList<Task>();
+		List<Task> executeTasks = new ArrayList<Task>();
+		List<Task> writeResultsTasks = new ArrayList<Task>();
 		
 		// execute the calculation steps grouped by entity
 		Workspace workspace = getWorkspace();
@@ -197,7 +195,7 @@ public class CalcJob extends Job {
 					upd.addValue(f, DSL.val(null, Double.class));
 				}
 			}
-			readDataTask.addScript( r().dbSendQuery( connection, upd ) );
+			readDataTask.addScript( r().dbSendQuery(connection, upd) );
 			
 			Set<String> selectFields = new HashSet<String>();
 			// 2. append select data

@@ -17,6 +17,8 @@ import org.json.simple.parser.ParseException;
 import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.InvalidProcessingChainException;
 import org.openforis.calc.chain.ProcessingChain;
+import org.openforis.calc.chain.ProcessingChainService;
+import org.openforis.calc.chain.export.ROutputScript;
 import org.openforis.calc.engine.CalcJob;
 import org.openforis.calc.engine.CalcTestJob;
 import org.openforis.calc.engine.DataRecord;
@@ -24,6 +26,7 @@ import org.openforis.calc.engine.Job;
 import org.openforis.calc.engine.ParameterMap;
 import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
+import org.openforis.calc.engine.WorkspaceBackup;
 import org.openforis.calc.engine.WorkspaceLockedException;
 import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.persistence.jooq.ParameterMapConverter;
@@ -46,11 +49,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class JobController {
 	@Autowired
 	private WorkspaceService workspaceService;
-
+	
+	@Autowired
+	private ProcessingChainService processingChainService;
+	
 	@Autowired
 	private TaskManager taskManager;
 
-	@RequestMapping(value = "/processing-chain.R", method = RequestMethod.POST )
+	@Deprecated
+	@RequestMapping(value = "/processing-chain-old.R", method = RequestMethod.POST )
 	public void downloadRCode(HttpServletResponse response) throws ParseException {
 		
 		StringBuilder sb = new StringBuilder();
@@ -65,7 +72,7 @@ public class JobController {
 		}
 		
 		if( sb.length() <= 0 ){
-			sb.append( "print('No job foud');" );
+			sb.append( "print('No job found');" );
 		}
 		
 		try {
@@ -94,6 +101,7 @@ public class JobController {
 	 * @throws InvalidProcessingChainException
 	 * @throws WorkspaceLockedException
 	 */
+	@Deprecated
 	@RequestMapping(value = "/step/{stepId}/execute.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	synchronized Job executeCalculationStep(@PathVariable int stepId) throws InvalidProcessingChainException, WorkspaceLockedException {
@@ -120,6 +128,7 @@ public class JobController {
 	 * @throws InvalidProcessingChainException
 	 * @throws WorkspaceLockedException
 	 */
+	@Deprecated
 	@RequestMapping(value = "/execute.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	synchronized Job execute() throws InvalidProcessingChainException, WorkspaceLockedException {
@@ -142,6 +151,7 @@ public class JobController {
 	 * @throws InvalidProcessingChainException
 	 * @throws WorkspaceLockedException
 	 */
+	@Deprecated
 	@RequestMapping(value = "/test/execute.json", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	synchronized Job testCalculationStep(@RequestParam int stepId, @RequestParam String variables) throws InvalidProcessingChainException, WorkspaceLockedException {
@@ -161,6 +171,7 @@ public class JobController {
 		return job;
 	}
 
+	@Deprecated
 	@RequestMapping(value = "/test/results.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody
 	List<DataRecord> getTestResults(@RequestParam String jobId, @RequestParam int offset, @RequestParam(value = "numberOfRows", required=false) Integer numberOfRows) {
@@ -172,6 +183,7 @@ public class JobController {
 		return results;
 	}
 	
+	@Deprecated
 	@RequestMapping(value = "/test/results/count.json", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody 
 	Response getTestResultsCount(@RequestParam String jobId) {

@@ -24,6 +24,7 @@ import org.openforis.calc.schema.CategoryDimensionTable;
  * @author Mino Togna
  * 
  */
+@Deprecated
 public class CalculationStepRTask extends CalcRTask {
 
 	private CalculationStep calculationStep;

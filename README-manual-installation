@@ -68,7 +68,7 @@ Install Xquartz http://xquartz.macosforge.org/landing/
 Then run the command install.packages(‘RPostgreSQL’) inside R terminal.
 		
 2) If having problems installing rJava under OS X Yosemite (10.10.x)
-Install Java for OS X 2014-001 : http://support.apple.com/kb/DL1572		
+Install Java for OS X 2015-001 : https://support.apple.com/kb/DL1572?locale=en_US
 ==============
  * Ubuntu
 ============== 

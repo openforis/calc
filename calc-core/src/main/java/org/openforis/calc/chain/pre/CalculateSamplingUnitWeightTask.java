@@ -34,6 +34,7 @@ import org.openforis.calc.schema.EntityDataView;
  * @author Mino Togna
  * 
  */
+@Deprecated
 public class CalculateSamplingUnitWeightTask extends CalcRTask {
 
 	private RLogger rLogger;
