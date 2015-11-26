@@ -55,7 +55,7 @@ CalculationStepEditManager = function (container) {
 	this.rScriptInputField 	= this.container.find("[name=script]");
 //	this.rScriptInputField 	= this.$form.find("[name=script]");
 //	this.$RScript = new RScript( this.rScriptInputField );
-	this.rEditor			= new REditor( this.rScriptInputField.attr("id") );
+	this.rEditor			= new REditor( this.rScriptInputField.attr("id") , true );
 	
 	this.$addVariableButton = this.$form.find( "button[name='add-variable']" );	
 	this.addVariableModal 	= new AddVariableModal( this.$addVariableButton , this );
@@ -109,6 +109,14 @@ CalculationStepEditManager.prototype.init = function( callback ) {
 				$this.updateForm();
 				
 				$this.lockForm();
+				
+//				console.log( $this.rEditor.getValue() );
+				if( StringUtils.isNotBlank( $this.rEditor.getValue() ) ){
+//					console.log( $this.rEditor.getValue() );
+					$this.rScriptForm.show(0);
+					$this.rEditor.refresh();
+				}
+				
 			});
 		} else {
 			// default settings
@@ -155,14 +163,14 @@ CalculationStepEditManager.prototype.initEventHandlers = function() {
 		$this.categoryButton.deselect();
 		
 		$this.typeInput.val( "SCRIPT" );
-		$this.rScriptForm.fadeIn( 300 );
+//		$this.rScriptForm.fadeIn( 300 );
 		$this.aggregateForm.fadeIn( 300 );
 	});
 	this.rScriptButton.deselect( function() {
 		UI.enable( this.button );
 		
 		$this.typeInput.val( "" );
-		$this.rScriptForm.hide();
+//		$this.rScriptForm.hide();
 		$this.aggregateForm.hide();
 	});
 
@@ -189,12 +197,10 @@ CalculationStepEditManager.prototype.initEventHandlers = function() {
 		$this.equationButton.deselect();
 		
 		// hide variable from selection
-//		$this.outputVariableForm.hide();
 		$this.outputCategoryForm.fadeIn();
 		
 		$this.typeInput.val( "CATEGORY" );
-//		$this.categoryForm.fadeIn( 300 );
-		$this.rScriptForm.fadeIn( 300 );
+//		$this.rScriptForm.fadeIn( 300 );
 		
 		$this.updateVariableSelect();
 	});
@@ -206,8 +212,7 @@ CalculationStepEditManager.prototype.initEventHandlers = function() {
 //		$this.outputVariableForm.fadeIn();
 		
 		$this.typeInput.val( "" );
-//		$this.categoryForm.hide();
-		$this.rScriptForm.hide();
+//		$this.rScriptForm.hide();
 		
 		$this.updateVariableSelect();
 	});

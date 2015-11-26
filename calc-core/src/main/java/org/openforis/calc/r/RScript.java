@@ -5,8 +5,11 @@ package org.openforis.calc.r;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -14,6 +17,8 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openforis.calc.metadata.Variable;
+import org.openforis.commons.io.csv.CsvReader;
+import org.openforis.commons.io.flat.FlatRecord;
 
 /**
  * @author Mino Togna
@@ -36,6 +41,8 @@ public class RScript {
 	// common static R scripts
 	private static RScript CALC_COMMON_SCRIPT;
 	private static RScript ERROR_ESTIMATION_SCRIPT;
+	// R builtin functions
+	private static List<String> BUILTIN_FUNCTIONS;
 	
 	// previous r script
 	private RScript previous;
@@ -182,7 +189,7 @@ public class RScript {
 		return new CheckError(this, variable, connection);
 	}
 
-	public Paste paste( RVariable variable1 , RVariable variable2 , String sep ){
+	public Paste paste( RScript variable1 , RScript variable2 , String sep ){
 		return new Paste(this, variable1, variable2, sep);
 	}
 	
@@ -201,7 +208,27 @@ public class RScript {
 	public CalculateAreaError calculateAreaError(  RVariable plots , RVariable strata ) {
 		return new CalculateAreaError( this, plots , strata );
 	}
+	
+	public CalcPersistCommonScript calcPersistCommonScript(RVariable filename, int id){
+		return new CalcPersistCommonScript( this , filename, id );
+	}
 
+	public CalcPersistBaseUnitWeightScript calcPersistBaseUnitWeightScript(RVariable filename, int id){
+		return new CalcPersistBaseUnitWeightScript( this , filename, id );
+	}
+	
+	public CalcPersistEntityPlotAreaScript calcPersistEntityPlotAreaScript(RVariable filename, int id){
+		return new CalcPersistEntityPlotAreaScript( this , filename, id );
+	}
+	
+	public CalcPersistCalculationStepScript calcPersistCalculationStepScript (RVariable filename, int id){
+		return new CalcPersistCalculationStepScript( this , filename, id );
+	}
+	
+	public CalcPersistErrorScript calcPersistErrorScript(RVariable filename, int id){
+		return new CalcPersistErrorScript( this , filename, id );
+	}
+	
 	// simple text passed as script. no parsing done here. it's assumed that the
 	// script is correct
 	public RScript rScript(String script) {
@@ -319,6 +346,39 @@ public class RScript {
 			CALC_COMMON_SCRIPT = loadScript( "org/openforis/calc/r/functions.R" );
 		}
 		return CALC_COMMON_SCRIPT;
+	}
+	
+	public static List<String> getBuiltinFunctions(){
+		if( BUILTIN_FUNCTIONS == null ){
+			BUILTIN_FUNCTIONS = new ArrayList<String>();
+		}
+		
+//		try {
+			InputStream stream = RScript.class.getClassLoader().getResourceAsStream( "org/openforis/calc/r/builtin-functions.csv" );
+			
+//			@SuppressWarnings("resource")
+			Scanner scanner = new Scanner(stream);
+			while( scanner.hasNextLine() ){
+				String line = scanner.nextLine();
+				BUILTIN_FUNCTIONS.add( line );
+			}
+			scanner.close();
+//			@SuppressWarnings("resource")
+//			CsvReader reader = new CsvReader( stream );
+//			reader.readHeaders();
+			
+//			FlatRecord record = reader.nextRecord();
+//			while( record != null ){
+//				String function = record.getValue( 0 , String.class );
+//				BUILTIN_FUNCTIONS.add( function );
+//				
+//				record = reader.nextRecord();
+//			}
+//		} catch (IOException e) {
+//			throw new RuntimeException( "Unexpected error while reading builtin R functions", e );
+//		}
+		
+		return BUILTIN_FUNCTIONS;
 	}
 	
 	@Deprecated

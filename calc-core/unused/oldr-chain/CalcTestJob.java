@@ -28,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author Mino Togna
  * 
  */
+@Deprecated
 public class CalcTestJob extends CalcJob {
 
 	private static final int DEFAULT_LIMIT = 10000;

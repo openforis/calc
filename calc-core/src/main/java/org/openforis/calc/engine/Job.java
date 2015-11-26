@@ -9,13 +9,9 @@ import java.util.UUID;
 
 import javax.sql.DataSource;
 
-import org.openforis.calc.r.R;
-import org.openforis.calc.r.REnvironment;
-import org.openforis.calc.r.RException;
 import org.openforis.calc.schema.DataSchema;
 import org.openforis.calc.schema.RolapSchema;
 import org.openforis.calc.schema.Schemas;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -38,13 +34,6 @@ public class Job extends Worker implements Iterable<Task> {
 	private DataSource dataSource;
 	@JsonIgnore
 	private Schemas schemas;
-
-	@Autowired
-	@JsonIgnore
-	R r;
-
-	// @JsonIgnore
-	// protected REnvironment rEnvironment;
 
 	protected Job(Workspace workspace, DataSource dataSource) {
 		this.currentTaskIndex = -1;
@@ -131,18 +120,6 @@ public class Job extends Worker implements Iterable<Task> {
 		}
 	}
 
-	// /**
-	// * Adds a task to the Job
-	// * @param task The Class of the task we want to add to the Job
-	// * @return The added Task instance
-	// */
-	// @SuppressWarnings("unchecked")
-	// public <T extends Task> T addTask(Class<T> task) {
-	// Task newTask = taskManager.createTask(task);
-	// addTask(newTask);
-	// return (T) newTask;
-	// }
-
 	public int getCurrentTaskIndex() {
 		return this.currentTaskIndex;
 	}
@@ -198,12 +175,12 @@ public class Job extends Worker implements Iterable<Task> {
 		return schemas.getDataSchema();
 	}
 
-	protected REnvironment newREnvironment() {
-		try {
-			return r.newEnvironment();
-		} catch (RException e) {
-			throw new IllegalStateException("Unable to create new r environment", e);
-		}
-	}
+//	protected REnvironment newREnvironment() {
+//		try {
+//			return r.newEnvironment();
+//		} catch (RException e) {
+//			throw new IllegalStateException("Unable to create new r environment", e);
+//		}
+//	}
 
 }

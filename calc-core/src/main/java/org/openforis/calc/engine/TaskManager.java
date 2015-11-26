@@ -13,9 +13,9 @@ import javax.sql.DataSource;
 import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.InvalidProcessingChainException;
 import org.openforis.calc.chain.ProcessingChain;
+import org.openforis.calc.chain.post.CreateAggregateTablesTask;
+import org.openforis.calc.chain.post.PublishRolapSchemaTask;
 import org.openforis.calc.chain.pre.AssignAoiColumnsTask;
-import org.openforis.calc.chain.pre.CalculateExpansionFactorsTask;
-import org.openforis.calc.chain.pre.CalculateSamplingUnitWeightTask;
 import org.openforis.calc.collect.CollectDataImportTask;
 import org.openforis.calc.collect.CollectMetadataImportTask;
 import org.openforis.calc.collect.CollectSurveyImportJob;
@@ -82,23 +82,37 @@ public class TaskManager {
 	 * Create a job with write-access to the calc schema. Used for updating
 	 * metadata (e.g. importing sampling design, variables)
 	 */
-	public CalcJob createCalcJob( Workspace workspace ) {
-		CalcJob job = new CalcJob(workspace, dataSource, this.beanFactory);
-		autowire(job);
-		return job;
-	}
+//	@Deprecated
+//	public CalcJob createCalcJob( Workspace workspace ) {
+//		CalcJob job = new CalcJob(workspace, dataSource, this.beanFactory);
+//		autowire(job);
+//		return job;
+//	}
 	/**
 	 * Create a job with tasks 
 	 * @param workspace
 	 * @param processingChain
 	 * @return
 	 */
-	public CalcJob createDefaultCalcJob(Workspace workspace, boolean aggregates) {
-		CalcJob job = createCalcJob(workspace);
-		job.setAggregates(aggregates);
+//	@Deprecated
+//	public CalcJob createDefaultCalcJob(Workspace workspace, boolean aggregates) {
+//		CalcJob job = createCalcJob(workspace);
+//		job.setAggregates(aggregates);
+//		
+//		ProcessingChain processingChain = workspace.getDefaultProcessingChain();
+//		job.setProcessingChain( processingChain );
+//		
+//		return job;
+//	}
+	
+	public Job createDefaultJob( Workspace workspace ) {
+		Job job = createJob( workspace );
 		
-		ProcessingChain processingChain = workspace.getDefaultProcessingChain();
-		job.setProcessingChain( processingChain );
+		CreateAggregateTablesTask aggTask 				= createTask( CreateAggregateTablesTask.class );
+		job.addTask( aggTask );
+		
+		PublishRolapSchemaTask publishRolapSchemaTask 	= createTask( PublishRolapSchemaTask.class );
+		job.addTask( publishRolapSchemaTask );
 		
 		return job;
 	}
@@ -112,12 +126,12 @@ public class TaskManager {
 	}
 
 	public void addPreProcessingTasks(Job job) {
-		CalculateSamplingUnitWeightTask weightTask = new CalculateSamplingUnitWeightTask( job.newREnvironment() );
-		autowire(weightTask);
+//		CalculateSamplingUnitWeightTask weightTask = new CalculateSamplingUnitWeightTask( job.newREnvironment() );
+//		autowire(weightTask);
 		
-		job.addTask( weightTask );
+//		job.addTask( weightTask );
 		job.addTask( createTask(AssignAoiColumnsTask.class) );
-		job.addTask( createTask(CalculateExpansionFactorsTask.class) );
+//		job.addTask( createTask(CalculateExpansionFactorsTask.class) );
 	}
 	
 	/**
@@ -158,11 +172,12 @@ public class TaskManager {
 	/**
 	 * Creates a job for testing a {@link CalculationStep}
 	 */
-	public CalcTestJob createCalcTestJob(Workspace workspace, CalculationStep step, ParameterMap variableParameters) throws InvalidProcessingChainException {
-		CalcTestJob job = new CalcTestJob(workspace, this.beanFactory, variableParameters);
-		((AutowireCapableBeanFactory) beanFactory).autowireBean(job);
-		return job;
-	}
+//	@Deprecated
+//	public CalcTestJob createCalcTestJob(Workspace workspace, CalculationStep step, ParameterMap variableParameters) throws InvalidProcessingChainException {
+//		CalcTestJob job = new CalcTestJob(workspace, this.beanFactory, variableParameters);
+//		((AutowireCapableBeanFactory) beanFactory).autowireBean(job);
+//		return job;
+//	}
 
 	/**
 	 * Create a job with write-access to the calc schema. Used for updating

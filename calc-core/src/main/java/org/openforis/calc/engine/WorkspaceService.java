@@ -14,6 +14,7 @@ import org.openforis.calc.metadata.CategoryLevel.CategoryLevelValue;
 import org.openforis.calc.metadata.CategoryManager;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.Entity.Visitor;
+import org.openforis.calc.metadata.EntityManager;
 import org.openforis.calc.metadata.ErrorSettings;
 import org.openforis.calc.metadata.ErrorSettingsManager;
 import org.openforis.calc.metadata.MetadataManager;
@@ -63,6 +64,8 @@ public class WorkspaceService {
 	private EntityDataViewDao entityDataViewDao;
 	@Autowired
 	private VariableManager variableManager;
+	@Autowired
+	private EntityManager entityManager;
 	@Autowired
 	private ProcessingChainManager processingChainService;
 	@Autowired
@@ -272,7 +275,7 @@ public class WorkspaceService {
 //				}
 //			});
 //		} else {
-			entityDataViewDao.createOrUpdateView( entity );
+		entityManager.createOrUpdateView( entity );
 //		}
 	}
 	
@@ -319,11 +322,11 @@ public class WorkspaceService {
 				entity.traverse( new Visitor() {
 					@Override
 					public void visit(Entity entity) {
-						entityDataViewDao.createOrUpdateView( entity );
+						entityManager.createOrUpdateView( entity );
 					}
 				});
 			} else {
-				entityDataViewDao.createOrUpdateView( entity );
+				entityManager.createOrUpdateView( entity );
 			}
 			 
 		} else if( !exists ) {
@@ -386,11 +389,11 @@ public class WorkspaceService {
 			entity.traverse( new Visitor() {
 				@Override
 				public void visit(Entity entity) {
-					entityDataViewDao.createOrUpdateView( entity );
+					entityManager.createOrUpdateView( entity );
 				}
 			});
 		} else {
-			entityDataViewDao.createOrUpdateView( entity );
+			entityManager.createOrUpdateView( entity );
 		}
 	}
 	

@@ -74,6 +74,7 @@ public class CalculateExpansionFactorROutputScript extends ROutputScript {
 				} else {
 					createExpfTable = createExpfTable1phase( workspace, schema , expf );
 				}
+				
 				r.addScript( createExpfTable );
 				
 				RScript addWeight 		= addWeightField( workspace, schema , expf );

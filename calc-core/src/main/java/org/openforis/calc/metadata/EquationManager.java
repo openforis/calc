@@ -27,7 +27,7 @@ import org.openforis.calc.persistence.jooq.tables.EquationListTable;
 import org.openforis.calc.persistence.jooq.tables.daos.EquationDao;
 import org.openforis.calc.persistence.jooq.tables.daos.EquationListDao;
 import org.openforis.calc.psql.Psql;
-import org.openforis.calc.r.R;
+import org.openforis.calc.r.RScript;
 import org.openforis.commons.io.csv.CsvReader;
 import org.openforis.commons.io.flat.FlatRecord;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,10 +50,7 @@ public class EquationManager {
 	@Autowired
 	private Psql psql;
 	
-	@Autowired
-	private R r;
-
-	private static Pattern VARIABLE_PATTERN = Pattern.compile( "([A-Za-z_]+[A-Za-z_.]*)" );
+	private static Pattern VARIABLE_PATTERN = Pattern.compile( "(['\"A-Za-z_]+[A-Za-z_.]*)" );
 	
 	@Transactional
 	public void createFromCsv( Workspace workspace , String filePath, String listName ) throws IOException {
@@ -170,8 +167,10 @@ public class EquationManager {
 			Matcher matcher = VARIABLE_PATTERN.matcher( equation );
 			while( matcher.find() ) {
 				String var = matcher.group( 1 );
-				if( !r.getBaseFunctions().contains( var ) ) {
-					variables.add( var );
+				if( ! RScript.getBuiltinFunctions().contains( var ) ) {
+					if( !(var.startsWith("'") || var.startsWith("\"")) ){
+						variables.add( var );
+					}
 				}
 			}
 		}

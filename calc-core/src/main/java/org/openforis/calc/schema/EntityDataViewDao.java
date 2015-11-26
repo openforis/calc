@@ -36,26 +36,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class EntityDataViewDao extends AbstractJooqDao {
 	
-	public void createOrUpdateView( Entity entity, boolean joinWithResults ){
-		Workspace ws = entity.getWorkspace();
-
-		Schemas schemas = new Schemas(ws);
-		DataSchema inputSchema = schemas.getDataSchema();
-		EntityDataView view = inputSchema.getDataView(entity);
-		
-		// drop view
-		drop(view);
-
-		// create view
-		create( view , joinWithResults );
-	}
-	
-	public void createOrUpdateView( Entity entity ) {
-		createOrUpdateView( entity , true );
-	}
-
-	public void create( EntityDataView view , boolean joinWithResults ) {
-		Select<?> select = view.getSelect( joinWithResults );
+	public void create( EntityDataView view , Select<?> select) {
 		psql().createView(view).as(select).execute();
 	}
 

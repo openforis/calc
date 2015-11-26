@@ -11,8 +11,11 @@ import org.openforis.calc.r.RScript;
  */
 public class ErrorFunctionsROutputScript extends ROutputScript {
 
+	private ErrorSettings errorSettings;
+
 	public ErrorFunctionsROutputScript( int index, ErrorSettings errorSettings ) {
 		super( "error-functions.R", createScript(errorSettings), Type.USER, index );
+		this.errorSettings = errorSettings;
 	}
 
 	private static RScript createScript( ErrorSettings errorSettings ) {
@@ -26,4 +29,8 @@ public class ErrorFunctionsROutputScript extends ROutputScript {
 		return r;
 	}
 
+	ErrorSettings getErrorSettings() {
+		return errorSettings;
+	}
+	
 }

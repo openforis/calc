@@ -7,6 +7,7 @@ import org.jooq.Record;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.Entity.Visitor;
+import org.openforis.calc.metadata.EntityManager;
 import org.openforis.calc.psql.CreateTableWithFieldsStep;
 import org.openforis.calc.psql.CreateViewStep.AsStep;
 import org.openforis.calc.psql.DropTableStep.CascadeStep;
@@ -26,11 +27,11 @@ import org.openforis.calc.schema.Schemas;
  */
 public class ResetResultsROutputScript extends ROutputScript {
 
-	public ResetResultsROutputScript(int index , Workspace workspace, Schemas schemas) {
-		super( "reset-results.R", createScript(workspace , schemas), Type.SYSTEM , index );
+	public ResetResultsROutputScript(int index , Workspace workspace, Schemas schemas, EntityManager entityManager) {
+		super( "reset-results.R", createScript(workspace , schemas, entityManager), Type.SYSTEM , index );
 	}
 
-	private static RScript createScript( Workspace workspace, final Schemas schemas ) {
+	private static RScript createScript( Workspace workspace, final Schemas schemas, final EntityManager entityManager ) {
 		final RScript r = r();
 		
 		Collection<Entity> rootEntities = workspace.getRootEntities();
@@ -38,7 +39,7 @@ public class ResetResultsROutputScript extends ROutputScript {
 			entity.traverse( new Visitor() {
 				@Override
 				public void visit(Entity entity) {
-					resetResults( entity , schemas , r );			
+					resetResults( entity , schemas , r ,entityManager );			
 				}
 
 				
@@ -47,7 +48,7 @@ public class ResetResultsROutputScript extends ROutputScript {
 		return r;
 	}
 
-	private static void resetResults(Entity entity, Schemas schemas, RScript r ){
+	private static void resetResults(Entity entity, Schemas schemas, RScript r, EntityManager entityManager ){
 		DataSchema schema 			= schemas.getDataSchema();
 		ResultTable resultsTable 	= schema.getResultTable(entity);
 		DataTable dataTable 		= schema.getDataTable(entity);
@@ -77,7 +78,7 @@ public class ResetResultsROutputScript extends ROutputScript {
 			
 		}
 		
-		AsStep createView = psql().createView( dataView ).as( dataView.getSelect() );
+		AsStep createView = psql().createView( dataView ).as( entityManager.getViewSelect(entity) );
 		r.addScript( r().dbSendQuery( CONNECTION_VAR, createView) );
 		
 	}

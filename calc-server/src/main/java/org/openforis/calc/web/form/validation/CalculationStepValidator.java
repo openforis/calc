@@ -185,14 +185,14 @@ public class CalculationStepValidator implements ConstraintValidator<Calculation
 
 	private boolean validateRScript( CalculationStepForm form, ConstraintValidatorContextImpl ctx ){
 		boolean valid = true;
-		if( StringUtils.isBlank(form.getScript()) ) {
-			ctx
-			.buildConstraintViolationWithTemplate( IS_REQUIRED )
-			.addPropertyNode( "script" )
-			.addConstraintViolation();
-			
-			valid = false;
-		}
+//		if( StringUtils.isBlank(form.getScript()) ) {
+//			ctx
+//			.buildConstraintViolationWithTemplate( IS_REQUIRED )
+//			.addPropertyNode( "script" )
+//			.addConstraintViolation();
+//			
+//			valid = false;
+//		}
 		return valid;
 	}
 

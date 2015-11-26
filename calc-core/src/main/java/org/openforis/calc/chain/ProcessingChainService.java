@@ -22,6 +22,7 @@ import org.openforis.calc.chain.export.CalculationStepsPostExecutionROutputScrip
 import org.openforis.calc.chain.export.CloseChainROutputScript;
 import org.openforis.calc.chain.export.CommonROutputScript;
 import org.openforis.calc.chain.export.CreateErrorTablesROutputScript;
+import org.openforis.calc.chain.export.CreateFactTablesROutputScript;
 import org.openforis.calc.chain.export.EntityPlotAreaROutputScript;
 import org.openforis.calc.chain.export.ErrorExecutionROutputScript;
 import org.openforis.calc.chain.export.ErrorFunctionsROutputScript;
@@ -35,6 +36,7 @@ import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.CategoryManager;
 import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.EntityManager;
 import org.openforis.calc.metadata.ErrorSettings;
 import org.openforis.calc.metadata.MetadataManager;
 import org.openforis.calc.persistence.DBProperties;
@@ -65,6 +67,9 @@ public class ProcessingChainService {
 
 	@Autowired
 	private MetadataManager metadataManager;
+
+	@Autowired
+	private EntityManager entityManager;
 	
 	@Autowired
 	private CategoryManager categoryManager;
@@ -98,7 +103,7 @@ public class ProcessingChainService {
 		addScript( init , scripts , calc );
 		
 		// reset results
-		ResetResultsROutputScript resetResults = new ResetResultsROutputScript( counter.increment() , workspace, schemas );
+		ResetResultsROutputScript resetResults = new ResetResultsROutputScript( counter.increment() , workspace, schemas , entityManager );
 		addScript( resetResults, scripts, calc );
 		
 		// read data
@@ -153,44 +158,45 @@ public class ProcessingChainService {
 			}
 			
 		}
-		
+		// ==================
+		// END USER SCRIPTS
+		// ==================
 		// execute post script calculation steps
 		CalculationStepsPostExecutionROutputScript stepsPostExec = new CalculationStepsPostExecutionROutputScript( counter.increment(), stepsPostExecScript  );
 		addScript(stepsPostExec, scripts, calc);
 		
-		// ==================
-		// END USER SCRIPTS
-		// ==================
-		// error functions
-		ErrorSettings errorSettings = workspace.getErrorSettings();
-		if( workspace.hasSamplingDesign() ){
-			errorFunctionsScript = new ErrorFunctionsROutputScript( counter.increment() , errorSettings );
-			addScript( errorFunctionsScript, scripts, calc );
-		}
+		// persist results
+		PersistResultsROutputScript persistResults				= new PersistResultsROutputScript( counter.increment(), group, schemas, entityManager );
+		addScript( persistResults, scripts, calc );
+		
+		// create fact tables 
+		CreateFactTablesROutputScript createFactTables 				= new  CreateFactTablesROutputScript( counter.increment(), workspace, schemas, dbProperties );
+		addScript( createFactTables, scripts, calc );
 		
 		if( workspace.hasSamplingDesign() ){
 			// calculate expansion factor
 			CalculateExpansionFactorROutputScript expansionFactor 	= new CalculateExpansionFactorROutputScript( counter.increment(), workspace, schemas );
 			addScript( expansionFactor, scripts, calc );
-		
+
 			// error execution
 			CreateErrorTablesROutputScript createErrorTables 	= new CreateErrorTablesROutputScript( counter.increment(), workspace, schemas );
 			addScript( createErrorTables, scripts, calc );
-			
+
+			// error functions
+			ErrorSettings errorSettings = workspace.getErrorSettings();
+			errorFunctionsScript = new ErrorFunctionsROutputScript( counter.increment() , errorSettings );
+			addScript( errorFunctionsScript, scripts, calc );
+
 			ErrorExecutionROutputScript errorExec 				= new ErrorExecutionROutputScript( counter.increment() , errorSettings , schemas );
 			addScript( errorExec, scripts, calc );
 		}
-		
-		// persist results
-		PersistResultsROutputScript persistResults				= new PersistResultsROutputScript( counter.increment(), group, schemas );
-		addScript( persistResults, scripts, calc );
 		
 		// persist user scripts
 		PersistUserScriptsROutputScript persistUserScripts		= new PersistUserScriptsROutputScript( counter.increment(), schemas , commonScript , weightScript , plotAreaScripts , chainScripts , errorFunctionsScript);
 		addScript( persistUserScripts, scripts, calc );
 		
 		// close
-		CloseChainROutputScript closeChain 						= new CloseChainROutputScript( counter.increment(), workspace, schemas );
+		CloseChainROutputScript closeChain 						= new CloseChainROutputScript( counter.increment(), workspace, schemas , entityManager );
 		addScript( closeChain, scripts, calc );
 		
 		return scripts;
@@ -230,19 +236,5 @@ public class ProcessingChainService {
 		stream.closeEntry();
 	}
 	
-//	private String extractZipEntry( ZipFile zipFile, String entryName ) throws IOException {
-//		ZipEntry entry = zipFile.getEntry(entryName);
-//		if ( entry == null ) {
-//			throw new IllegalStateException(entryName + " not found");
-//		}
-//		InputStream inputStream = zipFile.getInputStream(entry);
-//
-//		StringWriter writer = new StringWriter();
-//		IOUtils.copy(inputStream, writer);
-//		inputStream.close();
-//
-//		byte[] decodedString = decodeBase64(writer.toString());
-//		return new String(decodedString);
-//	}
 	
 }

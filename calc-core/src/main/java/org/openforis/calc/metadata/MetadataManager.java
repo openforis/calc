@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Class responsible for reading/writing metadata objects linked to the workspace
+ * TODO : rename to WorkspaceManager? 
  * 
  * @author Mino Togna
  * @author S. Ricci

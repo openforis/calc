@@ -12,6 +12,7 @@ import org.jooq.impl.DynamicTable;
 import org.jooq.impl.SQLDataType;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.Entity;
+import org.openforis.calc.metadata.EntityManager;
 import org.openforis.calc.psql.AlterTableStep.AlterColumnStep;
 import org.openforis.calc.psql.CreateViewStep.AsStep;
 import org.openforis.calc.psql.DropViewStep;
@@ -33,32 +34,32 @@ import org.openforis.calc.schema.Schemas;
  */
 public class PersistResultsROutputScript extends ROutputScript {
 
-	public PersistResultsROutputScript(int index , CalculationStepsGroup group, Schemas schemas) {
-		super( "persist-results.R", createScript(group , schemas), Type.SYSTEM , index );
+	public PersistResultsROutputScript(int index , CalculationStepsGroup group, Schemas schemas, EntityManager entityManager) {
+		super( "persist-results.R", createScript(group , schemas, entityManager), Type.SYSTEM , index );
 	}
 
-	private static RScript createScript(CalculationStepsGroup group, Schemas schemas) {
+	private static RScript createScript(CalculationStepsGroup group, Schemas schemas, EntityManager entityManager) {
 		RScript r = r();
 		
 		Workspace workspace = group.getWorkspace();
 		if( workspace.hasSamplingDesign() ){
 			// add read base unit script
 			Entity baseUnit 	= workspace.getSamplingUnit();
-			RScript persistBaseUnitResults = createPersistBaseUnitResultsScript( schemas , baseUnit , group );
+			RScript persistBaseUnitResults = createPersistBaseUnitResultsScript( schemas , baseUnit , group, entityManager );
 			r.addScript( persistBaseUnitResults );
 		}
 		
 		for (Integer entityId : group.entityIds()) {
 			Entity entity = workspace.getEntityById( entityId );
 			
-			RScript persistEntityResults = createPersistEntityResultsScript( schemas , entity , group );
+			RScript persistEntityResults = createPersistEntityResultsScript( schemas , entity , group, entityManager );
 			r.addScript( persistEntityResults );
 		}
 		
 		return r;
 	}
 
-	private static RScript createPersistBaseUnitResultsScript(Schemas schemas, Entity entity, CalculationStepsGroup group) {
+	private static RScript createPersistBaseUnitResultsScript(Schemas schemas, Entity entity, CalculationStepsGroup group, EntityManager entityManager) {
 		RScript r					= r();
 		
 		DataSchema schema 			= schemas.getDataSchema();
@@ -108,7 +109,7 @@ public class PersistResultsROutputScript extends ROutputScript {
 		DropViewStep dropViewIfExists 	= psql().dropViewIfExists(view);
 		r.addScript( r().dbSendQuery(CONNECTION_VAR, dropViewIfExists ) );
 		
-		Select<?> selectView 			= view.getSelect();
+		Select<?> selectView 			= entityManager.getViewSelect( entity , true );
 		AsStep createView 				= new Psql().createView(view).as(selectView);
 		r.addScript(r().dbSendQuery( CONNECTION_VAR, createView ));
 		
@@ -118,7 +119,7 @@ public class PersistResultsROutputScript extends ROutputScript {
 		return r;
 	}
 
-	private static RScript createPersistEntityResultsScript(Schemas schemas, Entity entity, CalculationStepsGroup group) {
+	private static RScript createPersistEntityResultsScript(Schemas schemas, Entity entity, CalculationStepsGroup group, EntityManager entityManager) {
 		RScript r					= r();
 		
 		DataSchema schema 			= schemas.getDataSchema();
@@ -168,7 +169,7 @@ public class PersistResultsROutputScript extends ROutputScript {
 		DropViewStep dropViewIfExists = new Psql().dropViewIfExists(view);
 		r.addScript(r().dbSendQuery( CONNECTION_VAR, dropViewIfExists ));
 		
-		Select<?> selectView = view.getSelect(true);
+		Select<?> selectView = entityManager.getViewSelect(entity , true );
 		AsStep createView = new Psql().createView(view).as(selectView);
 		r.addScript(r().dbSendQuery( CONNECTION_VAR, createView ));
 		

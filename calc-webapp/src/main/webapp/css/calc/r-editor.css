@@ -18,3 +18,11 @@
 .CodeMirror-hints {
 	z-index: 200;
 }
+
+.CodeMirror.readOnly  {
+    opacity: .7;
+    cursor: not-allowed !important;
+}
+.CodeMirror.readOnly div {
+    cursor: not-allowed  !important;
+}

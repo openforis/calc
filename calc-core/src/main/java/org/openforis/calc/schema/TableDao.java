@@ -75,7 +75,7 @@ public class TableDao extends AbstractJooqDao {
 		JSONArray info = info( table );
 		for ( Object object : info ){
 			JSONObject o = (JSONObject) object;
-			Object columnName = o.get( Columns.COLUMNS.COLUMN_NAME );
+			Object columnName = o.get( Columns.COLUMNS.COLUMN_NAME.getName() );
 			if( StringUtils.equalsIgnoreCase( columnName.toString() , field.getName() ) ){
 				return true;
 			}

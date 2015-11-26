@@ -3,6 +3,7 @@ package org.openforis.calc.chain.export;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.Entity.Visitor;
+import org.openforis.calc.metadata.EntityManager;
 import org.openforis.calc.psql.CreateViewStep.AsStep;
 import org.openforis.calc.psql.DropViewStep;
 import org.openforis.calc.r.RScript;
@@ -17,14 +18,13 @@ import org.openforis.calc.schema.Schemas;
  */
 public class CloseChainROutputScript extends ROutputScript {
 
-	public CloseChainROutputScript(int index , Workspace workspace , Schemas schemas) {
-		super( "close.R", createScript(workspace , schemas), Type.SYSTEM , index );
+	public CloseChainROutputScript(int index , Workspace workspace , Schemas schemas ,EntityManager entityManager) {
+		super( "close.R", createScript(workspace , schemas , entityManager), Type.SYSTEM , index );
 	}
 
-	private static RScript createScript(Workspace workspace, Schemas schemas) {
+	private static RScript createScript(Workspace workspace, final Schemas schemas, final EntityManager entityManager) {
 		final RScript r 			= r();
-		final DataSchema dataSchema = schemas.getDataSchema();
-		
+		final DataSchema schema 	= schemas.getDataSchema();
 		// recreate view
 		if( workspace.hasSamplingDesign() ){
 			Entity samplingUnit = workspace.getSamplingUnit();
@@ -32,11 +32,11 @@ public class CloseChainROutputScript extends ROutputScript {
 				@Override
 				public void visit(Entity entity) {
 					
-					EntityDataView view 			= dataSchema.getDataView( entity );
+					EntityDataView view 			= schema.getDataView( entity );
 					DropViewStep dropViewIfExists 	= psql().dropViewIfExists( view );
 					r.addScript(r().dbSendQuery( CONNECTION_VAR , dropViewIfExists ));
 					
-					AsStep createView 				= psql().createView( view ).as( view.getSelect() );
+					AsStep createView 				= psql().createView( view ).as( entityManager.getViewSelect(entity, true) );
 					r.addScript( r().dbSendQuery( CONNECTION_VAR, createView ) );
 					
 				}

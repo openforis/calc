@@ -361,11 +361,11 @@ public final class CreateAggregateTablesTask extends Task {
 				
 				if( getWorkspace().has2StagesSamplingDesign() ){
 					TwoStagesSettings twoStagesSettings = samplingDesign.getTwoStagesSettingsObject();
-					DataAoiTable aoiTable = getJob().getInputSchema().getPrimarySUAoiTable();
+					DataAoiTable aoiTable 				= getJob().getInputSchema().getPrimarySUAoiTable();
 					select.addSelect( aoiTable.getAoiIdFields() );
 					
-					List<ColumnJoin> psuJoinColumns = twoStagesSettings.getPsuIdColumns();
-					List<ColumnJoin> suPsuJoinColumns = twoStagesSettings.getSamplingUnitPsuJoinColumns();
+					List<ColumnJoin> psuJoinColumns 	= twoStagesSettings.getPsuIdColumns();
+					List<ColumnJoin> suPsuJoinColumns 	= twoStagesSettings.getSamplingUnitPsuJoinColumns();
 					
 					Condition condition = null;
 					for (int i = 0; i < psuJoinColumns.size(); i++) {

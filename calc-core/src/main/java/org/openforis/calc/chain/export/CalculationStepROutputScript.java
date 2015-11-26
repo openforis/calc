@@ -27,9 +27,12 @@ public class CalculationStepROutputScript extends ROutputScript {
 	private static final String NAME_FORMAT = "%s-%s.R";
 	
 	private RScript postScript ;
+
+	private CalculationStep calculationStep;
 	
 	public CalculationStepROutputScript(int index , CalculationStep calculationStep , Schemas schemas ) {
 		super ( getName(calculationStep), createScript(calculationStep , schemas), Type.USER , index );
+		this.calculationStep = calculationStep;
 		this.postScript = initPostScript( calculationStep , schemas );
 	}
 
@@ -112,5 +115,9 @@ public class CalculationStepROutputScript extends ROutputScript {
 	public RScript getPostExecScript() {
 		return postScript;
 	}	
+	
+	CalculationStep getCalculationStep() {
+		return calculationStep;
+	}
 
 }

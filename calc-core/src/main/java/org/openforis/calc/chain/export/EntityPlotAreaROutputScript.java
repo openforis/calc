@@ -16,9 +16,11 @@ import org.openforis.calc.schema.ResultTable;
 public class EntityPlotAreaROutputScript extends ROutputScript {
 
 	private static final String NAME_FORMAT = "%s-plot-area.R";
+	private Entity entity;
 	
 	public EntityPlotAreaROutputScript(int index , Entity entity ) {
 		super ( String.format(NAME_FORMAT, entity.getName() ), createScript(entity), Type.USER , index );
+		this.entity = entity;
 	}
 
 	private static RScript createScript( Entity entity ) {
@@ -44,5 +46,9 @@ public class EntityPlotAreaROutputScript extends ROutputScript {
 		
 		return r;
 	}
-
+	
+	Entity getEntity() {
+		return entity;
+	}
+	
 }

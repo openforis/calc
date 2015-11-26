@@ -26,8 +26,6 @@ import org.openforis.calc.metadata.CategoryManager;
 import org.openforis.calc.metadata.EquationList;
 import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.Variable;
-import org.openforis.calc.module.r.CalcRModule;
-import org.openforis.calc.module.r.CustomROperation;
 import org.openforis.calc.persistence.jooq.ParameterMapConverter;
 import org.openforis.calc.web.form.CalculationStepForm;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +45,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping(value = "/rest/calculationstep")
 public class CalculationStepController {
+	
+	private static final String MODULE_NAME 		= "calc-r";
+	private static final String MODULE_VERSION_2 	= "2.0";
+	private static final String OPERATION_NAME 		= "exec-r";
 
 	@Autowired
 	private WorkspaceService workspaceService;
@@ -215,9 +217,9 @@ public class CalculationStepController {
 			step = chain.getCalculationStepById( stepId );
 		}
 		
-		step.setModuleName( CalcRModule.MODULE_NAME );
-		step.setModuleVersion( CalcRModule.VERSION_1 );
-		step.setOperationName( CustomROperation.NAME );
+		step.setModuleName( MODULE_NAME );
+		step.setModuleVersion( MODULE_VERSION_2 );
+		step.setOperationName( OPERATION_NAME );
 		step.setCaption( form.getCaption() );
 		step.setActive( form.getActive() );
 		

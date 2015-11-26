@@ -145,7 +145,7 @@ public class WorkspaceBackupService {
 	private void loadPrimarySUData( WorkspaceBackup backup ) {
 		Workspace ws = backup.getWorkspace();
 		
-		if( ws.getSamplingDesign().getTwoStages() ) {
+		if( ws.hasSamplingDesign() &&  ws.getSamplingDesign().getTwoStages() ) {
 			// read table information 
 			DynamicTable<?> table = new DynamicTable<Record>( ws.getPrimarySUTableName(), ws.getExtendedSchemaName() );
 			JSONArray tableInfo = tableDao.info( table );

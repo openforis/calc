@@ -1658,3 +1658,11 @@ ul.ui-sortable li {
 #category-edit-page .categories button {
 	margin-bottom: 2px;
 }
+
+
+
+
+/* Common form classes  */
+.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control {
+    opacity: .7 !important;
+}

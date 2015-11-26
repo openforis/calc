@@ -6,6 +6,10 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jooq.JoinType;
+import org.jooq.Record;
+import org.jooq.Select;
+import org.jooq.SelectQuery;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceBackup;
 import org.openforis.calc.persistence.jooq.Sequences;
@@ -13,6 +17,13 @@ import org.openforis.calc.persistence.jooq.Tables;
 import org.openforis.calc.persistence.jooq.tables.EntityTable;
 import org.openforis.calc.persistence.jooq.tables.daos.EntityDao;
 import org.openforis.calc.psql.Psql;
+import org.openforis.calc.schema.DataSchema;
+import org.openforis.calc.schema.DataTable;
+import org.openforis.calc.schema.EntityDataView;
+import org.openforis.calc.schema.EntityDataViewDao;
+import org.openforis.calc.schema.ResultTable;
+import org.openforis.calc.schema.Schemas;
+import org.openforis.calc.schema.TableDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +38,12 @@ public class EntityManager {
 
 	@Autowired
 	private EntityDao entityDao;
+	
+	@Autowired
+	private EntityDataViewDao entityViewDao;
+
+	@Autowired
+	private TableDao tableDao;
 	
 	@Autowired
 	private VariableManager variableManager;
@@ -122,6 +139,115 @@ public class EntityManager {
 				originalEntity.setPlotAreaScript(plotAreaScript);
 				entityDao.update( originalEntity );
 			}
+		}
+	}
+	
+	public void createOrUpdateView( Entity entity ){
+		Workspace ws = entity.getWorkspace();
+
+		Schemas schemas = new Schemas(ws);
+		DataSchema inputSchema = schemas.getDataSchema();
+		EntityDataView view = inputSchema.getDataView(entity);
+		
+		// drop view
+		entityViewDao.drop(view);
+
+		// create view
+		Select<?> select = getViewSelect(entity);
+		entityViewDao.create( view , select  );
+	}
+	
+//	public void createOrUpdateView( Entity entity ) {
+//		createOrUpdateView( entity , true );
+//	}
+	
+	public Select<?> getViewSelect(Entity entity) {
+		return getViewSelect( entity , false );
+	}
+	
+	public Select<?> getViewSelect(Entity entity, boolean addAlwaysWeightField) {
+		Schemas schemas 			= entity.getWorkspace().schemas();
+		DataSchema schema 			= schemas.getDataSchema();
+		
+		DataTable table 			= schema.getDataTable(entity);
+		
+		SelectQuery<Record> select 	= new Psql().selectQuery();
+		select.addFrom(table);
+		
+		select.addSelect( table.getIdField() );
+		select.addSelect( table.getTextFields() );
+		select.addSelect( table.getAoiIdFields() );
+		
+		for (QuantitativeVariable var : entity.getOriginalQuantitativeVariables()) {
+			select.addSelect( table.getQuantityField(var) );
+		}
+		for (CategoricalVariable<?> var : entity.getOriginalCategoricalVariables()) {
+			select.addSelect( table.getCategoryIdField(var) );
+			select.addSelect( table.getCategoryValueField(var) );
+		}
+		// add weight column if sampling unit
+		if(  entity.isSamplingUnit() ) {
+			if( addAlwaysWeightField || tableDao.hasColumn( table, table.getWeightField() ) ){
+				select.addSelect( table.getWeightField() );
+			}
+		}
+		
+		// for every ancestor, add join condition and select fields
+		Entity currentEntity = entity;
+		while ( currentEntity.getParent() != null ){
+			DataTable currentTable = schema.getDataTable(currentEntity);
+			Entity parentEntity = currentEntity.getParent();
+			DataTable parentTable = schema.getDataTable( parentEntity );
+
+			select.addSelect( parentTable.getIdField() );
+			select.addSelect( parentTable.getCategoryValueFields() );
+			select.addSelect( parentTable.getCategoryIdFields() );
+			select.addSelect( parentTable.getTextFields() );
+			if(  parentEntity.isSamplingUnit() ){
+				if( addAlwaysWeightField || tableDao.hasColumn(table, table.getWeightField()) ){
+					select.addSelect( parentTable.getWeightField() );
+				}
+			}
+			for ( QuantitativeVariable var : parentEntity.getOriginalQuantitativeVariables() ) {
+				select.addSelect( parentTable.getQuantityField(var) );
+			}
+//			if( parentTable.getWeightField() != null ){
+//				select.addSelect( parentTable.getWeightField() );
+//			}
+			select.addJoin( parentTable, currentTable.getParentIdField().eq(parentTable.getIdField()) );
+			
+			if( parentEntity.isSamplingUnit() ){
+//				if( parentEntity.isSamplingUnit() && joinWithResults ){
+				addJoinWithResultsTable(parentEntity, parentTable, schema, select);
+			}
+//			addUniqueNameFields( select, parentTable.fields() );
+			currentEntity = parentEntity;
+		}
+		
+//		if( joinWithResults ){
+			// add join with results table if exits
+			addJoinWithResultsTable(entity, table, schema, select);
+//		}
+		
+		return select;
+	}
+
+	private void addJoinWithResultsTable(Entity entity, DataTable table, DataSchema schema, SelectQuery<Record> select) {
+		ResultTable resultTable = schema.getResultTable(entity);
+		if( resultTable != null ){
+			// select output variables from results table
+			for (QuantitativeVariable var : entity.getDefaultProcessingChainQuantitativeOutputVariables()) {
+				select.addSelect( resultTable.getQuantityField(var) );
+			}
+			for ( MultiwayVariable var : entity.getDefaultProcessingChainCategoricalOutputVariables() ){
+				select.addSelect( resultTable.getCategoryIdField(var) );
+				select.addSelect( resultTable.getCategoryValueField(var) );
+			}
+			if( resultTable.getPlotArea() != null ) {
+				select.addSelect( resultTable.getPlotArea() );
+			}
+			
+			select.addJoin(resultTable, JoinType.LEFT_OUTER_JOIN, resultTable.getIdField().eq(table.getIdField()));
 		}
 	}
 }

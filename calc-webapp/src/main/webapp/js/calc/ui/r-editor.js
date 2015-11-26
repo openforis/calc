@@ -3,7 +3,7 @@
  *
  *	@author Mino Togna
  */
-REditor = function( textAreaId ){
+REditor = function( textAreaId , readOnly  ){
 	
 	this.textArea			= $( "#"+textAreaId );
 	
@@ -25,6 +25,7 @@ REditor = function( textAreaId ){
 		matchBrackets	: true,
 	    foldGutter		: true,
 	    gutters			: [ "CodeMirror-linenumbers" , "CodeMirror-foldgutter" ],
+		readOnly 		: readOnly,	
 		extraKeys		: { 
 							"Ctrl-Space"	: "autocomplete" , 
 							"Ctrl-Q"		: function(cm) { cm.foldCode(cm.getCursor()); } ,
@@ -36,9 +37,12 @@ REditor = function( textAreaId ){
 													cm.setOption("fullScreen", false);
 													} 
 												}
-						  }
+						  }			  
 	});
-	
+	if( readOnly === true ){
+		var elem =  $( this.editor.getWrapperElement() );
+		elem.addClass( 'readOnly' );
+	}
 	/**
 	 * entity instance variable used to populate the autocomplete dropdown in case it's set
 	 */
@@ -136,20 +140,23 @@ REditor.prototype.refresh = function(){
 
 // r functions used for content assist
 REditor.rFunctions = [];
+
 /**
- * static function to call to initialize the r editor 
+ * static function to call to initialize the r editor
+ * 
+ *  @deprecated
  */
 REditor.init = function(){
 	// load r functions
-	$.ajax({
-		url		: "rest/r/functions.json",
-		dataType:"json"
-	})
-	.done(function(response) {
-		REditor.rFunctions = response;
-	})
-	.error( function() {
-		Calc.error.apply( this , arguments );
-	});
+//	$.ajax({
+//		url		: "rest/r/functions.json",
+//		dataType:"json"
+//	})
+//	.done(function(response) {
+//		REditor.rFunctions = response;
+//	})
+//	.error( function() {
+//		Calc.error.apply( this , arguments );
+//	});
 };
 

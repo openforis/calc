@@ -258,21 +258,7 @@ $(document).ready(function() {
 			});
 		}
 	};
-//	Calc.footer.find("button.btn-saiku").click(function(event){
-//		event.preventDefault();
-//
-//		var $button = $(event.currentTarget);
-//		sectionUrl = $button.attr("href");
-//		
-//		//home page section (contains the button links to the external pages)
-//		$homeSection = Calc.section.find( ".page-section" );
-//		if( !sectionUrl ) {
-//			var msg = " Calc error. Section url is undefinded";		
-//			throw msg;
-//		}
-//		
-//		Calc.navigateToSection( sectionUrl );
-//	});
+
 	$(".section-home button.btn-home, .section-home button.btn-home-plus, button.btn-saiku").click( homeButtonClick );
 	
 	Calc.backHomeBtn.click( function(event){
@@ -383,7 +369,7 @@ $(document).ready(function() {
 		Calc.pushToHistory( "home" );
 		
 		// init r editor
-		REditor.init();
+//		REditor.init();
 	};
 	
 	init();

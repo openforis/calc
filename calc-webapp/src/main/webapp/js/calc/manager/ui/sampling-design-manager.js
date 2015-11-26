@@ -48,9 +48,9 @@ SamplingDesignManager = function(container) {
 	this.aoiJoinManager.hide();
 	
 	// r script
-	this.weightInput 	= this.editSd.find( "[name=sampling-unit-weigth]" );
-	this.weightScript 	= new REditor( this.weightInput.attr('id') );
-	this.weightScript.customVariables.push( "weight" );
+//	this.weightInput 	= this.editSd.find( "[name=sampling-unit-weigth]" );
+//	this.weightScript 	= new REditor( this.weightInput.attr('id') );
+//	this.weightScript.customVariables.push( "weight" );
 	
 //	this.weightScript = new RScript( this.weightInput );
 	
@@ -85,7 +85,7 @@ SamplingDesignManager.prototype.init = function(){
 		e.preventDefault();
 		this.samplingDesign.samplingUnitId = $this.samplingUnitCombo.val();
 		WorkspaceManager.getInstance().activeWorkspace( $.proxy(function(ws){
-			this.weightScript.entity = ws.getEntityById( this.samplingDesign.samplingUnitId );
+//			this.weightScript.entity = ws.getEntityById( this.samplingDesign.samplingUnitId );
 		} , this ) );
 		this.loadSamplingUnitTableInfo();
 	} , this) );
@@ -189,9 +189,9 @@ SamplingDesignManager.prototype.showStep = function(step) {
 	this.editSd.find(".step").hide();
 	this.editSd.find(".step-"+step).fadeIn( 200 );
 	
-	if( step == this.stepMax ){
-		this.weightScript.refresh();
-	}
+//	if( step == this.stepMax ){
+//		this.weightScript.refresh();
+//	}
 	
 	this.updateEditNavigationBtns();
 };
@@ -357,18 +357,17 @@ SamplingDesignManager.prototype.validateStep5 = function(){
 /**
  * Validate weight script 
  */
-SamplingDesignManager.prototype.validateStep6 = function(){
-	var script = this.weightScript.getValue();
-	if( StringUtils.isBlank(script) ){
-		UI.showError("Sampling unit weigth script must be filled", true);
-		return false;
-	} else {
-//		this.samplingDesign.samplingUnitWeightScript = this.weightInput.val();
-		this.samplingDesign.samplingUnitWeightScript = this.weightScript.getValue();
-		return true;
-	}
-};
-
+//SamplingDesignManager.prototype.validateStep6 = function(){
+//	var script = this.weightScript.getValue();
+//	if( StringUtils.isBlank(script) ){
+//		UI.showError("Sampling unit weigth script must be filled", true);
+//		return false;
+//	} else {
+//		this.samplingDesign.samplingUnitWeightScript = this.weightScript.getValue();
+//		return true;
+//	}
+//};
+//
 
 /**
  * Update view ui
@@ -474,12 +473,12 @@ SamplingDesignManager.prototype.updateEditView = function(){
 		this.samplingUnitCombo.val( this.samplingUnit.id );
 		// update weight script
 		WorkspaceManager.getInstance().activeWorkspace( $.proxy(function(ws){
-			this.weightScript.entity = ws.getEntityById( this.samplingDesign.samplingUnitId );
+//			this.weightScript.entity = ws.getEntityById( this.samplingDesign.samplingUnitId );
 		} , this ) );
 		
 		if( this.samplingDesign.samplingUnitWeightScript ){
 //			this.weightInput.html( this.samplingDesign.samplingUnitWeightScript );
-			this.weightScript.setValue( this.samplingDesign.samplingUnitWeightScript );
+//			this.weightScript.setValue( this.samplingDesign.samplingUnitWeightScript );
 		}
 	}
 	
