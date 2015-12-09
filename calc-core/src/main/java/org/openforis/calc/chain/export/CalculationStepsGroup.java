@@ -48,9 +48,9 @@ public class CalculationStepsGroup {
 		
 		List<CalculationStep> steps = processingChain.getCalculationSteps();
 		for (CalculationStep calculationStep : steps) {
-			if( !onlyActive || calculationStep.getActive() ){
+//			if( !onlyActive || calculationStep.getActive() ){
 				this.addCalculationStep(calculationStep);
-			}
+//			}
 		}
 		
 	}

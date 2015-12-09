@@ -79,15 +79,13 @@ public class Saiku {
 		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 		marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
 		
-		File mdxPath = getMdxDirectory(workspace);
-		String wsName = workspace.getName();
-		File f = new File( mdxPath, wsName+".xml" );
+		File f = getMdxFile(workspace);
 		if ( f.exists() ) {
 			f.delete();
 		}
 		marshaller.marshal( schema, f );
 	}
-	
+
 	public void writeDataSource(Workspace workspace) throws IOException {
 		String wsName = workspace.getName();
 		
@@ -100,7 +98,7 @@ public class Saiku {
 		string = string.replaceAll( "\\$\\{saiku.datasource.catalog}", String.format( "%s/%s.xml", wsName, wsName) );
 		string = string.replaceAll( "\\$\\{saiku.datasource.name}", wsName );
 
-		File dataSourceFile = getDataSource( workspace );
+		File dataSourceFile = getDataSourceFile( workspace );
 		if( !dataSourceFile.exists() ){
 			dataSourceFile.createNewFile();
 		}
@@ -114,7 +112,7 @@ public class Saiku {
 		File mdxDirectory = getMdxDirectory( workspace );
 		FileUtils.deleteQuietly( mdxDirectory );
 		
-		File dataSource = getDataSource( workspace );
+		File dataSource = getDataSourceFile( workspace );
 		FileUtils.deleteQuietly( dataSource );
 	}
 	
@@ -130,9 +128,16 @@ public class Saiku {
 		return dataSourcesFolder;
 	}
 	
-	private File getDataSource( Workspace workspace ) {
+	private File getDataSourceFile( Workspace workspace ) {
 		String wsName = workspace.getName();
 		return new File( dataSourcesFolder , wsName );
+	}
+	
+	private File getMdxFile( Workspace workspace ) {
+		File mdxPath = getMdxDirectory(workspace);
+		String wsName = workspace.getName();
+		File f = new File( mdxPath, wsName+".xml" );
+		return f;
 	}
 	
 	private File getMdxDirectory(Workspace workspace){

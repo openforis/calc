@@ -54,7 +54,7 @@ public class CalculationStepROutputScript extends ROutputScript {
 		RVariable rVariable 	= r().variable( entity.getName(), variable.getName() );
 		
 		if( StringUtils.isBlank(script) ){
-			SetValue setValue 		= r().setValue( rVariable, r().rScript("1") );
+			SetValue setValue 		= r().setValue( rVariable, r().rScript("NA") );
 			
 			r.addScript( setValue );
 		} else {

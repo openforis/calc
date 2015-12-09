@@ -28,6 +28,7 @@
 		<of-commons-version>0.0.13</of-commons-version>
 		<geotools.version>2.7.5</geotools.version>
 		<jackson.version>2.1.0</jackson.version>
+		<jre.version>1.8.0_65</jre.version>
 	</properties>
 	
 	<distributionManagement>

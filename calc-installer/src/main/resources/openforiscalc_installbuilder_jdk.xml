@@ -1,50 +1,28 @@
 <project>
-	<shortName>OpenForisCalc</shortName>
+    <shortName>OpenForisCalc</shortName>
     <fullName>Open Foris Calc</fullName>
     <version>PROJECT_VERSION</version>
-    <outputDirectory>OUTPUT_DIRECTORY</outputDirectory>
+
     <!--readmeFile>../../../../README</readmeFile-->
-	<installerFilename>${product_shortname}-${product_version}-${platform_name}-installer-with-jdk.${platform_exec_suffix}</installerFilename>
+    <installerFilename>${product_shortname}-${product_version}-${platform_name}-installer-with-jdk.${platform_exec_suffix}</installerFilename>
     <licenseFile>../../../../License.txt</licenseFile>
     <leftImage>img/left-side.png</leftImage>
     <logoImage>../../../../calc-webapp/src/main/webapp/img/of-logo-small.png</logoImage>
-	<componentList>
+    <componentList>
         <include>
-			<file>java.xml</file>
-		</include>
+            <file>java.xml</file>
+        </include>
         <include>
             <file>openforiscalc_installbuilder_main.xml</file>
-        </include>    
-	</componentList>
-	<postInstallationActionList>
-        <addEnvironmentVariable>
-            <name>JAVA_HOME</name>
-            <scope>system</scope>
-            <value>${installdir}/java</value>
-            <ruleList>
-                <platformTest>
-                    <negate>1</negate>
-                    <type>windows</type>
-                </platformTest>
-            </ruleList>
-        </addEnvironmentVariable>
-        <addEnvironmentVariable>
-            <name>JAVA_HOME</name>
-            <scope>system</scope>
-            <value>${installdir}\java</value>
-            <ruleList>
-                <platformTest>
-                    <type>windows</type>
-                </platformTest>
-            </ruleList>
-        </addEnvironmentVariable>
-	</postInstallationActionList>
-	<compressionAlgorithm>lzma-ultra</compressionAlgorithm>
+        </include>
+    </componentList>
+    <compressionAlgorithm>lzma-ultra</compressionAlgorithm>
     <defaultUnixDirectoryPermissions>777</defaultUnixDirectoryPermissions>
     <defaultUnixFilePermissions>777</defaultUnixFilePermissions>
     <defaultUnixOwner>${env(SUDO_USER)}</defaultUnixOwner>
     <enableRollback>1</enableRollback>
     <enableTimestamp>1</enableTimestamp>
+    <outputDirectory>../../../target</outputDirectory>
     <rebootRequired>1</rebootRequired>
     <requireInstallationByRootUser>1</requireInstallationByRootUser>
     <rollbackBackupDirectory>${system_temp_directory}/${product_shortname}/backup</rollbackBackupDirectory>

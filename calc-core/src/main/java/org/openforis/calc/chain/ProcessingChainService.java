@@ -134,7 +134,7 @@ public class ProcessingChainService {
 			// plot areas
 			for (Integer entityId : group.entityIds()) {
 				Entity entity = workspace.getEntityById( entityId );
-				if( entity.isInSamplingUnitHierarchy() ){
+				if( entity.isInSamplingUnitHierarchy() && !entity.isSamplingUnit() ){
 					EntityPlotAreaROutputScript plotArea = new EntityPlotAreaROutputScript( counter.increment() , entity );
 					addScript(plotArea, scripts, calc);
 					

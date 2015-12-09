@@ -30,8 +30,142 @@
 			<id>assembly</id>
 			<build>
 				<plugins>
-				
-					<!-- 1. copy installbuilder source files -->
+					
+					
+					<!-- 1. extract jre and collect-assembly into build folder  -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<version>2.6</version>
+						<executions>
+							<execution>
+								<id>unpack-jre</id>
+								<phase>process-sources</phase>
+								<goals>
+									<goal>unpack</goal>
+								</goals>
+								<configuration>
+									<artifactItems>
+										<artifactItem>
+											<groupId>com.oracle.java</groupId>
+											<artifactId>jdk</artifactId>
+											<version>${jre.version}</version>
+											<classifier>linux-i386</classifier>
+											<type>zip</type>
+											<overWrite>false</overWrite>
+											<outputDirectory>${installer-dir}/java</outputDirectory>
+										</artifactItem>
+										<artifactItem>
+											<groupId>com.oracle.java</groupId>
+											<artifactId>jdk</artifactId>
+											<version>${jre.version}</version>
+											<classifier>linux-x64</classifier>
+											<type>zip</type>
+											<overWrite>false</overWrite>
+											<outputDirectory>${installer-dir}/java</outputDirectory>
+										</artifactItem>
+										<artifactItem>
+											<groupId>com.oracle.java</groupId>
+											<artifactId>jdk</artifactId>
+											<version>${jre.version}</version>
+											<classifier>osx</classifier>
+											<type>zip</type>
+											<overWrite>false</overWrite>
+											<outputDirectory>${installer-dir}/java</outputDirectory>
+										</artifactItem>
+										<artifactItem>
+											<groupId>com.oracle.java</groupId>
+											<artifactId>jdk</artifactId>
+											<version>${jre.version}</version>
+											<classifier>windows-i386</classifier>
+											<type>zip</type>
+											<overWrite>false</overWrite>
+											<outputDirectory>${installer-dir}/java</outputDirectory>
+										</artifactItem>
+										<artifactItem>
+											<groupId>com.oracle.java</groupId>
+											<artifactId>jdk</artifactId>
+											<version>${jre.version}</version>
+											<classifier>windows-x64</classifier>
+											<type>zip</type>
+											<overWrite>false</overWrite>
+											<outputDirectory>${installer-dir}/java</outputDirectory>
+										</artifactItem>
+<!-- 										<artifactItem> -->
+<!-- 											<groupId>com.oracle.java</groupId> -->
+<!-- 											<artifactId>jdk</artifactId> -->
+<!-- 											<version>${jre.version}</version> -->
+<!-- 											<classifier>solaris-intel</classifier> -->
+<!-- 											<type>zip</type> -->
+<!-- 											<overWrite>false</overWrite> -->
+<!-- 											<outputDirectory>${installer-dir}/java</outputDirectory> -->
+<!-- 										</artifactItem> -->
+<!-- 										<artifactItem> -->
+<!-- 											<groupId>com.oracle.java</groupId> -->
+<!-- 											<artifactId>jdk</artifactId> -->
+<!-- 											<version>${jre.version}</version> -->
+<!-- 											<classifier>solaris-sparc</classifier> -->
+<!-- 											<type>zip</type> -->
+<!-- 											<overWrite>false</overWrite> -->
+<!-- 											<outputDirectory>${installer-dir}/java</outputDirectory> -->
+<!-- 										</artifactItem> -->
+<!-- 										<artifactItem> -->
+<!-- 											<groupId>org.openforis.collect</groupId> -->
+<!-- 											<artifactId>collect-assembly</artifactId> -->
+<!-- 											<version>${project.version}</version> -->
+<!-- 											<type>zip</type> -->
+<!-- 											<overWrite>false</overWrite> -->
+<!-- 											<outputDirectory>${installer-build-path}/</outputDirectory> -->
+<!-- 										</artifactItem> -->
+									</artifactItems>
+								</configuration>
+							</execution>
+<!-- 							<execution> -->
+<!-- 								<id>copy-autoupdater</id> -->
+<!-- 								<phase>process-sources</phase> -->
+<!-- 								<goals> -->
+<!-- 									<goal>copy</goal> -->
+<!-- 								</goals> -->
+<!-- 								<configuration> -->
+<!-- 									<artifactItems> -->
+<!-- 										<artifactItem> -->
+<!-- 											<groupId>org.openforis.collect</groupId> -->
+<!-- 											<artifactId>collect-autoupdater</artifactId> -->
+<!-- 											<version>${project.version}</version> -->
+<!-- 											<classifier>windows</classifier> -->
+<!-- 											<type>exe</type> -->
+<!-- 											<overWrite>false</overWrite> -->
+<!-- 											<outputDirectory>${installer-build-path}</outputDirectory> -->
+<!-- 											<destFileName>${windows-autoupdater-file-name}</destFileName> -->
+<!-- 										</artifactItem> -->
+<!-- 										<artifactItem> -->
+<!-- 											<groupId>org.openforis.collect</groupId> -->
+<!-- 											<artifactId>collect-autoupdater</artifactId> -->
+<!-- 											<version>${project.version}</version> -->
+<!-- 											<classifier>linux</classifier> -->
+<!-- 											<type>run</type> -->
+<!-- 											<overWrite>false</overWrite> -->
+<!-- 											<outputDirectory>${installer-build-path}</outputDirectory> -->
+<!-- 											<destFileName>${linux-autoupdater-file-name}</destFileName> -->
+<!-- 										</artifactItem> -->
+<!-- 										<artifactItem> -->
+<!-- 											<groupId>org.openforis.collect</groupId> -->
+<!-- 											<artifactId>collect-autoupdater</artifactId> -->
+<!-- 											<version>${project.version}</version> -->
+<!-- 											<classifier>osx</classifier> -->
+<!-- 											<type>zip</type> -->
+<!-- 											<overWrite>false</overWrite> -->
+<!-- 											<outputDirectory>${installer-build-path}</outputDirectory> -->
+<!-- 											<destFileName>${osx-autoupdater-file-name}</destFileName> -->
+<!-- 										</artifactItem> -->
+<!-- 									</artifactItems> -->
+<!-- 								</configuration> -->
+<!-- 							</execution> -->
+						</executions>
+					</plugin>
+					
+					
+					<!-- 2. copy installbuilder source files -->
 					<plugin>
 						<artifactId>maven-resources-plugin</artifactId>
 						<version>2.6</version>
@@ -67,7 +201,7 @@
 						<version>1.4.0</version>
 						<executions>
 						
-							<!-- 2. replace calc version into the xml installbuilder source file -->
+							<!-- 3. replace calc version into the xml installbuilder source file -->
 							<execution>
 								<id>replace-project-version</id>
 								<phase>package</phase>
@@ -87,7 +221,7 @@
 								</configuration>
 							</execution>
 							
-							<!-- 3. replace the output directory of the installer with the project.build.directory property-->
+							<!-- 4. replace the output directory of the installer with the project.build.directory property-->
 							<execution>
 								<id>replace-output-directory</id>
 								<phase>package</phase>
@@ -111,29 +245,29 @@
 						
 					</plugin>
 				
-					<!-- 4. execute installbuilder to produce the installers -->
+					<!-- 5. execute installbuilder to produce the installers -->
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>exec-maven-plugin</artifactId>
 						<version>1.1</version>
 						<executions>
 							
-							<execution>
-								<id>windows-installer</id>
-								<phase>package</phase>
-								<goals>
-									<goal>exec</goal>
-								</goals>
-								<configuration>
-									<executable>${installbuilder-home}/bin/Builder.app/Contents/MacOS/installbuilder.sh</executable>
+<!-- 							<execution> -->
+<!-- 								<id>windows-installer</id> -->
+<!-- 								<phase>package</phase> -->
+<!-- 								<goals> -->
+<!-- 									<goal>exec</goal> -->
+<!-- 								</goals> -->
+<!-- 								<configuration> -->
+<!-- 									<executable>${installbuilder-home}/bin/Builder.app/Contents/MacOS/installbuilder.sh</executable> -->
 <!-- 									<executable>${installbuilder-home}/bin/builder</executable> -->
-									<arguments>
-										<argument>build</argument>
-										<argument>${basedir}/${installer-dir}/${installbuilder-file-name}</argument>
-										<argument>windows</argument>
-									</arguments>
-								</configuration>
-							</execution>
+<!-- 									<arguments> -->
+<!-- 										<argument>build</argument> -->
+<!-- 										<argument>${basedir}/${installer-dir}/${installbuilder-file-name}</argument> -->
+<!-- 										<argument>windows</argument> -->
+<!-- 									</arguments> -->
+<!-- 								</configuration> -->
+<!-- 							</execution> -->
 							
 <!-- 							<execution> -->
 <!-- 								<id>windows-installer-with-jdk</id> -->
@@ -151,22 +285,22 @@
 <!-- 								</configuration> -->
 <!-- 							</execution> -->
 							
-							<execution>
-								<id>linux-installer</id>
-								<phase>package</phase>
-								<goals>
-									<goal>exec</goal>
-								</goals>
-								<configuration>
-									<executable>${installbuilder-home}/bin/Builder.app/Contents/MacOS/installbuilder.sh</executable>								
+<!-- 							<execution> -->
+<!-- 								<id>linux-installer</id> -->
+<!-- 								<phase>package</phase> -->
+<!-- 								<goals> -->
+<!-- 									<goal>exec</goal> -->
+<!-- 								</goals> -->
+<!-- 								<configuration> -->
+<!-- 									<executable>${installbuilder-home}/bin/Builder.app/Contents/MacOS/installbuilder.sh</executable>								 -->
 <!-- 									<executable>${installbuilder-home}/bin/builder</executable> -->
-									<arguments>
-										<argument>build</argument>
-										<argument>${basedir}/${installer-dir}/${installbuilder-file-name}</argument>
-										<argument>linux</argument>
-									</arguments>
-								</configuration>
-							</execution>
+<!-- 									<arguments> -->
+<!-- 										<argument>build</argument> -->
+<!-- 										<argument>${basedir}/${installer-dir}/${installbuilder-file-name}</argument> -->
+<!-- 										<argument>linux</argument> -->
+<!-- 									</arguments> -->
+<!-- 								</configuration> -->
+<!-- 							</execution> -->
 							
 <!-- 							<execution> -->
 <!-- 								<id>linux-installer-with-jdk</id> -->
@@ -187,34 +321,34 @@
 						</executions>
 					</plugin>
 					
-			    	<!-- 5. attach installers as artifact -->
-					<plugin>
-					    <groupId>org.codehaus.mojo</groupId>
-					    <artifactId>build-helper-maven-plugin</artifactId>
-					    <executions>
-					        <execution>
-					            <id>attach-installer-artifacts</id>
-					            <phase>package</phase>
-					            <goals>
-					                <goal>attach-artifact</goal>
-					            </goals>
-					            <configuration>
-					                <artifacts>
-					                    <artifact>
-					                        <file>${project.build.directory}/${windows-installer-file-name}</file>
-					                        <classifier>windows</classifier>
-					                        <type>exe</type>
-					                    </artifact>
-					                    <artifact>
-					                        <file>${project.build.directory}/${linux-installer-file-name}</file>
-					                        <classifier>linux</classifier>
-					                        <type>run</type>
-					                    </artifact>
-					                </artifacts>
-					            </configuration>
-					        </execution>
-					    </executions>
-					</plugin>
+			    	<!-- 6. attach installers as artifact -->
+<!-- 					<plugin> -->
+<!-- 					    <groupId>org.codehaus.mojo</groupId> -->
+<!-- 					    <artifactId>build-helper-maven-plugin</artifactId> -->
+<!-- 					    <executions> -->
+<!-- 					        <execution> -->
+<!-- 					            <id>attach-installer-artifacts</id> -->
+<!-- 					            <phase>package</phase> -->
+<!-- 					            <goals> -->
+<!-- 					                <goal>attach-artifact</goal> -->
+<!-- 					            </goals> -->
+<!-- 					            <configuration> -->
+<!-- 					                <artifacts> -->
+<!-- 					                    <artifact> -->
+<!-- 					                        <file>${project.build.directory}/${windows-installer-file-name}</file> -->
+<!-- 					                        <classifier>windows</classifier> -->
+<!-- 					                        <type>exe</type> -->
+<!-- 					                    </artifact> -->
+<!-- 					                    <artifact> -->
+<!-- 					                        <file>${project.build.directory}/${linux-installer-file-name}</file> -->
+<!-- 					                        <classifier>linux</classifier> -->
+<!-- 					                        <type>run</type> -->
+<!-- 					                    </artifact> -->
+<!-- 					                </artifacts> -->
+<!-- 					            </configuration> -->
+<!-- 					        </execution> -->
+<!-- 					    </executions> -->
+<!-- 					</plugin> -->
 				
 				</plugins>
 			</build>		

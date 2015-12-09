@@ -3,7 +3,9 @@
  */
 package org.openforis.calc.chain.export;
 
+import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.r.RScript;
+import org.openforis.calc.r.Source;
 
 /**
  * @author M. Togna
@@ -30,7 +32,15 @@ public class CalcROutputScript extends ROutputScript {
 
 
 	public void addScript( ROutputScript  script ){
-		getRScript().addScript( r().source(script.getFileName()) );
+		Source source 		= r().source(script.getFileName());
+		RScript rScript 	= source;
+		if( script instanceof CalculationStepROutputScript ){
+			CalculationStep step = ( (CalculationStepROutputScript) script).getCalculationStep();
+			if ( !step.getActive() ){
+				rScript = r().comment( source );
+			}
+		}
+		getRScript().addScript( rScript );
 	}
 	
 }

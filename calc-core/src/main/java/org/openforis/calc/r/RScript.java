@@ -17,8 +17,6 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openforis.calc.metadata.Variable;
-import org.openforis.commons.io.csv.CsvReader;
-import org.openforis.commons.io.flat.FlatRecord;
 
 /**
  * @author Mino Togna
@@ -227,6 +225,10 @@ public class RScript {
 	
 	public CalcPersistErrorScript calcPersistErrorScript(RVariable filename, int id){
 		return new CalcPersistErrorScript( this , filename, id );
+	}
+	
+	public RComment comment(RScript script){
+		return new RComment( this , script );
 	}
 	
 	// simple text passed as script. no parsing done here. it's assumed that the

@@ -56,33 +56,18 @@
             <destination>${installdir}</destination>
             <name>programfileslinux</name>
             <platforms>linux</platforms>
-            <distributionFileList>
-                <distributionDirectory>
-                    <origin>R/R-linux</origin>
-                </distributionDirectory>
-            </distributionFileList>
         </folder>
         <folder>
             <description>Program Files</description>
             <destination>${installdir}</destination>
             <name>programfileswindows</name>
             <platforms>windows</platforms>
-            <distributionFileList>
-                <distributionDirectory>
-                    <origin>R/R-windows</origin>
-                </distributionDirectory>
-            </distributionFileList>
         </folder>
         <folder>
             <description>Program Files</description>
             <destination>${installdir}</destination>
             <name>programfilesosx</name>
             <platforms>osx</platforms>
-            <distributionFileList>
-                <distributionDirectory>
-                    <origin>R/R-mac</origin>
-                </distributionDirectory>
-            </distributionFileList>
         </folder>
     </folderList>
     <parameterList>
@@ -96,18 +81,6 @@
             <cliOptionName>prefix</cliOptionName>
             <mustBeWritable>1</mustBeWritable>
             <mustExist>0</mustExist>
-            <width>30</width>
-        </directoryParameter>
-        <directoryParameter>
-            <name>r_install_dir</name>
-            <title>Please select your R installation directory</title>
-            <description></description>
-            <explanation></explanation>
-            <value></value>
-            <default>${env(R_HOME)}</default>
-            <allowEmptyValue>0</allowEmptyValue>
-            <mustBeWritable>0</mustBeWritable>
-            <mustExist>1</mustExist>
             <width>30</width>
         </directoryParameter>
 
@@ -205,7 +178,7 @@
             <zipFile>${installdir}/calc-server.zip</zipFile>
         </unzip>
         <substitute>
-            <files>${installdir}/calc-server/startup.sh;${installdir}/calc-server/shutdown.sh;${installdir}/calc-server/startup.cmd;${installdir}/calc-server/shutdown.cmd;${installdir}/R-linux/install.R;${installdir}/R-mac/install.R;${installdir}/R-windows/install.R;${installdir}/change_file_permissions.sh;</files>
+            <files>${installdir}/calc-server/startup.sh;${installdir}/calc-server/shutdown.sh;${installdir}/calc-server/startup.cmd;${installdir}/calc-server/shutdown.cmd;${installdir}/calc-server/tomcat/bin/setenv.sh;${installdir}/calc-server/tomcat/bin/setenv.bat</files>
             <type>exact</type>
             <substitutionList>
                 <substitution>
@@ -214,130 +187,6 @@
                 </substitution>
             </substitutionList>
         </substitute>
-        <substitute>
-            <files>${installdir}/R-windows/install.R;</files>
-            <type>exact</type>
-            <ruleList>
-                <platformTest>
-                    <type>windows</type>
-                </platformTest>
-            </ruleList>
-            <substitutionList>
-                <substitution>
-                    <pattern>\</pattern>
-                    <value>/</value>
-                </substitution>
-            </substitutionList>
-        </substitute>
-
-        <!-- <addEnvironmentVariable>
-            <name>JAVA_HOME</name>
-            <scope>system</scope>
-            <value>${installdir}/java</value>
-            <ruleList>
-                <platformTest>
-                    <negate>1</negate>
-                    <type>windows</type>
-                </platformTest>
-            </ruleList>
-        </addEnvironmentVariable>
-        <addEnvironmentVariable>
-            <name>JAVA_HOME</name>
-            <scope>system</scope>
-            <value>${installdir}\java</value>
-            <ruleList>
-                <platformTest>
-                    <type>windows</type>
-                </platformTest>
-            </ruleList>
-        </addEnvironmentVariable> -->
-        <addEnvironmentVariable>
-            <name>R_HOME</name>
-            <scope>system</scope>
-            <value>${r_install_dir}</value>
-        </addEnvironmentVariable>
-        <substitute>
-            <files>${installdir}/R-windows/install.cmd</files>
-            <type>exact</type>
-            <ruleList>
-                <platformTest>
-                    <type>windows-x86</type>
-                </platformTest>
-            </ruleList>
-            <substitutionList>
-                <substitution>
-                    <pattern>R_BIN_DIRECTORY</pattern>
-                    <value>${r_install_dir}\bin\i386</value>
-                </substitution>
-            </substitutionList>
-        </substitute>
-        <substitute>
-            <files>${installdir}/R-windows/install.cmd</files>
-            <type>exact</type>
-            <ruleList>
-                <platformTest>
-                    <type>windows-x64</type>
-                </platformTest>
-            </ruleList>
-            <substitutionList>
-                <substitution>
-                    <pattern>R_BIN_DIRECTORY</pattern>
-                    <value>${r_install_dir}\bin\x64</value>
-                </substitution>
-            </substitutionList>
-        </substitute>
-        <runProgram>
-            <program>${installdir}/R-linux/install.sh</program>
-            <programArguments></programArguments>
-            <progressText>Installing required R packages</progressText>
-            <useMSDOSPath>0</useMSDOSPath>
-            <workingDirectory>${installdir}/R-linux/</workingDirectory>
-            <ruleList>
-                <platformTest>
-                    <type>linux</type>
-                </platformTest>
-            </ruleList>
-        </runProgram>
-        <runProgram>
-            <program>${installdir}/R-mac/install.sh</program>
-            <programArguments></programArguments>
-            <progressText>Installing required R packages</progressText>
-            <useMSDOSPath>0</useMSDOSPath>
-            <workingDirectory>${installdir}/R-mac/</workingDirectory>
-            <ruleList>
-                <platformTest>
-                    <type>osx</type>
-                </platformTest>
-            </ruleList>
-        </runProgram>
-        <runProgram>
-            <program>${installdir}/R-windows/install.cmd</program>
-            <programArguments>${installdir}/R-windows/</programArguments>
-            <progressText>Installing required R packages</progressText>
-            <ruleList>
-                <platformTest>
-                    <type>windows</type>
-                </platformTest>
-            </ruleList>
-        </runProgram>
-        <addDirectoryToPath>
-            <insertAt>end</insertAt>
-            <path>%JAVA_HOME%\bin;%R_HOME%\bin\i386;%R_HOME%\library\rJava\jri;%JAVA_HOME%\jre\bin\server;</path>
-            <ruleList>
-                <platformTest>
-                    <type>windows-x86</type>
-                </platformTest>
-            </ruleList>
-        </addDirectoryToPath>
-        <addDirectoryToPath>
-            <insertAt>end</insertAt>
-            <path>%JAVA_HOME%\bin;%R_HOME%\bin\x64;%R_HOME%\library\rJava\jri\x64;%JAVA_HOME%\jre\bin\server;</path>
-            <ruleList>
-                <platformTest>
-                    <type>windows-x64</type>
-                </platformTest>
-            </ruleList>
-        </addDirectoryToPath>
         <createJavaLaunchers>
             <destination>${java_launcher_destination}</destination>
             <explanation>${msg(Installer.Java.CreateLaunchers.Explanation)}</explanation>
@@ -431,7 +280,6 @@
                 </substitution>
             </substitutionList>
         </substitute>
-		
         <getFreePort>
             <finalPort>8046</finalPort>
             <initialPort>8006</initialPort>
@@ -447,8 +295,7 @@
                 </substitution>
             </substitutionList>
         </substitute>
-		
-		<getFreePort>
+        <getFreePort>
             <finalPort>8121</finalPort>
             <initialPort>8081</initialPort>
             <variable>tomcat_http</variable>
@@ -463,7 +310,7 @@
                 </substitution>
             </substitutionList>
         </substitute>
-		<substitute>
+        <substitute>
             <files>${installdir}/calc-server/tomcat/calc.properties</files>
             <type>exact</type>
             <substitutionList>
@@ -473,8 +320,7 @@
                 </substitution>
             </substitutionList>
         </substitute>
-		
-		<getFreePort>
+        <getFreePort>
             <finalPort>8484</finalPort>
             <initialPort>8444</initialPort>
             <variable>tomcat_redirect</variable>
@@ -489,8 +335,7 @@
                 </substitution>
             </substitutionList>
         </substitute>
-		
-		<getFreePort>
+        <getFreePort>
             <finalPort>8050</finalPort>
             <initialPort>8010</initialPort>
             <variable>tomcat_ajp</variable>
@@ -505,7 +350,19 @@
                 </substitution>
             </substitutionList>
         </substitute>
-
+        <if>
+            <actionList>
+                <copyFile>
+                    <destination>${installdir}/calc-server/tomcat/webapps/saiku/WEB-INF/classes/saiku-repository</destination>
+                    <origin>${system_temp_directory}/saiku-repository</origin>
+                </copyFile>
+            </actionList>
+            <conditionRuleList>
+                <fileExists>
+                    <path>${system_temp_directory}/saiku-repository</path>
+                </fileExists>
+            </conditionRuleList>
+        </if>
     </postInstallationActionList>
     <postUninstallationActionList>
         <deleteFile>
@@ -516,6 +373,23 @@
         </deleteFile>
     </postUninstallationActionList>
     <preInstallationActionList>
+        <deleteFile>
+            <path>${system_temp_directory}/saiku-repository</path>
+        </deleteFile>
+        <if>
+            <actionList>
+                <copyFile>
+                    <destination>${system_temp_directory}/saiku-repository</destination>
+                    <matchHiddenFiles>1</matchHiddenFiles>
+                    <origin>${installdir}/calc-server/tomcat/webapps/saiku/WEB-INF/classes/saiku-repository</origin>
+                </copyFile>
+            </actionList>
+            <conditionRuleList>
+                <fileExists>
+                    <path>${installdir}/calc-server/tomcat/webapps/saiku/WEB-INF/classes/saiku-repository</path>
+                </fileExists>
+            </conditionRuleList>
+        </if>
         <setInstallerVariable>
             <name>installdir</name>
             <value>${env(SYSTEMDRIVE)}/opt/${product_shortname}</value>
