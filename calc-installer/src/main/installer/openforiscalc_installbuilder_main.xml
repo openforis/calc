@@ -83,79 +83,6 @@
             <mustExist>0</mustExist>
             <width>30</width>
         </directoryParameter>
-
-        <!-- parameters for creating Java launchers -->
-        <stringParameter name="java_launcher_destination" value="${installdir}" ask="0">
-            <description></description>
-            <explanation></explanation>
-            <default></default>
-            <allowEmptyValue>1</allowEmptyValue>
-            <width>30</width>
-        </stringParameter>
-        <stringParameter name="java_launcher_binary_name" value="${project.shortName}-launcher.${platform_exec_suffix}" ask="0">
-            <description></description>
-            <explanation></explanation>
-            <default></default>
-            <allowEmptyValue>1</allowEmptyValue>
-            <width>30</width>
-        </stringParameter>
-        <stringParameter name="java_launcher_arguments" value="" ask="0">
-            <description></description>
-            <explanation></explanation>
-            <default></default>
-            <allowEmptyValue>1</allowEmptyValue>
-            <width>30</width>
-        </stringParameter>
-        <stringParameter name="java_launcher_vm_parameters" value="" ask="0">
-            <description></description>
-            <explanation></explanation>
-            <default></default>
-            <allowEmptyValue>1</allowEmptyValue>
-            <width>30</width>
-        </stringParameter>
-        <stringParameter name="java_launcher_jar" value="OpenForisCalc.jar" ask="0">
-            <description></description>
-            <explanation></explanation>
-            <default></default>
-            <allowEmptyValue>1</allowEmptyValue>
-            <width>30</width>
-        </stringParameter>
-        <stringParameter name="java_launcher_mainClass" value="org.openforis.calc.controlpanel.CalcControlPanel" ask="0">
-            <description></description>
-            <explanation></explanation>
-            <default></default>
-            <allowEmptyValue>1</allowEmptyValue>
-            <width>30</width>
-        </stringParameter>
-        <stringParameter name="java_launcher_classpath" value="" ask="0">
-            <description></description>
-            <explanation></explanation>
-            <default></default>
-            <allowEmptyValue>1</allowEmptyValue>
-            <width>30</width>
-        </stringParameter>
-        <stringParameter name="java_launcher_startmenu_shortcut_name" value="OpenForisCalc Control Panel" ask="0">
-            <description></description>
-            <explanation></explanation>
-            <default></default>
-            <allowEmptyValue>1</allowEmptyValue>
-            <width>30</width>
-        </stringParameter>
-        <booleanParameter name="java_launcher_add_to_win_startmenu" value="1" ask="0">
-            <description></description>
-            <explanation></explanation>
-            <default></default>
-        </booleanParameter>
-        <booleanParameter name="java_install_jre" value="1" ask="0">
-            <description></description>
-            <explanation></explanation>
-            <default></default>
-        </booleanParameter>
-        <booleanParameter name="java_create_launcher" value="1" ask="0">
-            <description></description>
-            <explanation></explanation>
-            <default></default>
-        </booleanParameter>
         <stringParameter>
             <name>postgres_password</name>
             <title>Please enter your admin postsgres password</title>
@@ -170,7 +97,7 @@
     <postInstallationActionList>
         <addEnvironmentVariable>
             <name>CALC_HOME</name>
-            <scope>system</scope>
+            <scope>user</scope>
             <value>${installdir}</value>
         </addEnvironmentVariable>
         <unzip>
@@ -187,7 +114,8 @@
                 </substitution>
             </substitutionList>
         </substitute>
-        <createJavaLaunchers>
+
+        <!--createJavaLaunchers>
             <destination>${java_launcher_destination}</destination>
             <explanation>${msg(Installer.Java.CreateLaunchers.Explanation)}</explanation>
             <progressText>${msg(Installer.Java.CreateLaunchers.Text)}</progressText>
@@ -212,10 +140,9 @@
             <ruleList>
                 <isTrue value="${java_create_launcher}"/>
             </ruleList>
-        </createJavaLaunchers>
-
-        <!-- create start menu shortcut(s) on Microsoft Windows -->
-        <actionGroup>
+        </createJavaLaunchers
+ create start menu shortcut(s) on Microsoft Windows 
+actionGroup>
             <actionList>
                 <setInstallerVariable>
                     <name>java_launcher_startmenudirectory</name>
@@ -259,7 +186,7 @@
                 <isTrue value="${java_launcher_add_to_win_startmenu}"/>
                 <isTrue value="${java_create_launcher}"/>
             </ruleList>
-        </actionGroup>
+        </actionGroup-->
         <changeOwnerAndGroup>
             <files>/home/${env(SUDO_USER)}/Desktop/${java_launcher_binary_name}</files>
             <group></group>
@@ -356,6 +283,9 @@
                     <destination>${installdir}/calc-server/tomcat/webapps/saiku/WEB-INF/classes/saiku-repository</destination>
                     <origin>${system_temp_directory}/saiku-repository</origin>
                 </copyFile>
+                <deleteFile>
+                    <path>${system_temp_directory}/saiku-repository</path>
+                </deleteFile>
             </actionList>
             <conditionRuleList>
                 <fileExists>
@@ -365,6 +295,10 @@
         </if>
     </postInstallationActionList>
     <postUninstallationActionList>
+        <deleteEnvironmentVariable>
+            <name>CALC_HOME</name>
+            <scope>user</scope>
+        </deleteEnvironmentVariable>
         <deleteFile>
             <path>${installdir}</path>
         </deleteFile>
@@ -385,9 +319,18 @@
                 </copyFile>
             </actionList>
             <conditionRuleList>
-                <fileExists>
-                    <path>${installdir}/calc-server/tomcat/webapps/saiku/WEB-INF/classes/saiku-repository</path>
-                </fileExists>
+                <ruleGroup>
+                    <ruleList>
+                        <compareText>
+                            <logic>does_not_equal</logic>
+                            <text>${env(CALC_HOME)}</text>
+                            <value></value>
+                        </compareText>
+                        <fileExists>
+                            <path>${env(CALC_HOME)}/calc-server/tomcat/webapps/saiku/WEB-INF/classes/saiku-repository</path>
+                        </fileExists>
+                    </ruleList>
+                </ruleGroup>
             </conditionRuleList>
         </if>
         <setInstallerVariable>

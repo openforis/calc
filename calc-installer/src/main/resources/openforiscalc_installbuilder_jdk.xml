@@ -23,8 +23,7 @@
     <enableRollback>1</enableRollback>
     <enableTimestamp>1</enableTimestamp>
     <outputDirectory>../../../target</outputDirectory>
-    <rebootRequired>1</rebootRequired>
-    <requireInstallationByRootUser>1</requireInstallationByRootUser>
+    <rebootRequired>0</rebootRequired>
     <rollbackBackupDirectory>${system_temp_directory}/${product_shortname}/backup</rollbackBackupDirectory>
     <saveRelativePaths>1</saveRelativePaths>
     <vendor>Open Foris</vendor>
