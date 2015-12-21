@@ -233,11 +233,11 @@ public class DataSchema extends RelationalSchema {
 	
 		List<Entity> entities = workspace.getEntities();
 		for ( Entity entity : entities ) {
-			if( entity.isAggregable() ) {
+//			if( entity.isAggregable() ) {
 				
 				// Add dimensions for categorical variables
-//				for (CategoricalVariable<?> var : entity.getCategoricalVariables()) {
-				for (CategoricalVariable<?> var : entity.getDimensions()) {
+				for (CategoricalVariable<?> var : entity.getCategoricalVariables()) {
+//				for (CategoricalVariable<?> var : entity.getDimensions()) {
 					if( var instanceof MultiwayVariable ){
 						MultiwayVariable multiVar = (MultiwayVariable) var;
 						CategoryLevel categoryLevel = var.getCategoryLevel();
@@ -256,7 +256,7 @@ public class DataSchema extends RelationalSchema {
 					}
 				}
 				
-			}
+//			}
 		}
 	}
 	

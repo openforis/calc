@@ -39,13 +39,13 @@ public class InitChainROutputScript extends ROutputScript {
 		r.addScript(r().dbSendQuery( CONNECTION_VAR, new Psql().setDefaultSchemaSearchPath(schemas.getDataSchema(), new SchemaImpl("public"))));
 		
 		// set current dir 
-		RScript dirname = r().rScript( "dirname(sys.frame(1)$ofile)" );
-		RScript setDirName = r().setValue( SCRIPT_DIR , dirname );
-		r.addScript( setDirName );
-		
-		Paste paste = r().paste( SCRIPT_DIR, r().variable("\"user\""), ".Platform$file.sep" );
-		SetValue setUserScriptDir = r().setValue( USER_SCRIPT_DIR , paste );
-		r.addScript(setUserScriptDir);
+//		RScript dirname = r().rScript( "dirname(sys.frame(1)$ofile)" );
+//		RScript setDirName = r().setValue( SCRIPT_DIR , dirname );
+//		r.addScript( setDirName );
+//		
+//		Paste paste = r().paste( SCRIPT_DIR, r().variable("\"user\""), ".Platform$file.sep" );
+//		SetValue setUserScriptDir = r().setValue( USER_SCRIPT_DIR , paste );
+//		r.addScript(setUserScriptDir);
 		return r;
 	}
 

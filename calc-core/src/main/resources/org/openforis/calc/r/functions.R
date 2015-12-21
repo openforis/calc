@@ -73,3 +73,10 @@ options (
   #gsubfn.engine = "R" , 
   sqldf.driver = "SQLite"
 );
+
+scriptDir <- dirname(sys.frame(1)$ofile);
+if( scriptDir == 'system' ){
+  scriptDir <- '.';
+}
+
+userScriptDir <- paste(scriptDir , "user" , sep = .Platform$file.sep);

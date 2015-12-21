@@ -1597,7 +1597,7 @@ ul.ui-sortable li {
 
 /** workspace list settings (change active workspace) */
 #workspace-edit-settings .row {
-	padding-top: 30px;	
+	padding-top: 10px;	
 }
 #workspace-edit-settings .workspace-list{	
 	overflow : hidden; 
@@ -1605,10 +1605,10 @@ ul.ui-sortable li {
 	width: 100%; 
 }
 #workspace-edit-settings .workspace-list button {
-	width: 10em;
-	height: 4em;
-	margin: 0.2em 0.5em;
-/* 	float: left; */
+	width: 90%;
+    min-height: 35px;
+    max-height: 45px;
+    margin: 0.1em;
 }
 #workspace-edit-settings .workspace-list button.add-ws i {
 	font-size: 2em;

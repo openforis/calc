@@ -32,7 +32,7 @@ public class ReadDataROutputScript extends ROutputScript {
 			r.addScript( readEntity );
 		}
 		
-		for (Integer entityId : group.entityIds()) {
+		for (Integer entityId : group.activeEntityIds()) {
 			Entity entity = workspace.getEntityById( entityId );
 			
 			RScript readEntity = createReadEntityScript( schemas , entity );

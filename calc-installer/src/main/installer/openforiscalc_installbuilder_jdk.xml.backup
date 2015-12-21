@@ -1,7 +1,7 @@
 <project>
     <shortName>OpenForisCalc</shortName>
     <fullName>Open Foris Calc</fullName>
-    <version>1.0-b4-SNAPSHOT</version>
+    <version>2.0-a0-SNAPSHOT</version>
 
     <!--readmeFile>../../../../README</readmeFile-->
     <installerFilename>${product_shortname}-${product_version}-${platform_name}-installer-with-jdk.${platform_exec_suffix}</installerFilename>
@@ -23,6 +23,7 @@
     <enableRollback>1</enableRollback>
     <enableTimestamp>1</enableTimestamp>
     <outputDirectory>../../../target</outputDirectory>
+    <rebootRequired>0</rebootRequired>
     <rollbackBackupDirectory>${system_temp_directory}/${product_shortname}/backup</rollbackBackupDirectory>
     <saveRelativePaths>1</saveRelativePaths>
     <vendor>Open Foris</vendor>

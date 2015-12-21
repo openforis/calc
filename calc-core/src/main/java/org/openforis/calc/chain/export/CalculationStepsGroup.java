@@ -19,6 +19,7 @@ import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.schema.ResultTable;
+import org.openforis.commons.collection.CollectionUtils;
 
 /**
  * Calculation step tasks are executed grouped by entity. This class groups
@@ -31,6 +32,8 @@ public class CalculationStepsGroup {
 
 	private Map<Integer, List<CalculationStep>> calculationSteps;
 	private Map<Integer, Set<String>> resultVariables;
+	// list of all calculation steps, including the disabled ones
+	private List<CalculationStep> allCalculationSteps;
 
 	private Workspace workspace;
 
@@ -45,12 +48,16 @@ public class CalculationStepsGroup {
 		ProcessingChain processingChain = this.workspace.getDefaultProcessingChain();
 		this.calculationSteps 			= new LinkedHashMap<Integer, List<CalculationStep>>();
 		this.resultVariables			= new LinkedHashMap<Integer, Set<String>>();
+		this.allCalculationSteps		= new ArrayList<CalculationStep>();
 		
 		List<CalculationStep> steps = processingChain.getCalculationSteps();
 		for (CalculationStep calculationStep : steps) {
-//			if( !onlyActive || calculationStep.getActive() ){
+			
+			this.allCalculationSteps.add( calculationStep );
+			
+			if( !onlyActive || calculationStep.getActive() ){
 				this.addCalculationStep(calculationStep);
-//			}
+			}
 		}
 		
 	}
@@ -89,7 +96,11 @@ public class CalculationStepsGroup {
 		
 	}
 	
-	public Collection<Integer> entityIds() {
+	public Collection<CalculationStep> getAllCalculationSteps(){
+		return CollectionUtils.unmodifiableList( this.allCalculationSteps );
+	}
+	
+	public Collection<Integer> activeEntityIds() {
 		return this.calculationSteps.keySet();
 	}
 	

@@ -280,7 +280,7 @@ actionGroup>
         <if>
             <actionList>
                 <copyFile>
-                    <destination>${installdir}/calc-server/tomcat/webapps/saiku/WEB-INF/classes/saiku-repository</destination>
+                    <destination>${installdir}/calc-server/tomcat/webapps/saiku/WEB-INF/classes/</destination>
                     <origin>${system_temp_directory}/saiku-repository</origin>
                 </copyFile>
                 <deleteFile>
@@ -315,31 +315,45 @@ actionGroup>
                 <copyFile>
                     <destination>${system_temp_directory}/saiku-repository</destination>
                     <matchHiddenFiles>1</matchHiddenFiles>
-                    <origin>${installdir}/calc-server/tomcat/webapps/saiku/WEB-INF/classes/saiku-repository</origin>
+                    <origin>${env(CALC_HOME)}/calc-server/tomcat/webapps/saiku/WEB-INF/classes/saiku-repository</origin>
                 </copyFile>
+                <deleteFile>
+                    <path>${env(CALC_HOME)}</path>
+                </deleteFile>
             </actionList>
             <conditionRuleList>
-                <ruleGroup>
-                    <ruleList>
-                        <compareText>
-                            <logic>does_not_equal</logic>
-                            <text>${env(CALC_HOME)}</text>
-                            <value></value>
-                        </compareText>
-                        <fileExists>
-                            <path>${env(CALC_HOME)}/calc-server/tomcat/webapps/saiku/WEB-INF/classes/saiku-repository</path>
-                        </fileExists>
-                    </ruleList>
-                </ruleGroup>
+                <compareText>
+                    <logic>does_not_equal</logic>
+                    <text>${env(CALC_HOME)}</text>
+                    <value></value>
+                </compareText>
             </conditionRuleList>
         </if>
-        <setInstallerVariable>
+        <if>
+            <actionList>        
+            	<setInstallerVariable>
+            		<name>installdir</name>
+            		<value>${env(CALC_HOME)}</value>
+        		</setInstallerVariable>
+            </actionList>
+            <conditionRuleList>
+                <compareText>
+                    <logic>does_not_equal</logic>
+                    <text>${env(CALC_HOME)}</text>
+                    <value></value>
+                </compareText>
+            </conditionRuleList>
+            <elseActionList>
+                <setInstallerVariable>
+                    <name>installdir</name>
+                    <value>${env(SYSTEMDRIVE)}/opt/${product_shortname}</value>
+                </setInstallerVariable>
+            </elseActionList>
+        </if>
+        <!--setInstallerVariable>
             <name>installdir</name>
             <value>${env(SYSTEMDRIVE)}/opt/${product_shortname}</value>
-        </setInstallerVariable>
-        <deleteFile>
-            <path>${installdir}</path>
-        </deleteFile>
+        </setInstallerVariable-->
     </preInstallationActionList>
     <startMenuShortcutList>
         <startMenuShortcut>

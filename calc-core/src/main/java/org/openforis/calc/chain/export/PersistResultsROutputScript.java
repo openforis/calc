@@ -49,7 +49,7 @@ public class PersistResultsROutputScript extends ROutputScript {
 			r.addScript( persistBaseUnitResults );
 		}
 		
-		for (Integer entityId : group.entityIds()) {
+		for (Integer entityId : group.activeEntityIds()) {
 			Entity entity = workspace.getEntityById( entityId );
 			
 			RScript persistEntityResults = createPersistEntityResultsScript( schemas , entity , group, entityManager );
@@ -176,8 +176,5 @@ public class PersistResultsROutputScript extends ROutputScript {
 		return r;
 	}
 	
-//	private static void addSamplingUnitWeightTask() {
-//		
-//	}
 
 }

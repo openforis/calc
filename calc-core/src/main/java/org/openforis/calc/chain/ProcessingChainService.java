@@ -49,7 +49,6 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 /**
- * Workspace backup implements to logic to export and import a workspace
  * 
  * @author Mino Togna
  * 
@@ -132,7 +131,7 @@ public class ProcessingChainService {
 			addScript( weightScript, scripts, calc );
 		
 			// plot areas
-			for (Integer entityId : group.entityIds()) {
+			for (Integer entityId : group.activeEntityIds()) {
 				Entity entity = workspace.getEntityById( entityId );
 				if( entity.isInSamplingUnitHierarchy() && !entity.isSamplingUnit() ){
 					EntityPlotAreaROutputScript plotArea = new EntityPlotAreaROutputScript( counter.increment() , entity );
@@ -146,18 +145,21 @@ public class ProcessingChainService {
 		
 		RScript stepsPostExecScript = new RScript();
 		// calculation steps
-		for (Integer entityId : group.entityIds()) {
-//			Entity entity = workspace.getEntityById( entityId );
-			for (CalculationStep calculationStep : group.getCalculationSteps( entityId )) {
-				CalculationStepROutputScript step = new CalculationStepROutputScript( counter.increment() , calculationStep, schemas );
-				addScript( step, scripts, calc );
-				
-				chainScripts.add( step );
-				
+//		for (Integer entityId : group.activeEntityIds()) {
+//			for (CalculationStep calculationStep : group.getCalculationSteps( entityId )) {
+		for (CalculationStep calculationStep : group.getAllCalculationSteps() ){
+			CalculationStepROutputScript step = new CalculationStepROutputScript( counter.increment() , calculationStep, schemas );
+			addScript( step, scripts, calc );
+			
+			chainScripts.add( step );
+			
+			if( calculationStep.getActive() ){
 				stepsPostExecScript.addScript( step.getPostExecScript() );
 			}
 			
 		}
+			
+//		}
 		// ==================
 		// END USER SCRIPTS
 		// ==================
