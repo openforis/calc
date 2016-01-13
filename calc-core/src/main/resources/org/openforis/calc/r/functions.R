@@ -22,11 +22,12 @@ checkError <- function( e, connection=NULL ){
 #===
 calc.log <- function( step, msg , level ){
   row1 <- paste( Sys.time() , step , sep = "     step : ");
-  print( row1  );
+  cat( row1  );
   
-  row2 <- paste(level , ':' , sep="");
+  row2 <- paste("\n" , level , sep="");
+  row2 <- paste(row2 , ':' , sep="");
   row2 <- paste(row2 , msg , sep=" ");
-  print( row1  );
+  cat( row2  );
 };
 calc.info <- function( step, msg ){
   calc.log( step , msg , "INFO" );
@@ -40,7 +41,7 @@ calc.error <- function( step, msg ){
 calc.debug <- function( step, msg ){
   calc.log( step , msg , "DEBUG" );
 };
-
+calc.info("1-init.R","Processing chain started");
 #===
 #=== Extracts the content of a file and returns it as an SQL quoted string  
 #===

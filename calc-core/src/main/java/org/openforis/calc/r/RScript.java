@@ -227,8 +227,16 @@ public class RScript {
 		return new CalcPersistErrorScript( this , filename, id );
 	}
 	
+	public CalcInfo calcInfo(String step , RScript message){
+		return new CalcInfo( this , step, message );
+	}
+	
 	public RComment comment(RScript script){
 		return new RComment( this , script );
+	}
+	
+	public RComment comment(String comments){
+		return new RComment( this , new RScript().rScript(comments) );
 	}
 	
 	// simple text passed as script. no parsing done here. it's assumed that the
