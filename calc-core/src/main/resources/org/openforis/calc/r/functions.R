@@ -1,5 +1,9 @@
 #= remove all objects in session
 rm( list = ls() ) ;
+
+# processing chain starting time
+calc.startTime <- Sys.time();
+
 #== 
 #== function used by open foris calc to check if the execution of a task returned an error 
 #== 
@@ -11,6 +15,30 @@ checkError <- function( e, connection=NULL ){
     }
     stop(e);
   }
+};
+
+#===
+#=== Calc logging functions
+#===
+calc.log <- function( step, msg , level ){
+  row1 <- paste( Sys.time() , step , sep = "     step : ");
+  print( row1  );
+  
+  row2 <- paste(level , ':' , sep="");
+  row2 <- paste(row2 , msg , sep=" ");
+  print( row1  );
+};
+calc.info <- function( step, msg ){
+  calc.log( step , msg , "INFO" );
+};
+calc.warn <- function( step, msg ){
+  calc.log( step , msg , "WARN" );
+};
+calc.error <- function( step, msg ){
+  calc.log( step , msg , "ERROR" );
+};
+calc.debug <- function( step, msg ){
+  calc.log( step , msg , "DEBUG" );
 };
 
 #===

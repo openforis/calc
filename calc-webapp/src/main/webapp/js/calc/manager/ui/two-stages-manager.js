@@ -210,6 +210,9 @@ TwoStagesManager.prototype.updateSSUSection = function(){
 		$this.tableJoin.hide();
 		$this.tableJoin.empty();
 		
+		if( ! $this.sdManager.samplingDesign.twoStagesSettings ){
+			$this.sdManager.samplingDesign.twoStagesSettings = {};
+		} 
 		$this.sdManager.samplingDesign.twoStagesSettings.joinSettings = null;
 		$this.tableJoin.settings	= null;
 	}

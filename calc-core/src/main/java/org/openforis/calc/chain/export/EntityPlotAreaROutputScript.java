@@ -33,7 +33,7 @@ public class EntityPlotAreaROutputScript extends ROutputScript {
 			if( StringUtils.isBlank(plotAreaScript) ){
 				
 				RVariable plotAreaVar 	= r().variable( entity.getName(), ResultTable.PLOT_AREA_COLUMN_NAME );
-				SetValue setPlotArea 	= r().setValue( plotAreaVar, r().rScript("0.5") );
+				SetValue setPlotArea 	= r().setValue( plotAreaVar, r().rScript("NA") );
 				
 				r.addScript( setPlotArea );
 				

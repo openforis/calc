@@ -31,7 +31,7 @@ public class BaseUnitWeightROutputScript extends ROutputScript {
 				
 				Entity entity 		= samplingDesign.getSamplingUnit();
 				RVariable weightVar = r().variable( entity.getName(), FactTable.WEIGHT_COLUMN );
-				SetValue setWeight 	= r().setValue( weightVar, r().rScript("1") );
+				SetValue setWeight 	= r().setValue( weightVar, r().rScript("NA") );
 				
 				r.addScript( setWeight );
 				

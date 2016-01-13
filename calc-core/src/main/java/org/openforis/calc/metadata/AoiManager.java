@@ -210,7 +210,11 @@ public class AoiManager {
 			}
 			aoi.setParentAoi(parentAoi);
 
-			aoiDao.insert(aoi);
+			try {
+				aoiDao.insert(aoi);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			level.addAoi(aoi);
 
 			map.put(code, aoi);
