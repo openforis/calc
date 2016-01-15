@@ -212,9 +212,11 @@ public class PublishRolapSchemaTask extends Task {
 		StratumDimension stratumDimension = rolapCube.getStratumDimension();
 		if( stratumDimension != null ) {
 			Field<Integer> stratumField =  rolapCube.getStratumField();
-			DimensionUsage stratumDimUsage = createDimensionUsage( stratumDimension.getName(), stratumField.getName() );
+			if( stratumField != null ){
+				DimensionUsage stratumDimUsage = createDimensionUsage( stratumDimension.getName(), stratumField.getName() );
+				cube.getDimensionUsageOrDimension().add(stratumDimUsage);
+			}
 			
-			cube.getDimensionUsageOrDimension().add(stratumDimUsage);
 		}
 
 		// add aoi dimension usages

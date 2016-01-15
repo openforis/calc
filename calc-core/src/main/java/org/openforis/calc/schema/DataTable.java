@@ -394,10 +394,14 @@ public abstract class DataTable extends AbstractTable {
 	protected void createStratumField() {
 		if( getEntity().getWorkspace().hasStratifiedSamplingDesign() ){
 		
-			Entity parent = this.entity.getParent();
-			if( entity.isSamplingUnit() || (parent != null && parent.isSamplingUnit()) ) {
-				this.stratumField = createField("_stratum", INTEGER, this);
+			if( entity.isInSamplingUnitHierarchy() ){
+				this.stratumField = createField("_stratum", INTEGER, this);	
 			}
+			
+//			Entity parent = this.entity.getParent();
+//			if( entity.isSamplingUnit() || (parent != null && parent.isSamplingUnit()) ) {
+//				this.stratumField = createField("_stratum", INTEGER, this);
+//			}
 
 		}
 	}
