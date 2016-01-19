@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables.pojos;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class SamplingDesignBase implements java.io.Serializable {
 
-	private static final long serialVersionUID = -1199179674;
+	private static final long serialVersionUID = -488969608;
 
 	private java.lang.Integer                      id;
 	private java.lang.Integer                      samplingUnitId;
@@ -28,6 +28,7 @@ public class SamplingDesignBase implements java.io.Serializable {
 	private java.lang.String                       samplingUnitWeightScript;
 	private java.lang.Boolean                      twoStages;
 	private org.openforis.calc.engine.ParameterMap twoStagesSettings;
+	private java.lang.Boolean                      applyAreaWeighted;
 
 	public SamplingDesignBase() {}
 
@@ -46,7 +47,8 @@ public class SamplingDesignBase implements java.io.Serializable {
 		org.openforis.calc.engine.ParameterMap aoiJoinSettings,
 		java.lang.String                       samplingUnitWeightScript,
 		java.lang.Boolean                      twoStages,
-		org.openforis.calc.engine.ParameterMap twoStagesSettings
+		org.openforis.calc.engine.ParameterMap twoStagesSettings,
+		java.lang.Boolean                      applyAreaWeighted
 	) {
 		this.id = id;
 		this.samplingUnitId = samplingUnitId;
@@ -63,6 +65,7 @@ public class SamplingDesignBase implements java.io.Serializable {
 		this.samplingUnitWeightScript = samplingUnitWeightScript;
 		this.twoStages = twoStages;
 		this.twoStagesSettings = twoStagesSettings;
+		this.applyAreaWeighted = applyAreaWeighted;
 	}
 
 	public java.lang.Integer getId() {
@@ -183,5 +186,13 @@ public class SamplingDesignBase implements java.io.Serializable {
 
 	public void setTwoStagesSettings(org.openforis.calc.engine.ParameterMap twoStagesSettings) {
 		this.twoStagesSettings = twoStagesSettings;
+	}
+
+	public java.lang.Boolean getApplyAreaWeighted() {
+		return this.applyAreaWeighted;
+	}
+
+	public void setApplyAreaWeighted(java.lang.Boolean applyAreaWeighted) {
+		this.applyAreaWeighted = applyAreaWeighted;
 	}
 }

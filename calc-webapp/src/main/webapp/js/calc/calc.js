@@ -43,6 +43,7 @@ $(document).ready(function() {
 	Calc.footerHomeLinks 	= Calc.footer.find( ".links" );
 	Calc.backHomeBtn 		= Calc.footer.find( "button.back" );
 	
+	
 	/**
 	 * Function to be called when active workspace change
 	 */

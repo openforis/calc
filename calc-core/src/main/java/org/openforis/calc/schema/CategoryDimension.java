@@ -1,5 +1,6 @@
 package org.openforis.calc.schema;
 
+import org.apache.commons.lang3.StringUtils;
 import org.openforis.calc.metadata.Category;
 import org.openforis.calc.metadata.CategoryHierarchy;
 import org.openforis.calc.metadata.CategoryLevel;
@@ -32,7 +33,8 @@ public class CategoryDimension extends Dimension {
 		CategoryHierarchy categoryHierarchy = categoryLevel.getHierarchy();
 		Category category = categoryHierarchy.getCategory();
 		
-		String caption = variable.getCaption() + " [" + variable.getName()+"]";
+		String caption = StringUtils.isNotBlank(variable.getCaption()) ? variable.getCaption() : category.getCaption();
+		caption += " [" + variable.getName()+"]";
 		setCaption( caption );
 		
 		String hName = categoryHierarchy.getName();

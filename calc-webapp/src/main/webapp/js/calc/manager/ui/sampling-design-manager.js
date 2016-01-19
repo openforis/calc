@@ -29,7 +29,8 @@ SamplingDesignManager = function(container) {
 	this.saveBtn 		= this.container.find( "[name=save-btn]" );
 	
 	// sampling unit combo
-	this.samplingUnitCombo =  this.container.find( '[name=sampling-unit]' ).combobox();
+	this.samplingUnitCombo = this.container.find( '[name=sampling-unit]' ).combobox();
+	this.applyAreaWeighted = this.container.find( '[name=apply_area_weighted]' );
 	
 	// additional managers used in the edit phase
 	this.phase1Manager = new Phase1Manager( this.editSd.find(".phase1_section") , this);
@@ -90,6 +91,10 @@ SamplingDesignManager.prototype.init = function(){
 		this.loadSamplingUnitTableInfo();
 	} , this) );
 	
+	this.applyAreaWeighted.change( function(e){
+		e.preventDefault();
+		$this.samplingDesign.applyAreaWeighted = $this.applyAreaWeighted.prop('checked');
+	});
 	
 	//2 phases
 	this.twoPhasesBtn.select( $.proxy(function(){
@@ -471,6 +476,9 @@ SamplingDesignManager.prototype.updateEditView = function(){
 	
 	if( this.samplingDesign.samplingUnitId ){
 		this.samplingUnitCombo.val( this.samplingUnit.id );
+		
+		var applyAreaWeighted = this.samplingDesign.applyAreaWeighted === true;
+		this.applyAreaWeighted.prop( 'checked' , applyAreaWeighted );
 		// update weight script
 		WorkspaceManager.getInstance().activeWorkspace( $.proxy(function(ws){
 //			this.weightScript.entity = ws.getEntityById( this.samplingDesign.samplingUnitId );

@@ -146,4 +146,11 @@ public class SamplingDesignDao extends org.jooq.impl.DAOImpl<org.openforis.calc.
 	public java.util.List<SamplingDesign> fetchByTwoStagesSettings(org.openforis.calc.engine.ParameterMap... values) {
 		return fetch(org.openforis.calc.persistence.jooq.tables.SamplingDesignTable.SAMPLING_DESIGN.TWO_STAGES_SETTINGS, values);
 	}
+
+	/**
+	 * Fetch records that have <code>apply_area_weighted IN (values)</code>
+	 */
+	public java.util.List<SamplingDesign> fetchByApplyAreaWeighted(java.lang.Boolean... values) {
+		return fetch(org.openforis.calc.persistence.jooq.tables.SamplingDesignTable.SAMPLING_DESIGN.APPLY_AREA_WEIGHTED, values);
+	}
 }

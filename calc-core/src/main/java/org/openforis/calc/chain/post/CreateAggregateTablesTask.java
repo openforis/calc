@@ -167,12 +167,16 @@ public final class CreateAggregateTablesTask extends Task {
 				Field<BigDecimal> quantityField = sourceTable.getQuantityField(var);	
 				Field<BigDecimal> aggregateField = null;
 				
-				if( getWorkspace().has2StagesSamplingDesign() ){
-					aggregateField = quantityField.mul( expfTable.EXPF ).sum();
-					
-				} else {
+				if( getWorkspace().getSamplingDesign().applyAreaWeigthedMethod() ) {
 					aggregateField = sourceTable.getWeightField().div( expfTable.WEIGHT ).mul( expfTable.AREA ).mul( quantityField ).sum();
+				} else {
+					aggregateField = quantityField.mul( expfTable.EXPF ).sum();
 				}
+//				if( getWorkspace().has2StagesSamplingDesign() ){
+//					aggregateField = quantityField.mul( expfTable.EXPF ).sum();
+//				} else {
+//					aggregateField = sourceTable.getWeightField().div( expfTable.WEIGHT ).mul( expfTable.AREA ).mul( quantityField ).sum();
+//				}
 				
 				
 				select.addSelect( aggregateField.as(quantityField.getName() ) );

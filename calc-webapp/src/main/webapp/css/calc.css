@@ -545,22 +545,29 @@ button.settings:hover {
     padding: 0px;
     position: absolute;
     right: 50px;
+    
 }
 #footer .logo button.calc-btn:hover {
 	 background-color: rgba(58, 159, 159, 0.25);
 }
-#footer .application-version {
-	height: auto;
-	font-size: 0.5em;
+#footer .application-version-container {
+	padding-top: 20px;
+	font-size: 0.8em;
 }
+
+/* #footer .application-version { */
+/* 	height: auto; */
+/* 	font-size: 0.5em; */
+/* } */
 #footer .calc-options {
     border: 1px solid rgba(86, 91, 103, 0.65);
     background-color: rgba(33, 130, 130, 0.18);
     padding: 20px 10px;
-    position: absolute;
-    bottom: 80px;
-    height: 150px;
-    right: 10px;
+    position: fixed;
+    bottom: 10%;
+    height: 20%;
+    left: 101%;
+    width: 20%;
 }
 #footer .calc-options div{
 	height: auto !important;
@@ -1283,6 +1290,9 @@ table.import-csv-table input[type=checkbox] {
 }
 .height90 {
 	height: 90%;
+}
+.height94 {
+	height: 94%;
 }
 .height95 {
 	height: 95%;

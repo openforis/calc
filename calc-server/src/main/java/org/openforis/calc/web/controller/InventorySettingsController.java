@@ -153,7 +153,8 @@ public class InventorySettingsController {
 				samplingDesign.setTwoStages(getBooleanValue(json, "twoStages"));
 				samplingDesign.setStratified(getBooleanValue(json, "stratified"));
 				samplingDesign.setCluster(getBooleanValue(json, "cluster"));
-					
+				samplingDesign.setApplyAreaWeighted( getBooleanValue(json, "applyAreaWeighted"));
+				
 				samplingDesign.setPhase1JoinSettings( getParameterMapValue( json , "phase1JoinSettings" ) );
 				samplingDesign.setTwoStagesSettings( getParameterMapValue( json , "twoStagesSettings" ) );
 				samplingDesign.setStratumJoinSettings( getParameterMapValue( json , "stratumJoinSettings" ) );

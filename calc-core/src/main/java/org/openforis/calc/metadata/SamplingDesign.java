@@ -106,6 +106,11 @@ public class SamplingDesign extends SamplingDesignBase {
 		return psuTable;
 	}
 	
+	@JsonIgnore
+	public boolean applyAreaWeigthedMethod(){
+		return super.getApplyAreaWeighted()!=null && super.getApplyAreaWeighted();
+	}
+	
 	// hard coded for now
 	public String getWeightVariable() {
 		return "weight";
