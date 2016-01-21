@@ -26,6 +26,8 @@ import org.openforis.calc.metadata.SamplingDesign.TwoStagesSettings;
 import org.openforis.calc.persistence.jooq.Tables;
 import org.openforis.calc.persistence.jooq.tables.AoiLevelTable;
 import org.openforis.calc.persistence.jooq.tables.AoiTable;
+import org.openforis.calc.persistence.jooq.tables.StratumAoiTable;
+import org.openforis.calc.persistence.jooq.tables.StratumTable;
 import org.openforis.calc.psql.AlterTableStep.AddColumnStep;
 import org.openforis.calc.psql.CreateTableStep.AsStep;
 import org.openforis.calc.psql.DropTableStep;
@@ -356,12 +358,6 @@ public class CalculateExpansionFactorROutputScript extends ROutputScript {
 		
 		selectTotals.addGroupBy( a.ID );
 		
-//		Select<?> selectTotals1 = psql()
-//			.select( dataView.getIdField().count() , aoiIdField )
-//			.from( dataView )
-//			.join( dataAoiTable )
-//			.on( dataView.getIdField().eq( dataAoiTable.getIdField() ) )
-//			.groupBy( aoiIdField );
 		
 		Table<?> totals = selectTotals.asTable( "totals" );
 //		
@@ -372,19 +368,13 @@ public class CalculateExpansionFactorROutputScript extends ROutputScript {
 		select.addFrom( dataView );
 		
 		// join with aoi_table to calculate proportions. if no stratification is applied, then results will be the same
-		select.addSelect( totals.field(aoiIdField.getName())  );
+		Field<Integer> totalsAoiIdField = (Field<Integer>) totals.field(aoiIdField.getName());
+		select.addSelect( totalsAoiIdField  );
 //		select.addSelect( dataAoiTable.getAoiAreaField(aoiLevel).as(expf.AREA.getName()) );
 		select.addJoin( dataAoiTable, dataView.getIdField().eq(dataAoiTable.getIdField()) );
-		select.addGroupBy( totals.field(aoiIdField.getName()) );
+		select.addGroupBy( totalsAoiIdField );
 		
-		if( stratified ) {
-			ColumnJoin stratumJoin = samplingDesign.getStratumJoin();
-			
-			Field<Integer> stratumField = (Field<Integer>) dataView.field(stratumJoin.getColumn());
-//			select.addSelect( stratumField.as(expf.STRATUM.getName()) );
-			select.addSelect( stratumField.cast(SQLDataType.INTEGER).as(expf.STRATUM.getName()) );
-			select.addGroupBy( stratumField );
-		}
+		
 		
 		// join with totals inner query
 		Field<?> totalField = totals.field("count");
@@ -401,14 +391,48 @@ public class CalculateExpansionFactorROutputScript extends ROutputScript {
 			.as( expf.PROPORTION.getName() );		
 		select.addSelect( proportion );
 		
-		Field<BigDecimal> area = DSL.decode()
+		// add area field and stratum if there is
+		if( stratified ) {
+			ColumnJoin stratumJoin = samplingDesign.getStratumJoin();
+			
+			Field<Integer> stratumField = (Field<Integer>) dataView.field(stratumJoin.getColumn());
+			Field<Integer> stratumFieldInteger = stratumField.cast(SQLDataType.INTEGER);
+			select.addSelect( stratumFieldInteger.as(expf.STRATUM.getName()) );
+			select.addGroupBy( stratumField );
+			
+			if( samplingDesign.hasStrataAois() ){
+				StratumTable S = StratumTable.STRATUM.as("s");
+				select.addJoin( S , stratumFieldInteger.eq(S.STRATUM_NO).and(S.WORKSPACE_ID.eq(workspace.getId())) );
+				
+				StratumAoiTable SA = StratumAoiTable.STRATUM_AOI.as("sa");
+				select.addJoin( SA , SA.AOI_ID.eq(totalsAoiIdField).and(SA.STRATUM_ID.eq(S.ID)) );
+				
+				select.addSelect( SA.AREA.as(expf.AREA.getName()) );
+				select.addGroupBy( SA.AREA );
+			} else {
+				Field<BigDecimal> area = DSL.decode()
 				.when( countField.gt(BigDecimal.ZERO), dataView.getWeightField().sum().div( DSL.cast(totalField, Psql.DOUBLE_PRECISION) ).mul(aoiAreaField) )
-//				.when( countField.gt(BigDecimal.ZERO), dataView.getIdField().count().div( DSL.cast(totalField, Psql.DOUBLE_PRECISION) ).mul(aoiAreaField) )
 				.otherwise( BigDecimal.ZERO )
 				.as( expf.AREA.getName() );
-		select.addSelect( area );
+				
+				select.addSelect( area );
+				
+				select.addGroupBy( aoiAreaField );
+			}
+			
+		} else {
+			select.addSelect( aoiAreaField.as(expf.AREA.getName()) );
+			
+			select.addGroupBy( aoiAreaField );
+		}
 		
-		select.addGroupBy( aoiAreaField );
+//		Field<BigDecimal> area = DSL.decode()
+//				.when( countField.gt(BigDecimal.ZERO), dataView.getWeightField().sum().div( DSL.cast(totalField, Psql.DOUBLE_PRECISION) ).mul(aoiAreaField) )
+//				.otherwise( BigDecimal.ZERO )
+//				.as( expf.AREA.getName() );
+//		select.addSelect( area );
+//		
+//		select.addGroupBy( aoiAreaField );
 //		( count(p.id) / total.count::double precision ) as proportion,
 //        ( count(p.id) / total.count::double precision ) * a._administrative_unit_level_1_area as area
 		

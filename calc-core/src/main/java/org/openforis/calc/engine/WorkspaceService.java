@@ -423,7 +423,7 @@ public class WorkspaceService {
 			Integer no = record.getValue(0, Integer.class);
 			String caption = record.getValue(1, String.class);
 			
-			samplingDesignManager.addStrata(workspace, no, caption);
+			samplingDesignManager.addStratum(workspace, no, caption);
 		}
 		
 	}

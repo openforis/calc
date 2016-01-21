@@ -10,7 +10,7 @@ ErrorSettingsManager = function( container ) {
 	this.workspace = null;
 	
 	// r editor
-	this.rEditor					= new REditor( "error-r-script" );
+	this.rEditor					= new REditor( "error-r-script" , true );
 	
 	this.formContainer				= this.container.find( ".form" );
 	

@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class SamplingDesignTable extends org.jooq.impl.TableImpl<org.openforis.calc.persistence.jooq.tables.records.SamplingDesignRecord> {
 
-	private static final long serialVersionUID = -2056735381;
+	private static final long serialVersionUID = -1958636862;
 
 	/**
 	 * The singleton instance of <code>calc.sampling_design</code>
@@ -105,6 +105,11 @@ public class SamplingDesignTable extends org.jooq.impl.TableImpl<org.openforis.c
 	 * The column <code>calc.sampling_design.apply_area_weighted</code>.
 	 */
 	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.SamplingDesignRecord, java.lang.Boolean> APPLY_AREA_WEIGHTED = createField("apply_area_weighted", org.jooq.impl.SQLDataType.BOOLEAN.defaulted(true), this, "");
+
+	/**
+	 * The column <code>calc.sampling_design.stratum_aoi</code>.
+	 */
+	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.SamplingDesignRecord, java.lang.Boolean> STRATUM_AOI = createField("stratum_aoi", org.jooq.impl.SQLDataType.BOOLEAN.defaulted(true), this, "");
 
 	/**
 	 * Create a <code>calc.sampling_design</code> table reference

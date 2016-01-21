@@ -9,6 +9,8 @@ import java.util.Map;
 import org.json.simple.JSONArray;
 import org.openforis.calc.metadata.CategoryLevel.CategoryLevelValue;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * Wrapper class for workspace backup used for export/import functionality
  * 
@@ -34,6 +36,14 @@ public class WorkspaceBackup {
 	private ExternalData phase1Data;
 
 	private ExternalData primarySuData;
+	
+	// the two maps below are used during the import process to match old ids with new ones
+	// key : oldId ---> value : newId
+	@JsonIgnore
+	private Map<Integer, Integer> aoiIdsMap;
+	
+	@JsonIgnore
+	private Map<Integer, Integer> stratumIdsMap;
 	
 	public WorkspaceBackup(){
 		super();
@@ -87,11 +97,26 @@ public class WorkspaceBackup {
 		this.phase1Data = phase1Data;
 	}
 	
-	void setPrimarySUData(ExternalData externalData) {
+	public void setPrimarySUData(ExternalData externalData) {
 		this.primarySuData = externalData;
-		
 	}
-
+	
+	public void setAoiIdsMap(Map<Integer, Integer> aoiIdsMap) {
+		this.aoiIdsMap = aoiIdsMap;
+	}
+	
+	public void setStratumIdsMap(Map<Integer, Integer> stratumIdsMap) {
+		this.stratumIdsMap = stratumIdsMap;
+	}
+	
+	public Map<Integer, Integer> getAoiIdsMap() {
+		return aoiIdsMap;
+	}
+	
+	public Map<Integer, Integer> getStratumIdsMap() {
+		return stratumIdsMap;
+	}
+	
 	public static class ExternalData {
 		
 		public ExternalData(){

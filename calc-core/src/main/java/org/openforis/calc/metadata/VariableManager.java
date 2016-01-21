@@ -161,7 +161,9 @@ public class VariableManager {
 			Integer originalId = originalIds.get(oldCalcId);
 			if( originalId != null ){
 				Variable<?> variable = workspace.getVariableByOriginalId( originalId  );
-				variableIds.put( oldCalcId, variable.getId() );
+				if( variable != null ){
+					variableIds.put( oldCalcId, variable.getId() );
+				}
 			}
 		}
 		

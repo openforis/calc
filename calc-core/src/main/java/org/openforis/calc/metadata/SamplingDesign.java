@@ -35,7 +35,9 @@ public class SamplingDesign extends SamplingDesignBase {
 
 	public void setSamplingUnit(Entity samplingUnit) {
 		this.samplingUnit = samplingUnit;
-		setSamplingUnitId( this.samplingUnit.getId() );
+		if( samplingUnit != null ){
+			setSamplingUnitId( this.samplingUnit.getId() );
+		}
 	}
 	
 	public Workspace getWorkspace() {
@@ -110,6 +112,11 @@ public class SamplingDesign extends SamplingDesignBase {
 	public boolean applyAreaWeigthedMethod(){
 		return super.getApplyAreaWeighted()!=null && super.getApplyAreaWeighted();
 	}
+	
+	@JsonIgnore
+	public boolean hasStrataAois(){
+		return super.getStratumAoi() != null && super.getStratumAoi();
+	} 
 	
 	// hard coded for now
 	public String getWeightVariable() {

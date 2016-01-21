@@ -52,14 +52,14 @@ public class ImportOutputMetadataTask extends Task {
 	
 	@Override
 	protected long countTotalItems() {
-		return 13;
+		return 14;
 	}
 	
 	@Override
 	protected void execute() throws Throwable {
 		Workspace workspace = getWorkspace();
 		
-		//the order matter
+		//the order matters
 		samplingDesignManager.importBackupPhase1Data( workspace, workspaceBackup );
 		incrementItemsProcessed();
 
@@ -86,6 +86,9 @@ public class ImportOutputMetadataTask extends Task {
 		
 		aoiManager.importBackup( workspace, workspaceBackup );
 		incrementItemsProcessed();
+		
+		samplingDesignManager.importBackupStrataAois( workspace , workspaceBackup );
+	 	incrementItemsProcessed();
 		
 		variableManager.importBackup( workspace , workspaceBackup );
 		incrementItemsProcessed();

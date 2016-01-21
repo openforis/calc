@@ -82,6 +82,7 @@ public class AoiLevel extends AoiLevelBase {
 			this.aois = new HashSet<Aoi>();
 		}
 		this.aois.add(aoi);
+		aoi.setAoiLevel( this );
 	}
 	@JsonIgnore
 	public String getNormalizedName() {

@@ -24,6 +24,7 @@ public class Response {
 	private Status status;
 	private List<ObjectError> errors;
 	private Map<String, Object> fields;
+	private boolean workspaceChanged;
 	
 	Response() {
 		this(null);
@@ -38,6 +39,8 @@ public class Response {
 			setStatus(Status.OK);
 			this.errors = new ArrayList<ObjectError>();
 		}
+		
+		this.workspaceChanged = false;
 	}
 
 	public Status getStatus() {
@@ -74,6 +77,21 @@ public class Response {
 	
 	public void addField(String name, Object object){
 		this.fields.put(name, object);
+	}
+	
+	public boolean isWorkspaceChanged() {
+		return workspaceChanged;
+	}
+	
+	public void setWorkspaceChanged(boolean workspaceChanged) {
+		this.workspaceChanged = workspaceChanged;
+	}
+	
+	/**
+	 * It sets the flag workspaceChanged to true to be parsed by the client
+	 */
+	public void setWorkspaceChanged() {
+		this.setWorkspaceChanged(true);
 	}
 	
 }

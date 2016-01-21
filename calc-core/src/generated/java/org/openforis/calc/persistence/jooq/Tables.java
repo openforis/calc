@@ -84,9 +84,9 @@ public class Tables {
 	public static final org.openforis.calc.persistence.jooq.tables.StratumTable STRATUM = org.openforis.calc.persistence.jooq.tables.StratumTable.STRATUM;
 
 	/**
-	 * The table calc.stratum_aoi_view
+	 * The table calc.stratum_aoi
 	 */
-	public static final org.openforis.calc.persistence.jooq.tables.StratumAoiViewTable STRATUM_AOI_VIEW = org.openforis.calc.persistence.jooq.tables.StratumAoiViewTable.STRATUM_AOI_VIEW;
+	public static final org.openforis.calc.persistence.jooq.tables.StratumAoiTable STRATUM_AOI = org.openforis.calc.persistence.jooq.tables.StratumAoiTable.STRATUM_AOI;
 
 	/**
 	 * The table calc.variable

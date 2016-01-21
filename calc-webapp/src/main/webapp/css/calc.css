@@ -20,6 +20,10 @@ html, body {
 	overflow: hidden;
 }
 
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+    font-weight: 100 !important;
+}
+
 #container {
 	width: 100%; 
 /* 	position: fixed; */
@@ -551,8 +555,9 @@ button.settings:hover {
 	 background-color: rgba(58, 159, 159, 0.25);
 }
 #footer .application-version-container {
-	padding-top: 20px;
-	font-size: 0.8em;
+	padding-top: 22px;
+	font-size: 0.7em;
+    color: whitesmoke;
 }
 
 /* #footer .application-version { */
@@ -560,8 +565,8 @@ button.settings:hover {
 /* 	font-size: 0.5em; */
 /* } */
 #footer .calc-options {
-    border: 1px solid rgba(86, 91, 103, 0.65);
-    background-color: rgba(33, 130, 130, 0.18);
+    border: 1px solid rgba(135, 142, 160, 0.20);
+    background-color: rgba(86, 90, 97,0.95);
     padding: 20px 10px;
     position: fixed;
     bottom: 10%;
@@ -981,7 +986,7 @@ ul.scroll-menu {
 	padding: 1.5em 0em;
 /* 	text-align: left; */
 	margin: 0px 0px;
-	font-size: 1.4em;
+/* 	font-size: 1.4em; */
 }
 #sampling-design .step>.row {
 	padding: 1em 0px;

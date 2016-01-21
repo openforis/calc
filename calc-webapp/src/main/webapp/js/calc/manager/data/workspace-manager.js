@@ -236,7 +236,7 @@ WorkspaceManager.prototype = (function(){
 	/**
 	 * Import aois for the active workspace
 	 */
-	var activeWorkspaceImportAoi = function(filepath, captions, complete) {
+	var activeWorkspaceImportAoi = function(filepath, levels, hasStrata , captions, complete) {
 		var $this = this;
 		$this.activeWorkspace(function(ws){
 			UI.lock();
@@ -244,28 +244,33 @@ WorkspaceManager.prototype = (function(){
 				url : "rest/workspace/active/aoi/import.json",
 				dataType : "json",
 				method : "POST",
-				data : { "filepath":filepath, "captions":captions.join(",") } 
+				data : { "filepath":filepath, "levels":levels , "hasStrata":hasStrata , "captions":captions.join(",") } 
 			}).done(function(response) {
 				
-				var aoiHierarchy = response.fields.aoiHierarchy;
-				ws.aoiHierarchies[0] = aoiHierarchy;
-				
-				var errorSettings = response.fields.errorSettings;
-				if( errorSettings ){
-					ws.errorSettings = errorSettings;
-				}
-				
-				UI.unlock();
-				Calc.updateButtonStatus();
-				
-				var job = response.fields.job;
-				if( job ){
-					JobManager.getInstance().start( job , function() {
+				var onComplete = function(){
+					var aoiHierarchy = response.fields.aoiHierarchy;
+					ws.aoiHierarchies[0] = aoiHierarchy;
+					
+					var errorSettings = response.fields.errorSettings;
+					if( errorSettings ){
+						ws.errorSettings = errorSettings;
+					}
+					
+					UI.unlock();
+					Calc.updateButtonStatus();
+					
+					var job = response.fields.job;
+					if( job ){
+						JobManager.getInstance().start( job , function() {
+							Utils.applyFunction( complete , ws );
+						});
+					} else {
 						Utils.applyFunction( complete , ws );
-					});
-				} else {
-					Utils.applyFunction( complete , ws );
-				}
+					}
+				};
+				
+				$this.checkWorkspaceChangedFromResponse( response , onComplete );
+				
 //				complete( ws );
 			}).error( function() {
 				Calc.error.apply( this , arguments );
@@ -574,6 +579,15 @@ WorkspaceManager.prototype.getHierarchy = function( workspaceId , callback ) {
 		
 };
 
+WorkspaceManager.prototype.checkWorkspaceChangedFromResponse = function( response , callback ){
+	if( response.workspaceChanged === true ){
+		Calc.workspaceChange( callback );
+	} else {
+		this.activeWorkspace(function(ws){
+			Utils.applyFunction( callback , ws );
+		});
+	}
+}
 
 // singleton instance of workspace manager
 var _workspaceManager = null;

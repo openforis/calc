@@ -110,6 +110,9 @@
     <bean name="stratumDao" class="org.openforis.calc.persistence.jooq.tables.daos.StratumDao">
     	<constructor-arg ref="config" />
     </bean>
+    <bean name="stratumAoiDao" class="org.openforis.calc.persistence.jooq.tables.daos.StratumAoiDao">
+    	<constructor-arg ref="config" />
+    </bean>
     <bean name="variableDao" class="org.openforis.calc.persistence.jooq.tables.daos.VariableDao">
     	<constructor-arg ref="config" />
     </bean>

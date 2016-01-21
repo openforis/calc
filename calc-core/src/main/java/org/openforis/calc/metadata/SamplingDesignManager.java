@@ -4,8 +4,12 @@
 package org.openforis.calc.metadata;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.jooq.Field;
 import org.jooq.InsertQuery;
 import org.jooq.Query;
@@ -22,6 +26,7 @@ import org.openforis.calc.persistence.jooq.CalcSchema;
 import org.openforis.calc.persistence.jooq.Sequences;
 import org.openforis.calc.persistence.jooq.Tables;
 import org.openforis.calc.persistence.jooq.tables.daos.SamplingDesignDao;
+import org.openforis.calc.persistence.jooq.tables.daos.StratumAoiDao;
 import org.openforis.calc.persistence.jooq.tables.daos.StratumDao;
 import org.openforis.calc.persistence.jooq.tables.daos.WorkspaceDao;
 import org.openforis.calc.psql.Psql;
@@ -42,6 +47,8 @@ public class SamplingDesignManager {
 	private SamplingDesignDao samplingDesignDao;
 	@Autowired
 	private StratumDao stratumDao;
+	@Autowired
+	private StratumAoiDao stratumAoiDao;
 	@Autowired
 	private WorkspaceDao workspaceDao;
 	@Autowired
@@ -85,7 +92,33 @@ public class SamplingDesignManager {
 		}
 	}
 	
+	@Transactional
+	public void loadStrataAois( Workspace workspace ) {
+		List<StratumAoi> strataAois = stratumAoiDao.fetchByWorkspaceId( workspace.getId() );
+		if( CollectionUtils.isNotEmpty(strataAois) ){
+			for (StratumAoi stratumAoi : strataAois) {
+				AoiHierarchy aoiHierarchy = workspace.getAoiHierarchies().get(0);
+				
+				Aoi aoi = aoiHierarchy.getAoiById( stratumAoi.getAoiId() );
+				stratumAoi.setAoi(aoi);
+				
+				Stratum stratum = workspace.getStratumById( stratumAoi.getStratumId() );
+				stratumAoi.setStratum(stratum);
+			}
+		}
+		workspace.setStrataAois(strataAois);
+	}
+	
 	// insert methods
+	
+	@Transactional
+	public void save( Workspace workspace , SamplingDesign samplingDesign ) {
+		if( samplingDesign.getId() == null ){
+			insert(workspace, samplingDesign);
+		} else {
+			samplingDesignDao.update(samplingDesign);
+		}
+	}
 	
 	@Transactional
 	public void insert( Workspace workspace , SamplingDesign samplingDesign ) {
@@ -99,8 +132,18 @@ public class SamplingDesignManager {
 		loadExternalData(samplingDesign);
 	}
 	
+	// ===== stratification methods
 	@Transactional
-	public void addStrata( Workspace workspace , Integer stratumNo , String caption ) {
+	public void setStrata( Workspace workspace , List<Stratum> strata ){
+		deleteStrata(workspace);
+		for (Stratum stratum : strata) {
+			workspace.addStratum( stratum );
+			stratumDao.insert( stratum );
+		}
+	}
+	
+	@Transactional
+	public Stratum addStratum( Workspace workspace , Integer stratumNo , String caption ) {
 		Stratum stratum = new Stratum();
 		
 		Long nextval = psql.nextval( Sequences.STRATUM_ID_SEQ );
@@ -112,12 +155,20 @@ public class SamplingDesignManager {
 		workspace.addStratum( stratum );
 		
 		stratumDao.insert( stratum );
+		
+		return stratum;
+	}
+	
+	@Transactional
+	public void setStrataAois(Workspace workspace , Collection<StratumAoi> strataAois){
+		workspace.setStrataAois(strataAois);
+		stratumAoiDao.insert(strataAois);
 	}
 	
 	// ========== delete methods
 	@Transactional
 	public void deleteSamplingDesign( Workspace workspace ){
-		if( workspace.hasSamplingDesign() ){
+		if( workspace.getSamplingDesign() != null ){
 			samplingDesignDao.delete( workspace.getSamplingDesign() );
 			workspace.setSamplingDesign( null );
 		}
@@ -162,6 +213,12 @@ public class SamplingDesignManager {
 	public void deleteStrata( Workspace workspace ){
 		stratumDao.delete( workspace.getStrata() );
 		workspace.emptyStrata();
+	}
+	
+	@Transactional
+	public void deleteStrataAois( Workspace workspace ){
+		stratumAoiDao.delete( workspace.getStrataAois() );
+		workspace.setStrataAois( new ArrayList<StratumAoi>() );
 	}
 	
 	// import from backup methods
@@ -312,9 +369,47 @@ public class SamplingDesignManager {
 
 	@Transactional
 	public void importBackupStrata( Workspace workspace , WorkspaceBackup workspaceBackup ) {
-		List<Stratum> strata = workspaceBackup.getWorkspace().getStrata();
+		List<Stratum> strata 			= workspaceBackup.getWorkspace().getStrata();
+		Map<Integer, Integer> strataIds = new HashMap<Integer, Integer>();
 		for ( Stratum stratum : strata ) {
-			addStrata( workspace, stratum.getStratumNo(), stratum.getCaption() );
+			Integer oldStratumId = stratum.getId();
+			Stratum newStratum = addStratum( workspace, stratum.getStratumNo(), stratum.getCaption() );
+			Integer newStratumId = newStratum.getId();
+			
+			strataIds.put(oldStratumId, newStratumId);
+		}
+		workspaceBackup.setStratumIdsMap(strataIds);
+	}
+	
+	@Transactional
+	public void importBackupStrataAois( Workspace workspace , WorkspaceBackup workspaceBackup ) {
+		if( workspaceBackup.getWorkspace().getSamplingDesign().hasStrataAois() ){
+			Map<Integer, Integer> aoiIdsMap 		= workspaceBackup.getAoiIdsMap();
+			Map<Integer, Integer> stratumIdsMap 	= workspaceBackup.getStratumIdsMap();
+			AoiHierarchy aoiHierarchy 				= workspace.getAoiHierarchies().get(0);
+			
+			List<StratumAoi> oldStrataAois 	= workspaceBackup.getWorkspace().getStrataAois();
+			List<StratumAoi> newStrataAois 	= new ArrayList<StratumAoi>();
+			
+			for (StratumAoi stratumAoi : oldStrataAois) {
+				StratumAoi newStratumAoi 	= new StratumAoi();
+				Long stratumAoiId 			= psql.nextval( Sequences.STRATUM_AOI_ID_SEQ );
+				newStratumAoi.setId( stratumAoiId.intValue() );
+				
+				Integer aoiId = aoiIdsMap.get( stratumAoi.getAoiId() );
+				Aoi aoi = aoiHierarchy.getAoiById( aoiId );
+				newStratumAoi.setAoi(aoi);
+				
+				Integer stratumId = stratumIdsMap.get( stratumAoi.getStratumId() );
+				Stratum stratum = workspace.getStratumById( stratumId );
+				newStratumAoi.setStratum( stratum );
+				
+				newStratumAoi.setArea( stratumAoi.getArea() );
+				
+				newStrataAois.add(newStratumAoi);
+			}
+			
+			setStrataAois(workspace, newStrataAois);
 		}
 	}
 	

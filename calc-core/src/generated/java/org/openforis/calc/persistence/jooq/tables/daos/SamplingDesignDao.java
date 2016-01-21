@@ -153,4 +153,11 @@ public class SamplingDesignDao extends org.jooq.impl.DAOImpl<org.openforis.calc.
 	public java.util.List<SamplingDesign> fetchByApplyAreaWeighted(java.lang.Boolean... values) {
 		return fetch(org.openforis.calc.persistence.jooq.tables.SamplingDesignTable.SAMPLING_DESIGN.APPLY_AREA_WEIGHTED, values);
 	}
+
+	/**
+	 * Fetch records that have <code>stratum_aoi IN (values)</code>
+	 */
+	public java.util.List<SamplingDesign> fetchByStratumAoi(java.lang.Boolean... values) {
+		return fetch(org.openforis.calc.persistence.jooq.tables.SamplingDesignTable.SAMPLING_DESIGN.STRATUM_AOI, values);
+	}
 }

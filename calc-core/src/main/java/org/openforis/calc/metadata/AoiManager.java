@@ -3,21 +3,12 @@
  */
 package org.openforis.calc.metadata;
 
-import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.jooq.Field;
-import org.jooq.Table;
-import org.jooq.Update;
-import org.jooq.impl.DSL;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceBackup;
 import org.openforis.calc.persistence.jooq.Sequences;
@@ -26,9 +17,6 @@ import org.openforis.calc.persistence.jooq.tables.AoiTable;
 import org.openforis.calc.persistence.jooq.tables.daos.AoiHierarchyDao;
 import org.openforis.calc.persistence.jooq.tables.daos.AoiLevelDao;
 import org.openforis.calc.psql.Psql;
-import org.openforis.calc.psql.UpdateWithStep;
-import org.openforis.commons.io.csv.CsvReader;
-import org.openforis.commons.io.flat.FlatRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,174 +40,20 @@ public class AoiManager {
 	@Autowired
 	private Psql psql;
 	
-	@SuppressWarnings( "unchecked" )
 	@Transactional
-	public Workspace csvImport(Workspace workspace, String filepath, String[] levelNames) throws IOException {
-		@SuppressWarnings( "resource" )
-		CsvReader csvReader = new CsvReader(filepath);
-		csvReader.readHeaders();
-
-		// transaction begin
-//		DefaultTransactionDefinition definition = new DefaultTransactionDefinition();
-//		definition.setName("txName");
-//		definition.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
-//		TransactionStatus transaction = transactionManager.getTransaction(definition);
-		try {
-			// create (for now only admin unit) aoi hierarchy
-			AoiHierarchy aoiHierarchy = null;
-			List<AoiHierarchy> aoiHierarchies = workspace.getAoiHierarchies();
-			if (aoiHierarchies.size() == 0) {
-				aoiHierarchy = new AoiHierarchy();
-				
-				Long aoiHierId = psql.nextval( Sequences.AOI_HIERARCHY_ID_SEQ );
-				aoiHierarchy.setId( aoiHierId.intValue() );
-				
-				aoiHierarchy.setWorkspace(workspace);
-				aoiHierarchy.setWorkspaceId(workspace.getId());
-				aoiHierarchy.setCaption("Administrative unit");
-				aoiHierarchy.setName("Administrative unit");
-				workspace.addAoiHierarchy(aoiHierarchy);
-				aoiHierarchyDao.insert( aoiHierarchy );
-			} else {
-				aoiHierarchy = aoiHierarchies.get(0);
-			}
-
-			// create levels
-			List<AoiLevel> levels = aoiHierarchy.getLevels();
-			if (!levels.isEmpty()) {
-				// remove old levels
-				aoiDao.deleteByHierarchy( aoiHierarchy );
-				aoiLevelDao.delete( levels );
-				// remove old levels and aois
-				aoiHierarchy.clearLevels();
-			}
-
-			levels = new ArrayList<AoiLevel>();
-			int rank = 0;
-			for (String name : levelNames) {
-				AoiLevel level = new AoiLevel();
-				
-				Long nextval = psql.nextval( Sequences.AOI_LEVEL_ID_SEQ );
-				level.setId( nextval.intValue() );
-				
-				level.setName(name);
-				level.setCaption(name);
-				level.setHierarchy(aoiHierarchy);
-				level.setRank(rank);
-
-				aoiLevelDao.insert(level);
-
-				levels.add(level);
-				rank++;
-			}
-			aoiHierarchy.setLevels(levels);
-
-			// import AOIs
-			Map<Integer, Map<String, Aoi>> aois = new LinkedHashMap<Integer, Map<String, Aoi>>();
-			FlatRecord record = csvReader.nextRecord();
-			do {
-				Aoi parentAoi = null;
-				for (AoiLevel level : levels) {
-					int r = level.getRank();
-					String code = record.getValue((r) * 2, String.class);
-					String caption = record.getValue((r) * 2 + 1, String.class);
-					Double area = null;
-
-					if (r == levels.size() - 1) {
-						// last element set area and save it
-						area = record.getValue((r + 1) * 2, Double.class);
-						getOrCreateAoi(aois, code, caption, level, area, parentAoi);
-					} else {
-						parentAoi = getOrCreateAoi(aois, code, caption, level, area, parentAoi);
-					}
-				}
-				record = csvReader.nextRecord();
-			} while (record != null);
-
-			// commit before updating areas
-//			transactionManager.commit(transaction);
+	public void insert(Workspace workspace , AoiHierarchy aoiHierarchy) {
+		delete( workspace );
+		
+		workspace.addAoiHierarchy(aoiHierarchy);
+		aoiHierarchyDao.insert( aoiHierarchy );
+		
+		for (AoiLevel aoiLevel : aoiHierarchy.getLevels()) {
+			aoiLevelDao.insert(aoiLevel);
 			
-			// update areas for non leaf aois
-			Iterator<AoiLevel> iterator = new LinkedList<AoiLevel>(levels).descendingIterator();
-			while (iterator.hasNext()) {
-
-				AoiLevel level = iterator.next();
-				// skip root aoi level
-				if (iterator.hasNext()) {
-
-					String landArea = "landArea";
-					String id = "id";
-					Table<?> cursor = 
-							new Psql()
-								.select(Tables.AOI.PARENT_AOI_ID.as(id), DSL.sum(Tables.AOI.LAND_AREA).as(landArea))
-								.from(Tables.AOI)
-								.where(Tables.AOI.AOI_LEVEL_ID.eq(level.getId()))
-								.groupBy(Tables.AOI.PARENT_AOI_ID)
-								.asTable("tmp");
-
-					Update<?> update = 
-						psql
-							.update(Tables.AOI)
-							.set(Tables.AOI.LAND_AREA, (Field<BigDecimal>) cursor.field(landArea));
-
-					UpdateWithStep updateWith = psql.updateWith(cursor, update, Tables.AOI.ID.eq((Field<Integer>) cursor.field(id)));
-					updateWith.execute();
-				} else {
-					break;
-				}
-//				transactionManager.commit(transaction);	
-//				aoiDao.assignRootAoi(aoiHierarchy);
-				
-				
-				
-				loadByWorkspace( workspace );
-				// set root aoi to hierarchy
-//				AoiLevel rootLevel = aoiHierarchy.getLevels().get(0);
-//				Aoi rootAoi = rootLevel.getAois().iterator().next();
-//				aoiHierarchy.setRootAoi(rootAoi);
-				
-			}
-		} catch(Exception e){
-//			transactionManager.rollback(transaction);
-			throw new RuntimeException("Error while importing areas of interest", e);
+			aoiDao.insert(aoiLevel.getAois());
 		}
 		
-		
-		return workspace;
-	}
-
-	private Aoi getOrCreateAoi(Map<Integer, Map<String, Aoi>> aois, String code, String caption, AoiLevel level, Double area, Aoi parentAoi) {
-		Map<String, Aoi> map = aois.get(level.getRank());
-		if (map != null && map.get(code) != null) {
-			return map.get(code);
-		} else {
-			if (map == null) {
-				map = new LinkedHashMap<String, Aoi>();
-				aois.put(level.getRank(), map);
-			}
-			Aoi aoi = new Aoi();
-			
-			Long nextval = psql.nextval( Sequences.AOI_ID_SEQ );
-			aoi.setId( nextval.intValue() );
-			
-			aoi.setCode(code);
-			aoi.setCaption(caption);
-			aoi.setAoiLevel(level);
-			if( area != null ){
-				aoi.setLandArea( new BigDecimal(area) );
-			}
-			aoi.setParentAoi(parentAoi);
-
-			try {
-				aoiDao.insert(aoi);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			level.addAoi(aoi);
-
-			map.put(code, aoi);
-			return aoi;
-		}
+		loadByWorkspace(workspace);
 	}
 	
 	@Transactional
@@ -315,6 +149,7 @@ public class AoiManager {
 		Aoi aoi = aoiHierarchy.getRootAoi();
 		createAoiFromBackup( aoi, levels, aoiIds, 0 );
 		
+		workspaceBackup.setAoiIdsMap( aoiIds );
 		
 		// replace aoiIds in error settings
 		ErrorSettings errorSettings = workspaceBackup.getWorkspace().getErrorSettings();
@@ -359,5 +194,5 @@ public class AoiManager {
 		}
 		
 	}
-	
+
 }

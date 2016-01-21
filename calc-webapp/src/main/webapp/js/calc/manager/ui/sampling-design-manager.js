@@ -391,6 +391,7 @@ SamplingDesignManager.prototype.updateSamplingDesign = function() {
 			this.samplingDesign = $.extend(true, {}, ws.samplingDesign );
 			
 			if(this.samplingDesign.samplingUnitId) {
+				
 				this.samplingUnit = ws.getEntityById(this.samplingDesign.samplingUnitId);
 				this.loadSamplingUnitTableInfo( $.proxy(function(){
 					// todo move loading info tables before edit. not necessary here

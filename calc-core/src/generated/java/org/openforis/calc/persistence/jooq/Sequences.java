@@ -84,6 +84,11 @@ public class Sequences {
 	public static final org.jooq.Sequence<java.lang.Long> SRS_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("srs_id_seq", org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
 
 	/**
+	 * The sequence <code>calc.stratum_aoi_id_seq</code>
+	 */
+	public static final org.jooq.Sequence<java.lang.Long> STRATUM_AOI_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("stratum_aoi_id_seq", org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
+
+	/**
 	 * The sequence <code>calc.stratum_id_seq</code>
 	 */
 	public static final org.jooq.Sequence<java.lang.Long> STRATUM_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("stratum_id_seq", org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.jooq.impl.SQLDataType.BIGINT.nullable(false));

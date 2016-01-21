@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+	<changeSet author="mino togna" id="037-add-stratum-aoi-column">
+
+		<sql>
+    		ALTER TABLE
+    			calc.sampling_design ADD COLUMN stratum_aoi BOOLEAN;
+    			
+    		ALTER TABLE
+    			calc.stratum_aoi ADD COLUMN workspace_id INTEGER;
+    			
+			ALTER TABLE
+			    calc.stratum_aoi ALTER COLUMN workspace_id SET NOT NULL;
+			    
+			ALTER TABLE
+			    calc.stratum_aoi ADD CONSTRAINT stratum_aoi_workspace_fk FOREIGN KEY (workspace_id)
+			    REFERENCES calc.workspace (id);
+    	</sql>
+    	
+	</changeSet>
+</databaseChangeLog>

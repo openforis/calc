@@ -45,7 +45,7 @@ $(document).ready(function() {
 	
 	
 	/**
-	 * Function to be called when active workspace change
+	 * Function to be called when active workspace changes
 	 */
 	Calc.workspaceChange = function( success ) {
 		
@@ -60,9 +60,7 @@ $(document).ready(function() {
 			// update ui buttons
 			Calc.updateButtonStatus();
 			
-			if ( success ) {
-				success(ws);
-			}
+			Utils.applyFunction( success , ws);
 		});
 			
 	};

@@ -3,14 +3,12 @@ package org.openforis.calc.chain.pre;
 import java.util.List;
 
 import org.jooq.Condition;
-import org.jooq.DataType;
 import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.SelectQuery;
 import org.jooq.impl.DynamicTable;
 import org.jooq.impl.PrimarySamplingUnitTable;
 import org.jooq.impl.SQLDataType;
-import org.jooq.util.postgres.PostgresDataType;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.Entity;

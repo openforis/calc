@@ -72,4 +72,11 @@ public class Aoi extends AoiBase {
 		}
 	}
 	
+	void addChild( Aoi aoi ){
+		if( this.children == null ){
+			this.children = new LinkedHashSet<Aoi>();
+		}
+		this.children.add( aoi );
+		aoi.setParentAoi( this );
+	}
 }

@@ -125,6 +125,7 @@ public class MetadataManager {
 		categoryManager.load( workspace );
 		entityManager.loadEntities( workspace );
 		samplingDesignManager.loadStrata( workspace );
+		samplingDesignManager.loadStrataAois(workspace);
 		processingChainManager.loadChains( workspace );
 		samplingDesignManager.loadSampligDesign( workspace );
 		equationManager.loadEquationLists( workspace );

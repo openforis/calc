@@ -22,6 +22,7 @@ AoiManager = function(container) {
 	this.levelSection = this.container.find(".level");
 	
 	this.importBtn = this.aoiImportSection.find( "[name=import-btn]" );
+	this.cancelBtn = this.aoiImportSection.find( "[name=cancel-btn]" );
 	
 	
 	// aoi tree section (it contains the svg that shows the aoi tree structure)
@@ -46,7 +47,25 @@ AoiManager.prototype.init = function(){
 	
 	// update aoi tree
 //	$this.initSvg();
+	this.showAoi( );
+	
+	this.cancelBtn.click( function(e){
+		e.preventDefault();
+		$this.showAoi();
+	});
+	
+	
+};
+
+AoiManager.prototype.showAoi = function() {
+	var $this = this;
+	
 	WorkspaceManager.getInstance().activeWorkspace(function(ws){
+		$this.importBtn.enable();
+		
+		$this.aoiImportSection.hide(0);
+		$this.aoiSection.fadeIn();
+		
 		$this.updateAoiTree(ws);
 	});
 };
@@ -60,27 +79,74 @@ AoiManager.prototype.showImport = function(response) {
 	this.levelsSection.empty();
 	this.aoiImportSection.fadeIn();
 	
-	var levels = 0;
+//	var levels = 0;
 	var headers = response.fields.headers;
 	var completed = false;
 	
-	while( !completed ) {
-		//TODO check that headers have right name
-		var headerArea = headers[(levels+1)*2];
-		if( headerArea === 'level_' + (levels+1) + '_area' ) {
-			completed = true;
+	var hasStrata 	=  headers[ headers.length - 1 ] == 'stratum_area';
+	var levels 		= ( headers.length - 1 ) / 2;
+	levels = ( hasStrata === true ) ? levels -1 : levels;
+
+	for( var i=0; i<levels; i++ ){
+		var levelNo = i+1;
+		
+		if( headers[i*2] != 'level_'+levelNo+'_code' ||  headers[i*2+1] != 'level_'+levelNo+'_label'){
+			Calc.error( {}, "CSV file is not compatible" );
+			$this.importBtn.disable();
+		}
+		// last level
+		if( levelNo == levels && !hasStrata){
+			if( headers[ headers.length - 1 ] != 'level_'+levelNo+'_area'){
+				Calc.error( {}, "CSV file is not compatible" );
+				$this.importBtn.disable();
+			}
 		}
 		
 		//append level section
 		var l = this.levelSection.clone();
 		var input = l.find("input[type=text]");
 		input.attr( "name","level" );
-		input.attr( "value","Level " +(levels+1) );
+		input.attr( "value","Level " + levelNo );
 		this.levelsSection.append(l);
 		l.show();
-		
-		levels += 1;
 	}
+	
+	if( hasStrata ){
+		if( headers[headers.length-3] != 'stratum_code' ||  headers[headers.length-2] != 'stratum_label' || headers[headers.length-1] != 'stratum_area'){
+			Calc.error( {}, "CSV file is not compatible" );
+			this.importBtn.disable();
+		}
+		
+		var l = this.levelSection.clone();
+		var input = l.find("input[type=text]");
+		input.attr( "name","strata" );
+		input.attr( "value","Stratum" );
+		input.prop('disabled', true);
+		
+		this.levelsSection.append(l);
+		l.show();
+	}
+	
+	this.levelsToImport = levels;
+	this.hasStrata		= hasStrata;
+	
+//	while( !completed ) {
+//		//TODO check that headers have right name
+//		var headerArea = headers[(levels+1)*2];
+//		if( headerArea === 'level_' + (levels+1) + '_area' ) {
+//			completed = true;
+//		}
+//		
+//		//append level section
+//		var l = this.levelSection.clone();
+//		var input = l.find("input[type=text]");
+//		input.attr( "name","level" );
+//		input.attr( "value","Level " +(levels+1) );
+//		this.levelsSection.append(l);
+//		l.show();
+//		
+//		levels += 1;
+//	}
 };
 
 AoiManager.prototype.import = function() {
@@ -97,11 +163,8 @@ AoiManager.prototype.import = function() {
 		captions.push( caption );
 	});
 	
-	WorkspaceManager.getInstance().activeWorkspaceImportAoi($this.filepath, captions, function(ws){
-		$this.aoiImportSection.hide(0);
-		$this.aoiSection.fadeIn();
-		
-		$this.updateAoiTree(ws);
+	WorkspaceManager.getInstance().activeWorkspaceImportAoi($this.filepath, $this.levelsToImport , $this.hasStrata, captions, function(ws){
+		$this.showAoi();
 	});
 	
 };

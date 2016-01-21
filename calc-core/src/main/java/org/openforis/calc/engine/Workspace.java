@@ -23,6 +23,7 @@ import org.openforis.calc.metadata.ErrorSettings;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.SamplingDesign;
 import org.openforis.calc.metadata.Stratum;
+import org.openforis.calc.metadata.StratumAoi;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.WorkspaceSettings;
 import org.openforis.calc.persistence.jooq.tables.pojos.WorkspaceBase;
@@ -50,6 +51,8 @@ public class Workspace extends WorkspaceBase {
    	private List<Entity> entities;
 
    	private List<Stratum> strata;
+   	
+   	private List<StratumAoi> strataAois;
 
 	private List<AoiHierarchy> aoiHierarchies;
 
@@ -115,6 +118,15 @@ public class Workspace extends WorkspaceBase {
 		return org.openforis.commons.collection.CollectionUtils.unmodifiableList( strata );
 	}
 	
+	public Stratum getStratumById(Integer id){
+		for (Stratum stratum : getStrata()) {
+			if(stratum.getId().equals(id) ){
+				return stratum;
+			}
+		}
+		return null;
+	}
+	
 	public void setStrata(List<Stratum> strata) {
 		this.strata = strata;
 		for ( Stratum stratum : this.strata ) {
@@ -132,6 +144,17 @@ public class Workspace extends WorkspaceBase {
 		}
 		this.strata.add(stratum);
 		stratum.setWorkspace(this);
+	}
+	
+	public List<StratumAoi> getStrataAois() {
+		return org.openforis.commons.collection.CollectionUtils.unmodifiableList( strataAois );
+	}
+	
+	public void setStrataAois(Collection<StratumAoi> strataAois) {
+		this.strataAois = new ArrayList<StratumAoi>( strataAois );
+		for (StratumAoi stratumAoi : strataAois) {
+			stratumAoi.setWorkspace( this );
+		}
 	}
 	
 	public SamplingDesign getSamplingDesign() {
@@ -400,8 +423,8 @@ public class Workspace extends WorkspaceBase {
 		return notOverriddenEntities;
 	}
 
-	public Entity getEntityById(int id) {
-		if (getName() != null && CollectionUtils.isNotEmpty(entities)) {
+	public Entity getEntityById(Integer id) {
+		if ( id!=null && getName() != null && CollectionUtils.isNotEmpty(entities)) {
 			for (Entity e : entities) {
 				if (e.getId().equals(id)) {
 					return e;

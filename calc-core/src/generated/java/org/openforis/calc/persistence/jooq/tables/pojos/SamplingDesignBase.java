@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables.pojos;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class SamplingDesignBase implements java.io.Serializable {
 
-	private static final long serialVersionUID = -488969608;
+	private static final long serialVersionUID = -1311034862;
 
 	private java.lang.Integer                      id;
 	private java.lang.Integer                      samplingUnitId;
@@ -29,6 +29,7 @@ public class SamplingDesignBase implements java.io.Serializable {
 	private java.lang.Boolean                      twoStages;
 	private org.openforis.calc.engine.ParameterMap twoStagesSettings;
 	private java.lang.Boolean                      applyAreaWeighted;
+	private java.lang.Boolean                      stratumAoi;
 
 	public SamplingDesignBase() {}
 
@@ -48,7 +49,8 @@ public class SamplingDesignBase implements java.io.Serializable {
 		java.lang.String                       samplingUnitWeightScript,
 		java.lang.Boolean                      twoStages,
 		org.openforis.calc.engine.ParameterMap twoStagesSettings,
-		java.lang.Boolean                      applyAreaWeighted
+		java.lang.Boolean                      applyAreaWeighted,
+		java.lang.Boolean                      stratumAoi
 	) {
 		this.id = id;
 		this.samplingUnitId = samplingUnitId;
@@ -66,6 +68,7 @@ public class SamplingDesignBase implements java.io.Serializable {
 		this.twoStages = twoStages;
 		this.twoStagesSettings = twoStagesSettings;
 		this.applyAreaWeighted = applyAreaWeighted;
+		this.stratumAoi = stratumAoi;
 	}
 
 	public java.lang.Integer getId() {
@@ -194,5 +197,13 @@ public class SamplingDesignBase implements java.io.Serializable {
 
 	public void setApplyAreaWeighted(java.lang.Boolean applyAreaWeighted) {
 		this.applyAreaWeighted = applyAreaWeighted;
+	}
+
+	public java.lang.Boolean getStratumAoi() {
+		return this.stratumAoi;
+	}
+
+	public void setStratumAoi(java.lang.Boolean stratumAoi) {
+		this.stratumAoi = stratumAoi;
 	}
 }

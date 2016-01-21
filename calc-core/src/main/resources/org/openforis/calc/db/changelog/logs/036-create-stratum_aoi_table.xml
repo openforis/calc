@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+	<changeSet author="mino togna" id="036-create_stratum_aoi_table">
+
+		<sql>
+    		CREATE TABLE
+			    calc.stratum_aoi
+			    (
+			        id serial NOT NULL,
+			        aoi_id INTEGER NOT NULL,
+			        stratum_id INTEGER NOT NULL,
+			        area DOUBLE PRECISION NOT NULL,
+			        PRIMARY KEY (id),
+			        CONSTRAINT stratum_aoi_aoi_fk FOREIGN KEY (aoi_id) REFERENCES calc.aoi (id),
+			        CONSTRAINT stratum_aoi_stratum_fk FOREIGN KEY (stratum_id) REFERENCES calc.stratum (id)
+			    )
+    	</sql>
+    	
+	</changeSet>
+</databaseChangeLog>
