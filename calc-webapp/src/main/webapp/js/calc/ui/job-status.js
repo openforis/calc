@@ -135,7 +135,6 @@ JobStatus.prototype = (function() {
 					$this.hide(complete, job);
 				});
 				this.closeBtn.show();
-//				$.proxy(adjustSize, $this)();
 				// auto hide disabled for now
 				if( hideOnComplete === true ) {
 					setTimeout( function(){
@@ -148,7 +147,6 @@ JobStatus.prototype = (function() {
 					$this.hide();
 				});
 				this.closeBtn.show();
-//				$.proxy(adjustSize, $this)();
 				break;
 			default:
 //				this.closeBtn.show();
@@ -205,10 +203,8 @@ JobStatus.prototype = (function() {
 			$this.logBtn.on("click", clickFunction);
 //		}
 		
-//		$(window).on("resize", $.proxy(adjustSize, $this));
 		
 //		$.proxy(showLog, $this)();
-//		$.proxy(adjustSize, $this)();
 		
 		// show / hide download R code button
 //		if( $this.job.rlogger ) {
@@ -227,8 +223,6 @@ JobStatus.prototype = (function() {
 		var height = 130;
 		this.logSection.animate({ height: height }, 600);
 		this.log.animate({ opacity: "1" }, 600);
-		
-		$.proxy(adjustSize, $this)();
 	};
 	
 	var hideLog = function() {
@@ -241,29 +235,6 @@ JobStatus.prototype = (function() {
 			$this.log.animate({ opacity: ".2" }, 600);
 		},800); 
 		
-		$.proxy(adjustSize, $this)();
-	};
-	
-	var adjustSize = function() {
-//		var taskMinHeight = 90;
-//		
-//		var header = this.container.find(".modal-header");
-//		var footer = this.container.find(".modal-footer");
-//		var maxHeight = $(window).height() - 60; //max available height, excluding padding
-//		var otherPartsHeight = header.outerHeight() + footer.outerHeight();
-//		
-//		var bodyMaxHeight = maxHeight - otherPartsHeight - 30;
-//		var taskRequiredHeight = this.taskStatus.outerHeight() * this.taskSection.children().length;
-//		var taskMaxHeight = Math.max(taskMinHeight, taskRequiredHeight);
-//		
-//		var logOpen = this.logBtn.hasClass("option-btn-selected");
-//		var logSectionHeight = logOpen ? 130: 80;
-//		
-//		//if task section required height is greater than maximum available, reduce task section
-//		if ( taskRequiredHeight + logSectionHeight > bodyMaxHeight ) {
-//			taskMaxHeight = Math.max(taskMinHeight, bodyMaxHeight - logSectionHeight);
-//		}
-//		this.taskSection.css({maxHeight: taskMaxHeight});
 	};
 	
 	// reset its internal state
@@ -280,6 +251,7 @@ JobStatus.prototype = (function() {
 //		this.log.css({ opacity: "1" });
 		this.logBtn.off("click");
 		UI.enable( this.logBtn );
+		
 		//(3 below lines) let's leave the last ui status. maybe users don't want to see the log? and always have to click it? 
 //		this.log.show();
 //		this.logBtn.removeClass("option-btn");
@@ -289,8 +261,6 @@ JobStatus.prototype = (function() {
 		this.closeBtn.hide();
 		
 		this.job = null;
-		
-		$(window).off("resize", $.proxy(adjustSize, this));
 	};
 	
 	return {

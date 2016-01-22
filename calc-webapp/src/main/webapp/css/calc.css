@@ -1712,3 +1712,10 @@ div.progress {
 .form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control {
     opacity: .7 !important;
 }
+
+
+.hint {
+	text-align: center;
+	font-size: 12px;
+	font-style: italic;	
+}

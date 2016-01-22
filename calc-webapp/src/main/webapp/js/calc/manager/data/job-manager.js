@@ -90,7 +90,6 @@ JobManager.prototype.start = function( job, complete, hideOnComplete ) {
 	this.job = job;
 	this.jobStatus.show();
 	this.updateJobStatus( complete, hideOnComplete );
-//	$.proxy(updateJobStatus, this)(complete, hideOnComplete);
 };
 	
 // check the job status for the active workspace 
@@ -113,25 +112,13 @@ JobManager.prototype.updateJobStatus = function( complete, hideOnComplete ) {
 					// update job status
 					setTimeout(function(){
 						$this.updateJobStatus(complete, hideOnComplete);
-//						$.proxy(updateJobStatus , $this)(complete, hideOnComplete);
 					}, 100);
 					break;
 				case "COMPLETED":
 					UI.enableAll();
-//					setTimeout( function(){
-//						$this.jobStatus.hide();
-//					}, 1650);
 					break;
-					// if there's a processing chain associated to the job (CalcJob)
 				case "FAILED":
 					UI.enableAll();
-					// done call callback
-//						if ( complete ) {
-//							complete(job);
-//						}
-//						if( hideOnComplete === true ) {
-//							$this.jobStatus.hide();
-//						}
 					
 					// if there's a processing chain associated to the job (CalcJob)
 					if( job.processingChain ) {

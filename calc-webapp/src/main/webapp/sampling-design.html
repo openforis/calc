@@ -1,8 +1,13 @@
 <div class="page-section">
 
-	<div class="col-md-8 col-md-offset-2" style="height: 100%" id="sampling-design">
+	<div class="col-md-10 col-md-offset-1" style="height: 100%" id="sampling-design">
 		<!--  view section -->
 		<div class="row height100 view-sd" style="padding-top:20px">
+			<div class="row height10">
+				<div class="col-md-12 hint" >
+					<i class="fa fa-hand-o-right"></i>&nbsp;To set or edit a sampling design strategy, please click the edit button below.
+				</div>
+			</div>
 			<div class="row height10">
 				<div class="col-md-2 col-md-offset-5" >
 					<button type="button" class="btn btn-default width100" name="edit-btn">Edit</button>
@@ -13,16 +18,25 @@
 		</div>
 		<!-- edit section -->
 		<div class="row height100 edit-sd" style="padding-top:20px">
-			<div class="row height100">
-				<div class="col-md-2">
+			<div class="row height95">
+				<div class="col-md-1">
 					<button type="button" class="btn default-btn prev" style="display: inline-block;">
 						<i class="fa fa-angle-left"></i>
 					</button>
 				</div>
-				<div class="col-md-8 height100">
+				<div class="col-md-10 height100">
 					<!-- Sampling unit selection -->
 					<div class="row option step step-0 height100">
-						<div class="row"><h4>Base Unit</h4></div>
+						<div class="row">
+							<div class="col-md-12 hint" >
+								<i class="fa fa-hand-o-right"></i>&nbsp;The base unit is the first level of aggregation. (i.e. a plot, subplot, or a section within a plot).
+								<br/><i class="fa fa-hand-o-right"></i>&nbsp;Use area weighting when the total area per strata or reporting unit is known.
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-12"><h4>Base Unit</h4>
+							</div>
+						</div>
 						<div class="row">
 							<div class="col-md-12">
 								<select class="form-control" name="sampling-unit"></select>
@@ -38,9 +52,15 @@
 					</div>
 					<!-- 2 phases -->					
 					<div class="row option step step-1 height100">
+						<div class="row">
+							<div class="col-md-12 hint" >
+								<i class="fa fa-hand-o-right"></i>&nbsp;In the Double or Two phase sampling initially a sample of units is selected for obtaining auxiliary information only, 
+								and then a second sample is selected in which the variable of interest is observed in addition to the auxiliary information. Double sampling is also called two-phase sampling.
+							</div>
+						</div>
 						<div class="row height25">
 							<div class="col-md-6 col-md-offset-3">
-								<button class="btn" name="twoPhases">2 phases</button>
+								<button class="btn" name="twoPhases">Double sampling</button>
 							</div>
 						</div>
 						
@@ -77,6 +97,12 @@
 					</div>
 					<!-- 2 stages with SRS -->
 					<div class="row option step step-2 height100">
+						<div class="row">
+							<div class="col-md-12 hint" >
+								<i class="fa fa-hand-o-right"></i>&nbsp;In the two-stage sampling design the population is partitioned into groups, like cluster sampling, but in this design new samples are taken from each cluster/blob sampled. 
+								The clusters/blobs are the first stage units to be sampled, called primary or first sampling units. The second-stage units are the elements of those clusters/blobs, called sub-units, secondary or second sampling units.
+							</div>
+						</div>
 						<div class="row height25">
 							<div class="col-md-6 col-md-offset-3">
 								<button class="btn" name="twoStages">2 stages w/ SRS</button>
@@ -139,6 +165,12 @@
 					
 					<!-- strata -->
 					<div class="row option step step-3">
+						<div class="row">
+							<div class="col-md-12 hint" >
+								<i class="fa fa-hand-o-right"></i>&nbsp;A stratified sampling design purposely partitions the target population into two or more non-overlapping subpopulations, called strata, which are sampled separately.
+								<br/><i class="fa fa-hand-o-right"></i>&nbsp;Use the 'Upload Csv' button below to import the strata and select the column that represents the straum in the data. 
+							</div>
+						</div>
 						<div class="row height25">
 							<div class="col-md-6 col-md-offset-3">
 								<button class="btn" name="stratified">Stratified</button>
@@ -162,6 +194,12 @@
 					</div>
 					<!-- cluster -->
 					<div class="row option step step-4 height100">
+						<div class="row">
+							<div class="col-md-12 hint" >
+								<i class="fa fa-hand-o-right"></i>&nbsp;In cluster sampling the population is partitioned into groups, called clusters. 
+								The clusters, which are composed of elements, are not necessarily of the same size. Each element should belong to one cluster only and none of the elements of the population should be left out.
+							</div>
+						</div>
 						<div class="row height25">
 							<div class="col-md-6 col-md-offset-3">
 								<button class="btn" name="cluster">Cluster</button>
@@ -176,6 +214,11 @@
 					</div>
 					<!-- aoi -->
 					<div class="row option step step-5 height100">
+						<div class="row">
+							<div class="col-md-12 hint" >
+								<i class="fa fa-hand-o-right"></i>&nbsp;Select which variable is used to join the data with the the lowest level of the hierarchy of the estimation unit. 
+							</div>
+						</div>
 						<div class="row height25">
 							<div class="col-md-6 col-md-offset-3">
 								Area of Interest column join
@@ -213,7 +256,7 @@
 <!-- 					</div> -->
 					
 				</div>
-				<div class="col-md-2">
+				<div class="col-md-1">
 					<button type="button" class="btn default-btn next" style="display: inline-block;">
 							<i class="fa fa-angle-right"></i>
 					</button>
