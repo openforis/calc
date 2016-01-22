@@ -16,49 +16,49 @@ JobManager = function() {
 	/**
 	 * execute a job for the calculation step with id stepId
 	 */
-JobManager.prototype.executeCalculationStep = function(stepId, complete, hideOnComplete){
-	var $this = this;
-	UI.disableAll();
-	$.ajax({
-		url : $this.contextPath + "/step/"+stepId+"/execute.json",
-		dataType:"json"
-	}).done(function(response) {
-		$this.start(response, complete, hideOnComplete);
-//		$.proxy(start, $this)(response, complete, hideOnComplete);
-	})
-	.error( function() {
-		Calc.error.apply( this , arguments );
-	});
-};
+//JobManager.prototype.executeCalculationStep = function(stepId, complete, hideOnComplete){
+//	var $this = this;
+//	UI.disableAll();
+//	$.ajax({
+//		url : $this.contextPath + "/step/"+stepId+"/execute.json",
+//		dataType:"json"
+//	}).done(function(response) {
+//		$this.start(response, complete, hideOnComplete);
+////		$.proxy(start, $this)(response, complete, hideOnComplete);
+//	})
+//	.error( function() {
+//		Calc.error.apply( this , arguments );
+//	});
+//};
 	
 /**
  * execute a job for testing the calculation step with id stepId
  */
-JobManager.prototype.executeCalculationStepTest = function(stepId, complete, variableParameters, hideOnComplete) {
-	var $this = this;
-	var data = {stepId: stepId, variables: JSON.stringify(variableParameters)};
-	$.ajax({
-		url : $this.contextPath + "/test/execute.json",
-		type: "POST", 
-		data: data,
-		dataType:"json"
-	}).done(function(response) {
-		$this.start(response, complete, hideOnComplete);
-	})
-	.error( function() {
-		Calc.error.apply( this , arguments );
-	});
-};
+//JobManager.prototype.executeCalculationStepTest = function(stepId, complete, variableParameters, hideOnComplete) {
+//	var $this = this;
+//	var data = {stepId: stepId, variables: JSON.stringify(variableParameters)};
+//	$.ajax({
+//		url : $this.contextPath + "/test/execute.json",
+//		type: "POST", 
+//		data: data,
+//		dataType:"json"
+//	}).done(function(response) {
+//		$this.start(response, complete, hideOnComplete);
+//	})
+//	.error( function() {
+//		Calc.error.apply( this , arguments );
+//	});
+//};
 	
 // execute all steps for active workspace
-JobManager.prototype.execute = function( complete ) {
+JobManager.prototype.execute = function( complete , hideOnComplete ) {
 	var $this = this;
 	UI.disableAll();
 	$.ajax({
 		url : $this.contextPath + "/execute.json",
 		dataType:"json"
 	}).done(function(response) {
-		$this.start(response, complete);
+		$this.start(response, complete , hideOnComplete);
 	})
 	.error(function(e){
 		Calc.error.apply( this, arguments );
@@ -70,6 +70,9 @@ JobManager.prototype.execute = function( complete ) {
  */
 JobManager.prototype.checkJobStatus = function( complete, hideOnComplete ) {
 	var $this = this;
+	// hide it by default
+	hideOnComplete = ( hideOnComplete === false ) ? false : true;
+	
 	// if workspace is locked then shows job status
 	WorkspaceManager.getInstance().activeWorkspaceIsLocked(function(locked){
 		if( locked === true ) {
@@ -81,6 +84,9 @@ JobManager.prototype.checkJobStatus = function( complete, hideOnComplete ) {
 };
 
 JobManager.prototype.start = function( job, complete, hideOnComplete ) {
+	// hide it by default
+	hideOnComplete = ( hideOnComplete === false ) ? false : true;
+	
 	this.job = job;
 	this.jobStatus.show();
 	this.updateJobStatus( complete, hideOnComplete );
@@ -111,6 +117,12 @@ JobManager.prototype.updateJobStatus = function( complete, hideOnComplete ) {
 					}, 100);
 					break;
 				case "COMPLETED":
+					UI.enableAll();
+//					setTimeout( function(){
+//						$this.jobStatus.hide();
+//					}, 1650);
+					break;
+					// if there's a processing chain associated to the job (CalcJob)
 				case "FAILED":
 					UI.enableAll();
 					// done call callback
@@ -128,6 +140,7 @@ JobManager.prototype.updateJobStatus = function( complete, hideOnComplete ) {
 							Calc.updateButtonStatus();
 						});
 					}
+					$this.jobStatus.showLog();
 					break;
 				default:
 			}

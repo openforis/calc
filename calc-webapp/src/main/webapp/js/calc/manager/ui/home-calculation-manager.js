@@ -63,8 +63,7 @@ HomeCalculationManager.prototype.init = function() {
 	
 	// exec button click
 	this.executeBtn.click(function(e){
-		JobManager.getInstance().execute(function(response){
-		});
+		JobManager.getInstance().execute(function(response){} , true );
 	});
 
 	this.downloadChainBtn.click( function(e){

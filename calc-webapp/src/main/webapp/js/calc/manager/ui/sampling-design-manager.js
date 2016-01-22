@@ -591,7 +591,7 @@ SamplingDesignManager.prototype.saveSamplingDesign = function(){
 				$this.updateSamplingDesign();
 				Calc.updateButtonStatus();
 			};
-			JobManager.getInstance().start( job , complete, false );
+			JobManager.getInstance().start( job , complete  );
 //			JobManager.getInstance().checkJobStatus(function(){
 //				$this.updateSamplingDesign();
 //				Calc.updateButtonStatus();

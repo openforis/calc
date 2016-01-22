@@ -27,13 +27,13 @@ JobStatus = function() {
 	this.job = null;
 	
 	// to download r code in case of calc job
-	this.downloadRCodeButton	= this.container.find( '.download-r-code button' );
-	this.downloadRCodeButton.click( function(e){
-		e.preventDefault();
-		JobManager.getInstance().downloadRCode(function(){
-			
-		});
-	});
+//	this.downloadRCodeButton	= this.container.find( '.download-r-code button' );
+//	this.downloadRCodeButton.click( function(e){
+//		e.preventDefault();
+//		JobManager.getInstance().downloadRCode(function(){
+//			
+//		});
+//	});
 };
 
 JobStatus.prototype = (function() {
@@ -52,6 +52,8 @@ JobStatus.prototype = (function() {
 			$.proxy(init, this)(job);
 		}
 		
+//		console.log( job );
+		this.status.html( job.status.toLowerCase() );
 		// update each task 
 		var tasks = job.tasks;
 		$.each(tasks, function(i, task) {
@@ -97,31 +99,31 @@ JobStatus.prototype = (function() {
 		});
 		
 		// update log if there is
-		if( job.rlogger ) {
-			var lines = job.rlogger.lines;
-			var processedLines = this.log.children().length;
-			var newLines = lines.slice(processedLines, lines.length);
-			
-			$.each(newLines, function(i, line){
-				var div = $('<div></div>');
-				div.hide();
-				
-				div.text(line.text);
-				
-				$this.log.append(div);
-				
-				div.fadeIn(300);
-				
-				// scroll only at the end
-				if(i == newLines.length-1){
-					setTimeout(function(){
-						$this.log.stop().animate({
-							scrollTop: div.offset().top
-						}, 0);
-					}, 1000);
-				}
-			});
-		}
+//		if( job.rlogger ) {
+//			var lines = job.rlogger.lines;
+//			var processedLines = this.log.children().length;
+//			var newLines = lines.slice(processedLines, lines.length);
+//			
+//			$.each(newLines, function(i, line){
+//				var div = $('<div></div>');
+//				div.hide();
+//				
+//				div.text(line.text);
+//				
+//				$this.log.append(div);
+//				
+//				div.fadeIn(300);
+//				
+//				// scroll only at the end
+//				if(i == newLines.length-1){
+//					setTimeout(function(){
+//						$this.log.stop().animate({
+//							scrollTop: div.offset().top
+//						}, 0);
+//					}, 1000);
+//				}
+//			});
+//		}
 		
 		// show/hide close btn
 		switch(job.status) {
@@ -133,18 +135,20 @@ JobStatus.prototype = (function() {
 					$this.hide(complete, job);
 				});
 				this.closeBtn.show();
-				$.proxy(adjustSize, $this)();
+//				$.proxy(adjustSize, $this)();
 				// auto hide disabled for now
-//				if( hideOnComplete === true ) {
-//					$this.hide(complete, job);
-//				}
+				if( hideOnComplete === true ) {
+					setTimeout( function(){
+						$this.hide(complete, job);
+					}, 1000);
+				}
 				break;
 			case "FAILED":
 				this.closeBtn.on("click", function(){
 					$this.hide();
 				});
 				this.closeBtn.show();
-				$.proxy(adjustSize, $this)();
+//				$.proxy(adjustSize, $this)();
 				break;
 			default:
 //				this.closeBtn.show();
@@ -188,14 +192,8 @@ JobStatus.prototype = (function() {
 		});
 		
 		// init r logger if calcjob
-//		if( $this.job.rlogger ) {
 			// show log section
-			$this.logSection.show();
-//			if( $this.logBtn.hasClass("option-btn-selected") ){
-//				// set logSection height
-//				var height = $(document).height() / 5;
-//				$this.logSection.css({"height":height});
-//			}
+//			$this.logSection.show();
 			
 			var clickFunction = function(e){
 				if( $this.logBtn.hasClass("option-btn-selected") ){
@@ -207,17 +205,17 @@ JobStatus.prototype = (function() {
 			$this.logBtn.on("click", clickFunction);
 //		}
 		
-		$(window).on("resize", $.proxy(adjustSize, $this));
+//		$(window).on("resize", $.proxy(adjustSize, $this));
 		
-		$.proxy(showLog, $this)();
-		$.proxy(adjustSize, $this)();
+//		$.proxy(showLog, $this)();
+//		$.proxy(adjustSize, $this)();
 		
 		// show / hide download R code button
-		if( $this.job.rlogger ) {
-			this.downloadRCodeButton.show();
-		} else {
-			this.downloadRCodeButton.hide();
-		}
+//		if( $this.job.rlogger ) {
+//			this.downloadRCodeButton.show();
+//		} else {
+//			this.downloadRCodeButton.hide();
+//		}
 	};
 
 	var showLog = function() {
@@ -247,34 +245,37 @@ JobStatus.prototype = (function() {
 	};
 	
 	var adjustSize = function() {
-		var taskMinHeight = 90;
-		
-		var header = this.container.find(".modal-header");
-		var footer = this.container.find(".modal-footer");
-		var maxHeight = $(window).height() - 60; //max available height, excluding padding
-		var otherPartsHeight = header.outerHeight() + footer.outerHeight();
-		
-		var bodyMaxHeight = maxHeight - otherPartsHeight - 30;
-		var taskRequiredHeight = this.taskStatus.outerHeight() * this.taskSection.children().length;
-		var taskMaxHeight = Math.max(taskMinHeight, taskRequiredHeight);
-		
-		var logOpen = this.logBtn.hasClass("option-btn-selected");
-		var logSectionHeight = logOpen ? 130: 80;
-		
-		//if task section required height is greater than maximum available, reduce task section
-		if ( taskRequiredHeight + logSectionHeight > bodyMaxHeight ) {
-			taskMaxHeight = Math.max(taskMinHeight, bodyMaxHeight - logSectionHeight);
-		}
-		this.taskSection.css({maxHeight: taskMaxHeight});
+//		var taskMinHeight = 90;
+//		
+//		var header = this.container.find(".modal-header");
+//		var footer = this.container.find(".modal-footer");
+//		var maxHeight = $(window).height() - 60; //max available height, excluding padding
+//		var otherPartsHeight = header.outerHeight() + footer.outerHeight();
+//		
+//		var bodyMaxHeight = maxHeight - otherPartsHeight - 30;
+//		var taskRequiredHeight = this.taskStatus.outerHeight() * this.taskSection.children().length;
+//		var taskMaxHeight = Math.max(taskMinHeight, taskRequiredHeight);
+//		
+//		var logOpen = this.logBtn.hasClass("option-btn-selected");
+//		var logSectionHeight = logOpen ? 130: 80;
+//		
+//		//if task section required height is greater than maximum available, reduce task section
+//		if ( taskRequiredHeight + logSectionHeight > bodyMaxHeight ) {
+//			taskMaxHeight = Math.max(taskMinHeight, bodyMaxHeight - logSectionHeight);
+//		}
+//		this.taskSection.css({maxHeight: taskMaxHeight});
 	};
 	
 	// reset its internal state
 	var reset = function() {
+		// logButton hidden
+		this.logBtn.hide();
+		
 		this.status.html( "Waiting job status" );
 		this.taskSection.empty();
 
 		// empty log
-		this.logSection.hide();
+		this.hideLog();
 		this.log.empty();
 //		this.log.css({ opacity: "1" });
 		this.logBtn.off("click");
@@ -303,3 +304,10 @@ JobStatus.prototype = (function() {
 	};
 	
 })();
+
+JobStatus.prototype.hideLog = function(){
+	this.logSection.hide();
+};
+JobStatus.prototype.showLog = function(){
+	this.logSection.fadeIn();
+};
