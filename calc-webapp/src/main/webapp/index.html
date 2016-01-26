@@ -35,7 +35,7 @@
 	
 	<!-- ==== Custom style ==== -->
 	<link rel="stylesheet" href="css/calc.css">
-
+	<link rel="stylesheet" href="css/calc/sampling-design/sampling-design.css">
 	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!--[if lt IE 9]>
       <script src="js/html5shiv.js"></script>
@@ -170,7 +170,7 @@
 			  		</div>
 		  			<div class="row group-buttons">
 		  				<button type="button" class="btn btn-default btn-home settings-btn workspace-required" href="aoi.html">Reporting units</button>
-		 				<button type="button" class="btn btn-default btn-home settings-btn aoi-required" href="sampling-design.html">Sampling design</button>
+		 				<button type="button" class="btn btn-default btn-home settings-btn aoi-required" href="html/settings/sampling-design.html">Sampling design</button>
 <!-- 		 				<button type="button" class="btn btn-default btn-home settings-btn sampling-design-required" href="aggregation.html">Base unit area formula</button> -->
 	 				</div>
 		  		</div>
@@ -495,6 +495,9 @@
 	<script src="./js/jquery/plugin/caretpixelpos/selection_range.js"></script>
 	<script src="./js/jquery/plugin/caretpixelpos/string_splitter.js"></script>
 	
+	<!-- 	Event BUS -->
+	<script src="./js/bus/EventBus.js"></script>
+	
 	<!-- Bootstrap -->
 	<script src="./js/bootstrap/bootstrap.min.js"></script>
 	<script src="./js/bootstrap/dropdown.js"></script>
@@ -589,14 +592,20 @@
 	<script src="./js/calc/manager/ui/category-edit-form-manager.js"></script>
 	
 	<!-- settings  -->
-	<script src="./js/calc/manager/ui/sampling-design-manager.js"></script>
-	<script src="./js/calc/manager/ui/aggregation-manager.js"></script>
+	<script src="./js/calc/manager/ui/settings/sampling-design/sampling-design-manager.js"></script>
+	<script src="./js/calc/manager/ui/settings/sampling-design/sampling-design-edit-manager.js"></script>
+	<script src="./js/calc/manager/ui/settings/sampling-design/sampling-design-erd-manager.js"></script>
+	<script src="./js/calc/manager/ui/settings/sampling-design/base-unit-manager.js"></script>
+	<script src="./js/calc/manager/ui/settings/sampling-design/erd-table.js"></script>
+<!-- 	<script src="./js/calc/manager/ui/legacy/sampling-design-manager.js"></script> -->
+	<script src="./js/calc/manager/ui/legacy/stratum-manager.js"></script>
+	<script src="./js/calc/manager/ui/legacy/phase1-manager.js"></script>
+	<script src="./js/calc/manager/ui/legacy/two-stages-manager.js"></script>
+	<script src="./js/calc/manager/ui/legacy/cluster-manager.js"></script>
+	<script src="./js/calc/manager/ui/legacy/aoi-join-manager.js"></script>
+	
+<!-- 		<script src="./js/calc/manager/ui/aggregation-manager.js"></script> -->
 	<script src="./js/calc/manager/ui/aoi-manager.js"></script>
-	<script src="./js/calc/manager/ui/stratum-manager.js"></script>
-	<script src="./js/calc/manager/ui/phase1-manager.js"></script>
-	<script src="./js/calc/manager/ui/two-stages-manager.js"></script>
-	<script src="./js/calc/manager/ui/cluster-manager.js"></script>
-	<script src="./js/calc/manager/ui/aoi-join-manager.js"></script>
 	<script src="./js/calc/manager/ui/home-settings-manager.js"></script>
 	<script src="./js/calc/manager/ui/workspace-settings-manager.js"></script>
 	
