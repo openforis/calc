@@ -1177,6 +1177,9 @@ table.import-csv-table input[type=checkbox] {
 .width50 {
 	width: 50%;	
 }
+.width60 {
+	width: 60%;
+}
 .width80 {
 	width: 80%;	
 }

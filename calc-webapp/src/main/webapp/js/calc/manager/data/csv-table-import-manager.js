@@ -7,11 +7,11 @@ CsvTableImport = function(container, filepath, columns, tableName) {
 	// ui container
 	this.container = $(container);
 	
-	this.table = this.container.find("table");
-	this.importBtn = this.container.find("[name=import-btn]");
+	this.table 		= this.container.find("table");
+	this.importBtn 	= this.container.find("[name=import-btn]");
 	
-	this.filepath = filepath;
-	this.tableName = tableName;
+	this.filepath 	= filepath;
+	this.tableName 	= tableName;
 	
 	var $this = this;
 	this.columns = [];
@@ -26,7 +26,7 @@ CsvTableImport = function(container, filepath, columns, tableName) {
 };
 
 //available data types
-CsvTableImport.dataTypes = ["String","Integer","Real"];
+CsvTableImport.dataTypes = [ "String" , "Integer" , "Real" ];
 
 CsvTableImport.prototype.init = function(){
 	var $this = this;

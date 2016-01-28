@@ -1,16 +1,20 @@
 /**
  * Manager for edit Sampling Design page
  */
-SamplingDesignEditManager = function( editContainer , editERDContainer ){
+SamplingDesignEditManager = function( editContainer , editERDContainer , stepButtonsContainer ){
 	
 	this.container 					= editContainer;
 	
 	this.prevBtn 					= this.container.find( "button.prev" );
 	this.nextBtn 					= this.container.find( "button.next" );
 	
-	
+	//ERD manager
 	this.samplingDesignERDManager	= new SamplingDesignERDManager( editERDContainer, "edit" );
+	this.validator					= new SamplingDesignValidator( this );
 	this.samplingDesign				= null;
+	
+	// Step buttons manager
+	this.samplingDesignStepButtonsManager = new SamplingDesignStepButtonsManager( stepButtonsContainer, this );
 	
 	this.init();
 };
@@ -30,12 +34,14 @@ SamplingDesignEditManager.prototype.init = function(){
 
 SamplingDesignEditManager.prototype.show = function(){
 	this.container.fadeIn();
+	
 	var $this 		= this;
 	WorkspaceManager.getInstance().activeWorkspace(function(ws){
-		
 		$this.samplingDesign = $.extend(true, {}, ws.samplingDesign );
 		
 		$this.samplingDesignERDManager.show( $this.samplingDesign );
+		$this.samplingDesignStepButtonsManager.updateView();
+		
 	});
 	
 	var steps = this.container.find(".step");
@@ -60,6 +66,8 @@ SamplingDesignEditManager.prototype.showStep = function(step) {
 	this.container.find(".step-"+step).fadeIn( 200 );
 	
 	this.updateNavigationBtns();
+	
+	EventBus.dispatch("calc.sampling-design.show-step", null , step);
 };
 
 /**
@@ -76,14 +84,8 @@ SamplingDesignEditManager.prototype.prev = function(){
  * Move to next edit section
  */
 SamplingDesignEditManager.prototype.next = function(){
-	var validate =  this[ "validateStep" + this.step ] ;
-	if( validate ){
-		var valid = $.proxy( validate, this )();
-		if( valid ){
-			this.step ++ ;
-			this.showStep(this.step);
-		}
-	} else {
+	var valid = this.validator.isValid( this.step );
+	if( valid ){
 		this.step ++ ;
 		this.showStep(this.step);
 	}
@@ -97,20 +99,7 @@ SamplingDesignEditManager.prototype.updateNavigationBtns = function(){
 };
 
 
-//EVENTS listeners
+// EVENT listeners
 SamplingDesignEditManager.prototype.baseUnitChange = function( event, entityId ){
 		this.samplingDesign.samplingUnitId =  entityId; 
-};
-
-// Validations methods
-/**
- * Sampling unit validation
- */
-SamplingDesignEditManager.prototype.validateStep0 = function(){
-	if( this.samplingDesign.samplingUnitId ){
-		return true;
-	} else {
-		UI.showError("Select a valid sampling unit", false);
-		return false;
-	}
 };

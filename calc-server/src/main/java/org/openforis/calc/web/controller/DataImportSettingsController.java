@@ -60,29 +60,6 @@ public class DataImportSettingsController {
 		Workspace workspace = workspaceService.getActiveWorkspace();
 		AOICsvFileParser aoiCsvFileParser = new AOICsvFileParser(filepath , psql);
 		aoiCsvFileParser.parseForImport(levels, captions, hasStrata);
-//		AoiHierarchy aoiHierarchy2 = aoiCsvFileParser.getAoiHierarchy();
-		
-//		Aoi rootAoi = aoiHierarchy2.getRootAoi();
-//		System.out.println( rootAoi.getCode() + "    " + rootAoi.getCaption() + "   " + rootAoi.getLandArea());
-//		BigDecimal area = new BigDecimal(0);
-//		for (Aoi aoi : rootAoi.getChildren()) {
-//			BigDecimal landArea = aoi.getLandArea();
-//			area = area.add(landArea);
-//			System.out.println( "\t" +aoi.getCode() + "    " + aoi.getCaption()  + "   " + landArea);
-//		}
-//		System.out.println( area );
-//		
-//		Collection<StratumAoi> strataAois = aoiCsvFileParser.getStrataAois();
-//		Double total = 0.0 ;
-//		for (StratumAoi stratumAoi : strataAois) {
-//			if( stratumAoi.getAoi().getAoiLevel().getRank() == 0 ){
-//				Double a = stratumAoi.getArea();
-//				total += a;
-//			}
-//			System.out.println( stratumAoi.getAoi().getCaption() + "    " + stratumAoi.getStratum().getStratumNo() + "     area: " + stratumAoi.getArea() );
-//		}
-//		DecimalFormat f = new DecimalFormat("###,###.#####");
-//		System.out.println( f.format(total) );
 		
 		// insert aois
 		SamplingDesign samplingDesign = workspace.getSamplingDesign();
@@ -101,7 +78,7 @@ public class DataImportSettingsController {
 			samplingDesignManager.save(workspace, samplingDesign);
 			
 			response.setWorkspaceChanged();
-		} else {
+		} else if (samplingDesign != null) {
 			// if sampling desgin != null and previously set stratumAoi=true, it sets it to false
 			samplingDesign.setStratumAoi(false);
 			samplingDesignManager.save(workspace, samplingDesign);

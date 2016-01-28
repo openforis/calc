@@ -76,32 +76,32 @@
 						
 						<div class="row no-margin phase1_section height75" style="padding: 0px;">
 		
-							<div class="row upload-section height10">
-								<form  method="post" enctype="multipart/form-data" action="rest/csv-upload.json">
-								<div class="col-md-6 col-md-offset-3" style="padding-top: 10px;">
-									<button type="button" class="btn btn-default width100" name="upload-btn">Upload Csv</button>
-								    <input type="file" name="file" style="display:none" />  
-								</div>
-								</form>
-							</div>
+<!-- 							<div class="row upload-section height10"> -->
+<!-- 								<form  method="post" enctype="multipart/form-data" action="rest/csv-upload.json"> -->
+<!-- 								<div class="col-md-6 col-md-offset-3" style="padding-top: 10px;"> -->
+<!-- 									<button type="button" class="btn btn-default width100" name="upload-btn">Upload Csv</button> -->
+<!-- 								    <input type="file" name="file" style="display:none" />   -->
+<!-- 								</div> -->
+<!-- 								</form> -->
+<!-- 							</div> -->
 							
 							<div class="row table-join height90">
 								
 							</div>
 							
-							<div class="row import-section height100 no-padding no-margin">
-								<div class="col-md-12" style="overflow: auto;">
-									<table style="width:100%" class="import-csv-table">
-										<thead>
-										</thead>
-										<tbody>
-										</tbody>
-									</table>
-								</div>
-								<div class="row col-md-6 col-md-offset-3" style="padding-top: 0.5em;">
-									<button type="button" class="btn btn-default width100" name="import-btn">Import</button>
-								</div>
-							</div>
+<!-- 							<div class="row import-section height100 no-padding no-margin"> -->
+<!-- 								<div class="col-md-12" style="overflow: auto;"> -->
+<!-- 									<table style="width:100%" class="import-csv-table"> -->
+<!-- 										<thead> -->
+<!-- 										</thead> -->
+<!-- 										<tbody> -->
+<!-- 										</tbody> -->
+<!-- 									</table> -->
+<!-- 								</div> -->
+<!-- 								<div class="row col-md-6 col-md-offset-3" style="padding-top: 0.5em;"> -->
+<!-- 									<button type="button" class="btn btn-default width100" name="import-btn">Import</button> -->
+<!-- 								</div> -->
+<!-- 							</div> -->
 							
 						</div>
 					</div>
@@ -266,6 +266,41 @@
 		</div>
 
 	</div>
+	
+	
+	<!-- ==== Job Status modal section ==== -->
+	<div class="modal fade" id="csv-import-column-selector">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				
+				<div class="modal-header col-md-12">
+					<div class="col-md-offset-2 col-md-8">
+						<h4 class="modal-title">Select columns to import</h4>
+					</div>	
+				</div>
+				
+				<div class="modal-body col-md-12">
+					<div class="row import-section height100 no-padding no-margin">
+						<div class="col-md-12" style="overflow: auto;">
+							<table style="width:100%" class="import-csv-table">
+								<thead>
+								</thead>
+								<tbody>
+								</tbody>
+							</table>
+						</div>
+						<div class="row col-md-6 col-md-offset-3" style="padding-top: 0.5em;">
+							<button type="button" class="btn btn-default width100" name="import-btn">Import</button>
+						</div>
+					</div>
+				</div>
+				
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default close-btn" data-dismiss="modal" aria-hidden="true">Close</button>
+				</div>
+			</div><!-- /.modal-content -->
+		</div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
 	
 	<script>
 	$(function() {

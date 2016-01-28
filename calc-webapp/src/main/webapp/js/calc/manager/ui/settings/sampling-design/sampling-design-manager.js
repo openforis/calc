@@ -16,7 +16,7 @@ SamplingDesignManager = function(container) {
 	this.editSd 	= this.container.find( ".edit-sd" );
 	this.editErdSd 	= this.container.find( ".sampling-design-erd-edit" );
 	
-	this.samplingDesignEditManager = new SamplingDesignEditManager( this.editSd, this.editErdSd );
+	this.samplingDesignEditManager = new SamplingDesignEditManager( this.editSd, this.editErdSd , this.container );
 	this.samplingDesignEditManager.hide();
 	
 	
@@ -24,11 +24,9 @@ SamplingDesignManager = function(container) {
 //	this.editSd.hide();
 	
 	// edit ui buttons
-//	this.srsBtn 		= new OptionButton( this.container.find('[name=srs]') );
-//	this.systematicBtn 	= new OptionButton( this.container.find('[name=systematic]') );
-	this.twoPhasesBtn 	= new OptionButton( this.container.find('[name=twoPhases]') );
+//	this.twoPhasesBtn 	= new OptionButton( this.container.find('[name=twoPhases]') );
 	this.twoStagesBtn 	= new OptionButton( this.container.find('[name=twoStages]') );
-	this.stratifiedBtn 	= new OptionButton( this.container.find('[name=stratified]') );
+//	this.stratifiedBtn 	= new OptionButton( this.container.find('[name=stratified]') );
 	this.clusterBtn 	= new OptionButton( this.container.find('[name=cluster]') );
 	
 	// save btn
@@ -54,14 +52,14 @@ SamplingDesignManager = function(container) {
 	this.applyAreaWeighted = this.container.find( '[name=apply_area_weighted]' );
 	
 	// additional managers used in the edit phase
-	this.phase1Manager = new Phase1Manager( this.editSd.find(".phase1_section") , this);
-	this.phase1Manager.hide();
+//	this.phase1Manager = new Phase1Manager( this.editSd.find(".phase1_section") , this);
+//	this.phase1Manager.hide();
 
 	this.twoStagesManager = new TwoStagesManager( this.editSd.find(".twostages-section") , this);
 	this.twoStagesManager.hide();
 	
-	this.stratumManager = new StratumManager( this.editSd.find(".strata_section") , this );
-	this.stratumManager.hide();
+//	this.stratumManager = new StratumManager( this.editSd.find(".strata_section") , this );
+//	this.stratumManager.hide();
 	
 	this.clusterManager = new ClusterManager( this.editSd.find(".cluster_section") , this);
 	this.clusterManager.hide();
@@ -101,14 +99,14 @@ SamplingDesignManager.prototype.init = function(){
 	 * Sampling desing change event handlers (edit phase)
 	 */ 
 	// sampling unit change
-	this.samplingUnitCombo.change( $.proxy(function(e){
-		e.preventDefault();
-		this.samplingDesign.samplingUnitId = $this.samplingUnitCombo.val();
-		WorkspaceManager.getInstance().activeWorkspace( $.proxy(function(ws){
-//			this.weightScript.entity = ws.getEntityById( this.samplingDesign.samplingUnitId );
-		} , this ) );
-		this.loadSamplingUnitTableInfo();
-	} , this) );
+//	this.samplingUnitCombo.change( $.proxy(function(e){
+//		e.preventDefault();
+//		this.samplingDesign.samplingUnitId = $this.samplingUnitCombo.val();
+//		WorkspaceManager.getInstance().activeWorkspace( $.proxy(function(ws){
+////			this.weightScript.entity = ws.getEntityById( this.samplingDesign.samplingUnitId );
+//		} , this ) );
+//		this.loadSamplingUnitTableInfo();
+//	} , this) );
 	
 	this.applyAreaWeighted.change( function(e){
 		e.preventDefault();
@@ -116,21 +114,18 @@ SamplingDesignManager.prototype.init = function(){
 	});
 	
 	//2 phases
-	this.twoPhasesBtn.select( $.proxy(function(){
-		this.samplingDesign.twoPhases = true;
-		this.phase1Manager.show();
-		
-		this.twoStagesBtn.disable();
-	}, this) );	
-	this.twoPhasesBtn.deselect( $.proxy(function(){
-		this.samplingDesign.twoPhases = false;
-		this.phase1Manager.hide();
-		
-		this.twoStagesBtn.enable();
-//		this.stratifiedBtn.deselect();
-//		this.clusterBtn.deselect();
-//		this.samplingDesign.aoiJoinSettings = {};
-	}, this) );
+//	this.twoPhasesBtn.select( $.proxy(function(){
+//		this.samplingDesign.twoPhases = true;
+//		this.phase1Manager.show();
+//		
+//		this.twoStagesBtn.disable();
+//	}, this) );	
+//	this.twoPhasesBtn.deselect( $.proxy(function(){
+//		this.samplingDesign.twoPhases = false;
+//		this.phase1Manager.hide();
+//		
+//		this.twoStagesBtn.enable();
+//	}, this) );
 	
 	
 	//2 stages
@@ -138,26 +133,24 @@ SamplingDesignManager.prototype.init = function(){
 		this.samplingDesign.twoStages = true;
 		this.twoStagesManager.show();
 		
-		this.twoPhasesBtn.disable();
+//		this.twoPhasesBtn.disable();
 		this.clusterBtn.disable();
 	}, this) );	
 	this.twoStagesBtn.deselect( $.proxy(function(){
 		this.samplingDesign.twoStages = false;
 		this.twoStagesManager.hide();
 		
-		this.twoPhasesBtn.enable();
+//		this.twoPhasesBtn.enable();
 		this.clusterBtn.enable();
 	}, this) );
 	
 	//stratified
-	this.stratifiedBtn.select( $.proxy(function(){
-		this.samplingDesign.stratified = true;
-		this.stratumManager.show();
-	}, this) );
-	this.stratifiedBtn.deselect( $.proxy(function(){
-		this.samplingDesign.stratified = false;
-		this.stratumManager.hide();
-	}, this) );	
+//	this.stratifiedBtn.select( $.proxy(function(){
+//		this.samplingDesign.stratified = true;
+//	}, this) );
+//	this.stratifiedBtn.deselect( $.proxy(function(){
+//		this.samplingDesign.stratified = false;
+//	}, this) );	
 	
 	// cluster
 	this.clusterBtn.select( $.proxy(function(){
@@ -194,18 +187,10 @@ SamplingDesignManager.prototype.init = function(){
  * Start showing the edit section
  */
 SamplingDesignManager.prototype.startEdit = function() {
-	this.updateEditView();
+//	this.updateEditView();
 	this.viewSd.hide();
 	
 	this.samplingDesignEditManager.show();
-	
-//	var steps = this.editSd.find(".step");
-//	this.step = 0;
-//	this.stepMax = steps.length - 1;
-//	// hide steps
-//	steps.hide();
-//	this.editSd.fadeIn(200);
-//	this.showStep(this.step);
 };
 
 /**
@@ -213,11 +198,11 @@ SamplingDesignManager.prototype.startEdit = function() {
  */
 SamplingDesignManager.prototype.updateEditView = function(){
 	
-	if( this.samplingDesign.twoPhases === true ){
-		this.twoPhasesBtn.select();
-	} else {
-		this.twoPhasesBtn.deselect();
-	}
+//	if( this.samplingDesign.twoPhases === true ){
+//		this.twoPhasesBtn.select();
+//	} else {
+//		this.twoPhasesBtn.deselect();
+//	}
 	
 	if( this.samplingDesign.twoStages === true ){
 		this.twoStagesBtn.select();
@@ -225,11 +210,11 @@ SamplingDesignManager.prototype.updateEditView = function(){
 		this.twoStagesBtn.deselect();
 	}
 	
-	if( this.samplingDesign.stratified === true ){
-		this.stratifiedBtn.select();
-	} else {
-		this.stratifiedBtn.deselect();
-	}
+//	if( this.samplingDesign.stratified === true ){
+//		this.stratifiedBtn.select();
+//	} else {
+//		this.stratifiedBtn.deselect();
+//	}
 	
 	if( this.samplingDesign.cluster === true ){
 		this.clusterBtn.select();
@@ -257,6 +242,7 @@ SamplingDesignManager.prototype.updateEditView = function(){
 SamplingDesignManager.prototype.loadSamplingUnitTableInfo = function(callback){
 	if( this.samplingDesign.samplingUnitId ) {
 		WorkspaceManager.getInstance().activeWorkspace( $.proxy( function(ws){
+			
 			var entity = ws.getEntityById( this.samplingDesign.samplingUnitId );
 			
 			var tableInfo = function(){
@@ -275,14 +261,6 @@ SamplingDesignManager.prototype.loadSamplingUnitTableInfo = function(callback){
 			this.samplingUnitTableInfo = new tableInfo();
 			Utils.applyFunction( callback );
 			
-			// load sampling unit table info
-//			new TableDataProvider( ws.inputSchema , entity.name +"_view" ).tableInfo( $.proxy( function(response){
-//				this.samplingUnitTableInfo = response;
-//				if(callback){
-//					callback();
-//				}
-//			} , this ) );
-			
 		} , this ) );
 	}
 };
@@ -290,19 +268,19 @@ SamplingDesignManager.prototype.loadSamplingUnitTableInfo = function(callback){
 /**
  * load phase 1 table info
  */
-SamplingDesignManager.prototype.loadPhase1TableInfo = function(callback){
-	var $this  = this;
-	WorkspaceManager.getInstance().activeWorkspace(function(ws){
-		if( ws.phase1PlotTable ) {
-
-			new TableDataProvider( "calc" , ws.phase1PlotTable ).tableInfo( function(response) {
-				$this.phase1TableInfo = response;
-				Utils.applyFunction( callback );
-			});
-			
-		}
-	});
-};
+//SamplingDesignManager.prototype.loadPhase1TableInfo = function(callback){
+//	var $this  = this;
+//	WorkspaceManager.getInstance().activeWorkspace(function(ws){
+//		if( ws.phase1PlotTable ) {
+//
+//			new TableDataProvider( "calc" , ws.phase1PlotTable ).tableInfo( function(response) {
+//				$this.phase1TableInfo = response;
+//				Utils.applyFunction( callback );
+//			});
+//			
+//		}
+//	});
+//};
 
 /**
  * load primary sampling unit table info (in case of two stages sampling)
@@ -324,6 +302,9 @@ SamplingDesignManager.prototype.loadPrimarySUTableInfo = function(callback){
 	});
 };
 
+
+
+
 /**
  * Save current sampling design for the current workspace
  */
@@ -333,20 +314,21 @@ SamplingDesignManager.prototype.saveSamplingDesign = function(){
 	if( !validate || $.proxy(validate, this)() ){
 		
 		WorkspaceManager.getInstance().activeWorkspaceSetSamplingDesign( this.samplingDesign, $.proxy( function(job) {
+		
 			var complete = function(){
 				$this.updateSamplingDesign();
 				Calc.updateButtonStatus();
 			};
 			JobManager.getInstance().start( job , complete  );
-//			JobManager.getInstance().checkJobStatus(function(){
-//				$this.updateSamplingDesign();
-//				Calc.updateButtonStatus();
-//			});
+
 		} , this) );
 		
 	}
 
 };
+
+
+
 
 /**
  * Step validation methods
@@ -422,9 +404,9 @@ SamplingDesignManager.prototype.validateStep3 = function(){
 				UI.showError("Import a valid csv file", false);
 				valid = false;
 			} else {
-				valid = $this.stratumManager.validate();
+//				valid = $this.stratumManager.validate();
 				if(valid) {
-					$this.samplingDesign.stratumJoinSettings = $this.stratumManager.joinOptions();
+//					$this.samplingDesign.stratumJoinSettings = $this.stratumManager.joinOptions();
 				}
 			}
 		} );
@@ -465,6 +447,11 @@ SamplingDesignManager.prototype.validateStep5 = function(){
 
 
 
+
+
+
+
+
 /**
  * Update view ui
  */
@@ -486,7 +473,7 @@ SamplingDesignManager.prototype.updateSamplingDesign = function() {
 				this.samplingUnit = ws.getEntityById(this.samplingDesign.samplingUnitId);
 				this.loadSamplingUnitTableInfo( $.proxy(function(){
 					// todo move loading info tables before edit. not necessary here
-					this.loadPhase1TableInfo();
+//					this.loadPhase1TableInfo();
 					this.loadPrimarySUTableInfo();
 					
 					this.addToSdUi( "Sampling unit<br/>" + this.samplingUnit.name );
