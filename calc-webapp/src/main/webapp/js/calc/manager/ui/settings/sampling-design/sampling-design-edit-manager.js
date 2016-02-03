@@ -90,6 +90,7 @@ SamplingDesignEditManager.prototype.next = function(){
 		this.showStep(this.step);
 	}
 };
+
 /**
  * update edit navigation buttons
  */

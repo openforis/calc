@@ -479,6 +479,7 @@
   , disable: function() {
 	  this.$element.prop('disabled', true);
 	  this.$button.attr('disabled', "disabled");
+	  this.$button.hide();
   }
   
   /**
@@ -487,6 +488,7 @@
   , enable: function() {
 	  this.$element.prop('disabled', false);
 	  this.$button.removeAttr('disabled');
+	  this.$button.show();
   }
   /**
    * Selects the item with the specified value or returns the selected one if the value parameters is not specified.

@@ -30,8 +30,13 @@ SamplingDesignERDManager.prototype.show = function( samplingDesign ){
 	
 	this.baseUnitManager 	= new BaseUnitManager	( this.container.find('.base-unit-container') , this , 0 );
 	this.twoPhasesManager 	= new TwoPhasesManager	( this.container.find('.two-phases-container') , this , 1 );
+	this.psuManager		 	= new PSUTwoStagesManager( this.container.find('.psu-container') , this , 2 );
+	this.ssuManager		 	= new SSUTwoStagesManager( this.container.find('.ssu-container') , this , 2 );
+	
 	this.stratumManager		= new StratumManager	( this.container.find( '.stratum-container'), 	this , 3 );
 
+//	this.tableJoinsManager	= new SamplingDesignERDTableJoinsManager( this );
+	
 	if( this.samplingDesign.samplingUnitId || this.editMode ){
 		
 		this.baseUnitManager.show();

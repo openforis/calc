@@ -12,10 +12,17 @@ TwoPhasesManager = function( container , sdERDManager , stepNo ){
 		dataProvider.tableName 	= ws.phase1PlotTableName;
 		dataProvider.extSchema	= false;
 		
+		this.baseUnitPhase1Join	= new ERDTableJoin( 'baseUnitPhase1Join' );
+		
 		SamplingDesignStepManager.call( this, container , sdERDManager , stepNo , dataProvider );
 		
-		EventBus.addEventListener( "calc.sampling-design.two-phases-change", this.update, this );
+		EventBus.addEventListener( "calc.sampling-design.two-phases-change", 	this.update, this );
+		EventBus.addEventListener( "calc.sampling-design.base-unit-change", this.baseUnitChange , this );
+		
+		this.loadPhase1Table();
+
 	} , this ) );
+	
 	
 };
 TwoPhasesManager.prototype 				= Object.create(SamplingDesignStepManager.prototype);
@@ -23,40 +30,66 @@ TwoPhasesManager.prototype.constructor 	= TwoPhasesManager;
 
 
 TwoPhasesManager.prototype.update = function(){
-	var sd = this.sdERDManager.samplingDesign;
 	
-	if( sd.twoPhases === true ){
+	if( this.sd().twoPhases === true ){
+		this.container.parent().fadeIn();
 		this.container.fadeIn();
-		if( this.sdERDManager.editMode === true && this.currentStepNo == this.stepNo ){
-			this.table.highlight();
-		}
+		this.baseUnitPhase1Join.show();
+		this.highlight();
 	} else {
+		this.container.parent().hide();
 		this.container.hide();
+		this.baseUnitPhase1Join.hide();
 	}
 
 };
 
-
-TwoPhasesManager.prototype.loadPhase1TableInfo = function(){
+TwoPhasesManager.prototype.loadPhase1Table = function(){
 	var $this  = this;
 	WorkspaceManager.getInstance().activeWorkspace(function(ws){
 		if( ws.phase1PlotTable ) {
-
+			
 			new TableDataProvider( "calc" , ws.phase1PlotTable ).tableInfo( function(response) {
 				var phase1TableInfo = response;
-//				Utils.applyFunction( callback );
+				$this.dataProvider.setTableInfo( phase1TableInfo );
+				
+				$this.table.updateView();
+				$this.updateJoins();
+				
+				EventBus.dispatch( "calc.sampling-design.phase1-table-change", null );
+				
 			});
 			
 		}
 	});
 };
 
+TwoPhasesManager.prototype.updateJoins = function(){
+	this.baseUnitPhase1Join.disconnect();
+	
+	if( this.sd().twoPhases === true ){
+		this.baseUnitPhase1Join.setRightTable( this.sdERDManager.baseUnitManager.table );
+		this.baseUnitPhase1Join.setLeftTable( this.table );
+		
+		if( this.dataProvider.getTableInfo() ){
+			this.baseUnitPhase1Join.connect( this.sd().phase1JoinSettings );
+		}
+	} else {
+		this.baseUnitPhase1Join.hide();
+	}
+	
+};
 
 TwoPhasesManager.prototype.uploadCallback = function( schema , table ){
-//	console.log( schema + '    '  + table  );
+	var $this = this;
 	WorkspaceManager.getInstance().activeWorkspaceSetPhase1PlotsTable(table, function(ws){
-		
-		// update join settings
-		EventBus.dispatch( "calc.sampling-design.phase1-table-change", null );
+		$this.loadPhase1Table();
 	});
+};
+
+TwoPhasesManager.prototype.baseUnitChange = function(){
+	//Reset phase 1 join settings
+	this.sd().phase1JoinSettings = {};
+	this.baseUnitPhase1Join.reset();
+	
 };

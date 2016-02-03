@@ -29,6 +29,7 @@ SamplingDesignStepButtonsManager.prototype.init = function(){
 		
 		EventBus.dispatch( "calc.sampling-design.two-phases-change", null );
 	}, this) );	
+	
 	this.twoPhasesBtn.deselect( $.proxy(function(){
 		
 		this.sd().twoPhases = false;
@@ -39,20 +40,23 @@ SamplingDesignStepButtonsManager.prototype.init = function(){
 	
 	
 	//2 stages
-//	this.twoStagesBtn.select( $.proxy(function(){
-//		this.sd().twoStages = true;
-//		this.twoStagesManager.show();
-//		
-//		this.twoPhasesBtn.disable();
-//		this.clusterBtn.disable();
-//	}, this) );	
-//	this.twoStagesBtn.deselect( $.proxy(function(){
-//		this.sd().twoStages = false;
-//		this.twoStagesManager.hide();
-//		
-//		this.twoPhasesBtn.enable();
-//		this.clusterBtn.enable();
-//	}, this) );
+	this.twoStagesBtn.select( $.proxy(function(){
+		this.sd().twoStages = true;
+		
+		this.twoPhasesBtn.disable();
+		this.clusterBtn.disable();
+		this.stratifiedBtn.disable();
+		EventBus.dispatch( "calc.sampling-design.two-stages-change", null );
+	}, this) );	
+	
+	this.twoStagesBtn.deselect( $.proxy(function(){
+		this.sd().twoStages = false;
+		
+		this.twoPhasesBtn.enable();
+		this.clusterBtn.enable();
+		this.stratifiedBtn.enable();
+		EventBus.dispatch( "calc.sampling-design.two-stages-change", null );
+	}, this) );
 	
 	//stratified
 	this.stratifiedBtn.select( $.proxy(function(){
@@ -88,11 +92,11 @@ SamplingDesignStepButtonsManager.prototype.updateView = function(){
 			this.twoPhasesBtn.deselect();
 		}
 		
-//		if( this.samplingDesign.twoStages === true ){
-//			this.twoStagesBtn.select();
-//		} else {
-//			this.twoStagesBtn.deselect();
-//		}
+		if( this.sd().twoStages === true ){
+			this.twoStagesBtn.select();
+		} else {
+			this.twoStagesBtn.deselect();
+		}
 		
 		if( this.sd().stratified === true ){
 			this.stratifiedBtn.select();

@@ -19,10 +19,23 @@ SamplingDesignStepManager = function( container , sdERDManager , stepNo , dataPr
 SamplingDesignStepManager.prototype.showEditStep = function( evt, stepNo ){
 	this.currentStepNo = stepNo;
 	
-	if( this.sdERDManager.editMode && stepNo == this.stepNo ){
+	if( this.sdERDManager.editMode && this.currentStepNo == this.stepNo ){
+		
 		this.table.setEditMode( true );
+		this.highlight();
+		
 	} else {
 		this.table.setEditMode( false );
 	}
 	
+};
+
+SamplingDesignStepManager.prototype.highlight = function(){
+	if( this.sdERDManager.editMode === true && this.currentStepNo == this.stepNo ){
+		this.table.highlight();
+	}
+};
+
+SamplingDesignStepManager.prototype.sd = function(){
+	return this.sdERDManager.samplingDesign;
 };

@@ -22,7 +22,8 @@ EntityDataProvider = function( onChange ){
 	
 	this.onChange = onChange;
 	
-	this._entityId = null;
+	this._entityId 	= null;
+	this.combobox 	= null;
 };
 
 EntityDataProvider.prototype 				= Object.create(ERDTableDataProvider.prototype);
@@ -36,8 +37,10 @@ EntityDataProvider.prototype.setEntityId = function( entityId ){
 			
 			var tableInfo = function(){
 				this.table 			= entity.name;
+				this.schema			= 'calc';
 				this.fields 		= {};
 				this.fields.table 	= entity.name;
+				this.fields.schema 	= 'calc';
 				this.fields.columns = [];
 				
 				var vars = entity.hierarchyVariables();
@@ -48,6 +51,11 @@ EntityDataProvider.prototype.setEntityId = function( entityId ){
 			};
 			
 			this.setTableInfo( new tableInfo() );
+			
+			if( this.combobox ){
+				this.combobox.val( this._entityId );
+			}
+			
 		} , this ) );
 	} else {
 		this.setTableInfo( null );
@@ -59,7 +67,7 @@ EntityDataProvider.prototype.createCombo = function( select ){
 	WorkspaceManager.getInstance().activeWorkspace( function(ws){
 		
 		var selectCombo = $( select ).combobox();
-		selectCombo.data( ws.entities, 'id','name' );
+		selectCombo.data( ws.entities, 'id' , 'name' );
 		
 		if( $this._entityId !== undefined && $this._entityId !== null ){
 			selectCombo.val( $this._entityId );
@@ -68,6 +76,7 @@ EntityDataProvider.prototype.createCombo = function( select ){
 			Utils.applyFunction( $this.onChange, selectCombo.val() );
 		});
 		
+		$this.combobox = selectCombo;
 	});
 };
 

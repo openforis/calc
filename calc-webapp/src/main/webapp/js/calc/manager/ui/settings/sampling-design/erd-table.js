@@ -5,14 +5,18 @@ ERDTable = function( parent , dataProvider ){
 	this.parent 		= parent;
 	this.dataProvider 	= dataProvider;
 	
-	// editable properties
+	// edit mode by default is false
+	this.editMode		= false;
 	this.tableName = '';
 	
 	// init html based on dataProvider
-	this.update();
+	this.initView();
 };
 
-ERDTable.prototype.update = function(){
+/**
+ * Init html view 
+ */
+ERDTable.prototype.initView = function(){
 	this.parent.empty();
 	
 	var html = $( '<div class="row height100 erd-table"><div class="col-md-12 container height100"></div></div>' );
@@ -26,6 +30,12 @@ ERDTable.prototype.update = function(){
 	this.table 	= html;
 	this.header = html.find( '.header' );
 	this.body 	= html.find( '.body' );
+	
+	this.body.append( '<div class="row"><div class="col-md-12 column-selector"></div></div>' );
+	this.body.append( '<div class="row"><div class="col-md-12 table-joins"></div></div>' );
+	
+	this.columnSelectors 	= this.body.find( '.column-selector' );
+	this.tableJoins 		= this.body.find( '.table-joins' );
 	
 	this.tableNameHtml = $( '<div class="table-name text-center"></div>' );
 	this.header.append( this.tableNameHtml );
@@ -47,11 +57,6 @@ ERDTable.prototype.update = function(){
 		this.viewDataHtml 	= $( '<div class="button-container width20 text-center"><button type="button" class="btn btn-default" name="view-btn"><i class="fa fa-table"></i></button></div>' );
 		this.viewDataButton = this.viewDataHtml.find( 'button[name=view-btn]' );
 		this.header.append( this.viewDataHtml );
-		if( this.dataProvider.getTableInfo() !== null){
-			UI.enable( this.viewDataButton );
-		} else {
-			UI.disable ( this.viewDataButton );
-		}
 		
 		this.dataProvider.initUploadForm( this.uploadCsvHtml );
 		
@@ -70,35 +75,27 @@ ERDTable.prototype.update = function(){
 		
 	}
 	
-	this.setEditMode( false );
+	this.updateView();
 };
 
-ERDTable.prototype.setEditMode = function( editMode ){
+ERDTable.prototype.updateView = function(){
 	
 	if( this.dataProvider instanceof CsvFileDataProvider ){ 
-		this.setCsvUpladEditMode( editMode );
+		this.updateCsvUpladView();
 	} else if( this.dataProvider instanceof EntityDataProvider ){
-		this.setEntityEditMode( editMode );
+		this.updateEntityView();
 	}
-	
-	if( editMode === true ){
-		this.highlight();
-	}
-	
 };
 
-ERDTable.prototype.highlight = function(){
-	this.table.stop().animate( {backgroundColor : 'rgba(51, 157, 166, 0.2)'}, 400 , $.proxy(function(){
-		this.table.animate( {backgroundColor : 'transparent'}, 600);
-	}, this) );
-};
-
-ERDTable.prototype.setEntityEditMode = function( editMode ){
+/**
+ * Entity view
+ */
+ERDTable.prototype.updateEntityView = function(){
 	var wsManager = WorkspaceManager.getInstance();
 	
 	wsManager.activeWorkspace( $.proxy( function(ws){ 
 		
-		if( editMode === true ){
+		if( this.editMode === true ){
 			
 			this.tableNameSelectorHtml.show();
 			this.tableNameHtml.hide();
@@ -116,13 +113,22 @@ ERDTable.prototype.setEntityEditMode = function( editMode ){
 	} , this ) );
 };
 
-
-ERDTable.prototype.setCsvUpladEditMode = function( editMode ){
-	if( editMode === true ){
+/**
+ * Csv upload view
+ */
+ERDTable.prototype.updateCsvUpladView = function(){
+	if(  this.editMode === true ){
 		this.uploadCsvHtml.visible();
 	} else {
 		this.uploadCsvHtml.invisible();
 	}
+	
+	if( this.dataProvider.getTableInfo() !== null){
+		UI.enable( this.viewDataButton );
+	} else {
+		UI.disable ( this.viewDataButton );
+	}
+	
 };
 
 ERDTable.prototype.setTableName = function( tableName ){
@@ -132,3 +138,15 @@ ERDTable.prototype.setTableName = function( tableName ){
 };
 	
 	
+ERDTable.prototype.setEditMode = function( editMode ){
+	this.editMode = editMode;
+	
+	this.updateView();
+};
+
+
+ERDTable.prototype.highlight = function(){
+	this.table.stop().animate( {backgroundColor : 'rgba(51, 157, 166, 0.2)'}, 400 , $.proxy(function(){
+		this.table.animate( {backgroundColor : 'transparent'}, 600);
+	}, this) );
+};

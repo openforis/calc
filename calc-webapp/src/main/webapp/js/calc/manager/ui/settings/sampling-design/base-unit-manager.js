@@ -16,11 +16,11 @@ BaseUnitManager.prototype.constructor 	= BaseUnitManager;
 
 
 BaseUnitManager.prototype.show = function( ){
+	this.container.parent().fadeIn();
 	this.container.fadeIn();
 	
-	var samplingDesign = this.sdERDManager.samplingDesign;
-	if( samplingDesign.samplingUnitId ){
-		this.dataProvider.setEntityId(  samplingDesign.samplingUnitId );
+	if( this.sd().samplingUnitId ){
+		this.dataProvider.setEntityId(  this.sd().samplingUnitId );
 	}
 };
 

@@ -591,6 +591,26 @@ button.settings:hover {
 #footer button.back:hover {
 	color: 		#676c7a;
 }
+#footer .of-link-container {
+    position: absolute;
+    bottom: 20px;
+    left: 0px;
+}
+#footer .of-link-container a{
+/*     padding: 22px 18px; */
+    padding: 6.5% 5% 9% 5%;
+    background-color: rgba(107, 177, 83, 0.06);
+    border: 1px solid rgba(101, 183, 100, 0.08);
+     border-radius: 0px;
+	transition: all 0.5s ease;
+}
+#footer .of-link-container a:hover{
+	background-color:  rgba(107, 177, 83, 0.18);
+	transition: all 0.5s ease;
+}
+#footer .of-link-container a img{
+	width: 48%;
+}
 
 .btn-saiku{
 	background-color: transparent;
