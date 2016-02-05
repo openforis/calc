@@ -17,8 +17,10 @@ PSUTwoStagesManager = function( container , sdERDManager , stepNo ){
 		this.areaColumn 		= new ERDTableColumnSelector( 'psu_area_column', 'Area column' );
 		this.noBaseUnitColumn 	= new ERDTableColumnSelector( 'no_base_unit_column', 'No. base unit column' );
 		
-		
 		SamplingDesignStepManager.call( this, container , sdERDManager , stepNo , dataProvider );
+		
+		this.addColumnSelector( this.areaColumn );
+		this.addColumnSelector( this.noBaseUnitColumn );
 		
 		EventBus.addEventListener( "calc.sampling-design.two-stages-change", 	this.update, this );
 		EventBus.addEventListener( "calc.sampling-design.base-unit-change", this.baseUnitChange , this );
@@ -83,6 +85,8 @@ PSUTwoStagesManager.prototype.updateColumnSelectors = function(){
 		this.noBaseUnitColumn.connect( this.table , this.sd().twoStagesSettings.noBaseUnitColumn , function(){
 			$this.sd().twoStagesSettings.noBaseUnitColumn = $this.noBaseUnitColumn.value;
 		});
+	
+		this.updateEditMode();
 	}
 };
 

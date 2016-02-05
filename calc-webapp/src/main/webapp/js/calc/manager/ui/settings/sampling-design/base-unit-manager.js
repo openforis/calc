@@ -3,7 +3,8 @@
  * @author M. Togna
  */
 BaseUnitManager = function( container , sdERDManager , stepNo ){
-	var dataProvider 	= new EntityDataProvider( $.proxy(this.onBaseUnitChange , this) );
+	var dataProvider 	= new EntityDataProvider( $.proxy(this.baseUnitChange , this) );
+	dataProvider.tableTitle = 'Base Unit: ';
 	var sd = sdERDManager.samplingDesign;
 	if( sd.samplingUnitId ){
 		dataProvider.setEntityId(  sd.samplingUnitId );
@@ -24,8 +25,11 @@ BaseUnitManager.prototype.show = function( ){
 	}
 };
 
-BaseUnitManager.prototype.onBaseUnitChange = function( entityId ){
+BaseUnitManager.prototype.baseUnitChange = function( entityId ){
 	this.dataProvider.setEntityId( entityId );
+	this.sd().samplingUnitId =  entityId;
+	
 	EventBus.dispatch( "calc.sampling-design.base-unit-change", null , entityId );
+	EventBus.dispatch( "calc.sampling-design.update-connections" , null );
 };
 

@@ -8,10 +8,14 @@ SSUTwoStagesManager = function( container , sdERDManager , stepNo ){
 		
 		var ssuChange 	= $.proxy(this.ssuChange , this );
 		var dataProvider 	= new EntityDataProvider( ssuChange );
+		dataProvider.tableTitle ='SSU: ';
 		
 		this.psuJoin	= new ERDTableJoin( 'baseUnitPhase1Join' );
+		this.psuJoin.leftJoinPointCssClass = 'anchor-right';
 		
 		SamplingDesignStepManager.call( this, container , sdERDManager , stepNo , dataProvider );
+		
+		this.addJoin( this.psuJoin );
 		
 		EventBus.addEventListener( "calc.sampling-design.two-stages-change", 	this.update, this );
 		EventBus.addEventListener( "calc.sampling-design.base-unit-change", this.baseUnitChange , this );
@@ -44,6 +48,7 @@ SSUTwoStagesManager.prototype.update = function(){
 		this.container.fadeIn();
 		this.psuJoin.show();
 		this.highlight();
+		
 	} else {
 		$( '.two-stages-container' ).hide();
 		this.container.hide();
@@ -76,6 +81,8 @@ SSUTwoStagesManager.prototype.updateJoins = function(){
 		
 		if( this.dataProvider.getTableInfo() &&  this.sdERDManager.psuManager.dataProvider.getTableInfo() ){
 			this.psuJoin.connect( this.sd().twoStagesSettings.joinSettings );
+			
+			this.updateEditMode();
 		}
 		
 	} else {

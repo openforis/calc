@@ -13,8 +13,12 @@ TwoPhasesManager = function( container , sdERDManager , stepNo ){
 		dataProvider.extSchema	= false;
 		
 		this.baseUnitPhase1Join	= new ERDTableJoin( 'baseUnitPhase1Join' );
+		this.baseUnitPhase1Join.rightJoinPointCssClass = 'anchor-right';
+		this.baseUnitPhase1Join.onChange = $.proxy( this.joinChange , this );
 		
 		SamplingDesignStepManager.call( this, container , sdERDManager , stepNo , dataProvider );
+		
+		this.addJoin( this.baseUnitPhase1Join );
 		
 		EventBus.addEventListener( "calc.sampling-design.two-phases-change", 	this.update, this );
 		EventBus.addEventListener( "calc.sampling-design.base-unit-change", this.baseUnitChange , this );
@@ -71,8 +75,10 @@ TwoPhasesManager.prototype.updateJoins = function(){
 		this.baseUnitPhase1Join.setRightTable( this.sdERDManager.baseUnitManager.table );
 		this.baseUnitPhase1Join.setLeftTable( this.table );
 		
-		if( this.dataProvider.getTableInfo() ){
+		if( this.dataProvider.getTableInfo() && this.sdERDManager.baseUnitManager.dataProvider.getTableInfo() ){
 			this.baseUnitPhase1Join.connect( this.sd().phase1JoinSettings );
+			
+			this.updateEditMode();
 		}
 	} else {
 		this.baseUnitPhase1Join.hide();
@@ -89,7 +95,11 @@ TwoPhasesManager.prototype.uploadCallback = function( schema , table ){
 
 TwoPhasesManager.prototype.baseUnitChange = function(){
 	//Reset phase 1 join settings
-	this.sd().phase1JoinSettings = {};
-	this.baseUnitPhase1Join.reset();
+//	this.sd().phase1JoinSettings = {};
+	this.updateJoins();
 	
+};
+
+TwoPhasesManager.prototype.joinChange = function(){
+	this.sd().phase1JoinSettings = this.baseUnitPhase1Join.jsonSettings();
 };

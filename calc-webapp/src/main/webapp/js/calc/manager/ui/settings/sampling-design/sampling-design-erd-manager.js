@@ -32,8 +32,9 @@ SamplingDesignERDManager.prototype.show = function( samplingDesign ){
 	this.twoPhasesManager 	= new TwoPhasesManager	( this.container.find('.two-phases-container') , this , 1 );
 	this.psuManager		 	= new PSUTwoStagesManager( this.container.find('.psu-container') , this , 2 );
 	this.ssuManager		 	= new SSUTwoStagesManager( this.container.find('.ssu-container') , this , 2 );
-	
 	this.stratumManager		= new StratumManager	( this.container.find( '.stratum-container'), 	this , 3 );
+	this.clusterManager	 	= new ClusterManager( this.container.find('.base-unit-container') , this , 4 );
+	this.aoiManager	 		= new ReportingUnitManager( this.container.find('.aoi-container') , this , 5 );
 
 //	this.tableJoinsManager	= new SamplingDesignERDTableJoinsManager( this );
 	

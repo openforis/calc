@@ -69,18 +69,17 @@ SamplingDesignStepButtonsManager.prototype.init = function(){
 	}, this) );	
 	
 	// cluster
-//	this.clusterBtn.select( $.proxy(function(){
-//		this.samplingDesign.cluster = true;
-//		this.clusterManager.show();
-//		
-//		this.twoStagesBtn.disable();
-//	}, this) );	
-//	this.clusterBtn.deselect( $.proxy(function(){
-//		this.samplingDesign.cluster = false;
-//		this.clusterManager.hide();
-//
-//		this.twoStagesBtn.enable();
-//	}, this) );
+	this.clusterBtn.select( $.proxy(function(){
+		this.sd().cluster = true;
+		this.twoStagesBtn.disable();
+		EventBus.dispatch( "calc.sampling-design.cluster-change", null );
+	}, this) );
+	
+	this.clusterBtn.deselect( $.proxy(function(){
+		this.sd().cluster = false;
+		this.twoStagesBtn.enable();
+		EventBus.dispatch( "calc.sampling-design.cluster-change", null );
+	}, this) );
 };
 
 
@@ -104,12 +103,12 @@ SamplingDesignStepButtonsManager.prototype.updateView = function(){
 			this.stratifiedBtn.deselect();
 		}
 		
-//		if( this.samplingDesign.cluster === true ){
-//			this.clusterBtn.select();
-//		} else {
-//			this.clusterBtn.deselect();
-//		}
-//		
+		if( this.sd().cluster === true ){
+			this.clusterBtn.select();
+		} else {
+			this.clusterBtn.deselect();
+		}
+		
 //		if( this.samplingDesign.samplingUnitId ){
 //			this.samplingUnitCombo.val( this.samplingUnit.id );
 //			

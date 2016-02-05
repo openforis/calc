@@ -67,7 +67,7 @@ ERDTableColumnSelector = function( id , label ){
 ERDTableColumnSelector.prototype.connect = function( table , value , onChange ){
 	this.table = table;
 	
-	if( this.table ){
+	if( this.table && this.table.dataProvider.getTableInfo()){
 		
 		var html = $( '<div class="row table-column-selector-row">'+
 			 '<div class="col-md-12 table-join">'+
@@ -104,6 +104,9 @@ ERDTableColumnSelector.prototype.connect = function( table , value , onChange ){
 		html.find( '.table-column-selector-body' ).append( row );
 		
 		this.table.columnSelectors.append( html );
+		this.table.erdColumnSelectors.push( this );
+		
+		this.html = html;
 	}
 	
 };
@@ -112,8 +115,44 @@ ERDTableColumnSelector.prototype.disconnect = function( ){
 	if( this.table ){
 		this.combo.val( '' );
 		this.table.columnSelectors.find( '.'+this.id ).remove();
+		
+		for(var i in this.table.erdColumnSelectors){
+			var r = this.table.erdColumnSelectors[i];
+			if( r == this ){
+				
+				this.table.erdColumnSelectors.splice( i, 1 );
+				break;
+			}
+		}
+	}
+	this.table 	= null;
+	this.html	= null;
+};
+ERDTableColumnSelector.prototype.highlight = function(){
+	if( this.html ){
+		
+		this.html.stop().animate( {backgroundColor : 'rgba(51, 157, 166, 0.2)'}, 400 , $.proxy(function(){
+			this.html.animate( {backgroundColor : 'transparent'}, 600);
+		}, this) );
+		
 	}
 };
+
+ERDTableColumnSelector.prototype.setEditMode = function(editMode){
+	this.editMode = editMode;
+	if( this.html ){
+		
+		if( this.editMode === true ){
+			UI.enable( this.html.find( 'input:not(.read-only)' ) );
+			this.html.find( 'button[name=add-btn],button[name=delete-btn],span[class=combobox-clear]').fadeIn() ;
+		} else {
+			UI.disable( this.html.find( 'input:not(.read-only)' ) );
+			this.html.find( 'button[name=add-btn],button[name=delete-btn],span[class=combobox-clear]').hide() ;
+		}
+	
+	}
+}
+
 //ERDTableColumnSelector.prototype.reset = function( ){
 //};
 
@@ -134,11 +173,15 @@ ERDTableJoin = function( id ){
 	// by default multiple columns can be used to join the two tables
 	this.multiple 		= true;
 	
-	this.rightColumnsReadOnly 	= false;
 	this.leftColumnsReadOnly 	= false;
+	this.rightColumnsReadOnly 	= false;
 	
 	this.leftJoinPointCssClass = 'anchor-left';
 	this.rightJoinPointCssClass = 'anchor-left';
+	
+	this.onChange = function(){};
+	
+	EventBus.addEventListener( "calc.sampling-design.cluster-change", this.updateConnections , this );
 };
 
 ERDTableJoin.prototype.setLeftTable = function( leftTable ){
@@ -149,12 +192,15 @@ ERDTableJoin.prototype.setRightTable = function( rightTable ){
 };
 ERDTableJoin.prototype.connect	= function( joinSettings ){
 	if( this.leftTable && this.rightTable ){
-		this.leftHtml 		= this.getHtml();
+
+		var leftHeader 		= StringUtils.isNotBlank( this.rightTable.dataProvider.tableAlias ) ? this.rightTable.dataProvider.tableAlias :  this.rightTable.dataProvider.tableName; 
+		this.leftHtml 		= this.getHtml( leftHeader + ' join' , this.leftColumnsReadOnly );
 		this.leftHtmlCssId 	= this.id+"_l";
 		this.leftHtml.addClass( this.leftHtmlCssId );
 		this.leftRows		= this.leftHtml.find( '.table-join-body' );
 		
-		this.rightHtml 			= this.getHtml();
+		var rightHeader 		= StringUtils.isNotBlank( this.leftTable.dataProvider.tableAlias ) ? this.leftTable.dataProvider.tableAlias :  this.leftTable.dataProvider.tableName;
+		this.rightHtml 			= this.getHtml( rightHeader + ' join' , this.rightColumnsReadOnly );
 		this.rightHtmlCssId 	= this.id+"_r";
 		this.rightHtml.addClass( this.rightHtmlCssId );
 		this.rightRows			= this.rightHtml.find( '.table-join-body' );
@@ -174,13 +220,13 @@ ERDTableJoin.prototype.connect	= function( joinSettings ){
 			this.addRow();
 		}
 		
-		this.leftTable.table.parent().on( 'scroll' , $.proxy(this.updateConnections, this) );
-		this.rightTable.table.parent().on( 'scroll' , $.proxy(this.updateConnections, this) );
+		this.leftTable.table.on( 'scroll' , $.proxy(this.updateConnections, this) );
+		this.rightTable.table.on( 'scroll' , $.proxy(this.updateConnections, this) );
 		
 	}
 };
 ERDTableJoin.prototype.updateConnections	= function( ){
-	$( 'connection.'+this.id ).connections('update');
+	EventBus.dispatch( 'calc.sampling-design.update-connections', null , this.id );
 };
 ERDTableJoin.prototype.disconnect	= function(){
 	this.reset();
@@ -191,18 +237,37 @@ ERDTableJoin.prototype.disconnect	= function(){
 		this.rightTable.tableJoins.find( '.'+this.rightHtmlCssId ).remove();
 	}
 };
+ERDTableJoin.prototype.setEditMode = function(editMode){
+	this.editMode = editMode;
+	if( this.leftHtml && this.rightHtml ){
+		
+		if( this.editMode === true ){
+			UI.enable( this.leftHtml.find( 'input:not(.read-only)' ) );
+			UI.enable( this.rightHtml.find( 'input:not(.read-only)' ) );
+			this.leftHtml.find( 'button[name=add-btn],button[name=delete-btn],span').visible() ;
+			this.rightHtml.find( 'button[name=add-btn],button[name=delete-btn],span').visible() ;
+		} else {
+			UI.disable( this.leftHtml.find( 'input:not(.read-only)' ) );
+			UI.disable( this.rightHtml.find( 'input:not(.read-only)' ) );
+			this.leftHtml.find( 'button[name=add-btn],button[name=delete-btn],span').invisible() ;
+			this.rightHtml.find( 'button[name=add-btn],button[name=delete-btn],span').invisible() ;
+		}
+		
+	}
+};
 
-ERDTableJoin.prototype.getHtml = function(){
+ERDTableJoin.prototype.getHtml = function( header , readOnly ){
 	 var div = 
 		 $( '<div class="row table-join-row">'+
 				 '<div class="col-md-12 table-join">'+
 				 	'<div class="row row-table-join-header">'+
-				 		'<div class="col-md-9 table-join-header">'+
-				 		'</div>'+
 				 		'<div class="col-md-3 table-join-header  text-center">'+
 				 			'<button type="button" class="btn no-background" name="add-btn">'+
-				 				'<i class="fa fa-plus-square"></i>'+
+				 				'<i class="fa fa-plus-circle"></i>'+
 				 			'</button>'+
+				 		'</div>'+
+				 		'<div class="col-md-9 table-join-header no-padding">'+
+				 		header +
 				 		'</div>'+
 			 		'</div>'+ 
 			 		'<div class="row row-table-join-body">'+
@@ -216,14 +281,14 @@ ERDTableJoin.prototype.getHtml = function(){
 	 div.addClass( this.containerCssClass );
 	 
 	 var addBtn = div.find('button[name=add-btn]');
-	 if( this.multiple === true ){
+	 if( this.multiple === true && !readOnly ){
 
 		 addBtn.click( $.proxy(function(){
 			 this.addRow();
 		 } , this) );
 		 
 	 } else {
-		 addBtn.hide();
+		 addBtn.remove();
 	 }
 	 
 	 return div;
@@ -261,7 +326,10 @@ ERDTableJoin.prototype.addRow = function( leftValue, rightValue ){
 	this.rightRows.append( row.rightRow );
 	
 	$( "."+row.leftCssClass +'_c').connections( {to:'.'+row.rightCssClass+'_c' , 'class': 'table-join-connection '+this.id} );
-
+	
+	EventBus.dispatch( 'calc.sampling-design.update-connections', null );
+	
+	this.rowsChange();
 };
 
 ERDTableJoin.prototype.deleteRow = function( row ){
@@ -274,26 +342,44 @@ ERDTableJoin.prototype.deleteRow = function( row ){
 				row.leftRow.remove();
 				row.rightRow.remove();
 				
-				this.updateConnections();
-			
+//				this.updateConnections();
+				EventBus.dispatch( 'calc.sampling-design.update-connections', null );
 			} , this ) , 140 );
 			
 			this.rows.splice( i, 1 );
-
+			
+			this.rowsChange();
+			
 			break;
 		}
 	}
 };
 
+ERDTableJoin.prototype.rowsChange = function (){
+	if( this.rows.length == 4 ){
+	 	UI.disable( this.leftHtml.find( 'button[name=add-btn]' ) );
+	 	UI.disable( this.rightHtml.find( 'button[name=add-btn]' ) );
+	} else {
+		UI.enable( this.leftHtml.find( 'button[name=add-btn]' ) );
+		UI.enable( this.rightHtml.find( 'button[name=add-btn]' ) );
+	}
+	
+	Utils.applyFunction( this.onChange );
+}
+
 ERDTableJoin.prototype.jsonSettings = function(){
 	var settings = {};
-	if( this.leftTable && this.rightTable ){
+	if( this.leftTable && this.rightTable && this.leftTable.dataProvider.getTableInfo() && this.rightTable.dataProvider.getTableInfo() ){
+		
+		var leftInfo 	= this.leftTable.dataProvider.getTableInfo();
+		var rightInfo 	= this.rightTable.dataProvider.getTableInfo();
+		
 		settings.leftTable 			= {};
-		settings.leftTable.table 	= this.leftTable.fields.table;
-		settings.leftTable.schema 	= this.leftTable.fields.schema;
+		settings.leftTable.table 	= leftInfo.fields.table;
+		settings.leftTable.schema 	= leftInfo.fields.schema;
 		settings.rightTable 		= {};
-		settings.rightTable.table 	= this.rightTable.fields.table;
-		settings.rightTable.schema 	= this.rightTable.fields.schema;
+		settings.rightTable.table 	= rightInfo.fields.table;
+		settings.rightTable.schema 	= rightInfo.fields.schema;
 		settings.columns 			= [];
 		
 		for( var i in this.rows ){
@@ -322,9 +408,11 @@ ERDTableJoinRow = function( tableJoin, leftValue, rightValue ) {
 	
 	var onChangeLeft = function( val ){
 		$this.leftColumn = val;
+		$this.tableJoin.rowsChange();
 	};
 	var onChangeRight = function( val ){
 		$this.rightColumn = val;
+		$this.tableJoin.rowsChange();
 	};
 	
 	this.leftRow	= this.getHtmlRowJoin( 	this.leftCssClass , 
@@ -346,7 +434,7 @@ ERDTableJoinRow = function( tableJoin, leftValue, rightValue ) {
 ERDTableJoinRow.prototype.getHtmlRowJoin = function( cssClass , columns, onChange , value , readOnly , anchorCssClass ){
 	var row 	= $( '<div class="row no-margin join-row"></div>' );
 	row.addClass( cssClass );
-	var col 	= $( '<div class="col-md-9"><span class="anchor '+cssClass+'_c ' + anchorCssClass +'"/></div>' );
+	var col 	= $( '<div class="col-md-10"><span class="anchor '+cssClass+'_c ' + anchorCssClass +'"/></div>' );
 	row.append( col );
 	
 	var select 	= $( '<select class="form-control">' );
@@ -362,12 +450,13 @@ ERDTableJoinRow.prototype.getHtmlRowJoin = function( cssClass , columns, onChang
 	}
 	if( readOnly === true ){
 		combo.disable();
+		combo.addClass( 'read-only' );
 	}
 	if( this.tableJoin.multiple === true ) {
 		
-		var colDeleteBtn 	= $( '<div class="col-md-1"></div>' );
+		var colDeleteBtn 	= $( '<div class="col-md-1 no-padding"></div>' );
 		row.append( colDeleteBtn );
-		var deleteBtn 		= $( '<button type="button" class="btn no-background" name="delete-btn"><i class="fa fa-minus-square-o"></i></button>' );
+		var deleteBtn 		= $( '<button type="button" class="btn no-background" name="delete-btn"><i class="fa fa-times-circle"></i></button>' );
 		colDeleteBtn.append( deleteBtn );
 		deleteBtn.click( $.proxy( function(e){
 			e.preventDefault();

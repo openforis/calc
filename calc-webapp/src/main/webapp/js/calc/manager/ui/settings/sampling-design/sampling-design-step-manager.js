@@ -14,20 +14,41 @@ SamplingDesignStepManager = function( container , sdERDManager , stepNo , dataPr
 	
 	// event listeners
 	EventBus.addEventListener( "calc.sampling-design.show-step", this.showEditStep , this );
+	
+	this.erdTableJoins				= new Array();
+	this.erdTableColumnSelectors	= new Array();
+};
+
+SamplingDesignStepManager.prototype.addJoin = function( tableJoin ){
+	this.erdTableJoins.push( tableJoin )
+};
+
+SamplingDesignStepManager.prototype.addColumnSelector = function( columnSelector ){
+	this.erdTableJoins.push( columnSelector )
 };
 
 SamplingDesignStepManager.prototype.showEditStep = function( evt, stepNo ){
 	this.currentStepNo = stepNo;
-	
+	this.updateEditMode();
+};
+
+SamplingDesignStepManager.prototype.updateEditMode = function(){
+	var edit = false;
 	if( this.sdERDManager.editMode && this.currentStepNo == this.stepNo ){
-		
-		this.table.setEditMode( true );
+		edit = true ;
 		this.highlight();
-		
-	} else {
-		this.table.setEditMode( false );
 	}
 	
+	this.table.setEditMode( edit );
+	
+	for( var i in this.erdTableColumnSelectors ){
+		var col = this.erdTableColumnSelectors[ i ];
+		col.setEditMode( edit );
+	}
+	for( var i in this.erdTableJoins ){
+		var col = this.erdTableJoins[ i ];
+		col.setEditMode( edit );
+	}
 };
 
 SamplingDesignStepManager.prototype.highlight = function(){

@@ -3,7 +3,7 @@
 	<div class="col-md-12 height100" id="sampling-design">
 	
 		<!--  view section -->
-		<div class="row height100 view-sd" style="padding-top:20px">
+		<div class="row view-sd" style="padding-top:20px">
 			<div class="col-md-12">
 				<div class="row height5">
 					<div class="col-md-12 hint" >
@@ -46,11 +46,6 @@
 							<div class="col-md-12"><h4>Base Unit</h4>
 							</div>
 						</div>
-<!-- 						<div class="row"> -->
-<!-- 							<div class="col-md-12"> -->
-<!-- 								<select class="form-control" name="sampling-unit"></select> -->
-<!-- 							</div> -->
-<!-- 						</div> -->
 						<div class="row">
 							<div class="col-md-12">
 								<div class="checkbox">
@@ -62,115 +57,37 @@
 					
 					<!-- 2 phases -->					
 					<div class="row option step step-1 height100">
+						
 						<div class="row">
 							<div class="col-md-12 hint" >
 								<i class="fa fa-hand-o-right"></i>&nbsp;In the Double or Two phase sampling initially a sample of units is selected for obtaining auxiliary information only, 
 								and then a second sample is selected in which the variable of interest is observed in addition to the auxiliary information. Double sampling is also called two-phase sampling.
 							</div>
 						</div>
+						
 						<div class="row height25">
 							<div class="col-md-6 col-md-offset-3">
 								<button class="btn" name="twoPhases">Double sampling</button>
 							</div>
 						</div>
 						
-<!-- 						<div class="row no-margin phase1_section height75" style="padding: 0px;"> -->
-		
-<!-- 							<div class="row upload-section height10"> -->
-<!-- 								<form  method="post" enctype="multipart/form-data" action="rest/csv-upload.json"> -->
-<!-- 								<div class="col-md-6 col-md-offset-3" style="padding-top: 10px;"> -->
-<!-- 									<button type="button" class="btn btn-default width100" name="upload-btn">Upload Csv</button> -->
-<!-- 								    <input type="file" name="file" style="display:none" />   -->
-<!-- 								</div> -->
-<!-- 								</form> -->
-<!-- 							</div> -->
-							
-<!-- 							<div class="row table-join height90"> -->
-								
-<!-- 							</div> -->
-							
-<!-- 							<div class="row import-section height100 no-padding no-margin"> -->
-<!-- 								<div class="col-md-12" style="overflow: auto;"> -->
-<!-- 									<table style="width:100%" class="import-csv-table"> -->
-<!-- 										<thead> -->
-<!-- 										</thead> -->
-<!-- 										<tbody> -->
-<!-- 										</tbody> -->
-<!-- 									</table> -->
-<!-- 								</div> -->
-<!-- 								<div class="row col-md-6 col-md-offset-3" style="padding-top: 0.5em;"> -->
-<!-- 									<button type="button" class="btn btn-default width100" name="import-btn">Import</button> -->
-<!-- 								</div> -->
-<!-- 							</div> -->
-							
-<!-- 						</div> -->
 					</div>
 					
 					<!-- 2 stages with SRS -->
 					<div class="row option step step-2 height100">
+					
 						<div class="row">
 							<div class="col-md-12 hint" >
 								<i class="fa fa-hand-o-right"></i>&nbsp;In the two-stage sampling design the population is partitioned into groups, like cluster sampling, but in this design new samples are taken from each cluster sampled. 
 								The clusters are the first stage units to be sampled, called primary or first sampling units (PSU). The second-stage units are the elements of those clusters, called sub-units, secondary or second sampling units (SSU).
 							</div>
 						</div>
+						
 						<div class="row height25">
 							<div class="col-md-6 col-md-offset-3">
 								<button class="btn" name="twoStages">2 stages w/ SRS</button>
 							</div>
 						</div>
-						
-<!-- 						<div class="row no-margin twostages-section height75" style="padding: 0px;"> -->
-<!-- 							<div class="row psu-section height30"> -->
-<!-- 								<div class="row"> -->
-<!-- 									<div class="col-md-12">Primary sampling unit</div> -->
-<!-- 								</div> -->
-<!-- 								<div class="row upload-section"> -->
-<!-- 									<form  method="post" enctype="multipart/form-data" action="rest/csv-upload.json"> -->
-<!-- 									<div class="col-md-6 col-md-offset-3" style="padding-top: 10px;"> -->
-<!-- 										<button type="button" class="btn btn-default width100" name="upload-btn">Upload Csv</button> -->
-<!-- 									    <input type="file" name="file" style="display:none" />   -->
-<!-- 									</div> -->
-<!-- 									</form> -->
-<!-- 								</div> -->
-								
-<!-- 								<div class="row area-column"> -->
-<!-- 									<div class="col-md-6">Area column:</div> -->
-<!-- 									<div class="col-md-6"><select class="form-control" name="area-column"></select></div> -->
-									
-<!-- 								</div> -->
-<!-- 								<div class="row no-base-unit-column"> -->
-<!-- 									<div class="col-md-6">No base unit column:</div> -->
-<!-- 									<div class="col-md-6"><select class="form-control" name="no-base-unit-column"></select></div> -->
-<!-- 								</div> -->
-<!-- 							</div> -->
-							
-<!-- 							<div class="row ssu-section height20"> -->
-<!-- 								<div class="row ssu"> -->
-<!-- 									<div class="col-md-6">Secondary sampling unit:</div> -->
-<!-- 									<div class="col-md-6"><select class="form-control" name="ssu"></select></div> -->
-<!-- 								</div> -->
-															
-<!-- 							</div> -->
-<!-- 							<div class="row table-join"> -->
-								
-<!-- 							</div> -->
-															
-<!-- 							<div class="row import-section height100 no-padding no-margin"> -->
-<!-- 								<div class="col-md-12" style="overflow: auto;"> -->
-<!-- 									<table style="width:100%" class="import-csv-table"> -->
-<!-- 										<thead> -->
-<!-- 										</thead> -->
-<!-- 										<tbody> -->
-<!-- 										</tbody> -->
-<!-- 									</table> -->
-<!-- 								</div> -->
-<!-- 								<div class="row col-md-6 col-md-offset-3" style="padding-top: 0.5em;"> -->
-<!-- 									<button type="button" class="btn btn-default width100" name="import-btn">Import</button> -->
-<!-- 								</div> -->
-<!-- 							</div> -->
-							
-<!-- 						</div> -->
 						
 					</div>
 					
@@ -188,38 +105,21 @@
 							</div>
 						</div>
 						
-						<div class="row no-margin strata_section height75" style="padding: 0px;">
-							<div class="row upload-section height10">
-								<form  method="post" enctype="multipart/form-data" action="rest/csv-upload.json">
-								<div class="col-md-6 col-md-offset-3" style="padding-top: 20px;">
-									<button type="button" class="btn btn-default width100" name="upload-btn">Upload Csv</button>
-								    <input type="file" name="file" style="display:none" />  
-								</div>
-								</form>
-							</div>
-							<div class="row table-column-selector height90">
-								
-							</div>
-						</div>
-						
 					</div>
 					
 					<!-- cluster -->
 					<div class="row option step step-4 height100">
+						
 						<div class="row">
 							<div class="col-md-12 hint" >
 								<i class="fa fa-hand-o-right"></i>&nbsp;In cluster sampling the population is partitioned into groups, called clusters. 
 								Each element should belong to one cluster only and none of the elements of the population should be left out.
 							</div>
 						</div>
+						
 						<div class="row height25">
 							<div class="col-md-6 col-md-offset-3">
 								<button class="btn" name="cluster">Cluster</button>
-							</div>
-						</div>
-						
-						<div class="row no-margin cluster_section height75">
-							<div class="col-md-12 table-column-selector">
 							</div>
 						</div>
 						
@@ -229,17 +129,12 @@
 					<div class="row option step step-5 height100">
 						<div class="row">
 							<div class="col-md-12 hint" >
-								<i class="fa fa-hand-o-right"></i>&nbsp;Select which variable is used to join the data with the the lowest level of the hierarchy of the estimation unit. 
+								<i class="fa fa-hand-o-right"></i>&nbsp;Select which variable is used to join the data with the the lowest level of the hierarchy of the reporting unit. 
 							</div>
 						</div>
 						<div class="row height25">
-							<div class="col-md-6 col-md-offset-3">
-								Area of Interest column join
-							</div>
-						</div>
-						
-						<div class="row aoi-join-section height50">
-							<div class="col-md-12 table-column-selector">
+							<div class="col-md-8 col-md-offset-2 text-center">
+								<h4>Area of Interest</h4>
 							</div>
 						</div>
 					
@@ -257,8 +152,6 @@
 					</button>
 				</div>
 				
-<!-- 			</div> -->
-		
 		</div>	
 		
 		<div class="row height70">
@@ -268,7 +161,7 @@
 	</div>
 	
 	
-	<!-- ==== Job Status modal section ==== -->
+	<!-- ==== Import columns modal section ==== -->
 	<div class="modal fade" id="csv-import-column-selector">
 		<div class="modal-dialog">
 			<div class="modal-content">

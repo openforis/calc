@@ -9,6 +9,11 @@ ERDTable = function( parent , dataProvider ){
 	this.editMode		= false;
 	this.tableName = '';
 	
+	
+	
+	this.erdTableJoins 	= new Array();
+	this.erdColumnSelectors = new Array();
+
 	// init html based on dataProvider
 	this.initView();
 };
@@ -69,7 +74,10 @@ ERDTable.prototype.initView = function(){
 		this.tableNameSelectorHtml = $( '<div class="width100"></div>' );
 		this.header.append( this.tableNameSelectorHtml  );
 		
-		var select = $( '<select class="form-control width100"></select>' );
+		var title = $( '<span class="table-title width40">'+this.dataProvider.tableTitle+'</span>' );
+		this.tableNameSelectorHtml.append( title );
+
+		var select = $( '<select class="form-control width60"></select>' );
 		this.tableNameSelectorHtml.append( select );
 		this.dataProvider.createCombo( select );
 		
@@ -85,6 +93,7 @@ ERDTable.prototype.updateView = function(){
 	} else if( this.dataProvider instanceof EntityDataProvider ){
 		this.updateEntityView();
 	}
+	
 };
 
 /**
@@ -103,7 +112,7 @@ ERDTable.prototype.updateEntityView = function(){
 		} else {
 			var tableInfo = this.dataProvider.getTableInfo() ;
 			var tableName = ( tableInfo ) ? tableInfo.fields.table : '';
-			this.setTableName(tableName);
+			this.setTableName( this.dataProvider.tableTitle + '  ' +tableName );
 			
 			this.tableNameSelectorHtml.hide();
 			this.tableNameHtml.show();
@@ -146,7 +155,7 @@ ERDTable.prototype.setEditMode = function( editMode ){
 
 
 ERDTable.prototype.highlight = function(){
-	this.table.stop().animate( {backgroundColor : 'rgba(51, 157, 166, 0.2)'}, 400 , $.proxy(function(){
-		this.table.animate( {backgroundColor : 'transparent'}, 600);
+	this.table.stop().animate( {backgroundColor : 'rgba(106, 145, 111, 0.2)'}, 500 , $.proxy(function(){
+		this.table.animate( {backgroundColor : 'rgba(210, 217, 249, 0.05)'}, 600);
 	}, this) );
 };

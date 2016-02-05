@@ -7,6 +7,9 @@ SamplingDesignEditManager = function( editContainer , editERDContainer , stepBut
 	
 	this.prevBtn 					= this.container.find( "button.prev" );
 	this.nextBtn 					= this.container.find( "button.next" );
+	this.saveBtn 					= this.container.find( "[name=save-btn]" );
+	
+	this.applyAreaWeighted			= this.container.find( '[name=apply_area_weighted]' );
 	
 	//ERD manager
 	this.samplingDesignERDManager	= new SamplingDesignERDManager( editERDContainer, "edit" );
@@ -21,15 +24,22 @@ SamplingDesignEditManager = function( editContainer , editERDContainer , stepBut
 
 SamplingDesignEditManager.prototype.init = function(){
 	var $this = this;
-	this.prevBtn.click( function(){
+	this.prevBtn.click( function(e){
+		e.preventDefault();
 		$this.prev();
 	});
-	this.nextBtn.click( function(){
+	this.nextBtn.click( function(e){
+		e.preventDefault();
 		$this.next();
 	}); 
-	
-	
-	EventBus.addEventListener( "calc.sampling-design.base-unit-change", this.baseUnitChange , this );
+	this.saveBtn.click( function(e){
+		e.preventDefault();
+		$this.save();
+	});
+	this.applyAreaWeighted.change( function(e){
+		e.preventDefault();
+		$this.samplingDesign.applyAreaWeighted = $this.applyAreaWeighted.prop( 'checked' );
+	});
 };
 
 SamplingDesignEditManager.prototype.show = function(){
@@ -38,6 +48,12 @@ SamplingDesignEditManager.prototype.show = function(){
 	var $this 		= this;
 	WorkspaceManager.getInstance().activeWorkspace(function(ws){
 		$this.samplingDesign = $.extend(true, {}, ws.samplingDesign );
+		
+		if( $this.samplingDesign.samplingUnitId ){
+			
+			var applyAreaWeighted = $this.samplingDesign.applyAreaWeighted === true;
+			$this.applyAreaWeighted.prop( 'checked' , applyAreaWeighted );
+		}
 		
 		$this.samplingDesignERDManager.show( $this.samplingDesign );
 		$this.samplingDesignStepButtonsManager.updateView();
@@ -68,6 +84,7 @@ SamplingDesignEditManager.prototype.showStep = function(step) {
 	this.updateNavigationBtns();
 	
 	EventBus.dispatch("calc.sampling-design.show-step", null , step);
+	EventBus.dispatch( 'calc.sampling-design.update-connections', null );
 };
 
 /**
@@ -91,6 +108,25 @@ SamplingDesignEditManager.prototype.next = function(){
 	}
 };
 
+SamplingDesignEditManager.prototype.save = function(){
+	var $this = this;
+	var validate = this[ "validateStep" + this.stepMax ] ;
+	if( !validate || $.proxy(validate, this)() ){
+		
+		WorkspaceManager.getInstance().activeWorkspaceSetSamplingDesign( this.samplingDesign, $.proxy( function(job) {
+		
+			var complete = function(){
+//				$this.updateSamplingDesign();
+				Calc.updateButtonStatus();
+				EventBus.dispatch( 'calc.sampling-design.change', null );
+			};
+			JobManager.getInstance().start( job , complete  );
+
+		} , this) );
+		
+	}
+
+};
 /**
  * update edit navigation buttons
  */
@@ -99,8 +135,3 @@ SamplingDesignEditManager.prototype.updateNavigationBtns = function(){
 	this.step == this.stepMax ? UI.disable( this.nextBtn ) : UI.enable( this.nextBtn );
 };
 
-
-// EVENT listeners
-SamplingDesignEditManager.prototype.baseUnitChange = function( event, entityId ){
-		this.samplingDesign.samplingUnitId =  entityId; 
-};

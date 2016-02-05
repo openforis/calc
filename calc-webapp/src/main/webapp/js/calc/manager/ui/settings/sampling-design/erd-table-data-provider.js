@@ -24,6 +24,8 @@ EntityDataProvider = function( onChange ){
 	
 	this._entityId 	= null;
 	this.combobox 	= null;
+	
+	this.tableTitle = '';
 };
 
 EntityDataProvider.prototype 				= Object.create(ERDTableDataProvider.prototype);
@@ -51,6 +53,8 @@ EntityDataProvider.prototype.setEntityId = function( entityId ){
 			};
 			
 			this.setTableInfo( new tableInfo() );
+			
+			this.tableAlias = entity.name;
 			
 			if( this.combobox ){
 				this.combobox.val( this._entityId );

@@ -4,9 +4,11 @@
  */
 StratumManager = function( container , sdERDManager , stepNo ){
 	
-	var dataProvider 	= new CsvFileDataProvider( null , false);
+	var uploadCallback 	= $.proxy(this.uploadCallback , this );
+	var dataProvider 	= new CsvFileDataProvider( uploadCallback , false);
 	dataProvider.setTableInfo( new StratumManager.prototype.tableInfo() );
 	dataProvider.tableAlias = 'Stratum Labels';
+	dataProvider.selectColumnsToImport = false;
 	
 	SamplingDesignStepManager.call( this, container , sdERDManager , stepNo , dataProvider );
 	
@@ -19,6 +21,10 @@ StratumManager = function( container , sdERDManager , stepNo ){
 	this.join.multiple 				= false;
 	this.join.rightColumnsReadOnly 	= true;
 	this.join.leftJoinPointCssClass = 'anchor-right';
+	this.join.onChange				= $.proxy( this.joinChange , this );
+	
+	this.addJoin( this.join );
+	
 };
 StratumManager.prototype 				= Object.create(SamplingDesignStepManager.prototype);
 StratumManager.prototype.constructor 	= StratumManager;
@@ -57,8 +63,6 @@ StratumManager.prototype.erdJoinSettings = function(){
 	return joinSettings;
 };
 StratumManager.prototype.updateJoin = function(){
-//	console.log( this.sd() );
-//	console.log( this.dataProvider.getTableInfo() );
 	
 	this.join.disconnect();
 	
@@ -76,6 +80,8 @@ StratumManager.prototype.updateJoin = function(){
 			this.join.setLeftTable( leftTable );
 			
 			this.join.connect( this.erdJoinSettings() );
+			
+			this.updateEditMode();
 		}
 		
 	} else {
@@ -84,6 +90,31 @@ StratumManager.prototype.updateJoin = function(){
 };
 
 
+StratumManager.prototype.joinChange = function(){
+	var sdStratumJoinSettings = {};
+	
+	var erdJoinSettings = this.join.jsonSettings();
+	if( erdJoinSettings.leftTable ){
+		sdStratumJoinSettings.table 	= erdJoinSettings.leftTable.table;
+		sdStratumJoinSettings.schema 	= erdJoinSettings.leftTable.schema;
+		if( erdJoinSettings.columns && erdJoinSettings.columns.length >=0 ){
+			var col = erdJoinSettings.columns[ 0 ];
+			sdStratumJoinSettings.column 	= col.left;
+		}
+	}
+	
+	 this.sd().stratumJoinSettings = sdStratumJoinSettings;
+	
+};
+
+StratumManager.prototype.uploadCallback = function( response ){
+	var $this = this;
+	WorkspaceManager.getInstance().activeWorkspaceImportStrata( response.fields.filepath , function(ws){
+		UI.unlock();
+		UI.showSuccess( ws.strata.length +" strata successfully imported", true);
+//		$this.updateStrata(ws);
+	});
+};
 
 StratumManager.prototype.tableInfo = function(){
 	this.table 			= "stratum";

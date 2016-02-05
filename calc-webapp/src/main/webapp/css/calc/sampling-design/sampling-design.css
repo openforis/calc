@@ -41,14 +41,15 @@
 .sampling-design-erd {
 	width: 100% !important;
 	height: 100% !important;
-	border: 1px solid rgba(33, 132, 131, 0.28);
+/* 	border: 1px solid rgba(33, 132, 131, 0.28); */
 }
 .sampling-design-erd ,
 .sampling-design-erd * {
 	font-size: 12px;	
 }
 .sampling-design-erd input {
-    height: 30px !important;
+	padding: 2.5px 10px !important;
+    height: 25px !important;
     border-radius: 0px;
     color: #E4E4E5;
     background-color: rgb(103, 107, 111);
@@ -79,23 +80,31 @@
 }
 .one-row {
 	height : 100%;
-	padding : 37.5% 5% !important;
-    overflow: auto;
+	padding : 10% 5% !important;
+    overflow: hidden;
     display: none;
 }
 .two-rows {
 	height: 50%;
 	display: none;
-	overflow: auto;
+	overflow: hidden;
 	padding: 0% 5% !important;
+}
+.stratum-container , .aoi-container, .ssu-container {
+	padding: 5% !important;
 }
 
 .erd-table {
-    border: 1px solid rgba(183, 176, 176, 0.43);
-    border-radius: 6px;
+    border: 1px solid rgba(183, 176, 176, 0.3); 
+    border-radius: 1px; 
     margin: 0px !important;
+    padding: 5px 10px;
+    overflow: auto;
+    background-color:  rgba(210, 217, 249, 0.05);
 }
 .erd-table .header {
+	font-weight: 300;
+    font-style: italic;
 }
 .erd-table .header > div {
 	float: left;
@@ -121,10 +130,23 @@
 .erd-table button:disabled {
 	opacity : .4 !important;
 }
-
+.erd-table i.fa.fa-plus-circle {
+    color: rgba(96, 214, 214, 0.7);
+}
+.erd-table i.fa.fa-times-circle {
+    color: rgba(255, 151, 151, 0.7);
+}
 /* //erd table joins */
-.table-join-row {
-	border : 1px solid rgba(183, 176, 176, 0.35);
+.table-join-header,
+.table-column-selector-header {
+	font-size : 10px !important;
+	text-align: left;
+}
+.table-join-row ,
+.table-column-selector-row {
+	border : 1px solid rgba(183, 176, 176, 0.15);
+    margin: .5em 0px;
+    padding-bottom: 10px;
 }
 .table-join-row button {
 	padding: 5px 5px !important;
@@ -133,12 +155,13 @@
 span.anchor-left {
 	position: absolute;
     top: 50%;
-   	left: 12px;
+   	left: 18px;
 }
 span.anchor-right {
 	position: absolute;
     top: 50%;
-   	left: 95%;
+/*    	left: 95%; */
+    right: 15px;
 }
 .table-join-connection {
 	 border:3px solid rgba(33, 132, 131, 0.8);;

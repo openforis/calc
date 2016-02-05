@@ -477,18 +477,24 @@
    * Disable element and button 
    */
   , disable: function() {
+	  this.$button.hide();
 	  this.$element.prop('disabled', true);
 	  this.$button.attr('disabled', "disabled");
-	  this.$button.hide();
   }
   
   /**
    * Enable element and button
    */
   , enable: function() {
+	  this.$button.show();
 	  this.$element.prop('disabled', false);
 	  this.$button.removeAttr('disabled');
-	  this.$button.show();
+  }
+  /**
+   * Add custom css class to the element
+   */
+  , addClass: function(className) {
+	  this.$element.addClass( className );
   }
   /**
    * Selects the item with the specified value or returns the selected one if the value parameters is not specified.
