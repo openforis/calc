@@ -23,6 +23,7 @@ TwoPhasesManager = function( container , sdERDManager , stepNo ){
 		EventBus.addEventListener( "calc.sampling-design.two-phases-change", 	this.update, this );
 		EventBus.addEventListener( "calc.sampling-design.base-unit-change", this.baseUnitChange , this );
 		
+		this.update();
 		this.loadPhase1Table();
 
 	} , this ) );
@@ -40,6 +41,7 @@ TwoPhasesManager.prototype.update = function(){
 		this.container.fadeIn();
 		this.baseUnitPhase1Join.show();
 		this.highlight();
+		this.loadPhase1Table();
 	} else {
 		this.container.parent().hide();
 		this.container.hide();
@@ -81,7 +83,7 @@ TwoPhasesManager.prototype.updateJoins = function(){
 			this.updateEditMode();
 		}
 	} else {
-		this.baseUnitPhase1Join.hide();
+//		this.baseUnitPhase1Join.hide();
 	}
 	
 };
@@ -95,7 +97,7 @@ TwoPhasesManager.prototype.uploadCallback = function( schema , table ){
 
 TwoPhasesManager.prototype.baseUnitChange = function(){
 	//Reset phase 1 join settings
-//	this.sd().phase1JoinSettings = {};
+	this.sd().phase1JoinSettings = {};
 	this.updateJoins();
 	
 };

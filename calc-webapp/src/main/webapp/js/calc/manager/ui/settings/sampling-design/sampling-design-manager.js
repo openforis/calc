@@ -16,7 +16,9 @@ SamplingDesignManager = function(container) {
 	this.editSd 	= this.container.find( ".edit-sd" );
 	this.editErdSd 	= this.container.find( ".sampling-design-erd-edit" );
 	
-	this.samplingDesignEditManager = new SamplingDesignEditManager( this.editSd, this.editErdSd , this.container );
+	this.samplingDesignERDManager	= new SamplingDesignERDManager( this.editErdSd , "edit" );
+	
+	this.samplingDesignEditManager = new SamplingDesignEditManager( this.editSd, this.samplingDesignERDManager, this.container );
 	this.samplingDesignEditManager.hide();
 	
 	
@@ -50,6 +52,22 @@ SamplingDesignManager.prototype.init = function(){
 		$this.updateSamplingDesign();
 	});
 	
+	var showView = function(){
+		var $this = this;
+		WorkspaceManager.getInstance().activeWorkspace( function(ws){
+			//refresh sampling unit select.
+//			$this.samplingUnitCombo.data( ws.entities, 'id','name' );
+			
+			//if sampling design is defined for active workspace update ui
+			$this.updateSamplingDesign();
+			$this.samplingDesignEditManager.hide();
+			$this.samplingDesignERDManager.show(ws.samplingDesign);
+			
+		});
+	};
+	
+	EventBus.addEventListener( "calc.sampling-design.saved", showView, this );
+	$.proxy( showView , this )();
 };
 
 
@@ -60,12 +78,12 @@ SamplingDesignManager.prototype.updateSamplingDesign = function() {
 	
 	WorkspaceManager.getInstance().activeWorkspace( $.proxy(function(ws) {
 		
-		this.editSd.hide();
-		this.viewSd.show(10);
+//		this.editSd.hide();
+		this.viewSd.show();
 		this.samplingDesignUI.empty();
 		
 		if(ws.samplingDesign) {
-			UI.lock();
+//			UI.lock();
 			
 			this.samplingDesign = $.extend(true, {}, ws.samplingDesign );
 			
@@ -101,7 +119,7 @@ SamplingDesignManager.prototype.updateSamplingDesign = function() {
 					}
 					
 					
-					UI.unlock();
+//					UI.unlock();
 					
 //				} , this));
 				

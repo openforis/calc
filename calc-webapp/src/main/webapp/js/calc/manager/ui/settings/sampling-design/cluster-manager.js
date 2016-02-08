@@ -3,25 +3,21 @@
  * @author M. Togna
  */
 ClusterManager = function( container , sdERDManager , stepNo ){
-	var $this = this;
-//	WorkspaceManager.getInstance().activeWorkspace( $.proxy(function(ws){
-		
-//		var ssuChange 	= $.proxy(this.ssuChange , this );
-//		var dataProvider 	= new EntityDataProvider( ssuChange );
-		this.sdERDManager		= sdERDManager;
-		this.stepNo				= stepNo;
-		this.clusterColumn 		= new ERDTableColumnSelector( 'cluster_column', 'Cluster column' );
+	this.sdERDManager		= sdERDManager;
+	this.stepNo				= stepNo;
+	this.clusterColumn 		= new ERDTableColumnSelector( 'cluster_column', 'Cluster column' );
 
 //		SamplingDesignStepManager.call( this, container , sdERDManager , stepNo , dataProvider );
-		
-		EventBus.addEventListener( "calc.sampling-design.phase1-table-change", 	this.update, this );
-		EventBus.addEventListener( "calc.sampling-design.two-phases-change", 	this.update, this );
-		EventBus.addEventListener( "calc.sampling-design.base-unit-change", this.update , this );
-		EventBus.addEventListener( "calc.sampling-design.cluster-change", this.update , this );
-
-//	} , this ) );
 	
-		EventBus.addEventListener( "calc.sampling-design.show-step", this.showEditStep , this );
+	EventBus.addEventListener( "calc.sampling-design.phase1-table-change", 	this.update, this );
+	EventBus.addEventListener( "calc.sampling-design.two-phases-change", 	this.update, this );
+	EventBus.addEventListener( "calc.sampling-design.base-unit-change", this.update , this );
+	EventBus.addEventListener( "calc.sampling-design.cluster-change", this.update , this );
+
+
+	EventBus.addEventListener( "calc.sampling-design.show-step", this.showEditStep , this );
+	
+	this.update();
 };
 
 ClusterManager.prototype.showEditStep = function( evt, stepNo ){
@@ -66,10 +62,16 @@ ClusterManager.prototype.update = function(){
 		}
 		
 		if( table ){
-			var value = this.sd().clusterColumnSettings.column;
+			var tableInfo 	= table.dataProvider.getTableInfo();
+			var value 		= this.sd().clusterColumnSettings.column;
+			
 			var onChange = function(){
-				
+				this.sd().clusterColumnSettings 		= {};
+				this.sd().clusterColumnSettings.table 	= tableInfo.fields.table;
+				this.sd().clusterColumnSettings.schema 	= tableInfo.fields.schema;
+				this.sd().clusterColumnSettings.column 	= this.clusterColumn.value;
 			};
+			
 			this.clusterColumn.connect( table, value, $.proxy(onChange,this) );
 
 			if( this.sdERDManager.editMode && this.currentStepNo == this.stepNo ){
@@ -84,42 +86,4 @@ ClusterManager.prototype.update = function(){
 	}
 	
 	EventBus.dispatch( 'calc.sampling-design.update-connections', null );
-//		
-//		if( !this.sd().twoStagesSettings ){
-//			this.sd().twoStagesSettings = {};
-//		}
-//		
-//		this.container.fadeIn();
-//		this.psuJoin.show();
-//		this.highlight();
-//	} else {
-//		$( '.two-stages-container' ).hide();
-//		this.container.hide();
-//		this.psuJoin.hide();
-//	}
-
-};
-
-
-//
-//ClusterManager.prototype.ssuChange = function( entityId ){
-//	if( ! this.sd().twoStagesSettings ){
-//		this.sd().twoStagesSettings = {};
-//	}
-//	this.dataProvider.setEntityId( entityId );
-//	
-//	var $this = this;
-//	WorkspaceManager.getInstance().activeWorkspace(function(ws){
-//		var entity = ws.getEntityById( entityId );
-//		$this.sd().twoStagesSettings.ssuOriginalId	= entity.originalId;
-//	});
-//	
-//	this.updateJoins();
-//};
-
-ClusterManager.prototype.baseUnitChange = function(){
-	//Reset phase 1 join settings
-//	this.sd().phase1JoinSettings = {};
-//	this.baseUnitPhase1Join.reset();
-	console.log( this.sdERDManager.baseUnitManager.dataProvider.getTableInfo() );	
 };

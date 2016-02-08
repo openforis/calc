@@ -68,7 +68,8 @@ ERDTableColumnSelector.prototype.connect = function( table , value , onChange ){
 	this.table = table;
 	
 	if( this.table && this.table.dataProvider.getTableInfo()){
-		
+		this.table.columnSelectors.find( '.'+this.id ).remove();
+
 		var html = $( '<div class="row table-column-selector-row">'+
 			 '<div class="col-md-12 table-join">'+
 			 	'<div class="row row-table-column-selector-header">'+
@@ -94,17 +95,16 @@ ERDTableColumnSelector.prototype.connect = function( table , value , onChange ){
 		combo.data( this.table.dataProvider.getTableInfo().fields.columns, 'column_name','column_name' );
 		combo.change( $.proxy(function(){
 			this.value = combo.val();
-			Utils.applyFunction( onChange , this );
+			Utils.applyFunction( onChange  );
 		} , this ) );
 		if(value){
-			combo.val( value );
+			combo.val( value , true );
 		}
 		this.combo = combo;
 		
 		html.find( '.table-column-selector-body' ).append( row );
 		
 		this.table.columnSelectors.append( html );
-		this.table.erdColumnSelectors.push( this );
 		
 		this.html = html;
 	}
@@ -112,18 +112,9 @@ ERDTableColumnSelector.prototype.connect = function( table , value , onChange ){
 };
 
 ERDTableColumnSelector.prototype.disconnect = function( ){
-	if( this.table ){
+	if( this.html ){
 		this.combo.val( '' );
 		this.table.columnSelectors.find( '.'+this.id ).remove();
-		
-		for(var i in this.table.erdColumnSelectors){
-			var r = this.table.erdColumnSelectors[i];
-			if( r == this ){
-				
-				this.table.erdColumnSelectors.splice( i, 1 );
-				break;
-			}
-		}
 	}
 	this.table 	= null;
 	this.html	= null;
@@ -131,8 +122,8 @@ ERDTableColumnSelector.prototype.disconnect = function( ){
 ERDTableColumnSelector.prototype.highlight = function(){
 	if( this.html ){
 		
-		this.html.stop().animate( {backgroundColor : 'rgba(51, 157, 166, 0.2)'}, 400 , $.proxy(function(){
-			this.html.animate( {backgroundColor : 'transparent'}, 600);
+		this.html.stop().animate( {backgroundColor : 'rgba(106, 145, 111, 0.2)'}, 500 , $.proxy(function(){
+			this.html.animate( {backgroundColor : 'rgba(210, 217, 249, 0.02)'}, 600);
 		}, this) );
 		
 	}
@@ -140,14 +131,15 @@ ERDTableColumnSelector.prototype.highlight = function(){
 
 ERDTableColumnSelector.prototype.setEditMode = function(editMode){
 	this.editMode = editMode;
+	
 	if( this.html ){
 		
 		if( this.editMode === true ){
 			UI.enable( this.html.find( 'input:not(.read-only)' ) );
-			this.html.find( 'button[name=add-btn],button[name=delete-btn],span[class=combobox-clear]').fadeIn() ;
+			this.html.find( 'button[name=add-btn],button[name=delete-btn],span').visible() ;
 		} else {
 			UI.disable( this.html.find( 'input:not(.read-only)' ) );
-			this.html.find( 'button[name=add-btn],button[name=delete-btn],span[class=combobox-clear]').hide() ;
+			this.html.find( 'button[name=add-btn],button[name=delete-btn],span').invisible() ;
 		}
 	
 	}
@@ -192,16 +184,19 @@ ERDTableJoin.prototype.setRightTable = function( rightTable ){
 };
 ERDTableJoin.prototype.connect	= function( joinSettings ){
 	if( this.leftTable && this.rightTable ){
-
+		
+		this.leftHtmlCssId 	= this.id+"_l";
+		this.rightHtmlCssId = this.id+"_r";
+		this.leftTable.tableJoins.find( '.'+this.leftHtmlCssId ); 
+		this.rightTable.tableJoins.find( '.'+this.rightHtmlCssId ); 
+		
 		var leftHeader 		= StringUtils.isNotBlank( this.rightTable.dataProvider.tableAlias ) ? this.rightTable.dataProvider.tableAlias :  this.rightTable.dataProvider.tableName; 
 		this.leftHtml 		= this.getHtml( leftHeader + ' join' , this.leftColumnsReadOnly );
-		this.leftHtmlCssId 	= this.id+"_l";
 		this.leftHtml.addClass( this.leftHtmlCssId );
 		this.leftRows		= this.leftHtml.find( '.table-join-body' );
 		
 		var rightHeader 		= StringUtils.isNotBlank( this.leftTable.dataProvider.tableAlias ) ? this.leftTable.dataProvider.tableAlias :  this.leftTable.dataProvider.tableName;
 		this.rightHtml 			= this.getHtml( rightHeader + ' join' , this.rightColumnsReadOnly );
-		this.rightHtmlCssId 	= this.id+"_r";
 		this.rightHtml.addClass( this.rightHtmlCssId );
 		this.rightRows			= this.rightHtml.find( '.table-join-body' );
 		
@@ -236,6 +231,7 @@ ERDTableJoin.prototype.disconnect	= function(){
 	if( this.rightTable ){
 		this.rightTable.tableJoins.find( '.'+this.rightHtmlCssId ).remove();
 	}
+	this.leftTable = this.rightTable = this.leftHtml = this.rightHtml = null;
 };
 ERDTableJoin.prototype.setEditMode = function(editMode){
 	this.editMode = editMode;
@@ -246,6 +242,7 @@ ERDTableJoin.prototype.setEditMode = function(editMode){
 			UI.enable( this.rightHtml.find( 'input:not(.read-only)' ) );
 			this.leftHtml.find( 'button[name=add-btn],button[name=delete-btn],span').visible() ;
 			this.rightHtml.find( 'button[name=add-btn],button[name=delete-btn],span').visible() ;
+			this.highlight();
 		} else {
 			UI.disable( this.leftHtml.find( 'input:not(.read-only)' ) );
 			UI.disable( this.rightHtml.find( 'input:not(.read-only)' ) );
@@ -393,6 +390,23 @@ ERDTableJoin.prototype.jsonSettings = function(){
 	return settings;
 };
 
+ERDTableJoin.prototype.highlight = function(){
+	if( this.leftHtml ){
+		
+		this.leftHtml.stop().animate( {backgroundColor : 'rgba(106, 145, 111, 0.2)'}, 500 , $.proxy(function(){
+			this.leftHtml.animate( {backgroundColor : 'rgba(210, 217, 249, 0.02)'}, 600);
+		}, this) );
+		
+	}
+	if( this.rightHtml ){
+		
+		this.rightHtml.stop().animate( {backgroundColor : 'rgba(106, 145, 111, 0.2)'}, 500 , $.proxy(function(){
+			this.rightHtml.animate( {backgroundColor : 'rgba(210, 217, 249, 0.02)'}, 600);
+		}, this) );
+		
+	}
+};
+
 ERDTableJoinRow = function( tableJoin, leftValue, rightValue ) {
 	var $this 			= this;
 	
@@ -446,7 +460,7 @@ ERDTableJoinRow.prototype.getHtmlRowJoin = function( cssClass , columns, onChang
 		onChange( combo.val() );
 	});
 	if(value){
-		combo.val( value );
+		combo.val( value , true );
 	}
 	if( readOnly === true ){
 		combo.disable();

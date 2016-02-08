@@ -1,7 +1,7 @@
 /**
  * Manager for edit Sampling Design page
  */
-SamplingDesignEditManager = function( editContainer , editERDContainer , stepButtonsContainer ){
+SamplingDesignEditManager = function( editContainer , samplingDesignERDManager , stepButtonsContainer ){
 	
 	this.container 					= editContainer;
 	
@@ -12,7 +12,7 @@ SamplingDesignEditManager = function( editContainer , editERDContainer , stepBut
 	this.applyAreaWeighted			= this.container.find( '[name=apply_area_weighted]' );
 	
 	//ERD manager
-	this.samplingDesignERDManager	= new SamplingDesignERDManager( editERDContainer, "edit" );
+	this.samplingDesignERDManager	= samplingDesignERDManager;
 	this.validator					= new SamplingDesignValidator( this );
 	this.samplingDesign				= null;
 	
@@ -70,7 +70,7 @@ SamplingDesignEditManager.prototype.show = function(){
 
 SamplingDesignEditManager.prototype.hide = function(){
 	this.container.hide();
-	this.samplingDesignERDManager.hide();
+//	this.samplingDesignERDManager.hide();
 };
 
 /**
@@ -110,15 +110,17 @@ SamplingDesignEditManager.prototype.next = function(){
 
 SamplingDesignEditManager.prototype.save = function(){
 	var $this = this;
-	var validate = this[ "validateStep" + this.stepMax ] ;
-	if( !validate || $.proxy(validate, this)() ){
-		
+	var valid = this.validator.isValid( this.stepMax );//this[ "validateStep" + this.stepMax ] ;
+	if( valid ){
 		WorkspaceManager.getInstance().activeWorkspaceSetSamplingDesign( this.samplingDesign, $.proxy( function(job) {
 		
 			var complete = function(){
 //				$this.updateSamplingDesign();
 				Calc.updateButtonStatus();
+				EventBus.dispatch("calc.sampling-design.show-step", null , -1);
 				EventBus.dispatch( 'calc.sampling-design.change', null );
+				EventBus.dispatch( 'calc.sampling-design.saved', null );
+				
 			};
 			JobManager.getInstance().start( job , complete  );
 

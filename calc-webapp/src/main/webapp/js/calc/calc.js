@@ -285,6 +285,8 @@ $(document).ready(function() {
 		Calc.footerHomeLinks.fadeIn(500);
 		
 		Calc.pushToHistory( "home" );
+		
+		EventBus.dispatch('calc.page-update', null,'home');
 	};
 	
 	// history methods

@@ -9,11 +9,6 @@ ERDTable = function( parent , dataProvider ){
 	this.editMode		= false;
 	this.tableName = '';
 	
-	
-	
-	this.erdTableJoins 	= new Array();
-	this.erdColumnSelectors = new Array();
-
 	// init html based on dataProvider
 	this.initView();
 };

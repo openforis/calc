@@ -21,9 +21,10 @@ StratumManager = function( container , sdERDManager , stepNo ){
 	this.join.multiple 				= false;
 	this.join.rightColumnsReadOnly 	= true;
 	this.join.leftJoinPointCssClass = 'anchor-right';
-	this.join.onChange				= $.proxy( this.joinChange , this );
-	
+	this.join.onChange				= $.proxy( this.onJoinChange , this );
 	this.addJoin( this.join );
+	
+	this.update();
 	
 };
 StratumManager.prototype 				= Object.create(SamplingDesignStepManager.prototype);
@@ -68,16 +69,16 @@ StratumManager.prototype.updateJoin = function(){
 	
 	if( this.sd().stratified === true ){
 		
-		var leftTable = null;
+		var stratumJoinleftTable = null;
 		if( this.sd().twoPhases === true ){
-			leftTable = this.sdERDManager.twoPhasesManager.table;
+			stratumJoinleftTable = this.sdERDManager.twoPhasesManager.table;
 		} else {
-			leftTable = this.sdERDManager.baseUnitManager.table;
+			stratumJoinleftTable = this.sdERDManager.baseUnitManager.table;
 		}
 		
-		if( leftTable && leftTable.dataProvider.getTableInfo() ){
+		if( stratumJoinleftTable && stratumJoinleftTable.dataProvider.getTableInfo() ){
 			this.join.setRightTable( this.table );
-			this.join.setLeftTable( leftTable );
+			this.join.setLeftTable( stratumJoinleftTable );
 			
 			this.join.connect( this.erdJoinSettings() );
 			
@@ -89,22 +90,21 @@ StratumManager.prototype.updateJoin = function(){
 	}
 };
 
-
-StratumManager.prototype.joinChange = function(){
+StratumManager.prototype.onJoinChange = function(){
 	var sdStratumJoinSettings = {};
-	
+
 	var erdJoinSettings = this.join.jsonSettings();
 	if( erdJoinSettings.leftTable ){
 		sdStratumJoinSettings.table 	= erdJoinSettings.leftTable.table;
 		sdStratumJoinSettings.schema 	= erdJoinSettings.leftTable.schema;
-		if( erdJoinSettings.columns && erdJoinSettings.columns.length >=0 ){
+		sdStratumJoinSettings.column	= '';
+		if( erdJoinSettings.columns && erdJoinSettings.columns.length >0 ){
 			var col = erdJoinSettings.columns[ 0 ];
 			sdStratumJoinSettings.column 	= col.left;
 		}
 	}
 	
 	 this.sd().stratumJoinSettings = sdStratumJoinSettings;
-	
 };
 
 StratumManager.prototype.uploadCallback = function( response ){

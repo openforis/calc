@@ -137,30 +137,39 @@ SamplingDesignValidator.prototype.validateStep3 = function(){
 	return valid;
 };
 
-///**
-// * Validate cluster settings
-// */
-//SamplingDesignValidator.prototype.validateStep4 = function(){
-//	var valid = true;
-//	
-//	if( this.samplingDesign.cluster === true ){
-//		valid =  this.clusterManager.validate();
-//		if(valid) {
-//			this.samplingDesign.clusterColumnSettings = this.clusterManager.joinOptions();
-//		}
-//	} 
-//	
-//	return valid;
-//	
-//};
-//
-///**
-// * Validate aoi column 
-// */
-//SamplingDesignValidator.prototype.validateStep5 = function(){
-//	var	valid =  this.aoiJoinManager.validate();
-//	if(valid) {
-//		this.samplingDesign.aoiJoinSettings = this.aoiJoinManager.joinOptions();
-//	}
-//	return valid;
-//};
+/**
+ * Validate cluster settings
+ */
+SamplingDesignValidator.prototype.validateStep4 = function(){
+	var valid = true;
+	if( this.sd().cluster === true ){
+		
+		var settings = this.sd().clusterColumnSettings;
+		if(!(settings 
+				&& StringUtils.isNotBlank(settings.table) 
+				&& StringUtils.isNotBlank(settings.schema) 
+				&& StringUtils.isNotBlank(settings.column) 
+			)){
+			valid = false;
+		}
+		
+	}
+	return valid;
+};
+
+/**
+ * Validate aoi column 
+ */
+SamplingDesignValidator.prototype.validateStep5 = function(){
+	var valid = true;
+	var settings = this.sd().aoiJoinSettings;
+	if(!(settings 
+			&& StringUtils.isNotBlank(settings.table) 
+			&& StringUtils.isNotBlank(settings.schema) 
+			&& StringUtils.isNotBlank(settings.column) 
+		)){
+		valid = false;
+	}
+	
+	return valid;
+};

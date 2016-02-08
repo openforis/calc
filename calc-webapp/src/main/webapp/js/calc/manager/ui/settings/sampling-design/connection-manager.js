@@ -6,6 +6,11 @@ $(document).ready(function(){
 	
 	ConnectionManagerClass = function(){
 		EventBus.addEventListener( 'calc.sampling-design.update-connections', this.updateConnections , this );
+		EventBus.addEventListener( 'calc.page-update', function(evt,page){
+			if(page=='home'){
+				$('connection').invisible();
+			}
+		} , this );
 	};
 	
 	ConnectionManagerClass.prototype.updateConnections = function( evt , id ){

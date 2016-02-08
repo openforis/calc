@@ -21,6 +21,7 @@ ReportingUnitManager = function( container , sdERDManager , stepNo ){
 	this.join.multiple 				= false;
 	this.join.rightColumnsReadOnly 	= true;
 	this.join.leftJoinPointCssClass = 'anchor-right';
+	this.join.onChange				= $.proxy( this.onJoinChange , this );
 	
 	this.addJoin( this.join );
 	
@@ -65,7 +66,7 @@ ReportingUnitManager.prototype.erdJoinSettings = function(){
 ReportingUnitManager.prototype.updateJoin = function(){
 
 	this.join.disconnect();
-		
+	
 	var leftTable = null;
 	if( this.sd().twoPhases === true ){
 		leftTable = this.sdERDManager.twoPhasesManager.table;
@@ -97,7 +98,7 @@ ReportingUnitManager.prototype.showEditStep = function( evt, stepNo ){
 	}
 };
 ReportingUnitManager.prototype.joinColumnName = function(){
-	var colName = ';'
+	var colName = ''
 	WorkspaceManager.getInstance().activeWorkspace( function(ws){
 		if( ws.aoiHierarchies && ws.aoiHierarchies.length > 0 ){
 			var levels = ws.aoiHierarchies[ 0 ].levels;
@@ -108,6 +109,25 @@ ReportingUnitManager.prototype.joinColumnName = function(){
 	
 	return colName;
 };
+
+ReportingUnitManager.prototype.onJoinChange = function(){
+	var sdStratumJoinSettings = {};
+	
+	var erdJoinSettings = this.join.jsonSettings();
+	if( erdJoinSettings.leftTable ){
+		sdStratumJoinSettings.table 	= erdJoinSettings.leftTable.table;
+		sdStratumJoinSettings.schema 	= erdJoinSettings.leftTable.schema;
+		sdStratumJoinSettings.column 	= '';
+		if( erdJoinSettings.columns && erdJoinSettings.columns.length >0 ){
+			var col = erdJoinSettings.columns[ 0 ];
+			sdStratumJoinSettings.column 	= col.left;
+		}
+	}
+	
+	 this.sd().aoiJoinSettings = sdStratumJoinSettings;
+	
+};
+
 
 ReportingUnitManager.prototype.tableInfo = function(){
 	this.table 			= "aoi";

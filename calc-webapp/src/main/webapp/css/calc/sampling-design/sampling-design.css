@@ -33,9 +33,14 @@
 #sampling-design button.option-btn {
 	width: 10em;
 	height: 4em;
+    margin: .3em;
 }
-
-
+#sampling-design .hint{
+	padding: .3em;
+}
+#sampling-design .hint i{
+	font-size:14px;
+}
 
 /* ERD css classes  */
 .sampling-design-erd {
@@ -147,6 +152,7 @@
 	border : 1px solid rgba(183, 176, 176, 0.15);
     margin: .5em 0px;
     padding-bottom: 10px;
+    background-color: rgba(210, 217, 249, 0.02);
 }
 .table-join-row button {
 	padding: 5px 5px !important;
@@ -164,7 +170,7 @@ span.anchor-right {
     right: 15px;
 }
 .table-join-connection {
-	 border:3px solid rgba(33, 132, 131, 0.8);;
+	 border:2px solid rgba(33,132,131,0.75);
 /*         opacity: 0.5; */
      z-index:1;
      border-radius:100%;
