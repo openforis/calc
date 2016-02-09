@@ -22,13 +22,28 @@ SamplingDesignValidator.prototype.isValid = function( stepNo ){
 };
 
 /**
- * Sampling unit validation
+ * AOI validation
  */
 SamplingDesignValidator.prototype.validateStep0 = function(){
+	var valid = true;
+	WorkspaceManager.getInstance().activeWorkspace( function(ws){
+		if( !ws.aoiHierarchies || ws.aoiHierarchies.length <= 0 ) {
+			UI.showError( "Upload a valid 'Reporting Unit (AOI)' csv file.", true );
+			valid = false;
+		}
+	});
+	return valid;
+};
+
+
+/**
+ * Sampling unit validation
+ */
+SamplingDesignValidator.prototype.validateStep1 = function(){
 	if( this.sd().samplingUnitId ){
 		return true;
 	} else {
-		UI.showError("Select a valid sampling unit", false);
+		UI.showError( "Select a valid Base Unit", true );
 		return false;
 	}
 };
@@ -36,19 +51,19 @@ SamplingDesignValidator.prototype.validateStep0 = function(){
 /**
  * Two phases validation
  */
-SamplingDesignValidator.prototype.validateStep1 = function(){
+SamplingDesignValidator.prototype.validateStep2 = function(){
 	var $this = this;
 	if( this.sd().twoPhases === true ){
 		
 		var valid = false;
 		WorkspaceManager.getInstance().activeWorkspace( function(ws){
 			if (! ws.phase1PlotTable ){
-				UI.showError("Upload a valid first phase csv file", false);
+				UI.showError("Upload a valid first phase csv file", true);
 				valid = false;
 			} else {
 				valid = $this.validateJoinSettings( $this.sd().phase1JoinSettings );
 				if( !valid ){
-					UI.showError("Join with base unit table is not valid.", false);
+					UI.showError("Join with base unit table is not valid.", true);
 				}
 			}
 		} );
@@ -89,45 +104,51 @@ SamplingDesignValidator.prototype.validateJoinSettings = function( joinSettings 
 /**
  * Two stages validation
  */
-//SamplingDesignValidator.prototype.validateStep2 = function(){
-//	if( this.samplingDesign.twoStages === true ){
-//		
-//		var valid = false;
-//		if (! this.primarySUTableInfo ){
-//			UI.showError( "Upload a primary sampling unit csv", true );
-//			valid = false;
-//		} else {
-//			valid = this.twoStagesManager.validate();
-//			if(valid){
-//				this.samplingDesign.twoStagesSettings.joinSettings = this.twoStagesManager.joinOptions();
-//			}
-//			
-//			this.aoiJoinManager.updateJoinColumn();
-//		}
-//		return valid;
-//	} else {
-//		this.aoiJoinManager.updateJoinColumn();
-//		return true;
-//	}
-//};
-//
-//
+SamplingDesignValidator.prototype.validateStep3 = function(){
+	var valid = true;
+	if( this.sd().twoStages === true ){
+		var settings 		= this.sd().twoStagesSettings;
+		var joinSettings 	= settings.joinSettings;
+		
+		if(  !this.samplingDesignEditManager.samplingDesignERDManager.psuManager.dataProvider.getTableInfo() ){
+			valid = false;
+			UI.showError( "Upload a valid primary sampling unit (PSU) csv file", true );
+		}
+		else if( StringUtils.isBlank(settings.areaColumn) ){
+			valid = false;
+			UI.showError( "Select a valid 'Area' column", true );
+		}
+		else if( StringUtils.isBlank(settings.noBaseUnitColumn) ){
+			valid = false;
+			UI.showError( "Select a valid 'No. base unit' column", true );
+		} else if( ! settings.ssuOriginalId ){
+			valid = false;
+			UI.showError( "Select a valid secondary sampling unit (SSU)", true );
+		} else if( !this.validateJoinSettings(joinSettings) ){
+			valid = false;
+			UI.showError("Join between PSU and SSU tables is not valid.", true);
+		}
+	}
+	return valid;
+};
+
+
 /**
  * Validate stratified sampling 
  */
-SamplingDesignValidator.prototype.validateStep3 = function(){
+SamplingDesignValidator.prototype.validateStep4 = function(){
 	var $this = this;
 	var valid = true;
 	if( this.sd().stratified === true ){
 		
 		WorkspaceManager.getInstance().activeWorkspace( function(ws){
 			if (! ws.strata || ws.strata.length <= 0) {
-				UI.showError("Upload a valid Strata definition csv file", false);
+				UI.showError("Upload a valid Strata definition csv file", true);
 				valid = false;
 			} else {
 				var settings = $this.sd().stratumJoinSettings; 
 				if( !(settings.table && settings.schema && settings.column) ){
-					UI.showError("Join with Stratum Labels table is not valid.", false);
+					UI.showError("Join with Stratum Labels table is not valid.", true);
 					valid = false;
 				}
 			}
@@ -140,7 +161,7 @@ SamplingDesignValidator.prototype.validateStep3 = function(){
 /**
  * Validate cluster settings
  */
-SamplingDesignValidator.prototype.validateStep4 = function(){
+SamplingDesignValidator.prototype.validateStep5 = function(){
 	var valid = true;
 	if( this.sd().cluster === true ){
 		
@@ -150,6 +171,7 @@ SamplingDesignValidator.prototype.validateStep4 = function(){
 				&& StringUtils.isNotBlank(settings.schema) 
 				&& StringUtils.isNotBlank(settings.column) 
 			)){
+			UI.showError( "Select a valid cluster column", true);
 			valid = false;
 		}
 		
@@ -160,7 +182,7 @@ SamplingDesignValidator.prototype.validateStep4 = function(){
 /**
  * Validate aoi column 
  */
-SamplingDesignValidator.prototype.validateStep5 = function(){
+SamplingDesignValidator.prototype.validateStep6 = function(){
 	var valid = true;
 	var settings = this.sd().aoiJoinSettings;
 	if(!(settings 
@@ -168,6 +190,7 @@ SamplingDesignValidator.prototype.validateStep5 = function(){
 			&& StringUtils.isNotBlank(settings.schema) 
 			&& StringUtils.isNotBlank(settings.column) 
 		)){
+		UI.showError( "Join with Reporting Unit (AOI) table is not valid.", true );
 		valid = false;
 	}
 	

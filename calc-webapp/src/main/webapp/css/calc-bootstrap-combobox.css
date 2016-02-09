@@ -6,8 +6,8 @@
 .combobox-container .typeahead {
 	height: 15em;
 	width: 100%;
-	padding: 0px;
-	border-radius: 4px;
+/* 	padding: 0px; */
+	border-radius: 1px;
 }
 ul.typeahead li {
 	color: #2c3e50;

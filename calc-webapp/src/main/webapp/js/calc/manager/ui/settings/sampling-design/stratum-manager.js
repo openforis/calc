@@ -37,10 +37,10 @@ StratumManager.prototype.update = function(){
 		this.container.fadeIn();
 		this.highlight();
 		this.updateJoin();
-		this.join.show();
+//		this.join.show();
 	} else {
+		this.join.disconnect();
 		this.container.hide();
-		this.join.hide();
 	}
 
 };

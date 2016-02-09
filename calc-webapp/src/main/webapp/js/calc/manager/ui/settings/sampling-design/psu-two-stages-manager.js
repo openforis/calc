@@ -12,7 +12,6 @@ PSUTwoStagesManager = function( container , sdERDManager , stepNo ){
 		dataProvider.tableName 	= ws.primarySUTableName;
 		dataProvider.extSchema	= true;
 		
-//		this.baseUnitPhase1Join	= new ERDTableJoin( 'baseUnitPhase1Join' );
 		
 		this.areaColumn 		= new ERDTableColumnSelector( 'psu_area_column', 'Area column' );
 		this.noBaseUnitColumn 	= new ERDTableColumnSelector( 'no_base_unit_column', 'No. base unit column' );
@@ -23,9 +22,9 @@ PSUTwoStagesManager = function( container , sdERDManager , stepNo ){
 		this.addColumnSelector( this.noBaseUnitColumn );
 		
 		EventBus.addEventListener( "calc.sampling-design.two-stages-change", 	this.update, this );
-		EventBus.addEventListener( "calc.sampling-design.base-unit-change", this.baseUnitChange , this );
+//		EventBus.addEventListener( "calc.sampling-design.base-unit-change", this.baseUnitChange , this );
 		
-		this.loadPSUTable();
+		this.update();
 
 	} , this ) );
 	
@@ -47,10 +46,14 @@ PSUTwoStagesManager.prototype.update = function(){
 		this.container.fadeIn();
 //		this.baseUnitPhase1Join.show();
 		this.highlight();
+		this.loadPSUTable();
 	} else {
 		$( '.two-stages-container' ).hide();
-		this.container.fadeOut();
+		this.container.hide();
 //		this.baseUnitPhase1Join.hide();
+		
+		this.areaColumn.disconnect();
+		this.noBaseUnitColumn.disconnect();
 	}
 
 };
@@ -88,31 +91,4 @@ PSUTwoStagesManager.prototype.updateColumnSelectors = function(){
 	
 		this.updateEditMode();
 	}
-};
-
-PSUTwoStagesManager.prototype.updateJoins = function(){
-	if( this.sd().twoPhases === true ){
-		this.baseUnitPhase1Join.setRightTable( this.sdERDManager.baseUnitManager.table );
-		this.baseUnitPhase1Join.setLeftTable( this.table );
-		
-		if( this.dataProvider.getTableInfo() ){
-			this.baseUnitPhase1Join.connect( this.sd().phase1JoinSettings );
-		}
-	} else {
-		this.baseUnitPhase1Join.reset();
-		this.baseUnitPhase1Join.hide();
-	}
-	
-};
-
-//PSUTwoStagesManager.prototype.uploadCallback = function( schema , table ){
-//	var $this = this;
-//	this.loadPSUTable();
-//};
-
-PSUTwoStagesManager.prototype.baseUnitChange = function(){
-	//Reset phase 1 join settings
-//	this.sd().phase1JoinSettings = {};
-//	this.baseUnitPhase1Join.reset();
-	
 };

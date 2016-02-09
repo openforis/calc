@@ -55,7 +55,7 @@ SamplingDesignEditManager.prototype.show = function(){
 			$this.applyAreaWeighted.prop( 'checked' , applyAreaWeighted );
 		}
 		
-		$this.samplingDesignERDManager.show( $this.samplingDesign );
+		$this.samplingDesignERDManager.show( $this.samplingDesign , "edit" );
 		$this.samplingDesignStepButtonsManager.updateView();
 		
 	});

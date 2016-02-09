@@ -4,7 +4,8 @@
  */
 ReportingUnitManager = function( container , sdERDManager , stepNo ){
 	
-	var dataProvider 	= new CsvFileDataProvider( null , false);
+	var onUpload = $.proxy( this.showImport , this );
+	var dataProvider 	= new CsvFileDataProvider( onUpload , false);
 	dataProvider.setTableInfo( new ReportingUnitManager.prototype.tableInfo() );
 	dataProvider.tableAlias = 'Reporting Unit (AOI)';
 	
@@ -23,6 +24,8 @@ ReportingUnitManager = function( container , sdERDManager , stepNo ){
 	this.join.leftJoinPointCssClass = 'anchor-right';
 	this.join.onChange				= $.proxy( this.onJoinChange , this );
 	
+	this.joinColumnStepNo = -1;
+	
 	this.addJoin( this.join );
 	
 	this.update();
@@ -30,17 +33,20 @@ ReportingUnitManager = function( container , sdERDManager , stepNo ){
 ReportingUnitManager.prototype 				= Object.create(SamplingDesignStepManager.prototype);
 ReportingUnitManager.prototype.constructor 	= ReportingUnitManager;
 
+ReportingUnitManager.prototype.show = function(){
+	this.container.fadeIn();
+	this.highlight();
+};
 
 ReportingUnitManager.prototype.update = function(){
 	
 	if( this.sd().samplingUnitId  ){
-		this.container.fadeIn();
-		this.highlight();
+		this.show();
 		this.updateJoin();
-		this.join.show();
+//		this.join.show();
 	} else {
-		this.container.hide();
-		this.join.hide();
+//		this.container.hide();
+//		this.join.hide();
 	}
 
 };
@@ -69,17 +75,17 @@ ReportingUnitManager.prototype.updateJoin = function(){
 	
 	var leftTable = null;
 	if( this.sd().twoPhases === true ){
-		leftTable = this.sdERDManager.twoPhasesManager.table;
+		leftTable = (this.sdERDManager.twoPhasesManager) ? this.sdERDManager.twoPhasesManager.table : null;
 	} else if( this.sd().twoStages === true ){
-		leftTable = this.sdERDManager.psuManager.table;
-	} else {
+		leftTable = (this.sdERDManager.psuManager) ? this.sdERDManager.psuManager.table : null;
+	} else if( this.sdERDManager.baseUnitManager ){
 		leftTable = this.sdERDManager.baseUnitManager.table;
 	}
 	
 	var firstEdit 	= !this.sd().id;
 	var show 		= ( this.stepNo == this.currentStepNo ) || !firstEdit;
 	
-	if( leftTable && leftTable.dataProvider.getTableInfo() && show){
+	if( leftTable && leftTable.dataProvider.getTableInfo() ){
 		this.join.setRightTable( this.table );
 		this.join.setLeftTable( leftTable );
 		
@@ -93,8 +99,16 @@ ReportingUnitManager.prototype.showEditStep = function( evt, stepNo ){
 	
 	SamplingDesignStepManager.prototype.showEditStep.call( this , evt , stepNo );
 
-	if( this.sdERDManager.editMode && this.currentStepNo == this.stepNo && !this.sd().id){
+//	if( this.sdERDManager.editMode && this.currentStepNo == this.stepNo && !this.sd().id){
+//		this.update();
+//	}
+	
+	if( stepNo == this.joinColumnStepNo ){
 		this.update();
+		this.join.highlight();
+		this.join.setEditMode( true );
+	} else {
+		this.join.setEditMode( false );
 	}
 };
 ReportingUnitManager.prototype.joinColumnName = function(){
@@ -138,4 +152,20 @@ ReportingUnitManager.prototype.tableInfo = function(){
 	this.fields.columns = [];
 	
 	this.fields.columns.push( { 'column_name' : ReportingUnitManager.prototype.joinColumnName() } );
+};
+
+
+ReportingUnitManager.prototype.showImport = function(response){
+//	$('#aoi-import-column-selector')
+	console.log( response );
+	var filePath = response.fields.filepath;
+	
+	
+	var modalDiv 		= $( '#aoi-import-column-selector' );
+	var onImport		= function(){
+		modalDiv.modal( 'hide' );
+	};
+	var importer		= new ReportingUnitImportManager( modalDiv , onImport , response );
+	
+	modalDiv.modal( 'show' );
 };

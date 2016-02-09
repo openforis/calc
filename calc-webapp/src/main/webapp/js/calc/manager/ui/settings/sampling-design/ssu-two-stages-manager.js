@@ -10,17 +10,22 @@ SSUTwoStagesManager = function( container , sdERDManager , stepNo ){
 		var dataProvider 	= new EntityDataProvider( ssuChange );
 		dataProvider.tableTitle ='SSU: ';
 		
-		this.psuJoin	= new ERDTableJoin( 'baseUnitPhase1Join' );
-		this.psuJoin.leftJoinPointCssClass = 'anchor-right';
+		this.psuJoin	= new ERDTableJoin( 'psuSsuJoin' );
+		this.psuJoin.rightJoinPointCssClass = 'anchor-right';
+		this.psuJoin.onChange = $.proxy( this.joinChange , this ); 
 		
+		this.baseUnitSsuJoin	= new ERDTableJoin( 'baseUnitSsuJoin' );
+		this.baseUnitSsuJoin.leftColumnsReadOnly = true;
+		this.baseUnitSsuJoin.rightColumnsReadOnly = true;
 		SamplingDesignStepManager.call( this, container , sdERDManager , stepNo , dataProvider );
 		
 		this.addJoin( this.psuJoin );
 		
 		EventBus.addEventListener( "calc.sampling-design.two-stages-change", 	this.update, this );
-		EventBus.addEventListener( "calc.sampling-design.base-unit-change", this.baseUnitChange , this );
-		EventBus.addEventListener( "calc.sampling-design.psu-table-change", this.psuTableChange , this );
+//		EventBus.addEventListener( "calc.sampling-design.base-unit-change", this.baseUnitChange , this );
+		EventBus.addEventListener( "calc.sampling-design.psu-table-change", this.updateJoins , this );
 		
+		this.update();
 		if( this.sd().twoStagesSettings && this.sd().twoStagesSettings.ssuOriginalId ){
 			WorkspaceManager.getInstance().activeWorkspace(function(ws){
 				
@@ -46,13 +51,13 @@ SSUTwoStagesManager.prototype.update = function(){
 		}
 		
 		this.container.fadeIn();
-		this.psuJoin.show();
+//		this.psuJoin.show();
 		this.highlight();
 		
 	} else {
 		$( '.two-stages-container' ).hide();
 		this.container.hide();
-		this.psuJoin.hide();
+		this.psuJoin.disconnect();
 	}
 
 };
@@ -68,12 +73,16 @@ SSUTwoStagesManager.prototype.ssuChange = function( entityId ){
 	var $this = this;
 	WorkspaceManager.getInstance().activeWorkspace(function(ws){
 		var entity = ws.getEntityById( entityId );
-		$this.sd().twoStagesSettings.ssuOriginalId	= entity.originalId;
+		var ssuOrigId = ( entity ) ? entity.originalId : null;
+		$this.sd().twoStagesSettings.ssuOriginalId	= ssuOrigId;
 	});
 	
 	this.updateJoins();
 };
+
 SSUTwoStagesManager.prototype.updateJoins = function(){
+	this.psuJoin.disconnect();
+	this.baseUnitSsuJoin.disconnect();
 	if( this.sd().twoStages === true ){
 		
 		this.psuJoin.setRightTable( this.table );
@@ -85,19 +94,40 @@ SSUTwoStagesManager.prototype.updateJoins = function(){
 			this.updateEditMode();
 		}
 		
+		
+		this.baseUnitSsuJoin.setRightTable( this.table );
+		this.baseUnitSsuJoin.setLeftTable( this.sdERDManager.baseUnitManager.table );
+		
+		var lInfo = this.sdERDManager.baseUnitManager.dataProvider.getTableInfo();
+		var rInfo = this.dataProvider.getTableInfo();
+		if( lInfo && rInfo ){
+			
+			//{"rightTable":{"schema":"calc","table":"plot"},"columns":[{"left":"plot","right":"plot_no"},{"left":"cluster","right":"cluster_id"}],"leftTable":{"schema":"calc","table":"_phase1_plot_laputa"}}
+			var joinSettings = {};
+			joinSettings.rightTable 		= {};
+			joinSettings.rightTable.schema 	= rInfo.fields.schema;
+			joinSettings.rightTable.table 	= rInfo.fields.table;
+			joinSettings.leftTable 		= {};
+			joinSettings.leftTable.schema 	= lInfo.fields.schema;
+			joinSettings.leftTable.table 	= lInfo.fields.table;
+			joinSettings.columns	= [];
+			var colJoin = {};
+			colJoin.left 	= lInfo.fields.idColumn.column_name; 
+			colJoin.right 	= rInfo.fields.idColumn.column_name; 
+			joinSettings.columns.push( colJoin );
+			this.baseUnitSsuJoin.connect(joinSettings);
+			this.baseUnitSsuJoin.setEditMode(false);
+		}
+		
+		
+		
 	} else {
-		this.psuJoin.reset();
-		this.psuJoin.hide();
+//		this.psuJoin.reset();
+//		this.psuJoin.hide();
 	}
 	
 };
 
-SSUTwoStagesManager.prototype.baseUnitChange = function(){
-	//Reset phase 1 join settings
-//	this.sd().phase1JoinSettings = {};
-//	this.baseUnitPhase1Join.reset();
-	
-};
-SSUTwoStagesManager.prototype.psuTableChange = function(){
-	this.updateJoins();
+SSUTwoStagesManager.prototype.joinChange = function(){
+	this.sd().twoStagesSettings.joinSettings = this.psuJoin.jsonSettings();
 };

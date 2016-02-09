@@ -45,6 +45,7 @@ SamplingDesignStepButtonsManager.prototype.init = function(){
 		
 		this.twoPhasesBtn.disable();
 		this.clusterBtn.disable();
+		this.stratifiedBtn.deselect();
 		this.stratifiedBtn.disable();
 		EventBus.dispatch( "calc.sampling-design.two-stages-change", null );
 	}, this) );	

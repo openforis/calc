@@ -1088,12 +1088,14 @@ table.import-csv-table {
 	font-size: small;
 }
 table.import-csv-table th {	
-	text-align: center;
-	background-color: #5d616e;
-	padding: 1em 0em;
+    text-align: center;
+    background-color: rgba(83, 104, 128, 0.5);
+    padding: 1em 0em;
+    border-bottom: 1px solid rgba(83, 104, 128, 0.9);
+    font-weight: 100;
 }
 table.import-csv-table td {
-	padding: 0.5em 0px;
+	padding: 2% 5%;
 	text-align: center;
 }
 table.import-csv-table tr:not(:first-child) {
@@ -1104,6 +1106,7 @@ table.import-csv-table select {
 	display: inherit;
 	border: none;
 	border-radius: 1px;
+    height: 35px;
 }
 table.import-csv-table option {
 	margin: 1em 0em;	
@@ -1310,14 +1313,14 @@ ul.ui-sortable li {
 div.progress {
 	border-radius : 1px !important;
 }
-#job-status .modal-dialog {
+.modal-dialog {
     width: 90%;
     height: 100%;
 }
 #job-status .modal-dialog button {
 	font-weight: 100 !important;
 }
-#job-status .modal-content {
+.modal-content {
     background-color: rgba(73, 85, 113, 0.9);
     color: #FFFFFF;
     border: none;
@@ -1325,14 +1328,14 @@ div.progress {
 	border-radius: 0px;
     height: 100%;
 }
-#job-status .modal-header {
+.modal-header {
 	border-bottom: none;
 	height: 10%;
 }
-#job-status .modal-body {
+.modal-body {
 	height: 80%;
 }
-#job-status .modal-footer {
+.modal-footer {
 	border-top: none;
 	margin-top: 0px;
 	height: 10%;
@@ -1353,22 +1356,22 @@ div.progress {
 #job-status .status {
 	text-transform: capitalize;
 }
-#job-status .download-r-code button,
-#job-status .download-r-code button:focus {
-	display: block; 
-	color: rgb(44, 62, 80);
-	border: 1px solid #DDDDDD;
-	border-radius: 0px;
-	font-size: 1.3em;
-}
-#job-status .download-r-code button:hover {
-	display: block; 
-	color: rgb(44, 62, 80);
-	border: 1px solid #DDDDDD;
-	border-radius: 0px;
-	background-color: #FDFDFD;
-	font-size: 1.3em;
-}
+/* #job-status .download-r-code button, */
+/* #job-status .download-r-code button:focus { */
+/* 	display: block;  */
+/* 	color: rgb(44, 62, 80); */
+/* 	border: 1px solid #DDDDDD; */
+/* 	border-radius: 0px; */
+/* 	font-size: 1.3em; */
+/* } */
+/* #job-status .download-r-code button:hover { */
+/* 	display: block;  */
+/* 	color: rgb(44, 62, 80); */
+/* 	border: 1px solid #DDDDDD; */
+/* 	border-radius: 0px; */
+/* 	background-color: #FDFDFD; */
+/* 	font-size: 1.3em; */
+/* } */
 
 #task-status {
 	display: none;	

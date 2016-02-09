@@ -156,7 +156,7 @@ AoiManager.prototype.import = function() {
 	var captions = [];
 	$.each(s, function(i,e){
 		var caption = $(e).val();
-		if(caption=="") {
+		if( StringUtils.isBlank(caption) ) {
 			UI.showError( "Caption not valid for level " + (i+1) , true );
 			return;
 		}

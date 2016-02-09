@@ -200,8 +200,16 @@ ERDTableJoin.prototype.connect	= function( joinSettings ){
 		this.rightHtml.addClass( this.rightHtmlCssId );
 		this.rightRows			= this.rightHtml.find( '.table-join-body' );
 		
-		this.leftTable.tableJoins.append( this.leftHtml ); 
-		this.rightTable.tableJoins.append( this.rightHtml ); 
+		if( this.leftTable.tableJoins.find( '.'+this.leftHtmlCssId ).length  ){
+			this.leftTable.tableJoins.find( '.'+this.leftHtmlCssId ).replaceWith( this.leftHtml );
+		} else {
+			this.leftTable.tableJoins.append( this.leftHtml ); 
+		}
+		if( this.rightTable.tableJoins.find( '.'+this.rightHtmlCssId ).length  ){
+			this.rightTable.tableJoins.find( '.'+this.rightHtmlCssId ).replaceWith( this.rightHtml );
+		} else {
+			this.rightTable.tableJoins.append( this.rightHtml ); 
+		}
 		
 		if( joinSettings && joinSettings.columns && joinSettings.columns.length > 0 ){
 
@@ -226,10 +234,10 @@ ERDTableJoin.prototype.updateConnections	= function( ){
 ERDTableJoin.prototype.disconnect	= function(){
 	this.reset();
 	if( this.leftTable ){
-		this.leftTable.tableJoins.find( '.'+this.leftHtmlCssId ).remove();
+		this.leftTable.tableJoins.find( '.'+this.leftHtmlCssId ).empty().hide();
 	}
 	if( this.rightTable ){
-		this.rightTable.tableJoins.find( '.'+this.rightHtmlCssId ).remove();
+		this.rightTable.tableJoins.find( '.'+this.rightHtmlCssId ).empty().hide();
 	}
 	this.leftTable = this.rightTable = this.leftHtml = this.rightHtml = null;
 };

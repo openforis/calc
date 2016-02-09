@@ -63,7 +63,7 @@ ClusterManager.prototype.update = function(){
 		
 		if( table ){
 			var tableInfo 	= table.dataProvider.getTableInfo();
-			var value 		= this.sd().clusterColumnSettings.column;
+			var value 		= (this.sd().clusterColumnSettings) ? this.sd().clusterColumnSettings.column : '';
 			
 			var onChange = function(){
 				this.sd().clusterColumnSettings 		= {};

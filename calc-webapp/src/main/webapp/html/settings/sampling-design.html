@@ -34,8 +34,20 @@
 				
 				<div class="col-md-10 height100">
 					
-					<!-- Sampling unit selection -->
 					<div class="row option step step-0 height100">
+						<div class="row">
+							<div class="col-md-12 hint" >
+								<i class="fa fa-hand-o-right"></i>&nbsp;?
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-12"><h4>Reporting Unit (AOI)</h4>
+							</div>
+						</div>
+					</div>
+					
+					<!-- Sampling unit selection -->
+					<div class="row option step step-1 height100">
 						<div class="row">
 							<div class="col-md-12 hint" >
 								<i class="fa fa-hand-o-right"></i>&nbsp;The base unit is the first level of aggregation. (i.e. a plot, subplot, or a section within a plot).
@@ -56,7 +68,7 @@
 					</div>
 					
 					<!-- 2 phases -->					
-					<div class="row option step step-1 height100">
+					<div class="row option step step-2 height100">
 						
 						<div class="row">
 							<div class="col-md-12 hint" >
@@ -74,7 +86,7 @@
 					</div>
 					
 					<!-- 2 stages with SRS -->
-					<div class="row option step step-2 height100">
+					<div class="row option step step-3 height100">
 					
 						<div class="row">
 							<div class="col-md-12 hint" >
@@ -92,7 +104,7 @@
 					</div>
 					
 					<!-- strata -->
-					<div class="row option step step-3">
+					<div class="row option step step-4">
 						<div class="row">
 							<div class="col-md-12 hint" >
 								<i class="fa fa-hand-o-right"></i>&nbsp;A stratified sampling design purposely partitions the target population into two or more non-overlapping subpopulations, called strata, which are sampled separately.
@@ -108,7 +120,7 @@
 					</div>
 					
 					<!-- cluster -->
-					<div class="row option step step-4 height100">
+					<div class="row option step step-5 height100">
 						
 						<div class="row">
 							<div class="col-md-12 hint" >
@@ -126,7 +138,7 @@
 					</div>
 					
 					<!-- aoi -->
-					<div class="row option step step-5 height100">
+					<div class="row option step step-6 height100">
 						<div class="row">
 							<div class="col-md-12 hint" >
 								<i class="fa fa-hand-o-right"></i>&nbsp;Select which variable is used to join the data with the the lowest level of the hierarchy of the reporting unit. 
@@ -134,7 +146,7 @@
 						</div>
 						<div class="row height25">
 							<div class="col-md-8 col-md-offset-2 text-center">
-								<h4>Area of Interest</h4>
+								<h4>Reporting Unit (AOI) join</h4>
 							</div>
 						</div>
 					
@@ -176,7 +188,7 @@
 				
 				<div class="modal-body col-md-12">
 					<div class="row import-section height100 no-padding no-margin">
-						<div class="col-md-12" style="overflow: auto;">
+						<div class="col-md-8 col-md-offset-2" style="overflow: auto;">
 							<table style="width:100%" class="import-csv-table">
 								<thead>
 								</thead>
@@ -184,7 +196,7 @@
 								</tbody>
 							</table>
 						</div>
-						<div class="row col-md-6 col-md-offset-3" style="padding-top: 0.5em;">
+						<div class="row col-md-4 col-md-offset-4" style="padding-top: 5%;">
 							<button type="button" class="btn btn-default width100" name="import-btn">Import</button>
 						</div>
 					</div>
@@ -197,6 +209,55 @@
 		</div><!-- /.modal-dialog -->
 	</div><!-- /.modal -->
 	
+	
+	<!-- ==== Import columns modal section ==== -->
+	<div class="modal fade" id="aoi-import-column-selector">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				
+				<div class="modal-header col-md-12">
+					<div class="col-md-offset-2 col-md-8">
+						<h4 class="modal-title">Select captions for the Reporting Unit levels</h4>
+					</div>	
+				</div>
+				
+				<div class="modal-body col-md-12">
+					<div class="row import-section height100 no-padding no-margin">
+						<div class="col-md-8 col-md-offset-2" style="overflow: auto;">
+							<div class="row col-md-10 col-md-offset-1 aoi-import-section height100">
+								<div class="row">
+									<div class="col-md-2 col-md-offset-5">Level captions</div>
+								</div>
+								<div class="row levels">
+									
+								</div>
+								<div class="row level" style="display: none;">
+									<div class="col-md-6 col-md-offset-3">
+										<input type="text" class="form-control" >
+									</div>
+								</div>
+<!-- 								<div class="row "> -->
+<!-- 									<div class="col-md-2 col-md-offset-4 text-center"> -->
+<!-- 										<button type="button" class="btn btn-default width90" name="import-btn">Import</button> -->
+<!-- 									</div> -->
+<!-- 									<div class="col-md-2 text-center"> -->
+<!-- 										<button type="button" class="btn btn-default width90" name="cancel-btn">Cancel</button> -->
+<!-- 									</div> -->
+<!-- 								</div> -->
+							</div>
+						</div>
+						<div class="row col-md-4 col-md-offset-4" style="padding-top: 5%;">
+							<button type="button" class="btn btn-default width100" name="import-btn">Import</button>
+						</div>
+					</div>
+				</div>
+				
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default close-btn" data-dismiss="modal" aria-hidden="true">Close</button>
+				</div>
+			</div><!-- /.modal-content -->
+		</div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
 	<script>
 	$(function() {
 		var manager = new SamplingDesignManager( $("#sampling-design") );

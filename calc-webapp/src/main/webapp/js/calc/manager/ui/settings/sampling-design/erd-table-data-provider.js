@@ -44,6 +44,9 @@ EntityDataProvider.prototype.setEntityId = function( entityId ){
 				this.fields.table 	= entity.name;
 				this.fields.schema 	= 'calc';
 				this.fields.columns = [];
+
+				this.fields.idColumn = { 'column_name' : '_id_' };
+				this.fields.columns.push( this.fields.idColumn );
 				
 				var vars = entity.hierarchyVariables();
 				for( var i in vars ){

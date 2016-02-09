@@ -12,9 +12,16 @@ BaseUnitManager = function( container , sdERDManager , stepNo ){
 	
 	SamplingDesignStepManager.call( this, container , sdERDManager , stepNo , dataProvider );
 };
+
 BaseUnitManager.prototype 				= Object.create(SamplingDesignStepManager.prototype);
 BaseUnitManager.prototype.constructor 	= BaseUnitManager;
 
+BaseUnitManager.prototype.showEditStep = function( evt, stepNo ){
+	SamplingDesignStepManager.prototype.showEditStep.call( this, evt , stepNo );
+	if( this.stepNo == this.currentStepNo ){
+		this.show();
+	}
+};
 
 BaseUnitManager.prototype.show = function( ){
 	this.container.parent().fadeIn();

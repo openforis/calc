@@ -89,7 +89,7 @@ $(document).ready(function() {
 		WorkspaceManager.getInstance().activeWorkspace( function(ws){
 			if ( ws ) {
 				UI.enable( wsButtons );
-				if( ws.aoiHierarchies.length > 0 ) {
+//				if( ws.aoiHierarchies.length > 0 ) {
 					UI.enable( aoiButtons );
 					
 					var sd = ws.samplingDesign;
@@ -105,7 +105,7 @@ $(document).ready(function() {
 							UI.enable( errorButton );
 //						}
 					}
-				}
+//				}
 				var chain = ws.getDefaultProcessingChain();
 				if( chain && chain.calculationSteps.length > 0 ){
 					UI.enable( stepsButtons );			
