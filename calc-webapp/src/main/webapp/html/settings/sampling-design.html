@@ -258,9 +258,32 @@
 			</div><!-- /.modal-content -->
 		</div><!-- /.modal-dialog -->
 	</div><!-- /.modal -->
+	
+	
+	
+	<div class="col-md-12 sampling-design-table-data height100 width100" >
+		<div class="row height10">
+			<div class='col-md-3'>
+				<button class="btn no-background height100 close-btn">
+					<i class="fa fa-times-circle"></i>
+				</button>
+			</div>
+			<div class='col-md-6 text-center'><h4 class='table-title'></h4></div>
+		</div>
+		
+		<div class="row height90">
+			<div class='col-md-10 height100 col-md-offset-1 data-container'>
+			</div>
+		</div>
+	</div>
 	<script>
 	$(function() {
+// 		if( !Calc.samplingDesignManager ){
+// 			Calc.samplingDesignManager = new SamplingDesignManager( $("#sampling-design") );
+// 		}
+// 		var manager = Calc.samplingDesignManager;
 		var manager = new SamplingDesignManager( $("#sampling-design") );
+		manager.showView();
 	});
 	</script>
 </div>

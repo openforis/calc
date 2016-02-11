@@ -8,6 +8,7 @@ ReportingUnitManager = function( container , sdERDManager , stepNo ){
 	var dataProvider 	= new CsvFileDataProvider( onUpload , false);
 	dataProvider.setTableInfo( new ReportingUnitManager.prototype.tableInfo() );
 	dataProvider.tableAlias = 'Reporting Unit (AOI)';
+	dataProvider.tableType	= CsvFileDataProvider.AOI_TABLE_TYPE;
 	
 	SamplingDesignStepManager.call( this, container , sdERDManager , stepNo , dataProvider );
 	

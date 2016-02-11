@@ -19,8 +19,8 @@ SamplingDesignManager = function(container) {
 	this.samplingDesignERDManager	= new SamplingDesignERDManager( this.editErdSd );
 	
 	this.samplingDesignEditManager = new SamplingDesignEditManager( this.editSd, this.samplingDesignERDManager, this.container );
-	this.samplingDesignEditManager.hide();
 	
+	this.samplingDesignViewTableDataManager = new SamplingDesignViewTableDataManager( $('.sampling-design-table-data') );
 	
 	this.samplingDesign = {};
 	
@@ -43,35 +43,40 @@ SamplingDesignManager.prototype.init = function(){
 		$this.samplingDesignEditManager.show();
 	}); 
 	
-	// populate sampling unit select with workspace entities and update view ui 
-	WorkspaceManager.getInstance().activeWorkspace( function(ws){
-		//refresh sampling unit select.
-//		$this.samplingUnitCombo.data( ws.entities, 'id','name' );
-		
-		//if sampling design is defined for active workspace update ui
-		$this.updateSamplingDesign();
-	});
 	
-	var showView = function(){
-		var $this = this;
-		WorkspaceManager.getInstance().activeWorkspace( function(ws){
-			//refresh sampling unit select.
-//			$this.samplingUnitCombo.data( ws.entities, 'id','name' );
-			
-			//if sampling design is defined for active workspace update ui
-			$this.updateSamplingDesign();
-			$this.samplingDesignEditManager.hide();
-			
-			var samplingDesign = $.extend(true, {}, ws.samplingDesign );
-			$this.samplingDesignERDManager.show( samplingDesign );
-			
-		});
-	};
+//	var showView = function(){
+//		var $this = this;
+//		WorkspaceManager.getInstance().activeWorkspace( function(ws){
+//			//refresh sampling unit select.
+////			$this.samplingUnitCombo.data( ws.entities, 'id','name' );
+//			
+//			//if sampling design is defined for active workspace update ui
+//			$this.updateSamplingDesign();
+//			$this.samplingDesignEditManager.hide();
+//			
+//			var samplingDesign = $.extend(true, {}, ws.samplingDesign );
+//			$this.samplingDesignERDManager.show( samplingDesign );
+//			
+//		});
+//	};
 	
-	EventBus.addEventListener( "calc.sampling-design.saved", showView, this );
-	$.proxy( showView , this )();
+	EventBus.addEventListener( "calc.sampling-design.saved", this.showView, this );
+//	$.proxy( showView , this )();
+//	this.showView();
 };
 
+SamplingDesignManager.prototype.showView = function(){
+	WorkspaceManager.getInstance().activeWorkspace( $.proxy(function(ws){
+		this.samplingDesignEditManager.hide();
+		
+		this.updateSamplingDesign();
+		
+		var samplingDesign = $.extend(true, {}, ws.samplingDesign );
+		this.samplingDesignERDManager.show( samplingDesign );
+		
+	}, this) );
+
+};
 
 /**
  * Update view ui

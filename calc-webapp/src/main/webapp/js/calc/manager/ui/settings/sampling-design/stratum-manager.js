@@ -5,10 +5,11 @@
 StratumManager = function( container , sdERDManager , stepNo ){
 	
 	var uploadCallback 	= $.proxy(this.uploadCallback , this );
-	var dataProvider 	= new CsvFileDataProvider( uploadCallback , false);
+	var dataProvider 					= new CsvFileDataProvider( uploadCallback , false);
 	dataProvider.setTableInfo( new StratumManager.prototype.tableInfo() );
-	dataProvider.tableAlias = 'Stratum Labels';
-	dataProvider.selectColumnsToImport = false;
+	dataProvider.tableAlias 			= 'Stratum Labels';
+	dataProvider.selectColumnsToImport 	= false;
+	dataProvider.tableType				= CsvFileDataProvider.STRATUM_TABLE_TYPE;
 	
 	SamplingDesignStepManager.call( this, container , sdERDManager , stepNo , dataProvider );
 	

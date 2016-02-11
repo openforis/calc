@@ -1032,8 +1032,8 @@ ul.scroll-menu {
 */
 #settings .settings-btn ,
 #settings .settings-btn:focus {
-	height: 65%;
-	width: 15%;
+	height: 60%;
+    width: 18%;
 	font-size: 1.1em;
 /* 	font-weight: 200; */
 	line-height: 2em;
@@ -1049,9 +1049,10 @@ ul.scroll-menu {
 }
 
 #settings .group {
-	height: 33%;
+	height: 50%;
+/* 	height: 33%; */
 	width: 100%;
-	padding: 10px 0px 0px 0px;
+	padding: 0px 0px 0px 0px;
 	margin: 0px;
 }
 #settings .group-header {
@@ -1059,13 +1060,14 @@ ul.scroll-menu {
 	width: 100%;
 	padding: 0px;
 	margin: 0px;
+	padding-top: 2.5%;
 }
-
 #settings .group-buttons {
-	height: 75%;
-	width: 100%;
-	padding: 2px 0px;
-	margin: 0px;
+	height: 60%;
+    width: 100%;
+    /* padding: 0px 0px; */
+    margin: 0px;
+    padding-top: 1%;
 }
 #settings .group-header div {
 	border-bottom: 1px solid #8f91a0;

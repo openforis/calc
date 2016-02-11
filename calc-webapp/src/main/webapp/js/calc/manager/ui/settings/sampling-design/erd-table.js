@@ -56,6 +56,9 @@ ERDTable.prototype.initView = function(){
 		
 		this.viewDataHtml 	= $( '<div class="button-container width20 text-center"><button type="button" class="btn btn-default" name="view-btn"><i class="fa fa-table"></i></button></div>' );
 		this.viewDataButton = this.viewDataHtml.find( 'button[name=view-btn]' );
+		this.viewDataButton.click($.proxy(function(e){
+			EventBus.dispatch('calc.sampling-design.show-table-data', null, this );
+		},this));
 		this.header.append( this.viewDataHtml );
 		
 		this.dataProvider.initUploadForm( this.uploadCsvHtml );

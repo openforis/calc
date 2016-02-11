@@ -37,7 +37,7 @@ SamplingDesignValidator.prototype.validateStep0 = function(){
 
 
 /**
- * Sampling unit validation
+ * Base unit validation
  */
 SamplingDesignValidator.prototype.validateStep1 = function(){
 	if( this.sd().samplingUnitId ){

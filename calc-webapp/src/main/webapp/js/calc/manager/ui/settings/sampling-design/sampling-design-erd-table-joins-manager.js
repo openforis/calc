@@ -203,12 +203,12 @@ ERDTableJoin.prototype.connect	= function( joinSettings ){
 		if( this.leftTable.tableJoins.find( '.'+this.leftHtmlCssId ).length  ){
 			this.leftTable.tableJoins.find( '.'+this.leftHtmlCssId ).replaceWith( this.leftHtml );
 		} else {
-			this.leftTable.tableJoins.append( this.leftHtml ); 
+			(this.id === 'aoi-join') ? this.leftTable.tableJoins.prepend( this.leftHtml ): this.leftTable.tableJoins.append( this.leftHtml ); 
 		}
 		if( this.rightTable.tableJoins.find( '.'+this.rightHtmlCssId ).length  ){
 			this.rightTable.tableJoins.find( '.'+this.rightHtmlCssId ).replaceWith( this.rightHtml );
 		} else {
-			this.rightTable.tableJoins.append( this.rightHtml ); 
+			(this.id === 'aoi-join') ? this.rightTable.tableJoins.prepend( this.rightHtml ): this.rightTable.tableJoins.append( this.rightHtml ); 
 		}
 		
 		if( joinSettings && joinSettings.columns && joinSettings.columns.length > 0 ){

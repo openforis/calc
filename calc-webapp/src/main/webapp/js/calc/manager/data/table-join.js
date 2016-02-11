@@ -1,5 +1,5 @@
 /**
- * it manages the join between two table
+ * Objects that represents a relational join between two table
  * @author Mino Togna
  */
 

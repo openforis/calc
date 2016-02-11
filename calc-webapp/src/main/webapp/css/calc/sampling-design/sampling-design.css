@@ -1,5 +1,8 @@
 @CHARSET "UTF-8";
 
+#sampling-design {
+	overflow: hidden;
+}
 /**
 **
 ** Sampling design section
@@ -44,7 +47,7 @@
 
 /* ERD css classes  */
 .sampling-design-erd {
-	width: 100% !important;
+	width: auto !important;
 	height: 100% !important;
 /* 	border: 1px solid rgba(33, 132, 131, 0.28); */
 }
@@ -98,13 +101,11 @@
 	transition: all 0.35s ease;
 }
 .two-rows-center {
-    padding: 40% 5% 5% 5% !important;
-    height: 80%;
+    padding: 30% 5% 5% 5% !important;
+    height: 90%;
     transition: all 0.35s ease;
 }
-div.left-placeholder {
-	width:12.5% !important;
-}
+
 .erd-table {
     border: 1px solid rgba(183, 176, 176, 0.3); 
     border-radius: 1px; 
@@ -192,8 +193,6 @@ span.anchor-right {
 	margin-bottom: 1px;
 }
 
-
-
 #sampling-design .typeahead{
 	border-radius: 0px;
     color: white !important;
@@ -218,8 +217,25 @@ span.anchor-right {
 
 
 
-
-
+.sampling-design-table-data {
+    border: 1px solid rgba(183, 176, 176, 0.3);
+    border-radius: 1px;
+    background-color: rgba(74, 76, 85,.95);
+    position: fixed;
+    top: 0%;
+    z-index: 1100;
+    left: 100%;
+    padding: 30px 15px !important;
+}
+.sampling-design-table-data button.close-btn i{
+	font-size: 200% !important;
+}
+.sampling-design-table-data .table-title{
+	border: 1px solid rgba(183, 176, 176, 0.3);
+    padding: 2.5%;
+    margin: 0px !important;
+    font-size: 120%;
+}
 
 
 

@@ -98,6 +98,8 @@ CsvFileDataProvider = function(uploadCallback , selectColumnsToImport){
 	this.selectColumnsToImport 	= ( selectColumnsToImport === true );
 	
 	this.tableAlias = '';
+	// table type can be AOI, STRATUM, or '' by default it's a database table
+	this.tableType  = '';
 	
 	this.tableName 	= '';
 	this.extSchema 	= false;
@@ -125,3 +127,11 @@ CsvFileDataProvider.prototype.showImportColumns = function( response ){
 	
 	modalDiv.modal( 'show' );
 };
+CsvFileDataProvider.prototype.isAoi = function(){
+	return this.tableType == CsvFileDataProvider.AOI_TABLE_TYPE;
+};
+CsvFileDataProvider.prototype.isStratum = function(){
+	return this.tableType == CsvFileDataProvider.STRATUM_TABLE_TYPE;
+};
+CsvFileDataProvider.AOI_TABLE_TYPE = 'AOI';
+CsvFileDataProvider.STRATUM_TABLE_TYPE = 'STRATUM';
