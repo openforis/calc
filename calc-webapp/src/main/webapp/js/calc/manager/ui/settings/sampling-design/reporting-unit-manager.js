@@ -1,5 +1,5 @@
 /**
- * Manager for Stratified step
+\ * Manager for Stratified step
  * @author M. Togna
  */
 ReportingUnitManager = function( container , sdERDManager , stepNo ){
@@ -13,7 +13,7 @@ ReportingUnitManager = function( container , sdERDManager , stepNo ){
 	SamplingDesignStepManager.call( this, container , sdERDManager , stepNo , dataProvider );
 	
 	EventBus.addEventListener( "calc.sampling-design.base-unit-change", this.updateJoin , this );
-	EventBus.addEventListener( "calc.sampling-design-stratified-change", this.updateJoin, this );
+	EventBus.addEventListener( "calc.sampling-design.stratified-change", this.updateJoin, this );
 	EventBus.addEventListener( "calc.sampling-design.two-phases-change", this.updateJoin, this );
 	EventBus.addEventListener( "calc.sampling-design.phase1-table-change", this.updateJoin , this );
 	EventBus.addEventListener( "calc.sampling-design.two-stages-change", this.updateJoin, this );
@@ -84,9 +84,9 @@ ReportingUnitManager.prototype.updateJoin = function(){
 	}
 	
 	var firstEdit 	= !this.sd().id;
-	var show 		= ( this.stepNo == this.currentStepNo ) || !firstEdit;
+	var show 		= ( this.joinColumnStepNo == this.currentStepNo ) || !firstEdit;
 	
-	if( leftTable && leftTable.dataProvider.getTableInfo() ){
+	if( leftTable && leftTable.dataProvider.getTableInfo() && show){
 		this.join.setRightTable( this.table );
 		this.join.setLeftTable( leftTable );
 		
@@ -157,14 +157,15 @@ ReportingUnitManager.prototype.tableInfo = function(){
 
 
 ReportingUnitManager.prototype.showImport = function(response){
-//	$('#aoi-import-column-selector')
-	console.log( response );
 	var filePath = response.fields.filepath;
 	
-	
+	var $this = this;
 	var modalDiv 		= $( '#aoi-import-column-selector' );
 	var onImport		= function(){
 		modalDiv.modal( 'hide' );
+		EventBus.dispatch( "calc.sampling-design.reporting-unit-table-change", null );
+		$this.dataProvider.setTableInfo( new ReportingUnitManager.prototype.tableInfo() );
+		$this.updateJoin();
 	};
 	var importer		= new ReportingUnitImportManager( modalDiv , onImport , response );
 	

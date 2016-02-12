@@ -19,7 +19,7 @@
 //	EventBus.addEventListener( "calc.sampling-design.phase1-table-change", this.twoPhasesChange , this );
 //	
 //	EventBus.addEventListener( "calc.sampling-design.two-stages-change", this.twoStagesChange , this );
-//	EventBus.addEventListener( "calc.sampling-design-stratified-change", this.stratifiedChange , this );
+//	EventBus.addEventListener( "calc.sampling-design.stratified-change", this.stratifiedChange , this );
 //	
 //};
 //SamplingDesignERDTableJoinsManager.prototype.sd = function(){

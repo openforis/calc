@@ -19,7 +19,6 @@ SamplingDesignViewTableDataManager = function( container ){
 
 
 SamplingDesignViewTableDataManager.prototype.showTableData = function( evt , erdTable){
-//	console.log( erdTable );
 	
 	this.dataContainer.empty();
 	this.tableTitle.empty();
@@ -52,7 +51,6 @@ SamplingDesignViewTableDataManager.prototype.showTableData = function( evt , erd
 		show = this.viewTableDataManager.show();
 		
 		break;
-		
 	}
 	
 	if( show ){

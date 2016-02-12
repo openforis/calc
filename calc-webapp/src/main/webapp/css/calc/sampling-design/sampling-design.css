@@ -199,6 +199,7 @@ span.anchor-right {
     background-color: rgb(103, 107, 111);
     border: 1px solid rgba(183, 176, 176, 0.3);
     text-transform: none;
+    width: 90%;
 }
 #sampling-design .typeahead li{
     color: white !important;

@@ -29,6 +29,7 @@ ReportingUnitImportManager.prototype.init = function(response) {
 	this.filepath = response.fields.filepath;
 	
 	this.levelsSection.empty();
+	this.container.find(".levels").empty();
 	
 //	var levels = 0;
 	var headers = response.fields.headers;

@@ -16,8 +16,10 @@ SamplingDesignEditManager = function( editContainer , samplingDesignERDManager ,
 	this.validator					= new SamplingDesignValidator( this );
 	this.samplingDesign				= null;
 	
+	this.stepButtonsContainer = stepButtonsContainer;
+	
 	// Step buttons manager
-	this.samplingDesignStepButtonsManager = new SamplingDesignStepButtonsManager( stepButtonsContainer, this );
+//	this.samplingDesignStepButtonsManager = new SamplingDesignStepButtonsManager( stepButtonsContainer, this );
 	
 	this.init();
 };
@@ -55,8 +57,9 @@ SamplingDesignEditManager.prototype.show = function(){
 			$this.applyAreaWeighted.prop( 'checked' , applyAreaWeighted );
 		}
 		
+		var samplingDesignStepButtonsManager = new SamplingDesignStepButtonsManager( $this.stepButtonsContainer, $this );
 		$this.samplingDesignERDManager.show( $this.samplingDesign , "edit" );
-		$this.samplingDesignStepButtonsManager.updateView();
+//		$this.samplingDesignStepButtonsManager.updateView();
 		
 	});
 	

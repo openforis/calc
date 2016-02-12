@@ -28,7 +28,7 @@ BaseUnitManager.prototype.show = function( ){
 	this.container.fadeIn();
 	
 	if( this.sd().samplingUnitId ){
-		this.dataProvider.setEntityId(  this.sd().samplingUnitId );
+		this.dataProvider.setEntityId( this.sd().samplingUnitId );
 	}
 };
 

@@ -17,11 +17,10 @@ ViewTableDataManager.prototype.show = function() {
 	
 	var schema 	= this.dataProvider.schema;
 	var table 	= this.dataProvider.table;
+	
 	if( this.dataProvider && StringUtils.isNotBlank(schema) && StringUtils.isNotBlank(table)){
 		show = true;
-		
-		this.initDataTable();
-		
+		this.showDataTable();
 	} else {
 		show = false;
 	}
@@ -30,7 +29,7 @@ ViewTableDataManager.prototype.show = function() {
 };
 
 
-ViewTableDataManager.prototype.initDataTable = function(){
+ViewTableDataManager.prototype.showDataTable = function(){
 	var $dataTable = $('<div class="row data-table no-margin">'+
 			'<div class="row no-margin">'+
 				'<div class="col-md-1 data-table-buttons no-padding">'+
@@ -54,8 +53,8 @@ ViewTableDataManager.prototype.initDataTable = function(){
 		'</div>');
 	this.container.append( $dataTable );
 	
-	this.dataTable = new DataTable( $dataTable );
-	this.dataTable.dataProvider = this.dataProvider;
-	this.dataTable.show();
+	var dataTable = new DataTable( $dataTable );
+	dataTable.dataProvider = this.dataProvider;
+	dataTable.show();
 };
 

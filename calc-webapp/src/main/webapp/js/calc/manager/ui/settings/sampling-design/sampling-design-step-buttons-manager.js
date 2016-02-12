@@ -12,6 +12,7 @@ SamplingDesignStepButtonsManager = function( container , samplingDesignEditManag
 	this.clusterBtn 	= new OptionButton( this.container.find('[name=cluster]') );
 	
 	this.init();
+	this.updateView();
 };
 
 //shorcut method that returns the current samplign design beign edited
@@ -62,11 +63,11 @@ SamplingDesignStepButtonsManager.prototype.init = function(){
 	//stratified
 	this.stratifiedBtn.select( $.proxy(function(){
 		this.sd().stratified = true;
-		EventBus.dispatch( "calc.sampling-design-stratified-change", null );
+		EventBus.dispatch( "calc.sampling-design.stratified-change", null );
 	}, this) );
 	this.stratifiedBtn.deselect( $.proxy(function(){
 		this.sd().stratified = false;
-		EventBus.dispatch( "calc.sampling-design-stratified-change", null );
+		EventBus.dispatch( "calc.sampling-design.stratified-change", null );
 	}, this) );	
 	
 	// cluster

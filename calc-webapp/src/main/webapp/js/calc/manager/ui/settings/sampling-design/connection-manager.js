@@ -9,7 +9,7 @@ $(document).ready(function(){
 		EventBus.addEventListener( 'calc.sampling-design.update-connections', this.updateConnections , this );
 		
 		EventBus.addEventListener( 'calc.page-update', function(evt, page){
-			if(page=='home'){
+			if( page == 'home' ){
 				$('connection').invisible();
 			}
 		} , this );
@@ -28,6 +28,6 @@ $(document).ready(function(){
 		$( selector ).connections('update');
 	};
 	
-	ConnectionManager = new ConnectionManagerClass();
+//	ConnectionManager = new ConnectionManagerClass();
 	
 });

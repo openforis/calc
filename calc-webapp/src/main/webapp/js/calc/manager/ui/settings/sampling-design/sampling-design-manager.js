@@ -14,9 +14,9 @@ SamplingDesignManager = function(container) {
 	
 	// edit section
 	this.editSd 	= this.container.find( ".edit-sd" );
-	this.editErdSd 	= this.container.find( ".sampling-design-erd-edit" );
+	this.erdSd 	= this.container.find( ".sampling-design-erd-container" );
 	
-	this.samplingDesignERDManager	= new SamplingDesignERDManager( this.editErdSd );
+	this.samplingDesignERDManager	= new SamplingDesignERDManager( this.erdSd );
 	
 	this.samplingDesignEditManager = new SamplingDesignEditManager( this.editSd, this.samplingDesignERDManager, this.container );
 	
@@ -44,32 +44,20 @@ SamplingDesignManager.prototype.init = function(){
 	}); 
 	
 	
-//	var showView = function(){
-//		var $this = this;
-//		WorkspaceManager.getInstance().activeWorkspace( function(ws){
-//			//refresh sampling unit select.
-////			$this.samplingUnitCombo.data( ws.entities, 'id','name' );
-//			
-//			//if sampling design is defined for active workspace update ui
-//			$this.updateSamplingDesign();
-//			$this.samplingDesignEditManager.hide();
-//			
-//			var samplingDesign = $.extend(true, {}, ws.samplingDesign );
-//			$this.samplingDesignERDManager.show( samplingDesign );
-//			
-//		});
-//	};
-	
 	EventBus.addEventListener( "calc.sampling-design.saved", this.showView, this );
-//	$.proxy( showView , this )();
-//	this.showView();
+	
+	EventBus.addEventListener( 'calc.page-update', function(evt, page){
+		if( page == 'home' ){
+			EventBus.removeEventListenersByGroup( 'calc.sampling-design' );
+		}
+	} , this );
 };
 
 SamplingDesignManager.prototype.showView = function(){
 	WorkspaceManager.getInstance().activeWorkspace( $.proxy(function(ws){
 		this.samplingDesignEditManager.hide();
 		
-		this.updateSamplingDesign();
+		this.updateSDSummary();
 		
 		var samplingDesign = $.extend(true, {}, ws.samplingDesign );
 		this.samplingDesignERDManager.show( samplingDesign );
@@ -81,55 +69,33 @@ SamplingDesignManager.prototype.showView = function(){
 /**
  * Update view ui
  */
-SamplingDesignManager.prototype.updateSamplingDesign = function() {
-	
+SamplingDesignManager.prototype.updateSDSummary = function() {
 	WorkspaceManager.getInstance().activeWorkspace( $.proxy(function(ws) {
 		
-//		this.editSd.hide();
 		this.viewSd.show();
 		this.samplingDesignUI.empty();
 		
 		if(ws.samplingDesign) {
-//			UI.lock();
 			
 			this.samplingDesign = $.extend(true, {}, ws.samplingDesign );
 			
 			if(this.samplingDesign.samplingUnitId) {
 				
 				this.samplingUnit = ws.getEntityById(this.samplingDesign.samplingUnitId);
-//				this.loadSamplingUnitTableInfo( $.proxy(function(){
-					// todo move loading info tables before edit. not necessary here
-//					this.loadPhase1TableInfo();
-//					this.loadPrimarySUTableInfo();
-					
-					this.addToSdUi( "<i>Base unit:</i><br/>" + this.samplingUnit.name );
-					
-					// view properties
-//					if( this.samplingDesign.srs === true ){
-//						this.addToSdUi("Srs");
-//					}
-//					if( this.samplingDesign.systematic === true ){
-//						this.addToSdUi("Systematic");
-//					}
-					if( this.samplingDesign.twoPhases === true ){
-						this.addToSdUi("Two phases");
-					}
-					if( this.samplingDesign.twoStages === true ){
-						this.addToSdUi("Two stages w/ SRS");
-					}
-					
-					if( this.samplingDesign.stratified === true ){
-						this.addToSdUi("Stratified");
-					}
-					if( this.samplingDesign.cluster === true ){
-						this.addToSdUi("Cluster");
-					}
-					
-					
-//					UI.unlock();
-					
-//				} , this));
+				this.addToSdUi( "<i>Base unit:</i><br/>" + this.samplingUnit.name );
 				
+				if( this.samplingDesign.twoPhases === true ){
+					this.addToSdUi("Two phases");
+				}
+				if( this.samplingDesign.twoStages === true ){
+					this.addToSdUi("Two stages w/ SRS");
+				}
+				if( this.samplingDesign.stratified === true ){
+					this.addToSdUi("Stratified");
+				}
+				if( this.samplingDesign.cluster === true ){
+					this.addToSdUi("Cluster");
+				}
 			}
 			
 		} else {

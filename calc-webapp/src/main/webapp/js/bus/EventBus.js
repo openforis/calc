@@ -1,7 +1,7 @@
 /**
 *
 * The MIT License (MIT)
-Copyright (c) 2014 Krasimir Tsonev
+Copyright (c) 2014 Krasimir Tsonev , Mino Togna
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -23,7 +23,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 var EventBusClass = {};
 EventBusClass = function() {
-	this.listeners = {};
+	this.listeners 		= {};
+	this.groupListeners = {};
 };
 EventBusClass.prototype = {
 	addEventListener:function(type, callback, scope) {
@@ -37,6 +38,15 @@ EventBusClass.prototype = {
 			this.listeners[type].push({scope:scope, callback:callback, args:args});
 		} else {
 			this.listeners[type] = [{scope:scope, callback:callback, args:args}];
+		}
+		
+		var group = this.getGroup(type);
+		if( StringUtils.isNotBlank(group) ){
+			if(typeof this.groupListeners[group] != "undefined") {
+				this.groupListeners[group].push({scope:scope, callback:callback, args:args, type:type});
+			} else {
+				this.groupListeners[group] = [{scope:scope, callback:callback, args:args, type:type}];
+			}
 		}
 	},
 	removeEventListener:function(type, callback, scope) {
@@ -52,6 +62,16 @@ EventBusClass.prototype = {
 				}
 			}
 			this.listeners[type] = newArray;
+		}
+	},
+	removeEventListenersByGroup:function( group ) {
+		if(typeof this.groupListeners[group] != "undefined") {
+			var listeners = this.groupListeners[group];
+			for( var i in listeners ){
+				var listener = listeners[ i ];
+				this.removeEventListener(listener.type, listener.callback, listener.scope);
+			}
+			this.groupListeners[group] = undefined;
 		}
 	},
 	hasEventListener:function(type, callback, scope) {
@@ -105,6 +125,15 @@ EventBusClass.prototype = {
 			}
 		}
 		return str;
+	} ,
+	
+	getGroup:function(type){
+		var group = '';
+		var index = type.lastIndexOf( '.' );
+		if( index > 0 ){
+			group = type.substring( 0 , index );
+		}
+		return group ;
 	}
 };
 var EventBus = new EventBusClass();

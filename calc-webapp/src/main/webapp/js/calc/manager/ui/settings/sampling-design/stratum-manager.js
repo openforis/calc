@@ -13,7 +13,7 @@ StratumManager = function( container , sdERDManager , stepNo ){
 	
 	SamplingDesignStepManager.call( this, container , sdERDManager , stepNo , dataProvider );
 	
-	EventBus.addEventListener( "calc.sampling-design-stratified-change", this.update, this );
+	EventBus.addEventListener( "calc.sampling-design.stratified-change", this.update, this );
 	EventBus.addEventListener( "calc.sampling-design.two-phases-change", this.updateJoin, this );
 	EventBus.addEventListener( "calc.sampling-design.base-unit-change", this.updateJoin , this );
 	EventBus.addEventListener( "calc.sampling-design.phase1-table-change", this.updateJoin , this );
