@@ -32,11 +32,7 @@ TableDataProvider.prototype.tableInfo = function(success) {
 TableDataProvider.prototype.count = function(success) {
 	
 	var $this = this;
-//	$.ajax({
-//		url : this.contextPath + "/table/info.json",
-//		dataType : "json",
-//		data : { "schema":this.schema, "table":this.table }
-//	}).done(function(response) {
+
 	this.tableInfo( function(response) {
 		var cnt = response.fields.count;
 		var cols = response.fields.columns;

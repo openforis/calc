@@ -6,10 +6,13 @@ SamplingDesignViewTableDataManager = function( container ){
 	this.closeBtn		= this.container.find( 'button.close-btn' );
 	this.closeBtn.click( $.proxy(function(e){
 		e.preventDefault();
-		this.container.animate({left:'100%'},600);
+//		this.container.animate({left:'100%'},600);
+		this.container.removeClass('opened').addClass('closed');
+
 	},this) );
 	
-	this.aoiViewDataManager = new ReportingUnitViewDataManager( this.dataContainer );
+	this.aoiViewDataManager 	= new ReportingUnitViewDataManager( this.dataContainer );
+	this.viewTableDataManager 	= new ViewTableDataManager( this.dataContainer );
 	
 	EventBus.addEventListener('calc.sampling-design.show-table-data', this.showTableData, this );
 };
@@ -18,25 +21,42 @@ SamplingDesignViewTableDataManager = function( container ){
 SamplingDesignViewTableDataManager.prototype.showTableData = function( evt , erdTable){
 //	console.log( erdTable );
 	
-	this.aoiViewDataManager.reset();
+	this.dataContainer.empty();
 	this.tableTitle.empty();
 	
 	var show 			= false;
 	var dataProvider 	= erdTable.dataProvider;
+	
 	switch (dataProvider.tableType) {
+	
 	case CsvFileDataProvider.AOI_TABLE_TYPE :
 		show = this.aoiViewDataManager.show();
+		
 		break;
+		
 	case CsvFileDataProvider.STRATUM_TABLE_TYPE :
+		this.viewTableDataManager.dataProvider = new StrataDataProvider();
+		show = this.viewTableDataManager.show();
 		
 		break;
 
 	default:
+		
+		var schema 	= '';
+		var table 	= ''; 
+		if( dataProvider.getTableInfo() ){
+			schema = dataProvider.getTableInfo().fields.schema;
+			table = dataProvider.getTableInfo().fields.table;
+		}
+		this.viewTableDataManager.dataProvider = new TableDataProvider(schema, table);
+		show = this.viewTableDataManager.show();
+		
 		break;
+		
 	}
 	
 	if( show ){
-		this.container.animate( {left:'0%'}, 600 );
+		this.container.removeClass('closed').addClass('opened');
 		
 		var tableHeader = ( dataProvider.tableAlias ) ?  dataProvider.tableAlias : dataProvider.tableName;
 		this.tableTitle.html( tableHeader );

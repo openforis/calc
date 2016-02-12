@@ -224,17 +224,27 @@ span.anchor-right {
     position: fixed;
     top: 0%;
     z-index: 1100;
-    left: 100%;
     padding: 30px 15px !important;
+}
+.sampling-design-table-data.closed {
+    left: 100%;
+    transition: all 0.6s ease-in-out;
+}
+.sampling-design-table-data.opened {
+    left: 0%;
+    transition: all 0.6s ease-in-out;
 }
 .sampling-design-table-data button.close-btn i{
 	font-size: 200% !important;
 }
 .sampling-design-table-data .table-title{
-	border: 1px solid rgba(183, 176, 176, 0.3);
+/* 	border: 1px solid rgba(183, 176, 176, 0.3); */
     padding: 2.5%;
     margin: 0px !important;
     font-size: 120%;
+}
+.sampling-design-table-data .data-table{
+	font-size: 80% !important;
 }
 
 

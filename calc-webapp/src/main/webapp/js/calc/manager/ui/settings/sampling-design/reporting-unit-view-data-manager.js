@@ -4,28 +4,7 @@
  */
 
 ReportingUnitViewDataManager = function(container) {
-	
 	this.container = $( container );
-	
-	// aoi section
-//	this.aoiSection = this.container.find(".aoi-section");
-	
-
-	// aoi tree section (it contains the svg that shows the aoi tree structure)
-	
-	
-	//form file uplaod manager (to be initialized in the init method)
-	this.formFileUpload = null;
-	
-//	this.init();
-};
-
-ReportingUnitViewDataManager.prototype.reset = function(){
-	if( this.aoiTreeSection ){
-		this.aoiTreeSection.hide();
-		this.aoiTreeSection.remove();
-	}
-	this.aoiTreeSection = null;
 };
 
 
@@ -37,11 +16,8 @@ ReportingUnitViewDataManager.prototype.show = function() {
 			
 			this.aoiTreeSection = $( '<div class="aoi-tree-section"></div>' );
 			this.container.append( this.aoiTreeSection );
-//			this.aoiTreeSection = this.container.find( ".aoi-tree-section" );
 			this.aoiTreeSection.css( "width", this.container.width() + "px" );
 			this.aoiTreeSection.css( "height", this.container.height() + "px" );
-//			this.aoiTreeSection.css( "width", Math.floor( this.container.width()*(10/12) )+"px" );
-//			this.aoiTreeSection.css( "height", Math.floor( this.container.height()*0.79 )+"px" );
 			this.aoiTreeSection.attr("id","aoi-tree-svg");
 			
 			this.updateAoiTree(ws);
@@ -51,7 +27,6 @@ ReportingUnitViewDataManager.prototype.show = function() {
 	
 	return show;
 };
-
 
 ReportingUnitViewDataManager.prototype.initSvg = function(){
 	var padding = 10,

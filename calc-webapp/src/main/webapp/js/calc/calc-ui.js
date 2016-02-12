@@ -56,9 +56,9 @@ UI.showMessage = function(type, message, autoHide) {
 	
 	UI.messageContainer.fadeIn( 400 );
 	
-	if ( autoHide == true ) {
-		// fade out after 2 seconds
-		UI.messageContainer.delay( 2000 ).fadeOut( 800 );
+	if ( autoHide === true ) {
+		// fade out after 3 seconds
+		UI.messageContainer.delay( 3000 ).fadeOut( 800 );
 	}
 };
 
