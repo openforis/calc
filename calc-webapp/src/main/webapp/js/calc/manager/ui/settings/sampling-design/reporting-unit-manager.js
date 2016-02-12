@@ -91,8 +91,8 @@ ReportingUnitManager.prototype.updateJoin = function(){
 		this.join.setLeftTable( leftTable );
 		
 		this.join.connect( this.erdJoinSettings() );
-		
-		this.updateEditMode();
+		this.join.setEditMode( false );
+//		this.updateEditMode();
 	}
 		
 };
