@@ -83,7 +83,6 @@ SamplingDesignERDManager.prototype.init = function(){
 			this.container.animate({'margin-left':'16.5%'},400);
 		}
 		
-		
 		if( this.samplingDesign.twoStages === true ){
 			this.baseUnitManager.container.removeClass( 'two-rows-center' ).addClass( 'two-rows' );
 		} else {
@@ -99,7 +98,7 @@ SamplingDesignERDManager.prototype.init = function(){
 		var updConnections = function(){
 			 EventBus.dispatch('calc.sampling-design.update-connections', null);
 		};
-		var setIntUpdConn = setInterval(updConnections, 5);
+		var setIntUpdConn = setInterval(updConnections, 24);
 		setTimeout(function(){
 			clearInterval(setIntUpdConn);
 		},480);

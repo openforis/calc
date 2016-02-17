@@ -1,7 +1,7 @@
 /**
  * Manager for edit Sampling Design page
  */
-SamplingDesignEditManager = function( editContainer , samplingDesignERDManager , stepButtonsContainer ){
+SamplingDesignEditManager = function( editContainer , samplingDesignERDManager , navManager ){
 	
 	this.container 					= editContainer;
 	
@@ -16,7 +16,7 @@ SamplingDesignEditManager = function( editContainer , samplingDesignERDManager ,
 	this.validator					= new SamplingDesignValidator( this );
 	this.samplingDesign				= null;
 	
-	this.stepButtonsContainer = stepButtonsContainer;
+	this.navManager = navManager;
 	
 	// Step buttons manager
 //	this.samplingDesignStepButtonsManager = new SamplingDesignStepButtonsManager( stepButtonsContainer, this );
@@ -57,13 +57,15 @@ SamplingDesignEditManager.prototype.show = function(){
 			$this.applyAreaWeighted.prop( 'checked' , applyAreaWeighted );
 		}
 		
-		var samplingDesignStepButtonsManager = new SamplingDesignStepButtonsManager( $this.stepButtonsContainer, $this );
+		$this.nextBtn.visible();
+		$this.prevBtn.visible();
+		
+		$this.navManager.update( $this.samplingDesign , true );
 		$this.samplingDesignERDManager.show( $this.samplingDesign , "edit" );
-//		$this.samplingDesignStepButtonsManager.updateView();
 		
 	});
 	
-	var steps = this.container.find(".step");
+	var steps = this.container.find(".col-nav-steps").children();
 	steps.hide();
 	this.step 		= 0;
 	this.stepMax 	= steps.length - 1;
@@ -72,8 +74,11 @@ SamplingDesignEditManager.prototype.show = function(){
 };
 
 SamplingDesignEditManager.prototype.hide = function(){
-	this.container.hide();
+//	this.container.hide();
 //	this.samplingDesignERDManager.hide();
+	this.nextBtn.invisible();
+	this.prevBtn.invisible();
+	Calc.backHomeBtn.visible();
 };
 
 /**
@@ -97,6 +102,16 @@ SamplingDesignEditManager.prototype.prev = function(){
 	if( this.step != 0){
 		this.step --;
 		this.showStep(this.step);
+	} else {
+		var position = {};
+		position.top = 50; 
+		position.left = 250;
+		var message = "Are you sure you want to go back? All settings will be lost."
+		var confirmDelete = function(){ 
+			EventBus.dispatch( "calc.sampling-design.show-view", null );
+		};
+		UI.showConfirm( message, confirmDelete , function(){ UI.enableAll(); } , position );
+		
 	}
 };
 
@@ -120,7 +135,7 @@ SamplingDesignEditManager.prototype.save = function(){
 			var complete = function(){
 //				$this.updateSamplingDesign();
 				Calc.updateButtonStatus();
-				EventBus.dispatch("calc.sampling-design.show-step", null , -1);
+				EventBus.dispatch( "calc.sampling-design.show-step", null , -1);
 				EventBus.dispatch( 'calc.sampling-design.change', null );
 				EventBus.dispatch( 'calc.sampling-design.saved', null );
 				
@@ -136,7 +151,8 @@ SamplingDesignEditManager.prototype.save = function(){
  * update edit navigation buttons
  */
 SamplingDesignEditManager.prototype.updateNavigationBtns = function(){
-	this.step == 0 ? UI.disable( this.prevBtn ) : UI.enable( this.prevBtn );
-	this.step == this.stepMax ? UI.disable( this.nextBtn ) : UI.enable( this.nextBtn );
+//	this.step == 0 ? UI.disable( this.prevBtn ) : UI.enable( this.prevBtn );
+//	this.step == this.stepMax ? UI.disable( this.nextBtn ) : UI.enable( this.nextBtn );
+	this.step == this.stepMax ? this.nextBtn.invisible() : this.nextBtn.visible();
 };
 

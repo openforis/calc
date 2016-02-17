@@ -133,8 +133,8 @@ UI.showConfirm = function(message, yesHandler, noHandler, position) {
 		'<div id="confirm-dialog" class="dialog">' +
 			'<div class="content"></div>' +
 			'<div class="footer">' +
-				'<button type="button" class="btn btn-default yes">Yes</button>' +
-				'<button type="button" class="btn btn-default no" data-dismiss="modal">No</button>' +
+				'<button type="button" class="btn btn-action yes">Yes</button>' +
+				'<button type="button" class="btn btn-action no" data-dismiss="modal">No</button>' +
 			'</div>' +
 		'</div>';
 	 var dialog = $(template);

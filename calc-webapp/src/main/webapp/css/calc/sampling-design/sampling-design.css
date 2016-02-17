@@ -2,6 +2,70 @@
 
 #sampling-design {
 	overflow: hidden;
+	padding-top: 20px;
+}
+
+#sampling-design button {
+	white-space: normal !important;
+}
+
+#sampling-design .col-nav-steps {
+	padding-top: 20px;	
+}
+
+#sampling-design .col-nav-steps > div {
+	width : 14.28571428571429% !important;
+	float: left;
+	font-size : 80%;
+	background-color: transparent;
+	height: 70px;
+	padding: 10px 0px;
+}
+#sampling-design .col-nav-steps > div.active {
+	background-color:  rgb(82, 102, 130);
+/* 	background-color:  #4d5e75; */
+/* 	background-color:  rgba(136, 188, 251, 0.20); */
+	transition: background-color 0.5s cubic-bezier(0.5, 0.2, 0.63, 0.37);
+}
+#sampling-design .col-nav-steps > div > button {
+    font-size: 100%;
+    width: 80%;
+    padding: 10px 5px;
+    height: 50px;
+    letter-spacing: 0.02em;
+}
+
+#sampling-design .col-progress {
+/* 	padding-top: 3%;	 */
+}
+#sampling-design  div.progress {
+	height: 6px !important;
+	background-color: rgba(111, 114, 119, 0.3);
+	border-radius: 0px !important;
+}
+#sampling-design  div.progress-bar {
+	background-color: 	rgb(82, 102, 130);
+/* 	background-color: 	rgba(136, 188, 251, 0.20); */
+	-webkit-box-shadow: none;
+	-moz-box-shadow: none;
+	box-shadow: none;
+}
+
+#sampling-design .col-hint {
+/* 	padding-top: 0px; */
+}
+
+
+#sampling-design .base-unit-name {
+	font-style: italic;
+}
+#sampling-design .read-only-placeholder {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    top: -100%;
+    left: 0px;
+    z-index: 9999;
 }
 /**
 **
@@ -34,9 +98,9 @@
 }
 #sampling-design button.option-btn-selected ,
 #sampling-design button.option-btn {
-	width: 10em;
-	height: 4em;
-    margin: .3em;
+/* 	width: 10em; */
+/* 	height: 4em; */
+/*     margin: .3em; */
 }
 #sampling-design .hint{
 	padding: .3em;

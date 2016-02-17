@@ -109,6 +109,7 @@ EventBusClass.prototype = {
 				if(listener && listener.callback) {					
 					var concatArgs = args.concat(listener.args);
 					listener.callback.apply(listener.scope, concatArgs);
+//					console.log( type + " ----  " + listener);
 					numOfListeners += 1;
 				}
 			}

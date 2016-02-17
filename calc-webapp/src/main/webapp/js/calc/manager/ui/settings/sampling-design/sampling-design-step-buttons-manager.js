@@ -2,22 +2,29 @@
  * Manager for step buttons in edit mode 
  *  @author M. Togna
  */
-SamplingDesignStepButtonsManager = function( container , samplingDesignEditManager ){
+SamplingDesignStepButtonsManager = function( container ){
 	this.container 					= container;
-	this.samplingDesignEditManager 	= samplingDesignEditManager;
 	
 	this.twoPhasesBtn 	= new OptionButton( this.container.find('[name=twoPhases]') );
 	this.twoStagesBtn 	= new OptionButton( this.container.find('[name=twoStages]') );
 	this.stratifiedBtn 	= new OptionButton( this.container.find('[name=stratified]') );
 	this.clusterBtn 	= new OptionButton( this.container.find('[name=cluster]') );
 	
+	this._samplingDesign = null;
+	
 	this.init();
+//	this.updateView();
+};
+
+SamplingDesignStepButtonsManager.prototype.setSamplingDesign = function( samplingDesign ){
+	this._samplingDesign = samplingDesign;
 	this.updateView();
 };
 
 //shorcut method that returns the current samplign design beign edited
 SamplingDesignStepButtonsManager.prototype.sd = function(){
-	return this.samplingDesignEditManager.samplingDesign;
+//	return this.samplingDesignEditManager.samplingDesign;
+	return this._samplingDesign;
 };
 
 SamplingDesignStepButtonsManager.prototype.init = function(){
@@ -87,41 +94,28 @@ SamplingDesignStepButtonsManager.prototype.init = function(){
 
 SamplingDesignStepButtonsManager.prototype.updateView = function(){
 		
-		if( this.sd().twoPhases === true ){
-			this.twoPhasesBtn.select();
-		} else {
-			this.twoPhasesBtn.deselect();
-		}
-		
-		if( this.sd().twoStages === true ){
-			this.twoStagesBtn.select();
-		} else {
-			this.twoStagesBtn.deselect();
-		}
-		
-		if( this.sd().stratified === true ){
-			this.stratifiedBtn.select();
-		} else {
-			this.stratifiedBtn.deselect();
-		}
-		
-		if( this.sd().cluster === true ){
-			this.clusterBtn.select();
-		} else {
-			this.clusterBtn.deselect();
-		}
-		
-//		if( this.samplingDesign.samplingUnitId ){
-//			this.samplingUnitCombo.val( this.samplingUnit.id );
-//			
-//			var applyAreaWeighted = this.samplingDesign.applyAreaWeighted === true;
-//			this.applyAreaWeighted.prop( 'checked' , applyAreaWeighted );
-//			// update weight script
-//		}
-		
-//		if( this.samplingDesign.phase1JoinSettings ) {
-//			this.phase1Manager.setJoinOptions( this.samplingDesign.phase1JoinSettings );
-//		}
-		
-//		this.aoiJoinManager.show();
+	if( this.sd().twoPhases === true ){
+		this.twoPhasesBtn.select();
+	} else {
+		this.twoPhasesBtn.deselect();
+	}
+	
+	if( this.sd().twoStages === true ){
+		this.twoStagesBtn.select();
+	} else {
+		this.twoStagesBtn.deselect();
+	}
+	
+	if( this.sd().stratified === true ){
+		this.stratifiedBtn.select();
+	} else {
+		this.stratifiedBtn.deselect();
+	}
+	
+	if( this.sd().cluster === true ){
+		this.clusterBtn.select();
+	} else {
+		this.clusterBtn.deselect();
+	}
+	
 };
