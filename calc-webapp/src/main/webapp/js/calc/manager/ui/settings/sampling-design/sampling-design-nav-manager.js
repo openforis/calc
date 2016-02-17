@@ -63,6 +63,7 @@ SamplingDesignNavManager.prototype.update = function( samplingDesign , editMode 
 		
 		if( !this.editMode ){
 			this.steps.children().show();
+			this.steps.children().removeClass( 'active' );
 		}
 		
 	} else {

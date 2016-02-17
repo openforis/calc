@@ -78,9 +78,9 @@ SamplingDesignERDManager.prototype.init = function(){
 	
 	var sdChange = $.proxy(function(){
 		if( this.samplingDesign.twoStages === true || this.samplingDesign.twoPhases === true){
-			this.container.animate({'margin-left':'0%'},400);
+			this.container.animate({'margin-left':'0%'}, 200);
 		}else{
-			this.container.animate({'margin-left':'16.5%'},400);
+			this.container.animate({'margin-left':'16.5%'}, 200);
 		}
 		
 		if( this.samplingDesign.twoStages === true ){
@@ -98,10 +98,10 @@ SamplingDesignERDManager.prototype.init = function(){
 		var updConnections = function(){
 			 EventBus.dispatch('calc.sampling-design.update-connections', null);
 		};
-		var setIntUpdConn = setInterval(updConnections, 24);
+		var setIntUpdConn = setInterval(updConnections, 15);
 		setTimeout(function(){
 			clearInterval(setIntUpdConn);
-		},480);
+		}, 600);
 	}, this);
 	
 	EventBus.addEventListener( "calc.sampling-design.stratified-change", sdChange, this );
