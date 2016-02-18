@@ -19,17 +19,15 @@ SamplingDesignNavManager = function( sdContainer ){
 	
 	this.samplingDesignStepButtonsManager = new SamplingDesignStepButtonsManager( this.steps );
 	
-	this.editMode = false;
-	
 	EventBus.addEventListener( 'calc.sampling-design.show-step', this.showEditStep, this );
 	EventBus.addEventListener( 'calc.sampling-design.base-unit-change', this.baseUnitChange, this );
+	
+	this.editMode = false;
 };
 
 SamplingDesignNavManager.prototype.showEditStep = function( evt , step ){
 //	console.log( step );
-	this.hints.find( '.hint' ).hide();
-	this.steps.children().removeClass( 'active' );
-	this.steps.find( '.read-only-placeholder' ).show();
+	this.reset();
 	
 	if( step >= 0 ){
 		
@@ -46,16 +44,32 @@ SamplingDesignNavManager.prototype.showEditStep = function( evt , step ){
 	
 };
 
+SamplingDesignNavManager.prototype.reset = function(){
+	this.hints.find( '.hint' ).hide();
+	
+	this.steps.children().removeClass( 'active' );
+	
+	this.steps.find( '.read-only-placeholder' ).show();
+	
+	if( !this.editMode ){
+		this.rowProgress.invisible();
+	}
+}; 
+
 SamplingDesignNavManager.prototype.update = function( samplingDesign , editMode ){
+	
+	this.samplingDesignStepButtonsManager.setSamplingDesign( samplingDesign );
+
 	this.editMode = ( editMode === true );
 	
-	this.rowProgress.invisible();
+//	this.rowProgress.invisible();
 //	this.progress.css( 'width' , '0%' );
+	
+	this.reset();
 	
 	var samplingUnitId = samplingDesign.samplingUnitId;
 	
 	if( samplingUnitId ){
-		this.samplingDesignStepButtonsManager.setSamplingDesign( samplingDesign );
 		
 		this.steps.visible();
 		this.rowProgress.visible();
@@ -67,11 +81,14 @@ SamplingDesignNavManager.prototype.update = function( samplingDesign , editMode 
 		}
 		
 	} else {
-		
+		if( !this.editMode ){
+			this.steps.invisible();
+		}
 	}
 	
 	if( this.editMode ){
 		this.rowProgress.visible();
+		this.steps.visible();
 		Calc.backHomeBtn.invisible();
 	} else {
 		this.hints.find( '.step-none' ).show();

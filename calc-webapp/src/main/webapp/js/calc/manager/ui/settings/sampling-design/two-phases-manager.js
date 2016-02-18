@@ -38,14 +38,14 @@ TwoPhasesManager.prototype.update = function(){
 	
 	if( this.sd().twoPhases === true ){
 		this.container.parent().fadeIn();
-		this.container.fadeIn();
+//		this.container.fadeIn();
 		this.baseUnitPhase1Join.show();
 		this.highlight();
 		this.loadPhase1Table();
 	} else {
-		this.container.parent().hide();
-		this.container.hide();
-		this.baseUnitPhase1Join.hide();
+		this.container.parent().hide(0);
+//		this.container.hide();
+		this.baseUnitPhase1Join.hide(0);
 	}
 
 };

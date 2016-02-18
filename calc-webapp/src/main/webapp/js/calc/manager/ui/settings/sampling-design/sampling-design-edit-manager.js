@@ -59,7 +59,7 @@ SamplingDesignEditManager.prototype.show = function(){
 		
 		$this.nextBtn.visible();
 		$this.prevBtn.visible();
-		
+		//EventBus.removeEventListenersByGroup( 'calc.sampling-design' );
 		$this.navManager.update( $this.samplingDesign , true );
 		$this.samplingDesignERDManager.show( $this.samplingDesign , "edit" );
 		
@@ -103,14 +103,11 @@ SamplingDesignEditManager.prototype.prev = function(){
 		this.step --;
 		this.showStep(this.step);
 	} else {
-		var position = {};
-		position.top = 50; 
-		position.left = 250;
 		var message = "Are you sure you want to go back? All settings will be lost."
 		var confirmDelete = function(){ 
 			EventBus.dispatch( "calc.sampling-design.show-view", null );
 		};
-		UI.showConfirm( message, confirmDelete , function(){ UI.enableAll(); } , position );
+		UI.showConfirm( message, confirmDelete , null, {top:50,left:250} );
 		
 	}
 };

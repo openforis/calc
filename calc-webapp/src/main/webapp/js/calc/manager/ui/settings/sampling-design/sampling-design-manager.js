@@ -8,7 +8,7 @@ SamplingDesignManager = function(container) {
 	this.container 			= $( container );
 	
 	// view section
-	this.viewSd 			= this.container.find( ".view-sd" );
+//	this.viewSd 			= this.container.find( ".view-sd" );
 	this.editBtn 			= this.container.find( "[name=edit-btn]" );
 //	this.samplingDesignUI 	= this.viewSd.find( ".sampling-design" );
 	
@@ -40,7 +40,7 @@ SamplingDesignManager.prototype.init = function(){
 	// start edit
 	this.editBtn.click( function(e) {
 		e.preventDefault();
-		$this.viewSd.hide();
+//		$this.viewSd.hide();
 		$this.samplingDesignEditManager.show();
 	}); 
 	
@@ -60,7 +60,7 @@ SamplingDesignManager.prototype.showView = function(){
 		this.samplingDesignEditManager.hide();
 		
 //		this.updateSDSummary();
-		
+		//EventBus.removeEventListenersByGroup( 'calc.sampling-design' );
 		var samplingDesign = $.extend(true, {}, ws.samplingDesign );
 		this.navManager.update( samplingDesign );
 		this.samplingDesignERDManager.show( samplingDesign );

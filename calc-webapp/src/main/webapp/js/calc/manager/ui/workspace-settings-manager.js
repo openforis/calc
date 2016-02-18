@@ -7,6 +7,7 @@ WorkspaceSettingsManager = function( container ) {
 	this.container = $( container );
 	
 	this.wsListContainer			= this.container.find( ".workspace-list" );	
+	this.wsButtonContainer			= this.container.find( ".workspace-button" );	
 	this.wsListBtnsContainer		= this.container.find( ".ws-list-view" );	
 	this.wsListView					= this.container.find( ".workspace-list-buttons" );	
 	this.addWsFormContainer			= this.container.find( ".add-workspace-form" );	
@@ -127,8 +128,9 @@ WorkspaceSettingsManager.prototype.showList = function(){
 };
 
 WorkspaceSettingsManager.prototype.loadWorkspaces = function(){
-	this.wsListContainer.empty();
 	this.tree.hide();
+	this.wsListContainer.empty(); 
+	this.wsButtonContainer.empty(); 
 	
 	UI.disable( this.wsListBtnsContainer.find( 'button' ) );
 	
@@ -219,8 +221,8 @@ WorkspaceSettingsManager.prototype.loadHierarchy = function(){
  */
 WorkspaceSettingsManager.prototype.addAddWsButton = function(){
 	var addBtn = $( '<button class="btn blue-btn add-ws"></button>' );
-	addBtn.append( $('<i class="fa fa-plus-square-o"></i>') );
-	this.wsListContainer.append( addBtn );	
+	addBtn.append( $('<i class="fa fa-plus-square"></i>') );
+	this.wsButtonContainer.append( addBtn );	
 	
 	var $this = this;
 	addBtn.click( function(e){

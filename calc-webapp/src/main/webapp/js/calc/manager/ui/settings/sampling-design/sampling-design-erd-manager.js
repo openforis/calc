@@ -61,7 +61,7 @@ SamplingDesignERDManager.prototype.show = function( samplingDesign , mode ){
 //		}
 //	}
 
-	EventBus.dispatch( 'calc.sampling-design.update-connections', null );
+	
 };
 
 SamplingDesignERDManager.prototype.init = function(){
@@ -76,12 +76,26 @@ SamplingDesignERDManager.prototype.init = function(){
 	
 	var ConnectionManager = new ConnectionManagerClass();
 	
-	var sdChange = $.proxy(function(){
-		if( this.samplingDesign.twoStages === true || this.samplingDesign.twoPhases === true){
-			this.container.animate({'margin-left':'0%'}, 200);
-		}else{
-			this.container.animate({'margin-left':'16.5%'}, 200);
+	if( this.editMode ){
+		
+		this.container.find( '.stratum-aoi-container' ).show();
+		this.aoiManager.show();
+		
+	} else {
+		if( this.samplingDesign.samplingUnitId ){
+			this.container.find( '.stratum-aoi-container' ).show();
+			this.baseUnitManager.show();
+			this.aoiManager.show();
+		} else {
+			this.container.find( '.stratum-aoi-container' ).hide();
+			this.aoiManager.container.hide();
+			this.baseUnitManager.container.parent().hide();
+			
 		}
+	}
+	
+	var sdChange = $.proxy(function(){
+		
 		
 		if( this.samplingDesign.twoStages === true ){
 			this.baseUnitManager.container.removeClass( 'two-rows-center' ).addClass( 'two-rows' );
@@ -96,30 +110,34 @@ SamplingDesignERDManager.prototype.init = function(){
 		}
 		
 		var updConnections = function(){
-			 EventBus.dispatch('calc.sampling-design.update-connections', null);
+//			console.log( 'updating conns');
+			EventBus.dispatch('calc.sampling-design.update-connections', null);
 		};
 		var setIntUpdConn = setInterval(updConnections, 15);
+		var clearIntervalFunctx = function(){
+			clearInterval(setIntUpdConn);
+		};
+		if( this.samplingDesign.twoStages === true || this.samplingDesign.twoPhases === true){
+//			this.container.animate({'margin-left':'0%'}, 200);
+//			this.baseUnitManager.container.parent().animate({'margin-left':'0%'}, 200, clearIntervalFunctx);
+			this.baseUnitManager.container.parent().css({'margin-left':'0%'});
+			
+		}else{
+//			this.container.animate({'margin-left':'16.5%'}, 200);
+//			this.baseUnitManager.container.parent().animate({'margin-left':'16.66666666666667%'}, 200, clearIntervalFunctx);
+			this.baseUnitManager.container.parent().css({'margin-left':'16.66666666666667%'});
+		}
+		
 		setTimeout(function(){
 			clearInterval(setIntUpdConn);
-		}, 600);
+		}, 500);
+		
 	}, this);
 	
 	EventBus.addEventListener( "calc.sampling-design.stratified-change", sdChange, this );
 	EventBus.addEventListener( "calc.sampling-design.two-phases-change", sdChange, this );
 	EventBus.addEventListener( "calc.sampling-design.two-stages-change", sdChange, this );
 	
-	if( this.editMode ){
-		
-		this.container.find( '.stratum-aoi-container' ).show();
-		this.aoiManager.show();
-		
-	} else {
-		if( this.samplingDesign.samplingUnitId ){
-			this.container.find( '.stratum-aoi-container' ).show();
-			this.baseUnitManager.show();
-			this.aoiManager.show();
-		}
-	}
 	
 	sdChange();
 };
