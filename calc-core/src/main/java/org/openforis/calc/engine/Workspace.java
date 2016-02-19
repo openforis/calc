@@ -146,6 +146,11 @@ public class Workspace extends WorkspaceBase {
 		stratum.setWorkspace(this);
 	}
 	
+	@JsonIgnore
+	public boolean hasStrataAois(){
+		return getStrataAois().size() > 0;
+	}
+	
 	public List<StratumAoi> getStrataAois() {
 		return org.openforis.commons.collection.CollectionUtils.unmodifiableList( strataAois );
 	}

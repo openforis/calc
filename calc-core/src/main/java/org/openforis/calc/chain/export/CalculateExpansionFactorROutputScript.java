@@ -400,7 +400,7 @@ public class CalculateExpansionFactorROutputScript extends ROutputScript {
 			select.addSelect( stratumFieldInteger.as(expf.STRATUM.getName()) );
 			select.addGroupBy( stratumField );
 			
-			if( samplingDesign.hasStrataAois() ){
+			if( workspace.hasStrataAois() ){
 				StratumTable S = StratumTable.STRATUM.as("s");
 				select.addJoin( S , stratumFieldInteger.eq(S.STRATUM_NO).and(S.WORKSPACE_ID.eq(workspace.getId())) );
 				

@@ -113,10 +113,10 @@ public class SamplingDesign extends SamplingDesignBase {
 		return super.getApplyAreaWeighted()!=null && super.getApplyAreaWeighted();
 	}
 	
-	@JsonIgnore
-	public boolean hasStrataAois(){
-		return super.getStratumAoi() != null && super.getStratumAoi();
-	} 
+//	@JsonIgnore
+//	public boolean hasStrataAois(){
+//		return super.getStratumAoi() != null && super.getStratumAoi();
+//	} 
 	
 	// hard coded for now
 	public String getWeightVariable() {

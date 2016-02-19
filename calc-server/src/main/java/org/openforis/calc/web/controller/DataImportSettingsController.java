@@ -3,7 +3,6 @@ package org.openforis.calc.web.controller;
 import java.io.IOException;
 import java.util.List;
 
-import org.openforis.calc.engine.Job;
 import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceLockedException;
@@ -13,7 +12,6 @@ import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.AoiManager;
 import org.openforis.calc.metadata.ErrorSettings;
 import org.openforis.calc.metadata.ErrorSettingsManager;
-import org.openforis.calc.metadata.SamplingDesign;
 import org.openforis.calc.metadata.SamplingDesignManager;
 import org.openforis.calc.metadata.Stratum;
 import org.openforis.calc.psql.Psql;
@@ -62,7 +60,7 @@ public class DataImportSettingsController {
 		aoiCsvFileParser.parseForImport(levels, captions, hasStrata);
 		
 		// insert aois
-		SamplingDesign samplingDesign = workspace.getSamplingDesign();
+//		SamplingDesign samplingDesign = workspace.getSamplingDesign();
 		samplingDesignManager.deleteStrataAois(workspace);
 		aoiManager.insert( workspace , aoiCsvFileParser.getAoiHierarchy() );
 		
@@ -71,20 +69,21 @@ public class DataImportSettingsController {
 			
 			samplingDesignManager.setStrataAois(workspace, aoiCsvFileParser.getStrataAois());
 			
-			if( samplingDesign == null ){
-				samplingDesign = new SamplingDesign();
-			}
-			samplingDesign.setStratumAoi(true);
-			samplingDesignManager.save(workspace, samplingDesign);
+//			if( samplingDesign == null ){
+//				samplingDesign = new SamplingDesign();
+//			}
+//			samplingDesign.setStratumAoi(true);
+//			samplingDesignManager.save(workspace, samplingDesign);
 			
-			response.setWorkspaceChanged();
-		} else if (samplingDesign != null) {
+			
+		} 
+//		else if (samplingDesign != null) {
 			// if sampling desgin != null and previously set stratumAoi=true, it sets it to false
-			samplingDesign.setStratumAoi(false);
-			samplingDesignManager.save(workspace, samplingDesign);
+//			samplingDesign.setStratumAoi(false);
+//			samplingDesignManager.save(workspace, samplingDesign);
 			
-			response.setWorkspaceChanged();
-		}
+//			response.setWorkspaceChanged();
+//		}
 		
 		AoiHierarchy aoiHierarchy = workspace.getAoiHierarchies().get(0);
 		response.addField( "aoiHierarchy", aoiHierarchy );
@@ -97,12 +96,14 @@ public class DataImportSettingsController {
 			response.addField( "errorSettings" , errorSettings );
 		}
 		
-		if( workspace.hasSamplingDesign() ){
-			Job job = taskManager.createPreProcessingJob( workspace );
-			taskManager.startJob( job );
-			
-			response.addField( "job" , job );
-		}
+//		if( workspace.hasSamplingDesign() ){
+//			Job job = taskManager.createPreProcessingJob( workspace );
+//			taskManager.startJob( job );
+//			
+//			response.addField( "job" , job );
+//		}
+		
+		response.setWorkspaceChanged();
 		
 		return response;
 	}

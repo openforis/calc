@@ -383,7 +383,7 @@ public class SamplingDesignManager {
 	
 	@Transactional
 	public void importBackupStrataAois( Workspace workspace , WorkspaceBackup workspaceBackup ) {
-		if( workspaceBackup.getWorkspace().getSamplingDesign().hasStrataAois() ){
+		if( workspaceBackup.getWorkspace().hasStrataAois() ){
 			Map<Integer, Integer> aoiIdsMap 		= workspaceBackup.getAoiIdsMap();
 			Map<Integer, Integer> stratumIdsMap 	= workspaceBackup.getStratumIdsMap();
 			AoiHierarchy aoiHierarchy 				= workspace.getAoiHierarchies().get(0);
