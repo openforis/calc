@@ -220,7 +220,7 @@ WorkspaceSettingsManager.prototype.loadHierarchy = function(){
  * Add the add workspace button
  */
 WorkspaceSettingsManager.prototype.addAddWsButton = function(){
-	var addBtn = $( '<button class="btn blue-btn add-ws"></button>' );
+	var addBtn = $( '<button class="btn btn-action add-ws"></button>' );
 	addBtn.append( $('<i class="fa fa-plus-square"></i>') );
 	this.wsButtonContainer.append( addBtn );	
 	

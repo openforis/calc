@@ -154,8 +154,11 @@ ERDTable.prototype.setEditMode = function( editMode ){
 
 ERDTable.prototype.highlight = function(){
 //	this.table.stop().animate( {backgroundColor : 'rgba(82, 102, 130,.5)'}, 1000 , $.proxy(function(){
-
-//	this.table.stop().animate( {backgroundColor : 'rgba(106, 145, 111, 0.2)'}, 500 , $.proxy(function(){
+	this.table.addClass( 'highlight' );
+	setTimeout($.proxy(function(){
+		this.table.removeClass( 'highlight' );
+	}, this), 1500);
+//	this.table.stop().animate( {backgroundColor : 'rgba(106, 145, 111, 0.2)'}, 1500 , $.proxy(function(){
 //		this.table.animate( {backgroundColor : 'rgba(210, 217, 249, 0.05)'}, 600);
 //	}, this) );
 };

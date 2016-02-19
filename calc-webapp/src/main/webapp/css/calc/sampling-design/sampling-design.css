@@ -14,7 +14,8 @@
 	float: left;
 	font-size : 80%;
 	background-color: transparent;
-	height: 70px;
+/* 	height: 70px; */
+	height: 100%;
 	padding: 10px 0px;
 }
 #sampling-design .col-nav-steps > div.active {
@@ -47,6 +48,11 @@
 	box-shadow: none;
 }
 
+#sampling-design .row-hint {
+	background-color:  rgba(217, 203, 251, 0.05);
+	    border: 1px solid rgba(217, 203, 251, 0.05);
+    border-radius: 5px;
+}
 #sampling-design .col-hint {
 /* 	padding-top: 0px; */
 }
@@ -92,12 +98,7 @@
 #sampling-design .step>.row {
 	padding: .3em 0px;
 }
-#sampling-design button.option-btn-selected ,
-#sampling-design button.option-btn {
-/* 	width: 10em; */
-/* 	height: 4em; */
-/*     margin: .3em; */
-}
+
 #sampling-design .hint{
 	padding: .3em;
 }
@@ -173,6 +174,8 @@
     padding: 5px 10px;
     overflow: auto;
     background-color:  rgba(210, 217, 249, 0.05);
+    
+    transition: all 0.5s ease;
 }
 .erd-table .header {
 	font-weight: 300;
@@ -220,6 +223,8 @@
     margin: .5em 0px;
     padding-bottom: 10px;
     background-color: rgba(210, 217, 249, 0.02);
+    
+    transition: all 0.5s ease;
 }
 .table-join-row button {
 	padding: 5px 5px !important;

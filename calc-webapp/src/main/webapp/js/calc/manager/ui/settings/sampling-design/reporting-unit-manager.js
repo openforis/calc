@@ -163,6 +163,7 @@ ReportingUnitManager.prototype.showImport = function(response){
 	var modalDiv 		= $( '#aoi-import-column-selector' );
 	var onImport		= function(){
 		modalDiv.modal( 'hide' );
+		UI.showSuccess( 'Reporting Unit (AOI) table succesfully imported', true );
 		EventBus.dispatch( "calc.sampling-design.reporting-unit-table-change", null );
 		$this.dataProvider.setTableInfo( new ReportingUnitManager.prototype.tableInfo() );
 		$this.updateJoin();

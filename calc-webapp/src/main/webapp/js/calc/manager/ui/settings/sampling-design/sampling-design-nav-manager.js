@@ -5,6 +5,7 @@ SamplingDesignNavManager = function( sdContainer ){
 	
 	this.sdContainer = sdContainer;
 	
+	this.rowHints	= this.sdContainer.find( '.row-hint' );
 	this.hints		= this.sdContainer.find( '.col-hint' );
 	this.hints.find( '.hint' ).hide();
 	

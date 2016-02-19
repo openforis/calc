@@ -122,9 +122,14 @@ ERDTableColumnSelector.prototype.disconnect = function( ){
 ERDTableColumnSelector.prototype.highlight = function(){
 	if( this.html ){
 		
-		this.html.stop().animate( {backgroundColor : 'rgba(106, 145, 111, 0.2)'}, 500 , $.proxy(function(){
-			this.html.animate( {backgroundColor : 'rgba(210, 217, 249, 0.02)'}, 600);
-		}, this) );
+		this.html.addClass( 'highlight' );
+		setTimeout($.proxy(function(){
+			this.html.removeClass( 'highlight' );
+		}, this), 1500);
+		
+//		this.html.stop().animate( {backgroundColor : 'rgba(106, 145, 111, 0.2)'}, 500 , $.proxy(function(){
+//			this.html.animate( {backgroundColor : 'rgba(210, 217, 249, 0.02)'}, 600);
+//		}, this) );
 		
 	}
 };
@@ -401,16 +406,25 @@ ERDTableJoin.prototype.jsonSettings = function(){
 ERDTableJoin.prototype.highlight = function(){
 	if( this.leftHtml ){
 		
-		this.leftHtml.stop().animate( {backgroundColor : 'rgba(106, 145, 111, 0.2)'}, 500 , $.proxy(function(){
-			this.leftHtml.animate( {backgroundColor : 'rgba(210, 217, 249, 0.02)'}, 600);
-		}, this) );
+		this.leftHtml.addClass( 'highlight' );
+		setTimeout($.proxy(function(){
+			this.leftHtml.removeClass( 'highlight' );
+		}, this), 1500);
+		
+//		this.leftHtml.stop().animate( {backgroundColor : 'rgba(106, 145, 111, 0.2)'}, 500 , $.proxy(function(){
+//			this.leftHtml.animate( {backgroundColor : 'rgba(210, 217, 249, 0.02)'}, 600);
+//		}, this) );
 		
 	}
 	if( this.rightHtml ){
+		this.rightHtml.addClass( 'highlight' );
+		setTimeout($.proxy(function(){
+			this.rightHtml.removeClass( 'highlight' );
+		}, this), 1500);
 		
-		this.rightHtml.stop().animate( {backgroundColor : 'rgba(106, 145, 111, 0.2)'}, 500 , $.proxy(function(){
-			this.rightHtml.animate( {backgroundColor : 'rgba(210, 217, 249, 0.02)'}, 600);
-		}, this) );
+//		this.rightHtml.stop().animate( {backgroundColor : 'rgba(106, 145, 111, 0.2)'}, 500 , $.proxy(function(){
+//			this.rightHtml.animate( {backgroundColor : 'rgba(210, 217, 249, 0.02)'}, 600);
+//		}, this) );
 		
 	}
 };

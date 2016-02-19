@@ -74,14 +74,14 @@ button.blue-btn ,
 button.blue-btn:focus {
 	height:100%;
 	border-radius:0px;
-	background-color: #496d7e;
+	background-color: rgba(57, 128, 147, 0.6);
 	border-color: #496d7e;
 	color:#e6e7e7;
 }
 button.blue-btn:hover {
 	color:#e6e7e7;
-	background-color: #36525f;
-	border-color: #36525f;
+	background-color: rgba(57, 128, 147, 0.75);
+	border-color: #496d7e;
 }
 
 button.blue-btn-selected ,
@@ -114,18 +114,32 @@ button.no-background:hover {
 button.option-btn ,
 button.option-btn:focus ,
 button.option-btn:active {
-    background-color: rgba(59, 59, 64, 0.90);
-    border: 1px solid rgba(59, 59, 60, 0.35);
+    background-color: rgba(136, 136, 137, 0.85);
+/*     border: 1px solid rgba(59, 59, 60, 0.35); */
     border-radius: 0px;
     color: white;
 }
 button.option-btn:hover {
 	color: white;
+	background-color: rgba(132, 140, 139, 0.85);
+/* 	border: 1px solid rgba(59, 59, 60, 0.2); */
+	border-radius: 0px;
+	opacity:0.85;
+}
+/** Option-btn default style for not selected*/
+.settings button.option-btn ,
+.settings button.option-btn:focus ,
+.settings button.option-btn:active {
+    background-color: rgba(59, 59, 64, 0.90);
+    border: 1px solid rgba(59, 59, 60, 0.35);
+}
+.settings button.option-btn:hover {
 	background-color: rgba(64, 64, 70, .8);
 	border: 1px solid rgba(59, 59, 60, 0.2);
-	border-radius: 0px;
-/* 	opacity:0.85; */
 }
+
+
+
 button.option-btn-selected ,
 button.option-btn-selected:focus ,
 button.option-btn-selected:active {
@@ -1255,6 +1269,9 @@ table.import-csv-table input[type=checkbox] {
 .height33 {
 	height: 33%;
 }
+.height40 {
+	height: 40%;
+}
 .height50 {
 	height: 50%;
 }
@@ -1302,6 +1319,7 @@ table.import-csv-table input[type=checkbox] {
     box-shadow: 0px 0px 6px 0px rgb(85, 96, 121);
     text-align: center;
     color: white;
+     z-index: 99999999;
 }
 
 .dialog .content {
@@ -1351,7 +1369,7 @@ div.progress {
 	font-weight: 100 !important;
 }
 .modal-content {
-    background-color: rgba(73, 85, 113, 0.9);
+    background-color: rgba(73, 85, 113, 0.95);
     color: #FFFFFF;
     border: none;
     border-radius: 0px;
@@ -1701,4 +1719,8 @@ div.progress {
 	text-align: center;
 	font-size: 12px;
 	font-style: italic;	
+}
+.highlight {
+	background-color: rgba(82, 102, 130, 0.5) !important;
+	transition: all 0.5s cubic-bezier(0, 0.6, 0.45, 1);
 }
