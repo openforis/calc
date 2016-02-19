@@ -199,7 +199,11 @@ public class ProcessingChainManager {
 			
 			calculationStep.setId( psql.nextval(Sequences.CALCULATION_STEP_ID_SEQ).intValue() );
 			calculationStepDao.insert( calculationStep );
-		}		
+		}
+		
+		String commonScript = workspaceToImport.getDefaultProcessingChain().getCommonScript();
+		processingChain.setCommonScript( commonScript );
+		processingChainDao.update( processingChain );
 	}
 	
 	

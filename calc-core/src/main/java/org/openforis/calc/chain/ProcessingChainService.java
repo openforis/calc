@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.openforis.calc.Calc;
 import org.openforis.calc.chain.export.BaseUnitWeightROutputScript;
 import org.openforis.calc.chain.export.CalcROutputScript;
 import org.openforis.calc.chain.export.CalculateExpansionFactorROutputScript;
@@ -32,22 +31,16 @@ import org.openforis.calc.chain.export.PersistUserScriptsROutputScript;
 import org.openforis.calc.chain.export.ROutputScript;
 import org.openforis.calc.chain.export.ReadDataROutputScript;
 import org.openforis.calc.chain.export.ResetResultsROutputScript;
-import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
-import org.openforis.calc.metadata.CategoryManager;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.EntityManager;
 import org.openforis.calc.metadata.ErrorSettings;
-import org.openforis.calc.metadata.MetadataManager;
 import org.openforis.calc.persistence.DBProperties;
 import org.openforis.calc.r.RScript;
 import org.openforis.calc.schema.Schemas;
-import org.openforis.calc.schema.TableDao;
 import org.openforis.calc.utils.Counter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * 
  * @author Mino Togna
@@ -59,26 +52,8 @@ public class ProcessingChainService {
 	private static final String YYYY_MM_DD = "YYYYMMdd-HHmmss";
 	
 	@Autowired
-	private Calc calc;
-	
-	@Autowired
-	private ObjectMapper jsonObjectMapper;
-
-	@Autowired
-	private MetadataManager metadataManager;
-
-	@Autowired
 	private EntityManager entityManager;
 	
-	@Autowired
-	private CategoryManager categoryManager;
-	
-	@Autowired
-	private TableDao tableDao;
-	
-	@Autowired
-	private TaskManager taskManager;
-
 	@Autowired
 	private DBProperties dbProperties;
 	

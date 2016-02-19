@@ -103,7 +103,7 @@ SamplingDesignEditManager.prototype.prev = function(){
 		this.step --;
 		this.showStep(this.step);
 	} else {
-		var message = "Are you sure you want to go back? All settings will be lost."
+		var message = "Are you sure you want to go back? All changes will be lost."
 		var confirmDelete = function(){ 
 			EventBus.dispatch( "calc.sampling-design.show-view", null );
 		};

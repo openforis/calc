@@ -124,7 +124,9 @@ ERDTableColumnSelector.prototype.highlight = function(){
 		
 		this.html.addClass( 'highlight' );
 		setTimeout($.proxy(function(){
-			this.html.removeClass( 'highlight' );
+			if( this.html ){
+				this.html.removeClass( 'highlight' );
+			}
 		}, this), 1500);
 		
 //		this.html.stop().animate( {backgroundColor : 'rgba(106, 145, 111, 0.2)'}, 500 , $.proxy(function(){
@@ -408,7 +410,9 @@ ERDTableJoin.prototype.highlight = function(){
 		
 		this.leftHtml.addClass( 'highlight' );
 		setTimeout($.proxy(function(){
-			this.leftHtml.removeClass( 'highlight' );
+			if( this.leftHtml ){
+				this.leftHtml.removeClass( 'highlight' );
+			}
 		}, this), 1500);
 		
 //		this.leftHtml.stop().animate( {backgroundColor : 'rgba(106, 145, 111, 0.2)'}, 500 , $.proxy(function(){
@@ -419,7 +423,9 @@ ERDTableJoin.prototype.highlight = function(){
 	if( this.rightHtml ){
 		this.rightHtml.addClass( 'highlight' );
 		setTimeout($.proxy(function(){
-			this.rightHtml.removeClass( 'highlight' );
+			if( this.rightHtml ){
+				this.rightHtml.removeClass( 'highlight' );
+			}
 		}, this), 1500);
 		
 //		this.rightHtml.stop().animate( {backgroundColor : 'rgba(106, 145, 111, 0.2)'}, 500 , $.proxy(function(){

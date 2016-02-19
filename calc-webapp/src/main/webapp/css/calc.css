@@ -1242,6 +1242,9 @@ table.import-csv-table input[type=checkbox] {
 .width60 {
 	width: 60%;
 }
+.width70 {
+	width: 70%;
+}
 .width80 {
 	width: 80%;	
 }
@@ -1271,6 +1274,9 @@ table.import-csv-table input[type=checkbox] {
 }
 .height40 {
 	height: 40%;
+}
+.height45 {
+	height: 45%;
 }
 .height50 {
 	height: 50%;
