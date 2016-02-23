@@ -159,7 +159,7 @@
 	height: 50%;
 /* 	display: none; */
 	overflow: hidden;
-	padding: 5% !important;
+	padding: 1% 5% !important;
 	transition: all 0.35s ease;
 }
 .two-rows-center {
