@@ -43,25 +43,7 @@ SamplingDesignERDManager.prototype.show = function( samplingDesign , mode ){
 	this.samplingDesign		= samplingDesign;
 	this.editMode			= ( mode === 'edit' );
 	
-//	if( this._initialized === false ){
 	this.init();
-//	}
-	
-//	if( this.editMode ){
-//		
-//		this.container.find( '.stratum-aoi-container' ).show();
-//		this.aoiManager.show();
-//		
-//	} else {
-//		if( this.samplingDesign.samplingUnitId ){
-//			this.aoiManager.update();
-//			this.baseUnitManager.show();
-//			this.container.find( '.stratum-aoi-container' ).show();
-//			this.aoiManager.show();
-//		}
-//	}
-
-	
 };
 
 SamplingDesignERDManager.prototype.init = function(){

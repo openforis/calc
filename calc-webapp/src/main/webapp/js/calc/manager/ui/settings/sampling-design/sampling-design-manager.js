@@ -4,22 +4,13 @@
  */
 
 SamplingDesignManager = function(container) {
-	//main ui sections
 	this.container 			= $( container );
-	
-	// view section
-//	this.viewSd 			= this.container.find( ".view-sd" );
 	this.editBtn 			= this.container.find( "[name=edit-btn]" );
-//	this.samplingDesignUI 	= this.viewSd.find( ".sampling-design" );
+	this.erdSd 				= this.container.find( ".sampling-design-erd-container" );
 	
-//	this.editSd = this.container.find( ".edit-sd" );
-	this.erdSd 	= this.container.find( ".sampling-design-erd-container" );
-	
-	this.navManager = new SamplingDesignNavManager( this.container );
-	
+	this.navManager 				= new SamplingDesignNavManager( this.container );
 	this.samplingDesignERDManager	= new SamplingDesignERDManager( this.erdSd );
-	
-	this.samplingDesignEditManager = new SamplingDesignEditManager( this.container, this.samplingDesignERDManager, this.navManager );
+	this.samplingDesignEditManager 	= new SamplingDesignEditManager( this.container, this.samplingDesignERDManager, this.navManager );
 	
 	this.samplingDesignViewTableDataManager = new SamplingDesignViewTableDataManager( $('.sampling-design-table-data') );
 	
@@ -34,13 +25,9 @@ SamplingDesignManager = function(container) {
 SamplingDesignManager.prototype.init = function(){
 	var $this = this;
 	
-	/**
-	 * main ui button handlers
-	 */
 	// start edit
 	this.editBtn.click( function(e) {
 		e.preventDefault();
-//		$this.viewSd.hide();
 		$this.samplingDesignEditManager.show();
 	}); 
 	
@@ -59,8 +46,6 @@ SamplingDesignManager.prototype.showView = function(){
 	WorkspaceManager.getInstance().activeWorkspace( $.proxy(function(ws){
 		this.samplingDesignEditManager.hide();
 		
-//		this.updateSDSummary();
-		//EventBus.removeEventListenersByGroup( 'calc.sampling-design' );
 		var samplingDesign = $.extend(true, {}, ws.samplingDesign );
 		this.navManager.update( samplingDesign );
 		this.samplingDesignERDManager.show( samplingDesign );
@@ -68,51 +53,3 @@ SamplingDesignManager.prototype.showView = function(){
 	}, this) );
 
 };
-
-/**
- * Update view ui
- */
-//SamplingDesignManager.prototype.updateSDSummary = function() {
-//	WorkspaceManager.getInstance().activeWorkspace( $.proxy(function(ws) {
-//		
-//		this.viewSd.show();
-//		this.samplingDesignUI.empty();
-//		
-//		if(ws.samplingDesign) {
-//			
-//			this.samplingDesign = $.extend(true, {}, ws.samplingDesign );
-//			
-//			if(this.samplingDesign.samplingUnitId) {
-//				
-//				this.samplingUnit = ws.getEntityById(this.samplingDesign.samplingUnitId);
-//				this.addToSdUi( "<i>Base unit:</i><br/>" + this.samplingUnit.name );
-//				
-//				if( this.samplingDesign.twoPhases === true ){
-//					this.addToSdUi("Two phases");
-//				}
-//				if( this.samplingDesign.twoStages === true ){
-//					this.addToSdUi("Two stages w/ SRS");
-//				}
-//				if( this.samplingDesign.stratified === true ){
-//					this.addToSdUi("Stratified");
-//				}
-//				if( this.samplingDesign.cluster === true ){
-//					this.addToSdUi("Cluster");
-//				}
-//			}
-//			
-//		} else {
-//			this.samplingDesign = {};
-//			this.samplingUnit = {};
-//		}	
-//		
-//	} , this) );
-//};
-
-//SamplingDesignManager.prototype.addToSdUi = function(text) {
-//	var btn = $( '<button class="btn option-btn-selected"></button>' );
-//	btn.html( text );
-//	this.samplingDesignUI.append( btn );
-//	UI.disable( btn );
-//};
-

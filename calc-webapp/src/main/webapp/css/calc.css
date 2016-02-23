@@ -127,13 +127,13 @@ button.option-btn:hover {
 	opacity:0.85;
 }
 /** Option-btn default style for not selected*/
-.settings button.option-btn ,
-.settings button.option-btn:focus ,
-.settings button.option-btn:active {
+#sampling-design button.option-btn ,
+#sampling-design button.option-btn:focus ,
+#sampling-design button.option-btn:active {
     background-color: rgba(59, 59, 64, 0.90);
     border: 1px solid rgba(59, 59, 60, 0.35);
 }
-.settings button.option-btn:hover {
+#sampling-design button.option-btn:hover {
 	background-color: rgba(64, 64, 70, .8);
 	border: 1px solid rgba(59, 59, 60, 0.2);
 }

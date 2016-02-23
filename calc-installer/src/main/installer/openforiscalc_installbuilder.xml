@@ -7,7 +7,7 @@
 	<installerFilename>${product_shortname}-${product_version}-${platform_name}-installer.${platform_exec_suffix}</installerFilename>
     <licenseFile>../../../../License.txt</licenseFile>
     <leftImage>img/left-side.png</leftImage>
-    <logoImage>../../../../calc-webapp/src/main/webapp/img/of-logo-small.png</logoImage>
+    <logoImage>../../../../calc-webapp/src/main/webapp/img/of_calc_logo.png</logoImage>
     <componentList>
         <include>
             <file>openforiscalc_installbuilder_main.xml</file>
@@ -31,8 +31,12 @@
 	<postInstallationActionList>       
 		<dirName path="${java_executable}" variable="java_bin_dir"/>
 		<dirName path="${java_bin_dir}" variable="java_home"/>
-		<addEnvironmentVariable name="JAVA_HOME" value="${java_home}"/>	
-		<addEnvironmentVariable name="JRE_HOME" value="${java_home}"/>
+		<!--addEnvironmentVariable name="JAVA_HOME" value="${java_home}"/-->	
+		<addEnvironmentVariable>
+			<name>JRE_HOME</name>
+            <scope>user</scope>
+            <value>${java_home}</value>
+        </addEnvironmentVariable>
 	</postInstallationActionList>
 	<compressionAlgorithm>lzma-ultra</compressionAlgorithm>
     <defaultUnixDirectoryPermissions>777</defaultUnixDirectoryPermissions>
@@ -40,8 +44,8 @@
     <defaultUnixOwner>${env(SUDO_USER)}</defaultUnixOwner>
     <enableRollback>1</enableRollback>
     <enableTimestamp>1</enableTimestamp>
-    <rebootRequired>1</rebootRequired>
-    <requireInstallationByRootUser>1</requireInstallationByRootUser>
+    <rebootRequired>0</rebootRequired>
+    <requireInstallationByRootUser>0</requireInstallationByRootUser>
     <rollbackBackupDirectory>${system_temp_directory}/${product_shortname}/backup</rollbackBackupDirectory>
     <saveRelativePaths>1</saveRelativePaths>
     <vendor>Open Foris</vendor>

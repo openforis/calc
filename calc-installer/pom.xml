@@ -20,9 +20,9 @@
 		<installbuilder-file-name>openforiscalc_installbuilder.xml</installbuilder-file-name>
 		<installbuilder-with-jdk-file-name>openforiscalc_installbuilder_jdk.xml</installbuilder-with-jdk-file-name>
 		<!-- installer file names -->
-		<windows-installer-file-name>OpenForisCalc-${project.version}-windows-installer-with-jdk.exe</windows-installer-file-name>
-		<linux-installer-file-name>OpenForisCalc-${project.version}-linux-installer-with-jdk.run</linux-installer-file-name>
-		<osx-installer-file-name>OpenForisCalc-${project.version}-osx-installer-with-jdk.app</osx-installer-file-name>	
+		<windows-installer-file-name>OpenForisCalc-${project.version}-windows-installer.exe</windows-installer-file-name>
+		<linux-installer-file-name>OpenForisCalc-${project.version}-linux-installer.run</linux-installer-file-name>
+		<osx-installer-file-name>OpenForisCalc-${project.version}-osx-installer.app</osx-installer-file-name>	
 	</properties>
 	
 	<profiles>
@@ -33,64 +33,64 @@
 					
 					
 					<!-- 1. extract jre and collect-assembly into build folder  -->
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-dependency-plugin</artifactId>
-						<version>2.6</version>
-						<executions>
-							<execution>
-								<id>unpack-jre</id>
-								<phase>process-sources</phase>
-								<goals>
-									<goal>unpack</goal>
-								</goals>
-								<configuration>
-									<artifactItems>
-										<artifactItem>
-											<groupId>com.oracle.java</groupId>
-											<artifactId>jdk</artifactId>
-											<version>${jre.version}</version>
-											<classifier>linux-i386</classifier>
-											<type>zip</type>
-											<overWrite>false</overWrite>
-											<outputDirectory>${installer-dir}/java</outputDirectory>
-										</artifactItem>
-										<artifactItem>
-											<groupId>com.oracle.java</groupId>
-											<artifactId>jdk</artifactId>
-											<version>${jre.version}</version>
-											<classifier>linux-x64</classifier>
-											<type>zip</type>
-											<overWrite>false</overWrite>
-											<outputDirectory>${installer-dir}/java</outputDirectory>
-										</artifactItem>
-										<artifactItem>
-											<groupId>com.oracle.java</groupId>
-											<artifactId>jdk</artifactId>
-											<version>${jre.version}</version>
-											<classifier>osx</classifier>
-											<type>zip</type>
-											<overWrite>false</overWrite>
-											<outputDirectory>${installer-dir}/java</outputDirectory>
-										</artifactItem>
-										<artifactItem>
-											<groupId>com.oracle.java</groupId>
-											<artifactId>jdk</artifactId>
-											<version>${jre.version}</version>
-											<classifier>windows-i386</classifier>
-											<type>zip</type>
-											<overWrite>false</overWrite>
-											<outputDirectory>${installer-dir}/java</outputDirectory>
-										</artifactItem>
-										<artifactItem>
-											<groupId>com.oracle.java</groupId>
-											<artifactId>jdk</artifactId>
-											<version>${jre.version}</version>
-											<classifier>windows-x64</classifier>
-											<type>zip</type>
-											<overWrite>false</overWrite>
-											<outputDirectory>${installer-dir}/java</outputDirectory>
-										</artifactItem>
+<!-- 					<plugin> -->
+<!-- 						<groupId>org.apache.maven.plugins</groupId> -->
+<!-- 						<artifactId>maven-dependency-plugin</artifactId> -->
+<!-- 						<version>2.6</version> -->
+<!-- 						<executions> -->
+<!-- 							<execution> -->
+<!-- 								<id>unpack-jre</id> -->
+<!-- 								<phase>process-sources</phase> -->
+<!-- 								<goals> -->
+<!-- 									<goal>unpack</goal> -->
+<!-- 								</goals> -->
+<!-- 								<configuration> -->
+<!-- 									<artifactItems> -->
+<!-- 										<artifactItem> -->
+<!-- 											<groupId>com.oracle.java</groupId> -->
+<!-- 											<artifactId>jdk</artifactId> -->
+<!-- 											<version>${jre.version}</version> -->
+<!-- 											<classifier>linux-i386</classifier> -->
+<!-- 											<type>zip</type> -->
+<!-- 											<overWrite>false</overWrite> -->
+<!-- 											<outputDirectory>${installer-dir}/java</outputDirectory> -->
+<!-- 										</artifactItem> -->
+<!-- 										<artifactItem> -->
+<!-- 											<groupId>com.oracle.java</groupId> -->
+<!-- 											<artifactId>jdk</artifactId> -->
+<!-- 											<version>${jre.version}</version> -->
+<!-- 											<classifier>linux-x64</classifier> -->
+<!-- 											<type>zip</type> -->
+<!-- 											<overWrite>false</overWrite> -->
+<!-- 											<outputDirectory>${installer-dir}/java</outputDirectory> -->
+<!-- 										</artifactItem> -->
+<!-- 										<artifactItem> -->
+<!-- 											<groupId>com.oracle.java</groupId> -->
+<!-- 											<artifactId>jdk</artifactId> -->
+<!-- 											<version>${jre.version}</version> -->
+<!-- 											<classifier>osx</classifier> -->
+<!-- 											<type>zip</type> -->
+<!-- 											<overWrite>false</overWrite> -->
+<!-- 											<outputDirectory>${installer-dir}/java</outputDirectory> -->
+<!-- 										</artifactItem> -->
+<!-- 										<artifactItem> -->
+<!-- 											<groupId>com.oracle.java</groupId> -->
+<!-- 											<artifactId>jdk</artifactId> -->
+<!-- 											<version>${jre.version}</version> -->
+<!-- 											<classifier>windows-i386</classifier> -->
+<!-- 											<type>zip</type> -->
+<!-- 											<overWrite>false</overWrite> -->
+<!-- 											<outputDirectory>${installer-dir}/java</outputDirectory> -->
+<!-- 										</artifactItem> -->
+<!-- 										<artifactItem> -->
+<!-- 											<groupId>com.oracle.java</groupId> -->
+<!-- 											<artifactId>jdk</artifactId> -->
+<!-- 											<version>${jre.version}</version> -->
+<!-- 											<classifier>windows-x64</classifier> -->
+<!-- 											<type>zip</type> -->
+<!-- 											<overWrite>false</overWrite> -->
+<!-- 											<outputDirectory>${installer-dir}/java</outputDirectory> -->
+<!-- 										</artifactItem> -->
 <!-- 										<artifactItem> -->
 <!-- 											<groupId>com.oracle.java</groupId> -->
 <!-- 											<artifactId>jdk</artifactId> -->
@@ -117,9 +117,9 @@
 <!-- 											<overWrite>false</overWrite> -->
 <!-- 											<outputDirectory>${installer-build-path}/</outputDirectory> -->
 <!-- 										</artifactItem> -->
-									</artifactItems>
-								</configuration>
-							</execution>
+<!-- 									</artifactItems> -->
+<!-- 								</configuration> -->
+<!-- 							</execution> -->
 <!-- 							<execution> -->
 <!-- 								<id>copy-autoupdater</id> -->
 <!-- 								<phase>process-sources</phase> -->
@@ -161,8 +161,8 @@
 <!-- 									</artifactItems> -->
 <!-- 								</configuration> -->
 <!-- 							</execution> -->
-						</executions>
-					</plugin>
+<!-- 						</executions> -->
+<!-- 					</plugin> -->
 					
 					
 					<!-- 2. copy installbuilder source files -->
@@ -184,7 +184,7 @@
 											<directory>src/main/resources</directory>
 											<includes>
 								                <include>${installbuilder-file-name}</include>
-								                <include>${installbuilder-with-jdk-file-name}</include>
+<!-- 								                <include>${installbuilder-with-jdk-file-name}</include> -->
 								            </includes>
 										</resource>
 									</resources>
@@ -211,7 +211,7 @@
 								<configuration>
 									<includes>
 										<include>${installer-dir}/${installbuilder-file-name}</include>
-										<include>${installer-dir}/${installbuilder-with-jdk-file-name}</include>
+<!-- 										<include>${installer-dir}/${installbuilder-with-jdk-file-name}</include> -->
 									</includes>
 									<regex>false</regex>
 									<!-- the name of the token to replace -->
@@ -231,7 +231,7 @@
 								<configuration>
 									<includes>
 										<include>${installer-dir}/${installbuilder-file-name}</include>
-										<include>${installer-dir}/${installbuilder-with-jdk-file-name}</include>
+<!-- 										<include>${installer-dir}/${installbuilder-with-jdk-file-name}</include> -->
 									</includes>
 									<regex>false</regex>
 									<!-- the name of the token to replace -->
@@ -253,71 +253,71 @@
 						<version>1.1</version>
 						<executions>
 							
-<!-- 							<execution> -->
-<!-- 								<id>windows-installer</id> -->
-<!-- 								<phase>package</phase> -->
-<!-- 								<goals> -->
-<!-- 									<goal>exec</goal> -->
-<!-- 								</goals> -->
-<!-- 								<configuration> -->
-<!-- 									<executable>${installbuilder-home}/bin/Builder.app/Contents/MacOS/installbuilder.sh</executable> -->
-<!-- 									<executable>${installbuilder-home}/bin/builder</executable> -->
-<!-- 									<arguments> -->
-<!-- 										<argument>build</argument> -->
-<!-- 										<argument>${basedir}/${installer-dir}/${installbuilder-file-name}</argument> -->
-<!-- 										<argument>windows</argument> -->
-<!-- 									</arguments> -->
-<!-- 								</configuration> -->
-<!-- 							</execution> -->
-							
 							<execution>
-								<id>windows-installer-with-jdk</id>
+								<id>windows-installer</id>
 								<phase>package</phase>
 								<goals>
 									<goal>exec</goal>
 								</goals>
 								<configuration>
-									<executable>${installbuilder-home}/bin/Builder.app/Contents/MacOS/installbuilder.sh</executable>	
+									<executable>${installbuilder-home}/bin/Builder.app/Contents/MacOS/installbuilder.sh</executable>
+									<executable>${installbuilder-home}/bin/builder</executable>
 									<arguments>
 										<argument>build</argument>
-										<argument>${basedir}/${installer-dir}/${installbuilder-with-jdk-file-name}</argument>
+										<argument>${basedir}/${installer-dir}/${installbuilder-file-name}</argument>
 										<argument>windows</argument>
 									</arguments>
 								</configuration>
 							</execution>
 							
 <!-- 							<execution> -->
-<!-- 								<id>linux-installer</id> -->
+<!-- 								<id>windows-installer-with-jdk</id> -->
 <!-- 								<phase>package</phase> -->
 <!-- 								<goals> -->
 <!-- 									<goal>exec</goal> -->
 <!-- 								</goals> -->
 <!-- 								<configuration> -->
-<!-- 									<executable>${installbuilder-home}/bin/Builder.app/Contents/MacOS/installbuilder.sh</executable>								 -->
-<!-- 									<executable>${installbuilder-home}/bin/builder</executable> -->
+<!-- 									<executable>${installbuilder-home}/bin/Builder.app/Contents/MacOS/installbuilder.sh</executable>	 -->
 <!-- 									<arguments> -->
 <!-- 										<argument>build</argument> -->
-<!-- 										<argument>${basedir}/${installer-dir}/${installbuilder-file-name}</argument> -->
-<!-- 										<argument>linux</argument> -->
+<!-- 										<argument>${basedir}/${installer-dir}/${installbuilder-with-jdk-file-name}</argument> -->
+<!-- 										<argument>windows</argument> -->
 <!-- 									</arguments> -->
 <!-- 								</configuration> -->
 <!-- 							</execution> -->
 							
 							<execution>
-								<id>linux-installer-with-jdk</id>
+								<id>linux-installer</id>
 								<phase>package</phase>
 								<goals>
 									<goal>exec</goal>
 								</goals>
 								<configuration>
-									<executable>${installbuilder-home}/bin/Builder.app/Contents/MacOS/installbuilder.sh</executable>	
+									<executable>${installbuilder-home}/bin/Builder.app/Contents/MacOS/installbuilder.sh</executable>								
+									<executable>${installbuilder-home}/bin/builder</executable>
 									<arguments>
 										<argument>build</argument>
-										<argument>${basedir}/${installer-dir}/${installbuilder-with-jdk-file-name}</argument>
+										<argument>${basedir}/${installer-dir}/${installbuilder-file-name}</argument>
 										<argument>linux</argument>
 									</arguments>
 								</configuration>
 							</execution>
+							
+<!-- 							<execution> -->
+<!-- 								<id>linux-installer-with-jdk</id> -->
+<!-- 								<phase>package</phase> -->
+<!-- 								<goals> -->
+<!-- 									<goal>exec</goal> -->
+<!-- 								</goals> -->
+<!-- 								<configuration> -->
+<!-- 									<executable>${installbuilder-home}/bin/Builder.app/Contents/MacOS/installbuilder.sh</executable>	 -->
+<!-- 									<arguments> -->
+<!-- 										<argument>build</argument> -->
+<!-- 										<argument>${basedir}/${installer-dir}/${installbuilder-with-jdk-file-name}</argument> -->
+<!-- 										<argument>linux</argument> -->
+<!-- 									</arguments> -->
+<!-- 								</configuration> -->
+<!-- 							</execution> -->
 							
 <!-- 							<execution> -->
 <!-- 								<id>osx-installer-with-jdk</id> -->

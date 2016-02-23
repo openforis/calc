@@ -8,8 +8,6 @@ ReportingUnitImportManager = function( container , importCallback, response ) {
 	this.container = $(container);
 	this.importCallback = importCallback;
 	
-	// aoi import section
-
 	// levels to import
 	this.levelsSection = this.container.find(".levels");
 	this.levelSection = this.container.find(".level");

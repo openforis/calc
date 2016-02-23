@@ -29,14 +29,28 @@ ReportingUnitManager = function( container , sdERDManager , stepNo ){
 	
 	this.addJoin( this.join );
 	
+	this.baseUnitStepVisited = false;
+	
 	this.update();
 };
 ReportingUnitManager.prototype 				= Object.create(SamplingDesignStepManager.prototype);
 ReportingUnitManager.prototype.constructor 	= ReportingUnitManager;
 
 ReportingUnitManager.prototype.show = function(){
+	
 	this.container.fadeIn();
 	this.highlight();
+	
+	this.updateMargin();
+	
+};
+
+ReportingUnitManager.prototype.updateMargin = function(){
+	if(  this.sd().samplingUnitId || this.baseUnitStepVisited ){
+		this.container.parent().css( 'margin-left' , '0%');
+	} else {
+		this.container.parent().css( 'margin-left' , 16.66666666666667*2+'%');
+	}
 };
 
 ReportingUnitManager.prototype.update = function(){
@@ -100,6 +114,11 @@ ReportingUnitManager.prototype.showEditStep = function( evt, stepNo ){
 	
 	SamplingDesignStepManager.prototype.showEditStep.call( this , evt , stepNo );
 
+	if( stepNo === this.sdERDManager.baseUnitManager.stepNo ){
+		this.baseUnitStepVisited = true;
+		this.updateMargin();
+	}
+	
 //	if( this.sdERDManager.editMode && this.currentStepNo == this.stepNo && !this.sd().id){
 //		this.update();
 //	}
@@ -167,6 +186,11 @@ ReportingUnitManager.prototype.showImport = function(response){
 		EventBus.dispatch( "calc.sampling-design.reporting-unit-table-change", null );
 		$this.dataProvider.setTableInfo( new ReportingUnitManager.prototype.tableInfo() );
 		$this.updateJoin();
+		
+		$this.table.viewDataButton.addClass( 'highlight' );
+		setTimeout(function(){
+			$this.table.viewDataButton.removeClass( 'highlight' );
+		}, 1500 );
 	};
 	var importer		= new ReportingUnitImportManager( modalDiv , onImport , response );
 	

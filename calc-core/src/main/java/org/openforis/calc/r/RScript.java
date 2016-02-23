@@ -363,30 +363,13 @@ public class RScript {
 			BUILTIN_FUNCTIONS = new ArrayList<String>();
 		}
 		
-//		try {
-			InputStream stream = RScript.class.getClassLoader().getResourceAsStream( "org/openforis/calc/r/builtin-functions.csv" );
-			
-//			@SuppressWarnings("resource")
-			Scanner scanner = new Scanner(stream);
-			while( scanner.hasNextLine() ){
-				String line = scanner.nextLine();
-				BUILTIN_FUNCTIONS.add( line );
-			}
-			scanner.close();
-//			@SuppressWarnings("resource")
-//			CsvReader reader = new CsvReader( stream );
-//			reader.readHeaders();
-			
-//			FlatRecord record = reader.nextRecord();
-//			while( record != null ){
-//				String function = record.getValue( 0 , String.class );
-//				BUILTIN_FUNCTIONS.add( function );
-//				
-//				record = reader.nextRecord();
-//			}
-//		} catch (IOException e) {
-//			throw new RuntimeException( "Unexpected error while reading builtin R functions", e );
-//		}
+		InputStream stream = RScript.class.getClassLoader().getResourceAsStream( "org/openforis/calc/r/builtin-functions.csv" );
+		Scanner scanner 	= new Scanner(stream);
+		while( scanner.hasNextLine() ){
+			String line = scanner.nextLine();
+			BUILTIN_FUNCTIONS.add( line );
+		}
+		scanner.close();
 		
 		return BUILTIN_FUNCTIONS;
 	}
