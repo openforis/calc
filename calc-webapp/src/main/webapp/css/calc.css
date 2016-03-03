@@ -164,7 +164,10 @@ button.option-btn-selected:hover {
 
 button.btn-action,
 button.btn-action:focus,
-button.btn-action:active{
+button.btn-action:active,
+a.btn-action,
+a.btn-action:focus,
+a.btn-action:active{
     background-color: rgba(88, 105, 130, 0.5);
     border-radius: 0px;
     border: 1px solid rgba(101, 113, 134, 0.25);
@@ -172,9 +175,16 @@ button.btn-action:active{
     font-weight: 100 !important;
     transition: background-color 0.25s cubic-bezier(0.25, 0.2, 0.63, 0.37);
 }
-button.btn-action:hover {
+button.btn-action:hover ,
+a.btn-action:hover {
 	background-color: rgba(82, 102, 130, 0.95);
     transition: background-color 0.25s cubic-bezier(0.25, 0.2, 0.63, 0.37);
+}
+a.btn-action,
+a.btn-action:focus,
+a.btn-action:active,
+a.btn-action:hover {
+	color:#e6e7e7;
 }
 /**
 Filter button 
@@ -546,31 +556,22 @@ button.settings:hover {
 /* 	margin-top:40px; */
 	padding : 5px 0px;
 	text-align: center;
-	width:100% ;
+	width: 90% ;
 	border-top: 1px solid rgba(184, 157, 157, 0.3);
+	margin-left: 5%;
 }
 #footer .links  button {
 	height: 100%;
 	width: 20%;
-/* 	font-size:1.2em; */
 	font-weight: 100;
 	letter-spacing: 0.03em;
 	border-radius: 1px;
 	font-family: "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
-/* 	line-height: 2em; */
-/* 	overflow: visible; */
-/* 	border-radius:8px; */
-/* 	font-size: 0.8em; */
 }
 #footer .logo {
-/* 	font-size: 1.2em; */
 	font-weight: 100;
-/* 	margin-top: 30px; */
 	text-align: center;
-/* 	position: relative; */
-/* 	top: 10px; */
 	height: auto;
-/* 	display:block; */
 	padding-top: 15px;
 	font-family: "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
 	letter-spacing: 3px; 
@@ -586,7 +587,6 @@ button.settings:hover {
     padding: 0px;
     position: absolute;
     right: 50px;
-    
 }
 #footer .logo button.calc-btn:hover {
 	 background-color: rgba(58, 159, 159, 0.25);
@@ -595,6 +595,7 @@ button.settings:hover {
 	padding-top: 22px;
 	font-size: 0.7em;
     color: whitesmoke;
+    padding-bottom: 10px;
 }
 
 /* #footer .application-version { */
@@ -607,7 +608,7 @@ button.settings:hover {
     padding: 20px 10px;
     position: fixed;
     bottom: 10%;
-    height: 20%;
+    height: 25%;
     left: 101%;
     width: 20%;
 }
@@ -617,6 +618,9 @@ button.settings:hover {
 #footer .calc-options button {
 	font-weight: 100 !important;
     font-size: 12px !important;
+}
+#footer .calc-options a{
+	font-size: 80% !important;
 }
 #footer button.back {
 	font-size: 	3em;	
@@ -648,7 +652,21 @@ button.settings:hover {
 #footer .of-link-container a img{
 	width: 48%;
 }
-
+#footer .active-workspace {
+    position: absolute;
+	right: 90px;
+    color: rgba(208, 212, 217,0.7);
+/*     background-color: rgba(58, 159, 159, 0.02); */
+    top: 25%;
+    padding: 5% 15%;
+    height: 50%;
+    border-left: 1px solid rgba(46, 155, 181, 0.10);
+    border-top: 1px solid rgba(46, 155, 181, 0.10);
+    border-bottom: 1px solid rgba(46, 155, 181, 0.10);
+    font-size: 80%;
+	border-top-left-radius : 10px;
+	border-bottom-left-radius : 10px;
+}
 .btn-saiku{
 	background-color: transparent;
 /* 	color: rgba(90, 22, 22, 0.7) !important; */

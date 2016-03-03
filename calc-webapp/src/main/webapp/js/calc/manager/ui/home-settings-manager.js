@@ -7,7 +7,7 @@ HomeSettingsManager = function( container ) {
 	this.container = $( container );
 	
 	// home settings ui components
-	this.activeWorkspaceLabel 	= this.container.find( ".active-workspace-label" );
+	this.activeWorkspaceLabel 	= $( ".active-workspace-label" );
 	
 	this.exportBtn 				= this.container.find( ".export-workspace" );
 	this.importBtn 				= this.container.find( ".import-workspace" );

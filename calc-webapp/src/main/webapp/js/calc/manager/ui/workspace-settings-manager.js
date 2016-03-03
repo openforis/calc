@@ -172,14 +172,14 @@ WorkspaceSettingsManager.prototype.loadWorkspaces = function(){
 						
 						$this.loadHierarchy();
 						
-						UI.enable( $this.wsListBtnsContainer.find( 'button' ) );
+//						UI.enable( $this.wsListBtnsContainer.find( 'button' ) );
 						
 					} , ws );
 					
 					optionBtn.deselect( function(w){
 						$this.selectedWorkspace = null;
 						$this.tree.hide();
-						UI.disable( $this.wsListBtnsContainer.find( 'button' ) );
+//						UI.disable( $this.wsListBtnsContainer.find( 'button' ) );
 					} , ws );
 					
 					if( ws.active === true ) {
