@@ -592,10 +592,12 @@ button.settings:hover {
 	 background-color: rgba(58, 159, 159, 0.25);
 }
 #footer .application-version-container {
-	padding-top: 22px;
+	padding-top: 15%;
 	font-size: 0.7em;
     color: whitesmoke;
-    padding-bottom: 10px;
+    padding-bottom: 15%;
+    font-style: italic;
+    color: rgba(222, 228, 239, 0.8);
 }
 
 /* #footer .application-version { */
@@ -608,7 +610,7 @@ button.settings:hover {
     padding: 20px 10px;
     position: fixed;
     bottom: 10%;
-    height: 25%;
+    height: 30%;
     left: 101%;
     width: 20%;
 }
@@ -639,7 +641,7 @@ button.settings:hover {
 }
 #footer .of-link-container a{
 /*     padding: 22px 18px; */
-    padding: 6.5% 5% 9% 5%;
+    padding: 5% 5% 7% 5%;
     background-color: rgba(107, 177, 83, 0.06);
     border: 1px solid rgba(101, 183, 100, 0.08);
      border-radius: 0px;
@@ -650,7 +652,7 @@ button.settings:hover {
 	transition: all 0.5s ease;
 }
 #footer .of-link-container a img{
-	width: 48%;
+	width: 40%;
 }
 #footer .active-workspace {
     position: absolute;

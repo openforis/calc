@@ -63,7 +63,7 @@ HomeSettingsManager.prototype.updateActive = function( ws ) {
 HomeSettingsManager.prototype.updateList = function( container ) {
 	var $this = this;
 	
-	container 			= $( container );
+	var container 			= $( container );
 	var wsList 			= container.find( ".workspace-list" );	
 	var activateBtn 	= container.find( "button[name=activate-btn]" ); 
 	
