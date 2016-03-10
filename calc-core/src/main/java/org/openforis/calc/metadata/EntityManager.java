@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jooq.Field;
 import org.jooq.JoinType;
 import org.jooq.Record;
 import org.jooq.Select;
@@ -182,8 +183,14 @@ public class EntityManager {
 			select.addSelect( table.getQuantityField(var) );
 		}
 		for (CategoricalVariable<?> var : entity.getOriginalCategoricalVariables()) {
-			select.addSelect( table.getCategoryIdField(var) );
-			select.addSelect( table.getCategoryValueField(var) );
+			
+			Field<Integer> categoryIdField = table.getCategoryIdField(var);
+			select.addSelect( categoryIdField );
+			Field<?> categoryValueField = table.getCategoryValueField(var);
+
+			if( categoryIdField != null && !categoryIdField.getName().equals(categoryValueField.getName()) ){
+				select.addSelect( categoryValueField );
+			}
 		}
 		// add weight column if sampling unit
 		if(  entity.isSamplingUnit() ) {

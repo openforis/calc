@@ -127,7 +127,7 @@ public class ErrorExecutionROutputScript extends ROutputScript {
 		sb.append( NEW_LINE );
 		
 		RVariable classes = r().variable( "classes" );
-		SetValue setClasses = r().setValue( classes, r().sqldf( "select distinct class_id from " + dataFrameName ) );
+		SetValue setClasses = r().setValue( classes, r().sqldf( "select distinct class_id from " + dataFrameName + " where class_id is not null") );
 //		addScript( setClasses );
 		sb.append( setClasses.toString() );
 		setClasses = r().setValue( classes, r().variable(classes, "class_id") );

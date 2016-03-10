@@ -15,7 +15,6 @@ import org.jooq.impl.DataSourceConnectionProvider;
 import org.jooq.impl.DynamicTable;
 import org.jooq.impl.SchemaImpl;
 import org.openforis.calc.engine.Task;
-import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.psql.Psql;
 import org.openforis.calc.schema.ExtendedSchema;
 import org.openforis.collect.relational.CollectRdbException;
@@ -33,9 +32,6 @@ public class CreateInputSchemaTask extends Task {
 
 	@Autowired
 	private Configuration config;
-	
-	@Autowired
-	private WorkspaceService workspaceService;
 	
 	@Autowired
 	private Psql psql;
@@ -81,6 +77,25 @@ public class CreateInputSchemaTask extends Task {
 		Connection connection = DataSourceUtils.getConnection(dataSource);
 		relationalSchemaCreator.createRelationalSchema(schema, connection);
 		incrementItemsProcessed();
+		
+//		for (Table<?> table : schema.getTables()) {
+//			if( table instanceof DataTable ){
+//				for (Column<?> column : table.getColumns()) {
+//					if( column instanceof DataColumn ){
+//						NodeDefinition nodeDefinition = ((DataColumn) column).getNodeDefinition();
+//						if( nodeDefinition instanceof TaxonAttributeDefinition ){
+//							
+//							DynamicTable<Record> jooqTable = new DynamicTable<>( table.getName() , inputSchemaName );
+//							jooqTable.getIntegerField(name)
+//							psql.
+//								alterTable( jooqTable )
+//								.addColumn( )
+//						}
+//					}
+//				}
+//			}
+//		}
+		
 		return schema;
 	}
 	

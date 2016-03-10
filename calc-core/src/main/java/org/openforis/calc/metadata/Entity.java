@@ -283,13 +283,13 @@ public class Entity extends EntityBase {
 	}
 
 	private void createDimensionsRecursively( Entity entity, List<CategoricalVariable<?>> vars ){
-		if( entity.isInSamplingUnitHierarchy() ){
+//		if( entity.isInSamplingUnitHierarchy() ){
 			Entity parent = entity.getParent();
 			// it stops if the entity is the sampling unit. cannot aggregate at higher level
 			if ( parent != null && !entity.isSamplingUnit() ) {
 				createDimensionsRecursively( parent , vars );
 			}
-		}
+//		}
 		
 		List<CategoricalVariable<?>> variables = entity.getCategoricalVariables();
 		for ( CategoricalVariable<?> var : variables ) {

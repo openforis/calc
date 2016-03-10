@@ -349,11 +349,13 @@ public class CollectMetadataImportTask extends Task {
 	}
 
 	private void createVariable(Entity entity, DataColumn column) {
-		Variable<?> v = null;
-		String entityName = entity.getName();
-		NodeDefinition columnNodeDefn = column.getNodeDefinition();
-		String columnNodeDefnName = columnNodeDefn.getName();
-		AttributeDefinition attrDefn = column.getAttributeDefinition();
+		String entityName 				= entity.getName();
+		String variableName 			= generateVariableName(entityName, column.getName());
+		NodeDefinition columnNodeDefn 	= column.getNodeDefinition();
+		String columnNodeDefnName 		= columnNodeDefn.getName();
+		AttributeDefinition attrDefn 	= column.getAttributeDefinition();
+		Variable<?> v			 		= null;
+		
 		if ( attrDefn instanceof BooleanAttributeDefinition &&  columnNodeDefnName.equals(BooleanAttributeDefinition.VALUE_FIELD) ) {
 			v = new BinaryVariable();
 			((BinaryVariable) v).setDisaggregate( !(column instanceof PrimaryKeyColumn) );
@@ -416,7 +418,11 @@ public class CollectMetadataImportTask extends Task {
 			SpeciesCodeTable speciesCodeTable = new SpeciesCodeTable(taxonomy, getInputSchema().getName());
 			CategoryLevel categoryLevel = ws.getCategoryLevelByTableName( speciesCodeTable.getName() );
 			
+			multiwayVar.setInputCategoryIdColumn( taxonomy );
+//			multiwayVar.setInputCategoryIdColumn( variableName );
+//			multiwayVar.setDisaggregate( true );
 			multiwayVar.setCategoryLevel( categoryLevel );
+			
 		} else if ( attrDefn instanceof TextAttributeDefinition && 
 				((TextAttributeDefinition) attrDefn).getType() == TextAttributeDefinition.Type.SHORT ) {
 			v = new TextVariable();
@@ -428,7 +434,7 @@ public class CollectMetadataImportTask extends Task {
 		
 		if ( v != null ) {
 			if ( v.getName() == null ) {
-				v.setName(generateVariableName(entityName, column.getName()));
+				v.setName(variableName);
 			}
 			v.setCaption( attrDefn.getLabel(NodeLabel.Type.INSTANCE) );
 			v.setDescription( attrDefn.getDescription() );

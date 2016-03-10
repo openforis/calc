@@ -49,9 +49,14 @@ public class SpeciesImportTask extends Task {
 			fileExtractor = new BackupFileExtractor(zipFile);
 			List<String> speciesFileNames = fileExtractor.listSpeciesEntryNames();
 			for (String entryName : speciesFileNames) {
-				File tempFile = fileExtractor.extract(entryName);
-				CsvReader reader = new CsvReader(tempFile);
-				total += reader.size();
+				CsvReader reader = null;
+				try {
+					File tempFile = fileExtractor.extract(entryName);
+					reader = new CsvReader(tempFile);
+					total += reader.size();
+				} finally {
+					IOUtils.closeQuietly(reader);
+				}
 			}
 			return total;
 		} catch (Exception e) {
@@ -108,6 +113,11 @@ public class SpeciesImportTask extends Task {
 					break;
 				}
 			}
+			
+			batchInserts.add(createInsertQuery(table, nextRecordId ++, "-1", "NA" ));
+			batchInserts.add(createInsertQuery(table, nextRecordId ++, "UNK", "Unknown" ));
+			batchInserts.add(createInsertQuery(table, nextRecordId ++, "UNL", "Unlisted" ));
+			
 			if ( ! batchInserts.isEmpty() ) {
 				//flush remaining inserts
 				flushBatchInserts(batchInserts);
@@ -120,10 +130,17 @@ public class SpeciesImportTask extends Task {
 	}
 
 	protected InsertQuery<Record> createInsertQuery(SpeciesCodeTable table, SpeciesBackupLine line, int recordId) {
+		String code = line.getCode();
+		String scientificName = line.getScientificName();
+		InsertQuery<Record> insert = createInsertQuery(table, recordId, code, scientificName);
+		return insert;
+	}
+
+	private InsertQuery<Record> createInsertQuery(SpeciesCodeTable table, int recordId, String code, String scientificName) {
 		InsertQuery<Record> insert = psql.insertQuery(table);
 		insert.addValue(table.getIdField(), recordId);
-		insert.addValue(table.getCodeField(), line.getCode());
-		insert.addValue(table.getScientificNameField(), line.getScientificName());
+		insert.addValue(table.getCodeField(), code);
+		insert.addValue(table.getScientificNameField(), scientificName);
 		return insert;
 	}
 	

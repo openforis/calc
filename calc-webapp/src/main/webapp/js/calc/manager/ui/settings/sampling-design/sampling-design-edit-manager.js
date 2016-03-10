@@ -108,7 +108,6 @@ SamplingDesignEditManager.prototype.prev = function(){
 			EventBus.dispatch( "calc.sampling-design.show-view", null );
 		};
 		UI.showConfirm( message, confirmDelete , null, {top:50,left:250} );
-		
 	}
 };
 
