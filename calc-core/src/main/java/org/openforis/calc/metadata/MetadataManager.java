@@ -15,7 +15,6 @@ import org.openforis.calc.persistence.jooq.Sequences;
 import org.openforis.calc.persistence.jooq.Tables;
 import org.openforis.calc.persistence.jooq.tables.daos.WorkspaceDao;
 import org.openforis.calc.psql.Psql;
-import org.openforis.calc.schema.TableDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,9 +59,6 @@ public class MetadataManager {
 
 	@Autowired
 	private ProcessingChainManager processingChainManager;
-	
-	@Autowired
-	private TableDao tableDao;
 	
 	@Autowired
 	private WorkspaceSettingsManager workspaceSettingsManager;

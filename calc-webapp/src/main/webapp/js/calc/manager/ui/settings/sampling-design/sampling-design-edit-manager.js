@@ -99,9 +99,9 @@ SamplingDesignEditManager.prototype.showStep = function(step) {
  * Move ui to previous edit section
  */
 SamplingDesignEditManager.prototype.prev = function(){
-	if( this.step != 0){
+	if( this.step != 0 ){
 		this.step --;
-		this.showStep(this.step);
+		this.showStep( this.step );
 	} else {
 		var message = "Are you sure you want to go back? All changes will be lost."
 		var confirmDelete = function(){ 

@@ -1,9 +1,12 @@
 package org.openforis.calc.metadata;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jooq.Field;
@@ -167,6 +170,7 @@ public class EntityManager {
 	}
 	
 	public Select<?> getViewSelect(Entity entity, boolean addAlwaysWeightField) {
+		Set<String> uniqueFields	= new HashSet<String>();
 		Schemas schemas 			= entity.getWorkspace().schemas();
 		DataSchema schema 			= schemas.getDataSchema();
 		
@@ -180,15 +184,27 @@ public class EntityManager {
 		select.addSelect( table.getAoiIdFields() );
 		
 		for (QuantitativeVariable var : entity.getOriginalQuantitativeVariables()) {
-			select.addSelect( table.getQuantityField(var) );
+			Field<BigDecimal> field = table.getQuantityField(var);
+			
+			if( !uniqueFields.contains( field.getName() ) ){
+				uniqueFields.add( field.getName() );
+				
+				select.addSelect( field );
+			}
 		}
 		for (CategoricalVariable<?> var : entity.getOriginalCategoricalVariables()) {
 			
 			Field<Integer> categoryIdField = table.getCategoryIdField(var);
-			select.addSelect( categoryIdField );
+			if( !(categoryIdField==null || uniqueFields.contains(categoryIdField.getName())) ){
+				uniqueFields.add( categoryIdField.getName() );
+				
+				select.addSelect( categoryIdField );
+			}
+			
 			Field<?> categoryValueField = table.getCategoryValueField(var);
-
-			if( categoryIdField != null && !categoryIdField.getName().equals(categoryValueField.getName()) ){
+			if( !(categoryValueField==null || uniqueFields.contains(categoryValueField.getName())) ){
+				uniqueFields.add( categoryValueField.getName() );
+				
 				select.addSelect( categoryValueField );
 			}
 		}
@@ -202,13 +218,27 @@ public class EntityManager {
 		// for every ancestor, add join condition and select fields
 		Entity currentEntity = entity;
 		while ( currentEntity.getParent() != null ){
-			DataTable currentTable = schema.getDataTable(currentEntity);
-			Entity parentEntity = currentEntity.getParent();
-			DataTable parentTable = schema.getDataTable( parentEntity );
+			DataTable currentTable 	= schema.getDataTable(currentEntity);
+			Entity parentEntity 	= currentEntity.getParent();
+			DataTable parentTable 	= schema.getDataTable( parentEntity );
 
 			select.addSelect( parentTable.getIdField() );
-			select.addSelect( parentTable.getCategoryValueFields() );
-			select.addSelect( parentTable.getCategoryIdFields() );
+			
+			for (Field<?> field : parentTable.getCategoryValueFields()) {
+				if( !(field==null || uniqueFields.contains(field.getName())) ){
+					uniqueFields.add( field.getName() );
+					select.addSelect( field );
+				}
+			}
+			for (Field<?> field : parentTable.getCategoryIdFields()) {
+				if( !(field==null || uniqueFields.contains(field.getName())) ){
+					uniqueFields.add( field.getName() );
+					select.addSelect( field );
+				}
+			}
+			
+//			select.addSelect( parentTable.getCategoryValueFields() );
+//			select.addSelect( parentTable.getCategoryIdFields() );
 			select.addSelect( parentTable.getTextFields() );
 			if(  parentEntity.isSamplingUnit() ){
 				if( addAlwaysWeightField || tableDao.hasColumn(table, table.getWeightField()) ){

@@ -51,7 +51,8 @@ public class CategoryDimension extends Dimension {
 //			caption = WordUtils.capitalize( variable.getName() );
 //		}
 		
-		Level level = new Level(variable.getName(), table.getIdField().getName(), table.getCaptionField().getName() , categoryLevel.getCaption() );
+		String idColumnName = ( variable.isSpecieCategory() ) ? table.getCodeField().getName() : table.getIdField().getName();
+		Level level = new Level(variable.getName(), idColumnName, table.getCaptionField().getName() , categoryLevel.getCaption() );
 		hierarchy.addLevel(level);
 		
 		setHierarchy(hierarchy);

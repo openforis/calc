@@ -97,8 +97,8 @@ public final class CreateAggregateTablesTask extends Task {
 			
 //			select.addSelect( sourceTable.getDimensionIdFields() );
 			for (Field<Integer> dimField : sourceTable.getDimensionIdFields()) {
-				select.addSelect( DSL.coalesce(dimField,-1).as( dimField.getName() ) );
-//				select.addSelect( DSL.coalesce(dimField,"-1").as( dimField.getName() ) );
+//				select.addSelect( DSL.coalesce(dimField,-1).as( dimField.getName() ) );
+				select.addSelect( DSL.coalesce(dimField,"-1").as( dimField.getName() ) );
 			}
 			select.addGroupBy( sourceTable.getDimensionIdFields() );
 			
@@ -225,8 +225,8 @@ public final class CreateAggregateTablesTask extends Task {
 
 		//		select.addSelect( sourceTable.getDimensionIdFields() );
 		for (Field<Integer> dimField : sourceTable.getDimensionIdFields()) {
-			select.addSelect( DSL.coalesce(dimField,-1).as( dimField.getName() ) );
-//			select.addSelect( DSL.coalesce(dimField,"-1").as( dimField.getName() ) );
+//			select.addSelect( DSL.coalesce(dimField,-1).as( dimField.getName() ) );
+			select.addSelect( DSL.coalesce(dimField,"-1").as( dimField.getName() ) );
 		}
 		select.addGroupBy( sourceTable.getDimensionIdFields() );
 		

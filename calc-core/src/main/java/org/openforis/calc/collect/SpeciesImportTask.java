@@ -3,14 +3,20 @@ package org.openforis.calc.collect;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.jooq.Batch;
+import org.jooq.Field;
 import org.jooq.InsertQuery;
 import org.jooq.Record;
+import org.jooq.SelectQuery;
+import org.jooq.Table;
+import org.jooq.impl.DSL;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.psql.CreateTableStep;
 import org.openforis.calc.psql.Psql;
@@ -98,11 +104,19 @@ public class SpeciesImportTask extends Task {
 			int nextRecordId = 1;
 			List<InsertQuery<Record>> batchInserts = new ArrayList<InsertQuery<Record>>();
 			
+			Set<String> genuses = new HashSet<String>();
+			
 			while ( isRunning() ) {
 				SpeciesBackupLine line = reader.readNextLine();
 				if ( line != null ) {
-					InsertQuery<Record> insertQuery = createInsertQuery(table, line, nextRecordId ++);
-					batchInserts.add(insertQuery);
+					String code 				= line.getCode();
+					String scientificName 		= line.getScientificName();
+					InsertQuery<Record> insert 	= createInsertQuery(table, nextRecordId ++, code, scientificName);
+					
+					batchInserts.add( insert );
+					
+					String genus = ( scientificName.indexOf(" ") > 0 ) ? scientificName.substring(0, scientificName.indexOf(" ")) : scientificName;
+					genuses.add( genus );
 					
 					if ( batchInserts.size() == MAX_BATCH_SIZE ) {
 						flushBatchInserts(batchInserts);
@@ -115,13 +129,29 @@ public class SpeciesImportTask extends Task {
 			}
 			
 			batchInserts.add(createInsertQuery(table, nextRecordId ++, "-1", "NA" ));
-			batchInserts.add(createInsertQuery(table, nextRecordId ++, "UNK", "Unknown" ));
-			batchInserts.add(createInsertQuery(table, nextRecordId ++, "UNL", "Unlisted" ));
+			genuses.add( "NA" );
+			batchInserts.add(createInsertQuery(table, nextRecordId ++, "UNK", "UNKNOWN" ));
+			genuses.add( "UNKNOWN" );
+			batchInserts.add(createInsertQuery(table, nextRecordId ++, "UNL", "UNLISTED" ));
+			genuses.add( "UNLISTED" );
+			
+			int i = 0;
+			for ( String genus : genuses ) {
+				String code = "g_" + (i++);
+				batchInserts.add( createInsertQuery(table, nextRecordId ++, code , genus , SpeciesCodeTable.Rank.genus.toString() ));
+				
+				if ( batchInserts.size() == MAX_BATCH_SIZE ) {
+					flushBatchInserts(batchInserts);
+				}
+			}
 			
 			if ( ! batchInserts.isEmpty() ) {
 				//flush remaining inserts
 				flushBatchInserts(batchInserts);
 			}
+			
+			createSpeciesView( table );
+			
 		} catch(Exception e) {
 			throw new RuntimeException(e);
 		} finally {
@@ -129,18 +159,53 @@ public class SpeciesImportTask extends Task {
 		}
 	}
 
-	protected InsertQuery<Record> createInsertQuery(SpeciesCodeTable table, SpeciesBackupLine line, int recordId) {
-		String code = line.getCode();
-		String scientificName = line.getScientificName();
-		InsertQuery<Record> insert = createInsertQuery(table, recordId, code, scientificName);
-		return insert;
+	private void createSpeciesView(SpeciesCodeTable table) {
+		SpeciesCodeView view 		= new SpeciesCodeView( table );
+		SpeciesCodeTable genusTable = table.as( "genusTable" );
+		
+		Table<Record> genusSelect = psql().select().from(table).where(table.getRankField().eq(SpeciesCodeTable.Rank.genus.toString())).asTable( genusTable.getName() );
+		
+		SelectQuery<Record> select = psql().selectQuery();
+		
+		select.addSelect( table.getIdField() , table.getCodeField() , table.getScientificNameField() , table.getRankField() );
+		
+		select.addSelect( genusTable.getIdField().as(view.getGenusIdField().getName()) );
+		select.addSelect( genusTable.getCodeField().as(view.getGenusCodeField().getName()) );
+		select.addSelect( genusTable.getScientificNameField().as(view.getGenusScientificNameField().getName()) );
+		select.addSelect( genusTable.getRankField().as(view.getGenusRankField().getName()) );
+		
+		select.addFrom( table );
+		
+		Field<String> speciesTableGenusField = DSL.concat(table.getScientificNameField()  , DSL.field("' '", String.class));
+		select.addJoin(
+				genusSelect, 
+				genusTable.getScientificNameField().eq(
+						DSL.substring( speciesTableGenusField, DSL.field("0", Integer.class) , DSL.position(speciesTableGenusField, " "))
+						)
+				);
+		
+		select.addConditions( table.getRankField().isNull() );
+		
+		psql()
+			.createView( view )
+			.as( select )
+			.execute();
 	}
 
-	private InsertQuery<Record> createInsertQuery(SpeciesCodeTable table, int recordId, String code, String scientificName) {
+	private InsertQuery<Record> createInsertQuery(SpeciesCodeTable table, int recordId, String code, String scientificName ) {
+		return createInsertQuery( table, recordId, code, scientificName, null );
+	}
+	
+	private InsertQuery<Record> createInsertQuery(SpeciesCodeTable table, int recordId, String code, String scientificName , String rank) {
 		InsertQuery<Record> insert = psql.insertQuery(table);
 		insert.addValue(table.getIdField(), recordId);
 		insert.addValue(table.getCodeField(), code);
 		insert.addValue(table.getScientificNameField(), scientificName);
+		
+		if( rank != null ){
+			insert.addValue( table.getRankField(), rank );
+		}
+		
 		return insert;
 	}
 	
@@ -156,6 +221,7 @@ public class SpeciesImportTask extends Task {
 		CreateTableStep createTableStep = psql()
 			.createTable(table)
 			.columns(table.fields());
+		
 		createTableStep.execute();
 		
 		return table;

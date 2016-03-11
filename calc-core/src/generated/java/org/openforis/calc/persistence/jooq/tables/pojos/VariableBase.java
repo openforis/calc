@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables.pojos;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class VariableBase implements java.io.Serializable {
 
-	private static final long serialVersionUID = -538261969;
+	private static final long serialVersionUID = -1238915415;
 
 	private java.lang.Integer                          id;
 	private java.lang.Integer                          entityId;
@@ -31,6 +31,7 @@ public class VariableBase implements java.io.Serializable {
 	private java.lang.Integer                          sortOrder;
 	private java.lang.Integer                          variablePerHaId;
 	private java.lang.Long                             categoryLevelId;
+	private java.lang.Boolean                          specieCategory;
 
 	public VariableBase() {}
 
@@ -52,7 +53,8 @@ public class VariableBase implements java.io.Serializable {
 		java.lang.String                           description,
 		java.lang.Integer                          sortOrder,
 		java.lang.Integer                          variablePerHaId,
-		java.lang.Long                             categoryLevelId
+		java.lang.Long                             categoryLevelId,
+		java.lang.Boolean                          specieCategory
 	) {
 		this.id = id;
 		this.entityId = entityId;
@@ -72,6 +74,7 @@ public class VariableBase implements java.io.Serializable {
 		this.sortOrder = sortOrder;
 		this.variablePerHaId = variablePerHaId;
 		this.categoryLevelId = categoryLevelId;
+		this.specieCategory = specieCategory;
 	}
 
 	public java.lang.Integer getId() {
@@ -216,5 +219,13 @@ public class VariableBase implements java.io.Serializable {
 
 	public void setCategoryLevelId(java.lang.Long categoryLevelId) {
 		this.categoryLevelId = categoryLevelId;
+	}
+
+	public java.lang.Boolean getSpecieCategory() {
+		return this.specieCategory;
+	}
+
+	public void setSpecieCategory(java.lang.Boolean specieCategory) {
+		this.specieCategory = specieCategory;
 	}
 }

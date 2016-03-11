@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class VariableTable extends org.jooq.impl.TableImpl<org.openforis.calc.persistence.jooq.tables.records.VariableRecord> {
 
-	private static final long serialVersionUID = -153631420;
+	private static final long serialVersionUID = -526222440;
 
 	/**
 	 * The singleton instance of <code>calc.variable</code>
@@ -115,6 +115,11 @@ public class VariableTable extends org.jooq.impl.TableImpl<org.openforis.calc.pe
 	 * The column <code>calc.variable.category_level_id</code>.
 	 */
 	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.VariableRecord, java.lang.Long> CATEGORY_LEVEL_ID = createField("category_level_id", org.jooq.impl.SQLDataType.BIGINT.defaulted(true), this, "");
+
+	/**
+	 * The column <code>calc.variable.specie_category</code>.
+	 */
+	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.VariableRecord, java.lang.Boolean> SPECIE_CATEGORY = createField("specie_category", org.jooq.impl.SQLDataType.BOOLEAN.defaulted(true), this, "");
 
 	/**
 	 * Create a <code>calc.variable</code> table reference

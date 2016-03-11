@@ -51,5 +51,10 @@ public class MultiwayVariable extends CategoricalVariable<String> {
 	public void setDefaultValue(String defaultValue) {
 		this.defaultValue = defaultValue;
 	}
-
+	
+	@JsonIgnore
+	public boolean isSpecieCategory(){
+		return Boolean.TRUE.equals( super.getSpecieCategory() );
+	}
+	
 }

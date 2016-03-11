@@ -6,15 +6,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.jooq.Field;
-import org.jooq.JoinType;
 import org.jooq.Record;
-import org.jooq.Select;
-import org.jooq.SelectQuery;
 import org.jooq.TableField;
 import org.jooq.impl.SQLDataType;
-import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
-import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.psql.Psql;
 import org.openforis.commons.collection.CollectionUtils;

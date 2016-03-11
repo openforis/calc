@@ -6,6 +6,7 @@ package org.openforis.calc.schema;
 import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Schema;
+import org.jooq.Table;
 import org.jooq.TableField;
 import org.jooq.impl.TableImpl;
 
@@ -20,6 +21,10 @@ public abstract class AbstractTable extends TableImpl<Record> {
 
 	protected AbstractTable(String name, Schema schema) {
 		super(name, schema);
+	}
+
+	protected AbstractTable(String alias, Schema schema, Table<Record> aliased, Field<?>[] parameters, String comment) {
+		super(alias, schema, aliased, parameters, comment);
 	}
 
 	public boolean hasField(String name) {

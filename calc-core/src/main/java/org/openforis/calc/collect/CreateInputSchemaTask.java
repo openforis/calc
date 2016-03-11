@@ -26,6 +26,7 @@ import org.springframework.jdbc.datasource.DataSourceUtils;
 
 /**
  * @author S. Ricci
+ * @author M. Togna
  *
  */
 public class CreateInputSchemaTask extends Task {
@@ -77,24 +78,6 @@ public class CreateInputSchemaTask extends Task {
 		Connection connection = DataSourceUtils.getConnection(dataSource);
 		relationalSchemaCreator.createRelationalSchema(schema, connection);
 		incrementItemsProcessed();
-		
-//		for (Table<?> table : schema.getTables()) {
-//			if( table instanceof DataTable ){
-//				for (Column<?> column : table.getColumns()) {
-//					if( column instanceof DataColumn ){
-//						NodeDefinition nodeDefinition = ((DataColumn) column).getNodeDefinition();
-//						if( nodeDefinition instanceof TaxonAttributeDefinition ){
-//							
-//							DynamicTable<Record> jooqTable = new DynamicTable<>( table.getName() , inputSchemaName );
-//							jooqTable.getIntegerField(name)
-//							psql.
-//								alterTable( jooqTable )
-//								.addColumn( )
-//						}
-//					}
-//				}
-//			}
-//		}
 		
 		return schema;
 	}

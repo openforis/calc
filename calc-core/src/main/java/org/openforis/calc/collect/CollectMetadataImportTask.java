@@ -418,9 +418,10 @@ public class CollectMetadataImportTask extends Task {
 			SpeciesCodeTable speciesCodeTable = new SpeciesCodeTable(taxonomy, getInputSchema().getName());
 			CategoryLevel categoryLevel = ws.getCategoryLevelByTableName( speciesCodeTable.getName() );
 			
-			multiwayVar.setInputCategoryIdColumn( taxonomy );
-//			multiwayVar.setInputCategoryIdColumn( variableName );
+			multiwayVar.setInputCategoryIdColumn( variableName );
+//			multiwayVar.setInputCategoryIdColumn( taxonomy );
 //			multiwayVar.setDisaggregate( true );
+			multiwayVar.setSpecieCategory( true );
 			multiwayVar.setCategoryLevel( categoryLevel );
 			
 		} else if ( attrDefn instanceof TextAttributeDefinition && 

@@ -167,4 +167,11 @@ public class VariableDao extends org.jooq.impl.DAOImpl<org.openforis.calc.persis
 	public java.util.List<Variable> fetchByCategoryLevelId(java.lang.Long... values) {
 		return fetch(org.openforis.calc.persistence.jooq.tables.VariableTable.VARIABLE.CATEGORY_LEVEL_ID, values);
 	}
+
+	/**
+	 * Fetch records that have <code>specie_category IN (values)</code>
+	 */
+	public java.util.List<Variable> fetchBySpecieCategory(java.lang.Boolean... values) {
+		return fetch(org.openforis.calc.persistence.jooq.tables.VariableTable.VARIABLE.SPECIE_CATEGORY, values);
+	}
 }
