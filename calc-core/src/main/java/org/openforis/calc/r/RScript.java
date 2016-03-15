@@ -142,7 +142,10 @@ public class RScript {
 		return new Not(this, script);
 	}
 	
-
+	public IsNa isNa(RScript script) {
+		return new IsNa(this, script);
+	}
+	
 	public Library library(String name) {
 		return new Library(this, name);
 	}
@@ -278,7 +281,7 @@ public class RScript {
 		sb.append(s);
 	}
 
-	protected String toScript() {
+	public String toScript() {
 		return sb.toString();
 	}
 

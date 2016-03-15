@@ -61,7 +61,7 @@ public class RVector extends RScript {
 	}
 	
 	@Override
-	protected String toScript() {
+	public String toScript() {
 		if ( changed ) {
 			reset();
 			createVector();

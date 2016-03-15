@@ -12,7 +12,6 @@ import org.jooq.SQLDialect;
 import org.jooq.SelectQuery;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DynamicTable;
-import org.openforis.calc.engine.CalculationException;
 import org.openforis.calc.engine.ParameterMap;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.CategoricalVariable;
@@ -57,37 +56,74 @@ public class CalculationStepRScriptGenerator {
 	}
 
 	private String createEquationTypeScript( CalculationStep calculationStep ) {
-		Workspace workspace = calculationStep.getWorkspace();
+		Workspace workspace 		= calculationStep.getWorkspace();
 		
-		Variable<?> outputVariable = calculationStep.getOutputVariable();
-		Entity entity = outputVariable.getEntity();
-		RVariable rOutputVariable = r().variable( entity.getName(), outputVariable.getName() );
+//		Variable<?> outputVariable = calculationStep.getOutputVariable();
+//		Entity entity = outputVariable.getEntity();
+//		RVariable rOutputVariable = r().variable( entity.getName(), outputVariable.getName() );
 		
-		EquationList equationList = workspace.getEquationListById( calculationStep.getEquationListId() );
+		EquationList equationList 	= workspace.getEquationListById( calculationStep.getEquationListId() );
 		Iterator<Equation> iterator = equationList.getEquations().iterator();
-		RScript rScript = getNextREquation( iterator , calculationStep );
+		RScript rScript 			= getNextREquation( iterator , calculationStep );
 		
-		SetValue setValue = r().setValue( rOutputVariable, rScript );
+//		SetValue setValue = r().setValue( rOutputVariable, rScript );
 		
-		String script = setValue.toString();
-		return script;
+//		String script = setValue.toString();
+//		return script;
+		
+		return rScript.toString();
 	}
-
+	
 	private RScript getNextREquation( Iterator<Equation> iterator , CalculationStep calculationStep ) {
+		RScript equationScript = new RScript();
 		Equation eq = iterator.next();
 		
-		String code = eq.getCode();
-		String condition = eq.getCondition();
+//		String code = eq.getCode();
+//		String condition = eq.getCondition();
+		Variable<?> outputVariable 		= calculationStep.getOutputVariable();
+		Entity entity 					= outputVariable.getEntity();
 		
-		StringBuffer sbCondition = new StringBuffer();
-		RScript rCondition = null;
+		RScript rCondition 				= getCondition( eq , calculationStep );
+		
+		RScript filteredDataFrame 		= r().rScript( entity.getName() + "["+rCondition.toScript()+" , ]" );
+		String tmpDataFrameName 		= "tmp";
+		RVariable tmp 					= r().variable(tmpDataFrameName);
+		SetValue setTmp 				= r().setValue( tmp, filteredDataFrame );
+		equationScript.addScript( setTmp );
+		
+		RVariable rOutputVar 		= r().variable(filteredDataFrame, outputVariable.getName() );
+		String eqString 			= replaceVariables( eq.getEquation(), calculationStep, tmpDataFrameName, entity.getWorkspace() );
+		SetValue setValue			= r().setValue(rOutputVar, r().rScript(eqString) );
+		equationScript.addScript(setValue);
+		
+		RScript rScript = null;
+		if( iterator.hasNext() ) {
+//			if( rCondition == null ){
+//				throw new CalculationException( "Equation " + equation + " has neither code nor condition set" );
+//			}
+			rScript = getNextREquation(iterator , calculationStep);
+			equationScript.addScript( rScript );
+		} else {
+			rScript = equationScript;
+		}
+		
+		return equationScript;
+	}
+	
+	private RScript getCondition(Equation equation,  CalculationStep calculationStep) {
+		RScript rCondition 				= null;
+		StringBuffer sbCondition 		= new StringBuffer();
+		Variable<?> outputVariable 		= calculationStep.getOutputVariable();
+		Entity entity 					= outputVariable.getEntity();
+		String code 					= equation.getCode();
+		String condition				= equation.getCondition();
+		
 		if( StringUtils.isNotBlank( code ) || StringUtils.isNotBlank( condition)  ) {
 			if(StringUtils.isNotBlank( code )) {
 				
-				Entity entity = calculationStep.getOutputVariable().getEntity();
-				Integer codeVariableId = calculationStep.getParameters().getInteger( "codeVariable" );
-				Variable<?> codeVariable = calculationStep.getWorkspace().getVariableById(codeVariableId );
-				RVariable rCodeVariable	= r().variable( entity.getName() , codeVariable.getName() );
+				Integer codeVariableId 		= calculationStep.getParameters().getInteger( "codeVariable" );
+				Variable<?> codeVariable 	= calculationStep.getWorkspace().getVariableById(codeVariableId );
+				RVariable rCodeVariable		= r().variable( entity.getName() , codeVariable.getName() );
 				
 				sbCondition.append( rCodeVariable.toString() );
 				sbCondition.append( " == " );
@@ -110,34 +146,86 @@ public class CalculationStepRScriptGenerator {
 			}
 			
 			rCondition = r().rScript( sbCondition.toString() );
-		}
-		
-		String equation = eq.getEquation();
-		equation = replaceVariables(equation , calculationStep);
-		RScript rEquation = r().rScript(equation);
-		
-		RScript rScript = null;
-		if( iterator.hasNext() ) {
-			if( rCondition == null ){
-				throw new CalculationException( "Equation " + equation + " has neither code nor condition set" );
-			}
-			rScript = r().ifElse( rCondition, rEquation, getNextREquation(iterator , calculationStep) );
 		} else {
-			rScript = rEquation;
+			RVariable rOutputVar = r().variable( entity.getName(), outputVariable.getName() );
+			rCondition = r().not( r().isNa(rOutputVar) );
 		}
-		return rScript;
+		
+		return rCondition;
 	}
-	
-	String replaceVariables( String string ,  CalculationStep calculationStep ) {
-		Entity entity = calculationStep.getOutputVariable().getEntity();
-		RVariable entityDf = r().variable( entity.getName() );
 
-		String script = string;
+//	private RScript getNextREquationOLD( Iterator<Equation> iterator , CalculationStep calculationStep ) {
+//		Equation eq = iterator.next();
+//		
+//		String code = eq.getCode();
+//		String condition = eq.getCondition();
+//		
+//		StringBuffer sbCondition = new StringBuffer();
+//		RScript rCondition = null;
+//		if( StringUtils.isNotBlank( code ) || StringUtils.isNotBlank( condition)  ) {
+//			if(StringUtils.isNotBlank( code )) {
+//				
+//				Entity entity = calculationStep.getOutputVariable().getEntity();
+//				Integer codeVariableId = calculationStep.getParameters().getInteger( "codeVariable" );
+//				Variable<?> codeVariable = calculationStep.getWorkspace().getVariableById(codeVariableId );
+//				RVariable rCodeVariable	= r().variable( entity.getName() , codeVariable.getName() );
+//				
+//				sbCondition.append( rCodeVariable.toString() );
+//				sbCondition.append( " == " );
+//				if( codeVariable instanceof CategoricalVariable ){
+//					sbCondition.append( "'" );
+//				}
+//				sbCondition.append( code );
+//				if( codeVariable instanceof CategoricalVariable ){
+//					sbCondition.append( "'" );
+//				}
+//			}
+//			
+//			if(StringUtils.isNotBlank( condition )) {
+//				if( sbCondition.length() > 0 ) {
+//					sbCondition.append( " & " );
+//				}
+//				
+//				String expr = replaceVariables(condition , calculationStep);
+//				sbCondition.append( expr );
+//			}
+//			
+//			rCondition = r().rScript( sbCondition.toString() );
+//		}
+//		
+//		String equation = eq.getEquation();
+//		equation = replaceVariables(equation , calculationStep);
+//		RScript rEquation = r().rScript(equation);
+//		
+//		RScript rScript = null;
+//		if( iterator.hasNext() ) {
+//			if( rCondition == null ){
+//				throw new CalculationException( "Equation " + equation + " has neither code nor condition set" );
+//			}
+//			rScript = r().ifElse( rCondition, rEquation, getNextREquation(iterator , calculationStep) );
+//		} else {
+//			rScript = rEquation;
+//		}
+//		return rScript;
+//	}
+	
+	String replaceVariables( String script ,  CalculationStep calculationStep ) {
+		Entity entity 		= calculationStep.getOutputVariable().getEntity();
+		String entityName 	= entity.getName();
+		Workspace workspace = entity.getWorkspace();
+		
+		return replaceVariables(script, calculationStep, entityName, workspace);
+	}
+
+	private String replaceVariables(String script, CalculationStep calculationStep, String entityName, Workspace workspace) {
+		RVariable entityDf 	= r().variable( entityName );
+
+//		String script = string;
 		
 		List<ParameterMap> varParams = calculationStep.getParameters().getList("variables");
 		for (ParameterMap varParam : varParams) {
 			Integer variableId = varParam.getInteger("variableId");
-			Variable<?> variable = entity.getWorkspace().getVariableById(variableId);
+			Variable<?> variable = workspace.getVariableById(variableId);
 			
 			RVariable rVariable = r().variable( entityDf , variable.getName() );
 

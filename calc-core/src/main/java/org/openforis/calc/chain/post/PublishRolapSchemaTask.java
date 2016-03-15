@@ -123,7 +123,6 @@ public class PublishRolapSchemaTask extends Task {
 	}
 
 	private void createRoles( RolapSchema rolapSchema , Schema schema ) {
-		// TODO Auto-generated method stub
 		List<Role> roles = schema.getRole();
 		
 		// add admin role

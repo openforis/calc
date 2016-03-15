@@ -238,7 +238,7 @@ public class DataSchema extends RelationalSchema {
 				// Add dimensions for categorical variables
 				for (CategoricalVariable<?> var : entity.getCategoricalVariables()) {
 //				for (CategoricalVariable<?> var : entity.getDimensions()) {
-					if( var instanceof MultiwayVariable ){
+					if( var instanceof MultiwayVariable && !((MultiwayVariable) var).isSpecieCategory()){
 						MultiwayVariable multiVar = (MultiwayVariable) var;
 						CategoryLevel categoryLevel = var.getCategoryLevel();
 						if( categoryLevel != null ){

@@ -53,7 +53,7 @@ public class RDataFrame extends RScript {
 	}
 	
 	@Override
-	protected String toScript() {
+	public String toScript() {
 		if ( changed ) {
 			buildScript();
 		}
