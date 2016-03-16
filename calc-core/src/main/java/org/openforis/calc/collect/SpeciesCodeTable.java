@@ -27,7 +27,7 @@ public class SpeciesCodeTable extends AbstractTable {
 		genus;
 	}
 	
-	SpeciesCodeTable(String speciesList, String schema) {
+	public SpeciesCodeTable(String speciesList, String schema) {
 		super(speciesList + "_code", new SchemaImpl(schema));
 		initFields(speciesList);
 	}

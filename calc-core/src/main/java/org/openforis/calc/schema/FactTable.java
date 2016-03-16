@@ -77,6 +77,7 @@ public class FactTable extends DataTable {
 
 		createPrimaryKeyField();
 		createDimensionFieldsRecursive(entity);
+		createSpeciesDimensionFields();
 		createStratumField();
 		createAoiIdFields();
 		createQuantityFields(false, true);
@@ -88,7 +89,6 @@ public class FactTable extends DataTable {
 		
 		createAggregateTables();
 		createClusterField();
-		
 		
 		createWeightField();
 		

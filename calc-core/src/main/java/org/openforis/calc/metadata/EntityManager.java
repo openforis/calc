@@ -14,6 +14,9 @@ import org.jooq.JoinType;
 import org.jooq.Record;
 import org.jooq.Select;
 import org.jooq.SelectQuery;
+import org.jooq.impl.DSL;
+import org.openforis.calc.collect.SpeciesCodeTable;
+import org.openforis.calc.collect.SpeciesCodeView;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceBackup;
 import org.openforis.calc.persistence.jooq.Sequences;
@@ -169,6 +172,7 @@ public class EntityManager {
 		return getViewSelect( entity , false );
 	}
 	
+	@SuppressWarnings("unchecked")
 	public Select<?> getViewSelect(Entity entity, boolean addAlwaysWeightField) {
 		Set<String> uniqueFields	= new HashSet<String>();
 		Schemas schemas 			= entity.getWorkspace().schemas();
@@ -208,6 +212,23 @@ public class EntityManager {
 				select.addSelect( categoryValueField );
 			}
 		}
+		
+		for (MultiwayVariable variable : entity.getSpeciesCategoricalVariables()) {
+			CategoryLevel categoryLevel 	= variable.getCategoryLevel();
+			SpeciesCodeTable speciesTable 	= new SpeciesCodeTable( categoryLevel.getName(), categoryLevel.getSchemaName() );
+			SpeciesCodeView speciesView 	= new SpeciesCodeView( speciesTable );
+			
+			
+			select.addJoin(
+					speciesView, 
+					JoinType.LEFT_OUTER_JOIN, 
+					speciesView.getCodeField().eq( (Field<String>) table.getCategoryValueField(variable) )
+					);
+			
+			select.addSelect( DSL.coalesce( speciesView.getIdField() , -1 ).as(speciesView.getIdField().getName()) );
+			select.addSelect( DSL.coalesce( speciesView.getGenusIdField() , -1 ).as(speciesView.getGenusIdField().getName()) );
+		}
+		
 		// add weight column if sampling unit
 		if(  entity.isSamplingUnit() ) {
 			if( addAlwaysWeightField || tableDao.hasColumn( table, table.getWeightField() ) ){

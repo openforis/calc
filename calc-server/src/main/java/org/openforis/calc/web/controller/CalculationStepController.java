@@ -17,12 +17,10 @@ import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.chain.ProcessingChainManager;
 import org.openforis.calc.engine.ParameterHashMap;
 import org.openforis.calc.engine.ParameterMap;
-import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceService;
 import org.openforis.calc.metadata.Category;
 import org.openforis.calc.metadata.CategoryLevel;
-import org.openforis.calc.metadata.CategoryManager;
 import org.openforis.calc.metadata.EquationList;
 import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.Variable;
@@ -56,14 +54,14 @@ public class CalculationStepController {
 	@Autowired
 	private ProcessingChainManager processingChainManager;
 	
-	@Autowired
-	private TaskManager taskManager;
+//	@Autowired
+//	private TaskManager taskManager;
 
 	@Autowired
 	private CalculationStepRScriptGenerator calculationStepRScriptGenerator;
 	
-	@Autowired
-	private CategoryManager categoryManager;
+//	@Autowired
+//	private CategoryManager categoryManager;
 	
 	@RequestMapping(value = "/save.json", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody

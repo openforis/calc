@@ -107,6 +107,16 @@ public class Cube {
 				dimensionUsages.put(dim, field);
 			}
 		}
+		
+		Map<CategoricalVariable<?>, SpeciesCategoryDimension> speciesDimensionsMap = rolapSchema.getSpeciesDimensionsMap();
+		for ( CategoricalVariable<?> var : speciesDimensionsMap.keySet() ) {
+			Field<Integer> field = factTable.getSpeciesDimensionIdField(var);
+			if ( field != null ) {
+				Dimension dim = speciesDimensionsMap.get(var);
+				dimensionUsages.put(dim, field);
+			}
+		}
+		
 	}
 
 	private void createMeasures() {
@@ -380,6 +390,7 @@ public class Cube {
 				AggForeignKey aggFK = new AggForeignKey( stratumField.getName(), stratumField.getName() );
 				aggForeignKeys.add(aggFK);
 			}
+			
 		}
 
 		private void createAggMeasures() {

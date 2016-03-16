@@ -37,6 +37,8 @@ public class EntityDataView extends DataTable {
 		// TODO: coordinates disabled now
 		// createCoordinateFields();
 		createCategoryFields(entity);
+		createSpeciesDimensionFields();
+		
 		createQuantityFields();
 		createTextFields();
 

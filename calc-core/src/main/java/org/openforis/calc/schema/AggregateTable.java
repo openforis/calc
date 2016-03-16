@@ -47,6 +47,7 @@ public class AggregateTable extends DataTable {
 		Entity entity = getEntity();
 		
 		createDimensionFieldsRecursive(entity);
+		createSpeciesDimensionFields();
 		createStratumField();
 		createAoiIdFields( aoiLevel );
 		createOutputQuantityFields(entity);

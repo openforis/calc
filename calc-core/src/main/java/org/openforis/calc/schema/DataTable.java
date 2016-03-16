@@ -24,11 +24,14 @@ import org.jooq.Schema;
 import org.jooq.TableField;
 import org.jooq.UniqueKey;
 import org.jooq.impl.SQLDataType;
+import org.openforis.calc.collect.SpeciesCodeTable;
+import org.openforis.calc.collect.SpeciesCodeView;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.AoiHierarchy;
 import org.openforis.calc.metadata.AoiLevel;
 import org.openforis.calc.metadata.BinaryVariable;
 import org.openforis.calc.metadata.CategoricalVariable;
+import org.openforis.calc.metadata.CategoryLevel;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.QuantitativeVariable;
@@ -76,6 +79,8 @@ public abstract class DataTable extends AbstractTable {
 	private Field<Long> samplingUnitIdField;
 
 	private Map<CategoricalVariable<?>, Field<Integer>> dimensionIdFields;
+	private Map<CategoricalVariable<?>, Field<Integer>> speciesDimensionIdFields;
+	private Map<MultiwayVariable, List<Field<Integer>> > speciesDimensionFields;
 	private Field<Integer> stratumField;
 
 	private Field<BigDecimal> weightField;
@@ -85,14 +90,16 @@ public abstract class DataTable extends AbstractTable {
 	
 	protected DataTable(Entity entity, String name, Schema schema) {
 		super(name, schema);
-		this.entity = entity;
-		this.aoiIdFields = new HashMap<AoiLevel, Field<Integer>>();
-		this.quantityFields = new HashMap<QuantitativeVariable, Field<BigDecimal>>();
-		this.categoryValueFields = new HashMap<CategoricalVariable<?>, Field<?>>();
-		this.categoryIdFields = new HashMap<CategoricalVariable<?>, Field<Integer>>();
-		this.variableAggregateFields = new HashMap<VariableAggregate, Field<BigDecimal>>();
-		this.textFields = new HashMap<TextVariable, Field<String>>();
-		this.dimensionIdFields = new HashMap<CategoricalVariable<?>, Field<Integer>>();
+		this.entity 					= entity;
+		this.aoiIdFields 				= new HashMap<AoiLevel, Field<Integer>>();
+		this.quantityFields 			= new HashMap<QuantitativeVariable, Field<BigDecimal>>();
+		this.categoryValueFields 		= new HashMap<CategoricalVariable<?>, Field<?>>();
+		this.categoryIdFields 			= new HashMap<CategoricalVariable<?>, Field<Integer>>();
+		this.variableAggregateFields 	= new HashMap<VariableAggregate, Field<BigDecimal>>();
+		this.textFields 				= new HashMap<TextVariable, Field<String>>();
+		this.dimensionIdFields 			= new HashMap<CategoricalVariable<?>, Field<Integer>>();
+		this.speciesDimensionIdFields	= new HashMap<>();
+		this.speciesDimensionFields 	= new HashMap<>();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -406,6 +413,31 @@ public abstract class DataTable extends AbstractTable {
 		}
 	}
 	
+	protected void createSpeciesDimensionFields() {
+//		this.dimensionIdFields = new HashMap<CategoricalVariable<?>, Field<Integer>>();
+//		List<CategoricalVariable<?>> dimensions = entity.getDimensions();
+		for (CategoricalVariable<?> var : entity.getSpeciesCategoricalVariables()) {
+			if( var instanceof MultiwayVariable && ((MultiwayVariable) var).isSpecieCategory() ){
+				
+				CategoryLevel level 	= var.getCategoryLevel();
+				SpeciesCodeTable table 	= new SpeciesCodeTable( level.getName() , this.getSchema().getName() );
+				SpeciesCodeView view	= new SpeciesCodeView( table );
+				
+				List<Field<Integer>> fields = new ArrayList<>();
+				
+				Field<Integer> fld 		= createField( view.getIdField().getName() , SQLDataType.INTEGER, this );
+				fields.add(fld);
+				
+				Field<Integer> fldGenus = createField( view.getGenusIdField().getName() , SQLDataType.INTEGER, this );
+				fields.add(fldGenus);
+				
+				speciesDimensionFields.put( (MultiwayVariable) var, fields );
+				speciesDimensionIdFields.put( (MultiwayVariable) var, fld );
+			}
+		}
+		
+	}
+	
 	public Collection<Field<Integer>> getDimensionIdFields() {
 		return Collections.unmodifiableCollection(dimensionIdFields.values());
 	}
@@ -414,6 +446,18 @@ public abstract class DataTable extends AbstractTable {
 		return dimensionIdFields.get(variable);
 	}
 
+	public Collection<Field<Integer>> getSpeciesDimensionFields() {
+		List<Field<Integer>> fields = new ArrayList<>();
+		for (List<Field<Integer>> list : speciesDimensionFields.values()) {
+			fields.addAll(list);
+		}
+		return Collections.unmodifiableCollection( fields );
+	}
+	
+	public Field<Integer> getSpeciesDimensionIdField(CategoricalVariable<?> variable) {
+		return speciesDimensionIdFields.get(variable);
+	}
+	
 	public Field<Integer> getStratumField() {
 		return stratumField;
 	}

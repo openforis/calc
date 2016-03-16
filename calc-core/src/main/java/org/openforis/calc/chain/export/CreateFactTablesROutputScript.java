@@ -59,30 +59,32 @@ public class CreateFactTablesROutputScript extends ROutputScript {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private static RScript createFactTableScript( Workspace workspace , DataSchema schema , FactTable factTable , DBProperties dbProperties ) {
 		RScript r					= r();
+		Entity entity 				= factTable.getEntity();
 		
-		EntityDataView dataTable = factTable.getEntityView();
+		EntityDataView dataView 	= factTable.getEntityView();
 		
-		SelectQuery<?> select = new Psql().selectQuery( dataTable );
-		select.addSelect( dataTable.getIdField() );
+		SelectQuery<?> select 		= new Psql().selectQuery( dataView );
+		select.addSelect( dataView.getIdField() );
 
 		// add dimensions to select
 		for (Field<Integer> field : factTable.getDimensionIdFields()) {
-			select.addSelect(dataTable.field(field));
+			select.addSelect(dataView.field(field));
 		}
 		for (Field<?> field : factTable.getCategoryValueFields() ) {
-			select.addSelect( dataTable.field(field) );
+			select.addSelect( dataView.field(field) );
 		}
-		
+		for (Field<?> field : factTable.getSpeciesDimensionFields() ) {
+			select.addSelect( dataView.field(field) );
+		}
 		// add quantities to select
-		Entity entity = factTable.getEntity();
 		Collection<QuantitativeVariable> vars = entity.getOriginalQuantitativeVariables();
 		for (QuantitativeVariable var : vars) {
-			Field<BigDecimal> fld = dataTable.getQuantityField(var);
+			Field<BigDecimal> fld = dataView.getQuantityField(var);
 			select.addSelect(fld);
 		}
 		vars = entity.getDefaultProcessingChainQuantitativeOutputVariables();
 		for (QuantitativeVariable var : vars) {
-			Field<BigDecimal> fld = dataTable.getQuantityField(var);
+			Field<BigDecimal> fld = dataView.getQuantityField(var);
 			select.addSelect(fld);
 			
 			// add error columns in case at least 1 error table has been defined for the given variable
@@ -112,12 +114,12 @@ public class CreateFactTablesROutputScript extends ROutputScript {
 		// in case entities that need to be aggregated based on their sampling design 
 		if( entity.isInSamplingUnitHierarchy() ){
 			
-			if( !dataTable.getEntity().isSamplingUnit() ){
-				select.addSelect( dataTable.getSamplingUnitIdField() );
+			if( !dataView.getEntity().isSamplingUnit() ){
+				select.addSelect( dataView.getSamplingUnitIdField() );
 			}
 			
 			// in case of sampling unit, it adds the weight (area) measure
-			Field<BigDecimal> weightField = dataTable.getWeightField();
+			Field<BigDecimal> weightField = dataView.getWeightField();
 			if( weightField != null ){
 				select.addSelect( weightField );
 			}
@@ -125,7 +127,7 @@ public class CreateFactTablesROutputScript extends ROutputScript {
 			// add plot area to select
 			Field<BigDecimal> plotAreaField = factTable.getPlotAreaField();
 			if (plotAreaField != null) {
-				select.addSelect( dataTable.field(plotAreaField) );
+				select.addSelect( dataView.field(plotAreaField) );
 			}
 			
 			// add aoi ids to fact table if it's geo referenced
@@ -145,7 +147,7 @@ public class CreateFactTablesROutputScript extends ROutputScript {
 						ColumnJoin psuCol = psuJoinColumns.get(i);
 						ColumnJoin suCol = suPsuJoinColumns.get(i);
 						Field aoiField = aoiTable.field( psuCol.getColumn() );
-						Condition join = aoiField.eq( dataTable.field(suCol.getColumn()) );
+						Condition join = aoiField.eq( dataView.field(suCol.getColumn()) );
 						if( condition == null ){
 							condition = join;
 						} else {
@@ -160,7 +162,7 @@ public class CreateFactTablesROutputScript extends ROutputScript {
 					DataAoiTable aoiTable = schema.getSamplingUnitAoiTable();
 					select.addSelect( aoiTable.getAoiIdFields() );
 					
-					Field<Long> joinField = ( dataTable.getEntity().isSamplingUnit() ) ? dataTable.getIdField() : dataTable.getSamplingUnitIdField();
+					Field<Long> joinField = ( dataView.getEntity().isSamplingUnit() ) ? dataView.getIdField() : dataView.getSamplingUnitIdField();
 					select.addJoin(aoiTable, joinField.eq(aoiTable.getIdField()) );
 				}
 				
@@ -173,7 +175,7 @@ public class CreateFactTablesROutputScript extends ROutputScript {
 				// add join in case of two phase sampling
 				DynamicTable<Record> phase1Table = factTable.getDataSchema().getPhase1Table();
 				TableJoin phase1Join = samplingDesign.getPhase1Join();
-				Condition conditions = phase1Table.getJoinConditions( dataTable, phase1Join );
+				Condition conditions = phase1Table.getJoinConditions( dataView, phase1Join );
 				select.addJoin(phase1Table, conditions);
 				
 				// add stratum column
@@ -196,14 +198,14 @@ public class CreateFactTablesROutputScript extends ROutputScript {
 				if( workspace.hasStratifiedSamplingDesign() ) {
 					// add stratum column
 					String stratumColumn = samplingDesign.getStratumJoin().getColumn();
-					Field<Integer> stratumField = dataTable.field( stratumColumn ).cast(Integer.class).as( factTable.getStratumField().getName() ) ;
+					Field<Integer> stratumField = dataView.field( stratumColumn ).cast(Integer.class).as( factTable.getStratumField().getName() ) ;
 					select.addSelect( stratumField );
 				}
 				
 				// add cluster column
 				if( workspace.hasClusterSamplingDesign() ) {
 					String clusterColumn = samplingDesign.getClusterColumn().getColumn();
-					clusterField = dataTable.field( clusterColumn ).cast(String.class).as( factTable.getClusterField().getName() ) ;
+					clusterField = dataView.field( clusterColumn ).cast(String.class).as( factTable.getClusterField().getName() ) ;
 				} else {
 //					clusterField = 	DSL.val( "1" ).as( factTable.getClusterField().getName() );
 				}
@@ -215,12 +217,12 @@ public class CreateFactTablesROutputScript extends ROutputScript {
 
 				List<ColumnJoin> samplingUnitPsuJoinColumns = twoStagesSettings.getSamplingUnitPsuJoinColumns();
 				for( ColumnJoin columnJoin : samplingUnitPsuJoinColumns ){
-					select.addSelect( dataTable.field(columnJoin.getColumn()) );
+					select.addSelect( dataView.field(columnJoin.getColumn()) );
 				}
 				
 				
 				Entity ssu = workspace.getEntityByOriginalId( twoStagesSettings.getSsuOriginalId() );
-				select.addSelect( dataTable.field(ssu.getIdColumn()).as(factTable.SSU_ID.getName()) );
+				select.addSelect( dataView.field(ssu.getIdColumn()).as(factTable.SSU_ID.getName()) );
 			}
 		}
 		

@@ -24,6 +24,7 @@ public class RolapSchema {
 
 	private List<AoiDimension> aoiDimensions;
 	private Map<CategoricalVariable<?>, CategoryDimension> sharedDimensions;
+	private Map<CategoricalVariable<?>, SpeciesCategoryDimension> speciesDimensions;
 	private StratumDimension stratumDimension;
 
 	private Workspace workspace;
@@ -33,7 +34,6 @@ public class RolapSchema {
 	private ExtendedSchema extendedSchema;
 
 	private List<VirtualCube> virtualCubes;
-
 
 	public RolapSchema(Workspace workspace, DataSchema schema, ExtendedSchema extendedSchema) {
 		this.name = workspace.getInputSchema();
@@ -46,67 +46,69 @@ public class RolapSchema {
 		createAoiDimensions();
 		createStratumDimension();
 		createSharedDimensions();
+		createSpeciesDimensions();
+		
 		createCubes();
 		createVirtualCubes();
 	}
 
 	private void createStratumDimension() {
 		StratumDimensionTable stratumDimensionTable = dataSchema.getStratumDimensionTable();
-		if( stratumDimensionTable != null ){
-			this.stratumDimension = new StratumDimension( this, stratumDimensionTable );
+		if (stratumDimensionTable != null) {
+			this.stratumDimension = new StratumDimension(this, stratumDimensionTable);
 		}
 	}
 
 	private void createCubes() {
 		this.cubes = new HashMap<Integer, Cube>();
-		
+
 		List<FactTable> factTables = dataSchema.getFactTables();
 		for (FactTable factTable : factTables) {
 			Cube cube = new Cube(this, factTable);
-			
+
 			this.cubes.put(factTable.getEntity().getId(), cube);
 		}
 	}
 
 	private void createVirtualCubes() {
 		this.virtualCubes = new ArrayList<VirtualCube>();
-		
+
 		Entity samplingUnit = this.workspace.getSamplingUnit();
-		if( samplingUnit != null ) {
-		
-			Cube suCube = cubes.get( samplingUnit.getId() );
-			createVirtualCubes( suCube , samplingUnit.getChildren() );
-		
+		if (samplingUnit != null) {
+
+			Cube suCube = cubes.get(samplingUnit.getId());
+			createVirtualCubes(suCube, samplingUnit.getChildren());
+
 		}
-		
+
 	}
 
-	private void createVirtualCubes( Cube suCube , List<Entity> entities ) {
-		for ( Entity entity : entities ) {
-			Cube cube = cubes.get( entity.getId() );
-			
+	private void createVirtualCubes(Cube suCube, List<Entity> entities) {
+		for (Entity entity : entities) {
+			Cube cube = cubes.get(entity.getId());
+
 			// if cube is defined then it creates a virtual cube to join with sampling unit cube (used to calculate per ha measures)
-			if( cube != null ) {
-				VirtualCube virtualCube = new VirtualCube( suCube, cube );
-				this.virtualCubes.add( virtualCube );
+			if (cube != null) {
+				VirtualCube virtualCube = new VirtualCube(suCube, cube);
+				this.virtualCubes.add(virtualCube);
 			}
-			createVirtualCubes( suCube , entity.getChildren() );
+			createVirtualCubes(suCube, entity.getChildren());
 		}
 	}
 
 	private void createSharedDimensions() {
 		sharedDimensions = new HashMap<CategoricalVariable<?>, CategoryDimension>();
 
-		initSharedDimension( dataSchema );
-		initSharedDimension( extendedSchema );
+		initSharedDimension(dataSchema);
+		initSharedDimension(extendedSchema);
 	}
 
-	protected void initSharedDimension(DataSchema dataSchema) {
-		Collection<CategoryDimensionTable> categoryDimensionTables = dataSchema.getCategoryDimensionTables();
-		for ( CategoryDimensionTable categoryDimensionTable : categoryDimensionTables ) {
-			CategoryDimension dimension = new CategoryDimension( this, categoryDimensionTable );
+	protected void initSharedDimension(DataSchema schema) {
+		Collection<CategoryDimensionTable> categoryDimensionTables = schema.getCategoryDimensionTables();
+		for (CategoryDimensionTable categoryDimensionTable : categoryDimensionTables) {
+			CategoryDimension dimension = new CategoryDimension(this, categoryDimensionTable);
 			CategoricalVariable<?> variable = categoryDimensionTable.getVariable();
-			sharedDimensions.put( variable, dimension );
+			sharedDimensions.put(variable, dimension);
 		}
 	}
 
@@ -115,10 +117,19 @@ public class RolapSchema {
 
 		List<AoiHierarchyFlatTable> aoiHierchyTables = dataSchema.getAoiHierchyTables();
 		for (AoiHierarchyFlatTable table : aoiHierchyTables) {
-			AoiDimension aoiDimension = new AoiDimension( this, table );
+			AoiDimension aoiDimension = new AoiDimension(this, table);
 			aoiDimensions.add(aoiDimension);
 		}
 
+	}
+	
+	private void createSpeciesDimensions() {
+		speciesDimensions = new HashMap<>();
+		for (SpeciesCategoryDimensionTable table : dataSchema.getSpeciesCategoryDimensionTables()) {
+			SpeciesCategoryDimension dimension = new SpeciesCategoryDimension(this, table);
+			CategoricalVariable<?> variable = table.getVariable();
+			speciesDimensions.put(variable, dimension);
+		}
 	}
 
 	public Collection<CategoryDimension> getSharedDimensions() {
@@ -127,6 +138,14 @@ public class RolapSchema {
 
 	Map<CategoricalVariable<?>, CategoryDimension> getSharedDimensionsMap() {
 		return Collections.unmodifiableMap(sharedDimensions);
+	}
+	
+	public Collection<SpeciesCategoryDimension> getSpeciesDimension() {
+		return Collections.unmodifiableCollection(speciesDimensions.values());
+	}
+	
+	Map<CategoricalVariable<?>, SpeciesCategoryDimension> getSpeciesDimensionsMap() {
+		return Collections.unmodifiableMap( speciesDimensions );
 	}
 
 	public List<AoiDimension> getAoiDimensions() {
@@ -150,13 +169,13 @@ public class RolapSchema {
 	// }
 
 	public Collection<Cube> getCubes() {
-		return CollectionUtils.unmodifiableCollection( this.cubes.values() );
+		return CollectionUtils.unmodifiableCollection(this.cubes.values());
 	}
 
 	public Collection<VirtualCube> getVirtualCubes() {
-		return CollectionUtils.unmodifiableCollection( this.virtualCubes ); 
+		return CollectionUtils.unmodifiableCollection(this.virtualCubes);
 	}
-	
+
 	//
 	// public List<CategoryDimension> getCategoryDimensions() {
 	// return Collections.unmodifiableList(categoryDimensions);
@@ -165,12 +184,12 @@ public class RolapSchema {
 	public DataSchema getDataSchema() {
 		return dataSchema;
 	}
-	
-//	@Deprecated
-//	public OutputSchema getOutputSchema() {
-////		return dataSchema;
-//		return null;
-//	}
+
+	// @Deprecated
+	// public OutputSchema getOutputSchema() {
+	//// return dataSchema;
+	// return null;
+	// }
 
 	public String getName() {
 		return name;

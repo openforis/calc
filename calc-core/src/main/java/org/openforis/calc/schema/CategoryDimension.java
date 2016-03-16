@@ -18,8 +18,12 @@ public class CategoryDimension extends Dimension {
 
 	private CategoryDimensionTable table;
 
-	public CategoryDimension(RolapSchema rolapSchema, CategoryDimensionTable table) {
+	public CategoryDimension(RolapSchema rolapSchema) {
 		super(rolapSchema);
+	}
+	
+	public CategoryDimension(RolapSchema rolapSchema, CategoryDimensionTable table) {
+		this( rolapSchema );
 		this.table = table;
 		
 		setName(table.getVariable().getOutputValueColumn());
@@ -38,21 +42,14 @@ public class CategoryDimension extends Dimension {
 		setCaption( caption );
 		
 		String hName = categoryHierarchy.getName();
-//		if( variable.isUserDefined() ){
-//			hName += " " + variable.getName();
-//		}
 		Hierarchy hierarchy = new Hierarchy(hName);
 		
 		Table t = new Table(table.getSchema().getName(), table.getName());
 		hierarchy.setTable(t);
 		
-//		String caption = variable.getCaption();
-//		if ( StringUtils.isBlank(caption) ) {
-//			caption = WordUtils.capitalize( variable.getName() );
-//		}
-		
-		String idColumnName = ( variable.isSpecieCategory() ) ? table.getCodeField().getName() : table.getIdField().getName();
-		Level level = new Level(variable.getName(), idColumnName, table.getCaptionField().getName() , categoryLevel.getCaption() );
+		String idColumnName = table.getIdField().getName();
+//		String idColumnName = ( variable.isSpecieCategory() ) ? table.getCodeField().getName() : table.getIdField().getName();
+		Level level = new Level( variable.getName(), idColumnName, table.getCaptionField().getName() , categoryLevel.getCaption() );
 		hierarchy.addLevel(level);
 		
 		setHierarchy(hierarchy);

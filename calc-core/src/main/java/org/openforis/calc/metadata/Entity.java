@@ -372,6 +372,21 @@ public class Entity extends EntityBase {
 	
 	@SuppressWarnings("unchecked")
 	@JsonIgnore
+	public Collection<MultiwayVariable> getSpeciesCategoricalVariables() {
+		return CollectionUtils.select(getCategoricalVariables(), new Predicate() {
+			@Override
+			public boolean evaluate(Object object) {
+				if( object instanceof MultiwayVariable && ((MultiwayVariable) object).isSpecieCategory() ){
+					return true;
+				} else {
+					return false;
+				}
+			}
+		});
+	}
+	
+	@SuppressWarnings("unchecked")
+	@JsonIgnore
 	public Collection<Variable<?>> getOriginalVariables() {
 		return CollectionUtils.select(getVariables(), new Predicate() {
 			@Override

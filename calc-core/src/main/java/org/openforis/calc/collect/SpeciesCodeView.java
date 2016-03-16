@@ -31,7 +31,7 @@ public class SpeciesCodeView extends AbstractTable {
 		genus;
 	}
 	
-	SpeciesCodeView(SpeciesCodeTable table) {
+	public SpeciesCodeView(SpeciesCodeTable table) {
 		super( table.getName() + "_view", table.getSchema() );
 		initFields( table.getSpeciesListName() );
 	}
@@ -39,15 +39,15 @@ public class SpeciesCodeView extends AbstractTable {
 	private void initFields(String speciesList) {
 		this.speciesListName 		= speciesList;
 
-		this.idField 				= createField(getName() + "_id", SQLDataType.INTEGER, this);
+		this.idField 				= createField(speciesList + "_id", SQLDataType.INTEGER, this);
 		this.codeField 				= createField(speciesList, SQLDataType.VARCHAR, this);
 		this.scientificNameField 	= createField(speciesList + "_scientific_name", SQLDataType.VARCHAR, this);
 		this.rankField 				= createField( "rank", SQLDataType.VARCHAR, this);
 		
-		this.genusIdField 				= createField( "genus_id", SQLDataType.INTEGER, this);
-		this.genusCodeField 			= createField( "genus_code", SQLDataType.VARCHAR, this);
-		this.genusScientificNameField 	= createField( "genus_scientific_name", SQLDataType.VARCHAR, this);
-		this.genusRankField 			= createField( "genus_rank", SQLDataType.VARCHAR, this);
+		this.genusIdField 				= createField( speciesList+ "_genus_id", SQLDataType.INTEGER, this);
+		this.genusCodeField 			= createField( speciesList+ "_genus_code", SQLDataType.VARCHAR, this);
+		this.genusScientificNameField 	= createField( speciesList+ "_genus_scientific_name", SQLDataType.VARCHAR, this);
+		this.genusRankField 			= createField( speciesList+ "_genus_rank", SQLDataType.VARCHAR, this);
 		
 	}
 

@@ -55,6 +55,7 @@ import org.openforis.calc.schema.AoiDimension;
 import org.openforis.calc.schema.CategoryDimension;
 import org.openforis.calc.schema.Dimension;
 import org.openforis.calc.schema.RolapSchema;
+import org.openforis.calc.schema.SpeciesCategoryDimension;
 import org.openforis.calc.schema.StratumDimension;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -234,7 +235,7 @@ public class PublishRolapSchemaTask extends Task {
 			DimensionUsage dim = createDimensionUsage(dimension.getName(), field.getName());
 			cube.getDimensionUsageOrDimension().add(dim);
 		}
-
+		
 		// add measures
 //		Map<org.openforis.calc.schema.Measure, Field<BigDecimal>> measures = rolapCube.getMeasures();
 		for ( org.openforis.calc.schema.Measure measure : rolapCube.getMeasuresOrdered() ) {
@@ -275,10 +276,14 @@ public class PublishRolapSchemaTask extends Task {
 	}
 
 	private void createSharedDimensions( RolapSchema rolapSchema, Schema schema ) {
-		Collection<CategoryDimension> sharedDimensions = rolapSchema.getSharedDimensions();
-		for ( CategoryDimension categoryDimension : sharedDimensions ) {
+		for ( CategoryDimension categoryDimension : rolapSchema.getSharedDimensions() ) {
 			SharedDimension dim = createDimension(categoryDimension);
 			schema.getDimension().add(dim);
+		}
+		
+		for (SpeciesCategoryDimension speciesCategoryDimension : rolapSchema.getSpeciesDimension()) {
+			SharedDimension dim = createSpeciesDimension(speciesCategoryDimension);
+			schema.getDimension().add( dim );
 		}
 	}
 
@@ -328,6 +333,14 @@ public class PublishRolapSchemaTask extends Task {
 		org.openforis.calc.schema.Hierarchy.Level level = hierarchy.getLevels().get(0);
 
 		SharedDimension dim = createSharedDimension(dimension.getName(), table.getName(), table.getSchema(), level.getColumn(), level.getNameColumn(), level.getCaption() ,dimension.getCaption());
+		return dim;
+	}
+	
+	private SharedDimension createSpeciesDimension(SpeciesCategoryDimension dimension) {
+		org.openforis.calc.schema.Hierarchy hierarchy = dimension.getHierarchy();
+		org.openforis.calc.schema.Hierarchy.Table table = hierarchy.getTable();
+
+		SharedDimension dim = createSharedDimension(dimension.getName(), table.getName(), table.getSchema(), dimension.getCaption() , hierarchy.getLevels() );
 		return dim;
 	}
 

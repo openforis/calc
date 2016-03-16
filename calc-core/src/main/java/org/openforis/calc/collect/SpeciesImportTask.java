@@ -128,7 +128,7 @@ public class SpeciesImportTask extends Task {
 				}
 			}
 			
-			batchInserts.add(createInsertQuery(table, nextRecordId ++, "-1", "NA" ));
+			batchInserts.add(createInsertQuery(table, -1, "-1", "NA" ));
 			genuses.add( "NA" );
 			batchInserts.add(createInsertQuery(table, nextRecordId ++, "UNK", "UNKNOWN" ));
 			genuses.add( "UNKNOWN" );

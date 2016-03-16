@@ -4,6 +4,7 @@
 package org.openforis.calc.mondrian;
 
 import java.math.BigInteger;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.openforis.calc.mondrian.Hierarchy.Level;
@@ -123,6 +124,32 @@ public class Rolap {
 
 		Level l = createLevel(table, name, column, nameColumn, caption);
 		h.getLevel().add(l);
+
+		dim.getHierarchy().add(h);
+		return dim;
+	}
+	
+	public static SharedDimension createSharedDimension(String name, String table, String schema, String dimCaption, List<org.openforis.calc.schema.Hierarchy.Level> levels) {
+		SharedDimension dim = new SharedDimension();
+		dim.setType(DIMENSION_TYPE_STANDARD);
+		dim.setName(name);
+		if( dimCaption!= null){
+			dim.setCaption(dimCaption);
+		}
+
+		Hierarchy h = new Hierarchy();
+		h.setName(name);
+		h.setHasAll(true);
+
+		Table t = createTable(schema, table);
+		h.setTable(t);
+		
+		for (org.openforis.calc.schema.Hierarchy.Level level : levels) {
+			
+			Level l = createLevel(table, level.getName(), level.getColumn(), level.getNameColumn(), level.getCaption() );
+			h.getLevel().add(l);
+		}
+		
 
 		dim.getHierarchy().add(h);
 		return dim;
