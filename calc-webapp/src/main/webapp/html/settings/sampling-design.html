@@ -122,8 +122,8 @@
 				</div>
 				
 				<div class="modal-body col-md-12">
-					<div class="row import-section height100 no-padding no-margin">
-						<div class="col-md-8 col-md-offset-2" style="overflow: auto;">
+					<div class="row import-section height100 overflow-hidden no-padding no-margin" >
+						<div class="col-md-8 col-md-offset-2 height100 overflow-auto">
 							<table style="width:100%" class="import-csv-table">
 								<thead>
 								</thead>
@@ -131,21 +131,29 @@
 								</tbody>
 							</table>
 						</div>
-						<div class="row col-md-4 col-md-offset-4" style="padding-top: 5%;">
-							<button type="button" class="btn btn-default width100" name="import-btn">Import</button>
-						</div>
+<!-- 						<div class="row col-md-4 col-md-offset-4" style="padding-top: 5%;"> -->
+<!-- 							<button type="button" class="btn btn-default width100" name="import-btn">Import</button> -->
+<!-- 						</div> -->
 					</div>
 				</div>
 				
 				<div class="modal-footer">
-					<button type="button" class="btn btn-default close-btn" data-dismiss="modal" aria-hidden="true">Close</button>
+					<div class="row">
+						<div class="col-md-3 col-md-offset-3 text-center">
+							<button type="button" class="btn btn-default width80" name="import-btn">Import</button>
+						</div>
+						<div class="col-md-3 text-center">
+							<button type="button" class="btn btn-default width80 close-btn" data-dismiss="modal" aria-hidden="true">Close</button>
+						</div>
+					</div>
 				</div>
+				
 			</div><!-- /.modal-content -->
 		</div><!-- /.modal-dialog -->
 	</div><!-- /.modal -->
 	
 	
-	<!-- ==== Import columns modal section ==== -->
+	<!-- ==== Import AOI modal section ==== -->
 	<div class="modal fade" id="aoi-import-column-selector">
 		<div class="modal-dialog">
 			<div class="modal-content">
@@ -173,14 +181,19 @@
 								</div>
 							</div>
 						</div>
-						<div class="row col-md-4 col-md-offset-4" style="padding-top: 5%;">
-							<button type="button" class="btn btn-default width100" name="import-btn">Import</button>
-						</div>
+						
 					</div>
 				</div>
 				
 				<div class="modal-footer">
-					<button type="button" class="btn btn-default close-btn" data-dismiss="modal" aria-hidden="true">Close</button>
+					<div class="row">
+						<div class="col-md-3 col-md-offset-3 text-center">
+							<button type="button" class="btn btn-default width80" name="import-btn">Import</button>
+						</div>
+						<div class="col-md-3 text-center">
+							<button type="button" class="btn btn-default width80 close-btn" data-dismiss="modal" aria-hidden="true">Close</button>
+						</div>
+					</div>
 				</div>
 			</div><!-- /.modal-content -->
 		</div><!-- /.modal-dialog -->

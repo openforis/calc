@@ -261,7 +261,7 @@
 								</goals>
 								<configuration>
 									<executable>${installbuilder-home}/bin/Builder.app/Contents/MacOS/installbuilder.sh</executable>
-									<executable>${installbuilder-home}/bin/builder</executable>
+<!-- 									<executable>${installbuilder-home}/bin/builder</executable> -->
 									<arguments>
 										<argument>build</argument>
 										<argument>${basedir}/${installer-dir}/${installbuilder-file-name}</argument>
@@ -294,7 +294,7 @@
 								</goals>
 								<configuration>
 									<executable>${installbuilder-home}/bin/Builder.app/Contents/MacOS/installbuilder.sh</executable>								
-									<executable>${installbuilder-home}/bin/builder</executable>
+<!-- 									<executable>${installbuilder-home}/bin/builder</executable> -->
 									<arguments>
 										<argument>build</argument>
 										<argument>${basedir}/${installer-dir}/${installbuilder-file-name}</argument>
@@ -318,6 +318,22 @@
 <!-- 									</arguments> -->
 <!-- 								</configuration> -->
 <!-- 							</execution> -->
+
+<!-- 							<execution> -->
+<!-- 								<id>osx-installer</id> -->
+<!-- 								<phase>package</phase> -->
+<!-- 								<goals> -->
+<!-- 									<goal>exec</goal> -->
+<!-- 								</goals> -->
+<!-- 								<configuration> -->
+<!-- 									<executable>${installbuilder-home}/bin/Builder.app/Contents/MacOS/installbuilder.sh</executable>								 -->
+<!-- 									<arguments> -->
+<!-- 										<argument>build</argument> -->
+<!-- 										<argument>${basedir}/${installer-dir}/${installbuilder-file-name}</argument> -->
+<!-- 										<argument>osx</argument> -->
+<!-- 									</arguments> -->
+<!-- 								</configuration> -->
+<!-- 							</execution> -->
 							
 <!-- 							<execution> -->
 <!-- 								<id>osx-installer-with-jdk</id> -->
@@ -334,6 +350,7 @@
 <!-- 									</arguments> -->
 <!-- 								</configuration> -->
 <!-- 							</execution> -->
+
 						</executions>
 					</plugin>
 					

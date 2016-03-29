@@ -1328,6 +1328,12 @@ table.import-csv-table input[type=checkbox] {
 .float-left {
 	float: left;
 }
+.overflow-auto{
+	overflow: auto !important;
+}
+.overflow-hidden {
+	overflow: hidden !important;
+}
 /**
 * Dialog
 */
