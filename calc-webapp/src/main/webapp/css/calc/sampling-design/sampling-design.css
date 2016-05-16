@@ -106,7 +106,9 @@
 #sampling-design .hint i{
 	font-size:14px;
 }
-
+#sampling-design button.apply_area_weighted {
+    font-size: 1.4rem;
+}
 /* ERD css classes  */
 .sampling-design-erd {
 	width: auto !important;

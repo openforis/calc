@@ -71,20 +71,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class CollectMetadataImportTask extends Task {
 
 	private static final int SPECIES_CATEGORY_ORIGINAL_ID = -9999;
+	private static final int BOOLEAN_CATEGORY_ORIGINAL_ID = -9998;
 
 	@Autowired
 	private WorkspaceService workspaceService;
-	
+
 	@Autowired
 	private MetadataManager metadataManager;
-	
+
 	private File backupFile;
-	
+
 	@Override
 	public String getName() {
 		return "Import metadata";
 	}
-	
+
 	private LinkedHashMap<Integer, Entity> entitiesByOriginalId;
 	private Set<String> variableNames;
 
@@ -92,10 +93,10 @@ public class CollectMetadataImportTask extends Task {
 	protected void execute() throws Throwable {
 		entitiesByOriginalId = new LinkedHashMap<Integer, Entity>();
 		variableNames = new HashSet<String>();
-		
+
 		updateWorkspaceCategories();
 		updateWorkspaceMetadata();
-		
+
 		saveWorkspace();
 	}
 
@@ -105,193 +106,225 @@ public class CollectMetadataImportTask extends Task {
 		String surveyLanguage = survey.getDefaultLanguage();
 
 		List<CodeList> codeLists = survey.getCodeLists();
-		
-		List<Category> categories = new ArrayList<Category>( ws.getCategories() );
 
-		//remove all existing input categories
+		List<Category> categories = new ArrayList<Category>(ws.getCategories());
+
+		// remove all existing input categories
 		Iterator<Category> iterator = categories.iterator();
-		while( iterator.hasNext() ){
+		while (iterator.hasNext()) {
 			Category category = iterator.next();
-			if( category.isInput() ){
+			if (category.isInput()) {
 				iterator.remove();
 			}
 		}
-		
-		//add input categories
-		for( CodeList codeList : codeLists ) {
-			if ( ! codeList.isExternal() ) {
+
+		// add input categories
+		for (CodeList codeList : codeLists) {
+			if (!codeList.isExternal()) {
 				String codeListName = codeList.getName();
-				String codeListLabel = codeList.getLabel( Type.ITEM, surveyLanguage );
-				codeListLabel = ( StringUtils.isBlank(codeListLabel) ) ? codeListName : codeListLabel; 
-				String codeListDescription = codeList.getDescription( surveyLanguage );
-				
+				String codeListLabel = codeList.getLabel(Type.ITEM, surveyLanguage);
+				codeListLabel = (StringUtils.isBlank(codeListLabel)) ? codeListName : codeListLabel;
+				String codeListDescription = codeList.getDescription(surveyLanguage);
+
 				Category category = new Category();
-				category.setOriginalId( codeList.getId() );
-				category.setCaption( codeListLabel );
-				category.setDescription( codeListDescription );
-				category.setName( codeListName );
-				categories.add( category );
-	
-				//TODO support multiple hierarchies
+				category.setOriginalId(codeList.getId());
+				category.setCaption(codeListLabel);
+				category.setDescription(codeListDescription);
+				category.setName(codeListName);
+				categories.add(category);
+
+				// TODO support multiple hierarchies
 				CategoryHierarchy hierarchy = new CategoryHierarchy();
-				hierarchy.setCaption( codeListLabel );
-				hierarchy.setName( codeListName );
-				hierarchy.setDescription( codeListDescription );
+				hierarchy.setCaption(codeListLabel);
+				hierarchy.setName(codeListName);
+				hierarchy.setDescription(codeListDescription);
 				List<CodeListLevel> codeListHierarchy = codeList.getHierarchy();
-				if ( codeListHierarchy.isEmpty() ) {
-					//when no code list hierarchy is specified, a default category level is created
-					CategoryLevel level = createCategoryLevel( codeList, null );
+				if (codeListHierarchy.isEmpty()) {
+					// when no code list hierarchy is specified, a default category level is created
+					CategoryLevel level = createCategoryLevel(codeList, null);
 					hierarchy.addLevel(level);
 				} else {
 					for (int levelIdx = 0; levelIdx < codeListHierarchy.size(); levelIdx++) {
-						CategoryLevel level = createCategoryLevel( codeList, levelIdx );
-						hierarchy.addLevel( level );
+						CategoryLevel level = createCategoryLevel(codeList, levelIdx);
+						hierarchy.addLevel(level);
 					}
 				}
-				category.addHierarchy( hierarchy );
-	
+				category.addHierarchy(hierarchy);
+
 				incrementItemsProcessed();
 			}
 		}
-		
-		//add species categories
+
+		// add species categories
 		ZipFile zipFile = new ZipFile(backupFile);
 		BackupFileExtractor fileExtractor = new BackupFileExtractor(zipFile);
 		List<String> speciesFileNames = fileExtractor.listSpeciesEntryNames();
 		for (String speciesFileName : speciesFileNames) {
 			Category category = createSpeciesCategory(speciesFileName);
-			categories.add( category );
-			
+			categories.add(category);
+
 			incrementItemsProcessed();
 		}
-		ws.setCategories( categories );
+		
+		Category category = createBooleanCategory();
+		categories.add(category);
+		
+		ws.setCategories(categories);
+	}
+
+	private Category createBooleanCategory() {
+		Category category = new Category();
+		category.setOriginalId(BOOLEAN_CATEGORY_ORIGINAL_ID);
+		category.setCaption("Boolean code list");
+		category.setDescription("Boolean code list");
+		category.setName("Boolean");
+		
+
+		CategoryHierarchy hierarchy = new CategoryHierarchy();
+		hierarchy.setName("Boolean hierarchy");
+		hierarchy.setCaption("Boolean hierarchy");
+		category.addHierarchy(hierarchy);
+		
+		BooleanCodeListTable booleanCodeListTable = new BooleanCodeListTable(getWorkspace().getInputSchema());
+		
+		CategoryLevel level = new CategoryLevel();
+		level.setName(category.getName());
+		level.setCaptionColumn(booleanCodeListTable.getLabelField().getName());
+		level.setCodeColumn(booleanCodeListTable.getCodeField().getName());
+		level.setIdColumn(booleanCodeListTable.getIdField().getName());
+		level.setRank(1);
+		level.setTableName( booleanCodeListTable.getName() );
+//		String levelCaption = getNormalizedName( category.getCaption() );
+		level.setCaption( category.getCaption() );
+		level.setSchemaName(getWorkspace().getInputSchema());
+		hierarchy.addLevel(level);
+		return category;
 	}
 
 	protected Category createSpeciesCategory(String speciesFileName) {
 		String speciesListName = FilenameUtils.getBaseName(speciesFileName);
 		String caption = "Species list " + speciesListName;
-		
+
 		Category category = new Category();
-		category.setName( speciesListName );
-		category.setOriginalId( SPECIES_CATEGORY_ORIGINAL_ID );
-		category.setCaption( caption );
-		
+		category.setName(speciesListName);
+		category.setOriginalId(SPECIES_CATEGORY_ORIGINAL_ID);
+		category.setCaption(caption);
+
 		CategoryHierarchy hierarchy = new CategoryHierarchy();
-		hierarchy.setName( speciesListName );
-		hierarchy.setCaption( caption );
-		
-		SpeciesCodeTable speciesTable = new SpeciesCodeTable( speciesListName, getInputSchema().getName());
-		
+		hierarchy.setName(speciesListName);
+		hierarchy.setCaption(caption);
+
+		SpeciesCodeTable speciesTable = new SpeciesCodeTable(speciesListName, getInputSchema().getName());
+
 		CategoryLevel level = new CategoryLevel();
-		level.setName( speciesListName );
-		level.setCaptionColumn( speciesTable.getScientificNameField().getName() );
-		level.setCodeColumn( speciesTable.getCodeField().getName() );
-		level.setIdColumn( speciesTable.getIdField().getName() );
-		level.setRank( 1 );
-		level.setTableName( speciesTable.getName() );
+		level.setName(speciesListName);
+		level.setCaptionColumn(speciesTable.getScientificNameField().getName());
+		level.setCodeColumn(speciesTable.getCodeField().getName());
+		level.setIdColumn(speciesTable.getIdField().getName());
+		level.setRank(1);
+		level.setTableName(speciesTable.getName());
 		String levelCaption = getNormalizedName(speciesListName);
-		level.setCaption( levelCaption );
+		level.setCaption(levelCaption);
 		level.setSchemaName(getWorkspace().getInputSchema());
-		
-		hierarchy.addLevel( level );
-		category.addHierarchy( hierarchy );
+
+		hierarchy.addLevel(level);
+		category.addHierarchy(hierarchy);
 		return category;
 	}
 
 	protected CategoryLevel createCategoryLevel(CodeList codeList, Integer levelIdx) {
 		CategoryLevel level = new CategoryLevel();
 
-		CodeListLevel codeListLevel = levelIdx == null ? null: codeList.getHierarchy().get( levelIdx );
-		String name = codeListLevel == null ? codeList.getName(): codeListLevel.getName();
+		CodeListLevel codeListLevel = levelIdx == null ? null : codeList.getHierarchy().get(levelIdx);
+		String name = codeListLevel == null ? codeList.getName() : codeListLevel.getName();
 
 		String tableName = CodeListTables.getTableName(codeList, levelIdx);
-		
-		level.setCaptionColumn( CodeListTables.getLabelColumnName( tableName ) );
-		level.setCodeColumn( CodeListTables.getCodeColumnName( tableName ) );
-		level.setIdColumn( CodeListTables.getIdColumnName( tableName ) );
-		level.setName( name );
-		level.setRank( levelIdx == null ? 1: levelIdx + 1 );
-		level.setTableName( tableName );
+
+		level.setCaptionColumn(CodeListTables.getLabelColumnName(tableName));
+		level.setCodeColumn(CodeListTables.getCodeColumnName(tableName));
+		level.setIdColumn(CodeListTables.getIdColumnName(tableName));
+		level.setName(name);
+		level.setRank(levelIdx == null ? 1 : levelIdx + 1);
+		level.setTableName(tableName);
 		level.setSchemaName(getWorkspace().getInputSchema());
 
 		String caption = getNormalizedName(name);
-		level.setCaption( caption );
-		
+		level.setCaption(caption);
+
 		return level;
 	}
 
 	private String getNormalizedName(String name) {
 		StringBuilder sb = new StringBuilder();
-		
-		StringTokenizer t = new StringTokenizer(name , "_");
-		while( t.hasMoreTokens() ){
-			String string = StringUtils.capitalize( t.nextToken() );
+
+		StringTokenizer t = new StringTokenizer(name, "_");
+		while (t.hasMoreTokens()) {
+			String string = StringUtils.capitalize(t.nextToken());
 			sb.append(string);
-			if( t.hasMoreTokens() ){
-				sb.append( " " );
+			if (t.hasMoreTokens()) {
+				sb.append(" ");
 			}
 		}
-		
+
 		String str = sb.toString();
 		return str;
 	}
 
 	/**
-	 * This method updates the workspace entities: 
-	 * it adds the new entities to the workspace removing the ones not present
+	 * This method updates the workspace entities: it adds the new entities to the workspace removing the ones not present
 	 * 
 	 * @return
-	 * @throws IdmlParseException 
+	 * @throws IdmlParseException
 	 */
 	private Workspace updateWorkspaceMetadata() throws IdmlParseException {
 		Workspace ws = getWorkspace();
 		List<Entity> entities = createEntities();
-		
-//		printToLog( entities );
-		
-		//remove deleted entities
+
+		// printToLog( entities );
+
+		// remove deleted entities
 		Collection<Entity> entitiesToBeRemoved = new HashSet<Entity>();
 		for (Entity oldEntity : ws.getEntities()) {
-			Entity newEntity = getEntityByOriginalId( entities, oldEntity.getOriginalId());
-			if ( newEntity == null ) {
+			Entity newEntity = getEntityByOriginalId(entities, oldEntity.getOriginalId());
+			if (newEntity == null) {
 				entitiesToBeRemoved.add(oldEntity);
 			}
 		}
 		metadataManager.deleteEntities(entitiesToBeRemoved);
-		
-		//apply changes to existing entities
+
+		// apply changes to existing entities
 		for (Entity oldEntity : ws.getEntities()) {
-			Entity newEntity = getEntityByOriginalId( entities, oldEntity.getOriginalId());
-			if ( newEntity != null ) {
+			Entity newEntity = getEntityByOriginalId(entities, oldEntity.getOriginalId());
+			if (newEntity != null) {
 				applyChangesToEntity(oldEntity, newEntity);
 			}
 		}
-		
-		//add new entities
+
+		// add new entities
 		for (Entity newEntity : entities) {
 			Entity oldEntity = ws.getEntityByOriginalId(newEntity.getOriginalId());
-			if ( oldEntity == null ) {
+			if (oldEntity == null) {
 				addToParentEntity(newEntity);
-				ws.addEntity( newEntity );
-//				metadataManager.saveEntity(ws, newEntity);
+				ws.addEntity(newEntity);
+				// metadataManager.saveEntity(ws, newEntity);
 			}
 		}
 
 		return ws;
 	}
-	
+
 	private List<Entity> createEntities() throws IdmlParseException {
 		CollectSurvey survey = getSurvey();
 		final RelationalSchema relationalSchema = ((CollectSurveyImportJob) getJob()).getInputRelationalSchema();
 		Schema schema = survey.getSchema();
-		
+
 		schema.traverse(new NodeDefinitionVisitor() {
 			@Override
 			public void visit(NodeDefinition definition) {
-				if ( definition.isMultiple() ) {
-					Entity entity = createEntity( definition, relationalSchema );
+				if (definition.isMultiple()) {
+					Entity entity = createEntity(definition, relationalSchema);
 					entity.setSortOrder(entitiesByOriginalId.size() + 1);
-					entitiesByOriginalId.put( definition.getId(), entity);
+					entitiesByOriginalId.put(definition.getId(), entity);
 				}
 				incrementItemsProcessed();
 			}
@@ -299,42 +332,42 @@ public class CollectMetadataImportTask extends Task {
 		return new ArrayList<Entity>(entitiesByOriginalId.values());
 	}
 
-	private Entity createEntity( NodeDefinition nodeDefinition, RelationalSchema relationalSchema ){
+	private Entity createEntity(NodeDefinition nodeDefinition, RelationalSchema relationalSchema) {
 		Entity entity = new Entity();
 		DataTable dataTable = relationalSchema.getDataTable(nodeDefinition);
 		int id = nodeDefinition.getId();
-		
+
 		entity.setWorkspace(getWorkspace());
 		entity.setCaption(nodeDefinition.getLabel(NodeLabel.Type.INSTANCE));
 		entity.setDescription(nodeDefinition.getDescription());
 		entity.setDataTable(dataTable.getName());
-//		entity.setDescription(description);
-		entity.setIdColumn( dataTable.getPrimaryKeyColumn().getName() );
+		// entity.setDescription(description);
+		entity.setIdColumn(dataTable.getPrimaryKeyColumn().getName());
 		entity.setInput(true);
 		entity.setName(dataTable.getName());
 		entity.setOriginalId(id);
 		entity.setOverride(false);
-		
-//		entity.setLocationColumn(locationColumn);
-		
-		if ( nodeDefinition instanceof EntityDefinition ) {
+
+		// entity.setLocationColumn(locationColumn);
+
+		if (nodeDefinition instanceof EntityDefinition) {
 			setCoordinateColumns(entity, dataTable);
 		}
 
-		Entity parentEntity = getParentEntity( nodeDefinition );
-		if ( parentEntity != null ) {
-			parentEntity.addChild( entity );
-			entity.setParentIdColumn( dataTable.getParentKeyColumn().getName() );
+		Entity parentEntity = getParentEntity(nodeDefinition);
+		if (parentEntity != null) {
+			parentEntity.addChild(entity);
+			entity.setParentIdColumn(dataTable.getParentKeyColumn().getName());
 		}
-		
-		createVariables( entity, dataTable );
-		
+
+		createVariables(entity, dataTable);
+
 		return entity;
 	}
-	
+
 	private void createVariables(Entity entity, DataTable dataTable) {
 		NodeDefinition nodeDefinition = dataTable.getNodeDefinition();
-		if ( nodeDefinition instanceof EntityDefinition ) {
+		if (nodeDefinition instanceof EntityDefinition) {
 			EntityDefinition entityDefinition = (EntityDefinition) nodeDefinition;
 			List<AttributeDefinition> childrenAttrDefns = getChildrenAttributeDefinitions(entityDefinition);
 			for (AttributeDefinition attrDefn : childrenAttrDefns) {
@@ -344,105 +377,110 @@ public class CollectMetadataImportTask extends Task {
 				}
 			}
 		} else {
-			//TODO handle import multiple attributes
+			// TODO handle import multiple attributes
 		}
 	}
 
 	private void createVariable(Entity entity, DataColumn column) {
-		String entityName 				= entity.getName();
-		String variableName 			= generateVariableName(entityName, column.getName());
-		NodeDefinition columnNodeDefn 	= column.getNodeDefinition();
-		String columnNodeDefnName 		= columnNodeDefn.getName();
-		AttributeDefinition attrDefn 	= column.getAttributeDefinition();
-		Variable<?> v			 		= null;
+		String entityName = entity.getName();
+		String variableName = generateVariableName(entityName, column.getName());
+		NodeDefinition columnNodeDefn = column.getNodeDefinition();
+		String columnNodeDefnName = columnNodeDefn.getName();
+		AttributeDefinition attrDefn = column.getAttributeDefinition();
+		Variable<?> v = null;
+		Workspace ws = getWorkspace();
 		
-		if ( attrDefn instanceof BooleanAttributeDefinition &&  columnNodeDefnName.equals(BooleanAttributeDefinition.VALUE_FIELD) ) {
+		if (attrDefn instanceof BooleanAttributeDefinition && columnNodeDefnName.equals(BooleanAttributeDefinition.VALUE_FIELD)) {
+			
 			v = new BinaryVariable();
-			((BinaryVariable) v).setDisaggregate( !(column instanceof PrimaryKeyColumn) );
-		} else if ( attrDefn instanceof CodeAttributeDefinition && columnNodeDefnName.equals(CodeAttributeDefinition.CODE_FIELD) ){
+			v.setInputCategoryIdColumn(v.getName());
+			BooleanCodeListTable booleanCodeListTable = new BooleanCodeListTable(getWorkspace().getInputSchema());
+			CategoryLevel categoryLevel = ws.getCategoryLevelByTableName( booleanCodeListTable.getName() );
+			((BinaryVariable) v).setCategoryLevel(categoryLevel);
+//			((BinaryVariable) v).setDisaggregate(!(column instanceof PrimaryKeyColumn));
+			
+			
+		} else if (attrDefn instanceof CodeAttributeDefinition && columnNodeDefnName.equals(CodeAttributeDefinition.CODE_FIELD)) {
 			v = new MultiwayVariable();
 			MultiwayVariable variable = (MultiwayVariable) v;
-			
+
 			variable.setScale(Scale.NOMINAL);
 			variable.setMultipleResponse(attrDefn.isMultiple());
-			variable.setDisaggregate(! (column instanceof PrimaryKeyColumn));
+			variable.setDisaggregate(!(column instanceof PrimaryKeyColumn));
 			CodeAttributeDefinition codeAttrDefn = (CodeAttributeDefinition) attrDefn;
 			CodeList list = codeAttrDefn.getList();
-			variable.setDegenerateDimension( list.isExternal() );
-			
-			if ( ! variable.getDegenerateDimension() ) {
-				//set dimension table and input category id column
+			variable.setDegenerateDimension(list.isExternal());
+
+			if (!variable.getDegenerateDimension()) {
+				// set dimension table and input category id column
 				RelationalSchema inputRelationalSchema = ((CollectSurveyImportJob) getJob()).getInputRelationalSchema();
-				
+
 				DataTable table = inputRelationalSchema.getDataTable(codeAttrDefn.getParentEntityDefinition());
-				
+
 				CodeValueFKColumn fk = table.getForeignKeyCodeColumn(codeAttrDefn);
-				if ( fk != null ) {
+				if (fk != null) {
 					variable.setInputCategoryIdColumn(fk.getName());
 				}
+
 				
-				Workspace ws = getWorkspace();
 				String codeListTableName = CodeListTables.getTableName(list, codeAttrDefn.getListLevelIndex());
-				CategoryLevel categoryLevel = ws.getCategoryLevelByTableName( codeListTableName );
-				
-				variable.setCategoryLevel( categoryLevel );
+				CategoryLevel categoryLevel = ws.getCategoryLevelByTableName(codeListTableName);
+
+				variable.setCategoryLevel(categoryLevel);
 			}
-		} else if ( attrDefn instanceof DateAttributeDefinition ) {
+		} else if (attrDefn instanceof DateAttributeDefinition) {
 			v = new TextVariable();
 			v.setScale(Scale.TEXT);
-		} else if ( attrDefn instanceof NumberAttributeDefinition &&
-				columnNodeDefnName.equals(attrDefn.getMainFieldName()) ) {
+		} else if (attrDefn instanceof NumberAttributeDefinition && columnNodeDefnName.equals(attrDefn.getMainFieldName())) {
 			v = new QuantitativeVariable();
-			v.setScale( Scale.RATIO );
-			//TODO set unit...
-//		} else if ( attrDefn instanceof CalculatedAttributeDefinition) {
-//			CalculatedAttributeDefinition calculatedAttrDefn = (CalculatedAttributeDefinition) attrDefn;
-//			switch ( calculatedAttrDefn.getType() ) {
-//			case INTEGER:
-//			case REAL:
-//				v = new QuantitativeVariable();
-//				v.setScale( Scale.RATIO );
-//				break;
-//			default:
-//			}
-		} else if ( attrDefn instanceof TaxonAttributeDefinition &&
-				(columnNodeDefnName.equals(TaxonAttributeDefinition.CODE_FIELD_NAME) ) ) {
+			v.setScale(Scale.RATIO);
+			// TODO set unit...
+			// } else if ( attrDefn instanceof CalculatedAttributeDefinition) {
+			// CalculatedAttributeDefinition calculatedAttrDefn = (CalculatedAttributeDefinition) attrDefn;
+			// switch ( calculatedAttrDefn.getType() ) {
+			// case INTEGER:
+			// case REAL:
+			// v = new QuantitativeVariable();
+			// v.setScale( Scale.RATIO );
+			// break;
+			// default:
+			// }
+		} else if (attrDefn instanceof TaxonAttributeDefinition && (columnNodeDefnName.equals(TaxonAttributeDefinition.CODE_FIELD_NAME))) {
 			v = new MultiwayVariable();
 			MultiwayVariable multiwayVar = (MultiwayVariable) v;
 			multiwayVar.setScale(Scale.NOMINAL);
 			multiwayVar.setMultipleResponse(attrDefn.isMultiple());
+
+			// associate category level
 			
-			//associate category level
-			Workspace ws = getWorkspace();
 			String taxonomy = ((TaxonAttributeDefinition) attrDefn).getTaxonomy();
 			SpeciesCodeTable speciesCodeTable = new SpeciesCodeTable(taxonomy, getInputSchema().getName());
-			CategoryLevel categoryLevel = ws.getCategoryLevelByTableName( speciesCodeTable.getName() );
-			
-			multiwayVar.setInputCategoryIdColumn( variableName );
-//			multiwayVar.setInputCategoryIdColumn( taxonomy );
-//			multiwayVar.setDisaggregate( true );
-			multiwayVar.setSpecieCategory( true );
-			multiwayVar.setCategoryLevel( categoryLevel );
-			
-		} else if ( attrDefn instanceof TextAttributeDefinition && 
-				((TextAttributeDefinition) attrDefn).getType() == TextAttributeDefinition.Type.SHORT ) {
+			CategoryLevel categoryLevel = ws.getCategoryLevelByTableName(speciesCodeTable.getName());
+
+			multiwayVar.setInputCategoryIdColumn(variableName);
+			// multiwayVar.setInputCategoryIdColumn( taxonomy );
+			// multiwayVar.setDisaggregate( true );
+			multiwayVar.setSpecieCategory(true);
+			multiwayVar.setCategoryLevel(categoryLevel);
+
+		} else if (attrDefn instanceof TextAttributeDefinition && ((TextAttributeDefinition) attrDefn).getType() == TextAttributeDefinition.Type.SHORT) {
 			v = new TextVariable();
 			v.setScale(Scale.TEXT);
-		} else if ( attrDefn instanceof TimeAttributeDefinition ) {
+		} else if (attrDefn instanceof TimeAttributeDefinition) {
 			v = new TextVariable();
 			v.setScale(Scale.TEXT);
 		}
-		
-		if ( v != null ) {
-			if ( v.getName() == null ) {
+
+		if (v != null) {
+			if (v.getName() == null) {
 				v.setName(variableName);
 			}
-			v.setCaption( attrDefn.getLabel(NodeLabel.Type.INSTANCE) );
-			v.setDescription( attrDefn.getDescription() );
-			v.setInputValueColumn( v.getName() );
-			v.setOutputValueColumn( v.getName() );
-			v.setOriginalId( attrDefn.getId() );
-			
+			v.setCaption(attrDefn.getLabel(NodeLabel.Type.INSTANCE));
+			v.setDescription(attrDefn.getDescription());
+			v.setInputValueColumn(v.getName());
+			v.setOutputValueColumn(v.getName());
+			v.setOriginalId(attrDefn.getId());
+
 			entity.addVariable(v);
 		}
 	}
@@ -450,31 +488,30 @@ public class CollectMetadataImportTask extends Task {
 	private void setCoordinateColumns(Entity entity, DataTable dataTable) {
 		EntityDefinition entityDefinition = (EntityDefinition) dataTable.getNodeDefinition();
 		CoordinateAttributeDefinition coordinateAttrDefn = getChildCoordinateAttributeDefinition(entityDefinition);
-		if ( coordinateAttrDefn != null ) {
+		if (coordinateAttrDefn != null) {
 			// SRS
 			FieldDefinition<?> srsField = coordinateAttrDefn.getFieldDefinition(CoordinateAttributeDefinition.SRS_FIELD_NAME);
 			DataColumn srsCol = dataTable.getDataColumn(srsField);
-			if ( srsCol != null ) {
+			if (srsCol != null) {
 				entity.setSrsColumn(srsCol.getName());
 			}
 			// X
 			FieldDefinition<?> xField = coordinateAttrDefn.getFieldDefinition(CoordinateAttributeDefinition.X_FIELD_NAME);
 			DataColumn xCol = dataTable.getDataColumn(xField);
-			if ( xCol != null ) {
+			if (xCol != null) {
 				entity.setXColumn(xCol.getName());
 			}
 			// Y
 			FieldDefinition<?> yField = coordinateAttrDefn.getFieldDefinition(CoordinateAttributeDefinition.Y_FIELD_NAME);
 			DataColumn yCol = dataTable.getDataColumn(yField);
-			if ( srsCol != null ) {
+			if (srsCol != null) {
 				entity.setYColumn(yCol.getName());
 			}
 		}
 	}
-	
+
 	/**
-	 * Search for a {@link CoordinateAttributeDefinition} among the children {@link AttributeDefinition}
-	 * or among descendants in nested single {@link EntityDefinition}
+	 * Search for a {@link CoordinateAttributeDefinition} among the children {@link AttributeDefinition} or among descendants in nested single {@link EntityDefinition}
 	 * 
 	 * @param entityDefn
 	 * @return
@@ -482,16 +519,15 @@ public class CollectMetadataImportTask extends Task {
 	private CoordinateAttributeDefinition getChildCoordinateAttributeDefinition(EntityDefinition entityDefn) {
 		List<AttributeDefinition> childrenAttrDefns = getChildrenAttributeDefinitions(entityDefn);
 		for (AttributeDefinition attrDefn : childrenAttrDefns) {
-			if ( attrDefn instanceof CoordinateAttributeDefinition ) {
+			if (attrDefn instanceof CoordinateAttributeDefinition) {
 				return (CoordinateAttributeDefinition) attrDefn;
 			}
 		}
 		return null;
 	}
-	
+
 	/**
-	 * Returns single attribute definitions descendants of the entity definition specified
-	 * that are children of the entity or that are inside single entity definitions.
+	 * Returns single attribute definitions descendants of the entity definition specified that are children of the entity or that are inside single entity definitions.
 	 * 
 	 * @param entityDefinition
 	 * @return
@@ -500,14 +536,14 @@ public class CollectMetadataImportTask extends Task {
 		List<AttributeDefinition> result = new ArrayList<AttributeDefinition>();
 		Stack<EntityDefinition> stack = new Stack<EntityDefinition>();
 		stack.push(entityDefinition);
-		while ( ! stack.isEmpty() ) {
+		while (!stack.isEmpty()) {
 			EntityDefinition e = stack.pop();
 			List<NodeDefinition> childDefinitions = e.getChildDefinitions();
 			for (NodeDefinition nodeDefn : childDefinitions) {
-				if ( ! nodeDefn.isMultiple() ) {
-					if ( nodeDefn instanceof AttributeDefinition ) {
+				if (!nodeDefn.isMultiple()) {
+					if (nodeDefn instanceof AttributeDefinition) {
 						result.add((AttributeDefinition) nodeDefn);
-					} else if ( nodeDefn instanceof EntityDefinition ) {
+					} else if (nodeDefn instanceof EntityDefinition) {
 						stack.push((EntityDefinition) nodeDefn);
 					}
 				}
@@ -518,44 +554,42 @@ public class CollectMetadataImportTask extends Task {
 
 	private Entity getParentEntity(NodeDefinition defn) {
 		EntityDefinition parentDefn = defn.getParentEntityDefinition();
-		if( parentDefn == null ) {
+		if (parentDefn == null) {
 			return null;
-		} else if ( parentDefn.isMultiple() ) {
-			return entitiesByOriginalId.get( parentDefn.getId() );
+		} else if (parentDefn.isMultiple()) {
+			return entitiesByOriginalId.get(parentDefn.getId());
 		} else {
 			return getParentEntity(parentDefn);
 		}
 	}
-	
+
 	private String generateVariableName(String entityName, String columnName) {
 		String name = columnName;
-		if ( variableNames.contains(name) ) {
-			//name = ENTITYNAME_COLUMNNAME
+		if (variableNames.contains(name)) {
+			// name = ENTITYNAME_COLUMNNAME
 			name = entityName + "_" + name;
 			String baseName = name;
 			int count = 0;
-			while ( variableNames.contains(name) ) {
-				//name = ENTITYNAME_COLUMNNAME#
+			while (variableNames.contains(name)) {
+				// name = ENTITYNAME_COLUMNNAME#
 				name = baseName + (++count);
 			}
 		}
 		variableNames.add(name);
 		return name;
 	}
-	
-	
-	
+
 	private Entity getEntityByOriginalId(List<Entity> entities, int originalId) {
 		for (Entity entity : entities) {
-			if ( originalId == entity.getOriginalId().intValue() )  {
+			if (originalId == entity.getOriginalId().intValue()) {
 				return entity;
 			}
 		}
 		return null;
 	}
-	
+
 	private void applyChangesToEntity(Entity oldEntity, Entity newEntity) {
-		//update entity attributes
+		// update entity attributes
 		oldEntity.setCaption(newEntity.getCaption());
 		oldEntity.setDataTable(newEntity.getDataTable());
 		oldEntity.setDescription(newEntity.getDescription());
@@ -563,107 +597,106 @@ public class CollectMetadataImportTask extends Task {
 		oldEntity.setLocationColumn(newEntity.getLocationColumn());
 		oldEntity.setName(newEntity.getName());
 		oldEntity.setParentIdColumn(newEntity.getParentIdColumn());
-//		oldEntity.setSamplingUnit(newEntity.isSamplingUnit());
+		// oldEntity.setSamplingUnit(newEntity.isSamplingUnit());
 		oldEntity.setSrsColumn(newEntity.getSrsColumn());
 		oldEntity.setUnitOfAnalysis(newEntity.getUnitOfAnalysis());
 		oldEntity.setXColumn(newEntity.getXColumn());
 		oldEntity.setYColumn(newEntity.getYColumn());
-		
-		//remove deleted variables
+
+		// remove deleted variables
 		Collection<Variable<?>> variablesToBeRemoved = new HashSet<Variable<?>>();
 		for (Variable<?> oldVariable : oldEntity.getVariables()) {
 			Integer oldVariableOrigId = oldVariable.getOriginalId();
-			if ( oldVariableOrigId != null ) {
+			if (oldVariableOrigId != null) {
 				Variable<?> newVariable = newEntity.getVariableByOriginalId(oldVariableOrigId);
-				if ( newVariable == null ) {
+				if (newVariable == null) {
 					variablesToBeRemoved.add(oldVariable);
 				}
 			}
 		}
 		metadataManager.deleteVariables(variablesToBeRemoved);
-		
+
 		// apply changes to existing variables
 		for (Variable<?> oldVariable : oldEntity.getVariables()) {
 			Integer oldVariableOrigId = oldVariable.getOriginalId();
-			if ( oldVariableOrigId != null ) {
+			if (oldVariableOrigId != null) {
 				Variable<?> newVariable = newEntity.getVariableByOriginalId(oldVariableOrigId);
-				
+
 				applyChangesToVariable(oldVariable, newVariable);
-				
-//				metadataManager.saveVariable(oldVariable.getEntity(), oldVariable);
+
+				// metadataManager.saveVariable(oldVariable.getEntity(), oldVariable);
 			}
 		}
-		
+
 		// add new variables
 		for (Variable<?> newVariable : newEntity.getVariables()) {
 			Variable<?> oldVariable = oldEntity.getVariableByOriginalId(newVariable.getOriginalId());
-			if ( oldVariable == null ) {
-				oldEntity.addVariable( newVariable );
-//				metadataManager.saveVariable(oldEntity, newVariable);
+			if (oldVariable == null) {
+				oldEntity.addVariable(newVariable);
+				// metadataManager.saveVariable(oldEntity, newVariable);
 			}
 		}
 	}
-	
+
 	private void applyChangesToVariable(Variable<?> dest, Variable<?> from) {
 		dest.setCaption(from.getCaption());
 		dest.setDescription(from.getDescription());
 		setDefaultValue(dest, from);
-		
-		if ( dest instanceof CategoricalVariable ) {
-			((CategoricalVariable<?>) dest).setCategoryLevel( ((CategoricalVariable<?>) from).getCategoryLevel()  );
-			
-			dest.setInputCategoryIdColumn( from.getInputCategoryIdColumn() );
+
+		if (dest instanceof CategoricalVariable) {
+			((CategoricalVariable<?>) dest).setCategoryLevel(((CategoricalVariable<?>) from).getCategoryLevel());
+
+			dest.setInputCategoryIdColumn(from.getInputCategoryIdColumn());
 		}
-//		oldVariable.setInputValueColumn(newVariable.getInputValueColumn());
-		//oldVariable.setName(newVariable.getName());
+		// oldVariable.setInputValueColumn(newVariable.getInputValueColumn());
+		// oldVariable.setName(newVariable.getName());
 		dest.setOutputValueColumn(from.getOutputValueColumn());
-		if ( from instanceof MultiwayVariable ) {
+		if (from instanceof MultiwayVariable) {
 			MultiwayVariable toVar = (MultiwayVariable) dest;
 			MultiwayVariable fromVar = (MultiwayVariable) from;
 			toVar.setDegenerateDimension(fromVar.getDegenerateDimension());
 			toVar.setDisaggregate(fromVar.getDisaggregate());
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	private <T extends Object> void setDefaultValue(Variable<?> oldVariable,
-			Variable<?> newVariable) {
+	private <T extends Object> void setDefaultValue(Variable<?> oldVariable, Variable<?> newVariable) {
 		((Variable<T>) oldVariable).setDefaultValue((T) newVariable.getDefaultValueTemp());
 	}
 
 	private void addToParentEntity(Entity newEntity) {
 		Workspace ws = newEntity.getWorkspace();
 		Entity parent = newEntity.getParent();
-		if ( parent != null ) {
+		if (parent != null) {
 			Integer parentOriginalId = parent.getOriginalId();
-			if ( parentOriginalId != null ) {
+			if (parentOriginalId != null) {
 				Entity persistedParent = ws.getEntityByOriginalId(parentOriginalId);
-				if ( persistedParent != null && persistedParent != parent ) {
+				if (persistedParent != null && persistedParent != parent) {
 					persistedParent.addChild(newEntity);
 				}
 			}
 		}
 	}
-	
+
 	private void saveWorkspace() {
 		Workspace workspace = getWorkspace();
 		// delete input categories first
-		workspaceService.deleteInputCategories( workspace );
-		workspaceService.save( workspace );
-		
-		( (CollectSurveyImportJob) getJob() ).updateWorkspace( workspace );
+		workspaceService.deleteInputCategories(workspace);
+		workspaceService.save(workspace);
+
+		((CollectSurveyImportJob) getJob()).updateWorkspace(workspace);
 	}
 
 	protected void printToLog(List<Entity> entityList) {
 		// TODO print to debug log instead
 		for (Entity entity : entityList) {
 			List<Variable<?>> vars = entity.getVariables();
-			for ( Variable<?> var : vars ){
+			for (Variable<?> var : vars) {
 				System.out.printf("%s.%s (%s)%n", entity.getName(), var.getName(), var.getScale());
 			}
 		}
 	}
-	
+
 	private CollectSurvey getSurvey() {
 		CollectSurvey survey = ((CollectSurveyImportJob) getJob()).getSurvey();
 		return survey;
@@ -672,7 +705,7 @@ public class CollectMetadataImportTask extends Task {
 	public File getBackupFile() {
 		return backupFile;
 	}
-	
+
 	public void setBackupFile(File backupFile) {
 		this.backupFile = backupFile;
 	}

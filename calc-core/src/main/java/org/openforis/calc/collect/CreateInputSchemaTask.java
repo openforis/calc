@@ -33,74 +33,78 @@ public class CreateInputSchemaTask extends Task {
 
 	@Autowired
 	private Configuration config;
-	
+
 	@Autowired
 	private Psql psql;
-	
+
 	@Override
 	public String getName() {
 		return "Create database";
 	}
-	
+
 	@Override
 	protected long countTotalItems() {
 		return 3;
 	}
-	
+
 	@Override
 	protected void execute() throws Throwable {
 		dropInputSchema();
-		
+
 		createInputSchema();
-		
+
 		createExtendedSchema();
 	}
 
 	private void dropInputSchema() {
 		String inputSchemaName = getWorkspace().getInputSchema();
-		psql()
-			.dropSchemaIfExists(new SchemaImpl(inputSchemaName))
-			.cascade()
-			.execute();
-		
+		psql().dropSchemaIfExists(new SchemaImpl(inputSchemaName)).cascade().execute();
+
 		incrementItemsProcessed();
 	}
 
 	private RelationalSchema createInputSchema() throws CollectRdbException {
 		String inputSchemaName = getWorkspace().getInputSchema();
-		psql()
-			.createSchema(new SchemaImpl(inputSchemaName))
-			.execute();
+		psql().createSchema(new SchemaImpl(inputSchemaName)).execute();
 		DataSourceConnectionProvider connectionProvider = (DataSourceConnectionProvider) config.connectionProvider();
 		DataSource dataSource = connectionProvider.dataSource();
 		RelationalSchema schema = ((CollectSurveyImportJob) getJob()).getInputRelationalSchema();
 		RelationalSchemaCreator relationalSchemaCreator = new LiquibaseRelationalSchemaCreator();
 		Connection connection = DataSourceUtils.getConnection(dataSource);
 		relationalSchemaCreator.createRelationalSchema(schema, connection);
+
+		createBooleanCodeTable(inputSchemaName);
+
 		incrementItemsProcessed();
-		
+
 		return schema;
 	}
-	
+
+	private void createBooleanCodeTable(String schema) {
+		BooleanCodeListTable table = new BooleanCodeListTable(schema);
+		psql().createTable(table , table.fields() ).execute();
+		
+		psql()
+			.insertInto(table , table.getIdField() , table.getCodeField() , table.getLabelField() )
+			.values( "null" , "-1" , "N/A" )
+			.values( "true" , "true" , "True" )
+			.values( "false" , "false" , "False" )
+			.execute();
+	}
+
 	private void createExtendedSchema() {
-		
-		String extendedSchema = ExtendedSchema.getName( getWorkspace() );
-		
-		DynamicTable<Record> schemata = new DynamicTable<Record>("schemata" ,"information_schema");
+
+		String extendedSchema = ExtendedSchema.getName(getWorkspace());
+
+		DynamicTable<Record> schemata = new DynamicTable<Record>("schemata", "information_schema");
 		Field<String> schemaName = schemata.getVarcharField("schema_name");
 
-		Integer count = psql
-					.selectCount()
-					.from( schemata )
-					.where( schemaName.eq(extendedSchema) )
-					.fetchOne( DSL.count() );
-		
-		if( count == 0 ) {
-			psql
-				.createSchema( new SchemaImpl(extendedSchema) )
-				.execute();
+		Integer count = psql.selectCount().from(schemata).where(schemaName.eq(extendedSchema)).fetchOne(DSL.count());
+
+		if (count == 0) {
+			psql.createSchema(new SchemaImpl(extendedSchema)).execute();
 		}
-		
+
 		incrementItemsProcessed();
 	}
 

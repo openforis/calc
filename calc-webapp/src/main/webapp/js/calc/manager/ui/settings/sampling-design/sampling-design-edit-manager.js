@@ -9,7 +9,8 @@ SamplingDesignEditManager = function( editContainer , samplingDesignERDManager ,
 	this.nextBtn 					= this.container.find( "button.next" );
 	this.saveBtn 					= this.container.find( "[name=save-btn]" );
 	
-	this.applyAreaWeighted			= this.container.find( '[name=apply_area_weighted]' );
+//	this.applyAreaWeighted			= this.container.find( '[name=apply_area_weighted]' );
+	this.applyAreaWeightedBtn		= new OptionButton( this.container.find( '[name=apply_area_weighted]' ) );
 	
 	//ERD manager
 	this.samplingDesignERDManager	= samplingDesignERDManager;
@@ -38,9 +39,17 @@ SamplingDesignEditManager.prototype.init = function(){
 		e.preventDefault();
 		$this.save();
 	});
-	this.applyAreaWeighted.change( function(e){
-		e.preventDefault();
-		$this.samplingDesign.applyAreaWeighted = $this.applyAreaWeighted.prop( 'checked' );
+//	this.applyAreaWeighted.change( function(e){
+//		e.preventDefault();
+//		$this.samplingDesign.applyAreaWeighted = $this.applyAreaWeighted.prop( 'checked' );
+//	});
+	
+	this.applyAreaWeightedBtn.select( function(){
+		$this.samplingDesign.applyAreaWeighted = true;
+	});
+	
+	this.applyAreaWeightedBtn.deselect( function(){
+		$this.samplingDesign.applyAreaWeighted = false;
 	});
 };
 
@@ -53,8 +62,11 @@ SamplingDesignEditManager.prototype.show = function(){
 		
 		if( $this.samplingDesign.samplingUnitId ){
 			
-			var applyAreaWeighted = $this.samplingDesign.applyAreaWeighted === true;
-			$this.applyAreaWeighted.prop( 'checked' , applyAreaWeighted );
+//			var applyAreaWeighted = $this.samplingDesign.applyAreaWeighted === true;
+//			$this.applyAreaWeighted.prop( 'checked' , applyAreaWeighted );
+			if( $this.samplingDesign.applyAreaWeighted === true ){
+				$this.applyAreaWeightedBtn.select();
+			}
 		}
 		
 		$this.nextBtn.visible();

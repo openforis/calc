@@ -21,6 +21,7 @@ import org.openforis.calc.engine.DataRecordVisitor;
 import org.openforis.calc.engine.ParameterHashMap;
 import org.openforis.calc.engine.ParameterMap;
 import org.openforis.calc.engine.Workspace;
+import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.QuantitativeVariable;
@@ -159,8 +160,8 @@ public class EntityDataViewDao extends AbstractJooqDao {
 				ParameterHashMap conditionParams = new ParameterHashMap( (JSONObject) o );
 				Variable<?> variable = view.getEntity().findVariableByName( conditionParams.getString("variable") );
 				
-				if( variable instanceof MultiwayVariable ) {
-					Field<String> field = (Field<String>) view.getCategoryValueField( (MultiwayVariable) variable );
+				if( variable instanceof CategoricalVariable ) {
+					Field<String> field = (Field<String>) view.getCategoryValueField( (CategoricalVariable<?>) variable );
 					addFieldConditions( select, field, conditionParams , String.class );
 				} else if( variable instanceof QuantitativeVariable ) {
 					Field<BigDecimal> field = view.getQuantityField( (QuantitativeVariable) variable );

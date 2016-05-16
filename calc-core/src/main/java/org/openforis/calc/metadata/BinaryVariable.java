@@ -33,7 +33,7 @@ public class BinaryVariable extends CategoricalVariable<Boolean> {
 	
 	@Override
 	public Type getType() {
-		return Type.BINARY;
+		return Type.CATEGORICAL;
 	}
 
 	@Override

@@ -3,8 +3,8 @@ package org.openforis.calc.schema;
 import org.jooq.Schema;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.SchemaImpl;
+import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.CategoryLevel;
-import org.openforis.calc.metadata.MultiwayVariable;
 
 /**
  * 
@@ -15,9 +15,9 @@ public class CategoryDimensionTable extends DimensionTable {
 
 	private static final long serialVersionUID = 1L;
 
-	private MultiwayVariable variable;
+	private CategoricalVariable<?> variable;
 
-	public CategoryDimensionTable(Schema schema, MultiwayVariable variable) {
+	public CategoryDimensionTable(Schema schema, CategoricalVariable<?> variable) {
 		super( getLevel(variable).getTableName() , schema );
 
 		this.variable = variable;
@@ -25,16 +25,16 @@ public class CategoryDimensionTable extends DimensionTable {
 		initFields();
 	}
 
-	public CategoryDimensionTable( MultiwayVariable variable ){
+	public CategoryDimensionTable( CategoricalVariable<?> variable ){
 		this(  new SchemaImpl( getLevel(variable).getSchemaName() ) , variable );
 	}
 	
-	private static CategoryLevel getLevel( MultiwayVariable variable ) {
+	private static CategoryLevel getLevel( CategoricalVariable<?> variable ) {
 		CategoryLevel categoryLevel = variable.getCategoryLevel();
 		return categoryLevel;
 	}
 
-	public MultiwayVariable getVariable() {
+	public CategoricalVariable<?> getVariable() {
 		return variable;
 	}
 

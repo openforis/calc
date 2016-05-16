@@ -19,6 +19,7 @@ import org.openforis.calc.collect.SpeciesCodeTable;
 import org.openforis.calc.collect.SpeciesCodeView;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceBackup;
+import org.openforis.calc.metadata.Variable.Type;
 import org.openforis.calc.persistence.jooq.Sequences;
 import org.openforis.calc.persistence.jooq.Tables;
 import org.openforis.calc.persistence.jooq.tables.EntityTable;
@@ -209,7 +210,12 @@ public class EntityManager {
 			if( !(categoryValueField==null || uniqueFields.contains(categoryValueField.getName())) ){
 				uniqueFields.add( categoryValueField.getName() );
 				
-				select.addSelect( categoryValueField );
+				if( var.getType() == Type.BINARY ){
+					select.addSelect( DSL.coalesce(categoryValueField, "null").as(categoryValueField.getName()) );
+				} else {
+					select.addSelect( categoryValueField );	
+				}
+				
 			}
 		}
 		

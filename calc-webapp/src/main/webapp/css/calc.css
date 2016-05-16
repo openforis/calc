@@ -539,7 +539,7 @@ button.settings:hover {
 */
 #footer {
   	height: 10%;
-	position: fixed;
+/* 	position: fixed; */
 	z-index: 10;
 	width: 100%;
 	background-color: #ecf0f1;

@@ -8,6 +8,7 @@ import org.json.simple.JSONObject;
 import org.openforis.calc.engine.TaskManager;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.engine.WorkspaceService;
+import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.metadata.VariableManager;
@@ -50,8 +51,8 @@ public class VariableController {
 		
 		Workspace workspace = workspaceService.getActiveWorkspace();
 		Variable<?> variable = workspace.getVariableById( variableId );
-		if( variable instanceof MultiwayVariable ) {
-			CategoryDimensionTable table = new CategoryDimensionTable( (MultiwayVariable) variable );
+		if( variable instanceof CategoricalVariable ) {
+			CategoryDimensionTable table = new CategoryDimensionTable( (CategoricalVariable<?>) variable );
 				
 			boolean readCategories = true;
 			if( max != null ) {
