@@ -23,7 +23,7 @@ public class BooleanCodeListTable extends AbstractTable {
 	// private TableField<Record, String> descriptionField;
 
 	BooleanCodeListTable(String schema) {
-		super("boolean_code", new SchemaImpl(schema));
+		super("boolean_code_", new SchemaImpl(schema));
 
 		idField = createField("_id", SQLDataType.VARCHAR, this);
 		codeField = createField("code", SQLDataType.VARCHAR, this);
