@@ -45,7 +45,7 @@ calc.info("1-init.R","Processing chain started");
 #===
 #=== Extracts the content of a file and returns it as an SQL quoted string  
 #===
-calc.getQuotedFileContent <- function( filename ){
+calc.getQuotedFileContentOLD <- function( filename ){
   
   filePath <- paste(scriptDir , filename , sep = .Platform$file.sep);
   
@@ -54,6 +54,21 @@ calc.getQuotedFileContent <- function( filename ){
   fileContentQuoted <- dbQuoteString( conn = connection , x = fileContent );
     
   return ( fileContentQuoted );
+};
+
+calc.getQuotedFileContent <- function( filename ){
+  newLinePlaceHolder <- 'CALC_NEW_LINE_PLACEHOLDER';
+  
+  filePath <- paste(scriptDir , filename , sep = .Platform$file.sep);
+  
+  c <- file(filePath, encoding = "UTF-8");
+  fileContent <- paste(readLines(c), collapse = newLinePlaceHolder)
+  close(c);
+  
+  fileContent <- dbQuoteString( conn = connection , x = fileContent );
+  fileContent <- gsub(newLinePlaceHolder,'\n',fileContent);
+
+  return ( fileContent );
 };
 
 calc.persistUserScript <- function( filename , table , column , id ){

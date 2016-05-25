@@ -252,7 +252,7 @@
 						<artifactId>exec-maven-plugin</artifactId>
 						<version>1.1</version>
 						<executions>
-							
+<!-- 							<executable>${installbuilder-home}/bin/builder</executable> -->
 							<execution>
 								<id>windows-installer</id>
 								<phase>package</phase>
@@ -261,7 +261,6 @@
 								</goals>
 								<configuration>
 									<executable>${installbuilder-home}/bin/Builder.app/Contents/MacOS/installbuilder.sh</executable>
-<!-- 									<executable>${installbuilder-home}/bin/builder</executable> -->
 									<arguments>
 										<argument>build</argument>
 										<argument>${basedir}/${installer-dir}/${installbuilder-file-name}</argument>
@@ -286,6 +285,8 @@
 <!-- 								</configuration> -->
 <!-- 							</execution> -->
 							
+							<!-- 									<executable>${installbuilder-home}/bin/builder</executable> -->
+							
 							<execution>
 								<id>linux-installer</id>
 								<phase>package</phase>
@@ -294,7 +295,6 @@
 								</goals>
 								<configuration>
 									<executable>${installbuilder-home}/bin/Builder.app/Contents/MacOS/installbuilder.sh</executable>								
-<!-- 									<executable>${installbuilder-home}/bin/builder</executable> -->
 									<arguments>
 										<argument>build</argument>
 										<argument>${basedir}/${installer-dir}/${installbuilder-file-name}</argument>
