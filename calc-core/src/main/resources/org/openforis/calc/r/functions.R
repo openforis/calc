@@ -62,7 +62,7 @@ calc.getQuotedFileContent <- function( filename ){
   filePath <- paste(scriptDir , filename , sep = .Platform$file.sep);
   
   c <- file(filePath, encoding = "UTF-8");
-  fileContent <- paste(readLines(c), collapse = newLinePlaceHolder)
+  fileContent <- paste(readLines(c, warn = F), collapse = newLinePlaceHolder)
   close(c);
   
   fileContent <- dbQuoteString( conn = connection , x = fileContent );
