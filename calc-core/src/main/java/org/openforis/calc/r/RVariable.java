@@ -36,6 +36,16 @@ public class RVariable extends RScript {
 		return toScript();
 	}
 	
+	public RVariable filterByColumn(RScript filter) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(this.toScript());
+		sb.append("[");
+		sb.append(filter.toScript());
+		sb.append("]");
+
+		return new RVariable(null, sb.toString() );
+	}
+	
 	/**
 	 * Returns a string representation of the current variable filtering the columns
 	 */

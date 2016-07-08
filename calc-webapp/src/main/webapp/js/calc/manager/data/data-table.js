@@ -165,7 +165,7 @@ DataTable.prototype = (function(){
 		}
 	};
 	
-	var formatNumber = d3.format(".4n");
+	var formatNumber = d3.format("0,000");
 	
 	// update html table with data given as parameter
 	var updateTbody = function(data) {

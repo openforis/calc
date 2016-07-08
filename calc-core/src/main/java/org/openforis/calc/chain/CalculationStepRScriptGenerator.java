@@ -62,18 +62,25 @@ public class CalculationStepRScriptGenerator {
 		
 		Variable<?> outputVariable 		= calculationStep.getOutputVariable();
 		Entity entity 					= outputVariable.getEntity();
-		
+		String entityName 				= entity.getName();
 		RScript rCondition 				= getCondition( eq , calculationStep );
 		
-		RScript filteredDataFrame 		= r().rScript( entity.getName() + "["+rCondition.toScript()+" , ]" );
+//		RScript filteredDataFrame 		= r().rScript( entity.getName() + "["+rCondition.toScript()+" , ]" );
+		
+		RScript filteredDataFrame 		= r().rScript( "subset(" + entityName + ", "+rCondition.toScript()+" ) " );
 		String tmpDataFrameName 		= "tmp";
 		RVariable tmp 					= r().variable(tmpDataFrameName);
 		SetValue setTmp 				= r().setValue( tmp, filteredDataFrame );
 		equationScript.addScript( setTmp );
 		
-		RVariable rOutputVar 		= r().variable(filteredDataFrame, outputVariable.getName() );
-		String eqString 			= replaceVariables( eq.getEquation(), calculationStep, tmpDataFrameName, entity.getWorkspace() );
-		SetValue setValue			= r().setValue(rOutputVar, r().rScript(eqString) );
+		String idColumn = entity.getIdColumn();
+//		RVariable rOutputVar 		= r().variable(filteredDataFrame, outputVariable.getName() );
+		RVariable rOutputVar 			= r().variable(entityName, outputVariable.getName() );
+		RScript filter 					= r().rScript( r().variable(entityName, idColumn).toScript() + " %in% " + r().variable(tmpDataFrameName,idColumn).toScript() );
+		RVariable filteredROutputVar	= rOutputVar.filterByColumn(filter);
+		String eqString 				= replaceVariables( eq.getEquation(), calculationStep, tmpDataFrameName, entity.getWorkspace() );
+		//SetValue setValue			= r().setValue(rOutputVar, r().rScript(eqString) );
+		SetValue setValue				= r().setValue(filteredROutputVar, r().rScript(eqString) );
 		equationScript.addScript(setValue);
 		
 		RScript rScript = null;
@@ -128,7 +135,7 @@ public class CalculationStepRScriptGenerator {
 			rCondition = r().rScript( sbCondition.toString() );
 		} else {
 			RVariable rOutputVar = r().variable( entity.getName(), outputVariable.getName() );
-			rCondition = r().not( r().isNa(rOutputVar) );
+			rCondition = r().isNa( rOutputVar );
 		}
 		
 		return rCondition;

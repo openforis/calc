@@ -113,8 +113,8 @@ CalculationStepEditManager.prototype.init = function( callback ) {
 //				console.log( $this.rEditor.getValue() );
 				if( StringUtils.isNotBlank( $this.rEditor.getValue() ) ){
 //					console.log( $this.rEditor.getValue() );
-					$this.rScriptForm.show(0);
-					$this.rEditor.refresh();
+//					$this.rScriptForm.show(0);
+//					$this.rEditor.refresh();
 				}
 				
 			});
