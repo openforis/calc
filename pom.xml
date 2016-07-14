@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.openforis.calc</groupId>
 	<artifactId>calc</artifactId>
-	<version>2.0-a2</version>
+	<version>2.0-a3-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Open Foris Calc</name>
 
@@ -48,7 +48,7 @@
 		<url>https://github.com/openforis/calc</url>
 		<connection>scm:git:git@github.com:openforis/calc.git</connection>
 		<developerConnection>scm:git:git@github.com:openforis/calc.git</developerConnection>
-		<tag>calc-2.0-a2</tag>
+		<tag>calc-1.0-a13</tag>
 	</scm>
 
 	<repositories>
