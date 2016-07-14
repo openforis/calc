@@ -18,6 +18,15 @@ checkError <- function( e, connection=NULL ){
 };
 
 #===
+#=== Function used to load a library if installed, if not it installs it first 
+#===
+usePackage <- function(p)  {
+  if (!is.element(p, installed.packages()[,1]))
+    install.packages(p, dep = TRUE)
+  library(p, character.only = TRUE)
+};
+
+#===
 #=== Calc logging functions
 #===
 calc.log <- function( step, msg , level ){
@@ -108,8 +117,9 @@ calc.persistErrorScript <- function( filename , id ){
 	calc.persistUserScript( filename , 'error_settings' , 'script' , id );
 };
 
-library("RPostgreSQL");
-library("sqldf");
+usePackage("RPostgreSQL");
+usePackage("sqldf");
+
 # sqldf options. 
 # driver is set to SQLLite in order to read from dataframe , otherwise it uses PostgreSQL which is the default driver loaded by Calc
 # https://code.google.com/p/sqldf/#Troubleshooting
