@@ -27,42 +27,42 @@ public class RScript {
 	// =====================================
 	// R symbols
 	// =====================================
-	public static final String DOLLAR				= "$";
-	public static final String SPACE 				= " ";
-	public static final String ASSIGN 				= "<-";
-	public static final String COMMA 				= ",";
-	public static final String NEW_LINE 			= "\n";
-	public static final String NULL 				= "NULL";
-	public static final String NOT 					= "!";
-	public static final String PLATFORM$FILE_SEP 	= ".Platform$file.sep";
-	
+	public static final String DOLLAR = "$";
+	public static final String SPACE = " ";
+	public static final String ASSIGN = "<-";
+	public static final String COMMA = ",";
+	public static final String NEW_LINE = "\n";
+	public static final String NULL = "NULL";
+	public static final String NOT = "!";
+	public static final String PLATFORM$FILE_SEP = ".Platform$file.sep";
+
 	// common static R scripts
 	private static RScript CALC_COMMON_SCRIPT;
 	private static RScript ERROR_ESTIMATION_SCRIPT;
 	// R builtin functions
 	private static List<String> BUILTIN_FUNCTIONS;
-	
+
 	// previous r script
 	private RScript previous;
 	// stringbuilder that contains the script
 	private StringBuilder sb;
-	
+
 	private Set<String> variables;
 
 	public RScript() {
-		this( (Collection<Variable<?>>)null );
+		this((Collection<Variable<?>>) null);
 	}
 
 	public RScript(Collection<Variable<?>> variables) {
 		this.sb = new StringBuilder();
 		this.variables = new HashSet<String>();
-		if ( variables != null ) {
+		if (variables != null) {
 			parseVariables(variables);
 		}
 	}
 
 	protected RScript(RScript previous) {
-		this((Collection<Variable<?>>)null);
+		this((Collection<Variable<?>>) null);
 		this.previous = previous;
 	}
 
@@ -112,40 +112,40 @@ public class RScript {
 	public DbRemoveTable dbRemoveTable(RVariable connection, String name) {
 		return new DbRemoveTable(this, connection, name);
 	}
-	
+
 	public DbExistsTable dbExistsTable(RVariable connection, String name) {
 		return new DbExistsTable(this, connection, name);
 	}
-	
+
 	public DbDriver dbDriver(String name) {
 		return new DbDriver(this, name);
 	}
-	
-	public DbQuoteString dbQuoteString(RVariable conn, RVariable x){
-		return new DbQuoteString( this , conn, x );
+
+	public DbQuoteString dbQuoteString(RVariable conn, RVariable x) {
+		return new DbQuoteString(this, conn, x);
 	}
-//	calc.getQuotedFileContent <- function( filename ){
-	
-	public CalcGetQuotedFileContent calcGetQuotedFileContent( RVariable fileName ){
-		return new CalcGetQuotedFileContent( this, fileName );
+	// calc.getQuotedFileContent <- function( filename ){
+
+	public CalcGetQuotedFileContent calcGetQuotedFileContent(RVariable fileName) {
+		return new CalcGetQuotedFileContent(this, fileName);
 	}
-	
+
 	public If rIf(RScript condition, RScript script) {
 		return new If(this, condition, script);
 	}
-	
-	public IfElse ifElse( RScript condition, RScript leftValue, RScript rightValue ) {
-		return new IfElse( this, condition, leftValue, rightValue );
+
+	public IfElse ifElse(RScript condition, RScript leftValue, RScript rightValue) {
+		return new IfElse(this, condition, leftValue, rightValue);
 	}
-	
+
 	public Not not(RScript script) {
 		return new Not(this, script);
 	}
-	
+
 	public IsNa isNa(RScript script) {
 		return new IsNa(this, script);
 	}
-	
+
 	public Library library(String name) {
 		return new Library(this, name);
 	}
@@ -154,14 +154,14 @@ public class RScript {
 		return new Div(this, numerator, denumenator);
 	}
 
-	public<T extends Object> RVector c(@SuppressWarnings("unchecked") T... values) {
+	public <T extends Object> RVector c(@SuppressWarnings("unchecked") T... values) {
 		return new RVector(this, values);
 	}
-	
+
 	public RDataFrame dataFrame() {
 		return dataFrame((String[]) null, (RVector[]) null);
 	}
-	
+
 	public RDataFrame dataFrame(String[] columnNames, RVector[] columns) {
 		return new RDataFrame(columnNames, columns);
 	}
@@ -170,78 +170,82 @@ public class RScript {
 		return new Try(this, scripts);
 	}
 
+	public TryCatch rTryCatch(RScript script, RScript errorScript, RScript finallyScript) {
+		return new TryCatch(this, script, errorScript, finallyScript);
+	}
+
 	public Sqldf sqldf(String script) {
 		return new Sqldf(this, script);
 	}
 
-	public Source source( String fileName ){
-		return new Source( this, fileName);
+	public Source source(String fileName) {
+		return new Source(this, fileName);
 	}
 
-	public Setwd setWd( RScript script) {
+	public Setwd setWd(RScript script) {
 		return new Setwd(this, script);
 	}
 
 	public CheckError checkError(RVariable variable) {
 		return checkError(variable, null);
 	}
-	
+
 	public CheckError checkError(RVariable variable, RVariable connection) {
 		return new CheckError(this, variable, connection);
 	}
 
-	public Paste paste( RScript variable1 , RScript variable2 , String sep ){
+	public Paste paste(RScript variable1, RScript variable2, String sep) {
 		return new Paste(this, variable1, variable2, sep);
 	}
-	
-	public FileInfo fileInfo( RVariable rVariable ){
-		return new FileInfo( this , rVariable );
-	}
-	
-	public ReadChar readChar( RVariable con, RVariable nchars ){
-		return new ReadChar( this, con, nchars );
-	}
-	
-	public CalculateQuantityError calculateQuantityError( RVariable data, RVariable plots , RVariable strata ) {
-		return new CalculateQuantityError( this, data , plots , strata );
-	}
-	
-	public CalculateAreaError calculateAreaError(  RVariable plots , RVariable strata ) {
-		return new CalculateAreaError( this, plots , strata );
-	}
-	
-	public CalcPersistCommonScript calcPersistCommonScript(RVariable filename, int id){
-		return new CalcPersistCommonScript( this , filename, id );
+
+	public FileInfo fileInfo(RVariable rVariable) {
+		return new FileInfo(this, rVariable);
 	}
 
-	public CalcPersistBaseUnitWeightScript calcPersistBaseUnitWeightScript(RVariable filename, int id){
-		return new CalcPersistBaseUnitWeightScript( this , filename, id );
+	public ReadChar readChar(RVariable con, RVariable nchars) {
+		return new ReadChar(this, con, nchars);
 	}
-	
-	public CalcPersistEntityPlotAreaScript calcPersistEntityPlotAreaScript(RVariable filename, int id){
-		return new CalcPersistEntityPlotAreaScript( this , filename, id );
+
+	public CalculateQuantityError calculateQuantityError(RVariable data, RVariable plots, RVariable strata) {
+		return new CalculateQuantityError(this, data, plots, strata);
 	}
-	
-	public CalcPersistCalculationStepScript calcPersistCalculationStepScript (RVariable filename, int id){
-		return new CalcPersistCalculationStepScript( this , filename, id );
+
+	public CalculateAreaError calculateAreaError(RVariable plots, RVariable strata) {
+		return new CalculateAreaError(this, plots, strata);
 	}
-	
-	public CalcPersistErrorScript calcPersistErrorScript(RVariable filename, int id){
-		return new CalcPersistErrorScript( this , filename, id );
+
+	public CalcPersistCommonScript calcPersistCommonScript(RVariable filename, int id) {
+		return new CalcPersistCommonScript(this, filename, id);
 	}
-	
-	public CalcInfo calcInfo(String step , RScript message){
-		return new CalcInfo( this , step, message );
+
+	public CalcPersistBaseUnitWeightScript calcPersistBaseUnitWeightScript(RVariable filename, int id) {
+		return new CalcPersistBaseUnitWeightScript(this, filename, id);
 	}
-	
-	public RComment comment(RScript script){
-		return new RComment( this , script );
+
+	public CalcPersistEntityPlotAreaScript calcPersistEntityPlotAreaScript(RVariable filename, int id) {
+		return new CalcPersistEntityPlotAreaScript(this, filename, id);
 	}
-	
-	public RComment comment(String comments){
-		return new RComment( this , new RScript().rScript(comments) );
+
+	public CalcPersistCalculationStepScript calcPersistCalculationStepScript(RVariable filename, int id) {
+		return new CalcPersistCalculationStepScript(this, filename, id);
 	}
-	
+
+	public CalcPersistErrorScript calcPersistErrorScript(RVariable filename, int id) {
+		return new CalcPersistErrorScript(this, filename, id);
+	}
+
+	public CalcInfo calcInfo(String step, RScript message) {
+		return new CalcInfo(this, step, message);
+	}
+
+	public RComment comment(RScript script) {
+		return new RComment(this, script);
+	}
+
+	public RComment comment(String comments) {
+		return new RComment(this, new RScript().rScript(comments));
+	}
+
 	// simple text passed as script. no parsing done here. it's assumed that the
 	// script is correct
 	public RScript rScript(String script) {
@@ -256,24 +260,24 @@ public class RScript {
 		rScript.parseVariables(variables);
 		return rScript;
 	}
-	
+
 	public RScript addNewLine() {
-		this.append( NEW_LINE );
+		this.append(NEW_LINE);
 		return this;
 	}
-	
+
 	public RScript addScript(RScript script) {
-		if( script != null && !script.isEmpty() ){
-			this.append( script.toString() );
-			this.append( NEW_LINE );
+		if (script != null && !script.isEmpty()) {
+			this.append(script.toString());
+			this.append(NEW_LINE);
 		}
 		return this;
 	}
-	
-	public boolean isEmpty(){
+
+	public boolean isEmpty() {
 		return sb.length() <= 0;
 	}
-	
+
 	// =====================================
 	// methods to convert the instance into an R script
 	// =====================================
@@ -297,7 +301,7 @@ public class RScript {
 		String script = this.toScript();
 		if (!StringUtils.isBlank(script)) {
 			script = script.trim();
-//			script = script.replaceAll("[\r\n]+", "\n");
+			// script = script.replaceAll("[\r\n]+", "\n");
 			sb.append(script);
 			if (!script.endsWith(";")) {
 				sb.append(";");
@@ -355,44 +359,44 @@ public class RScript {
 	}
 
 	public static RScript getCalcCommonScript() {
-		if( CALC_COMMON_SCRIPT == null ) {
-			CALC_COMMON_SCRIPT = loadScript( "org/openforis/calc/r/functions.R" );
+		if (CALC_COMMON_SCRIPT == null) {
+			CALC_COMMON_SCRIPT = loadScript("org/openforis/calc/r/functions.R");
 		}
 		return CALC_COMMON_SCRIPT;
 	}
-	
-	public static List<String> getBuiltinFunctions(){
-		if( BUILTIN_FUNCTIONS == null ){
+
+	public static List<String> getBuiltinFunctions() {
+		if (BUILTIN_FUNCTIONS == null) {
 			BUILTIN_FUNCTIONS = new ArrayList<String>();
 		}
-		
-		InputStream stream = RScript.class.getClassLoader().getResourceAsStream( "org/openforis/calc/r/builtin-functions.csv" );
-		Scanner scanner 	= new Scanner(stream);
-		while( scanner.hasNextLine() ){
+
+		InputStream stream = RScript.class.getClassLoader().getResourceAsStream("org/openforis/calc/r/builtin-functions.csv");
+		Scanner scanner = new Scanner(stream);
+		while (scanner.hasNextLine()) {
 			String line = scanner.nextLine();
-			BUILTIN_FUNCTIONS.add( line );
+			BUILTIN_FUNCTIONS.add(line);
 		}
 		scanner.close();
-		
+
 		return BUILTIN_FUNCTIONS;
 	}
-	
+
 	@Deprecated
 	public static RScript getErrorEstimationScript() {
-		if( ERROR_ESTIMATION_SCRIPT == null ) {
-			ERROR_ESTIMATION_SCRIPT = loadScript( "org/openforis/calc/r/error-point-estimators.R" );
+		if (ERROR_ESTIMATION_SCRIPT == null) {
+			ERROR_ESTIMATION_SCRIPT = loadScript("org/openforis/calc/r/error-point-estimators.R");
 		}
 		return ERROR_ESTIMATION_SCRIPT;
 	}
 
-	private static RScript loadScript( String filePath ) {
-		InputStream stream = RScript.class.getClassLoader().getResourceAsStream( filePath );
+	private static RScript loadScript(String filePath) {
+		InputStream stream = RScript.class.getClassLoader().getResourceAsStream(filePath);
 		try {
 			String string = IOUtils.toString(stream);
 			RScript rScript = new RScript().rScript(string);
 			return rScript;
 		} catch (IOException e) {
-			throw new IllegalStateException( "unable to find " + filePath, e );
+			throw new IllegalStateException("unable to find " + filePath, e);
 		} finally {
 			try {
 				stream.close();

@@ -56,11 +56,17 @@ JobStatus.prototype = (function() {
 		this.status.html( job.status.toLowerCase() );
 		// update each task 
 		var tasks = job.tasks;
+		var scrollToLastTask = false;
 		$.each(tasks, function(i, task) {
 			var taskStatus =  $this.taskSection.find("#" + task.id);
 
 			var progressBar = taskStatus.data( "progress-bar" );
 			progressBar.update( task.itemsProcessed, task.totalItems );
+			
+			if( task.status == "RUNNING" && task.id !== $this.lastRunningTask){				
+				$this.lastRunningTask = task.id;
+				scrollToLastTask = true;
+			}
 			
 			if( task.totalItems <= 0 ) {
 				switch(task.status) {
@@ -97,6 +103,13 @@ JobStatus.prototype = (function() {
 			}
 
 		});
+		
+		if(scrollToLastTask){
+			var taskStatus =  $this.taskSection.find("#" + $this.lastRunningTask);
+			
+//			taskStatus.velocity("stop");
+			taskStatus.velocity("scroll", { container:$this.taskSection, duration: 1000, easing: "spring",delay:0 });
+		}
 		
 		// update log if there is
 //		if( job.rlogger ) {
@@ -259,6 +272,8 @@ JobStatus.prototype = (function() {
 		
 		this.closeBtn.off("click");
 		this.closeBtn.hide();
+		
+		this.lastRunningTask = null;
 		
 		this.job = null;
 	};

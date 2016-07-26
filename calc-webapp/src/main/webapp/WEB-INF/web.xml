@@ -39,14 +39,7 @@
 <!-- 	    <listener-class>org.zkoss.spring.web.context.CoreContextListener</listener-class> -->
 <!-- 	</listener> -->
 	
-	<!-- ====================================================== -->
-	<!-- Calc bootstrap context listener -->
-	<!-- ====================================================== -->
-	<listener>
-		<display-name>Calc Context Listener</display-name>
-		<listener-class>org.openforis.calc.web.listener.CalcContextListener</listener-class>
-	</listener>
-	
+
 	<!-- ====================================================== -->
 	<!-- SPRING CONTEXT LOADER -->
 	<!-- ====================================================== -->
@@ -81,7 +74,15 @@
 	</listener>
 	 -->
 	<!-- END Spring-Security -->
-
+	
+	<!-- ====================================================== -->
+	<!-- Calc bootstrap context listener -->
+	<!-- ====================================================== -->
+	<listener>
+		<display-name>Calc Context Listener</display-name>
+		<listener-class>org.openforis.calc.web.listener.CalcContextListener</listener-class>
+	</listener>
+	
 	<!-- Filter that makes form encoded data available through the ServletRequest.getParameter*() family of methods during HTTP PUT or PATCH requests. -->	
 	<filter>
 		<filter-name>httpPutFormContentFilter</filter-name>

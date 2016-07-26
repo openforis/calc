@@ -67,7 +67,7 @@ public abstract class Task extends Worker implements Captionable {
 		return job;
 	}
 	
-	void setJob(Job job) {
+	protected void setJob(Job job) {
 		this.job = job;
 	}
 	

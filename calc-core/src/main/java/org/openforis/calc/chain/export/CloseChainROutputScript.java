@@ -1,9 +1,13 @@
 package org.openforis.calc.chain.export;
 
+import org.jooq.UpdateConditionStep;
+import org.openforis.calc.engine.Worker;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.Entity.Visitor;
 import org.openforis.calc.metadata.EntityManager;
+import org.openforis.calc.persistence.jooq.Tables;
+import org.openforis.calc.persistence.jooq.tables.records.ProcessingChainRecord;
 import org.openforis.calc.psql.CreateViewStep.AsStep;
 import org.openforis.calc.psql.DropViewStep;
 import org.openforis.calc.r.Paste;
@@ -43,7 +47,12 @@ public class CloseChainROutputScript extends ROutputScript {
 				}
 			});
 		}
-					
+		UpdateConditionStep<ProcessingChainRecord> updateChainStatus = psql()
+			.update(Tables.PROCESSING_CHAIN)
+			.set( Tables.PROCESSING_CHAIN.STATUS , Worker.Status.COMPLETED)
+			.where( Tables.PROCESSING_CHAIN.ID.eq(workspace.getDefaultProcessingChain().getId()) );
+		
+		r.addScript( r().dbSendQuery(CONNECTION_VAR, updateChainStatus));
 		
 		r.addScript( r().dbDisconnect(CONNECTION_VAR) );
 		

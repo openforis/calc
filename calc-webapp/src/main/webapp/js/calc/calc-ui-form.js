@@ -7,9 +7,9 @@ UI.Form = function() {};
  * @returns
  */
 UI.Form.getFieldLabel = function($field) {
-	$formGroup = $field.closest('.form-group');
-	$labelEl = $formGroup.find('.control-label');
-	return $labelEl == null ? "": $labelEl.text();
+  $formGroup = $field.closest('.form-group');
+  $labelEl = $formGroup.find('.control-label');
+  return $labelEl == null ? "": $labelEl.text();
 };
 /**
  * Remove all validation errors shown in the form
@@ -17,8 +17,8 @@ UI.Form.getFieldLabel = function($field) {
  * @param $form
  */
 UI.Form.removeErrors = function ($form) {
-	$form.find('.form-group').removeClass('has-error');
-	$form.find('.form-control').tooltip('destroy');
+  $form.find('.form-group').removeClass('has-error');
+  $form.find('.form-control').tooltip('destroy');
 };
 
 /**
@@ -28,20 +28,20 @@ UI.Form.removeErrors = function ($form) {
  * @param errors
  */
 UI.Form.updateErrors = function( form, errors ) {
-	UI.Form.removeErrors( form );
-	
-	$.each( errors, function( i, error ){
-		var fieldName = error.field;
-		var field = form.find( '[name="'+ fieldName + '"]' );
-		if ( field != null ) {
-			var formGroup = field.closest( '.form-group' );
-			if ( !formGroup.hasClass( 'has-error' ) ){
-				formGroup.addClass( 'has-error' );
-	
-				UI.Form.createErrorTooltip( field, error );
-			}
-		}
-	});
+  UI.Form.removeErrors( form );
+  
+  $.each( errors, function( i, error ){
+    var fieldName = error.field;
+    var field = form.find( '[name="'+ fieldName + '"]' );
+    if ( field != null ) {
+      var formGroup = field.closest( '.form-group' );
+      if ( !formGroup.hasClass( 'has-error' ) ){
+        formGroup.addClass( 'has-error' );
+  
+        UI.Form.createErrorTooltip( field, error );
+      }
+    }
+  });
 };
 
 /**
@@ -49,13 +49,13 @@ UI.Form.updateErrors = function( form, errors ) {
  * If field name is not specified, than the generic form error message is returned.
  */
 UI.Form.getFieldErrorMessage = function(errors, field) {
-	for (var i=0; i < errors.length; i++) {
-		var error = errors[i];
-		if ( ! field && ! error.field || field == error.field) {
-			return error.defaultMessage;
-		}
-	}
-	return null;
+  for (var i=0; i < errors.length; i++) {
+    var error = errors[i];
+    if ( ! field && ! error.field || field == error.field) {
+      return error.defaultMessage;
+    }
+  }
+  return null;
 };
 
 /**
@@ -63,18 +63,18 @@ UI.Form.getFieldErrorMessage = function(errors, field) {
  * or the one associated to the first error.
  */
 UI.Form.getFormErrorMessage = function($form, errors) {
-	var genericErrorMessage = UI.Form.getFieldErrorMessage(errors);
-	if ( genericErrorMessage != null ) {
-		errorMessage = genericErrorMessage;
-	} else {
-		var firstError = errors[0];
-		var fieldName = firstError.field;
-		var fieldErrorMessage = firstError.defaultMessage;
-		var field = $form.find( '[name="' + fieldName + '"]' );
-		var fieldLabel = UI.Form.getFieldLabel(field);
-		errorMessage =  fieldLabel + " " + fieldErrorMessage;
-	}
-	return errorMessage;
+  var genericErrorMessage = UI.Form.getFieldErrorMessage(errors);
+  if ( genericErrorMessage != null ) {
+    errorMessage = genericErrorMessage;
+  } else {
+    var firstError = errors[0];
+    var fieldName = firstError.field;
+    var fieldErrorMessage = firstError.defaultMessage;
+    var field = $form.find( '[name="' + fieldName + '"]' );
+    var fieldLabel = UI.Form.getFieldLabel(field);
+    errorMessage =  fieldLabel + " " + fieldErrorMessage;
+  }
+  return errorMessage;
 };
 
 /**
@@ -83,8 +83,8 @@ UI.Form.getFormErrorMessage = function($form, errors) {
  * @param form
  */
 UI.Form.disable = function(form){
-	UI.enable( form.find('input, textarea, button, select') );
-//	.prop('disabled', true);
+  UI.enable( form.find('input, textarea, button, select') );
+//  .prop('disabled', true);
 };
 
 /**
@@ -93,7 +93,7 @@ UI.Form.disable = function(form){
  * @param form
  */
 UI.Form.enable = function(form){
-	UI.disable( form.find('input, textarea, button, select') );
+  UI.disable( form.find('input, textarea, button, select') );
 };
 
 /**
@@ -104,23 +104,23 @@ UI.Form.enable = function(form){
  * @param fieldLabel (optional) if not specified, field label will be assigned using getFieldLabel function
  */
 UI.Form.createErrorTooltip = function($field, error, fieldLabel) {
-	if ( ! fieldLabel ) {
-		fieldLabel = UI.Form.getFieldLabel($field);
-	}
-	var errorMessage = typeof error == "string" ? error: error.hasOwnProperty("defaultMessage") ? error.defaultMessage: "error";
-	var message = fieldLabel + " " + errorMessage;
-	
-	var $parentModal = $field.closest('.modal');
-	var container = $parentModal.length == 0 ? 'body': $parentModal; 
-	
-	var inputType = UI.Form.getInputType($field);
-	var $targetField = inputType == 'hidden' ? $targetField = $field.siblings('.form-control'): $field;
-	
-	$targetField.tooltip({
-		title: message,
-		container: container,
-		template: '<div class="tooltip error"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'
-	});
+  if ( ! fieldLabel ) {
+    fieldLabel = UI.Form.getFieldLabel($field);
+  }
+  var errorMessage = typeof error == "string" ? error: error.hasOwnProperty("defaultMessage") ? error.defaultMessage: "error";
+  var message = fieldLabel + " " + errorMessage;
+  
+  var $parentModal = $field.closest('.modal');
+  var container = $parentModal.length == 0 ? 'body': $parentModal; 
+  
+  var inputType = UI.Form.getInputType($field);
+  var $targetField = inputType == 'hidden' ? $targetField = $field.siblings('.form-control'): $field;
+  
+  $targetField.tooltip({
+    title: message,
+    container: container,
+    template: '<div class="tooltip error"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'
+  });
 };
 
 /**
@@ -130,28 +130,28 @@ UI.Form.createErrorTooltip = function($field, error, fieldLabel) {
  * @param $data
  */
 UI.Form.setFieldValues = function($form, $data) {
-	$.each($data, function(fieldName, value) {
-		var $inputFields = $('[name='+fieldName+']', $form);
-		if ( $inputFields.length == 1 ) {
-			var inputFieldEl = $inputFields[0];
-			switch(UI.Form.getInputType(inputFieldEl)) {
-				case "hidden":  
-				case "text" :   
-				case "textarea":  
-					inputFieldEl.value = value;   
-					break;
-			}
-		} else {
-			$inputFields.each(function(i, $inputField) {
-				switch(UI.Form.getInputType($inputField)) {
-					case "radio" : 
-					case "checkbox":
-						var checked = $(this).attr('value') == value;
-						$(this).attr("checked", checked); 
-						break;  
-				}
-			});
-		}
+  $.each($data, function(fieldName, value) {
+    var $inputFields = $('[name='+fieldName+']', $form);
+    if ( $inputFields.length == 1 ) {
+      var inputFieldEl = $inputFields[0];
+      switch(UI.Form.getInputType(inputFieldEl)) {
+        case "hidden":  
+        case "text" :   
+        case "textarea":  
+          inputFieldEl.value = value;   
+          break;
+      }
+    } else {
+      $inputFields.each(function(i, $inputField) {
+        switch(UI.Form.getInputType($inputField)) {
+          case "radio" : 
+          case "checkbox":
+            var checked = $(this).attr('value') == value;
+            $(this).attr("checked", checked); 
+            break;  
+        }
+      });
+    }
     });
 };
 
@@ -163,21 +163,21 @@ UI.Form.setFieldValues = function($form, $data) {
  * @returns
  */
 UI.Form.getInputType = function(inputField) {
-	if ( inputField instanceof jQuery ) {
-		if ( inputField.length == 1 ) {
-			var field = inputField.get(0);
-			return UI.Form.getInputType(field);
-		} else {
-			//no single input field found
-			return null;
-		}
-	}
-	var type = inputField.type;
-	if ( ! type ) {
-		//e.g. textarea element
-		type = inputField.nodeName.toLowerCase();
-	}
-	return type;
+  if ( inputField instanceof jQuery ) {
+    if ( inputField.length == 1 ) {
+      var field = inputField.get(0);
+      return UI.Form.getInputType(field);
+    } else {
+      //no single input field found
+      return null;
+    }
+  }
+  var type = inputField.type;
+  if ( ! type ) {
+    //e.g. textarea element
+    type = inputField.nodeName.toLowerCase();
+  }
+  return type;
 };
 
 /**
@@ -186,13 +186,13 @@ UI.Form.getInputType = function(inputField) {
  * @param $form
  */
 UI.Form.reset = function($form) {
-	//TODO support other field types: select, radio buttons, checkboxes...
-	$form.find("input[type=text], input[type=hidden], textarea").val("");
-	UI.Form.removeErrors($form);
+  //TODO support other field types: select, radio buttons, checkboxes...
+  $form.find("input[type=text], input[type=hidden], textarea").val("");
+  UI.Form.removeErrors($form);
 };
 
 UI.Form.setValue = function(element,item){
-	element.val(item);
+  element.val(item);
 };
 
 /**
@@ -207,31 +207,31 @@ UI.Form.setValue = function(element,item){
  * @param callback
  */
 UI.Form.populateSelect = function($select, items, valueKey, labelKey) {
-	$select.empty();
-	$select.attr("disabled", "disabled");
+  $select.empty();
+  $select.attr("disabled", "disabled");
 
-	$.each(items, function(i, item) {
-		var value = item.hasOwnProperty(valueKey) ? item[valueKey]: item;
-		var label = item.hasOwnProperty(labelKey) ? item[labelKey]: value;
-		$select.append($("<option />").val(value).text(label));
-	});
-	$select.removeAttr("disabled");
-	$select.val([]);
+  $.each(items, function(i, item) {
+    var value = item.hasOwnProperty(valueKey) ? item[valueKey]: item;
+    var label = item.hasOwnProperty(labelKey) ? item[labelKey]: value;
+    $select.append($("<option />").val(value).text(label));
+  });
+  $select.removeAttr("disabled");
+  $select.val([]);
 };
 
 /**
  * Sets the focus on the first input field in the specified form
  */
 UI.Form.setFocus = function($form) {
-	var $firstField = $form.find("*:input[type!=hidden]:first");
-	$firstField.focus();
+  var $firstField = $form.find("*:input[type!=hidden]:first");
+  $firstField.focus();
 };
 
 UI.Form.toJSON = function($form) {
-	var array = $form.serializeArray();
-	var result = {};
+  var array = $form.serializeArray();
+  var result = {};
     jQuery.each(array, function() {
-    	result[this.name] = this.value || '';
+      result[this.name] = this.value || '';
     });
     return result;
 };
@@ -245,49 +245,49 @@ UI.Form.validation = function() {};
  * Returns true if the field is not empty, otherwise returns false and adds error feedback to the field
  */
 UI.Form.validation.required = function($field, label) {
-	var $formGroup = $field.closest(".form-group");
-	$formGroup.removeClass('has-error');
-	var val = $field.val();
-	if ( val.trim().length == 0 ) {
-		$formGroup.addClass('has-error');
-		UI.Form.createErrorTooltip($field, "is required", label);
-		return false;
-	} else {
-		return true;
-	}
+  var $formGroup = $field.closest(".form-group");
+  $formGroup.removeClass('has-error');
+  var val = $field.val();
+  if ( val.trim().length == 0 ) {
+    $formGroup.addClass('has-error');
+    UI.Form.createErrorTooltip($field, "is required", label);
+    return false;
+  } else {
+    return true;
+  }
 };
 
 /**
  * Returns true if the field value is a valid number, otherwise returns false and adds error feedback to the field
  */
 UI.Form.validation.numeric = function($field, label) {
-	var $formGroup = $field.closest(".form-group");
-	$formGroup.removeClass('has-error');
-	var val = $field.val();
-	if ( isNaN(val) ) {
-		$formGroup.addClass('has-error');
-		UI.Form.createErrorTooltip($field, "Invalid number");
-		return false;
-	} else {
-		return true;
-	}
+  var $formGroup = $field.closest(".form-group");
+  $formGroup.removeClass('has-error');
+  var val = $field.val();
+  if ( isNaN(val) ) {
+    $formGroup.addClass('has-error');
+    UI.Form.createErrorTooltip($field, "Invalid number");
+    return false;
+  } else {
+    return true;
+  }
 };
 
 /**
  * Returns true if the field value is greater than the specified value, otherwise returns false and adds error feedback to the field
  */
 UI.Form.validation.greaterThan = function($field, label, value) {
-	var $formGroup = $field.closest(".form-group");
-	$formGroup.removeClass('has-error');
-	var val = $field.val();
-	var number = Number(val);
-	if ( number > value ) {
-		return true;
-	} else {
-		$formGroup.addClass('has-error');
-		UI.Form.createErrorTooltip($field, "Must be greather than " + value);
-		return false;
-	}
+  var $formGroup = $field.closest(".form-group");
+  $formGroup.removeClass('has-error');
+  var val = $field.val();
+  var number = Number(val);
+  if ( number > value ) {
+    return true;
+  } else {
+    $formGroup.addClass('has-error');
+    UI.Form.createErrorTooltip($field, "Must be greather than " + value);
+    return false;
+  }
 };
 
 /**
@@ -296,26 +296,26 @@ UI.Form.validation.greaterThan = function($field, label, value) {
  * so that opening a new web browser tab is not required
  */
 UI.Form.download = function(url, data) {
-	
-	var iFrame = $( "<iframe id='_exportIframe' style='display: none;' ></iframe>" ); 
-	$( "body" ).append( iFrame );
-	
-	var form = $("<form target='_exportIframe' method='post' action='" + url + "'></form>");
-	
-	if( data ) {
-	    //add an hidden field to the form for each parameter
-	    $.each(data, function(fieldName, value) {
-		form.append($("<input type='hidden' name='" + fieldName + "' value='"+ value + "' />"));
-	    });
-	}
-	
-	$( "body" ).append( form );
-	
-	form.submit();
-	
-	//remove the elements at the end
-	setTimeout( function(){ 
-	    iFrame.remove();
-	    form.remove();
-	} , 10000 );
+  
+  var iFrame = $( "<iframe id='_exportIframe' style='display: none;' ></iframe>" ); 
+  $( "body" ).append( iFrame );
+  
+  var form = $("<form target='_exportIframe' method='post' action='" + url + "'></form>");
+  
+  if( data ) {
+      //add an hidden field to the form for each parameter
+      $.each(data, function(fieldName, value) {
+    form.append($("<input type='hidden' name='" + fieldName + "' value='"+ value + "' />"));
+      });
+  }
+  
+  $( "body" ).append( form );
+  
+  form.submit();
+  
+  //remove the elements at the end
+  setTimeout( function(){ 
+      iFrame.remove();
+      form.remove();
+  } , 10000 );
 };

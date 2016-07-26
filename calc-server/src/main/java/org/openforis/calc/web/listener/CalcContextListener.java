@@ -15,7 +15,7 @@ import org.openforis.calc.persistence.DatabaseInitializer;
 import org.openforis.calc.persistence.DatabaseInitializer.DatabaseInitializationException;
 
 /**
- * Bootstrap context listener that initializes the 
+ * Bootstrap context listener that initializes the
  * 
  * @author S. Ricci
  *
@@ -27,16 +27,16 @@ public class CalcContextListener implements ServletContextListener {
 		ServletContext context = event.getServletContext();
 		try {
 			initDatabase(context);
-		} catch ( Exception e ) {
+		} catch (Exception e) {
 			throw new RuntimeException("Error initializing the web application: " + e.getMessage(), e);
 		}
 	}
 
 	@Override
 	public void contextDestroyed(ServletContextEvent event) {
-		//do nothing
+		// do nothing
 	}
-	
+
 	private void initDatabase(ServletContext context) throws DatabaseInitializationException {
 		String driver = getParameter(context, "calc.jdbc.driver");
 		String url = getParameter(context, "calc.jdbc.url");
@@ -47,30 +47,30 @@ public class CalcContextListener implements ServletContextListener {
 		String password = getParameter(context, "calc.jdbc.password");
 		String adminUsername = getParameter(context, "calc.jdbc.adminuser");
 		String adminPassword = getParameter(context, "calc.jdbc.adminpassword");
-		
+
 		DatabaseInitializer dbInitializer = new DatabaseInitializer(driver, url, db, host, port, username, password, adminUsername, adminPassword);
-		if ( ! dbInitializer.isDBInitialized() ) {
+		if (!dbInitializer.isDBInitialized()) {
 			dbInitializer.initDB();
 		}
 	}
 
 	private String getParameter(ServletContext context, String name) {
 		String value = (String) context.getInitParameter(name);
-		if ( StringUtils.isBlank(value) ) {
+		if (StringUtils.isBlank(value)) {
 			throw new IllegalArgumentException("Context parameter not found: " + name);
 		} else {
-			//replace nested parameters with values
+			// replace nested parameters with values
 			Pattern nestedParameterPattern = Pattern.compile("\\$\\{((\\w|-|_|\\.)+)\\}");
 			Matcher matcher = nestedParameterPattern.matcher(value);
 			boolean hasNestedParameters = false;
 			StringBuffer sb = new StringBuffer();
-			while ( matcher.find() ) {
+			while (matcher.find()) {
 				hasNestedParameters = true;
-			    String nestedParameterName = matcher.group(1);
-			    String nestedValue = getParameter(context, nestedParameterName);
-			    matcher.appendReplacement(sb, nestedValue);
+				String nestedParameterName = matcher.group(1);
+				String nestedValue = getParameter(context, nestedParameterName);
+				matcher.appendReplacement(sb, nestedValue);
 			}
-			if ( hasNestedParameters ) {
+			if (hasNestedParameters) {
 				value = sb.toString();
 			}
 			return value;

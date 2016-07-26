@@ -1,18 +1,13 @@
 package org.openforis.calc.engine;
 
 import java.io.File;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
 
 import javax.sql.DataSource;
 
-import org.openforis.calc.chain.CalculationStep;
-import org.openforis.calc.chain.InvalidProcessingChainException;
-import org.openforis.calc.chain.ProcessingChain;
+import org.openforis.calc.chain.ProcessingChainTask;
 import org.openforis.calc.chain.post.CreateAggregateTablesTask;
 import org.openforis.calc.chain.post.PublishRolapSchemaTask;
 import org.openforis.calc.chain.pre.AssignAoiColumnsTask;
@@ -22,7 +17,6 @@ import org.openforis.calc.collect.CollectSurveyImportJob;
 import org.openforis.calc.collect.CreateInputSchemaTask;
 import org.openforis.calc.collect.SpeciesImportTask;
 import org.openforis.calc.module.ModuleRegistry;
-import org.openforis.calc.module.Operation;
 import org.openforis.calc.schema.Schemas;
 import org.openforis.collect.model.CollectRecord.Step;
 import org.openforis.collect.model.CollectSurvey;
@@ -108,19 +102,30 @@ public class TaskManager {
 	public Job createDefaultJob( Workspace workspace ) {
 		Job job = createJob( workspace );
 		
-		CreateAggregateTablesTask aggTask 				= createTask( CreateAggregateTablesTask.class );
-		job.addTask( aggTask );
-		
-		PublishRolapSchemaTask publishRolapSchemaTask 	= createTask( PublishRolapSchemaTask.class );
-		job.addTask( publishRolapSchemaTask );
+		addProcessingChainTasks(workspace, job);
 		
 		return job;
+	}
+
+	public void addProcessingChainTasks(Workspace workspace, Job job) {
+		if( workspace.getDefaultProcessingChain().isCompleted() ){
+			ProcessingChainTask chainTask = createTask( ProcessingChainTask.class );
+			job.addTask( chainTask );
+			
+			CreateAggregateTablesTask aggTask 				= createTask( CreateAggregateTablesTask.class );
+			job.addTask( aggTask );
+			
+			PublishRolapSchemaTask publishRolapSchemaTask 	= createTask( PublishRolapSchemaTask.class );
+			job.addTask( publishRolapSchemaTask );
+		}
 	}
 	
 	public Job createPreProcessingJob(Workspace workspace) {
 		Job job = createJob(workspace);
 		
 		addPreProcessingTasks(job);
+		
+		addProcessingChainTasks(workspace, job);
 		
 		return job;
 	}
@@ -164,6 +169,8 @@ public class TaskManager {
 		
 		if( workspace.hasSamplingDesign() ) {
 			addPreProcessingTasks( job );
+			
+			addProcessingChainTasks(workspace, job);
 		}
 
 		return job;
@@ -207,26 +214,26 @@ public class TaskManager {
 		((AutowireCapableBeanFactory) beanFactory).autowireBean(object);
 	}
 
-	public List<Task> createCalculationStepTasks(ProcessingChain chain) throws InvalidProcessingChainException {
-		List<Task> tasks = new ArrayList<Task>();
-		List<CalculationStep> steps = chain.getCalculationSteps();
-		for (CalculationStep step : steps) {
-			CalculationStepTask task = createCalculationStepTask(step);
-			tasks.add(task);
-		}
-		return tasks;
-	}
+//	public List<Task> createCalculationStepTasks(ProcessingChain chain) throws InvalidProcessingChainException {
+//		List<Task> tasks = new ArrayList<Task>();
+//		List<CalculationStep> steps = chain.getCalculationSteps();
+//		for (CalculationStep step : steps) {
+//			CalculationStepTask task = createCalculationStepTask(step);
+//			tasks.add(task);
+//		}
+//		return tasks;
+//	}
 
-	public CalculationStepTask createCalculationStepTask(CalculationStep step) throws InvalidProcessingChainException {
-		Operation<?> operation = moduleRegistry.getOperation(step);
-		if (operation == null) {
-			throw new InvalidProcessingChainException("Unknown operation in step " + step);
-		}
-		Class<? extends CalculationStepTask> taskType = operation.getTaskType();
-		CalculationStepTask task = createTask(taskType);
-		task.setCalculationStep(step);
-		return task;
-	}
+//	public CalculationStepTask createCalculationStepTask(CalculationStep step) throws InvalidProcessingChainException {
+//		Operation<?> operation = moduleRegistry.getOperation(step);
+//		if (operation == null) {
+//			throw new InvalidProcessingChainException("Unknown operation in step " + step);
+//		}
+//		Class<? extends CalculationStepTask> taskType = operation.getTaskType();
+//		CalculationStepTask task = createTask(taskType);
+//		task.setCalculationStep(step);
+//		return task;
+//	}
 
 	/**
 	 * Executes a job in the background
@@ -262,15 +269,15 @@ public class TaskManager {
 //		return job;
 //	}
 
-	@SuppressWarnings("unchecked")
-	public List<Task> createTasks(Class<?>... types) {
-		List<Task> tasks = new ArrayList<Task>();
-		for (Class<?> type : types) {
-			Task task = createTask((Class<Task>) type);
-			tasks.add(task);
-		}
-		return tasks;
-	}
+//	@SuppressWarnings("unchecked")
+//	public List<Task> createTasks(Class<?>... types) {
+//		List<Task> tasks = new ArrayList<Task>();
+//		for (Class<?> type : types) {
+//			Task task = createTask((Class<Task>) type);
+//			tasks.add(task);
+//		}
+//		return tasks;
+//	}
 
 	protected DataSource getDataSource() {
 		return dataSource;
@@ -297,13 +304,13 @@ public class TaskManager {
 		}
 	}
 
-	public static void main(String[] args) {
-		String pattern = "###,##0.00######";
-		double value = 0.00021691812253467514;
-		
-		 DecimalFormat myFormatter = new DecimalFormat(pattern);
-	      String output = myFormatter.format(value);
-      System.out.println(value + "  " + pattern + "  " + output);
-	}
+//	public static void main(String[] args) {
+//		String pattern = "###,##0.00######";
+//		double value = 0.00021691812253467514;
+//		
+//		 DecimalFormat myFormatter = new DecimalFormat(pattern);
+//	      String output = myFormatter.format(value);
+//      System.out.println(value + "  " + pattern + "  " + output);
+//	}
 	
 }

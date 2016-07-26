@@ -36,6 +36,7 @@ calc.log <- function( step, msg , level ){
   row2 <- paste("\n" , level , sep="");
   row2 <- paste(row2 , ':' , sep="");
   row2 <- paste(row2 , msg , sep=" ");
+  row2 <- paste(row2 , '\n' , sep=" ");
   cat( row2  );
 };
 calc.info <- function( step, msg ){

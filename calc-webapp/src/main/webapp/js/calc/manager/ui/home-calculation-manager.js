@@ -12,6 +12,7 @@ function HomeCalculationManager(container) {
 	
 	this.deleteBtn 				= this.container.find( ".delete" );
 	this.executeBtn 			= this.container.find( ".execute" );
+	this.rStudioBtn				= this.container.find( ".btn-RStudio" );
 	this.downloadChainBtn		= this.container.find( ".btn-R" );
 	
 	this.calculationStepBtnTemplate = this.container.find(".calculation-step.template");
@@ -23,7 +24,7 @@ function HomeCalculationManager(container) {
 	
 	// options section 
 	var optionsSection 		= this.container.find( '.options' );
-	var optionsSectionBtn 	= this.container.find( '.options-section-btn' );''
+	var optionsSectionBtn 	= this.container.find( '.options-section-btn' );
 	// manager for calculations section otions
 	this.optionsManager		= new HomeCalculationOptionsManager( this , optionsSection, optionsSectionBtn );
 	
@@ -70,6 +71,12 @@ HomeCalculationManager.prototype.init = function() {
 		e.preventDefault();
 		
 		$this.processingChainManager.export();
+	});
+	
+	this.rStudioBtn.click(function(e){
+		e.preventDefault();
+		
+		$this.processingChainManager.openRStudio();
 	});
 	
 };

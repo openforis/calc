@@ -7,10 +7,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import java.util.StringTokenizer;
@@ -110,10 +112,14 @@ public class CollectMetadataImportTask extends Task {
 		List<Category> categories = new ArrayList<Category>(ws.getCategories());
 
 		// remove all existing input categories
+		Map<String,Integer> originalIds = new HashMap<>();
 		Iterator<Category> iterator = categories.iterator();
 		while (iterator.hasNext()) {
 			Category category = iterator.next();
 			if (category.isInput()) {
+				
+				originalIds.put( category.getName() , category.getId() );
+				
 				iterator.remove();
 			}
 		}
@@ -132,6 +138,10 @@ public class CollectMetadataImportTask extends Task {
 				category.setDescription(codeListDescription);
 				category.setName(codeListName);
 				categories.add(category);
+				Integer id = originalIds.get( category.getName() );
+				if( id != null ){
+					category.setId(id);
+				}
 
 				// TODO support multiple hierarchies
 				CategoryHierarchy hierarchy = new CategoryHierarchy();
@@ -160,25 +170,29 @@ public class CollectMetadataImportTask extends Task {
 		BackupFileExtractor fileExtractor = new BackupFileExtractor(zipFile);
 		List<String> speciesFileNames = fileExtractor.listSpeciesEntryNames();
 		for (String speciesFileName : speciesFileNames) {
-			Category category = createSpeciesCategory(speciesFileName);
+			Category category = createSpeciesCategory(speciesFileName,originalIds);
 			categories.add(category);
 
 			incrementItemsProcessed();
 		}
 		
-		Category category = createBooleanCategory();
+		Category category = createBooleanCategory(originalIds);
 		categories.add(category);
 		
 		ws.setCategories(categories);
 	}
 
-	private Category createBooleanCategory() {
+	private Category createBooleanCategory(Map<String, Integer> originalIds) {
 		Category category = new Category();
 		category.setOriginalId(BOOLEAN_CATEGORY_ORIGINAL_ID);
 		category.setCaption("Boolean code list");
 		category.setDescription("Boolean code list");
 		category.setName("Boolean");
 		
+		Integer id = originalIds.get( category.getName() );
+		if( id != null ){
+			category.setId(id);
+		}
 
 		CategoryHierarchy hierarchy = new CategoryHierarchy();
 		hierarchy.setName("Boolean hierarchy");
@@ -201,7 +215,7 @@ public class CollectMetadataImportTask extends Task {
 		return category;
 	}
 
-	protected Category createSpeciesCategory(String speciesFileName) {
+	protected Category createSpeciesCategory(String speciesFileName, Map<String, Integer> originalIds) {
 		String speciesListName = FilenameUtils.getBaseName(speciesFileName);
 		String caption = "Species list " + speciesListName;
 
@@ -209,7 +223,11 @@ public class CollectMetadataImportTask extends Task {
 		category.setName(speciesListName);
 		category.setOriginalId(SPECIES_CATEGORY_ORIGINAL_ID);
 		category.setCaption(caption);
-
+		Integer id = originalIds.get( category.getName() );
+		if( id != null ){
+			category.setId(id);
+		}
+		
 		CategoryHierarchy hierarchy = new CategoryHierarchy();
 		hierarchy.setName(speciesListName);
 		hierarchy.setCaption(caption);
@@ -681,9 +699,9 @@ public class CollectMetadataImportTask extends Task {
 	private void saveWorkspace() {
 		Workspace workspace = getWorkspace();
 		// delete input categories first
-		workspaceService.deleteInputCategories(workspace);
-		workspaceService.save(workspace);
-
+//		workspaceService.deleteInputCategories(workspace);
+		workspace = workspaceService.save(workspace);
+		
 		((CollectSurveyImportJob) getJob()).updateWorkspace(workspace);
 	}
 

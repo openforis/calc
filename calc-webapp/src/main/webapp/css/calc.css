@@ -534,6 +534,18 @@ button.settings:hover {
 	font-family: "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
 	border-radius: 3px;
 }
+
+.button-bar-inner .r-buttons .btn {
+	height: 50% !important;
+}
+.button-bar-inner .r-buttons .btn:first-child {
+	border-bottom: 1px solid rgb(86, 91, 103);
+	border-bottom: 1px solid #5b718c;
+}
+
+.button-bar-inner .r-buttons .btn i {
+	font-size: 2rem;
+}
 /**
 * Footer
 */
