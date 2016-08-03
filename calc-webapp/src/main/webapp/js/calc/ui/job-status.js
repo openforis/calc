@@ -108,7 +108,7 @@ JobStatus.prototype = (function() {
 			var taskStatus =  $this.taskSection.find("#" + $this.lastRunningTask);
 			
 //			taskStatus.velocity("stop");
-			taskStatus.velocity("scroll", { container:$this.taskSection, duration: 1000, easing: "spring",delay:0 });
+			taskStatus.velocity("scroll", { container:$this.taskSection, duration: 1000, easing: "spring",delay:500 });
 		}
 		
 		// update log if there is
@@ -186,7 +186,7 @@ JobStatus.prototype = (function() {
 		$.each(tasks, function(i, task) {
 			// add a row for each task
 			var taskStatus = $this.taskStatus.clone();
-			taskStatus.hide();
+			taskStatus.hide(0);
 			
 			taskStatus.attr("id", task.id);
 			taskStatus.find(".number").text( (i+1) +"." );
@@ -196,10 +196,10 @@ JobStatus.prototype = (function() {
 			taskStatus.data("progress-bar", progressBar);
 
 			$this.taskSection.append(taskStatus);	
-
-			setTimeout(function(){
-				taskStatus.fadeIn(100);
-			}, (delay+=50) );
+			taskStatus.show(0);
+//			setTimeout(function(){
+//				taskStatus.fadeIn(100);
+//			}, (delay+=50) );
 		});
 		
 		// init r logger if calcjob

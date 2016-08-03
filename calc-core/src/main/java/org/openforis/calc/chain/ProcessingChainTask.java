@@ -52,13 +52,24 @@ public class ProcessingChainTask extends Task {
 		currentTask = -99;
 	}
 
-	@Override
-	protected void setJob(Job job) {
-		super.setJob(job);
-		
-		this.scripts = processingChainService.createROutputScripts(getWorkspace(), true);
-	}
+//	@Override
+//	protected void setJob(Job job) {
+//		super.setJob(job);
+//		
+//		
+//	}
 
+	@Override
+	public synchronized void init() {		
+//		this.scripts = processingChainService.createROutputScripts(getWorkspace(), true);
+		try {
+			this.initChain();
+		} catch (IOException e) {
+			throw new RuntimeException("Unable to create Processing Chain Task", e);
+		}
+		super.init();
+	}
+	
 	private void initChain() throws IOException {
 		this.scripts = processingChainService.createROutputScripts(getWorkspace(), true);
 
@@ -74,16 +85,11 @@ public class ProcessingChainTask extends Task {
 	 */
 	@Override
 	protected void execute() throws Throwable {
-		
-		try {
-			initChain();
-		} catch (IOException e) {
-			throw new RuntimeException("Unable to create Processing Chain Task", e);
-		}
-		
-		executeRChain();
+						
+		executeChain();
 
-		while (true) {
+		while (true) {		
+			
 			if (currentTask > 0) {
 				setItemsProcessed(currentTask);
 			} else if (currentTask == -1) {
@@ -106,11 +112,10 @@ public class ProcessingChainTask extends Task {
 
 	}
 
-	private void executeRChain() throws IOException {
+	private void executeChain() throws IOException {
 		File chain = new File(this.processingChainDir, "chain.R");
 		
 		String rscriptCommand = calc.getRscriptCommandPath();
-//		System.out.println( "\n\n====================EXECUTIIIIING====================:\n " + rscriptCommand + " " + chain.getAbsolutePath() + "\n\n");
 		Runtime.getRuntime().exec(rscriptCommand + " " + chain.getAbsolutePath());
 
 		File logFile = new File(this.processingChainDir, "output.txt");
