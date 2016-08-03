@@ -46,8 +46,10 @@
     <enableTimestamp>1</enableTimestamp>
     <rebootRequired>0</rebootRequired>
     <requireInstallationByRootUser>0</requireInstallationByRootUser>
+    <requestedExecutionLevel>asInvoker</requestedExecutionLevel>
     <rollbackBackupDirectory>${system_temp_directory}/${product_shortname}/backup</rollbackBackupDirectory>
     <saveRelativePaths>1</saveRelativePaths>
+    <createOsxBundleZip>1</createOsxBundleZip>
     <vendor>Open Foris</vendor>
 </project>
 

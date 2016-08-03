@@ -63,7 +63,7 @@ JobStatus.prototype = (function() {
 			var progressBar = taskStatus.data( "progress-bar" );
 			progressBar.update( task.itemsProcessed, task.totalItems );
 			
-			if( task.status == "RUNNING" && task.id !== $this.lastRunningTask){				
+			if( task.status == "RUNNING" && task.id !== $this.lastRunningTask && i > 2){				
 				$this.lastRunningTask = task.id;
 				scrollToLastTask = true;
 			}
