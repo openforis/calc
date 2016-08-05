@@ -62,22 +62,33 @@ UI.showMessage = function(type, message, autoHide) {
 	}
 };
 
+
+var _locked = false;
 /**
  * Shows a modal with static backdrop to avoid user interaction
  */
 UI.lock = function() {
-	UI.modalLock.modal({keyboard:false, backdrop:"static"});
-	$('body').addClass('locked');
+	if(!_locked){
+		_locked = true;
+		
+		UI.modalLock.modal({keyboard:false, backdrop:"static"});
+		$('body').addClass('locked');
+	}
 };
 
 /**
  * Remove the lock modal
  */
 UI.unlock = function() {
-	UI.modalLock.modal('hide');
-	UI.modalLock.modal('removeBackdrop');
-	$('body').removeClass('locked');
+	if(_locked){		
+		UI.modalLock.modal('hide');
+		UI.modalLock.modal('removeBackdrop');
+		$('body').removeClass('locked');
+	}
 };
+UI.modalLock.on('hidden.bs.modal', function (e) {
+	_locked = false;
+});
 
 /**
  * Reset a progress bar to its original state

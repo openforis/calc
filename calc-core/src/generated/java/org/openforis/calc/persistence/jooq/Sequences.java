@@ -94,6 +94,11 @@ public class Sequences {
 	public static final org.jooq.Sequence<java.lang.Long> STRATUM_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("stratum_id_seq", org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
 
 	/**
+	 * The sequence <code>calc.system_property_id_seq</code>
+	 */
+	public static final org.jooq.Sequence<java.lang.Long> SYSTEM_PROPERTY_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("system_property_id_seq", org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
+
+	/**
 	 * The sequence <code>calc.variable_aggregate_id_seq</code>
 	 */
 	public static final org.jooq.Sequence<java.lang.Long> VARIABLE_AGGREGATE_ID_SEQ = new org.jooq.impl.SequenceImpl<java.lang.Long>("variable_aggregate_id_seq", org.openforis.calc.persistence.jooq.CalcSchema.CALC, org.jooq.impl.SQLDataType.BIGINT.nullable(false));

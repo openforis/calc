@@ -89,6 +89,11 @@ public class Tables {
 	public static final org.openforis.calc.persistence.jooq.tables.StratumAoiTable STRATUM_AOI = org.openforis.calc.persistence.jooq.tables.StratumAoiTable.STRATUM_AOI;
 
 	/**
+	 * The table calc.system_property
+	 */
+	public static final org.openforis.calc.persistence.jooq.tables.SystemPropertyTable SYSTEM_PROPERTY = org.openforis.calc.persistence.jooq.tables.SystemPropertyTable.SYSTEM_PROPERTY;
+
+	/**
 	 * The table calc.variable
 	 */
 	public static final org.openforis.calc.persistence.jooq.tables.VariableTable VARIABLE = org.openforis.calc.persistence.jooq.tables.VariableTable.VARIABLE;

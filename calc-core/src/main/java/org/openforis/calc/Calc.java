@@ -7,6 +7,10 @@ import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 
+import org.openforis.calc.system.SystemProperty;
+import org.openforis.calc.system.SystemPropertyInitializer;
+import org.openforis.calc.system.SystemPropertyManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -25,23 +29,17 @@ public class Calc {
 	
 	@Value(value = "${saiku.ui.url:/saiku-ui}")
 	private String saikuUiUrl;
+	
+	@Autowired
+	private SystemPropertyManager systemPropertyManager;
 
-	private String rscriptCommandPath;
-
+	@Autowired
+	private SystemPropertyInitializer systemPropertyInitializer;
+	
 	@PostConstruct
 	public void init() {
 		Properties info = readInfoProperties();
 		version = info.getProperty(Calc.class.getPackage().getName() + ".version");
-		
-		try {
-			initRscriptCommandPath();
-		} catch (IOException | InterruptedException e) {
-			throw new RuntimeException("Unable to find Rscript executable file", e);
-		}
-
-		if (this.rscriptCommandPath == null) {
-			throw new RuntimeException("Unable to find Rscript executable file");
-		}
 	}
 
 	public String getVersion() {
@@ -79,54 +77,29 @@ public class Calc {
 	
 	@JsonIgnore
 	public String getRscriptCommandPath() {
-		return rscriptCommandPath;
-	}
-
-	@JsonIgnore
-	public void initRscriptCommandPath() throws IOException, InterruptedException {
-
 		String osname = System.getProperty("os.name");
-		if (osname != null && osname.length() >= 7 && osname.substring(0, 7).equalsIgnoreCase("windows")) {
-			
-			String installPath = null;
-			Process rp = Runtime.getRuntime().exec("reg query HKLM\\Software\\R-core\\R");
-			StreamHog regHog = new StreamHog(rp.getInputStream());
-			rp.waitFor();
-			regHog.join();
-			installPath = regHog.getInstallPath();
-
-			if (installPath == null) {
-				throw new RuntimeException("ERROR: canot find path to R. Make sure reg is available and R was installed with registry settings.");
-			}
-			rscriptCommandPath = "\""+ installPath + "\\bin\\Rscript.exe\"";
-			regHog.interrupt();
-			
-		} else {
-			
-				String[] paths = new String[] { "/Library/Frameworks/R.framework/Resources/bin/Rscript",
-					"/Library/Frameworks/R.framework/Resources/bin/Rscript", 
-					"/usr/local/lib/R/bin/Rscript",
-					"/usr/local/lib/R/bin/Rscript", 
-					"/usr/lib/R/bin/Rscript", 
-					"/usr/lib/R/bin/Rscript",
-					"/usr/local/bin/Rscript",
-					"/usr/local/bin/Rscript",
-					"/sw/bin/Rscript",
-					"/sw/bin/Rscript",
-					"/usr/common/bin/Rscript",
-					"/usr/common/bin/Rscript" ,
-					"/opt/bin/Rscript",
-					"/opt/bin/Rscript"};
-			
-			for (String path : paths) {
-				if( new File(path).exists() ){
-					rscriptCommandPath = path;
-					break;
-				}
-			}
-			
+		boolean isWindows = ( osname != null && osname.length() >= 7 && osname.substring(0, 7).equalsIgnoreCase("windows") );
+		
+		StringBuilder sb = new StringBuilder();
+		if( isWindows ){
+			sb.append("\"");
 		}
 		
+		SystemProperty sp = systemPropertyManager.getSystemPropertyByName( SystemProperty.PROPERTIES.R_EXEC_DIR.toString() );
+		if( sp == null ){
+			throw new RuntimeException( "Unable to find R executable files" );
+		}
+		
+		sb.append( sp.getValue() );
+		sb.append( File.separator );
+		sb.append( "Rscript" );
+		
+		if( isWindows ){
+			sb.append(".exe\"");
+		}
+		
+		return sb.toString();
 	}
+
 
 }

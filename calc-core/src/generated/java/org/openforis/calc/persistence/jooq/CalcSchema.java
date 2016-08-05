@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class CalcSchema extends org.jooq.impl.SchemaImpl {
 
-	private static final long serialVersionUID = -837864183;
+	private static final long serialVersionUID = -115495770;
 
 	/**
 	 * The singleton instance of <code>calc</code>
@@ -50,6 +50,7 @@ public class CalcSchema extends org.jooq.impl.SchemaImpl {
 			org.openforis.calc.persistence.jooq.Sequences.SRS_ID_SEQ,
 			org.openforis.calc.persistence.jooq.Sequences.STRATUM_AOI_ID_SEQ,
 			org.openforis.calc.persistence.jooq.Sequences.STRATUM_ID_SEQ,
+			org.openforis.calc.persistence.jooq.Sequences.SYSTEM_PROPERTY_ID_SEQ,
 			org.openforis.calc.persistence.jooq.Sequences.VARIABLE_AGGREGATE_ID_SEQ,
 			org.openforis.calc.persistence.jooq.Sequences.VARIABLE_ID_SEQ,
 			org.openforis.calc.persistence.jooq.Sequences.WORKSPACE_ID_SEQ,
@@ -80,6 +81,7 @@ public class CalcSchema extends org.jooq.impl.SchemaImpl {
 			org.openforis.calc.persistence.jooq.tables.SamplingDesignTable.SAMPLING_DESIGN,
 			org.openforis.calc.persistence.jooq.tables.StratumTable.STRATUM,
 			org.openforis.calc.persistence.jooq.tables.StratumAoiTable.STRATUM_AOI,
+			org.openforis.calc.persistence.jooq.tables.SystemPropertyTable.SYSTEM_PROPERTY,
 			org.openforis.calc.persistence.jooq.tables.VariableTable.VARIABLE,
 			org.openforis.calc.persistence.jooq.tables.VariableAggregateTable.VARIABLE_AGGREGATE,
 			org.openforis.calc.persistence.jooq.tables.WorkspaceTable.WORKSPACE,

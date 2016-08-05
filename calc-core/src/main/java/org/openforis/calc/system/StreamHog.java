@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.openforis.calc;
+package org.openforis.calc.system;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -1101,8 +1101,9 @@ ul.scroll-menu {
 */
 #settings .settings-btn ,
 #settings .settings-btn:focus {
-	height: 60%;
-    width: 18%;
+	height: 100%;
+/*     width: 18%; */
+    width: 30%;
 	font-size: 1.1em;
 /* 	font-weight: 200; */
 	line-height: 2em;
@@ -1118,8 +1119,8 @@ ul.scroll-menu {
 }
 
 #settings .group {
-	height: 50%;
-/* 	height: 33%; */
+/* 	height: 50%; */
+	height: 33%;
 	width: 100%;
 	padding: 0px 0px 0px 0px;
 	margin: 0px;
@@ -1129,14 +1130,17 @@ ul.scroll-menu {
 	width: 100%;
 	padding: 0px;
 	margin: 0px;
-	padding-top: 2.5%;
+/* 	padding-top: 2.5%; */
+	padding-top: 1%;
 }
 #settings .group-buttons {
-	height: 60%;
+height: 60%;
     width: 100%;
     /* padding: 0px 0px; */
     margin: 0px;
-    padding-top: 1%;
+    /* padding-top: 1%; */
+    text-align: left;
+    padding: 1% 25%;
 }
 #settings .group-header div {
 	border-bottom: 1px solid #8f91a0;
@@ -1768,3 +1772,14 @@ div.progress {
 	background-color: rgba(82, 102, 130, 0.5) !important;
 	transition: all 0.5s cubic-bezier(0, 0.6, 0.45, 1);
 }
+
+
+
+/* system property page */
+#system-property .hint {
+	text-align: right;
+	font-weight: bold;
+	font-size: 1.2rem; 
+	font-style: italic;
+}
+

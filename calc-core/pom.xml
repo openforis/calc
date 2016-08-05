@@ -103,7 +103,10 @@
 									<name>org.openforis.calc.metadata.WorkspaceSettings.VIEW_STEPS</name>
 									<converter>org.openforis.calc.persistence.jooq.WorkspaceSettingsViewStepsConverter</converter>
 								</customType>
-								
+								<customType>
+									<name>org.openforis.calc.system.SystemProperty.TYPE</name>
+									<converter>org.openforis.calc.persistence.jooq.SystemPropertyTypeConverter</converter>
+								</customType>
 							</customTypes>
 							<forcedTypes>
 								<forcedType>
@@ -161,6 +164,10 @@
 								<forcedType>
 									<name>org.openforis.calc.metadata.WorkspaceSettings.VIEW_STEPS</name>
 									<expression>.*\.workspace_settings\.view_steps</expression>
+								</forcedType>
+								<forcedType>
+									<name>org.openforis.calc.system.SystemProperty.TYPE</name>
+									<expression>.*\.system_property\.type</expression>
 								</forcedType>
 							</forcedTypes>
 						</database>

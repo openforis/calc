@@ -198,11 +198,16 @@ $(document).ready(function() {
 		
 		//set current home section
 		if( Calc.section.attr("id") != target.attr("id") ){
-		    Calc.section = target ;
-		    scrollToSection(true);
+			Calc.scrollToSection(target);
 		}
 		
 	});
+	
+	Calc.scrollToSection = function(target){
+	    Calc.section = target ;
+	    $homeSection = Calc.section.find( ".page-section" );
+	    scrollToSection(true);
+	};
 	
 	// event handler for home button click
 	homeButtonClick = function(event){
@@ -336,9 +341,6 @@ $(document).ready(function() {
 	// when page is loaded init function is called
 	init = function() {
 		
-		//disable caching
-		$.ajaxSetup( { cache: false } );
-		
 		// load calc info
 		Calc._loadInfo();
 		
@@ -365,7 +367,9 @@ $(document).ready(function() {
 			// check if there's a job currently running
 			JobManager.getInstance().checkJobStatus();
 		});
-	
+		
+		SystemProperty.getInstance().check();
+		
 		
 		Calc.pushToHistory( "home" );
 		

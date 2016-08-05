@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+	<changeSet author="mino togna" id="039-create-system-property-table">
+
+		<sql>
+			CREATE TABLE
+			    calc.system_property
+			    (
+			        id serial NOT NULL,
+			        name VARCHAR NOT NULL,
+			        type VARCHAR NOT NULL,
+			        value VARCHAR,
+			        PRIMARY KEY (id)
+			    );
+			    
+			INSERT INTO 
+				calc.system_property ( name , type )
+			VALUES ('r_exec_dir' , 'DIRECTORY' );
+    	</sql>
+    	
+	</changeSet>
+</databaseChangeLog>

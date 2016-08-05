@@ -1,0 +1,50 @@
+
+<div class="page-section" id="system-property">
+
+	<div class="row height100 width100" id="calculation-step-edit-container">
+
+		<form class="form-horizontal height100 width100" method="POST"
+			action="rest/calc/system-properties/save.json">
+			
+			<div class="row height20">
+				<div class="col-md-8 col-md-offset-2" style="padding-top: 2%;">
+					<h4>System Properties</h4>
+				</div>
+			</div>
+			
+			<div class="row height60">
+				<div class="col-md-8 col-md-offset-2 form-section">
+
+<!-- 					<div class="form-group"> -->
+<!-- 						<label class="col-md-2 control-label">Caption</label> -->
+<!-- 						<div class="col-md-10"> -->
+<!-- 							<input type="text" class="form-control" name="caption"> -->
+<!-- 						</div> -->
+<!-- 					</div> -->
+					
+
+				</div>
+			</div>
+
+			<div class="row height20">
+				<div class="col-md-8 col-md-offset-2">
+				<div class="form-group buttons" style="margin: 0px">
+						<div class="col-md-4 col-md-offset-4" style="text-align: center;">
+							<button type="submit" class="btn btn-action width70">
+								<i class="fa fa-floppy-o"></i>&nbsp;Save
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</form>
+	</div>
+
+	<script>
+		$(function() {
+			SystemProperty.getInstance().show();
+		});
+	</script>
+
+</div>

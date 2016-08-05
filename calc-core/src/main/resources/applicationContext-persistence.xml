@@ -140,4 +140,7 @@
     <bean name="workspaceSettingsDao" class="org.openforis.calc.persistence.jooq.tables.daos.WorkspaceSettingsDao">
     	<constructor-arg ref="config" />
     </bean>
+    <bean name="systemPropertyDao" class="org.openforis.calc.persistence.jooq.tables.daos.SystemPropertyDao">
+    	<constructor-arg ref="config" />
+    </bean>
 </beans>
