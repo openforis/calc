@@ -86,13 +86,54 @@ EquationListManager.prototype.showList = function() {
 		$.each( ws.equationLists , function( i , eq ){
 			
 			var addButton = function( ){
+				var div = $( '<div class="row no-margin no-padding width100"></div>')
+				div.hide();
+				$this.equationLists.append( div );
 				
-				var btn = $( '<button class="btn option-btn width100"></button>' );
-				btn.hide();
+				var btn = $( '<button class="btn option-btn col-md-10"></button>' );
+//				btn.hide();
 				btn.html( eq.name );
-				$this.equationLists.append( btn );
+//				$this.equationLists.append( btn );
+				div.append( btn );
+				
+				
+				
+				var deleteBtn = $( '<button class="btn no-background col-md-2"><i class="fa fa-minus-square"></i></button>' );
+				div.append( deleteBtn );
+				deleteBtn.click( function(){
+
+					var position = deleteBtn.offset();
+					position.top -= 20; 
+					position.left -= 20;
+					UI.showConfirm( 
+							"Do you want to delete " + eq.name + " equation list? This operation cannot be undone." , 
+							function(){
+								var params = {
+										url		: $this.BASE_URI + eq.id + "/delete.json",
+										success	:function(response) {
+											
+											WorkspaceManager.getInstance().activeWorkspace( function(ws) {
+												if( response.status == "OK" ){
+													UI.showSuccess( "Equation list deleted" , true );
+													ws.equationLists = response.fields.equationLists;
+													$this.showList();
+												} else {
+													UI.showError( response.fields.error , true );
+												}
+											});
+										}
+								}
+								
+								EventBus.dispatch("ajax", null, params);
+							} , 
+							null,
+							position
+							)
+				});
+				
+				
 				setTimeout( function(){
-					btn.fadeIn();
+					div.fadeIn();
 				} , i * 75);
 				
 				

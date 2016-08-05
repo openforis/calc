@@ -71,7 +71,7 @@ public class DeleteOutputMetadataTask extends Task {
 		incrementItemsProcessed();
 		
 		// delete ext equations
-		equationManager.delete( workspace );
+		equationManager.deleteAll( workspace );
 		incrementItemsProcessed();
 		
 		// delete output categories

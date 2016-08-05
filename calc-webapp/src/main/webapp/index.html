@@ -75,10 +75,10 @@
 					 				</button>
 				 				</div>
 				 				<div class="col-md-6 no-padding height50 r-buttons">
-				 					<button type="button" class="btn btn-RStudio" ">
+				 					<button type="button" class="btn btn-RStudio calculation-steps-required">
 										<img src="img/r-studio.png" width="45px" height="16px">
 					 				</button>
-				 					<button type="button" class="btn btn-R" href="">
+				 					<button type="button" class="btn btn-R calculation-steps-required">
 										<i class="fa fa-download"></i>
 										<img src="img/R_logo.svg.png" width="16px" height="16px">
 					 				</button>
@@ -150,7 +150,27 @@
 	  	<!-- Settings section -->
 	  	<div class="section-home settings" id="settings">
 	  		<div class="page-section">
-	  			
+	  			<!-- workspace settings -->
+		 		<div class="row group" id="workspace-settings">
+		 			<div class="row group-header">
+			  			<div class="col-md-8 col-md-offset-2">
+			  				Workspace
+			  			</div>
+			  		</div>
+		  			<div class="row group-buttons">
+		 				<button type="button" class="btn btn-default btn-home settings-btn" 
+		 					href="workspace-list.html"><div class="active-workspace-label"></div></button>
+		 					
+	 					<button type="button" class="btn btn-default settings-btn workspace-required export-workspace"><i class="fa fa-download icon-3"></i>&nbsp;Export</button>
+	 					
+	 					<div style="display: none" class="import-workspace-form-section">
+		 					<form method="post" enctype="multipart/form-data" action="rest/workspace/import.json">
+							    <input type="file" name="file" style="display:none" accept=".zip" />		    		    
+							</form>
+	 					</div>
+	 					<button type="button" class="btn btn-default settings-btn workspace-required import-workspace"><i class="fa fa-upload icon-3"></i>&nbsp;Import</button>
+	 				</div>
+		  		</div>
 	  			
 		  		<!-- calc metadata settings -->
 		  		<div class="row group">
@@ -178,27 +198,6 @@
 <!-- 		 				<button type="button" class="btn btn-default btn-home settings-btn sampling-design-required" href="aggregation.html">Base unit area formula</button> -->
 <!-- 	 				</div> -->
 <!-- 		  		</div> -->
-		  		<!-- workspace settings -->
-		 		<div class="row group" id="workspace-settings">
-		 			<div class="row group-header">
-			  			<div class="col-md-8 col-md-offset-2">
-			  				Workspace
-			  			</div>
-			  		</div>
-		  			<div class="row group-buttons">
-		 				<button type="button" class="btn btn-default btn-home settings-btn" 
-		 					href="workspace-list.html"><div class="active-workspace-label"></div></button>
-		 					
-	 					<button type="button" class="btn btn-default settings-btn workspace-required export-workspace"><i class="fa fa-download icon-3"></i>&nbsp;Export</button>
-	 					
-	 					<div style="display: none" class="import-workspace-form-section">
-		 					<form method="post" enctype="multipart/form-data" action="rest/workspace/import.json">
-							    <input type="file" name="file" style="display:none" accept=".zip" />		    		    
-							</form>
-	 					</div>
-	 					<button type="button" class="btn btn-default settings-btn workspace-required import-workspace"><i class="fa fa-upload icon-3"></i>&nbsp;Import</button>
-	 				</div>
-		  		</div>
 	  			
 	  			<div class="row group" id="system-settings">
 		 			<div class="row group-header">

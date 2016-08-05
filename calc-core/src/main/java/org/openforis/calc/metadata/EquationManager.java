@@ -179,7 +179,7 @@ public class EquationManager {
 	}
 
 	@Transactional
-	public void delete( Workspace workspace ) {
+	public void deleteAll( Workspace workspace ) {
 		List<EquationList> equationLists = workspace.getEquationLists();
 		for ( EquationList equationList : equationLists ) {
 			equationDao.delete( equationList.getEquations() );
@@ -187,6 +187,15 @@ public class EquationManager {
 		}
 		
 		workspace.setEquationLists( new ArrayList<EquationList>() );
+	}
+	
+	@Transactional
+	public void delete( EquationList equationList  ) {
+		Workspace workspace = equationList.getWorkspace();
+		workspace.deleteEquationList(equationList);
+		
+		equationDao.delete( equationList.getEquations() );
+		equationListDao.delete( equationList );
 	}
 
 	@Transactional

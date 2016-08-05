@@ -7,6 +7,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.openforis.calc.chain.CalculationStep;
+import org.openforis.calc.chain.CalculationStep.Type;
 import org.openforis.calc.engine.Job;
 import org.openforis.calc.engine.ParameterHashMap;
 import org.openforis.calc.engine.ParameterMap;
@@ -127,6 +129,35 @@ public class InventorySettingsController {
 		
 		return response;
 	} 
+	
+	@RequestMapping(value = "/settings/equationList/{listId}/delete.json", method = RequestMethod.GET, produces = "application/json")
+	public @ResponseBody 
+	Response deleteEquationList( @PathVariable long listId ) throws IOException {
+		Response response = new Response();
+		
+		Workspace workspace = workspaceService.getActiveWorkspace();
+		
+		EquationList equationList = workspace.getEquationListById( listId );
+		List<CalculationStep> steps = workspace.getDefaultProcessingChain().getCalculationSteps();
+		for (CalculationStep calculationStep : steps) {
+			if(calculationStep.getType() == Type.EQUATION){
+				if( calculationStep.getEquationListId() == equationList.getId() ){
+					response.setStatusError();
+					response.addField( "error" , "This equationb list cannot be deleted. There is one or more calculation step associated with it." );
+					break;
+				}
+			}
+		}
+		
+		if( !response.hasErrors() ){
+			equationManager.delete(equationList);
+			response.setStatusOk();
+			
+			response.addField("equationLists", workspace.getEquationLists() );
+		}
+		
+		return response;
+	}
 	
 	/**
 	 * Parse the json object into a samplingDesing instance

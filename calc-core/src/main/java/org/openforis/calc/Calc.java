@@ -26,16 +26,17 @@ public class Calc {
 	private static final String INFO_FILE_NAME = "info.properties";
 
 	private String version;
-	
+
 	@Value(value = "${saiku.ui.url:/saiku-ui}")
 	private String saikuUiUrl;
-	
+
 	@Autowired
 	private SystemPropertyManager systemPropertyManager;
 
+	@SuppressWarnings("unused")
 	@Autowired
 	private SystemPropertyInitializer systemPropertyInitializer;
-	
+
 	@PostConstruct
 	public void init() {
 		Properties info = readInfoProperties();
@@ -74,32 +75,31 @@ public class Calc {
 
 		return calcUserHome;
 	}
-	
+
 	@JsonIgnore
 	public String getRscriptCommandPath() {
 		String osname = System.getProperty("os.name");
-		boolean isWindows = ( osname != null && osname.length() >= 7 && osname.substring(0, 7).equalsIgnoreCase("windows") );
-		
+		boolean isWindows = (osname != null && osname.length() >= 7 && osname.substring(0, 7).equalsIgnoreCase("windows"));
+
 		StringBuilder sb = new StringBuilder();
-		if( isWindows ){
+		if (isWindows) {
 			sb.append("\"");
 		}
-		
-		SystemProperty sp = systemPropertyManager.getSystemPropertyByName( SystemProperty.PROPERTIES.R_EXEC_DIR.toString() );
-		if( sp == null ){
-			throw new RuntimeException( "Unable to find R executable files" );
+
+		SystemProperty sp = systemPropertyManager.getSystemPropertyByName(SystemProperty.PROPERTIES.R_EXEC_DIR.toString());
+		if (sp == null) {
+			throw new RuntimeException("Unable to find R executable files");
 		}
-		
-		sb.append( sp.getValue() );
-		sb.append( File.separator );
-		sb.append( "Rscript" );
-		
-		if( isWindows ){
+
+		sb.append(sp.getValue());
+		sb.append(File.separator);
+		sb.append("Rscript");
+
+		if (isWindows) {
 			sb.append(".exe\"");
 		}
-		
+
 		return sb.toString();
 	}
-
 
 }
