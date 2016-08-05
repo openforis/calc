@@ -143,7 +143,7 @@ public class InventorySettingsController {
 			if(calculationStep.getType() == Type.EQUATION){
 				if( calculationStep.getEquationListId() == equationList.getId() ){
 					response.setStatusError();
-					response.addField( "error" , "This equationb list cannot be deleted. There is one or more calculation step associated with it." );
+					response.addField( "error" , "This equation list cannot be deleted. There is one or more calculation step associated with it." );
 					break;
 				}
 			}

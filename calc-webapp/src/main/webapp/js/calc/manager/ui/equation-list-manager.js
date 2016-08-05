@@ -91,12 +91,8 @@ EquationListManager.prototype.showList = function() {
 				$this.equationLists.append( div );
 				
 				var btn = $( '<button class="btn option-btn col-md-10"></button>' );
-//				btn.hide();
 				btn.html( eq.name );
-//				$this.equationLists.append( btn );
 				div.append( btn );
-				
-				
 				
 				var deleteBtn = $( '<button class="btn no-background col-md-2"><i class="fa fa-minus-square"></i></button>' );
 				div.append( deleteBtn );
