@@ -12,7 +12,7 @@ Run integration tests with:
 	mvn verify
 
 To realease :
-	mvn release:prepare -Passembly
+	mvn release:prepare
 	mvn release:perform -Passembly
 	mvn release:clean    
 
