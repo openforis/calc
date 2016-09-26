@@ -29,7 +29,9 @@ import org.openforis.calc.metadata.CategoryHierarchy;
 import org.openforis.calc.metadata.CategoryLevel;
 import org.openforis.calc.metadata.CategoryLevel.CategoryLevelValue;
 import org.openforis.calc.metadata.CategoryManager;
+import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.MetadataManager;
+import org.openforis.calc.metadata.SamplingDesign;
 import org.openforis.calc.metadata.Variable;
 import org.openforis.calc.persistence.jooq.CalcSchema;
 import org.openforis.calc.schema.TableDao;
@@ -162,6 +164,15 @@ public class WorkspaceBackupService {
 		String wsString = extractZipEntry( zipFile , WORKSPACE_BACKUP_FILE_NAME );
 		WorkspaceBackup backup = this.jsonObjectMapper.readValue( wsString, WorkspaceBackup.class );
 		
+		Workspace workspace = backup.getWorkspace();
+		SamplingDesign samplingDesign = workspace.getSamplingDesign();
+		if(samplingDesign != null ){
+			Integer samplingUnitId = samplingDesign.getSamplingUnitId();
+			Integer samplingUnitOrigId = backup.getVariableOriginalIds().get(samplingUnitId);
+			Entity su = workspace.getEntityByOriginalId(samplingUnitOrigId);
+//			Entity su = workspace.getEntityById(samplingUnitId);
+			samplingDesign.setSamplingUnit(su);
+		}
 		return backup;
 	}
 	

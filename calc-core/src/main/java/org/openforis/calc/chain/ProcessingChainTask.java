@@ -116,7 +116,11 @@ public class ProcessingChainTask extends Task {
 		File chain = new File(this.processingChainDir, "chain.R");
 		
 		String rscriptCommand = calc.getRscriptCommandPath();
-		Runtime.getRuntime().exec(rscriptCommand + " " + chain.getAbsolutePath());
+		String chainPath = chain.getAbsolutePath();
+		if(calc.isWindows()){
+			chainPath = "\""+chainPath + "\"";
+		}
+		Runtime.getRuntime().exec(rscriptCommand + " " + chainPath);
 
 		File logFile = new File(this.processingChainDir, "output.txt");
 		TailerListener listener = this.new TailerListner();

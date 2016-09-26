@@ -6,7 +6,6 @@ package org.openforis.calc.chain.export;
 import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.r.RScript;
 import org.openforis.calc.r.Source;
-import org.openforis.calc.r.TryCatch;
 
 /**
  * @author M. Togna
@@ -58,7 +57,7 @@ public class CalcROutputScript extends ROutputScript {
 			chainScript.addScript(super.getRScript());
 
 			RScript errorScript = new RScript();
-			errorScript.addScript(r().rScript("cat('==========-1\\n');"));
+			errorScript.addScript(r().rScript("cat('==========-1\\n');\n calc.error('-',e);"));
 			errorScript.addScript(r().rScript("dbDisconnect(connection);"));
 			
 			script = r().rTryCatch(chainScript, errorScript, null);

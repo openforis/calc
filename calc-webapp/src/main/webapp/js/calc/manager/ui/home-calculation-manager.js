@@ -433,10 +433,13 @@ HomeCalculationManager.prototype.updateCalculationStepUI = function( element , s
 	badge.find( "i" ).removeClass().addClass( cssClass );
 	
 	// add or remove type css class
-	( step.active ) ? element.addClass( step.type ) : element.removeClass( step.type );
-
-	var opacity = ( step.active == true ) ? 1 : 0.4;
-	button.fadeTo( 1000 , opacity );
+//	( step.active ) ? element.addClass( step.type ) : element.removeClass( step.type );
+	element.addClass( step.type );
+	( step.active == true ) ? button.removeClass( 'inactive' ) : button.addClass( 'inactive' );
+	
+//	var opacity = ( step.active == true ) ? 1 : 0.3;
+//	button.fadeTo(1000,opacity);
+	button.fadeIn(1000);
 };
 
 /**

@@ -569,7 +569,8 @@ public class Workspace extends WorkspaceBase {
 	
 	@JsonIgnore
 	public boolean hasSamplingDesign() {
-		return getSamplingUnit() != null;
+		Entity samplingUnit = getSamplingUnit();
+		return samplingUnit != null;
 	}
 	
 	@JsonIgnore

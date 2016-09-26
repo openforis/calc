@@ -73,7 +73,7 @@ public class ProcessingChainManager {
 			calculationStepDao.update(step);
 		}
 		
-		updateProcessingChainStatus( step.getProcessingChain() , Status.PENDING );
+		//updateProcessingChainStatus( step.getProcessingChain() , Status.PENDING );
 		
 		if( resetResults ){
 			workspaceService.resetResult( step.getOutputVariable() );
@@ -134,7 +134,7 @@ public class ProcessingChainManager {
 			workspaceService.resetView( entity );
 		}
 		
-		updateProcessingChainStatus( processingChain, Status.PENDING );
+		//updateProcessingChainStatus( processingChain, Status.PENDING );
 		
 		// 4. update steps number in db
 		updateCalculationSteps( processingChain );

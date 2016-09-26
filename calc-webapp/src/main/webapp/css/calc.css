@@ -401,6 +401,12 @@ button.settings:hover {
 	background-color: #4d5e75;
 	border-color: #4d5e75;
 	border-radius: 0px;	
+	transition: opacity 0.5s ease-in-out;
+}
+#calculation li.calculation-step button.inactive {
+	opacity: 0.2 !important;
+    text-decoration: line-through;
+    transition: opacity 0.5s ease-in-out;
 }
 
 #calculation li.CATEGORY button {

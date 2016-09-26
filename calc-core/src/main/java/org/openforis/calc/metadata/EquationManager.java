@@ -168,7 +168,7 @@ public class EquationManager {
 			while( matcher.find() ) {
 				String var = matcher.group( 1 );
 				if( ! RScript.getBuiltinFunctions().contains( var ) ) {
-					if( !(var.startsWith("'") || var.startsWith("\"")) ){
+					if( !(var.startsWith("'") || var.startsWith("\"") || var.endsWith("'")) ){
 						variables.add( var );
 					}
 				}

@@ -78,8 +78,7 @@ public class Calc {
 
 	@JsonIgnore
 	public String getRscriptCommandPath() {
-		String osname = System.getProperty("os.name");
-		boolean isWindows = (osname != null && osname.length() >= 7 && osname.substring(0, 7).equalsIgnoreCase("windows"));
+		boolean isWindows = isWindows();
 
 		StringBuilder sb = new StringBuilder();
 		if (isWindows) {
@@ -100,6 +99,13 @@ public class Calc {
 		}
 
 		return sb.toString();
+	}
+
+	@JsonIgnore
+	public boolean isWindows() {
+		String osname = System.getProperty("os.name");
+		boolean isWindows = (osname != null && osname.length() >= 7 && osname.substring(0, 7).equalsIgnoreCase("windows"));
+		return isWindows;
 	}
 
 }

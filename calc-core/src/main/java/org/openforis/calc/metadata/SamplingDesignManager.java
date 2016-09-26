@@ -256,7 +256,7 @@ public class SamplingDesignManager {
 				}
 			}
 			
-			if( workspaceToImport.has2PhasesSamplingDesign() ){
+			if( samplingDesign.getTwoPhases() ){
 				// replace phase 1 table name
 				String originalPhase1PlotTableName = workspaceToImport.getPhase1PlotTableName();
 				String phase1PlotTableName = workspace.getPhase1PlotTableName();
@@ -276,7 +276,7 @@ public class SamplingDesignManager {
 				}
 			}
 			
-			if( workspaceToImport.has2StagesSamplingDesign() ){
+			if( samplingDesign.getTwoStages() ){
 				ParameterMap twoStagesSettings = samplingDesign.getTwoStagesSettings();
 				ParameterMap left = twoStagesSettings.getMap("joinSettings").getMap( "leftTable" );
 				if( left.getString( "schema" ).equals( origExtSchema) ){
