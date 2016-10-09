@@ -14,7 +14,7 @@ Run integration tests with:
 To realease :
 	mvn release:prepare
 	mvn release:perform -Passembly
-	mvn release:clean    
+	mvn release:clean
 
 Add dev database settings to calc-core/src/main/resources/dev.properties.
 
