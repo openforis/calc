@@ -165,8 +165,8 @@ DataTable.prototype = (function(){
 		}
 	};
 	
-	var formatNumber = d3.format("0,000");
-	
+//	var formatNumber = d3.format("0,000.0##");
+	var formatNumber = d3.format(".2f");
 	// update html table with data given as parameter
 	var updateTbody = function(data) {
 		var $this = this;
@@ -181,6 +181,7 @@ DataTable.prototype = (function(){
 		var delay = 0;
 		var rowNum = this.offset + 1;
 		// add rows to table
+		console.log( data );
 		$.each(data, function(i,record) {
 			var $tr = $("<tr></tr>");
 			$tr.hide();
@@ -193,7 +194,15 @@ DataTable.prototype = (function(){
 			$.each(variables, function(j, variable){
 				var value = record.fields[variable];
 				// format only numbers with decimal points
-				var field = ( typeof value === "number" && value % 1 !== 0 ) ? formatNumber( value ) : value;
+				var field = null
+				if( typeof value === "number" && value % 1 !== 0 ){
+					console.log( value );
+//					console.log( value  % 1 );
+					field = formatNumber( value );
+				} else {
+					field = value;
+				}
+//				var field = ( typeof value === "number" && value % 1 !== 0 ) ? formatNumber( value ) : value;
 				var $td = $( "<td></td>" );
 				$td.html(field);
 				$tr.append($td);

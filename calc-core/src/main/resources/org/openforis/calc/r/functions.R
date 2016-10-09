@@ -77,6 +77,7 @@ calc.getQuotedFileContent <- function( filename ){
   
   fileContent <- dbQuoteString( conn = connection , x = fileContent );
   fileContent <- gsub(newLinePlaceHolder,'\n',fileContent);
+  fileContent <- gsub('\\\\t','\t',fileContent);
 
   return ( fileContent );
 };
