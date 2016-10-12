@@ -28,7 +28,7 @@ public class Rolap {
 	public static final String MEASURES = "Measures";
 
 	public static final String DIMENSION_TYPE_STANDARD = "StandardDimension";
-	public static final String NUMBER_FORMAT_STRING = "###,##0.####";
+	public static final String NUMBER_FORMAT_STRING = "###,##0.000";
 	public static final String DATA_TYPE_NUMERIC = "Numeric";
 
 	public static AggLevel createAggLevel(String hierarchy, String name, String column) {

@@ -169,9 +169,8 @@ public class TaskManager {
 		
 		if( workspace.hasSamplingDesign() ) {
 			addPreProcessingTasks( job );
-			
-			addProcessingChainTasks(workspace, job);
 		}
+		addProcessingChainTasks(workspace, job);
 
 		return job;
 	}

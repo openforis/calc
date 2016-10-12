@@ -303,9 +303,9 @@ public class RScript {
 			script = script.trim();
 			// script = script.replaceAll("[\r\n]+", "\n");
 			sb.append(script);
-			if (!script.endsWith(";")) {
-				sb.append(";");
-			}
+//			if (!script.endsWith(";")) {
+//				sb.append(";");
+//			}
 			sb.append("\n");
 		}
 

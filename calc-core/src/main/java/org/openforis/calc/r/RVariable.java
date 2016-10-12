@@ -22,7 +22,7 @@ public class RVariable extends RScript {
 		if(dataFrame != null) {
 			append(dataFrame);
 			append(DOLLAR);
-			append( escape(name) );
+			append( name );
 		} else {
 			append( name );
 		}

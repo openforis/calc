@@ -207,8 +207,8 @@ public class WorkspaceBackupService {
 		
 		if( workspaceBackup.getWorkspace().hasSamplingDesign() ){
 			taskManager.addPreProcessingTasks( job );
-			taskManager.addProcessingChainTasks(workspaceBackup.getWorkspace(), job);
 		}
+		taskManager.addProcessingChainTasks(workspaceBackup.getWorkspace(), job);
 		
 		return job;
 	}
