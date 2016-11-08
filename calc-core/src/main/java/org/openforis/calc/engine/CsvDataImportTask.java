@@ -52,11 +52,11 @@ public class CsvDataImportTask extends Task {
 	protected void execute() throws Throwable {
 
 		// drop table if it exists
-		new Psql(getDataSource()).dropTableIfExists(table).execute();
+		new Psql(getDataSource()).dropTableIfExistsLegacy(table).execute();
 		// create table
 		new Psql(getDataSource()).createTable(table, table.fields()).execute();
 		// add pkey to table
-		new Psql(getDataSource()).alterTable(table).addPrimaryKey(table.getPrimaryKey()).execute();
+		new Psql(getDataSource()).alterTableLegacy(table).addPrimaryKey(table.getPrimaryKey()).execute();
 
 		populateTable(table);
 	}

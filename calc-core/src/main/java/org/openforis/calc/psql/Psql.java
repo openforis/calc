@@ -109,11 +109,11 @@ public final class Psql extends DefaultDSLContext {
 		return new GrantStep(this, privileges);
 	}
 
-	public CreateTableStep createTable(Table<?> table) {
+	public CreateTableStep createTableLegacy(Table<?> table) {
 		return new CreateTableStep(this, table);
 	}
 
-	public CreateViewStep createView(Table<?> table) {
+	public CreateViewStep createViewLegacy(Table<?> table) {
 		return new CreateViewStep(this, table);
 	}
 
@@ -123,7 +123,7 @@ public final class Psql extends DefaultDSLContext {
 		return select().from(DSL.tableByName(schemaName, tableName));
 	}
 
-	public AlterTableStep alterTable(Table<?> table) {
+	public AlterTableStep alterTableLegacy(Table<?> table) {
 		return new AlterTableStep(this, table);
 	}
 
@@ -147,11 +147,11 @@ public final class Psql extends DefaultDSLContext {
 		return new UpdateWithStep(this, cursor, update, joinCondition);
 	}
 
-	public DropTableStep dropTableIfExists(Table<?> table) {
+	public DropTableStep dropTableIfExistsLegacy(Table<?> table) {
 		return new DropTableStep(this, true, table);
 	}
 
-	public DropViewStep dropViewIfExists(Table<?> table) {
+	public DropViewStep dropViewIfExistsLegacy(Table<?> table) {
 		return new DropViewStep(this, true, table);
 	}
 

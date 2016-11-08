@@ -79,14 +79,19 @@ SamplingDesignStepButtonsManager.prototype.init = function(){
 	
 	// cluster
 	this.clusterBtn.select( $.proxy(function(){
-		this.sd().cluster = true;
+		this.sd().cluster2 = true;
+		//this.sd().cluster = true;
 		this.twoStagesBtn.disable();
 		EventBus.dispatch( "calc.sampling-design.cluster-change", null );
 	}, this) );
 	
 	this.clusterBtn.deselect( $.proxy(function(){
-		this.sd().cluster = false;
-		this.twoStagesBtn.enable();
+//		this.sd().cluster = false;
+		this.sd().cluster2 = false;
+		if( this.sd().twoPhases !== true){
+			this.twoStagesBtn.enable();
+		}
+		
 		EventBus.dispatch( "calc.sampling-design.cluster-change", null );
 	}, this) );
 };
@@ -112,7 +117,8 @@ SamplingDesignStepButtonsManager.prototype.updateView = function(){
 		this.stratifiedBtn.deselect();
 	}
 	
-	if( this.sd().cluster === true ){
+//	if( this.sd().cluster === true ){
+	if( this.sd().cluster2 === true ){
 		this.clusterBtn.select();
 	} else {
 		this.clusterBtn.deselect();

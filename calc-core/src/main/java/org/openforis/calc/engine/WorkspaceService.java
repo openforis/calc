@@ -207,12 +207,12 @@ public class WorkspaceService {
 			DataSchema schema = new Schemas(ws).getDataSchema();
 			DataTable dataTable = schema.getDataTable( samplingUnit );
 			psql
-				.alterTable(dataTable)
+				.alterTableLegacy(dataTable)
 				.dropColumnIfExists( dataTable.getWeightField() , true )
 				.execute();
 		
 			psql
-				.alterTable(dataTable)
+				.alterTableLegacy(dataTable)
 				.addColumn( dataTable.getWeightField() )
 				.execute();
 		}
@@ -248,7 +248,7 @@ public class WorkspaceService {
 		if( resultsTable != null ) {
 			//drop data view first
 			psql
-				.dropTableIfExists( resultsTable )
+				.dropTableIfExistsLegacy( resultsTable )
 				.cascade()
 				.execute();
 			
@@ -297,11 +297,11 @@ public class WorkspaceService {
 			
 			Field<?> field = resultTable.field( variable.getOutputValueColumn() );
 			psql
-				.alterTable( resultTable )
+				.alterTableLegacy( resultTable )
 				.dropColumnIfExists( field , true )
 				.execute();
 			psql
-				.alterTable( resultTable )
+				.alterTableLegacy( resultTable )
 				.addColumn( field )
 				.execute();
 			
@@ -309,11 +309,11 @@ public class WorkspaceService {
 				
 				Field<?> idField = resultTable.field( variable.getInputCategoryIdColumn() );
 				psql
-					.alterTable( resultTable )
+					.alterTableLegacy( resultTable )
 					.dropColumnIfExists( idField , true )
 					.execute();
 				psql
-					.alterTable( resultTable )
+					.alterTableLegacy( resultTable )
 					.addColumn( idField )
 					.execute();
 			}
@@ -352,7 +352,7 @@ public class WorkspaceService {
 				Field<?> field = resultTable.field( variable.getOutputValueColumn() );
 				if( field != null ){
 					psql
-					.alterTable( resultTable )
+					.alterTableLegacy( resultTable )
 					.dropColumnIfExists( field , true )
 					.execute();
 				}
@@ -362,7 +362,7 @@ public class WorkspaceService {
 					Field<?> idField = resultTable.field( variable.getInputCategoryIdColumn() );
 					if( idField != null ){
 						psql
-						.alterTable( resultTable )
+						.alterTableLegacy( resultTable )
 						.dropColumnIfExists( idField , true )
 						.execute();
 					}

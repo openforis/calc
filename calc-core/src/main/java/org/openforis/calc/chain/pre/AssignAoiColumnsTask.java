@@ -88,12 +88,12 @@ public final class AssignAoiColumnsTask extends Task {
 
 		
 		psql()
-			.dropTableIfExists( suAoiTable )
+			.dropTableIfExistsLegacy( suAoiTable )
 			.execute();
 		
 		// create table
 		psql()
-			.createTable(suAoiTable)
+			.createTableLegacy(suAoiTable)
 			.as(select)
 			.execute();
 	}
@@ -102,7 +102,7 @@ public final class AssignAoiColumnsTask extends Task {
 		
 		// drop table first
 		psql()
-			.dropTableIfExists( dataAoiTable )
+			.dropTableIfExistsLegacy( dataAoiTable )
 			.execute();
 		
 		// create table 
@@ -117,7 +117,7 @@ public final class AssignAoiColumnsTask extends Task {
 		select.addSelect( dataTable.getIntegerField("id") );
 
 		psql()
-			.createTable( dataAoiTable )
+			.createTableLegacy( dataAoiTable )
 			.as( select )
 			.execute() ;
 			
@@ -127,7 +127,7 @@ private void createAoiJoinTable2Stages(DataAoiTable dataAoiTable, AoiHierarchyFl
 		ColumnJoin aoiJoin = samplingDesign.getAoiJoin();
 		// drop table first
 		psql()
-			.dropTableIfExists( dataAoiTable )
+			.dropTableIfExistsLegacy( dataAoiTable )
 			.execute();
 		
 		// create table 
@@ -142,7 +142,7 @@ private void createAoiJoinTable2Stages(DataAoiTable dataAoiTable, AoiHierarchyFl
 		select.addSelect( psuTable.getPsuFields() );
 
 		psql()
-			.createTable( dataAoiTable )
+			.createTableLegacy( dataAoiTable )
 			.as( select )
 			.execute() ;
 			
@@ -152,7 +152,7 @@ private void createAoiJoinTable2Stages(DataAoiTable dataAoiTable, AoiHierarchyFl
 		
 		// drop table first
 		psql()
-			.dropTableIfExists( dataAoiTable )
+			.dropTableIfExistsLegacy( dataAoiTable )
 			.execute();
 		
 		// create table 
@@ -165,7 +165,7 @@ private void createAoiJoinTable2Stages(DataAoiTable dataAoiTable, AoiHierarchyFl
 		select.addSelect( samplingUnitView.getIdField().as("id") );
 			
 		psql()
-			.createTable( dataAoiTable )
+			.createTableLegacy( dataAoiTable )
 			.as( select )
 			.execute() ;
 			

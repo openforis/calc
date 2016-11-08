@@ -182,7 +182,7 @@ public class SamplingDesignManager {
 			DynamicTable<?> phase1Table = new DynamicTable<Record>( workspace.getPhase1PlotTableName(), CalcSchema.CALC.getName() );
 			if( tableDao.exists( phase1Table ) ){
 				psql
-					.dropTableIfExists(phase1Table)
+					.dropTableIfExistsLegacy(phase1Table)
 					.execute();
 			}
 			
@@ -200,7 +200,7 @@ public class SamplingDesignManager {
 			DynamicTable<?> table = new DynamicTable<Record>( workspace.getPrimarySUTableName(), workspace.getExtendedSchemaName() );
 			if( tableDao.exists( table ) ){
 				psql
-					.dropTableIfExists(table)
+					.dropTableIfExistsLegacy(table)
 					.execute();
 			}
 			
@@ -293,9 +293,9 @@ public class SamplingDesignManager {
 			
 			DataTable table = workspace.schemas().getDataSchema().getDataTable(samplingUnit);
 			// drop weight column if exists
-			psql.alterTable( table ).dropColumnIfExists( table.getWeightField(),true ).execute();
+			psql.alterTableLegacy( table ).dropColumnIfExists( table.getWeightField(),true ).execute();
 			// add weight column to sammpling unit table
-			psql.alterTable( table ).addColumn( table.getWeightField() ).execute() ;
+			psql.alterTableLegacy( table ).addColumn( table.getWeightField() ).execute() ;
 
 			
 		}
@@ -329,7 +329,7 @@ public class SamplingDesignManager {
 			
 			// drop table first
 			psql
-				.dropTableIfExists( table )
+				.dropTableIfExistsLegacy( table )
 				.execute();
 			
 			// create table
@@ -337,7 +337,7 @@ public class SamplingDesignManager {
 				.createTable( table, tableFields )
 				.execute();
 			psql
-				.alterTable( table )
+				.alterTableLegacy( table )
 				.addPrimaryKey( table.getPrimaryKey() )
 				.execute();
 			// populate table

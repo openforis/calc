@@ -1,6 +1,7 @@
 package org.openforis.calc.chain.export;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 
 import org.jooq.Condition;
 import org.jooq.Field;
@@ -9,6 +10,7 @@ import org.jooq.Record;
 import org.jooq.Select;
 import org.jooq.SelectQuery;
 import org.jooq.Table;
+import org.jooq.TableField;
 import org.jooq.Update;
 import org.jooq.UpdateSetMoreStep;
 import org.jooq.impl.DSL;
@@ -35,6 +37,7 @@ import org.openforis.calc.psql.Psql;
 import org.openforis.calc.psql.UpdateWithStep;
 import org.openforis.calc.r.DbSendQuery;
 import org.openforis.calc.r.RScript;
+import org.openforis.calc.schema.ClusterCountsTable;
 import org.openforis.calc.schema.DataAoiTable;
 import org.openforis.calc.schema.DataSchema;
 import org.openforis.calc.schema.EntityDataView;
@@ -60,6 +63,11 @@ public class CalculateExpansionFactorROutputScript extends ROutputScript {
 			
 			DataSchema schema 				= schemas.getDataSchema();
 			SamplingDesign samplingDesign 	= workspace.getSamplingDesign();
+			
+			if(workspace.hasClusterSamplingDesign() ){
+				RScript createClusterCounts = createClusterCountsTable(workspace, schema);
+				r.addScript( createClusterCounts  );
+			}
 			
 			// only one for now
 			AoiHierarchy hierarchy = workspace.getAoiHierarchies().get(0);
@@ -148,11 +156,11 @@ public class CalculateExpansionFactorROutputScript extends ROutputScript {
 		// ( count(p.id) / total.count::double precision ) *
 		// a._administrative_unit_level_1_area as area
 
-		DropTableStep dropTableQuery 	= psql().dropTableIfExists(expf);
+		DropTableStep dropTableQuery 	= psql().dropTableIfExistsLegacy(expf);
 		DbSendQuery dropTableScript 	= r().dbSendQuery(CONNECTION_VAR, dropTableQuery);
 		r.addScript( dropTableScript );
 		
-		AsStep createTable 				= psql().createTable(expf).as(select);
+		AsStep createTable 				= psql().createTableLegacy(expf).as(select);
 		DbSendQuery createTableScript 	= r().dbSendQuery(CONNECTION_VAR, createTable);
 		r.addScript( createTableScript );
 		
@@ -305,11 +313,11 @@ public class CalculateExpansionFactorROutputScript extends ROutputScript {
 		select.addSelect(psuTable.getNoTheoreticalBu().as( expf.NO_THEORETICAL_BU.getName()) );
 
 		
-		DropTableStep dropTableQuery 	= psql().dropTableIfExists(expf);
+		DropTableStep dropTableQuery 	= psql().dropTableIfExistsLegacy(expf);
 		DbSendQuery dropTableScript 	= r().dbSendQuery(CONNECTION_VAR, dropTableQuery);
 		r.addScript( dropTableScript );
 		
-		AsStep createTable 				= psql().createTable(expf).as(select);
+		AsStep createTable 				= psql().createTableLegacy(expf).as(select);
 		DbSendQuery createTableScript 	= r().dbSendQuery(CONNECTION_VAR, createTable);
 		r.addScript( createTableScript );
 		
@@ -436,17 +444,133 @@ public class CalculateExpansionFactorROutputScript extends ROutputScript {
 //		( count(p.id) / total.count::double precision ) as proportion,
 //        ( count(p.id) / total.count::double precision ) * a._administrative_unit_level_1_area as area
 		
-		DropTableStep dropTableQuery 	= psql().dropTableIfExists(expf);
+		DropTableStep dropTableQuery 	= psql().dropTableIfExistsLegacy(expf);
 		DbSendQuery dropTableScript 	= r().dbSendQuery(CONNECTION_VAR, dropTableQuery);
 		r.addScript( dropTableScript );
 		
-		AsStep createTable 				= psql().createTable(expf).as(select);
+		AsStep createTable 				= psql().createTableLegacy(expf).as(select);
 		DbSendQuery createTableScript 	= r().dbSendQuery(CONNECTION_VAR, createTable);
 		r.addScript( createTableScript );
 		
 		return r;
 			
 		
+	}
+	
+	@SuppressWarnings({ "unchecked" })
+	private static RScript createClusterCountsTable( Workspace workspace , DataSchema schema ) {
+		RScript r						= r();
+		SamplingDesign samplingDesign 	= workspace.getSamplingDesign();
+		Entity samplingUnit 			= workspace.getSamplingUnit();
+//		Entity cluster 					= samplingDesign.getClusterEntity();
+		EntityDataView samplingUnitView = schema.getDataView( samplingUnit );
+
+//		AoiLevel aoiLevel 						= expf.getAoiLevel();
+		ClusterCountsTable clusterCountsTable 	= schema.getClusterCountsTable(); 
+		
+		
+		SelectQuery<?> select 	= psql().selectQuery();
+
+		select.addFrom(samplingUnitView);
+		
+		Field<BigDecimal> plotWeightSum = samplingUnitView.getWeightField().sum();
+		
+		Field<BigDecimal> baseUnitWeight = DSL.decode().when(plotWeightSum.greaterThan(BigDecimal.ZERO), plotWeightSum).otherwise(BigDecimal.ZERO).as( clusterCountsTable.BASE_UNIT_WEIGHT.getName() );
+		select.addSelect( baseUnitWeight );
+		
+		Field<BigDecimal> weight = DSL.decode().when(plotWeightSum.greaterThan(BigDecimal.ZERO), BigDecimal.ONE).otherwise(BigDecimal.ZERO).as( clusterCountsTable.WEIGHT.getName() );
+		select.addSelect( weight );
+		
+//		Field<BigDecimal> cntField 	= samplingUnitView.getWeightField().sum().as("cnt");
+//		Field<Integer> totField 	= samplingUnitView.getWeightField().count().as("total");
+//		selectWeight.addSelect(cntField);
+//		selectWeight.addSelect(totField);
+
+		Field<Integer> stratumField = null;
+//		if (samplingDesign.getTwoStages()) {
+
+//			PrimarySamplingUnitTable<?> psuTable = samplingDesign.getPrimarySamplingUnitTable();
+//			for (Field<?> field : psuTable.getPsuFields()) {
+//				selectWeight.addSelect(field);
+//				selectWeight.addGroupBy(field);
+//			}
+//
+//			selectWeight.addJoin(psuTable, psuTable.getJoinConditions(
+//					samplingUnitView, samplingDesign
+//							.getTwoStagesSettingsObject().getJoinSettings()));
+
+//		} else {
+		DataAoiTable dataAoiTable = null;
+		Field<Long> dataIdField;
+
+		if (samplingDesign.getTwoPhases()) {
+			DynamicTable<Record> phase1Table 	= new DynamicTable<Record>( workspace.getPhase1PlotTable(), "calc" );
+
+			dataAoiTable 						= schema.getPhase1AoiTable();
+			dataIdField 						= phase1Table.getIdField();
+
+			// join with phase 1 table
+			TableJoin phase1Join = samplingDesign.getPhase1Join();
+			Condition conditions = null;
+			for (int i = 0; i < phase1Join.getColumnJoinSize(); i++) {
+				ColumnJoin leftColumn = phase1Join.getLeft()
+						.getColumnJoins().get(i);
+				ColumnJoin rightJoin = phase1Join.getRight()
+						.getColumnJoins().get(i);
+				Field<String> leftField = phase1Table
+						.getVarcharField(leftColumn.getColumn());
+				Field<String> rightField = (Field<String>) samplingUnitView
+						.field(rightJoin.getColumn());
+
+				Condition joinCondition = leftField.eq(rightField);
+				if (conditions == null) {
+					conditions = joinCondition;
+				} else {
+					conditions = conditions.and(joinCondition);
+				}
+			}
+			select.addJoin(phase1Table, JoinType.RIGHT_OUTER_JOIN, conditions);
+			select.setDistinct(true);
+
+			if (samplingDesign.getStratified()) {
+				stratumField = phase1Table.getIntegerField(samplingDesign.getStratumJoin().getColumn());
+			}
+
+		} else {
+			dataAoiTable 	= schema.getSamplingUnitAoiTable();
+			dataIdField 	= samplingUnitView.getIdField();
+
+			if (samplingDesign.getStratified()) {
+				stratumField = (Field<Integer>) samplingUnitView.field(samplingDesign.getStratumJoin().getColumn());
+			}
+		}
+
+		// join with aoi
+		Collection<Field<Long>> aoiIdFields = dataAoiTable.getAoiIdFields();
+		select.addSelect( aoiIdFields );
+		select.addJoin( dataAoiTable, dataAoiTable.getIdField().eq(dataIdField) );
+		select.addGroupBy( aoiIdFields );
+
+		if (stratumField != null) {
+			select.addSelect( stratumField.cast(SQLDataType.INTEGER).as(clusterCountsTable.STRATUM.getName()) );
+			select.addGroupBy( stratumField );
+		}
+		
+		Field<Integer> clusterField = samplingUnitView.field(clusterCountsTable.CLUSTER_ID);
+		select.addSelect( clusterField.as(clusterCountsTable.CLUSTER_ID.getName()) );
+		select.addGroupBy( clusterField );
+//		}
+
+		AsStep createTable = psql()
+			.createTableLegacy( clusterCountsTable )
+			.as( select );
+		
+		DropTableStep dropTable = psql().dropTableIfExistsLegacy( clusterCountsTable );
+		
+		r.addScript( r().dbSendQuery(CONNECTION_VAR, dropTable) );
+		r.addScript( r().dbSendQuery(CONNECTION_VAR, createTable) );
+
+		return r;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -544,10 +668,10 @@ public class CalculateExpansionFactorROutputScript extends ROutputScript {
 		}
 
 		// add weight column and base unit total
-		AddColumnStep addColumnW = psql().alterTable(expf).addColumn( expf.WEIGHT);
+		AddColumnStep addColumnW = psql().alterTableLegacy(expf).addColumn( expf.WEIGHT);
 		r.addScript( r().dbSendQuery(CONNECTION_VAR, addColumnW) );
 		
-		AddColumnStep addColumnBU = psql().alterTable(expf).addColumn( expf.BU_TOTAL);
+		AddColumnStep addColumnBU = psql().alterTableLegacy(expf).addColumn( expf.BU_TOTAL);
 		r.addScript( r().dbSendQuery(CONNECTION_VAR, addColumnBU) );
 
 		// update weight
@@ -593,13 +717,52 @@ public class CalculateExpansionFactorROutputScript extends ROutputScript {
 			r.addScript( r().dbSendQuery( CONNECTION_VAR, setBUTotal) );
 			
 		}
-
+		
+		// if cluster sampling, add cluster weights 
+		if( workspace.hasClusterSamplingDesign() ){
+			// add column
+			AddColumnStep addColumn = psql().alterTableLegacy( expf ).addColumn(expf.CLUSTER_WEIGHT);
+			r.addScript( r().dbSendQuery( CONNECTION_VAR, addColumn) );
+			
+			ClusterCountsTable clusterCountsTable = schema.getClusterCountsTable();
+			
+			// select sum of cluster weights from cluster_counts_table
+			SelectQuery<Record> select = psql().selectQuery();
+			select.addFrom( clusterCountsTable );
+			
+			select.addSelect( clusterCountsTable.WEIGHT.sum().as("cluster_weight") );
+			
+			Field<Integer> aoiIdField = clusterCountsTable.getAoiIdField(aoiLevel);
+			select.addSelect( aoiIdField );
+			select.addGroupBy( aoiIdField );
+			
+			if( workspace.hasStratifiedSamplingDesign() ){
+				select.addSelect( clusterCountsTable.STRATUM );
+				select.addGroupBy( clusterCountsTable.STRATUM );
+			}
+			Table<Record> clusterCounts = select.asTable("cluster_counts");
+			
+			Update<?> updateClusterWeight = psql()
+					.update(expf)
+					.set(expf.CLUSTER_WEIGHT, (Field<BigDecimal>)clusterCounts.field("cluster_weight"));
+			
+			
+			Condition updateClusterWeightJoin = expf.AOI_ID.eq((Field<Integer>) clusterCounts.field(aoiIdField) );
+			if( workspace.hasStratifiedSamplingDesign() ){
+				updateClusterWeightJoin = updateClusterWeightJoin.and( expf.STRATUM.eq((Field<Integer>) clusterCounts.field(clusterCountsTable.STRATUM.getName())) );
+			}
+			
+			// update expf cluster_weight_column
+			UpdateWithStep upd = psql().updateWith( clusterCounts, updateClusterWeight , updateClusterWeightJoin );
+			r.addScript( r().dbSendQuery( CONNECTION_VAR, upd) );
+		}
+		
 		return r;
 	}
 
 	private static RScript addExpfField( Workspace workspace , ExpansionFactorTable expf) {
 		RScript r 					= new RScript();
-		AddColumnStep addColumn 	= psql().alterTable( expf ).addColumn( expf.EXPF );
+		AddColumnStep addColumn 	= psql().alterTableLegacy( expf ).addColumn( expf.EXPF );
 		
 		r.addScript( r().dbSendQuery(CONNECTION_VAR, addColumn) );
 		
@@ -612,11 +775,13 @@ public class CalculateExpansionFactorROutputScript extends ROutputScript {
 					.mul(expf.BU_TOTAL.div(expf.WEIGHT));
 
 		} else {
-
+			boolean clusterSampling = workspace.hasClusterSamplingDesign() && !workspace.getSamplingDesign().applyClusterOnlyForErrorCalculation();
+			TableField<Record, BigDecimal> weightField = (clusterSampling) ? expf.CLUSTER_WEIGHT : expf.WEIGHT;
+			
 			expfFormula = DSL
 					.decode()
-					.when(expf.WEIGHT.gt(BigDecimal.ZERO),
-							expf.AREA.div(expf.WEIGHT))
+					.when(weightField.gt(BigDecimal.ZERO),
+							expf.AREA.div(weightField))
 					.otherwise(BigDecimal.ZERO);
 
 		}

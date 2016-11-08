@@ -579,10 +579,15 @@ public class Workspace extends WorkspaceBase {
 	}
 	
 	@JsonIgnore
-	public boolean hasClusterSamplingDesign() {
+	public boolean LEGACYhasClusterSamplingDesign() {
 		return this.hasSamplingDesign() && getSamplingDesign().getCluster();
 	}
 
+	@JsonIgnore
+	public boolean hasClusterSamplingDesign() {
+		return this.hasSamplingDesign() && getSamplingDesign().getCluster2();
+	}
+	
 	@JsonIgnore
 	public boolean has2PhasesSamplingDesign() {
 		return this.hasSamplingDesign() && getSamplingDesign().getTwoPhases();

@@ -38,11 +38,11 @@ import org.springframework.stereotype.Repository;
 public class EntityDataViewDao extends AbstractJooqDao {
 	
 	public void create( EntityDataView view , Select<?> select) {
-		psql().createView(view).as(select).execute();
+		psql().createViewLegacy(view).as(select).execute();
 	}
 
 	public void drop( EntityDataView view ) {
-		psql().dropViewIfExists(view).execute();
+		psql().dropViewIfExistsLegacy(view).execute();
 	}
 
 	public void drop( Entity entity ) {

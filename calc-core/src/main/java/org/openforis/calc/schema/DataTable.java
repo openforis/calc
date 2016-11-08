@@ -82,7 +82,8 @@ public abstract class DataTable extends AbstractTable {
 	private Map<CategoricalVariable<?>, Field<Integer>> speciesDimensionIdFields;
 	private Map<MultiwayVariable, List<Field<Integer>> > speciesDimensionFields;
 	private Field<Integer> stratumField;
-
+	private Field<Integer> clusterField;
+	
 	private Field<BigDecimal> weightField;
 
 	private List<Field<?>> psuFields;
@@ -413,6 +414,13 @@ public abstract class DataTable extends AbstractTable {
 		}
 	}
 	
+	protected void createClusterField() {
+		if( getWorkspace().hasClusterSamplingDesign() ){
+			Entity clusterEntity = getWorkspace().getSamplingDesign().getClusterEntity();
+			this.clusterField = createField( clusterEntity.getIdColumn() , SQLDataType.INTEGER, this );
+		}
+	}
+	
 	protected void createSpeciesDimensionFields() {
 //		this.dimensionIdFields = new HashMap<CategoricalVariable<?>, Field<Integer>>();
 //		List<CategoricalVariable<?>> dimensions = entity.getDimensions();
@@ -462,6 +470,10 @@ public abstract class DataTable extends AbstractTable {
 		return stratumField;
 	}
 
+	public Field<Integer> getClusterField() {
+		return clusterField;
+	}
+	
 	protected void createWeightField() {
 		if( getEntity().isInSamplingUnitHierarchy() ) {
 			weightField = createField( WEIGHT_COLUMN, Psql.DOUBLE_PRECISION, this );

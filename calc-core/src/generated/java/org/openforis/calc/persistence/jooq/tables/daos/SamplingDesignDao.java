@@ -160,4 +160,25 @@ public class SamplingDesignDao extends org.jooq.impl.DAOImpl<org.openforis.calc.
 	public java.util.List<SamplingDesign> fetchByStratumAoi(java.lang.Boolean... values) {
 		return fetch(org.openforis.calc.persistence.jooq.tables.SamplingDesignTable.SAMPLING_DESIGN.STRATUM_AOI, values);
 	}
+
+	/**
+	 * Fetch records that have <code>cluster2 IN (values)</code>
+	 */
+	public java.util.List<SamplingDesign> fetchByCluster2(java.lang.Boolean... values) {
+		return fetch(org.openforis.calc.persistence.jooq.tables.SamplingDesignTable.SAMPLING_DESIGN.CLUSTER2, values);
+	}
+
+	/**
+	 * Fetch records that have <code>cluster_original_id IN (values)</code>
+	 */
+	public java.util.List<SamplingDesign> fetchByClusterOriginalId(java.lang.Long... values) {
+		return fetch(org.openforis.calc.persistence.jooq.tables.SamplingDesignTable.SAMPLING_DESIGN.CLUSTER_ORIGINAL_ID, values);
+	}
+
+	/**
+	 * Fetch records that have <code>apply_cluster_only_error IN (values)</code>
+	 */
+	public java.util.List<SamplingDesign> fetchByApplyClusterOnlyError(java.lang.Boolean... values) {
+		return fetch(org.openforis.calc.persistence.jooq.tables.SamplingDesignTable.SAMPLING_DESIGN.APPLY_CLUSTER_ONLY_ERROR, values);
+	}
 }

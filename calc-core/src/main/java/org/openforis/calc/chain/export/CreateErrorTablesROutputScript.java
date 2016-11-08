@@ -32,7 +32,7 @@ public class CreateErrorTablesROutputScript extends ROutputScript {
 			for ( ErrorTable errorTable : errorTables ){
 				
 				// drop error table
-				DbSendQuery dropErrorTable = r().dbSendQuery( CONNECTION_VAR , psql().dropTableIfExists(errorTable) );
+				DbSendQuery dropErrorTable = r().dbSendQuery( CONNECTION_VAR , psql().dropTableIfExistsLegacy(errorTable) );
 				r.addScript( dropErrorTable );
 				// create error table
 				DbSendQuery createErrorTable = r().dbSendQuery( CONNECTION_VAR , psql().createTable(errorTable, errorTable.fields()) );

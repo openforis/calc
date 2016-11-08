@@ -163,19 +163,28 @@ SamplingDesignValidator.prototype.validateStep4 = function(){
  */
 SamplingDesignValidator.prototype.validateStep5 = function(){
 	var valid = true;
-	if( this.sd().cluster === true ){
+	if( this.sd().cluster2 === true ){
 		
 		var settings = this.sd().clusterColumnSettings;
-		if(!(settings 
-				&& StringUtils.isNotBlank(settings.table) 
-				&& StringUtils.isNotBlank(settings.schema) 
-				&& StringUtils.isNotBlank(settings.column) 
-			)){
-			UI.showError( "Select a valid cluster column", true);
+		if(!this.sd().clusterOriginalId ){
+			UI.showError( "Select a valid cluster entity", true );
 			valid = false;
 		}
 		
 	}
+//	if( this.sd().cluster === true ){
+//		
+//		var settings = this.sd().clusterColumnSettings;
+//		if(!(settings 
+//				&& StringUtils.isNotBlank(settings.table) 
+//				&& StringUtils.isNotBlank(settings.schema) 
+//				&& StringUtils.isNotBlank(settings.column) 
+//			)){
+//			UI.showError( "Select a valid cluster column", true);
+//			valid = false;
+//		}
+//		
+//	}
 	return valid;
 };
 

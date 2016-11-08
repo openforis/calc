@@ -6,9 +6,11 @@ import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.collections.functors.ClosureTransformer;
 import org.jooq.Condition;
 import org.jooq.Field;
 import org.jooq.Record;
+import org.jooq.Schema;
 import org.jooq.SelectQuery;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DynamicTable;
@@ -26,6 +28,8 @@ import org.openforis.calc.psql.CreateTableStep.AsStep;
 import org.openforis.calc.psql.Psql;
 import org.openforis.calc.psql.Psql.Privilege;
 import org.openforis.calc.schema.AoiAggregateTable;
+import org.openforis.calc.schema.ClusterAggregateTable;
+import org.openforis.calc.schema.ClusterCountsTable;
 import org.openforis.calc.schema.DataAoiTable;
 import org.openforis.calc.schema.DataSchema;
 import org.openforis.calc.schema.DataTable;
@@ -70,6 +74,12 @@ public final class CreateAggregateTablesTask extends Task {
 			if( suAggregateTable != null ){
 				createSamplingUnitAggregateTable(suAggregateTable);
 			}
+			
+			ClusterAggregateTable clusterAggregateTable = factTable.getClusterAggregateTable();
+			if( clusterAggregateTable != null ){
+				createClusterAggregateTable(clusterAggregateTable);
+			}
+			
 			// create aggregation tables for each aoi level if there are
 			createAoiAggregateTables( factTable );
 			
@@ -208,11 +218,11 @@ public final class CreateAggregateTablesTask extends Task {
 			select.addSelect( DSL.count().as(aggTable.getAggregateFactCountField().getName()) );
 			
 			psql()
-				.dropTableIfExists(aggTable)
+				.dropTableIfExistsLegacy(aggTable)
 				.execute();
 			
 			psql()
-				.createTable(aggTable)
+				.createTableLegacy(aggTable)
 				.as(select)
 				.execute();
 		}
@@ -289,202 +299,298 @@ public final class CreateAggregateTablesTask extends Task {
 		
 		// drop table
 		psql()
-			.dropTableIfExists( suAggTable )
+			.dropTableIfExistsLegacy( suAggTable )
 			.execute();
 		
 		AsStep createTable = psql()
-			.createTable(suAggTable)
+			.createTableLegacy(suAggTable)
+			.as(select);
+		
+		createTable.execute();
+	}	
+	
+	private void createClusterAggregateTable( ClusterAggregateTable clusterAggTable ) {
+//		SamplingUnitAggregateTable plotAgg = factTable.getPlotAggregateTable();
+		DataTable baseUnitTable = (DataTable) clusterAggTable.getSourceTable();
+		SelectQuery<Record> select = psql().selectQuery();
+		
+		select.addFrom( baseUnitTable );
+		
+//		select.addSelect( baseUnitTable.getSamplingUnitIdField() );
+//		select.addGroupBy( baseUnitTable.getSamplingUnitIdField() );
+		
+		select.addSelect( baseUnitTable.getClusterField() );
+		select.addGroupBy( baseUnitTable.getClusterField() );
+		
+		//		select.addSelect( sourceTable.getDimensionIdFields() );
+		for (Field<Integer> dimField : baseUnitTable.getDimensionIdFields()) {
+//			select.addSelect( DSL.coalesce(dimField,-1).as( dimField.getName() ) );
+			select.addSelect( DSL.coalesce(dimField,"-1").as( dimField.getName() ) );
+		}
+		select.addGroupBy( baseUnitTable.getDimensionIdFields() );
+		
+		//add species dimension
+		for ( Field<Integer> dimField : baseUnitTable.getSpeciesDimensionFields() ) {
+			select.addSelect( DSL.coalesce(dimField,"-1").as( dimField.getName() ) );
+		}
+		select.addGroupBy( baseUnitTable.getSpeciesDimensionFields() );
+		
+		select.addSelect( baseUnitTable.getAoiIdFields() );
+		select.addGroupBy( baseUnitTable.getAoiIdFields() );
+		
+		select.addSelect( baseUnitTable.getStratumField() );
+		select.addGroupBy( baseUnitTable.getStratumField() );
+
+//		if( getWorkspace().hasClusterSamplingDesign() ){
+//			select.addSelect( baseUnitTable.getClusterField() );
+//			select.addGroupBy( baseUnitTable.getClusterField() );
+//		}
+		
+		if( getWorkspace().has2StagesSamplingDesign() ){
+			
+			SamplingDesign samplingDesign = getWorkspace().getSamplingDesign();
+			List<ColumnJoin> joinColumns = samplingDesign.getTwoStagesSettingsObject().getSamplingUnitPsuJoinColumns();
+			for (ColumnJoin columnJoin : joinColumns) {
+				Field<?> field 			= baseUnitTable.field( columnJoin.getColumn() );
+				select.addSelect( field );
+				select.addGroupBy( field );
+			}
+		} 
+//		else {
+//		select.addSelect( baseUnitTable.getWeightField() );
+//		select.addGroupBy( baseUnitTable.getWeightField() );
+//		}
+		
+		
+		// for now quantity fields. check if it needs to be done for each variable aggregate
+//		Field<BigDecimal> plotArea = ((FactTable)baseUnitTable.getSourceTable()) .getPlotAreaField();
+//		if( plotArea == null ){
+//			throw new CalculationException( "Plot area script has not been defined for entity " + baseUnitTable.getEntity().getName()+ ". Unable to aggregate this entity at plot level" );
+//		}
+		Schema schema = clusterAggTable.getSchema();
+		ClusterCountsTable clusterCountsTable = ((DataSchema) schema).getClusterCountsTable();
+		select.addJoin(
+				clusterCountsTable, 
+				baseUnitTable.getClusterField().eq( clusterCountsTable.CLUSTER_ID )
+				);
+		select.addGroupBy(clusterCountsTable.BASE_UNIT_WEIGHT);
+		select.addConditions( clusterCountsTable.WEIGHT.gt(BigDecimal.ZERO));
+		
+		for ( QuantitativeVariable var : baseUnitTable.getEntity().getDefaultProcessingChainQuantitativeOutputVariables() ) {
+			Field<BigDecimal> quantityField = baseUnitTable.getQuantityField(var);
+			
+			Field<BigDecimal> aggregateField = quantityField.sum().div( clusterCountsTable.BASE_UNIT_WEIGHT ).as( quantityField.getName() );
+//				DSL.sum(
+//					DSL.decode()
+//					.when( plotArea.notEqual(BigDecimal.ZERO), quantityField.div(plotArea) )
+//					.otherwise( BigDecimal.ZERO )
+//				).as( quantityField.getName() );
+
+			select.addSelect( aggregateField );
+		}
+		
+		if( clusterAggTable.getWeightField() != null ){
+			Field<BigDecimal> aggregateField = baseUnitTable.getWeightField().sum().div( clusterCountsTable.BASE_UNIT_WEIGHT ).as( clusterAggTable.getWeightField().getName() );
+			select.addSelect( aggregateField );
+		}
+		
+		// drop table
+		psql()
+			.dropTableIfExistsLegacy( clusterAggTable )
+			.execute();
+		
+		AsStep createTable = psql()
+			.createTableLegacy(clusterAggTable)
 			.as(select);
 		
 		createTable.execute();
 	}	
 	
 	
-	
-	@SuppressWarnings("unchecked")
-	private void createFactTable(FactTable factTable) {
-		EntityDataView dataView = factTable.getEntityView();
-//		Entity entity = dataTable.getEntity();
-		
-		SelectQuery<?> select = new Psql().selectQuery( dataView );
-		select.addSelect( dataView.getIdField() );
-//		select.addSelect( dataTable.getParentIdField() );
-
-		// add dimensions to select
-		for (Field<Integer> field : factTable.getDimensionIdFields()) {
-			select.addSelect(dataView.field(field));
-		}
-		for (Field<?> field : factTable.getCategoryValueFields() ) {
-			select.addSelect( dataView.field(field) );
-		}
-		for (Field<?> field : factTable. getSpeciesDimensionFields() ) {
-			select.addSelect( dataView.field(field) );
-		}
-		//add species 
-		// add quantities to select
-		Entity entity = factTable.getEntity();
-		Collection<QuantitativeVariable> vars = entity.getOriginalQuantitativeVariables();
-		for (QuantitativeVariable var : vars) {
-			Field<BigDecimal> fld = dataView.getQuantityField(var);
-			select.addSelect(fld);
-		}
-		
-		// add error fields
-		vars = entity.getDefaultProcessingChainQuantitativeOutputVariables();
-		for (QuantitativeVariable var : vars) {
-			Field<BigDecimal> fld = dataView.getQuantityField(var);
-			select.addSelect(fld);
-			
-			// add error columns in case at least 1 error table has been defined for the given variable
-			List<ErrorTable> errorTables = factTable.getErrorTables( var );
-			if( errorTables.size() > 0 ){
-				ErrorTable errorTable = errorTables.get( 0 );
-				
-				select.addSelect( DSL.castNull( DOUBLEPRECISION ).as( errorTable.getTotalQuantityAbsoluteError().getName() ) );
-				select.addSelect( DSL.castNull( DOUBLEPRECISION ).as( errorTable.getTotalQuantityRelativeError().getName() ) );
-				select.addSelect( DSL.castNull( DOUBLEPRECISION ).as( errorTable.getTotalQuantityVariance().getName() ) );
-				select.addSelect( DSL.castNull( DOUBLEPRECISION ).as( errorTable.getMeanQuantityAbsoluteError().getName() ) );
-				select.addSelect( DSL.castNull( DOUBLEPRECISION ).as( errorTable.getMeanQuantityRelativeError().getName() ) );
-				select.addSelect( DSL.castNull( DOUBLEPRECISION ).as( errorTable.getMeanQuantityVariance().getName() ) );
-			}
-		}
-		if( entity.isSamplingUnit() ){
-			List<ErrorTable> errorTables = factTable.getErrorTables( getWorkspace().getAreaVariable() );
-			if( errorTables.size() > 0 ){
-				ErrorTable errorTable = errorTables.get( 0 );
-				
-				select.addSelect( DSL.castNull( DOUBLEPRECISION ).as( errorTable.getAreaAbsoluteError().getName() ) );
-				select.addSelect( DSL.castNull( DOUBLEPRECISION ).as( errorTable.getAreaRelativeError().getName() ) );
-				select.addSelect( DSL.castNull( DOUBLEPRECISION ).as( errorTable.getAreaVariance().getName() ) );
-			}
-		}
-		
-		// in case entities that need to be aggregated based on their sampling design 
-		if( entity.isInSamplingUnitHierarchy() ){
-			
-			if( !dataView.getEntity().isSamplingUnit() ){
-				select.addSelect( dataView.getSamplingUnitIdField() );
-			}
-			
-			// in case of sampling unit, it adds the weight (area) measure
-			Field<BigDecimal> weightField = dataView.getWeightField();
-			if( weightField != null ){
-				select.addSelect( weightField );
-			}
-			
-			// add plot area to select
-			Field<BigDecimal> plotAreaField = factTable.getPlotAreaField();
-			if (plotAreaField != null) {
-				select.addSelect( dataView.field(plotAreaField) );
-			}
-			
-			// add aoi ids to fact table if it's geo referenced
-			SamplingDesign samplingDesign = getWorkspace().getSamplingDesign();
-			if( factTable.isGeoreferenced() ) {
-				
-				if( getWorkspace().has2StagesSamplingDesign() ){
-					TwoStagesSettings twoStagesSettings = samplingDesign.getTwoStagesSettingsObject();
-					DataAoiTable aoiTable 				= getJob().getInputSchema().getPrimarySUAoiTable();
-					select.addSelect( aoiTable.getAoiIdFields() );
-					
-					List<ColumnJoin> psuJoinColumns 	= twoStagesSettings.getPsuIdColumns();
-					List<ColumnJoin> suPsuJoinColumns 	= twoStagesSettings.getSamplingUnitPsuJoinColumns();
-					
-					Condition condition = null;
-					for (int i = 0; i < psuJoinColumns.size(); i++) {
-						ColumnJoin psuCol = psuJoinColumns.get(i);
-						ColumnJoin suCol = suPsuJoinColumns.get(i);
-						Field aoiField = aoiTable.field( psuCol.getColumn() );
-						Condition join = aoiField.eq( dataView.field(suCol.getColumn()) );
-						if( condition == null ){
-							condition = join;
-						} else {
-							condition = condition.and( join );
-						}
-					}
-					
-					select.addJoin( aoiTable, condition );
-					
-				} else {
-					
-					DataAoiTable aoiTable = getJob().getInputSchema().getSamplingUnitAoiTable();
-					select.addSelect( aoiTable.getAoiIdFields() );
-					
-					Field<Long> joinField = ( dataView.getEntity().isSamplingUnit() ) ? dataView.getIdField() : dataView.getSamplingUnitIdField();
-					select.addJoin(aoiTable, joinField.eq(aoiTable.getIdField()) );
-				}
-				
-			}
-			
-			Field<String> clusterField = null;
-			// add stratum and cluster columns to fact table based on the sampling design
-			if( samplingDesign.getTwoPhases() ){
-				
-				// add join in case of two phase sampling
-				DynamicTable<Record> phase1Table = factTable.getDataSchema().getPhase1Table();
-				TableJoin phase1Join = samplingDesign.getPhase1Join();
-				Condition conditions = phase1Table.getJoinConditions( dataView, phase1Join );
-				select.addJoin(phase1Table, conditions);
-				
-				// add stratum column
-				if( getWorkspace().hasStratifiedSamplingDesign() ) {
-					String stratumColumn = samplingDesign.getStratumJoin().getColumn();
-					Field<Integer> stratumField = phase1Table.getIntegerField( stratumColumn ).cast(Integer.class).as( factTable.getStratumField().getName() ) ;
-					select.addSelect( stratumField );
-				}
-				// add cluster column
-				if( getWorkspace().hasClusterSamplingDesign() ) {
-					String clusterColumn = samplingDesign.getClusterColumn().getColumn();
-					clusterField = phase1Table.getVarcharField( clusterColumn ).as( factTable.getClusterField().getName() ) ;
-				} else {
-//					clusterField = 	DSL.val( "1" ).as( factTable.getClusterField().getName() );
-				}
-				select.addSelect( clusterField );
-			} else {
-				// one phase sampling
-				
-				if( getWorkspace().hasStratifiedSamplingDesign() ) {
-					// add stratum column
-					String stratumColumn = samplingDesign.getStratumJoin().getColumn();
-					Field<Integer> stratumField = dataView.field( stratumColumn ).cast(Integer.class).as( factTable.getStratumField().getName() ) ;
-					select.addSelect( stratumField );
-				}
-				
-				// add cluster column
-				if( getWorkspace().hasClusterSamplingDesign() ) {
-					String clusterColumn = samplingDesign.getClusterColumn().getColumn();
-					clusterField = dataView.field( clusterColumn ).cast(String.class).as( factTable.getClusterField().getName() ) ;
-				} else {
-//					clusterField = 	DSL.val( "1" ).as( factTable.getClusterField().getName() );
-				}
-				select.addSelect( clusterField );
-			}
-			
-			if( getWorkspace().has2StagesSamplingDesign() ){
-				TwoStagesSettings twoStagesSettings = samplingDesign.getTwoStagesSettingsObject();
-
-				List<ColumnJoin> samplingUnitPsuJoinColumns = twoStagesSettings.getSamplingUnitPsuJoinColumns();
-				for( ColumnJoin columnJoin : samplingUnitPsuJoinColumns ){
-					select.addSelect( dataView.field(columnJoin.getColumn()) );
-				}
-				
-				
-				Entity ssu = getWorkspace().getEntityByOriginalId( twoStagesSettings.getSsuOriginalId() );
-				select.addSelect( dataView.field(ssu.getIdColumn()).as(factTable.SSU_ID.getName()) );
-			}
-		}
-		
-		
-		// drop table
-		psql().dropTableIfExists( factTable ).execute();
-
-		// create table
-		AsStep createTable = psql().createTable( factTable ).as( select );
-		createTable.execute();
-
-		// Grant access to system user
-		psql().grant(Privilege.ALL).on(factTable).to(getSystemUser()).execute();
-	}
+//	@SuppressWarnings("unchecked")
+//	private void createFactTable(FactTable factTable) {
+//		EntityDataView dataView = factTable.getEntityView();
+////		Entity entity = dataTable.getEntity();
+//		
+//		SelectQuery<?> select = new Psql().selectQuery( dataView );
+//		select.addSelect( dataView.getIdField() );
+////		select.addSelect( dataTable.getParentIdField() );
+//
+//		// add dimensions to select
+//		for (Field<Integer> field : factTable.getDimensionIdFields()) {
+//			select.addSelect(dataView.field(field));
+//		}
+//		for (Field<?> field : factTable.getCategoryValueFields() ) {
+//			select.addSelect( dataView.field(field) );
+//		}
+//		for (Field<?> field : factTable. getSpeciesDimensionFields() ) {
+//			select.addSelect( dataView.field(field) );
+//		}
+//		//add species 
+//		// add quantities to select
+//		Entity entity = factTable.getEntity();
+//		Collection<QuantitativeVariable> vars = entity.getOriginalQuantitativeVariables();
+//		for (QuantitativeVariable var : vars) {
+//			Field<BigDecimal> fld = dataView.getQuantityField(var);
+//			select.addSelect(fld);
+//		}
+//		
+//		// add error fields
+//		vars = entity.getDefaultProcessingChainQuantitativeOutputVariables();
+//		for (QuantitativeVariable var : vars) {
+//			Field<BigDecimal> fld = dataView.getQuantityField(var);
+//			select.addSelect(fld);
+//			
+//			// add error columns in case at least 1 error table has been defined for the given variable
+//			List<ErrorTable> errorTables = factTable.getErrorTables( var );
+//			if( errorTables.size() > 0 ){
+//				ErrorTable errorTable = errorTables.get( 0 );
+//				
+//				select.addSelect( DSL.castNull( DOUBLEPRECISION ).as( errorTable.getTotalQuantityAbsoluteError().getName() ) );
+//				select.addSelect( DSL.castNull( DOUBLEPRECISION ).as( errorTable.getTotalQuantityRelativeError().getName() ) );
+//				select.addSelect( DSL.castNull( DOUBLEPRECISION ).as( errorTable.getTotalQuantityVariance().getName() ) );
+//				select.addSelect( DSL.castNull( DOUBLEPRECISION ).as( errorTable.getMeanQuantityAbsoluteError().getName() ) );
+//				select.addSelect( DSL.castNull( DOUBLEPRECISION ).as( errorTable.getMeanQuantityRelativeError().getName() ) );
+//				select.addSelect( DSL.castNull( DOUBLEPRECISION ).as( errorTable.getMeanQuantityVariance().getName() ) );
+//			}
+//		}
+//		if( entity.isSamplingUnit() ){
+//			List<ErrorTable> errorTables = factTable.getErrorTables( getWorkspace().getAreaVariable() );
+//			if( errorTables.size() > 0 ){
+//				ErrorTable errorTable = errorTables.get( 0 );
+//				
+//				select.addSelect( DSL.castNull( DOUBLEPRECISION ).as( errorTable.getAreaAbsoluteError().getName() ) );
+//				select.addSelect( DSL.castNull( DOUBLEPRECISION ).as( errorTable.getAreaRelativeError().getName() ) );
+//				select.addSelect( DSL.castNull( DOUBLEPRECISION ).as( errorTable.getAreaVariance().getName() ) );
+//			}
+//		}
+//		
+//		// in case entities that need to be aggregated based on their sampling design 
+//		if( entity.isInSamplingUnitHierarchy() ){
+//			
+//			if( !dataView.getEntity().isSamplingUnit() ){
+//				select.addSelect( dataView.getSamplingUnitIdField() );
+//			}
+//			
+//			// in case of sampling unit, it adds the weight (area) measure
+//			Field<BigDecimal> weightField = dataView.getWeightField();
+//			if( weightField != null ){
+//				select.addSelect( weightField );
+//			}
+//			
+//			// add plot area to select
+//			Field<BigDecimal> plotAreaField = factTable.getPlotAreaField();
+//			if (plotAreaField != null) {
+//				select.addSelect( dataView.field(plotAreaField) );
+//			}
+//			
+//			// add aoi ids to fact table if it's geo referenced
+//			SamplingDesign samplingDesign = getWorkspace().getSamplingDesign();
+//			if( factTable.isGeoreferenced() ) {
+//				
+//				if( getWorkspace().has2StagesSamplingDesign() ){
+//					TwoStagesSettings twoStagesSettings = samplingDesign.getTwoStagesSettingsObject();
+//					DataAoiTable aoiTable 				= getJob().getInputSchema().getPrimarySUAoiTable();
+//					select.addSelect( aoiTable.getAoiIdFields() );
+//					
+//					List<ColumnJoin> psuJoinColumns 	= twoStagesSettings.getPsuIdColumns();
+//					List<ColumnJoin> suPsuJoinColumns 	= twoStagesSettings.getSamplingUnitPsuJoinColumns();
+//					
+//					Condition condition = null;
+//					for (int i = 0; i < psuJoinColumns.size(); i++) {
+//						ColumnJoin psuCol = psuJoinColumns.get(i);
+//						ColumnJoin suCol = suPsuJoinColumns.get(i);
+//						Field aoiField = aoiTable.field( psuCol.getColumn() );
+//						Condition join = aoiField.eq( dataView.field(suCol.getColumn()) );
+//						if( condition == null ){
+//							condition = join;
+//						} else {
+//							condition = condition.and( join );
+//						}
+//					}
+//					
+//					select.addJoin( aoiTable, condition );
+//					
+//				} else {
+//					
+//					DataAoiTable aoiTable = getJob().getInputSchema().getSamplingUnitAoiTable();
+//					select.addSelect( aoiTable.getAoiIdFields() );
+//					
+//					Field<Long> joinField = ( dataView.getEntity().isSamplingUnit() ) ? dataView.getIdField() : dataView.getSamplingUnitIdField();
+//					select.addJoin(aoiTable, joinField.eq(aoiTable.getIdField()) );
+//				}
+//				
+//			}
+//			
+//			Field<String> clusterField = null;
+//			// add stratum and cluster columns to fact table based on the sampling design
+//			if( samplingDesign.getTwoPhases() ){
+//				
+//				// add join in case of two phase sampling
+//				DynamicTable<Record> phase1Table = factTable.getDataSchema().getPhase1Table();
+//				TableJoin phase1Join = samplingDesign.getPhase1Join();
+//				Condition conditions = phase1Table.getJoinConditions( dataView, phase1Join );
+//				select.addJoin(phase1Table, conditions);
+//				
+//				// add stratum column
+//				if( getWorkspace().hasStratifiedSamplingDesign() ) {
+//					String stratumColumn = samplingDesign.getStratumJoin().getColumn();
+//					Field<Integer> stratumField = phase1Table.getIntegerField( stratumColumn ).cast(Integer.class).as( factTable.getStratumField().getName() ) ;
+//					select.addSelect( stratumField );
+//				}
+//				// add cluster column
+//				if( getWorkspace().hasClusterSamplingDesign() ) {
+//					String clusterColumn = samplingDesign.getClusterColumn().getColumn();
+//					clusterField = phase1Table.getVarcharField( clusterColumn ).as( factTable.getClusterField().getName() ) ;
+//				} else {
+////					clusterField = 	DSL.val( "1" ).as( factTable.getClusterField().getName() );
+//				}
+//				select.addSelect( clusterField );
+//			} else {
+//				// one phase sampling
+//				
+//				if( getWorkspace().hasStratifiedSamplingDesign() ) {
+//					// add stratum column
+//					String stratumColumn = samplingDesign.getStratumJoin().getColumn();
+//					Field<Integer> stratumField = dataView.field( stratumColumn ).cast(Integer.class).as( factTable.getStratumField().getName() ) ;
+//					select.addSelect( stratumField );
+//				}
+//				
+//				// add cluster column
+//				if( getWorkspace().hasClusterSamplingDesign() ) {
+//					String clusterColumn = samplingDesign.getClusterColumn().getColumn();
+//					clusterField = dataView.field( clusterColumn ).cast(String.class).as( factTable.getClusterField().getName() ) ;
+//				} else {
+////					clusterField = 	DSL.val( "1" ).as( factTable.getClusterField().getName() );
+//				}
+//				select.addSelect( clusterField );
+//			}
+//			
+//			if( getWorkspace().has2StagesSamplingDesign() ){
+//				TwoStagesSettings twoStagesSettings = samplingDesign.getTwoStagesSettingsObject();
+//
+//				List<ColumnJoin> samplingUnitPsuJoinColumns = twoStagesSettings.getSamplingUnitPsuJoinColumns();
+//				for( ColumnJoin columnJoin : samplingUnitPsuJoinColumns ){
+//					select.addSelect( dataView.field(columnJoin.getColumn()) );
+//				}
+//				
+//				
+//				Entity ssu = getWorkspace().getEntityByOriginalId( twoStagesSettings.getSsuOriginalId() );
+//				select.addSelect( dataView.field(ssu.getIdColumn()).as(factTable.SSU_ID.getName()) );
+//			}
+//		}
+//		
+//		
+//		// drop table
+//		psql().dropTableIfExists( factTable ).execute();
+//
+//		// create table
+//		AsStep createTable = psql().createTable( factTable ).as( select );
+//		createTable.execute();
+//
+//		// Grant access to system user
+//		psql().grant(Privilege.ALL).on(factTable).to(getSystemUser()).execute();
+//	}
 	
 	
 	

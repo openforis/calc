@@ -75,7 +75,7 @@ ERDTable.prototype.initView = function(){
 		var title = $( '<span class="table-title width40">'+this.dataProvider.tableTitle+'</span>' );
 		this.tableNameSelectorHtml.append( title );
 
-		var select = $( '<select class="form-control width60"></select>' );
+		var select = $( '<select class="form-control "></select>' );
 		this.tableNameSelectorHtml.append( select );
 		this.dataProvider.createCombo( select );
 		

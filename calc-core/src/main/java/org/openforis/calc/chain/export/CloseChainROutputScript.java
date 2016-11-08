@@ -38,10 +38,10 @@ public class CloseChainROutputScript extends ROutputScript {
 				public void visit(Entity entity) {
 					
 					EntityDataView view 			= schema.getDataView( entity );
-					DropViewStep dropViewIfExists 	= psql().dropViewIfExists( view );
+					DropViewStep dropViewIfExists 	= psql().dropViewIfExistsLegacy( view );
 					r.addScript(r().dbSendQuery( CONNECTION_VAR , dropViewIfExists ));
 					
-					AsStep createView 				= psql().createView( view ).as( entityManager.getViewSelect(entity, true) );
+					AsStep createView 				= psql().createViewLegacy( view ).as( entityManager.getViewSelect(entity, true) );
 					r.addScript( r().dbSendQuery( CONNECTION_VAR, createView ) );
 					
 				}

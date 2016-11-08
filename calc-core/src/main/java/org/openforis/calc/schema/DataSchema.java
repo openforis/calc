@@ -45,6 +45,8 @@ public class DataSchema extends RelationalSchema {
 	// output tables
 	private List<AoiHierarchyFlatTable> aoiHierchyTables;
 	private Map<AoiLevel, ExpansionFactorTable> expansionFactorTables;
+	private ClusterCountsTable clusterCountsTable;
+	
 	private StratumDimensionTable stratumDimensionTable;
 	private Map<MultiwayVariable, CategoryDimensionTable> categoryDimensionTables;
 	private Map<MultiwayVariable, SpeciesCategoryDimensionTable> speciesCategoryDimensionTables;
@@ -72,6 +74,7 @@ public class DataSchema extends RelationalSchema {
 		// output tables
 		initAoiHirerchyTables();
 		initExpansionFactorTables();
+		initClusterCountsTables();
 		initStratumDimensionTable();
 		initCategoryDimensionTables();
 		initSpeciesCategoryDimensionTables();
@@ -188,7 +191,7 @@ public class DataSchema extends RelationalSchema {
 	public List<AoiHierarchyFlatTable> getAoiHierchyTables() {
 		return aoiHierchyTables;
 	}
-
+	
 	private void initExpansionFactorTables() {
 		this.expansionFactorTables = new HashMap<AoiLevel, ExpansionFactorTable>();
 
@@ -201,9 +204,22 @@ public class DataSchema extends RelationalSchema {
 			}
 		}
 	}
-
+	
 	public ExpansionFactorTable getExpansionFactorTable(AoiLevel aoiLevel) {
 		return this.expansionFactorTables.get(aoiLevel);
+	}
+	
+	private void initClusterCountsTables() {
+//		this.clusterCountsTable = new HashMap<AoiLevel, ClusterCountsTable>();
+		if (workspace.hasClusterSamplingDesign()) {
+			Entity clusterEntity = workspace.getSamplingDesign().getClusterEntity();
+
+			this.clusterCountsTable = new ClusterCountsTable( this, clusterEntity );
+		}
+	}
+	
+	public ClusterCountsTable getClusterCountsTable() {
+		return this.clusterCountsTable;
 	}
 
 	public DynamicTable<Record> getPhase1Table() {

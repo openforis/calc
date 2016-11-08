@@ -30,6 +30,7 @@ public class ExpansionFactorTable extends AbstractTable {
 	public final TableField<Record,Integer> STRATUM = createField( "stratum", INTEGER, this );
 	public final TableField<Record,Integer> AOI_ID; //= createField( "aoi_id", INTEGER, this );
 	public final TableField<Record,BigDecimal> WEIGHT = createField( "su_weight", Psql.DOUBLE_PRECISION, this );
+	public final TableField<Record,BigDecimal> CLUSTER_WEIGHT = createField( "cluster_weight", Psql.DOUBLE_PRECISION, this );
 	public final TableField<Record,BigDecimal> PROPORTION = createField("proportion", Psql.DOUBLE_PRECISION, this );
 	public final TableField<Record,BigDecimal> AREA = createField( "area", Psql.DOUBLE_PRECISION, this );
 	public final TableField<Record,BigDecimal> EXPF = createField( "expf", Psql.DOUBLE_PRECISION, this );

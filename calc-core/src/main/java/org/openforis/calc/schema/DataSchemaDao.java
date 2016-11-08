@@ -25,7 +25,7 @@ public class DataSchemaDao extends AbstractJooqDao {
 		Field<BigDecimal> field = table.getQuantityField(v);
 		
 		psql()
-			.alterTable(table)
+			.alterTableLegacy(table)
 			.addColumn(field)
 			.execute();
 	}
@@ -36,7 +36,7 @@ public class DataSchemaDao extends AbstractJooqDao {
 		Field<BigDecimal> field = table.getQuantityField(v);
 		
 		psql()
-			.alterTable(table)
+			.alterTableLegacy(table)
 			.dropColumn(field, true)
 			.execute();
 	}

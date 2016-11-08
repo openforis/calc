@@ -71,10 +71,10 @@ public class SamplingDesign extends SamplingDesignBase {
 	public ParameterMap getClusterColumnSettings() {
 		return super.getClusterColumnSettings();
 	}
-	@JsonIgnore
-	public ColumnJoin getClusterColumn() {
-		return new ColumnJoin( getClusterColumnSettings() );
-	}
+//	@JsonIgnore
+//	public ColumnJoin getClusterColumn() {
+//		return new ColumnJoin( getClusterColumnSettings() );
+//	}
 	 
 	@Override
 	public ParameterMap getAoiJoinSettings() {
@@ -111,6 +111,31 @@ public class SamplingDesign extends SamplingDesignBase {
 	@JsonIgnore
 	public boolean applyAreaWeigthedMethod(){
 		return super.getApplyAreaWeighted()!=null && super.getApplyAreaWeighted();
+	}
+	
+	@Override
+	public Boolean getCluster() {
+		return super.getCluster() != null ? super.getCluster() : Boolean.FALSE;
+	}
+	
+	@Override
+	public Boolean getCluster2() {
+		return super.getCluster2() != null ? super.getCluster2() : Boolean.FALSE;
+	}
+	
+	@JsonIgnore
+	public Boolean applyClusterOnlyForErrorCalculation() {
+		return super.getApplyClusterOnlyError() != null && super.getApplyClusterOnlyError();
+	}
+	
+	@JsonIgnore
+	public Entity getClusterEntity (){
+		Entity cluster = null;
+		if( getCluster2() ){
+			cluster = workspace.getEntityByOriginalId( getClusterOriginalId().intValue() );
+		}
+		
+		return cluster;
 	}
 	
 //	@JsonIgnore

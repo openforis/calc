@@ -69,9 +69,9 @@ public class PersistResultsROutputScript extends ROutputScript {
 		RVariable dataFrame 		= r().variable( entity.getName() );
 
 		// drop weight column if exists
-		r.addScript( r().dbSendQuery( CONNECTION_VAR, psql().alterTable( table ).dropColumnIfExists( table.getWeightField(),true ) ));
+		r.addScript( r().dbSendQuery( CONNECTION_VAR, psql().alterTableLegacy( table ).dropColumnIfExists( table.getWeightField(),true ) ));
 		// add weight column to sammpling unit table
-		r.addScript( r().dbSendQuery( CONNECTION_VAR, psql().alterTable( table ).addColumn( table.getWeightField() ) ));
+		r.addScript( r().dbSendQuery( CONNECTION_VAR, psql().alterTableLegacy( table ).addColumn( table.getWeightField() ) ));
 		
 		// temporary results table
 		DynamicTable<Record> resultTable 			= new DynamicTable<Record>( "_tmp_weight_result" , schema.getName() );
@@ -84,7 +84,7 @@ public class PersistResultsROutputScript extends ROutputScript {
 		
 		// convert id datatype from varchar to bigint
 		AlterColumnStep alterPkey = psql()
-				.alterTable( resultTable )
+				.alterTableLegacy( resultTable )
 				.alterColumn( resultTableIdField )
 				.type( SQLDataType.BIGINT )
 				.using( resultTableIdField.getName() + "::bigint" );
@@ -106,11 +106,11 @@ public class PersistResultsROutputScript extends ROutputScript {
 		r.addScript( r().dbSendQuery(CONNECTION_VAR, psql().updateWith(cursor, update, joinCondition)) );
 		
 		// drop view and recreate
-		DropViewStep dropViewIfExists 	= psql().dropViewIfExists(view);
+		DropViewStep dropViewIfExists 	= psql().dropViewIfExistsLegacy(view);
 		r.addScript( r().dbSendQuery(CONNECTION_VAR, dropViewIfExists ) );
 		
 		Select<?> selectView 			= entityManager.getViewSelect( entity , true );
-		AsStep createView 				= new Psql().createView(view).as(selectView);
+		AsStep createView 				= new Psql().createViewLegacy(view).as(selectView);
 		r.addScript(r().dbSendQuery( CONNECTION_VAR, createView ));
 		
 		// remove temporary result table
@@ -148,7 +148,7 @@ public class PersistResultsROutputScript extends ROutputScript {
 
 		// 3. drop results table
 		ResultTable resultTable = schema.getResultTable( entity );
-		r.addScript( r().dbSendQuery( CONNECTION_VAR, new Psql().dropTableIfExists(resultTable).cascade()) );
+		r.addScript( r().dbSendQuery( CONNECTION_VAR, new Psql().dropTableIfExistsLegacy(resultTable).cascade()) );
 		// 4. create results table into db
 		r.addScript(r().dbWriteTable( CONNECTION_VAR, resultTable.getName(), results) );
 		
@@ -157,7 +157,7 @@ public class PersistResultsROutputScript extends ROutputScript {
 		// convert id datatype from varchar to bigint first
 		AlterColumnStep alterPkey = 
 				new Psql()
-					.alterTable(resultTable)
+					.alterTableLegacy(resultTable)
 					.alterColumn(resultTable.getIdField())
 					.type(SQLDataType.BIGINT)
 					.using(resultTable.getIdField().getName() + "::bigint");
@@ -166,11 +166,11 @@ public class PersistResultsROutputScript extends ROutputScript {
 
 					
 		// 6. Recreate view
-		DropViewStep dropViewIfExists = new Psql().dropViewIfExists(view);
+		DropViewStep dropViewIfExists = new Psql().dropViewIfExistsLegacy(view);
 		r.addScript(r().dbSendQuery( CONNECTION_VAR, dropViewIfExists ));
 		
 		Select<?> selectView = entityManager.getViewSelect(entity , true );
-		AsStep createView = new Psql().createView(view).as(selectView);
+		AsStep createView = new Psql().createViewLegacy(view).as(selectView);
 		r.addScript(r().dbSendQuery( CONNECTION_VAR, createView ));
 		
 		return r;

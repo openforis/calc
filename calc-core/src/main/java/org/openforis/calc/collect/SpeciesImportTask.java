@@ -187,7 +187,7 @@ public class SpeciesImportTask extends Task {
 		select.addConditions( table.getRankField().isNull() );
 		
 		psql()
-			.createView( view )
+			.createViewLegacy( view )
 			.as( select )
 			.execute();
 	}
@@ -219,7 +219,7 @@ public class SpeciesImportTask extends Task {
 		SpeciesCodeTable table = new SpeciesCodeTable(speciesListName, getInputSchema().getName());
 		
 		CreateTableStep createTableStep = psql()
-			.createTable(table)
+			.createTableLegacy(table)
 			.columns(table.fields());
 		
 		createTableStep.execute();

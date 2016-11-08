@@ -1267,85 +1267,85 @@ table.import-csv-table input[type=checkbox] {
 
 
 .width10 {
-	width: 10%;	
+	width: 10% !important ;	
 }
 .width20 {
-	width: 20%;	
+	width: 20% !important ;	
 }
 .width25 {
-	width: 25%;	
+	width: 25% !important ;	
 }
 .width33 {
-	width: 33%;	
+	width: 33% !important ;	
 }
 .width50 {
-	width: 50%;	
+	width: 50% !important ;	
 }
 .width60 {
-	width: 60%;
+	width: 60% !important ;
 }
 .width70 {
-	width: 70%;
+	width: 70% !important ;
 }
 .width80 {
-	width: 80%;	
+	width: 80% !important ;	
 }
 .width90 {
-	width: 90%;	
+	width: 90% !important ;	
 }
 .width100 {
-	width: 100%;	
+	width: 100% !important ;	
 }
 .height5 {
-	height: 5%;
+	height: 5% !important ;
 }
 .height10 {
-	height: 10%;
+	height: 10% !important ;
 }
 .height20 {
-	height: 20%;
+	height: 20% !important ;
 }
 .height25 {
-	height: 25%;
+	height: 25% !important ;
 }
 .height30 {
-	height: 30%;
+	height: 30% !important ;
 }
 .height33 {
-	height: 33%;
+	height: 33% !important ;
 }
 .height40 {
-	height: 40%;
+	height: 40% !important ;
 }
 .height45 {
-	height: 45%;
+	height: 45% !important ;
 }
 .height50 {
-	height: 50%;
+	height: 50% !important ;
 }
 .height60 {
-	height: 60%;
+	height: 60% !important;
 }
 .height70 {
-	height: 70%;
+	height: 70% !important;
 }
 .height75 {
-	height: 75%;
+	height: 75% !important;
 }
 .height80 {
-	height: 80%;
+	height: 80% !important;
 }
 .height90 {
-	height: 90%;
+	height: 90% !important;
 }
 .height94 {
-	height: 94%;
+	height: 94% !important;
 }
 .height95 {
-	height: 95%;
+	height: 95% !important;
 }
 .height100 {
-	height: 100%;
+	height: 100% !important;
 }
 .float-left {
 	float: left;

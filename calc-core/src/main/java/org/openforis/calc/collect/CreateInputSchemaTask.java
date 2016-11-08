@@ -82,7 +82,7 @@ public class CreateInputSchemaTask extends Task {
 
 	private void createBooleanCodeTable(String schema) {
 		BooleanCodeListTable table = new BooleanCodeListTable(schema);
-		psql().dropTableIfExists(table);
+		psql().dropTableIfExistsLegacy(table);
 		psql().createTable(table , table.fields() ).execute();
 		
 		psql()

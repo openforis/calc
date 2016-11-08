@@ -183,14 +183,17 @@ public class InventorySettingsController {
 				samplingDesign.setTwoPhases(getBooleanValue(json, "twoPhases"));
 				samplingDesign.setTwoStages(getBooleanValue(json, "twoStages"));
 				samplingDesign.setStratified(getBooleanValue(json, "stratified"));
-				samplingDesign.setCluster(getBooleanValue(json, "cluster"));
+				samplingDesign.setCluster2(getBooleanValue(json, "cluster2"));
+				samplingDesign.setApplyClusterOnlyError(getBooleanValue(json, "applyClusterOnlyError"));
+//				samplingDesign.setCluster(getBooleanValue(json, "cluster"));
 				samplingDesign.setApplyAreaWeighted( getBooleanValue(json, "applyAreaWeighted"));
 				samplingDesign.setStratumAoi( getBooleanValue(json, "stratumAoi"));
 				
 				samplingDesign.setPhase1JoinSettings( getParameterMapValue( json , "phase1JoinSettings" ) );
 				samplingDesign.setTwoStagesSettings( getParameterMapValue( json , "twoStagesSettings" ) );
 				samplingDesign.setStratumJoinSettings( getParameterMapValue( json , "stratumJoinSettings" ) );
-				samplingDesign.setClusterColumnSettings( getParameterMapValue( json , "clusterColumnSettings" ) );
+//				samplingDesign.setClusterColumnSettings( getParameterMapValue( json , "clusterColumnSettings" ) );
+				samplingDesign.setClusterOriginalId(getLongValue(json, "clusterOriginalId") );
 				samplingDesign.setAoiJoinSettings( getParameterMapValue( json , "aoiJoinSettings" ) );
 
 				samplingDesign.setSamplingUnitWeightScript( getStringValue(json, "samplingUnitWeightScript") );
@@ -228,6 +231,12 @@ public class InventorySettingsController {
 	private String getStringValue(JSONObject json, String property) {
 		Object object = json.get(property);
 		String value = (object != null) ? object.toString() : null ;
+		return value;
+	}
+	
+	private Long getLongValue(JSONObject json, String property) {
+		Object object = json.get(property);
+		Long value = (object != null) ? (Long) object : null ;
 		return value;
 	}
 	

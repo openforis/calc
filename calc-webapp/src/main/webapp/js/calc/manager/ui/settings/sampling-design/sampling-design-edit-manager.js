@@ -11,6 +11,7 @@ SamplingDesignEditManager = function( editContainer , samplingDesignERDManager ,
 	
 //	this.applyAreaWeighted			= this.container.find( '[name=apply_area_weighted]' );
 	this.applyAreaWeightedBtn		= new OptionButton( this.container.find( '[name=apply_area_weighted]' ) );
+	this.applyClusterOnlyErrorBtn	= new OptionButton( this.container.find( '[name=apply_cluster_only_error]' ) );
 	
 	//ERD manager
 	this.samplingDesignERDManager	= samplingDesignERDManager;
@@ -51,6 +52,14 @@ SamplingDesignEditManager.prototype.init = function(){
 	this.applyAreaWeightedBtn.deselect( function(){
 		$this.samplingDesign.applyAreaWeighted = false;
 	});
+	
+	this.applyClusterOnlyErrorBtn.select( function(){
+		$this.samplingDesign.applyClusterOnlyError = true;
+	});
+	
+	this.applyClusterOnlyErrorBtn.deselect( function(){
+		$this.samplingDesign.applyClusterOnlyError = false;
+	});
 };
 
 SamplingDesignEditManager.prototype.show = function(){
@@ -66,6 +75,9 @@ SamplingDesignEditManager.prototype.show = function(){
 //			$this.applyAreaWeighted.prop( 'checked' , applyAreaWeighted );
 			if( $this.samplingDesign.applyAreaWeighted === true ){
 				$this.applyAreaWeightedBtn.select();
+			}
+			if( $this.samplingDesign.applyClusterOnlyError === true ){
+				$this.applyClusterOnlyErrorBtn.select();
 			}
 		}
 		

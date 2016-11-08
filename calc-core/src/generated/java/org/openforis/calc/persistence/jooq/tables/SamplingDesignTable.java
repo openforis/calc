@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class SamplingDesignTable extends org.jooq.impl.TableImpl<org.openforis.calc.persistence.jooq.tables.records.SamplingDesignRecord> {
 
-	private static final long serialVersionUID = -1958636862;
+	private static final long serialVersionUID = 456867369;
 
 	/**
 	 * The singleton instance of <code>calc.sampling_design</code>
@@ -110,6 +110,21 @@ public class SamplingDesignTable extends org.jooq.impl.TableImpl<org.openforis.c
 	 * The column <code>calc.sampling_design.stratum_aoi</code>.
 	 */
 	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.SamplingDesignRecord, java.lang.Boolean> STRATUM_AOI = createField("stratum_aoi", org.jooq.impl.SQLDataType.BOOLEAN.defaulted(true), this, "");
+
+	/**
+	 * The column <code>calc.sampling_design.cluster2</code>.
+	 */
+	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.SamplingDesignRecord, java.lang.Boolean> CLUSTER2 = createField("cluster2", org.jooq.impl.SQLDataType.BOOLEAN.defaulted(true), this, "");
+
+	/**
+	 * The column <code>calc.sampling_design.cluster_original_id</code>.
+	 */
+	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.SamplingDesignRecord, java.lang.Long> CLUSTER_ORIGINAL_ID = createField("cluster_original_id", org.jooq.impl.SQLDataType.BIGINT.defaulted(true), this, "");
+
+	/**
+	 * The column <code>calc.sampling_design.apply_cluster_only_error</code>.
+	 */
+	public final org.jooq.TableField<org.openforis.calc.persistence.jooq.tables.records.SamplingDesignRecord, java.lang.Boolean> APPLY_CLUSTER_ONLY_ERROR = createField("apply_cluster_only_error", org.jooq.impl.SQLDataType.BOOLEAN.defaulted(true), this, "");
 
 	/**
 	 * Create a <code>calc.sampling_design</code> table reference

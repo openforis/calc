@@ -54,13 +54,13 @@ public class ResetResultsROutputScript extends ROutputScript {
 		DataTable dataTable 		= schema.getDataTable(entity);
 		EntityDataView dataView 	= schema.getDataView(entity);
 		
-		DropViewStep dropView = psql().dropViewIfExists( dataView );
+		DropViewStep dropView = psql().dropViewIfExistsLegacy( dataView );
 		r.addScript( r().dbSendQuery( CONNECTION_VAR , dropView ) );
 		
 		if( resultsTable != null ) {
 			//drop data view first
 			CascadeStep dropResults = psql()
-				.dropTableIfExists( resultsTable )
+				.dropTableIfExistsLegacy( resultsTable )
 				.cascade();
 			r.addScript( r().dbSendQuery( CONNECTION_VAR, dropResults) );
 			
@@ -78,7 +78,7 @@ public class ResetResultsROutputScript extends ROutputScript {
 			
 		}
 		
-		AsStep createView = psql().createView( dataView ).as( entityManager.getViewSelect(entity) );
+		AsStep createView = psql().createViewLegacy( dataView ).as( entityManager.getViewSelect(entity) );
 		r.addScript( r().dbSendQuery( CONNECTION_VAR, createView) );
 		
 	}

@@ -80,7 +80,7 @@ public final class CalculateExpansionFactorsTask extends Task {
 	}
 
 	private void addExpfField(ExpansionFactorTable expf) {
-		psql().alterTable(expf).addColumn(expf.EXPF).execute();
+		psql().alterTableLegacy(expf).addColumn(expf.EXPF).execute();
 		Field<BigDecimal> expfFormula = null;
 
 		if (getWorkspace().has2StagesSamplingDesign()) {
@@ -207,9 +207,9 @@ public final class CalculateExpansionFactorsTask extends Task {
 		}
 
 		// add weight column and base unit total
-		psql().alterTable(expf).addColumn(expf.WEIGHT).execute();
+		psql().alterTableLegacy(expf).addColumn(expf.WEIGHT).execute();
 
-		psql().alterTable(expf).addColumn(expf.BU_TOTAL).execute();
+		psql().alterTableLegacy(expf).addColumn(expf.BU_TOTAL).execute();
 
 		// update weight
 		Table<?> cursor = selectWeight.asTable("tmp");
@@ -394,11 +394,11 @@ public final class CalculateExpansionFactorsTask extends Task {
 //        ( count(p.id) / total.count::double precision ) * a._administrative_unit_level_1_area as area
 		
 		psql()
-			.dropTableIfExists( expf )
+			.dropTableIfExistsLegacy( expf )
 			.execute();
 		
 		psql()
-			.createTable( expf )
+			.createTableLegacy( expf )
 			.as( select )
 			.execute();
 			
@@ -465,9 +465,9 @@ public final class CalculateExpansionFactorsTask extends Task {
 		// ( count(p.id) / total.count::double precision ) *
 		// a._administrative_unit_level_1_area as area
 
-		psql().dropTableIfExists(expf).execute();
+		psql().dropTableIfExistsLegacy(expf).execute();
 
-		psql().createTable(expf).as(select).execute();
+		psql().createTableLegacy(expf).as(select).execute();
 
 	}
 
@@ -626,9 +626,9 @@ public final class CalculateExpansionFactorsTask extends Task {
 		// Field<?> totalField = totals.field("count");
 		// selectOLD.addGroupBy( totalField );
 
-		psql().dropTableIfExists(expf).execute();
+		psql().dropTableIfExistsLegacy(expf).execute();
 
-		psql().createTable(expf).as(select).execute();
+		psql().createTableLegacy(expf).as(select).execute();
 
 	}
 

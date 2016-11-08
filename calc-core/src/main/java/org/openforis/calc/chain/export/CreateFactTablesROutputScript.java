@@ -168,7 +168,7 @@ public class CreateFactTablesROutputScript extends ROutputScript {
 				
 			}
 			
-			Field<String> clusterField = null;
+			Field<Integer> clusterField = null;
 			// add stratum and cluster columns to fact table based on the sampling design
 			if( samplingDesign.getTwoPhases() ){
 				
@@ -186,8 +186,8 @@ public class CreateFactTablesROutputScript extends ROutputScript {
 				}
 				// add cluster column
 				if( workspace.hasClusterSamplingDesign() ) {
-					String clusterColumn = samplingDesign.getClusterColumn().getColumn();
-					clusterField = phase1Table.getVarcharField( clusterColumn ).as( factTable.getClusterField().getName() ) ;
+					String clusterColumn = samplingDesign.getClusterEntity().getIdColumn();
+					clusterField = phase1Table.getIntegerField( clusterColumn ).as( factTable.getClusterField().getName() ) ;
 				} else {
 //					clusterField = 	DSL.val( "1" ).as( factTable.getClusterField().getName() );
 				}
@@ -204,8 +204,8 @@ public class CreateFactTablesROutputScript extends ROutputScript {
 				
 				// add cluster column
 				if( workspace.hasClusterSamplingDesign() ) {
-					String clusterColumn = samplingDesign.getClusterColumn().getColumn();
-					clusterField = dataView.field( clusterColumn ).cast(String.class).as( factTable.getClusterField().getName() ) ;
+					String clusterColumn = samplingDesign.getClusterEntity().getIdColumn();
+					clusterField = dataView.field( clusterColumn ).cast(Integer.class).as( factTable.getClusterField().getName() ) ;
 				} else {
 //					clusterField = 	DSL.val( "1" ).as( factTable.getClusterField().getName() );
 				}
@@ -228,11 +228,11 @@ public class CreateFactTablesROutputScript extends ROutputScript {
 		
 		
 		// drop table
-		DropTableStep dropTableIfExists = psql().dropTableIfExists( factTable );
+		DropTableStep dropTableIfExists = psql().dropTableIfExistsLegacy( factTable );
 		r.addScript( r().dbSendQuery( CONNECTION_VAR , dropTableIfExists ) );
 
 		// create table
-		AsStep createTable = psql().createTable( factTable ).as( select );
+		AsStep createTable = psql().createTableLegacy( factTable ).as( select );
 		r.addScript( r().dbSendQuery( CONNECTION_VAR , createTable ) );
 
 		// Grant access to system user

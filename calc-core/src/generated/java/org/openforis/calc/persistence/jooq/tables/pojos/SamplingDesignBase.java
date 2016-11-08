@@ -11,7 +11,7 @@ package org.openforis.calc.persistence.jooq.tables.pojos;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class SamplingDesignBase implements java.io.Serializable {
 
-	private static final long serialVersionUID = -1311034862;
+	private static final long serialVersionUID = 1179143096;
 
 	private java.lang.Integer                      id;
 	private java.lang.Integer                      samplingUnitId;
@@ -30,6 +30,9 @@ public class SamplingDesignBase implements java.io.Serializable {
 	private org.openforis.calc.engine.ParameterMap twoStagesSettings;
 	private java.lang.Boolean                      applyAreaWeighted;
 	private java.lang.Boolean                      stratumAoi;
+	private java.lang.Boolean                      cluster2;
+	private java.lang.Long                         clusterOriginalId;
+	private java.lang.Boolean                      applyClusterOnlyError;
 
 	public SamplingDesignBase() {}
 
@@ -50,7 +53,10 @@ public class SamplingDesignBase implements java.io.Serializable {
 		java.lang.Boolean                      twoStages,
 		org.openforis.calc.engine.ParameterMap twoStagesSettings,
 		java.lang.Boolean                      applyAreaWeighted,
-		java.lang.Boolean                      stratumAoi
+		java.lang.Boolean                      stratumAoi,
+		java.lang.Boolean                      cluster2,
+		java.lang.Long                         clusterOriginalId,
+		java.lang.Boolean                      applyClusterOnlyError
 	) {
 		this.id = id;
 		this.samplingUnitId = samplingUnitId;
@@ -69,6 +75,9 @@ public class SamplingDesignBase implements java.io.Serializable {
 		this.twoStagesSettings = twoStagesSettings;
 		this.applyAreaWeighted = applyAreaWeighted;
 		this.stratumAoi = stratumAoi;
+		this.cluster2 = cluster2;
+		this.clusterOriginalId = clusterOriginalId;
+		this.applyClusterOnlyError = applyClusterOnlyError;
 	}
 
 	public java.lang.Integer getId() {
@@ -205,5 +214,29 @@ public class SamplingDesignBase implements java.io.Serializable {
 
 	public void setStratumAoi(java.lang.Boolean stratumAoi) {
 		this.stratumAoi = stratumAoi;
+	}
+
+	public java.lang.Boolean getCluster2() {
+		return this.cluster2;
+	}
+
+	public void setCluster2(java.lang.Boolean cluster2) {
+		this.cluster2 = cluster2;
+	}
+
+	public java.lang.Long getClusterOriginalId() {
+		return this.clusterOriginalId;
+	}
+
+	public void setClusterOriginalId(java.lang.Long clusterOriginalId) {
+		this.clusterOriginalId = clusterOriginalId;
+	}
+
+	public java.lang.Boolean getApplyClusterOnlyError() {
+		return this.applyClusterOnlyError;
+	}
+
+	public void setApplyClusterOnlyError(java.lang.Boolean applyClusterOnlyError) {
+		this.applyClusterOnlyError = applyClusterOnlyError;
 	}
 }

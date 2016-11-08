@@ -38,12 +38,13 @@ public class FactTable extends DataTable {
 
 	private Map<AoiLevel, AoiAggregateTable> aoiAggregateTables;
 	private SamplingUnitAggregateTable samplingUnitAggregateTable;
-
+	private ClusterAggregateTable clusterAggregateTable;
+	
 	private EntityDataView entityView;
 	private Field<BigDecimal> plotAreaField;
 	private DataSchema schema;
 	private Map<QuantitativeVariable, Field<BigDecimal>> measureFields;
-	private Field<String> clusterField; 
+	 
 	
 	
 	public final Field<Integer> SSU_ID = createField( "ssu_id", SQLDataType.INTEGER, this );
@@ -109,9 +110,16 @@ public class FactTable extends DataTable {
 	
 	}
 	
-	private void createClusterField() {
-		this.clusterField = createField( "_cluster", SQLDataType.VARCHAR, this );
-	}
+//	private void createClusterField() {
+//		if( this.getWorkspace().hasClusterSamplingDesign() ){
+//			Entity clusterEntity = this.getWorkspace().getSamplingDesign().getClusterEntity();
+//			this.clusterField = createField( clusterEntity.getIdColumn() , SQLDataType.INTEGER, this );
+//		} else {
+//			// backwards compatibility
+//			this.clusterField = createField( "_cluster", SQLDataType.INTEGER, this );	
+//		}
+//		
+//	}
 
 	protected void createMeasureFields() {
 		Entity entity = getEntity();
@@ -125,15 +133,20 @@ public class FactTable extends DataTable {
 	protected void createAggregateTables() {
 		this.aoiAggregateTables = new LinkedHashMap<AoiLevel, AoiAggregateTable>();
 
-		DataTable sourceTable = null;
+		DataTable sourceTable = this;
 		Entity parent = getEntity().getParent();
 		if ( parent != null && parent.isInSamplingUnitHierarchy() ) {
 			this.samplingUnitAggregateTable = new SamplingUnitAggregateTable(this);
 			sourceTable = this.samplingUnitAggregateTable;
 		}
+		
+		if( getWorkspace().hasClusterSamplingDesign() && !getWorkspace().getSamplingDesign().applyClusterOnlyForErrorCalculation()){
+			this.clusterAggregateTable = new ClusterAggregateTable( sourceTable );
+			sourceTable = this.clusterAggregateTable;
+		}
 
 		if ( this.isGeoreferenced() ) {
-			sourceTable = sourceTable == null ? this : sourceTable;
+		
 			createAoiAggregateTables(sourceTable);
 		}
 	}
@@ -247,6 +260,10 @@ public class FactTable extends DataTable {
 	public SamplingUnitAggregateTable getSamplingUnitAggregateTable() {
 		return samplingUnitAggregateTable;
 	}
+	
+	public ClusterAggregateTable getClusterAggregateTable() {
+		return clusterAggregateTable;
+	}
 
 	private static String getName(Entity entity) {
 		return String.format(TABLE_NAME_FORMAT, entity.getDataTable());
@@ -260,9 +277,9 @@ public class FactTable extends DataTable {
 		return plotAreaField;
 	}
 
-	public Field<String> getClusterField() {
-		return clusterField;
-	}
+//	public Field<Integer> getClusterField() {
+//		return clusterField;
+//	}
 	
 	public EntityDataView getEntityView() {
 		return entityView;

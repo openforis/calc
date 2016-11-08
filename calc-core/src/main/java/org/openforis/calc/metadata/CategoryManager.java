@@ -135,7 +135,7 @@ public class CategoryManager {
 					for ( CategoryLevel level : hierarchy.getLevels() ) {
 						DynamicTable<?> table = new DynamicTable<Record>( level.getTableName() , level.getSchemaName() );
 						psql
-							.dropTableIfExists(table)
+							.dropTableIfExistsLegacy(table)
 							.execute();
 						
 						categoryLevelDao.delete( level );
@@ -206,7 +206,7 @@ public class CategoryManager {
 		Field<String> captionField = table.getVarcharField( "caption" );
 		
 		psql
-			.dropTableIfExists( table )
+			.dropTableIfExistsLegacy( table )
 			.execute();
 		
 		psql
@@ -214,7 +214,7 @@ public class CategoryManager {
 			.execute();
 			
 		psql
-			.alterTable(table)
+			.alterTableLegacy(table)
 			.addPrimaryKey(table.getPrimaryKey())
 			.execute();
 		
@@ -404,7 +404,7 @@ public class CategoryManager {
 				
 				DynamicTable<Record> table = new DynamicTable<Record>( level.getTableName(), level.getSchemaName() );
 				psql
-					.dropTableIfExists( table )
+					.dropTableIfExistsLegacy( table )
 					.execute();
 				
 				categoryLevelDao.delete( level );
