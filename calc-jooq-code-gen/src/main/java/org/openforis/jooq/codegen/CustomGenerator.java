@@ -55,7 +55,7 @@ public class CustomGenerator extends JavaGenerator {
 	            log.info("Generating DAO", getStrategy().getFileName(table, Mode.DAO));
 	        }
 
-	        JavaWriter out = new JavaWriter(getStrategy().getFile(table, Mode.DAO));
+	        JavaWriter out = new JavaWriter(getStrategy().getFile(table, Mode.DAO) , null);
 	        printPackage(out, table, Mode.DAO);
 	        printClassJavadoc(out, table);
 
