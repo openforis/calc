@@ -20,6 +20,7 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.engine.Workspace;
@@ -167,13 +168,18 @@ public class CollectMetadataImportTask extends Task {
 
 		// add species categories
 		ZipFile zipFile = new ZipFile(backupFile);
-		BackupFileExtractor fileExtractor = new BackupFileExtractor(zipFile);
-		List<String> speciesFileNames = fileExtractor.listSpeciesEntryNames();
-		for (String speciesFileName : speciesFileNames) {
-			Category category = createSpeciesCategory(speciesFileName,originalIds);
-			categories.add(category);
-
-			incrementItemsProcessed();
+		BackupFileExtractor fileExtractor = null;
+		try {
+			fileExtractor = new BackupFileExtractor(zipFile);
+			List<String> speciesFileNames = fileExtractor.listSpeciesEntryNames();
+			for (String speciesFileName : speciesFileNames) {
+				Category category = createSpeciesCategory(speciesFileName,originalIds);
+				categories.add(category);
+	
+				incrementItemsProcessed();
+			}
+		} finally {
+			IOUtils.closeQuietly(fileExtractor);
 		}
 		
 		Category category = createBooleanCategory(originalIds);
@@ -375,7 +381,7 @@ public class CollectMetadataImportTask extends Task {
 		Entity parentEntity = getParentEntity(nodeDefinition);
 		if (parentEntity != null) {
 			parentEntity.addChild(entity);
-			entity.setParentIdColumn(dataTable.getParentKeyColumn().getName());
+			entity.setParentIdColumn(dataTable.getParentFKColumn().getName());
 		}
 
 		createVariables(entity, dataTable);

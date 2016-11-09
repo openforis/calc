@@ -19,7 +19,7 @@ import org.openforis.calc.psql.Psql;
 import org.openforis.calc.schema.ExtendedSchema;
 import org.openforis.collect.relational.CollectRdbException;
 import org.openforis.collect.relational.RelationalSchemaCreator;
-import org.openforis.collect.relational.liquibase.LiquibaseRelationalSchemaCreator;
+import org.openforis.collect.relational.jooq.JooqRelationalSchemaCreator;
 import org.openforis.collect.relational.model.RelationalSchema;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.DataSourceUtils;
@@ -69,7 +69,7 @@ public class CreateInputSchemaTask extends Task {
 		DataSourceConnectionProvider connectionProvider = (DataSourceConnectionProvider) config.connectionProvider();
 		DataSource dataSource = connectionProvider.dataSource();
 		RelationalSchema schema = ((CollectSurveyImportJob) getJob()).getInputRelationalSchema();
-		RelationalSchemaCreator relationalSchemaCreator = new LiquibaseRelationalSchemaCreator();
+		RelationalSchemaCreator relationalSchemaCreator = new JooqRelationalSchemaCreator();
 		Connection connection = DataSourceUtils.getConnection(dataSource);
 		relationalSchemaCreator.createRelationalSchema(schema, connection);
 
@@ -94,19 +94,24 @@ public class CreateInputSchemaTask extends Task {
 	}
 
 	private void createExtendedSchema() {
-
-		String extendedSchema = ExtendedSchema.getName(getWorkspace());
-
-		DynamicTable<Record> schemata = new DynamicTable<Record>("schemata", "information_schema");
+		
+		String extendedSchema = ExtendedSchema.getName( getWorkspace() );
+		
+		DynamicTable<Record> schemata = new DynamicTable<Record>("schemata" ,"information_schema");
 		Field<String> schemaName = schemata.getVarcharField("schema_name");
 
-		Integer count = psql.selectCount().from(schemata).where(schemaName.eq(extendedSchema)).fetchOne(DSL.count());
-
-		if (count == 0) {
-			psql.createSchema(new SchemaImpl(extendedSchema)).execute();
+		Integer count = psql
+					.selectCount()
+					.from( schemata )
+					.where( schemaName.eq(extendedSchema) )
+					.fetchOne( DSL.count() );
+		
+		if( count == 0 ) {
+			psql
+				.createSchema( new SchemaImpl(extendedSchema) )
+				.execute();
 		}
-
+		
 		incrementItemsProcessed();
 	}
-
 }
