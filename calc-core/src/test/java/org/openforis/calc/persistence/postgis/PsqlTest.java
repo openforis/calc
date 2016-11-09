@@ -18,7 +18,7 @@ import org.openforis.calc.psql.UpdateWithStep;
  */
 public class PsqlTest {
 
-	@Test
+//	@Test
 	public void testUpdateWith() {
 		Field<Integer> fld = STRATUM.ID;
 		Table<?> cursor = new Psql().select(fld).from(STRATUM).asTable("x");
