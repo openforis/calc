@@ -3,6 +3,8 @@
  */
 package org.openforis.calc.collect;
 
+import static org.openforis.concurrency.ProgressListener.NULL_PROGRESS_LISTENER;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.zip.ZipException;
@@ -19,6 +21,7 @@ import org.openforis.collect.model.CollectSurvey;
 import org.openforis.collect.persistence.xml.DataUnmarshaller.ParseRecordResult;
 import org.openforis.collect.relational.CollectRdbException;
 import org.openforis.collect.relational.DatabaseExporter;
+import org.openforis.collect.relational.jooq.JooqDatabaseExporter;
 import org.openforis.collect.relational.model.RelationalSchema;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -68,17 +71,15 @@ public class CollectDataImportTask extends Task {
 	}
 
 	private void importData() throws CollectRdbException, ZipException, IOException, Exception {
-		RelationalSchema targetSchema = ((CollectSurveyImportJob) getJob()).getInputRelationalSchema();
-		
-		DatabaseExporter databaseExporter = new CollectDatabaseExporter(config);
-		databaseExporter.insertReferenceData(targetSchema);
-		
 		int recordId = 1;
 		CollectSurvey survey = ((CollectSurveyImportJob) getJob()).getSurvey();
+		
 		BackupDataExtractor recordExtractor = null;
+		DatabaseExporter databaseExporter = null;
 		try {
-			ZipFile zipFile = new ZipFile(dataFile);
-			recordExtractor = new BackupDataExtractor(survey, zipFile, step, false);
+			databaseExporter = createDatabaseExporter();
+			databaseExporter.insertReferenceData(NULL_PROGRESS_LISTENER);
+			recordExtractor = new BackupDataExtractor(survey, dataFile, step);
 			recordExtractor.init();
 			ParseRecordResult parseRecordResult = recordExtractor.nextRecord();
 			while ( parseRecordResult != null ) {
@@ -86,17 +87,22 @@ public class CollectDataImportTask extends Task {
 				if ( parseRecordResult.isSuccess()) {
 					CollectRecord record = parseRecordResult.getRecord();
 					record.setId(recordId++);
-					databaseExporter.insertData(targetSchema, record);
+					databaseExporter.insertRecordData(record, NULL_PROGRESS_LISTENER);
 				} else {
 					log().error("Error importing file: " + parseRecordResult.getMessage());
 				}
 				parseRecordResult = recordExtractor.nextRecord();
-			} 
+			}
 		} finally {
 			IOUtils.closeQuietly(recordExtractor);
+			IOUtils.closeQuietly(databaseExporter);
 		}
 	}
 
+	private DatabaseExporter createDatabaseExporter() {
+		RelationalSchema targetSchema = ((CollectSurveyImportJob) getJob()).getInputRelationalSchema();
+		return new JooqDatabaseExporter(targetSchema, config);
+	}
 	
 //	private void createViews() {
 //		workspaceService.resetDataViews(getWorkspace());
