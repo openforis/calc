@@ -72,9 +72,9 @@
 		
 					<!-- Generator parameters -->
 					<generator>
-						<name>org.openforis.jooq.codegen.CustomGenerator</name>
+						<name>org.jooq.util.CustomGenerator</name>
 						<strategy>
-							<name>org.openforis.jooq.codegen.CustomGeneratorStrategy</name>
+							<name>org.jooq.util.CustomGeneratorStrategy</name>
 						</strategy>
 						<database>
 							<name>org.jooq.util.postgres.PostgresDatabase</name>
@@ -174,8 +174,8 @@
 						
 						<generate>
 							<relations>true</relations>
-							<records>false</records>
-							<deprecated>false</deprecated>
+							<records>true</records>
+							<deprecated>true</deprecated>
 							<daos>true</daos>
 							<pojos>true</pojos>
 						</generate>

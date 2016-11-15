@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+	<changeSet author="mino togna" id="041-create_auxiliary_tables_table">
+
+		<sql>
+			CREATE TABLE
+			    "calc".auxiliary_table
+			    (
+			        id bigserial NOT NULL,
+			        workspace_id bigint NOT NULL,
+			        schema VARCHAR NOT NULL,
+			        name VARCHAR NOT NULL,
+			        PRIMARY KEY (id),
+			        CONSTRAINT auxiliarytable_ws_fk FOREIGN KEY (workspace_id) REFERENCES
+			        "calc"."workspace" ("id")
+			    )
+    	</sql>
+    	
+	</changeSet>
+</databaseChangeLog>

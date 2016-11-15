@@ -1,4 +1,4 @@
-package org.openforis.jooq.codegen;
+package org.jooq.util;
 
 import org.jooq.util.ColumnDefinition;
 import org.jooq.util.DefaultGeneratorStrategy;
