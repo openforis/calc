@@ -63,6 +63,9 @@ public class MetadataManager {
 	@Autowired
 	private WorkspaceSettingsManager workspaceSettingsManager;
 	
+	@Autowired
+	private AuxiliaryTableManager auxiliaryTableManager;
+	
 	/*
 	 * ============================
 	 * 	Load workspace methods
@@ -127,6 +130,7 @@ public class MetadataManager {
 		equationManager.loadEquationLists( workspace );
 		errorSettingsManager.load( workspace );
 		workspaceSettingsManager.load( workspace );
+		auxiliaryTableManager.loadAll( workspace );
 		
 		initEntityHierarchy( workspace );
 	}

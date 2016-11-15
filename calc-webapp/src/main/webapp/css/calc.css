@@ -1107,18 +1107,18 @@ ul.scroll-menu {
 */
 #settings .settings-btn ,
 #settings .settings-btn:focus {
-	height: 100%;
-/*     width: 18%; */
-    width: 30%;
-	font-size: 1.1em;
-/* 	font-weight: 200; */
-	line-height: 2em;
-	overflow: visible;
-	border-radius: 0px;
-	background-color: #5d616e;
-	border: none;
-	letter-spacing: 0.03em;
-	color: #d0d4d9;
+    height: 100%;
+    /* width: 18%; */
+    width: 15%;
+    font-size: 1.1em;
+    /* font-weight: 200; */
+    line-height: 2em;
+    overflow: visible;
+    border-radius: 0px;
+    background-color: #5d616e;
+    border: none;
+    letter-spacing: 0.03em;
+    color: #d0d4d9;
 }
 #settings .settings-btn:hover {
 	background-color: #676c7a;
@@ -1140,13 +1140,13 @@ ul.scroll-menu {
 	padding-top: 1%;
 }
 #settings .group-buttons {
-height: 60%;
+    height: 65%;
     width: 100%;
     /* padding: 0px 0px; */
     margin: 0px;
     /* padding-top: 1%; */
-    text-align: left;
-    padding: 1% 25%;
+    text-align: center;
+    padding: 1.5% 0%;
 }
 #settings .group-header div {
 	border-bottom: 1px solid #8f91a0;

@@ -143,4 +143,7 @@
     <bean name="systemPropertyDao" class="org.openforis.calc.persistence.jooq.tables.daos.SystemPropertyDao">
     	<constructor-arg ref="config" />
     </bean>
+    <bean name="auxiliaryTableDao" class="org.openforis.calc.persistence.jooq.tables.daos.AuxiliaryTableDao">
+    	<constructor-arg ref="config" />
+    </bean>
 </beans>

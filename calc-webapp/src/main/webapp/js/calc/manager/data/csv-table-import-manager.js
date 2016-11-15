@@ -22,6 +22,8 @@ CsvTableImport = function(container, filepath, columns, tableName) {
 	// set to true if you want to upload the file to the extended schema
 	this.extSchema = false;
 	
+	this.beforeImport = null;
+	
 	this.init();
 };
 
@@ -59,28 +61,33 @@ CsvTableImport.prototype.init = function(){
 	// import click btn handler
 	this.importBtn.click(function(event){
 		event.preventDefault();
-		UI.lock();
 		
-		var cols = JSON.stringify( $this.columns );
-		var params = { "filepath":$this.filepath, "table":$this.tableName, "columns":cols , "useExtSchema": $this.extSchema };
+		var valid = !Utils.isFunction( $this.beforeImport ) || $this.beforeImport();
 		
-		$.ajax({
-			url : "rest/workspace/active/import-table.json",
-			dataType : "json",
-			method : "POST",
-			data : params 
-		}).done(function(response){
-
-			JobManager.getInstance().start(null, function(job){
-				var task = job.tasks[0];				
-				$this.importCallback(task.schema, task.table); 
-			}, true );
+		if( valid ){
+			UI.lock();
 			
-			UI.unlock();
-		}).error( function() {
-			Calc.error.apply( this , arguments );
-		});
-		
+			var cols = JSON.stringify( $this.columns );
+			var params = { "filepath":$this.filepath, "table":$this.tableName, "columns":cols , "useExtSchema": $this.extSchema };
+			
+			$.ajax({
+				url : "rest/workspace/active/import-table.json",
+				dataType : "json",
+				method : "POST",
+				data : params 
+			}).done(function(response){
+	
+				JobManager.getInstance().start(null, function(job){
+					var task = job.tasks[0];				
+					$this.importCallback(task.schema, task.table); 
+				}, true );
+				
+				UI.unlock();
+			}).error( function() {
+				Calc.error.apply( this , arguments );
+			});
+			
+		}
 	});
 };
 

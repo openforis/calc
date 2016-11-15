@@ -13,6 +13,7 @@ import org.apache.commons.collections.Predicate;
 import org.openforis.calc.chain.CalculationStep;
 import org.openforis.calc.chain.ProcessingChain;
 import org.openforis.calc.metadata.AoiHierarchy;
+import org.openforis.calc.metadata.AuxiliaryTable;
 import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Category;
 import org.openforis.calc.metadata.CategoryHierarchy;
@@ -67,6 +68,8 @@ public class Workspace extends WorkspaceBase {
 	private ErrorSettings errorSettings; 
 	
 	private WorkspaceSettings settings;
+	
+	private List<AuxiliaryTable> auxiliaryTables;
 	
 	public Workspace() {
 		this.processingChains = new ArrayList<ProcessingChain>();
@@ -243,6 +246,28 @@ public class Workspace extends WorkspaceBase {
 		this.settings = settings;
 		if( settings != null ){
 			settings.setWorkspace(this);
+		}
+	}
+	
+	public List<AuxiliaryTable> getAuxiliaryTables() {
+		return org.openforis.commons.collection.CollectionUtils.unmodifiableList( auxiliaryTables );
+	}
+	
+	public AuxiliaryTable geAuxiliaryTableById( long id ){
+		List<AuxiliaryTable> tables = getAuxiliaryTables();
+		for (AuxiliaryTable table : tables) {
+			if( table.getId().equals(id) ){
+				return table;
+			}
+		}
+		
+		return null;
+	}
+	
+	public void setAuxiliaryTables(List<AuxiliaryTable> auxiliaryTables) {
+		this.auxiliaryTables = auxiliaryTables;
+		for (AuxiliaryTable auxiliaryTable : this.auxiliaryTables) {
+			auxiliaryTable.setWorkspace(this);
 		}
 	}
 	
