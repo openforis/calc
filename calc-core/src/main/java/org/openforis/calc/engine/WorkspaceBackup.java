@@ -3,11 +3,13 @@
  */
 package org.openforis.calc.engine;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.json.simple.JSONArray;
 import org.openforis.calc.metadata.CategoryLevel.CategoryLevelValue;
+import org.openforis.commons.collection.CollectionUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -36,6 +38,8 @@ public class WorkspaceBackup {
 	private ExternalData phase1Data;
 
 	private ExternalData primarySuData;
+	
+	private Map<String, ExternalData> auxiliaryTables;
 	
 	// the two maps below are used during the import process to match old ids with new ones
 	// key : oldId ---> value : newId
@@ -81,6 +85,15 @@ public class WorkspaceBackup {
 		return categoryLevelValues;
 	}
 	
+	public Map<String, ExternalData> getAuxiliaryTables() {
+		return CollectionUtils.unmodifiableMap( auxiliaryTables );
+	}
+	
+	public ExternalData getAuxiliaryTableData(String tableName) {
+		return getAuxiliaryTables().get( tableName );
+		
+	}
+	
 	void setVersion( String version ) {
 		this.version = version;
 	}
@@ -97,8 +110,19 @@ public class WorkspaceBackup {
 		this.phase1Data = phase1Data;
 	}
 	
-	public void setPrimarySUData(ExternalData externalData) {
+	void setPrimarySUData(ExternalData externalData) {
 		this.primarySuData = externalData;
+	}
+	
+//	void setAuxiliaryTables(Map<String, ExternalData> auxiliaryTables) {
+//		this.auxiliaryTables = auxiliaryTables;
+//	}
+//	
+	void addAuxiliaryTable(String name, ExternalData extData) {
+		if( this.auxiliaryTables == null ){
+			this.auxiliaryTables = new HashMap<>();
+		}
+		this.auxiliaryTables.put( name, extData );
 	}
 	
 	public void setAoiIdsMap(Map<Integer, Integer> aoiIdsMap) {

@@ -2,6 +2,7 @@ package org.openforis.calc.engine;
 
 import org.openforis.calc.chain.ProcessingChainManager;
 import org.openforis.calc.metadata.AoiManager;
+import org.openforis.calc.metadata.AuxiliaryTableManager;
 import org.openforis.calc.metadata.CategoryManager;
 import org.openforis.calc.metadata.EntityManager;
 import org.openforis.calc.metadata.EquationManager;
@@ -37,6 +38,8 @@ public class DeleteOutputMetadataTask extends Task {
 	@Autowired
 	private ErrorSettingsManager errorSettingsManager;
 	@Autowired
+	private AuxiliaryTableManager auxiliaryTableManager;
+	@Autowired
 	private Psql psql;
 	@Autowired
 	private WorkspaceSettingsManager workspaceSettingsManager;
@@ -46,7 +49,7 @@ public class DeleteOutputMetadataTask extends Task {
 	
 	@Override
 	protected long countTotalItems() {
-		return 10;
+		return 11;
 	}
 	
 	@Override
@@ -92,6 +95,8 @@ public class DeleteOutputMetadataTask extends Task {
 		errorSettingsManager.delete( workspace );
 		incrementItemsProcessed();
 		
+		auxiliaryTableManager.deleteAll( workspace);
+		incrementItemsProcessed();
 	}
 	
 	@Override

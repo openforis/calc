@@ -1,6 +1,9 @@
 package org.openforis.calc.chain.export;
 
+import java.util.List;
+
 import org.openforis.calc.engine.Workspace;
+import org.openforis.calc.metadata.AuxiliaryTable;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.r.DbGetQuery;
 import org.openforis.calc.r.RScript;
@@ -39,13 +42,28 @@ public class ReadDataROutputScript extends ROutputScript {
 			r.addScript( readEntity );
 		}
 		
+		List<AuxiliaryTable> tables = workspace.getAuxiliaryTables();
+		for (AuxiliaryTable table : tables) {
+			String name 	= table.getName();
+			String schema 	= table.getSchema();
+			RScript script 	= createReadDataScript(name , schema , name);
+			r.addScript( script );
+		}
+		
 		return r;
 	}
 
 	private static SetValue createReadEntityScript(Schemas schemas, Entity entity) {
-		EntityDataView view 		= schemas.getDataSchema().getDataView( entity );
-		RVariable dataFrame 		= r().variable( entity.getName() );
-		DbGetQuery select 			= r().dbGetQuery( CONNECTION_VAR, "select * from " + view.getSchema().getName() + "."+ view.getName() );
+		EntityDataView view 	= schemas.getDataSchema().getDataView( entity );
+		String dataFrameName 	= entity.getName();
+		String schema 			= view.getSchema().getName();
+		String table	 		= view.getName();
+		return createReadDataScript(dataFrameName, schema, table);
+	}
+
+	private static SetValue createReadDataScript(String dataFrameName, String schema, String table) {
+		RVariable dataFrame 		= r().variable( dataFrameName );
+		DbGetQuery select 			= r().dbGetQuery( CONNECTION_VAR, "select * from " + schema + "."+ table );
 		SetValue setDataframeValue 	= r().setValue( dataFrame, select );
 		return setDataframeValue;
 	}

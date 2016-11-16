@@ -181,7 +181,7 @@ DataTable.prototype = (function(){
 		var delay = 0;
 		var rowNum = this.offset + 1;
 		// add rows to table
-		console.log( data );
+//		console.log( data );
 		$.each(data, function(i,record) {
 			var $tr = $("<tr></tr>");
 			$tr.hide();

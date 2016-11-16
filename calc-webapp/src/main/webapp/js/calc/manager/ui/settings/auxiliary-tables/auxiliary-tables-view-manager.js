@@ -3,12 +3,16 @@
  */
 
 AuxiliaryTablesViewManager = function( container , manager ) {
-	this.BASE_URI = "rest/workspace/active/auxiliary-table";
-	
 	this.container 	= $( container );
 	this.manager 	= manager;
+	this.BASE_URI 	= this.manager.BASE_URI;
 	
-	this.listSection = this.container.find( '.list-section' );
+	this.listSection 		= this.container.find( '.list-section' );
+	
+	this.dataTableSection 	= this.container.find( '.data-table-section' ).show();
+	this.dataTable			= new DataTable(  this.dataTableSection.find(".data-table") );
+	this.dataTable.hide();
+	this.dataProvider		= null;
 	
 	this.init();
 }
@@ -30,6 +34,8 @@ AuxiliaryTablesViewManager.prototype.hide = function(){
 
 AuxiliaryTablesViewManager.prototype.updateList = function(){
 	this.listSection.empty();
+	this.dataTable.hide();
+	
 	this.manager.activeTable 	= null;
 	this.activeButton 			= null;
 	
@@ -98,6 +104,9 @@ AuxiliaryTablesViewManager.prototype.updateList = function(){
 					$this.activeButton 			= optionBtn;					
 					$this.manager.activeTable 	= t;
 					
+					$this.dataProvider 			= new TableDataProvider(t.schema, t.name);
+					$this.dataTable.setDataProvider( $this.dataProvider );
+					$this.dataTable.show();
 //					UI.lock();
 //					var tbody = $this.equationsTable.find("tbody");
 //					tbody.empty();
@@ -143,6 +152,8 @@ AuxiliaryTablesViewManager.prototype.updateList = function(){
 				
 				var deselect = function( e ) {
 //					$this.equationsTable.hide(0);
+					$this.dataTable.hide();
+					$this.dataProvider 			= null;
 					
 					$this.activeButton 			= null;					
 					$this.manager.activeTable 	= null;

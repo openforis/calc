@@ -5,6 +5,7 @@ package org.openforis.calc.engine;
 
 import org.openforis.calc.chain.ProcessingChainManager;
 import org.openforis.calc.metadata.AoiManager;
+import org.openforis.calc.metadata.AuxiliaryTableManager;
 import org.openforis.calc.metadata.CategoryManager;
 import org.openforis.calc.metadata.EntityManager;
 import org.openforis.calc.metadata.EquationManager;
@@ -47,12 +48,14 @@ public class ImportOutputMetadataTask extends Task {
 	@Autowired
 	private WorkspaceSettingsManager workspaceSettingsManager;
 	@Autowired
+	private AuxiliaryTableManager auxiliaryTableManager;
+	@Autowired
 	private Psql psql;
 	
 	
 	@Override
 	protected long countTotalItems() {
-		return 14;
+		return 15;
 	}
 	
 	@Override
@@ -97,6 +100,9 @@ public class ImportOutputMetadataTask extends Task {
 		incrementItemsProcessed();
 		
 		errorSettingsManager.importBackup( workspace, workspaceBackup );
+		incrementItemsProcessed();
+		
+		auxiliaryTableManager.importBackup( workspace, workspaceBackup );
 		incrementItemsProcessed();
 		
 		// reload workspace

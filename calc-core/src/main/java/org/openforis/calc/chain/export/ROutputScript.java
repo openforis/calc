@@ -41,8 +41,9 @@ public abstract class ROutputScript {
 		this.rScript 	= rScript;
 //		this.type 		= type;
 		this.index 		= index;
-		
-		this.fileName 	= type.toString() + FILE_SEPARATOR + index + DASH +  fileName;
+	
+		String f = String.format("%03d", index);
+		this.fileName 	= type.toString() + FILE_SEPARATOR + f + DASH +  fileName;
 	}
 
 //	public String getDirectory() {

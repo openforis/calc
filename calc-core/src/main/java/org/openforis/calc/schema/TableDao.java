@@ -136,7 +136,7 @@ public class TableDao extends AbstractJooqDao {
 		select.addFrom(dbTable);
 		if( fields != null && fields.length >0 ) {
 			for (String field : fields) {
-				Field<?> f = dbTable.field(field);
+				Field<?> f = dbTable.getObjectField(field);
 				select.addSelect(f);
 				if( excludeNull != null && excludeNull ) {
 					select.addConditions(f.isNotNull());

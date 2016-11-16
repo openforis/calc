@@ -90,6 +90,15 @@ public class DynamicTable<R extends Record> extends TableImpl<R> {
 		return field;
 	}
 	
+	public Field<?> getObjectField(String name) {
+		Field<?> field = field(name);
+		if( field == null ){
+			field = addField(name, SQLDataType.OTHER);
+		}
+		
+		return field;
+	}
+	
 	public Field<Long> getIdField(){
 		return getLongField( "id" );
 	}

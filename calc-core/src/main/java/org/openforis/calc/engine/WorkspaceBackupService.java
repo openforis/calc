@@ -24,6 +24,7 @@ import org.jooq.impl.DynamicTable;
 import org.json.simple.JSONArray;
 import org.openforis.calc.Calc;
 import org.openforis.calc.engine.WorkspaceBackup.ExternalData;
+import org.openforis.calc.metadata.AuxiliaryTable;
 import org.openforis.calc.metadata.Category;
 import org.openforis.calc.metadata.CategoryHierarchy;
 import org.openforis.calc.metadata.CategoryLevel;
@@ -96,6 +97,7 @@ public class WorkspaceBackupService {
 		loadPhase1Data( backup );
 		loadPrimarySUData( backup );
 		loadOutputCategoryLevelValues( backup );
+		loadAuxiliaryTables( backup );
 		
 		backup.setVersion( calc.getVersion() );
 		
@@ -130,14 +132,9 @@ public class WorkspaceBackupService {
 		
 		String phase1PlotTable = ws.getPhase1PlotTable();
 		if( ws.has2PhasesSamplingDesign() && StringUtils.isNotBlank(phase1PlotTable) ){
-			// read table information 
-			DynamicTable<?> phase1Table = new DynamicTable<Record>( phase1PlotTable, CalcSchema.CALC.getName() );
-			JSONArray tableInfo = tableDao.info( phase1Table );
 			
-			phase1Table.initFields(tableInfo);
-			List<DataRecord> records = tableDao.selectAll(phase1Table);
-			
-			backup.setPhase1Data( new ExternalData( tableInfo , records ) );
+			ExternalData externalData 	= loadExternalData(phase1PlotTable, CalcSchema.CALC.getName());
+			backup.setPhase1Data( externalData );
 		}
 	}
 	/**
@@ -149,16 +146,37 @@ public class WorkspaceBackupService {
 		
 		if( ws.hasSamplingDesign() &&  ws.getSamplingDesign().getTwoStages() ) {
 			// read table information 
-			DynamicTable<?> table = new DynamicTable<Record>( ws.getPrimarySUTableName(), ws.getExtendedSchemaName() );
-			JSONArray tableInfo = tableDao.info( table );
-			
-			table.initFields(tableInfo);
-			List<DataRecord> records = tableDao.selectAll(table);
-			
-			backup.setPrimarySUData( new ExternalData( tableInfo , records ) );
+			ExternalData externalData = loadExternalData(ws.getPrimarySUTableName(), ws.getExtendedSchemaName());
+			backup.setPrimarySUData( externalData );
 		}
 	}
 
+	private ExternalData loadExternalData(String tableName, String schemaName) {
+		DynamicTable<?> table 	= new DynamicTable<Record>( tableName, schemaName );
+		JSONArray tableInfo 	= tableDao.info( table );
+		
+		table.initFields(tableInfo);
+		List<DataRecord> records = tableDao.selectAll(table);
+		
+		ExternalData externalData = new ExternalData( tableInfo , records );
+		return externalData;
+	}
+	
+	/**
+	 * Load the imported auxiliary tables
+	 * @param backup
+	 */
+	private void loadAuxiliaryTables(WorkspaceBackup backup) {
+		Workspace ws = backup.getWorkspace();	
+		for (AuxiliaryTable table : ws.getAuxiliaryTables()) {
+			String name 				= table.getName();
+			ExternalData externalData 	= loadExternalData(name, table.getSchema());
+			
+			backup.addAuxiliaryTable(name, externalData);
+		}
+	}	
+	
+	
 	public WorkspaceBackup extractBackup( ZipFile zipFile ) throws IOException {
 		
 		String wsString = extractZipEntry( zipFile , WORKSPACE_BACKUP_FILE_NAME );

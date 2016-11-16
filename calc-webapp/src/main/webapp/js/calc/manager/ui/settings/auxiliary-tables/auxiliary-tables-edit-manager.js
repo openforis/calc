@@ -2,10 +2,9 @@
  * @author M. Togna
  */
 AuxiliaryTablesEditManager = function( container, manager ) {
-	this.BASE_URI = "rest/workspace/active/auxiliary-table";
-	
-	this.container = $( container );
-	this.manager = manager;
+	this.container 	= $( container );
+	this.manager 	= manager;
+	this.BASE_URI 	= this.manager.BASE_URI;
 	
 	this.init();
 }
@@ -50,10 +49,14 @@ AuxiliaryTablesEditManager.prototype.hide = function() {
 AuxiliaryTablesEditManager.prototype.validate = function() {
 	var valid = true;
 	
+	var regex = /^[a-z][a-z0-9_]*/;
 	var name = $.trim( this.name.val() );
 	if( name == "" ) {
 		valid = false;
 		UI.showError( "Table name cannot be blank" , true );
+	} else if( !regex.test(name) ){
+		valid = false;
+		UI.showError( "Table name can contain only lowercase characters, numbers and underscores" , true );
 	} else {
 		this.importer.tableName = name;
 	} 

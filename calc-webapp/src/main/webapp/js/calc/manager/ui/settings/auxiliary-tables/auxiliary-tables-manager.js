@@ -30,13 +30,12 @@ AuxiliaryTablesManager.prototype.init = function() {
 			}		
 	);
 	
-	// show lists
 	this.showView( true );
 };
 
 AuxiliaryTablesManager.prototype.showView = function( reloadTables ){
 	this.editManager.hide();
-	this.viewManager.show(reloadTables);
+	this.viewManager.show( reloadTables );
 }
 
 AuxiliaryTablesManager.prototype.showEdit = function(file , headers){
