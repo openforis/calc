@@ -54,9 +54,9 @@ AuxiliaryTablesEditManager.prototype.validate = function() {
 	if( name == "" ) {
 		valid = false;
 		UI.showError( "Table name cannot be blank" , true );
-	} else if( !regex.test(name) ){
+	} else if( !regex.test(name) || name.includes(" ") ){
 		valid = false;
-		UI.showError( "Table name can contain only lowercase characters, numbers and underscores" , true );
+		UI.showError( "Table name must start with a character and must contain only lowercase characters, numbers and underscores" , true );
 	} else {
 		this.importer.tableName = name;
 	} 
