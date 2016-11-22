@@ -56,7 +56,14 @@ public class CategoryManager {
 	
 	@Transactional
 	public void load( Workspace workspace ){
-		List<Category> categories = categoryDao.fetchByWorkspaceId( workspace.getId().longValue() );
+		List<Category> categories = psql
+				.select()
+				.from( Tables.CATEGORY )
+				.where( Tables.CATEGORY.WORKSPACE_ID.eq(workspace.getId().longValue()) )
+				.orderBy(Tables.CATEGORY.NAME)
+				.fetchInto(Category.class);
+//		List<Category> categories = categoryDao. 
+//				fetchByWorkspaceId( workspace.getId().longValue() );
 		for ( Category category : categories ){
 			workspace.addCategory( category );
 			

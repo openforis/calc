@@ -470,13 +470,13 @@ button.settings:hover {
 /* settings */
 #calculation .options {
 	position: fixed;
-	right: 170px;
-	width: 320px;
-	background-color: rgba(91, 113, 140, 0.24);
-	border: 2px solid RGBA(185, 214, 251, 0.02);
-	height: 180px;
-	padding: 20px;
-	z-index: 2;
+    right: 170px;
+    width: 320px;
+    background-color: rgba(91, 113, 140, 0.95);
+    border: 1px solid RGBA(185, 214, 251, 0.22);
+    height: 180px;
+    padding: 20px;
+    z-index: 2;
 }
 /**
 **

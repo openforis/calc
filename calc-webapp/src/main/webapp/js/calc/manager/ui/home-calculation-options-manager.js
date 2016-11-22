@@ -12,11 +12,11 @@ HomeCalculationOptionsManager = function( homeCalculationManager, container , tr
 	// view step option buttons
 	var viewStepList 		= this.container.find( 'button.view-steps-list' );
 	this.viewStepListBtn 	= new OptionButton( viewStepList );
-	this.viewStepListBtn.disableUnselect = true;
+	//this.viewStepListBtn.disableUnselect = true;
 	
 	var viewStepFolder		= this.container.find( 'button.view-steps-folder' );
 	this.viewStepFolderBtn 	= new OptionButton( viewStepFolder );
-	this.viewStepFolderBtn.disableUnselect = true;
+	//this.viewStepFolderBtn.disableUnselect = true;
 	
 	this.workspaceManager 	= WorkspaceManager.getInstance();
 	
