@@ -415,7 +415,7 @@ public abstract class DataTable extends AbstractTable {
 	}
 	
 	protected void createClusterField() {
-		if( getWorkspace().hasClusterSamplingDesign() ){
+		if( getWorkspace().hasClusterSamplingDesign() && entity.isInSamplingUnitHierarchy() ){
 			Entity clusterEntity = getWorkspace().getSamplingDesign().getClusterEntity();
 			this.clusterField = createField( clusterEntity.getIdColumn() , SQLDataType.INTEGER, this );
 		}

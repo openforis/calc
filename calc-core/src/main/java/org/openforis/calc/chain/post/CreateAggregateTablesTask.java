@@ -1,40 +1,28 @@
 package org.openforis.calc.chain.post;
 
-import static org.jooq.util.postgres.PostgresDataType.DOUBLEPRECISION;
-
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.collections.functors.ClosureTransformer;
 import org.jooq.Condition;
 import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Schema;
 import org.jooq.SelectQuery;
 import org.jooq.impl.DSL;
-import org.jooq.impl.DynamicTable;
 import org.openforis.calc.engine.CalculationException;
 import org.openforis.calc.engine.Job;
 import org.openforis.calc.engine.Task;
 import org.openforis.calc.metadata.AoiLevel;
-import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.SamplingDesign;
 import org.openforis.calc.metadata.SamplingDesign.ColumnJoin;
-import org.openforis.calc.metadata.SamplingDesign.TableJoin;
-import org.openforis.calc.metadata.SamplingDesign.TwoStagesSettings;
 import org.openforis.calc.psql.CreateTableStep.AsStep;
-import org.openforis.calc.psql.Psql;
-import org.openforis.calc.psql.Psql.Privilege;
 import org.openforis.calc.schema.AoiAggregateTable;
 import org.openforis.calc.schema.ClusterAggregateTable;
 import org.openforis.calc.schema.ClusterCountsTable;
-import org.openforis.calc.schema.DataAoiTable;
 import org.openforis.calc.schema.DataSchema;
 import org.openforis.calc.schema.DataTable;
-import org.openforis.calc.schema.EntityDataView;
-import org.openforis.calc.schema.ErrorTable;
 import org.openforis.calc.schema.ExpansionFactorTable;
 import org.openforis.calc.schema.FactTable;
 import org.openforis.calc.schema.SamplingUnitAggregateTable;

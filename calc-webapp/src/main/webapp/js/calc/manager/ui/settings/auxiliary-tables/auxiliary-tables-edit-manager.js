@@ -54,7 +54,7 @@ AuxiliaryTablesEditManager.prototype.validate = function() {
 	if( name == "" ) {
 		valid = false;
 		UI.showError( "Table name cannot be blank" , true );
-	} else if( !regex.test(name) || name.includes(" ") ){
+	} else if( !regex.test(name) || name.includes(" ") || name.toLowerCase() != name ){
 		valid = false;
 		UI.showError( "Table name must start with a character and must contain only lowercase characters, numbers and underscores" , true );
 	} else {

@@ -192,7 +192,7 @@ public class InventorySettingsController {
 				samplingDesign.setPhase1JoinSettings( getParameterMapValue( json , "phase1JoinSettings" ) );
 				samplingDesign.setTwoStagesSettings( getParameterMapValue( json , "twoStagesSettings" ) );
 				samplingDesign.setStratumJoinSettings( getParameterMapValue( json , "stratumJoinSettings" ) );
-//				samplingDesign.setClusterColumnSettings( getParameterMapValue( json , "clusterColumnSettings" ) );
+				samplingDesign.setClusterColumnSettings( getParameterMapValue( json , "clusterColumnSettings" ) );
 				samplingDesign.setClusterOriginalId(getLongValue(json, "clusterOriginalId") );
 				samplingDesign.setAoiJoinSettings( getParameterMapValue( json , "aoiJoinSettings" ) );
 

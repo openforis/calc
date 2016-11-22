@@ -140,7 +140,7 @@ public class FactTable extends DataTable {
 			sourceTable = this.samplingUnitAggregateTable;
 		}
 		
-		if( getWorkspace().hasClusterSamplingDesign() && !getWorkspace().getSamplingDesign().applyClusterOnlyForErrorCalculation()){
+		if( getWorkspace().hasClusterSamplingDesign() && getEntity().isInSamplingUnitHierarchy() && !getWorkspace().getSamplingDesign().applyClusterOnlyForErrorCalculation()){
 			this.clusterAggregateTable = new ClusterAggregateTable( sourceTable );
 			sourceTable = this.clusterAggregateTable;
 		}
