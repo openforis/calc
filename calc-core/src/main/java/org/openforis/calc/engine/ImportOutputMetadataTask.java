@@ -13,7 +13,6 @@ import org.openforis.calc.metadata.ErrorSettingsManager;
 import org.openforis.calc.metadata.SamplingDesignManager;
 import org.openforis.calc.metadata.VariableManager;
 import org.openforis.calc.metadata.WorkspaceSettingsManager;
-import org.openforis.calc.psql.Psql;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -49,8 +48,8 @@ public class ImportOutputMetadataTask extends Task {
 	private WorkspaceSettingsManager workspaceSettingsManager;
 	@Autowired
 	private AuxiliaryTableManager auxiliaryTableManager;
-	@Autowired
-	private Psql psql;
+//	@Autowired
+//	private Psql psql;
 	
 	
 	@Override

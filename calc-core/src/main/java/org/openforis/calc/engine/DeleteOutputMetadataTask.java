@@ -10,7 +10,6 @@ import org.openforis.calc.metadata.ErrorSettingsManager;
 import org.openforis.calc.metadata.SamplingDesignManager;
 import org.openforis.calc.metadata.VariableManager;
 import org.openforis.calc.metadata.WorkspaceSettingsManager;
-import org.openforis.calc.psql.Psql;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -39,8 +38,8 @@ public class DeleteOutputMetadataTask extends Task {
 	private ErrorSettingsManager errorSettingsManager;
 	@Autowired
 	private AuxiliaryTableManager auxiliaryTableManager;
-	@Autowired
-	private Psql psql;
+//	@Autowired
+//	private Psql psql;
 	@Autowired
 	private WorkspaceSettingsManager workspaceSettingsManager;
 	
