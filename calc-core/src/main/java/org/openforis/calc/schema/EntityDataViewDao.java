@@ -92,7 +92,7 @@ public class EntityDataViewDao extends AbstractJooqDao {
 //	}
 
 	public List<DataRecord> query(DataRecordVisitor visitor, Workspace workspace, Integer offset, Integer numberOfRows, Entity entity, boolean excludeNull, JSONArray filters, String... fields) {
-		if (fields == null || fields.length == 0) {
+		if (fields == null ){//|| fields.length == 0) {
 			throw new IllegalArgumentException("fields must be specifed");
 		}
 

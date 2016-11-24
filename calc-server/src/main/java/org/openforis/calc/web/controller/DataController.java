@@ -75,7 +75,8 @@ public class DataController {
 		
 		JSONArray arrayFilters = filtersToJsonArray(filters);
 		
-		List<DataRecord> records = entityDao.query(workspace, offset, numberOfRows, entity, excludeNull, arrayFilters, fields.split(","));
+		String[] fieldsArray = StringUtils.isBlank(fields) ? new String[]{} : fields.split(",");
+		List<DataRecord> records = entityDao.query(workspace, offset, numberOfRows, entity, excludeNull, arrayFilters, fieldsArray);
 		
 		return records;
 	}
