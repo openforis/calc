@@ -13,68 +13,68 @@ import org.openforis.calc.persistence.jooq.tables.pojos.AoiHierarchyBase;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
- * Provides metadata about a AOI Hierarchy. A hierarchy might be an "Administrative division" or "Ecological division" of an area. The hierarchy then
- * has several hierarchy levels. e.g. country, region, province, distric for the Administrative division
+ * Provides metadata about a AOI Hierarchy. A hierarchy might be an "Administrative division" or "Ecological division" of an area. The hierarchy then has several hierarchy levels.
+ * e.g. country, region, province, distric for the Administrative division
  * 
  * @author Mino Togna
- * @author S. Ricci 
+ * @author S. Ricci
  */
 public class AoiHierarchy extends AoiHierarchyBase {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	@JsonIgnore
 	private Workspace workspace;
 
-//	@OneToMany(mappedBy = "hierarchy", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-//	@OrderBy("rank")
+	// @OneToMany(mappedBy = "hierarchy", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	// @OrderBy("rank")
 	private List<AoiLevel> levels;
 
 	private Aoi rootAoi;
-	
+
 	public Workspace getWorkspace() {
 		return this.workspace;
 	}
 
 	public void setWorkspace(Workspace workspace) {
 		this.workspace = workspace;
-		this.setWorkspaceId( workspace.getId() );
+		this.setWorkspaceId(workspace.getId());
 	}
 
 	public List<AoiLevel> getLevels() {
-		return org.openforis.commons.collection.CollectionUtils.unmodifiableList( levels );
+		return org.openforis.commons.collection.CollectionUtils.unmodifiableList(levels);
 	}
 
 	@JsonIgnore
 	public Collection<AoiLevel> getLevelsReverseOrder() {
-		List<AoiLevel> aoiLevels = new ArrayList<AoiLevel>( this.levels );
-		
+		List<AoiLevel> aoiLevels = new ArrayList<AoiLevel>(this.levels);
+
 		Collections.reverse(aoiLevels);
-		
-		return org.openforis.commons.collection.CollectionUtils.unmodifiableCollection( aoiLevels );
+
+		return org.openforis.commons.collection.CollectionUtils.unmodifiableCollection(aoiLevels);
 	}
-	
-//	public void addLevel(AoiLevel level) {
-//		if( this.levels == null ){
-//			this.levels = new ArrayList<AoiLevel>();
-//		}
-//		level.setHierarchy( this );
-//		this.levels.add( level );
-//	}
-	
+
+	// public void addLevel(AoiLevel level) {
+	// if( this.levels == null ){
+	// this.levels = new ArrayList<AoiLevel>();
+	// }
+	// level.setHierarchy( this );
+	// this.levels.add( level );
+	// }
+
 	public void setLevels(List<AoiLevel> levels) {
-		Collections.sort( levels , new Comparator<AoiLevel>() {
+		Collections.sort(levels, new Comparator<AoiLevel>() {
 			@Override
 			public int compare(AoiLevel o1, AoiLevel o2) {
-				return o1.getRank().compareTo( o2.getRank() );
+				return o1.getRank().compareTo(o2.getRank());
 			}
-		} );
+		});
 		this.levels = levels;
 		for (AoiLevel aoiLevel : this.levels) {
-			aoiLevel.setHierarchy( this );
+			aoiLevel.setHierarchy(this);
 		}
 	}
-	
+
 	@JsonIgnore
 	public AoiLevel getLeafLevel() {
 		return (AoiLevel) CollectionUtils.get(levels, levels.size() - 1);
@@ -86,28 +86,29 @@ public class AoiHierarchy extends AoiHierarchyBase {
 
 	/**
 	 * Set the root aoi and init the levels
+	 * 
 	 * @param rootAoi
 	 */
-	public void setRootAoi( Aoi rootAoi ) {
+	public void setRootAoi(Aoi rootAoi) {
 		this.rootAoi = rootAoi;
 	}
 
-	public Aoi getAoiById( int aoiId ) {
-		if( this.rootAoi == null ) {
-			throw new IllegalStateException( "Aoi hierarchy not initialized. Set the root aoi before invoking this method" );
+	public Aoi getAoiById(int aoiId) {
+		if (this.rootAoi == null) {
+			throw new IllegalStateException("Aoi hierarchy not initialized. Set the root aoi before invoking this method");
 		}
-		
-		return findAoiById( rootAoi , aoiId );
+
+		return findAoiById(rootAoi, aoiId);
 	}
 
-	private Aoi findAoiById( Aoi aoi , int aoiId ) {
+	private Aoi findAoiById(Aoi aoi, int aoiId) {
 		Integer id = aoi.getId();
-		if( id.intValue() == aoiId ) {
+		if (id.intValue() == aoiId) {
 			return aoi;
 		}
-		for ( Aoi child : aoi.getChildren() ) {
-			Aoi a = findAoiById( child, aoiId );
-			if( a != null ) {
+		for (Aoi child : aoi.getChildren()) {
+			Aoi a = findAoiById(child, aoiId);
+			if (a != null) {
 				return a;
 			}
 		}
@@ -116,7 +117,7 @@ public class AoiHierarchy extends AoiHierarchyBase {
 
 	public AoiLevel getLevelById(Integer aoiLevelId) {
 		for (AoiLevel aoiLevel : this.levels) {
-			if( aoiLevel.getId().equals(aoiLevelId) ){
+			if (aoiLevel.getId().equals(aoiLevelId)) {
 				return aoiLevel;
 			}
 		}

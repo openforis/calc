@@ -188,10 +188,12 @@ public class CreateFactTablesROutputScript extends ROutputScript {
 				if( workspace.hasClusterSamplingDesign() ) {
 					String clusterColumn = samplingDesign.getClusterEntity().getIdColumn();
 					clusterField = phase1Table.getIntegerField( clusterColumn ).as( factTable.getClusterField().getName() ) ;
+					
+					select.addSelect( clusterField );
 				} else {
 //					clusterField = 	DSL.val( "1" ).as( factTable.getClusterField().getName() );
 				}
-				select.addSelect( clusterField );
+				
 			} else {
 				// one phase sampling
 				
@@ -206,10 +208,12 @@ public class CreateFactTablesROutputScript extends ROutputScript {
 				if( workspace.hasClusterSamplingDesign() ) {
 					String clusterColumn = samplingDesign.getClusterEntity().getIdColumn();
 					clusterField = dataView.field( clusterColumn ).cast(Integer.class).as( factTable.getClusterField().getName() ) ;
+					
+					select.addSelect( clusterField );
 				} else {
 //					clusterField = 	DSL.val( "1" ).as( factTable.getClusterField().getName() );
 				}
-				select.addSelect( clusterField );
+				
 			}
 			
 			if( workspace.has2StagesSamplingDesign() ){
