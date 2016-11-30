@@ -243,9 +243,11 @@ public final class CreateAggregateTablesTask extends Task {
 		select.addSelect( sourceTable.getAoiIdFields() );
 		select.addGroupBy( sourceTable.getAoiIdFields() );
 		
-		select.addSelect( sourceTable.getStratumField() );
-		select.addGroupBy( sourceTable.getStratumField() );
-
+		if( getWorkspace().hasStratifiedSamplingDesign() ){
+			select.addSelect( sourceTable.getStratumField() );
+			select.addGroupBy( sourceTable.getStratumField() );
+		}
+		
 		if( getWorkspace().hasClusterSamplingDesign() ){
 			select.addSelect( sourceTable.getClusterField() );
 			select.addGroupBy( sourceTable.getClusterField() );
@@ -326,9 +328,11 @@ public final class CreateAggregateTablesTask extends Task {
 		select.addSelect( baseUnitTable.getAoiIdFields() );
 		select.addGroupBy( baseUnitTable.getAoiIdFields() );
 		
-		select.addSelect( baseUnitTable.getStratumField() );
-		select.addGroupBy( baseUnitTable.getStratumField() );
-
+		if( getWorkspace().hasStratifiedSamplingDesign() ){
+			select.addSelect( baseUnitTable.getStratumField() );
+			select.addGroupBy( baseUnitTable.getStratumField() );
+		}
+		
 //		if( getWorkspace().hasClusterSamplingDesign() ){
 //			select.addSelect( baseUnitTable.getClusterField() );
 //			select.addGroupBy( baseUnitTable.getClusterField() );
