@@ -3,6 +3,7 @@
  */
 package org.openforis.calc.persistence.jooq;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jooq.Converter;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -47,6 +48,9 @@ public class ParameterMapConverter implements Converter<String, ParameterMap> {
 
 	@SuppressWarnings("unchecked")
 	private ParameterMap parseJson(String str) {
+		if( StringUtils.isBlank(str)){
+			return new ParameterHashMap();
+		}
 		try {
 			JSONParser parser = new JSONParser();
 			Object obj = parser.parse(str);
