@@ -1,5 +1,5 @@
 /**
-\ * Manager for Stratified step
+ * Manager for Reporting Unit table
  * @author M. Togna
  */
 ReportingUnitManager = function( container , sdERDManager , stepNo ){
