@@ -79,42 +79,43 @@ public class AOICsvFileParser {
 		
 		// create aois
 		CsvLine record = (CsvLine) csvReader.nextRecord();
+		
 		do {
-			
-			for(int i = 0 ; i < levels ; i++ ){
-				String code 		= record.getValue((i) * 2, String.class);
-				String caption 		= record.getValue((i) * 2 + 1, String.class);
-				
-				AoiLevel aoiLevel 	= aoiLevels.get(i);
-				Aoi aoi				= getOrCreateAoi( aoiLevel , code , caption );
-				
-				// update land area
-				BigDecimal area = new BigDecimal( record.getValue( record.getLine().length - 1, Double.class ) );
-				
-				BigDecimal landArea = aoi.getLandArea();
-				landArea = ( landArea == null ) ? area : landArea.add( area );
-				aoi.setLandArea(landArea);
-				
-				// if not root aoi, it sets the parent aoi
-				if( i != 0 ){
-					String parentCode	= record.getValue( (i-1) * 2, String.class);
-					Aoi parentAoi		= getOrCreateAoi( aoiLevels.get(i-1) , parentCode , null );
-					parentAoi.addChild( aoi );
-				}
-				
-				if( hasStrata ){
-					Integer stratumCode 	= record.getValue("stratum_code", Integer.class );
-					String stratumLabel		= record.getValue("stratum_label", String.class );
-					Double stratumArea		= record.getValue("stratum_area", Double.class );
+			if( !record.toString().equals("[]")){
+				for(int i = 0 ; i < levels ; i++ ){
+					String code 		= record.getValue((i) * 2, String.class);
+					String caption 		= record.getValue((i) * 2 + 1, String.class);
 					
-					Stratum stratum 		= getOrCreateStratum( stratumCode, stratumLabel );
+					AoiLevel aoiLevel 	= aoiLevels.get(i);
+					Aoi aoi				= getOrCreateAoi( aoiLevel , code , caption );
 					
-					StratumAoi stratumAoi	= getOrCreateStratumAoi( stratum , aoi );
-					stratumAoi.setArea( stratumAoi.getArea() + stratumArea );
+					// update land area
+					BigDecimal area = new BigDecimal( record.getValue( record.getLine().length - 1, Double.class ) );
+					
+					BigDecimal landArea = aoi.getLandArea();
+					landArea = ( landArea == null ) ? area : landArea.add( area );
+					aoi.setLandArea(landArea);
+					
+					// if not root aoi, it sets the parent aoi
+					if( i != 0 ){
+						String parentCode	= record.getValue( (i-1) * 2, String.class);
+						Aoi parentAoi		= getOrCreateAoi( aoiLevels.get(i-1) , parentCode , null );
+						parentAoi.addChild( aoi );
+					}
+					
+					if( hasStrata ){
+						Integer stratumCode 	= record.getValue("stratum_code", Integer.class );
+						String stratumLabel		= record.getValue("stratum_label", String.class );
+						Double stratumArea		= record.getValue("stratum_area", Double.class );
+						
+						Stratum stratum 		= getOrCreateStratum( stratumCode, stratumLabel );
+						
+						StratumAoi stratumAoi	= getOrCreateStratumAoi( stratum , aoi );
+						stratumAoi.setArea( stratumAoi.getArea() + stratumArea );
+					}
+					
 				}
-				
 			}
-			
 			record = (CsvLine) csvReader.nextRecord();
 		} while (record != null);
 		

@@ -41,29 +41,36 @@ WorkspaceSettingsManager.prototype.init = function(){
 	
 	this.activateBtn.click( function(e) {
 		e.preventDefault();
-		
-		UI.lock();
-		$this.workspaceManager.changeActiveWorkspace( $this.selectedWorkspace , function(response){
-			UI.unlock();
-		});
+		if($this.selectedWorkspace){
+			UI.lock();
+			$this.workspaceManager.changeActiveWorkspace( $this.selectedWorkspace , function(response){
+				UI.unlock();
+			});
+		} else {
+			UI.showError("Please select a workspace", true)
+		}
 	});
 	
 	this.deleteBtn.click( function(e){
-		var message = "Are you sure you want to delete this workspace? This operation cannot be undone."
-		var confirmDelete = function(){ 
-			$this.workspaceManager.deleteWorkspace( $this.selectedWorkspace , function(job){
-				UI.enableAll();
-				Calc.workspaceChange( function(){
-					$this.loadWorkspaces();
-					UI.showSuccess( "Workspace deleted" , true );
+		if( $this.selectedWorkspace ){	
+			var message = "Are you sure you want to delete this workspace? This operation cannot be undone."
+			var confirmDelete = function(){ 
+				$this.workspaceManager.deleteWorkspace( $this.selectedWorkspace , function(job){
+					UI.enableAll();
+					Calc.workspaceChange( function(){
+						$this.loadWorkspaces();
+						UI.showSuccess( "Workspace deleted" , true );
+					});
 				});
-			});
-		};
-		var position = $this.wsListContainer.offset();
-		position.top += 150; 
-		position.left += 250;
-		UI.disableAll();
-		UI.showConfirm( message, confirmDelete , function(){ UI.enableAll(); } , position );
+			};
+			var position = $this.wsListContainer.offset();
+			position.top += 150; 
+			position.left += 250;
+			UI.disableAll();
+			UI.showConfirm( message, confirmDelete , function(){ UI.enableAll(); } , position );
+		} else {
+			UI.showError("Please select a workspace", true)
+		}
 	});
 	
 	this.addWsForm.submit(function(e){
@@ -169,7 +176,7 @@ WorkspaceSettingsManager.prototype.loadWorkspaces = function(){
 						});
 						
 						$this.selectedWorkspace = w.id;
-						
+						$this.wsListView.find('button').prop('disabled', false);
 						$this.loadHierarchy();
 						
 //						UI.enable( $this.wsListBtnsContainer.find( 'button' ) );
@@ -179,6 +186,7 @@ WorkspaceSettingsManager.prototype.loadWorkspaces = function(){
 					optionBtn.deselect( function(w){
 						$this.selectedWorkspace = null;
 						$this.tree.hide();
+						$this.wsListView.find('button').prop('disabled', true);
 //						UI.disable( $this.wsListBtnsContainer.find( 'button' ) );
 					} , ws );
 					
