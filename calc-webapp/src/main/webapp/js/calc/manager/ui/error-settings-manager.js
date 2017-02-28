@@ -29,7 +29,8 @@ ErrorSettingsManager = function( container ) {
 	this.errorSettings.parameters 	= {};
 	this.errorSettings.script	 	= "";
 	
-	this.saveBtn 		= this.container.find( ".save-btn button" );
+	this.saveBtn 		= this.container.find( ".save-btn .btn-save" );	
+	this.unselectAllBtn	= this.container.find( ".save-btn .btn-unselect-all" );
 	
 	this.init();
 };
@@ -83,21 +84,37 @@ ErrorSettingsManager.prototype.initEventHandlers = function() {
 	var $this = this;
 	
 	this.saveBtn.click( function(e){
-		
-		$this.errorSettings.script	= $this.rEditor.getValue();
-		var data = JSON.stringify( $this.errorSettings );
-		WorkspaceManager.getInstance().setErrorSettings( data, function(ws){
-			$this.workspace = ws;
-			
-			UI.showSuccess( "Saved!", true );
-			
-		});
-		
+		$this.save();
 	});
+	
+	this.unselectAllBtn.click(function(){
+		$this.errorSettings.parameters = {};
+		$this.save();
+		$this.showQuantity();
+	});
+};
+
+ErrorSettingsManager.prototype.save = function(){
+	var $this = this;
+	$this.errorSettings.script	= $this.rEditor.getValue();
+	var data = JSON.stringify( $this.errorSettings );
+	WorkspaceManager.getInstance().setErrorSettings( data, function(ws){
+		$this.workspace = ws;
+		
+		UI.showSuccess( "Saved!", true );
+	});
+};
+
+ErrorSettingsManager.prototype.resetVariables = function(){
+	this.quantity.find('.option').remove();
+	this.formContainer.find( ".variable-error-settings" ).remove();
+//	this.errorSettingsContainer.find('.button-container').empty();
+//	this.errorSettingsContainer.hide();
 };
 
 ErrorSettingsManager.prototype.showQuantity = function() {
 	var $this = this;
+	$this.resetVariables();
 	var container = $( '<div class="height95 option col-md-12" style="overflow: auto;"></div>' );
 	$this.quantity.append( container );
 	
