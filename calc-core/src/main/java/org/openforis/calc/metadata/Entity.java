@@ -314,6 +314,11 @@ public class Entity extends EntityBase {
 	}
 	
 	@JsonIgnore
+	public List<DateVariable> getDateVariables() {
+		return Collections.unmodifiableList(selectInstancesOf(variables, DateVariable.class));
+	}
+	
+	@JsonIgnore
 	public Collection<Variable<?>> getUserDefinedVariables() {
 		Collection<Variable<?>> list = new HashSet<Variable<?>>();
 		if ( CollectionUtils.isNotEmpty(variables) ) {

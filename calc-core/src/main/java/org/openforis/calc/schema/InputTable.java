@@ -30,6 +30,7 @@ public class InputTable extends DataTable {
 		createQuantityFields(true);
 		createCoordinateFields();
 		createTextFields();
+		createDateFields();
 		
 		createWeightField();
 	}

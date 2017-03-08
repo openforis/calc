@@ -1,6 +1,7 @@
 package org.openforis.calc.psql;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,7 +36,8 @@ public final class Psql extends DefaultDSLContext {
 	public static final DataType<BigDecimal> DOUBLE_PRECISION = SQLDataType.NUMERIC.precision(15, 5);
 	public static final DataType<Long> SERIAL = new SerialDataType();
 	public static final DataType<GeodeticCoordinate> GEODETIC_COORDINATE = new GeodeticCoordinateDataType();
-
+	public static final DataType<LocalDate> LOCAL_DATE = new LocalDateDataType();
+	
 	public static final Schema PUBLIC = DSL.schemaByName("public");
 
 	@SuppressWarnings("unused")

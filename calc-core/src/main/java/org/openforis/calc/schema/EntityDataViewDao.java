@@ -4,6 +4,7 @@
 package org.openforis.calc.schema;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,8 +23,8 @@ import org.openforis.calc.engine.ParameterHashMap;
 import org.openforis.calc.engine.ParameterMap;
 import org.openforis.calc.engine.Workspace;
 import org.openforis.calc.metadata.CategoricalVariable;
+import org.openforis.calc.metadata.DateVariable;
 import org.openforis.calc.metadata.Entity;
-import org.openforis.calc.metadata.MultiwayVariable;
 import org.openforis.calc.metadata.QuantitativeVariable;
 import org.openforis.calc.metadata.TextVariable;
 import org.openforis.calc.metadata.Variable;
@@ -169,6 +170,9 @@ public class EntityDataViewDao extends AbstractJooqDao {
 				} else if ( variable instanceof TextVariable ){
 					Field<String> field = view.getTextField( (TextVariable) variable );
 					addFieldConditions( select, field, conditionParams , String.class );
+				} else if ( variable instanceof DateVariable ){
+					Field<LocalDate> field = view.getDateField( (DateVariable) variable );
+					addFieldConditions( select, field, conditionParams , LocalDate.class );
 				}
 			}
 		}
@@ -183,7 +187,7 @@ public class EntityDataViewDao extends AbstractJooqDao {
 			
 			T value1 = null; 
 			T value2 = null;
-			if( String.class.isAssignableFrom( fieldType ) ) {
+			if( String.class.isAssignableFrom( fieldType ) || LocalDate.class.isAssignableFrom( fieldType ) ) {
 				value1 = (T) conditionParam.getString("value1");
 				value2 = (T) conditionParam.getString("value2");
 			} else if( Number.class.isAssignableFrom( fieldType ) ) {

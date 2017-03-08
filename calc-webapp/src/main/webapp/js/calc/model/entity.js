@@ -30,6 +30,12 @@ Entity.prototype.quantitativeVariables = function(){
 Entity.prototype.textVariables = function(){
 	return this.filterVariables( "type" , "TEXT" );
 };
+/**
+ * Returns the quantitative variables
+ */
+Entity.prototype.dateVariables = function(){
+	return this.filterVariables( "type" , "DATE" );
+};
 
 Entity.prototype.filterVariables = function( field , value ){
 	var vars = [];

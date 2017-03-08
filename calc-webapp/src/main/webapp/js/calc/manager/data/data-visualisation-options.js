@@ -14,9 +14,11 @@ DataVisualisationOptions = function ( container ) {
 	this.quantities		= this.container.find( ".quantities" );
 	this.categories 	= this.container.find( ".categories" );
 	this.texts 			= this.container.find( ".texts" );
+	this.dates 			= this.container.find( ".dates" );
 	this.qBtn 			= this.container.find( "[name=q-btn]" ); 
 	this.cBtn 			= this.container.find( "[name=c-btn]" ); 
 	this.tBtn 			= this.container.find( "[name=t-btn]" ); 
+	this.dBtn 			= this.container.find( "[name=d-btn]" ); 
 	this.viewResultsBtn	= this.container.find( ".view-results-btn button" ); 
 
 	// function to call after view results btn is clicked
@@ -37,6 +39,7 @@ DataVisualisationOptions.prototype.init = function() {
 	
 	this.categories.hide();
 	this.texts.hide();
+	this.dates.hide();
 	this.container.css( {"height" : this.optionButtonsHeight } );
 	
 	this.container.on( "show.bs.collapse" , function(e) {
@@ -60,6 +63,7 @@ DataVisualisationOptions.prototype.init = function() {
 		$this.quantities.empty();
 		$this.categories.empty();
 		$this.texts.empty();
+		$this.dates.empty();
 		
 		if ( entityId ) {
 			// create data provider
@@ -81,17 +85,26 @@ DataVisualisationOptions.prototype.init = function() {
 	this.qBtn.click( function(e) {
 		$this.categories.hide();
 		$this.texts.hide();
+		$this.dates.hide();
 		$this.quantities.show();
 	});
 	this.cBtn.click( function(e) {
 		$this.quantities.hide();
 		$this.texts.hide();
+		$this.dates.hide();
 		$this.categories.show();
 	});
 	this.tBtn.click( function(e){
 		$this.quantities.hide();
 		$this.categories.hide();
+		$this.dates.hide();
 		$this.texts.show();
+	});
+	this.dBtn.click( function(e){
+		$this.quantities.hide();
+		$this.categories.hide();
+		$this.texts.hide();
+		$this.dates.show();
 	});
 	
 	this.viewResultsBtn.click( function(e){
@@ -112,10 +125,12 @@ DataVisualisationOptions.prototype.addVariableOptions = function( entity ) {
 		this.quantities.append( header );
 		this.categories.append( header.clone() );
 		this.texts.append( header.clone() );
+		this.dates.append( header.clone() );
 		
 		this.addVariableOptionButtons( entity.quantitativeVariables() , this.quantities );
 		this.addVariableOptionButtons( entity.categoricalVariables() , this.categories );
 		this.addVariableOptionButtons( entity.textVariables() , this.texts );
+		this.addVariableOptionButtons( entity.dateVariables() , this.dates );
 		
 		entity = entity.parent();
 	}

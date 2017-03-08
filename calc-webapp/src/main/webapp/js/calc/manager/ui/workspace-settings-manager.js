@@ -47,7 +47,7 @@ WorkspaceSettingsManager.prototype.init = function(){
 				UI.unlock();
 			});
 		} else {
-			UI.showError("Please select a workspace", true)
+			UI.showError("Please select a workspace", true);
 		}
 	});
 	
@@ -60,6 +60,14 @@ WorkspaceSettingsManager.prototype.init = function(){
 					Calc.workspaceChange( function(){
 						$this.loadWorkspaces();
 						UI.showSuccess( "Workspace deleted" , true );
+						
+						$this.workspaceManager.activeWorkspace(function(ws){
+							if(ws){
+								$this.wsListView.find('button').prop('disabled', false);
+							} else {
+								$this.wsListView.find('button').prop('disabled', true);
+							}
+						})
 					});
 				});
 			};

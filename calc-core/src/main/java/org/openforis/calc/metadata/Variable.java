@@ -23,7 +23,7 @@ public abstract class Variable<T> extends VariableBase {
 	private static final long serialVersionUID = 1L;
 
 	public enum Type {
-		QUANTITATIVE, CATEGORICAL, BINARY, TEXT;
+		QUANTITATIVE, CATEGORICAL, BINARY, TEXT, DATE;
 		
 		public static Type fromString( String value ){
 			if( StringUtils.isNotBlank(value) ){
@@ -38,7 +38,7 @@ public abstract class Variable<T> extends VariableBase {
 	}
 
 	public enum Scale {
-		NOMINAL, ORDINAL, BINARY, RATIO, INTERVAL, OTHER, TEXT;
+		NOMINAL, ORDINAL, BINARY, RATIO, INTERVAL, OTHER, TEXT, DATE;
 	}
 
 	public Variable() {

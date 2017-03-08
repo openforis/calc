@@ -41,7 +41,8 @@ public class EntityDataView extends DataTable {
 		
 		createQuantityFields();
 		createTextFields();
-
+		createDateFields();
+		
 		createAncestorIdFields();
 		
 		ResultTable resultTable = this.schema.getResultTable(entity);

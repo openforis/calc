@@ -50,7 +50,7 @@
 				<version>${jooq.version}</version>
 				<dependencies>
 					<dependency>
-						<groupId>postgresql</groupId>
+						<groupId>org.postgresql</groupId>
 						<artifactId>postgresql</artifactId>
 						<version>${postgres-driver.version}</version>
 					</dependency>
@@ -394,7 +394,7 @@
 		
 		<!-- Database -->
 		<dependency>
-			<groupId>postgresql</groupId>
+			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 		</dependency>
 		<dependency>
@@ -404,6 +404,12 @@
 		<dependency>
 			<groupId>org.postgis</groupId>
 			<artifactId>postgis-jdbc</artifactId>
+			<exclusions>
+		      <exclusion>
+		         <groupId>org.postgis</groupId>
+		         <artifactId>postgis-stubs</artifactId>
+		      </exclusion>
+		   </exclusions>
 		</dependency>
 		<dependency>
 			<groupId>commons-dbcp</groupId>

@@ -186,7 +186,9 @@ public class EntityManager {
 		
 		select.addSelect( table.getIdField() );
 		select.addSelect( table.getTextFields() );
+		select.addSelect( table.getDateFields() );
 		select.addSelect( table.getAoiIdFields() );
+		
 		
 		for (QuantitativeVariable var : entity.getOriginalQuantitativeVariables()) {
 			Field<BigDecimal> field = table.getQuantityField(var);
@@ -267,6 +269,7 @@ public class EntityManager {
 //			select.addSelect( parentTable.getCategoryValueFields() );
 //			select.addSelect( parentTable.getCategoryIdFields() );
 			select.addSelect( parentTable.getTextFields() );
+			select.addSelect( parentTable.getDateFields() );
 			if(  parentEntity.isSamplingUnit() ){
 				if( addAlwaysWeightField || tableDao.hasColumn(table, table.getWeightField()) ){
 					select.addSelect( parentTable.getWeightField() );

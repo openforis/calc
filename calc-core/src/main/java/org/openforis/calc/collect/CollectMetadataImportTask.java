@@ -30,6 +30,7 @@ import org.openforis.calc.metadata.CategoricalVariable;
 import org.openforis.calc.metadata.Category;
 import org.openforis.calc.metadata.CategoryHierarchy;
 import org.openforis.calc.metadata.CategoryLevel;
+import org.openforis.calc.metadata.DateVariable;
 import org.openforis.calc.metadata.Entity;
 import org.openforis.calc.metadata.MetadataManager;
 import org.openforis.calc.metadata.MultiwayVariable;
@@ -452,9 +453,11 @@ public class CollectMetadataImportTask extends Task {
 
 				variable.setCategoryLevel(categoryLevel);
 			}
-		} else if (attrDefn instanceof DateAttributeDefinition) {
-			v = new TextVariable();
-			v.setScale(Scale.TEXT);
+		} else if (column.getNodeDefinition() instanceof DateAttributeDefinition) {
+//			v = new TextVariable();
+//			v.setScale(Scale.TEXT);
+			v = new DateVariable();
+			v.setScale(Scale.DATE);
 		} else if (attrDefn instanceof NumberAttributeDefinition && columnNodeDefnName.equals(attrDefn.getMainFieldName())) {
 			v = new QuantitativeVariable();
 			v.setScale(Scale.RATIO);

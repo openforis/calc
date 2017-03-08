@@ -39,6 +39,9 @@ public class VariableRecordMapper implements RecordMapper<Record, Variable<?> >{
 		case NOMINAL:
 			variable = new MultiwayVariable();
 			break;
+		case DATE:
+			variable = new DateVariable();
+			break;
 		default:
 			variable = new QuantitativeVariable();
 		}
