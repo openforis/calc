@@ -46,7 +46,7 @@
 		<dependencySet>
 			<outputDirectory>${output.directory}/tomcat/lib</outputDirectory>
 			<includes>
-				<include>postgresql:postgresql:jar</include>
+				<include>org.postgresql:postgresql:jar</include>
 				<include>commons-pool:commons-pool:jar</include>
 				<include>commons-dbcp:commons-dbcp:jar</include>
 			</includes>
