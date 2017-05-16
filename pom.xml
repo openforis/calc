@@ -25,7 +25,7 @@
 		<sqlite-driver.version>3.7.2</sqlite-driver.version>
 		<jooq.version>3.6.2</jooq.version>
 		<!-- <collect.version>3.11.8</collect.version> -->
-		<collect.version>3.12.22</collect.version>
+		<collect.version>3.13.1</collect.version>
 		<mondrian.version>3.5.0</mondrian.version>	
 		<of-commons-version>0.1.25</of-commons-version>
 		<geotools.version>2.7.5</geotools.version>

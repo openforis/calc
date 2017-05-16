@@ -118,16 +118,16 @@ calc.persistErrorScript <- function( filename , id ){
 	calc.persistUserScript( filename , 'error_settings' , 'script' , id );
 };
 
-usePackage("RPostgreSQL");
-usePackage("sqldf");
-
 # sqldf options. 
 # driver is set to SQLLite in order to read from dataframe , otherwise it uses PostgreSQL which is the default driver loaded by Calc
 # https://code.google.com/p/sqldf/#Troubleshooting
 options (
-  #gsubfn.engine = "R" , 
+  gsubfn.engine = "R" , 
   sqldf.driver = "SQLite"
 );
+
+usePackage("RPostgreSQL");
+usePackage("sqldf");
 
 scriptDir <- dirname(sys.frame(1)$ofile);
 if( scriptDir == 'system' ){
