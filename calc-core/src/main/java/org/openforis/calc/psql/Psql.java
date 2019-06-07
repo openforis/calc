@@ -25,26 +25,26 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Simple PostreSQL query builder
- * 
+ *
  * @author G. Miceli
  * @author M. Togna
- * 
+ *
  */
 public final class Psql extends DefaultDSLContext {
 	private static final long serialVersionUID = 1L;
 
-	public static final DataType<BigDecimal> DOUBLE_PRECISION = SQLDataType.NUMERIC.precision(15, 5);
+	public static final DataType<BigDecimal> DOUBLE_PRECISION = SQLDataType.DECIMAL;
 	public static final DataType<Long> SERIAL = new SerialDataType();
 	public static final DataType<GeodeticCoordinate> GEODETIC_COORDINATE = new GeodeticCoordinateDataType();
 	public static final DataType<LocalDate> LOCAL_DATE = new LocalDateDataType();
-	
+
 	public static final Schema PUBLIC = DSL.schemaByName("public");
 
 	@SuppressWarnings("unused")
 	private static final Logger log = LoggerFactory.getLogger( Psql.class );
 
 	public static final Map<String,DataType<?>> POSTGRESQL_DATA_TYPES ;
-	
+
 	public enum Privilege {
 
 		USAGE, ALL, SELECT;
@@ -53,12 +53,12 @@ public final class Psql extends DefaultDSLContext {
 			return name().toLowerCase();
 		};
 	};
-	
+
 	static {
 		// init postgresql data types
 		try {
 			POSTGRESQL_DATA_TYPES = new HashMap<String, DataType<?>>();
-			
+
 			java.lang.reflect.Field[] fields = PostgresDataType.class.getDeclaredFields();
 			for ( java.lang.reflect.Field field : fields ) {
 				field.setAccessible(true);
@@ -140,7 +140,7 @@ public final class Psql extends DefaultDSLContext {
 	public DropSchemaStep dropSchemaIfExistsCascade(Schema schema) {
 		return new DropSchemaStep(this, true, schema, true );
 	}
-	
+
 	public SetDefaultSchemaSearchPathStep setDefaultSchemaSearchPath(Schema... schemas) {
 		return new SetDefaultSchemaSearchPathStep(this, schemas);
 	}
