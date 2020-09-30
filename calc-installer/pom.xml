@@ -195,13 +195,13 @@
 						</executions>
 					</plugin>
 					
+					<!-- 3. replace calc version into the xml installbuilder source file -->
+					<!-- 4. replace the output directory of the installer with the project.build.directory property-->
 					<plugin>
 						<groupId>com.google.code.maven-replacer-plugin</groupId>
 						<artifactId>maven-replacer-plugin</artifactId>
 						<version>1.4.0</version>
 						<executions>
-						
-							<!-- 3. replace calc version into the xml installbuilder source file -->
 							<execution>
 								<id>replace-project-version</id>
 								<phase>package</phase>
@@ -214,45 +214,32 @@
 <!-- 										<include>${installer-dir}/${installbuilder-with-jdk-file-name}</include> -->
 									</includes>
 									<regex>false</regex>
-									<!-- the name of the token to replace -->
-									<token>PROJECT_VERSION</token>
-									<!-- replace it with the Maven project version -->
-									<value>${project.version}</value>
+									<replacements>
+										<replacement>
+											<!-- the name of the token to replace -->
+											<token>PROJECT_VERSION</token>
+											<!-- replace it with the Maven project version -->
+											<value>${project.version}</value>
+										</replacement>
+										<replacement>
+											<!-- the name of the token to replace -->
+											<token>OUTPUT_DIRECTORY</token>
+											<!-- replace it with the Maven project version -->
+											<value>${project.build.directory}</value>
+										</replacement>
+									</replacements>
 								</configuration>
 							</execution>
-							
-							<!-- 4. replace the output directory of the installer with the project.build.directory property-->
-							<execution>
-								<id>replace-output-directory</id>
-								<phase>package</phase>
-								<goals>
-									<goal>replace</goal>
-								</goals>
-								<configuration>
-									<includes>
-										<include>${installer-dir}/${installbuilder-file-name}</include>
-<!-- 										<include>${installer-dir}/${installbuilder-with-jdk-file-name}</include> -->
-									</includes>
-									<regex>false</regex>
-									<!-- the name of the token to replace -->
-									<token>OUTPUT_DIRECTORY</token>
-									<!-- replace it with the Maven project version -->
-									<value>${project.build.directory}</value>
-								</configuration>
-							</execution>
-							
 						</executions>
 						
 					</plugin>
 				
 					<!-- 5. execute installbuilder to produce the installers -->
-					<!-- 									<executable>${installbuilder-home}/bin/builder</executable> -->
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>exec-maven-plugin</artifactId>
 						<version>1.1</version>
 						<executions>
-<!-- 							<executable>${installbuilder-home}/bin/builder</executable> -->
 							<execution>
 								<id>windows-installer</id>
 								<phase>package</phase>
@@ -260,7 +247,7 @@
 									<goal>exec</goal>
 								</goals>
 								<configuration>
-									<executable>${installbuilder-home}/bin/Builder.app/Contents/MacOS/installbuilder.sh</executable>
+									<executable>${installbuilder.builder.executable}</executable>
 									<arguments>
 										<argument>build</argument>
 										<argument>${basedir}/${installer-dir}/${installbuilder-file-name}</argument>
