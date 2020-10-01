@@ -36,10 +36,11 @@ Maven POM properties
 ============================================================================
 
 The 'assembly' profile needs some properties defined in the Maven settings.xml file:
- - installbuilder.home : Home folder of Installbuilder installation
+ - installbuilder.home : Home folder of InstallBuilder installation
  - installbuilder.builder.executable : Location of builder executable file
  	- if using Linux: ${installbuilder.home}/bin/builder
- 	- if using Mac OS: ${installbuilder-home}/bin/Builder.app/Contents/MacOS/installbuilder.sh 
+ 	- if using Windows: ${installbuilder.home}/bin/builder.exe
+ 	- if using Mac OS: ${installbuilder.home}/bin/Builder.app/Contents/MacOS/installbuilder.sh 
  
 ============================================================================
  				Tomcat 7 database parameters configuration

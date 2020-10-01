@@ -263,7 +263,7 @@
 <!-- 									<goal>exec</goal> -->
 <!-- 								</goals> -->
 <!-- 								<configuration> -->
-<!-- 									<executable>${installbuilder-home}/bin/Builder.app/Contents/MacOS/installbuilder.sh</executable>	 -->
+<!-- 									<executable>${installbuilder.builder.executable}</executable>	 -->
 <!-- 									<arguments> -->
 <!-- 										<argument>build</argument> -->
 <!-- 										<argument>${basedir}/${installer-dir}/${installbuilder-with-jdk-file-name}</argument> -->
@@ -281,7 +281,7 @@
 									<goal>exec</goal>
 								</goals>
 								<configuration>
-									<executable>${installbuilder-home}/bin/Builder.app/Contents/MacOS/installbuilder.sh</executable>								
+									<executable>${installbuilder.builder.executable}</executable>								
 									<arguments>
 										<argument>build</argument>
 										<argument>${basedir}/${installer-dir}/${installbuilder-file-name}</argument>
@@ -297,7 +297,7 @@
 <!-- 									<goal>exec</goal> -->
 <!-- 								</goals> -->
 <!-- 								<configuration> -->
-<!-- 									<executable>${installbuilder-home}/bin/Builder.app/Contents/MacOS/installbuilder.sh</executable>	 -->
+<!-- 									<executable>${installbuilder.builder.executable}</executable>	 -->
 <!-- 									<arguments> -->
 <!-- 										<argument>build</argument> -->
 <!-- 										<argument>${basedir}/${installer-dir}/${installbuilder-with-jdk-file-name}</argument> -->
@@ -312,7 +312,7 @@
 									<goal>exec</goal>
 								</goals>
 								<configuration>
-									<executable>${installbuilder-home}/bin/Builder.app/Contents/MacOS/installbuilder.sh</executable>								
+									<executable>${installbuilder.builder.executable}</executable>								
 									<arguments>
 										<argument>build</argument>
 										<argument>${basedir}/${installer-dir}/${installbuilder-file-name}</argument>
@@ -328,7 +328,7 @@
 									<goal>exec</goal>
 								</goals>
 								<configuration>
-									<executable>${installbuilder-home}/bin/Builder.app/Contents/MacOS/installbuilder.sh</executable>								
+									<executable>${installbuilder.builder.executable}</executable>								
 									<arguments>
 										<argument>build</argument>
 										<argument>${basedir}/${installer-dir}/${installbuilder-file-name}</argument>
@@ -344,7 +344,7 @@
 <!-- 									<goal>exec</goal> -->
 <!-- 								</goals> -->
 <!-- 								<configuration> -->
-<!-- 									<executable>${installbuilder-home}/bin/Builder.app/Contents/MacOS/installbuilder.sh</executable>								 -->
+<!-- 									<executable>${installbuilder.builder.executable}</executable>								 -->
 <!-- 									<arguments> -->
 <!-- 										<argument>build</argument> -->
 <!-- 										<argument>${basedir}/${installer-dir}/${installbuilder-with-jdk-file-name}</argument> -->
