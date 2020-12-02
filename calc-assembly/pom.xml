@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>org.openforis.calc</groupId>
 		<artifactId>calc</artifactId>
-		<version>2.1-a17-SNAPSHOT</version>
+		<version>2.1-a17</version>
 	</parent>
 	<artifactId>calc-assembly</artifactId>
 	<packaging>pom</packaging>
@@ -184,7 +184,7 @@
 <!-- 										<unzip -->
 <!-- 											src="${project.build.directory}/${output.finalName}.zip" -->
 <!-- 											dest="${project.build.directory}" -->
-<!-- 											                                                                                      /> -->
+<!-- 											                                                                                       /> -->
 <!-- 									</tasks> -->
 <!-- 								</configuration> -->
 <!-- 							</execution> -->
