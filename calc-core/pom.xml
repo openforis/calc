@@ -346,6 +346,28 @@
 		<dependency>
 			<groupId>org.openforis.collect</groupId>
 			<artifactId>collect-core</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.openforis.commons</groupId>
+					<artifactId>commons-collections</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.openforis.commons</groupId>
+					<artifactId>commons-concurrency</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.openforis.commons</groupId>
+					<artifactId>commons-io</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.openforis.commons</groupId>
+					<artifactId>commons-lang</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.openforis.commons</groupId>
+					<artifactId>commons-versioning</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.openforis.collect</groupId>
@@ -353,15 +375,19 @@
 		</dependency>
 		<dependency>
 			<groupId>org.openforis.commons</groupId>
-			<artifactId>commons-collections</artifactId>
+			<artifactId>of-commons-collections</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.openforis.commons</groupId>
-			<artifactId>commons-io</artifactId>
+			<artifactId>of-commons-concurrency</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.openforis.commons</groupId>
-			<artifactId>commons-versioning</artifactId>
+			<artifactId>of-commons-io</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.openforis.commons</groupId>
+			<artifactId>of-commons-versioning</artifactId>
 		</dependency>
 		
 		<!--  Spring  -->

@@ -52,10 +52,9 @@
 		<postgres-driver.version>42.0.0</postgres-driver.version>
 		<sqlite-driver.version>3.7.2</sqlite-driver.version>
 		<jooq.version>3.6.2</jooq.version>
-		<!-- <collect.version>3.11.8</collect.version> -->
 		<collect.version>3.13.1</collect.version>
 		<mondrian.version>3.5.0</mondrian.version>	
-		<of-commons-version>0.1.27</of-commons-version>
+		<of-commons-version>0.1.25-SNAPSHOT</of-commons-version>
 		<geotools.version>2.7.5</geotools.version>
 		<jackson.version>2.1.0</jackson.version>
 		<jre.version>1.8.0_65</jre.version>
@@ -243,17 +242,22 @@
 			<!-- Open Foris Commmons -->
 			<dependency>
 				<groupId>org.openforis.commons</groupId>
-				<artifactId>commons-io</artifactId>
+				<artifactId>of-commons-collections</artifactId>
 				<version>${of-commons-version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.openforis.commons</groupId>
-				<artifactId>commons-collections</artifactId>
+				<artifactId>of-commons-concurrency</artifactId>
 				<version>${of-commons-version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.openforis.commons</groupId>
-				<artifactId>commons-versioning</artifactId>
+				<artifactId>of-commons-io</artifactId>
+				<version>${of-commons-version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.openforis.commons</groupId>
+				<artifactId>of-commons-versioning</artifactId>
 				<version>${of-commons-version}</version>
 			</dependency>
 			
