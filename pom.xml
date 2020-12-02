@@ -75,7 +75,7 @@
 		<url>https://github.com/openforis/calc</url>
 		<connection>scm:git:git@github.com:openforis/calc.git</connection>
 		<developerConnection>scm:git:git@github.com:openforis/calc.git</developerConnection>
-		<tag>calc-1.0-a13</tag>
+		<tag>HEAD</tag>
 	</scm>
 
 	<licenses>
