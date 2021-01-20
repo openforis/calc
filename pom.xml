@@ -56,7 +56,7 @@
 		<mondrian.version>3.5.0</mondrian.version>	
 		<of-commons-version>0.1.25</of-commons-version>
 		<geotools.version>2.7.5</geotools.version>
-		<jackson.version>2.1.0</jackson.version>
+		<jackson.version>2.12.1</jackson.version>
 		<jre.version>1.8.0_65</jre.version>
 	</properties>
 	
