@@ -46,17 +46,17 @@
 	</modules>
 
 	<properties>
-		<spring.version>4.2.2.RELEASE</spring.version>
+		<spring.version>5.2.7.RELEASE</spring.version>
 		<kettle.version>4.4.0-stable</kettle.version>
 		<!-- <postgres-driver.version>9.1-901-1.jdbc4</postgres-driver.version> -->
 		<postgres-driver.version>42.0.0</postgres-driver.version>
 		<sqlite-driver.version>3.7.2</sqlite-driver.version>
 		<jooq.version>3.6.2</jooq.version>
-		<collect.version>3.13.1</collect.version>
+		<collect.version>4.0.14</collect.version>
 		<mondrian.version>3.5.0</mondrian.version>	
-		<of-commons-version>0.1.25</of-commons-version>
+		<of-commons-version>0.1.27</of-commons-version>
 		<geotools.version>2.7.5</geotools.version>
-		<jackson.version>2.1.0</jackson.version>
+		<jackson.version>2.12.1</jackson.version>
 		<jre.version>1.8.0_65</jre.version>
 	</properties>
 	
@@ -99,7 +99,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.1</version>
+					<version>3.8.1</version>
 					<configuration>
 						<source>1.8</source>
 						<target>1.8</target>
@@ -147,6 +147,9 @@
 			<plugin>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>2.9</version>
+				<configuration>
+			        <source>8</source>
+			    </configuration>
 				<executions>
 					<execution>
 						<id>attach-javadocs</id>
