@@ -46,7 +46,7 @@
 	</modules>
 
 	<properties>
-		<spring.version>5.2.7.RELEASE</spring.version>
+		<spring.version>5.3.19</spring.version>
 		<kettle.version>4.4.0-stable</kettle.version>
 		<!-- <postgres-driver.version>9.1-901-1.jdbc4</postgres-driver.version> -->
 		<postgres-driver.version>42.0.0</postgres-driver.version>
