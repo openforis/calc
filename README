@@ -4,13 +4,13 @@
 		
 - Open Foris Calc:		
 	Windows:
-	http://www.openforis.org/nexus/service/local/artifact/maven/redirect?r=releases&g=org.openforis.calc&a=calc-installer&v=LATEST&c=windows&e=exe
+	https://oss.sonatype.org/service/local/artifact/maven/redirect?r=releases&g=org.openforis.calc&a=calc-installer&v=LATEST&c=windows&e=exe
 	
 	Linux:
-	http://www.openforis.org/nexus/service/local/artifact/maven/redirect?r=releases&g=org.openforis.calc&a=calc-installer&v=LATEST&c=linux&e=run
+	https://oss.sonatype.org/service/local/artifact/maven/redirect?r=releases&g=org.openforis.calc&a=calc-installer&v=LATEST&c=linux&e=run
 	
 - Open Foris Collect:
-	http://www.openforis.org/nexus/service/local/artifact/maven/redirect?r=releases&g=org.openforis.collect&a=collect-assembly&v=LATEST&e=zip
+	https://oss.sonatype.org/service/local/artifact/maven/redirect?r=releases&g=org.openforis.collect&a=collect-installer&v=LATEST&c=windows&e=exe
 - Open Foris Test Data:
 	http://www.openforis.org/nexus/service/local/artifact/maven/redirect?r=releases&g=org.openforis.test-data&a=test-data&v=LATEST&e=zip
 
